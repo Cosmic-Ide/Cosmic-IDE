@@ -18,7 +18,7 @@ android {
         release {
 //            crunchPngs false
 //            shrinkResources true
-//            minifyEnabled true
+//            minifyEnabled false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -32,9 +32,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
-    }
-    buildFeatures {
-        viewBinding true
     }
 }
 

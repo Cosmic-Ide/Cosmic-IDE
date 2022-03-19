@@ -1,34 +1,112 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.JavaIDE.AppBarOverlay">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.JavaIDE.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/_coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/_app_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:background="?attr/colorPrimary"
+			app:popupTheme="@style/AppTheme.PopupOverlay" />
+	</com.google.android.material.appbar.AppBarLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+		<androidx.coordinatorlayout.widget.CoordinatorLayout
+			android:id="@+id/container"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:padding="8dp" />
+		<io.github.rosemoe.sora.widget.CodeEditor
+			android:id="@+id/editor"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:padding="8dp"
+			android:background="#2B2B2B"
+			android:orientation="horizontal"
+			android:layout_weight="1" />
+		<HorizontalScrollView
+			android:id="@+id/scrollview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#2B2B2B"
+			android:orientation="horizontal">
+			<LinearLayout
+				android:id="@+id/functions"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:orientation="horizontal">
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_run"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="run"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_weight="1"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="@color/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.MaterialComponents.Button" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_smali"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="8dp"
+					android:layout_marginRight="4dp"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="Smali"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_weight="1"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="@color/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.MaterialComponents.Button" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_disassemble"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="4dp"
+					android:layout_marginRight="8dp"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="Disassemble"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="@color/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.MaterialComponents.Button" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_smali2java"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="Smali2Java"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_weight="1"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="@color/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.MaterialComponents.Button" />
+			</LinearLayout>
+		</HorizontalScrollView>
+	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

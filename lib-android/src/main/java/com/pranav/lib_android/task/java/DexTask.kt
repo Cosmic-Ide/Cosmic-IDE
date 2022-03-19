@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor
 class DexTask: Task() {
 
 	val mBuilder: Builder
-	val ex: Exception = null
+	val ex: Exception? = null
 
 	constructor(builder: Builder) {
 		this.mBuilder = builder
@@ -22,11 +22,11 @@ class DexTask: Task() {
 
 	override fun doFullTask() {
 		val latch = CountDownLatch(1)
-		Executors.newSingleThreadExecutor().execute(() {
+		Executors.newSingleThreadExecutor().execute({
 			try {
 				val f = File(
-						FileUtil.getBinDir()
-								+ "classes")
+					FileUtil.getBinDir()
+							+ "classes")
 				val args = ArrayList<>()
 				args.add("--debug")
 				args.add("--verbose")
@@ -37,12 +37,11 @@ class DexTask: Task() {
 				args.add(f.getAbsolutePath())
 
 				Main.clearInternTables()
-				Main.Arguments arguments = Main.Arguments()
-				val parseMethod = Main.Arguments.class
+				val arguments = Main.Arguments()
+				val parseMethod = Main.Arguments::class.java
 						.getDeclaredMethod("parse", Array<String>::class.java)
-				parseMethod.setAccessible(true)
-				parseMethod.invoke(arguments,
-						(Object) args.toArray(String[0]))
+				method.isAccessible = true
+				method.invoke(arguments, args.toTypedArray() as Any)
 				Main.run(arguments)
 			} catch (e: Exception) {
 				ex = e

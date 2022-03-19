@@ -10,9 +10,9 @@ import org.eclipse.jdt.core.util.ClassFormatException
 
 class ClassFileDisassembler {
     
-    lateinit val classFileBytes: byte[]
+    var classFileBytes: Byte[]
     
-    constructor(classFile: String): ClassFileDisassembler {
+    constructor(classFile: String) {
 		classFileBytes = Files.asByteSource(File(classFile)).read()
     }
 	

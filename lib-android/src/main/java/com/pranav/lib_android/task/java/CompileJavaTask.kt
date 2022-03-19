@@ -11,11 +11,11 @@ import java.util.ArrayList
 
 class CompileJavaTask: Task() {
 
-	val mBuilder: Builder
+	var mBuilder: Builder
 	val errs = StringBuilder()
-	val prefs: SharedPreferences
+	var prefs: SharedPreferences
 
-	constructor CompileJavaTask(builder: Builder) {
+	constructor(builder: Builder) {
 		this.mBuilder = builder
 		prefs = mBuilder.getContext().getSharedPreferences("compiler_settings",
 				Context.MODE_PRIVATE)
@@ -28,7 +28,7 @@ class CompileJavaTask: Task() {
 	override fun doFullTask() {
 
         val output = File(FileUtil.getBinDir() + "classes")
-		val args = ArrayList<>()
+		val args = ArrayList<String>()
 
 		args.add("-warn:all")
 		args.add("-log")
@@ -60,9 +60,7 @@ class CompileJavaTask: Task() {
 		args.add(" ")
 		args.add(FileUtil.getJavaDir())
 
-		val writer = PrintWriter((p1) -> {
-			errs.append((char) p1)
-		})
+		val writer = PrintWriter((p1) -> errs.append((char) p1))
 
 		val main = Main(writer, writer, false, null, null)
 

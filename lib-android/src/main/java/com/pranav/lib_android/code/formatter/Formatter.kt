@@ -13,14 +13,14 @@ import org.eclipse.jface.text.Document
 
 class Formatter {
 	
-	lateinit val source: String
+	var source: String
 	
 	constructor(source: String) {
 		this.source = source
 	}
 	
-	public String format() {
-		Map options = DefaultCodeFormatterConstants.getEclipse21Settings()
+	fun format(): String {
+		val options = DefaultCodeFormatterConstants.getEclipse21Settings()
 		
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7)
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
@@ -71,8 +71,7 @@ class Formatter {
 		.createCodeFormatter(options)
 		
 		val edit = codeFormatter.format(
-		CodeFormatter.K_COMPILATION_UNIT
-		| CodeFormatter.F_INCLUDE_COMMENTS,
+		CodeFormatter.K_COMPILATION_UNIT,
 		source,
 		0, // starting index
 		source.length(), // length

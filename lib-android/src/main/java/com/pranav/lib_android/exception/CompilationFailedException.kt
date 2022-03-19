@@ -2,11 +2,11 @@ package com.pranav.lib_android
 
 class CompilationFailedException: Throwable() {
 
-	fun CompilationFailedException(e: Throwable): Throwable {
-		super(e)
+	constructor(e: Throwable) {
+		this(e)
 	}
 
-	fun CompilationFailedException(message: String): Throwable {
+	constructor(message: String) {
 		super(message)
 	}
 }

@@ -31,10 +31,10 @@ class ExecuteJavaTask: Task() {
 		val dexFile = FileUtil.getBinDir()
 		+ "classes.dex"
 		final CountDownLatch latch = CountDownLatch(1)
-		Executors.newSingleThreadExecutor().execute(() -> {
+		Executors.newSingleThreadExecutor().execute({
 				val out = OutputStream() {
-					override fun write(int b) {
-						log.append(String.valueOf((char) b))
+					override fun write(b: Int) {
+						log.append(String.valueOf((Char) b))
 					}
 					
 					override fun toString(): String {

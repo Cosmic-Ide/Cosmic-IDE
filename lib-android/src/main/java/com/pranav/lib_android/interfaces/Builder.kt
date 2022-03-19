@@ -4,9 +4,6 @@ import android.content.Context
 
 abstract class Builder {
 
-	abstract fun getTasks(): Task[]
-
 	abstract fun getContext(): Context
-
 	abstract fun getClassloader(): ClassLoader
 }

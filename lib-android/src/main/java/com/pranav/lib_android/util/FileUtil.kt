@@ -1,4 +1,4 @@
-package com.pranav.java.ide
+package com.pranav.lib_android.util
 
 import com.google.common.io.Files
 

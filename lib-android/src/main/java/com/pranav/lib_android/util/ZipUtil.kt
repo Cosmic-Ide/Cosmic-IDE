@@ -1,4 +1,4 @@
-package com.pranav.ide.util
+package com.pranav.lib_android.util
 
 import android.content.Context
 import android.util.Log

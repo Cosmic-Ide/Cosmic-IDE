@@ -1,0 +1,118 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/_coordinator"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/_app_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:background="?attr/colorPrimary"
+			app:popupTheme="@style/AppTheme.PopupOverlay" />
+	</com.google.android.material.appbar.AppBarLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/versionTxt"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:text="Java Version"
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:textColor="#000000" />
+		<HorizontalScrollView
+			android:id="@+id/hscroll3"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<RadioGroup
+				android:id="@+id/javaGroup"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java3"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.3"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java4"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.4"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java5"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.5"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java6"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.6"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java7"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.7"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java8"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="1.8"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+			</RadioGroup>
+		</HorizontalScrollView>
+		<com.google.android.material.textview.MaterialTextView
+			android:id="@+id/classpathTxt"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:padding="4dp"
+			android:text="Classpath"
+			android:textSize="16sp"
+			android:textStyle="bold"
+			android:textColor="#000000" />
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/textinputlayout1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+			<androidx.appcompat.widget.AppCompatEditText
+				android:id="@+id/classpath"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:textSize="12sp"
+				android:textColor="#000000"
+				android:hint="seperated by ':'"
+				android:textColorHint="#607D8B" />
+		</com.google.android.material.textfield.TextInputLayout>
+	</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

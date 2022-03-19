@@ -3,7 +3,6 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
-        jcenter()
     }
 }
 dependencyResolutionManagement {
@@ -11,7 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-    maven { url 'http://repo1.maven.org/maven2' }
+        maven { url 'http://repo1.maven.org/maven2' }
+        jcenter()
     }
 }
 rootProject.name = "Java IDE"

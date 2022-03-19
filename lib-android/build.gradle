@@ -9,7 +9,6 @@ java {
 }
 
 dependencies {
-    implementation project(path: ':app')
     implementation project(path: ':lib-dx')
     implementation files('libs/eclipse.jar')
     compileOnly files('libs/android-stubs.jar')

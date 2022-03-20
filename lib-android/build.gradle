@@ -10,6 +10,6 @@ java {
 
 dependencies {
     implementation project(path: ':lib-dx')
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    compileOnly files('android-stubs.jar')
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compileOnly files('classpath/android-stubs.jar')
 }

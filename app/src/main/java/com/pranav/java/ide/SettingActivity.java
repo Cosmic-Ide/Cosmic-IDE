@@ -3,8 +3,6 @@ package com.pranav.java.ide;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.*;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.appbar.AppBarLayout;
 import android.app.*;
 import android.os.*;
 import android.view.*;
@@ -43,9 +41,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 public class SettingActivity extends AppCompatActivity {
 	
-	private Toolbar _toolbar;
-	private AppBarLayout _app_bar;
-	private CoordinatorLayout _coordinator;
+	private Toolbar toolbar;
 	
 	private MaterialTextView versionTxt;
 	private HorizontalScrollView hscroll3;
@@ -63,21 +59,19 @@ public class SettingActivity extends AppCompatActivity {
 	private SharedPreferences settings;
 	
 	@Override
-	protected void onCreate(Bundle _savedInstanceState) {
-		super.onCreate(_savedInstanceState);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setting);
-		initialize(_savedInstanceState);
+		initialize();
 		initializeLogic();
 	}
 	
 	private void initialize(Bundle _savedInstanceState) {
-		_app_bar = findViewById(R.id._app_bar);
-		_coordinator = findViewById(R.id._coordinator);
-		_toolbar = findViewById(R.id._toolbar);
-		setSupportActionBar(_toolbar);
+		toolbar = findViewById(R.id._toolbar);
+		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		_toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View _v) {
 				onBackPressed();

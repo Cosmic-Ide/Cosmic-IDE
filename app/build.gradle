@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'
     implementation 'com.google.guava:guava:31.1-android'

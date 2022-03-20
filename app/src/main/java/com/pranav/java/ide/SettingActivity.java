@@ -61,12 +61,12 @@ public class SettingActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.setting);
+		setContentView(R.layout.activity_setting);
 		initialize();
 		initializeLogic();
 	}
 	
-	private void initialize(Bundle _savedInstanceState) {
+	private void initialize() {
 		toolbar = findViewById(R.id._toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);

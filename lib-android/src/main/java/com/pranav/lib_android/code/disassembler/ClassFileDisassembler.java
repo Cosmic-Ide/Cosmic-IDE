@@ -16,7 +16,7 @@ public class ClassFileDisassembler {
 		classFileBytes = Files.asByteSource(new File(classFile)).read();
     }
 	
-	public String disassemble() throws ClassFormatException {
+	public String disassemble() throws Throwable {
 		return new Disassembler().disassemble(classFileBytes, System.lineSeparator());
 	}
 }

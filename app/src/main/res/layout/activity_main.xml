@@ -57,7 +57,7 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
@@ -73,7 +73,7 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
@@ -88,7 +88,7 @@
 					android:text="Disassemble"
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
@@ -102,7 +102,7 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />

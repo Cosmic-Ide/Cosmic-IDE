@@ -30,7 +30,7 @@ public class ApplicationLoader extends Application {
 			am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent);
 
 			Process.killProcess(Process.myPid());
-			System.exit(1);
+			this.finish();
 
 			uncaughtExceptionHandler.uncaughtException(thread, throwable);
 		});

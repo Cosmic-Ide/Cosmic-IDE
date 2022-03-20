@@ -1,11 +1,18 @@
 package com.pranav.lib_android.util;
 
+import android.content.Context;
+
 import com.google.common.io.Files;
 
 import java.io.File;
 
 public class FileUtil {
 
+	private Context mContext;
+
+	public static void initializeContext(Context context) {
+		this.mContext = context;
+	}
 	public static void deleteFile(String path) {
 		File file = new File(path);
 
@@ -35,7 +42,7 @@ public class FileUtil {
 	}
 
 	private static String getDataDir() {
-		return ApplicationLoader.getContext().getExternalFilesDir(null).getAbsolutePath();
+		return mContext.getExternalFilesDir(null).getAbsolutePath();
 	}
 	
 	public static String getJavaDir() {

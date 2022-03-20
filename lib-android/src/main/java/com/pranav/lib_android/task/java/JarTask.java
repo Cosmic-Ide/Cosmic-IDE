@@ -1,7 +1,7 @@
 package com.pranav.lib_android.task.java;
 
 import android.net.Uri;
-import com.pranav.lib_android.FileUtil;
+import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.interfaces.*;
 import java.io.BufferedInputStream;
 import java.io.File;

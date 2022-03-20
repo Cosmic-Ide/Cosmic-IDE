@@ -482,7 +482,6 @@ public class MainActivity extends AppCompatActivity {
 						} catch (Throwable e) {
 							dialog("Failed to disassemble", Log.getStackTraceString(e), true);
 						}
-					}
 				});
 	}
 

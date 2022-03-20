@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 		btn_smali2java.setOnClickListener((v) -> {
 			decompile();
 		});
-		btn_smali.setOnClickListener((v) {
+		btn_smali.setOnClickListener((v) -> {
 			smali();
 		});
 		btn_run.setOnClickListener((view) -> {

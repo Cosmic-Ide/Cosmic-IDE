@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 		btn_smali2java.setOnClickListener((v) -> {
 			decompile();
 		});
-		btn_smali.setOnClickListener((v) {
+		btn_smali.setOnClickListener((v) -> {
 			smali();
 		});
 		btn_run.setOnClickListener((view) -> {
@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
 						}
 						dxTime = System.currentTimeMillis() - time;
 						latch.countDown();
-					}
 				});
 				try {
 					latch.await();
@@ -201,7 +200,8 @@ public class MainActivity extends AppCompatActivity {
 					}
 				}
 			}
-	});}
+		});
+	}
 
 	private void showErr(final String e) {
 		Snackbar.make(findViewById(R.id.container), "An error occurred",

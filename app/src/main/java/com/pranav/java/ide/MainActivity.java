@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
 						}
 						dxTime = System.currentTimeMillis() - time;
 						latch.countDown();
-					}
 				});
 				try {
 					latch.await();
@@ -200,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
 						}
 					}
 				}
-			}
-	});}
+			});
+	}
 
 	private void showErr(final String e) {
 		Snackbar.make(findViewById(R.id.container), "An error occurred",

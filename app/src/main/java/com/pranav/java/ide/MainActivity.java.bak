@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
 		getSupportActionBar().setHomeButtonEnabled(false);
 
 		editor = findViewById(R.id.editor);
-		final MaterialButton btn_disassemble = findViewById(R.id.btn_disassemble);
+		final MaterialButton btn_disassemble = findViewById(
+				R.id.btn_disassemble);
 		final MaterialButton btn_run = findViewById(R.id.btn_run);
 		final MaterialButton btn_smali = findViewById(R.id.btn_smali);
 		final MaterialButton btn_smali2java = findViewById(R.id.btn_smali2java);
@@ -89,117 +90,116 @@ public class MainActivity extends AppCompatActivity {
 		});
 		btn_run.setOnClickListener((view) -> {
 			errors = false;
-				final CountDownLatch latch = new CountDownLatch(1);
-				Executors.newSingleThreadExecutor().execute(() -> {
-						try {
-						// code that prepares the files
-						FileUtil.deleteFile(FileUtil
-								.getBinDir());
-						new File(FileUtil
-								.getBinDir()).mkdirs();
-						final File mainFile = new File(FileUtil.getJavaDir() + "Main.java");
-						Files.createParentDirs(mainFile);
-						Files.write(editor.getText().toString().replace("System.exit(", "System.err.print(\"Exit code \" + ").getBytes(), mainFile);
-						} catch (IOException e) {
-							
-						}
-						// code that copies android.jar and
-						// core-lambda-stubs.jar from
-						// assets to temp folder (if not exists)
-						if (!new File(FileUtil
-								.getClasspathDir()
-								        + "android.jar").exists()) {
-							ZipUtil.unzipFromAssets(getApplicationContext(),
-									"android.jar.zip",
-									FileUtil.getClasspathDir());
-							try (InputStream input = getAssets()
-									.open("core-lambda-stubs.jar")) {
-								File output = new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar");
-								Files.write(ByteStreams.toByteArray(input), output);
-							} catch (Exception e) {
-
-							}
-						}
-						// code that runs ecj
-						long time = System.currentTimeMillis();
-						try {
-							CompileJavaTask javaTask = new CompileJavaTask(
-									builder);
-							javaTask.doFullTask();
-						} catch (Throwable e) {
-							errors = true;
-							if (e instanceof CompilationFailedException) {
-								showErr(e.getMessage());
-							} else {
-								showErr(Log.getStackTraceString(e));
-							}
-							latch.countDown();
-							return;
-						}
-						ecjTime = System.currentTimeMillis() - time;
-						// code that packages classes to a JAR
-						time = System.currentTimeMillis();
-						try {
-							new DexTask(builder).doFullTask();
-						} catch (Exception e) {
-							errors = true;
-							showErr(e.toString());
-							latch.countDown();
-							return;
-						}
-						dxTime = System.currentTimeMillis() - time;
-						latch.countDown();
-				});
+			final CountDownLatch latch = new CountDownLatch(1);
+			Executors.newSingleThreadExecutor().execute(() -> {
 				try {
-					latch.await();
-				} catch (Throwable e) {
-					dialog("eww", Log.getStackTraceString(e), true);
+					// code that prepares the files
+					FileUtil.deleteFile(FileUtil.getBinDir());
+					new File(FileUtil.getBinDir()).mkdirs();
+					final File mainFile = new File(
+							FileUtil.getJavaDir() + "Main.java");
+					Files.createParentDirs(mainFile);
+					Files.write(editor.getText().toString()
+							.replace("System.exit(",
+									"System.err.print(\"Exit code \" + ")
+							.getBytes(), mainFile);
+				} catch (IOException e) {
+
 				}
-				// code that loads the final dex
-				if (!errors) {
-					{
-						try {
-							final String[] classes = getClassesFromDex();
-							if (classes == null)
-								return;
-							listDialog("Select a class to execute", classes,
-									new DialogInterface.OnClickListener() {
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int pos) {
-											ExecuteJavaTask task = new ExecuteJavaTask(
-													builder, classes[pos]);
-											try {
-												task.doFullTask();
-											} catch (java.lang.reflect.InvocationTargetException e) {
-												dialog("Failed...",
-														"Runtime error: "
-																+ e.getCause()
-																		.toString(),
-														true);
-											} catch (Exception e) {
-												dialog("Failed..",
-														"Couldn't execute the dex: "
-																+ e.toString()
-																+ "\n\nSystem logs:\n"
-																+ task.getLogs(),
-														true);
-											}
-											dialog("Success! Ecj took: "
-													+ String.valueOf(ecjTime)
-													+ " " + "ms" + ", Dx took: "
-													+ String.valueOf(dxTime),
-													task.getLogs(), true);
-										}
-									});
-						} catch (Throwable e) {
-							final String stack = Log.getStackTraceString(e);
-							showErr(stack);
-						}
+				// code that copies android.jar and
+				// core-lambda-stubs.jar from
+				// assets to temp folder (if not exists)
+				if (!new File(FileUtil.getClasspathDir() + "android.jar")
+						.exists()) {
+					ZipUtil.unzipFromAssets(getApplicationContext(),
+							"android.jar.zip", FileUtil.getClasspathDir());
+					try (InputStream input = getAssets()
+							.open("core-lambda-stubs.jar")) {
+						File output = new File(FileUtil.getClasspathDir(),
+								"core-lambda-stubs.jar");
+						Files.write(ByteStreams.toByteArray(input), output);
+					} catch (Exception e) {
+
 					}
 				}
+				// code that runs ecj
+				long time = System.currentTimeMillis();
+				try {
+					CompileJavaTask javaTask = new CompileJavaTask(builder);
+					javaTask.doFullTask();
+				} catch (Throwable e) {
+					errors = true;
+					if (e instanceof CompilationFailedException) {
+						showErr(e.getMessage());
+					} else {
+						showErr(Log.getStackTraceString(e));
+					}
+					latch.countDown();
+					return;
+				}
+				ecjTime = System.currentTimeMillis() - time;
+				// code that packages classes to a JAR
+				time = System.currentTimeMillis();
+				try {
+					new DexTask(builder).doFullTask();
+				} catch (Exception e) {
+					errors = true;
+					showErr(e.toString());
+					latch.countDown();
+					return;
+				}
+				dxTime = System.currentTimeMillis() - time;
+				latch.countDown();
 			});
+			try {
+				latch.await();
+			} catch (Throwable e) {
+				dialog("eww", Log.getStackTraceString(e), true);
+			}
+			// code that loads the final dex
+			if (!errors) {
+				{
+					try {
+						final String[] classes = getClassesFromDex();
+						if (classes == null)
+							return;
+						listDialog("Select a class to execute", classes,
+								new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog,
+											int pos) {
+										ExecuteJavaTask task = new ExecuteJavaTask(
+												builder, classes[pos]);
+										try {
+											task.doFullTask();
+										} catch (java.lang.reflect.InvocationTargetException e) {
+											dialog("Failed...",
+													"Runtime error: "
+															+ e.getCause()
+																	.toString(),
+													true);
+										} catch (Exception e) {
+											dialog("Failed..",
+													"Couldn't execute the dex: "
+															+ e.toString()
+															+ "\n\nSystem logs:\n"
+															+ task.getLogs(),
+													true);
+										}
+										dialog("Success! Ecj took: "
+												+ String.valueOf(ecjTime) + " "
+												+ "ms" + ", Dx took: "
+												+ String.valueOf(dxTime),
+												task.getLogs(), true);
+									}
+								});
+					} catch (Throwable e) {
+						final String stack = Log.getStackTraceString(e);
+						showErr(stack);
+					}
+				}
+			}
+		});
 	}
 
 	private void showErr(final String e) {
@@ -276,51 +276,158 @@ public class MainActivity extends AppCompatActivity {
 			listDialog("Select a class to extract source", classes,
 					(d, pos) -> {
 						final String claz = classes[0];
-							final CountDownLatch latch = new CountDownLatch(1);
-							Executors.newSingleThreadExecutor()
-									.execute(() -> {
-
-											String[] str = new String[]{"-f",
-													"-o",
-													FileUtil.getBinDir()
-															.concat("smali/"),
-													FileUtil.getBinDir()
-															.concat("classes.dex")};
-											com.googlecode.d2j.smali.BaksmaliCmd
-													.main(str);
-											latch.countDown();
-									});
-
-							try {
-								latch.await();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							CodeEditor edi = new CodeEditor(MainActivity.this);
-
-							edi.setTypefaceText(Typeface.MONOSPACE);
-
-//							edi.setOverScrollEnabled(true);
-
-							edi.setEditorLanguage(new JavaLanguage());
-
-							edi.setColorScheme(new SchemeDarcula());
-
-							edi.setTextSize(13);
-							
-							File smaliFile = new File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
-							
-							try {
-							    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
-							} catch (IOException e) {
-								dialog("Cannot read file", Log.getStackTraceString(e), true);
-							}
-
-							final AlertDialog dialog = new AlertDialog.Builder(
-									MainActivity.this).setView(edi).create();
-							dialog.setCanceledOnTouchOutside(true);
-							dialog.show();
+						final CountDownLatch latch = new CountDownLatch(1);
+						Executors.newSingleThreadExecutor()
+								.execute(() -> {
+									String[] str = new String[]{"-f",
+											"-o",
+											FileUtil.getBinDir()
+													.concat("smali/"),
+											FileUtil.getBinDir()
+													.concat("classes.dex")};
+									com.googlecode.d2j.smali.BaksmaliCmd
+											.main(str);
+									latch.countDown();
 						});
+
+						try {
+							latch.await();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						CodeEditor edi = new CodeEditor(MainActivity.this);
+
+						edi.setTypefaceText(Typeface.MONOSPACE);
+
+//						edi.setOverScrollEnabled(true);
+
+						edi.setEditorLanguage(new JavaLanguage());
+
+						edi.setColorScheme(new SchemeDarcula());
+
+						edi.setTextSize(13);
+							
+						File smaliFile = new File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
+							
+						try {
+						    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
+						} catch (IOException e) {
+							dialog("Cannot read file", Log.getStackTraceString(e), true);
+						}
+
+						final AlertDialog dialog = new AlertDialog.Builder(
+								MainActivity.this).setView(edi).create();
+						dialog.setCanceledOnTouchOutside(true);
+						dialog.show();
+			});
+		} catch(Throwable e) {
+			dialog("Failed to extract smali source", Log.getStackTraceString(e),
+					true);
+		}
+	}
+
+	public void decompile() {
+		final String[] classes = getClassesFromDex();
+		if (classes == null)
+			return;
+		listDialog("Select a class to extract source", classes,
+				(dialog, pos) -> {
+					final String claz = classes[pos].replace(".", "/");
+					final CountDownLatch latch = new CountDownLatch(1);
+					Executors.newSingleThreadExecutor().execute(() -> {
+
+						String[] args = {
+								// "-jar",
+								FileUtil.getBinDir() + "classes/" + claz
+										+ ".class",
+								"--extraclasspath",
+								FileUtil.getClasspathDir() + "android.jar",
+								"--outputdir", FileUtil.getBinDir() + "cfr/"};
+
+						try {
+							org.benf.cfr.reader.Main.main(args);
+						} catch (final Exception e) {
+							dialog("Failed to decompile...",
+									Log.getStackTraceString(e), true);
+						}
+						latch.countDown();
+					});
+
+					try {
+						latch.await();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						dialog("Thread was interrupted while decompiling...",
+								e.getMessage(), true);
+					}
+
+					final CodeEditor edi = new CodeEditor(MainActivity.this);
+
+					edi.setTypefaceText(Typeface.MONOSPACE);
+
+					// edi.setOverScrollEnabled(true);
+
+					edi.setEditorLanguage(new JavaLanguage());
+
+					edi.setColorScheme(new SchemeDarcula());
+
+					edi.setTextSize(12);
+
+					File decompiledClass = new File(
+							FileUtil.getBinDir() + "cfr/" + claz + ".java");
+
+					try {
+						edi.setText(Files
+								.asCharSource(decompiledClass, Charsets.UTF_8)
+								.read());
+					} catch (IOException e) {
+						dialog("Cannot read file", Log.getStackTraceString(e),
+								true);
+					}
+
+					final AlertDialog d = new AlertDialog.Builder(
+							MainActivity.this).setView(edi).create();
+					d.setCanceledOnTouchOutside(true);
+					d.show();
+				});
+	}
+
+	public void disassemble() {
+		final String[] classes = getClassesFromDex();
+		if (classes == null)
+			return;
+		listDialog("Select a class to disassemble", classes, (dialog, pos) -> {
+			final String claz = classes[pos].replace(".", "/");
+
+			final CodeEditor edi = new CodeEditor(MainActivity.this);
+
+			edi.setTypefaceText(Typeface.MONOSPACE);
+
+			// edi.setOverScrollEnabled(true);
+
+			edi.setEditorLanguage(new JavaLanguage());
+
+			edi.setColorScheme(new SchemeDarcula());
+
+			edi.setTextSize(12);
+
+			try {
+				final String disassembly = new ClassFileDisassembler(
+						FileUtil.getBinDir() + "classes/" + claz + ".class")
+								.disassemble();
+
+				edi.setText(disassembly);
+
+				final AlertDialog d = new AlertDialog.Builder(MainActivity.this)
+						.setView(edi).create();
+				d.setCanceledOnTouchOutside(true);
+				d.show();
+			} catch (Throwable e) {
+				dialog("Failed to disassemble", Log.getStackTraceString(e),
+						true);
+			}
+		});
+	}
 
 	private String formatSmali(String in) {
 
@@ -333,25 +440,21 @@ public class MainActivity extends AppCompatActivity {
 
 			String line = lines.get(i);
 
-			if (line.startsWith(".method")) {
+			if (line.startsWith(".method"))
 				insideMethod = true;
-			}
 
-			if (line.startsWith(".end method")) {
+			if (line.startsWith(".end method"))
 				insideMethod = false;
-			}
 
-			if (insideMethod && !shouldSkip(line)) {
+			if (insideMethod && !shouldSkip(line))
 				lines.set(i, line + "\n");
-			}
 		}
 
 		StringBuilder result = new StringBuilder();
 
 		for (int i = 0; i < lines.size(); i++) {
-			if (i != 0) {
+			if (i != 0)
 				result.append("\n");
-			}
 
 			result.append(lines.get(i));
 		}
@@ -364,122 +467,10 @@ public class MainActivity extends AppCompatActivity {
 		String[] ops = {".line", ":", ".prologue"};
 
 		for (String op : ops) {
-
-			if (smaliLine.trim().startsWith(op)) {
+			if (smaliLine.trim().startsWith(op))
 				return true;
-			}
 		}
-
 		return false;
-	}});}catch(
-	Throwable e){
-	dialog("Failed to extract smali source", Log.getStackTraceString(e),
-					true);
-		}
-	}
-
-	public void decompile() {
-		final String[] classes = getClassesFromDex();
-		if (classes == null)
-			return;
-		listDialog("Select a class to extract source", classes,
-				(dialog, pos) -> {
-					final String claz = classes[pos].replace(".", "/");
-						final CountDownLatch latch = new CountDownLatch(1);
-						Executors.newSingleThreadExecutor()
-								.execute(() -> {
-
-										String[] args = {
-												// "-jar",
-												FileUtil.getBinDir()
-														+ "classes/" + claz
-														+ ".class",
-												"--extraclasspath",
-												FileUtil.getClasspathDir()
-														+ "android.jar",
-												"--outputdir",
-												FileUtil.getBinDir()
-														+ "cfr/"};
-
-										try {
-											org.benf.cfr.reader.Main.main(args);
-										} catch (final Exception e) {
-											dialog("Failed to decompile...",
-													Log.getStackTraceString(e),
-													true);
-										}
-										latch.countDown();
-								});
-
-						try {
-							latch.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							dialog("Thread was interrupted while decompiling...",
-									e.getMessage(), true);
-						}
-
-						final CodeEditor edi = new CodeEditor(
-								MainActivity.this);
-
-						edi.setTypefaceText(Typeface.MONOSPACE);
-
-//						edi.setOverScrollEnabled(true);
-
-						edi.setEditorLanguage(new JavaLanguage());
-
-						edi.setColorScheme(new SchemeDarcula());
-
-						edi.setTextSize(12);
-						
-						File decompiledClass = new File(FileUtil.getBinDir() + "cfr/" + claz + ".java");
-						
-						try {
-						    edi.setText(Files.asCharSource(decompiledClass, Charsets.UTF_8).read());
-						} catch (IOException e) {
-							dialog("Cannot read file", Log.getStackTraceString(e), true);
-						}
-
-						final AlertDialog d = new AlertDialog.Builder(
-								MainActivity.this).setView(edi).create();
-						d.setCanceledOnTouchOutside(true);
-						d.show();
-	});
-	}
-
-	public void disassemble() {
-		final String[] classes = getClassesFromDex();
-		if (classes == null)
-			return;
-		listDialog("Select a class to disassemble", classes,
-				(dialog, pos) -> {
-					final String claz = classes[pos].replace(".", "/");
-						
-					final CodeEditor edi = new CodeEditor(
-							MainActivity.this);
-
-					edi.setTypefaceText(Typeface.MONOSPACE);
-
-//					edi.setOverScrollEnabled(true);
-
-					edi.setEditorLanguage(new JavaLanguage());
-
-					edi.setColorScheme(new SchemeDarcula());
-
-					edi.setTextSize(12);
-
-					try {
-						final String disassembly = new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
-
-						edi.setText(disassembly);
-
-						final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-						d.setCanceledOnTouchOutside(true);
-						d.show();
-					} catch (Throwable e) {
-						dialog("Failed to disassemble", Log.getStackTraceString(e), true);
-					}
-				});
 	}
 
 	public void listDialog(String title, String[] items,
@@ -495,14 +486,12 @@ public class MainActivity extends AppCompatActivity {
 						.setPositiveButton("GOT IT", null)
 						.setNegativeButton("CANCEL", null);
 		if (copyButton)
-			dialog.setNeutralButton("COPY",
-					(dialogInterface, i) -> {
-						((ClipboardManager) getSystemService(
-								getApplicationContext().CLIPBOARD_SERVICE))
-										.setPrimaryClip(ClipData
-												.newPlainText("clipboard",
-														message));
-					});
+			dialog.setNeutralButton("COPY", (dialogInterface, i) -> {
+				((ClipboardManager) getSystemService(
+						getApplicationContext().CLIPBOARD_SERVICE))
+								.setPrimaryClip(ClipData
+										.newPlainText("clipboard", message));
+			});
 		dialog.create().show();
 	}
 

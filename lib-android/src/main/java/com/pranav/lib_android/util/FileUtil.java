@@ -8,7 +8,7 @@ import java.io.File;
 
 public class FileUtil {
 
-	private Context mContext;
+	private static Context mContext;
 
 	public static void initializeContext(Context context) {
 		this.mContext = context;

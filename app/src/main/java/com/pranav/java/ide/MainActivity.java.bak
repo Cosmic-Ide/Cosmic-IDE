@@ -199,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
 						}
 					}
 				}
-			}
-		});
+			});
 	}
 
 	private void showErr(final String e) {

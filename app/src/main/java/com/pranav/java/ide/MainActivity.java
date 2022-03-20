@@ -289,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
 											com.googlecode.d2j.smali.BaksmaliCmd
 													.main(str);
 											latch.countDown();
-										}
 									});
 
 							try {

@@ -67,6 +67,7 @@ public class ExecuteJavaTask extends Task {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.setSecurityManager(null);
 			latch.countDown();
 		});
 		try {

@@ -36,7 +36,8 @@ android {
 }
 
 dependencies {
-
+    implementation 'io.github.Rosemoe.sora-editor:editor:0.10.8'
+    implementation 'io.github.Rosemoe.sora-editor:language-java:0.10.8'
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
     implementation 'com.google.android.material:material:1.4.0'

@@ -11,6 +11,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         jcenter()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/releases'
+        }
     }
 }
 rootProject.name = "Java IDE"

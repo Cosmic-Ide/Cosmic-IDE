@@ -9,8 +9,9 @@ java {
 }
 
 dependencies {
-    implementation project(path: ':lib-dx')
+    implementation 'org.smali:dexlib2:2.5.2'
     implementation 'com.google.guava:guava:31.1-android'
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    implementation project(path: ':lib-dx')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly files('classpath/android-stubs.jar')
 }

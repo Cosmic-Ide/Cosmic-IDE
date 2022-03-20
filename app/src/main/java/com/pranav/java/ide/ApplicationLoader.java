@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
-import com.pranav.android_lib.util.FileUtil.initializeContext;
+import com.pranav.android_lib.util.FileUtil;
 
 public class ApplicationLoader extends Application {
 
@@ -18,7 +18,7 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
 		mContext = getApplicationContext();
-		initializeContext(mContext);
+		FileUtil.initializeContext(mContext);
         this.uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
 
 		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {

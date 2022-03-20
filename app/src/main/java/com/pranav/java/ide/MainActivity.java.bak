@@ -289,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
 											com.googlecode.d2j.smali.BaksmaliCmd
 													.main(str);
 											latch.countDown();
-										}
 									});
 
 							try {
@@ -321,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 									MainActivity.this).setView(edi).create();
 							dialog.setCanceledOnTouchOutside(true);
 							dialog.show();
-						}
+						});
 
 	private String formatSmali(String in) {
 
@@ -410,7 +409,6 @@ public class MainActivity extends AppCompatActivity {
 													true);
 										}
 										latch.countDown();
-									}
 								});
 
 						try {
@@ -446,8 +444,8 @@ public class MainActivity extends AppCompatActivity {
 								MainActivity.this).setView(edi).create();
 						d.setCanceledOnTouchOutside(true);
 						d.show();
-					}
-	});}
+	});
+	}
 
 	public void disassemble() {
 		final String[] classes = getClassesFromDex();
@@ -457,30 +455,30 @@ public class MainActivity extends AppCompatActivity {
 				(dialog, pos) -> {
 					final String claz = classes[pos].replace(".", "/");
 						
-						final CodeEditor edi = new CodeEditor(
-								MainActivity.this);
+					final CodeEditor edi = new CodeEditor(
+							MainActivity.this);
 
-						edi.setTypefaceText(Typeface.MONOSPACE);
+					edi.setTypefaceText(Typeface.MONOSPACE);
 
-//						edi.setOverScrollEnabled(true);
+//					edi.setOverScrollEnabled(true);
 
-						edi.setEditorLanguage(new JavaLanguage());
+					edi.setEditorLanguage(new JavaLanguage());
 
-						edi.setColorScheme(new SchemeDarcula());
+					edi.setColorScheme(new SchemeDarcula());
 
-						edi.setTextSize(12);
-						
-						try {
-							final String disassembly = new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
-							
-							edi.setText(disassembly);
-							
-							final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-							d.setCanceledOnTouchOutside(true);
-							d.show();
-						} catch (Throwable e) {
-							dialog("Failed to disassemble", Log.getStackTraceString(e), true);
-						}
+					edi.setTextSize(12);
+
+					try {
+						final String disassembly = new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
+
+						edi.setText(disassembly);
+
+						final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+						d.setCanceledOnTouchOutside(true);
+						d.show();
+					} catch (Throwable e) {
+						dialog("Failed to disassemble", Log.getStackTraceString(e), true);
+					}
 				});
 	}
 
@@ -498,16 +496,12 @@ public class MainActivity extends AppCompatActivity {
 						.setNegativeButton("CANCEL", null);
 		if (copyButton)
 			dialog.setNeutralButton("COPY",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface,
-								int i) {
-							((ClipboardManager) getSystemService(
-									getApplicationContext().CLIPBOARD_SERVICE))
-											.setPrimaryClip(ClipData
-													.newPlainText("clipboard",
-															message));
-						}
+					(dialogInterface, i) -> {
+						((ClipboardManager) getSystemService(
+								getApplicationContext().CLIPBOARD_SERVICE))
+										.setPrimaryClip(ClipData
+												.newPlainText("clipboard",
+														message));
 					});
 		dialog.create().show();
 	}

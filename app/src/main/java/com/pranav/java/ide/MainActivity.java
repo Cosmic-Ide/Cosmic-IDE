@@ -276,104 +276,97 @@ public class MainActivity extends AppCompatActivity {
 			listDialog("Select a class to extract source", classes,
 					(d, pos) -> {
 						final String claz = classes[0];
-							final CountDownLatch latch = new CountDownLatch(1);
-							Executors.newSingleThreadExecutor()
-									.execute(() -> {
+						final CountDownLatch latch = new CountDownLatch(1);
+						Executors.newSingleThreadExecutor()
+								.execute(() -> {
 
-											String[] str = new String[]{"-f",
-													"-o",
-													FileUtil.getBinDir()
-															.concat("smali/"),
-													FileUtil.getBinDir()
-															.concat("classes.dex")};
-											com.googlecode.d2j.smali.BaksmaliCmd
-													.main(str);
-											latch.countDown();
-									});
+										String[] str = new String[]{"-f",
+												"-o",
+												FileUtil.getBinDir()
+														.concat("smali/"),
+												FileUtil.getBinDir()
+														.concat("classes.dex")};
+										com.googlecode.d2j.smali.BaksmaliCmd
+												.main(str);
+										latch.countDown();
+								});
 
-							try {
-								latch.await();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							CodeEditor edi = new CodeEditor(MainActivity.this);
+						try {
+							latch.await();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						CodeEditor edi = new CodeEditor(MainActivity.this);
 
-							edi.setTypefaceText(Typeface.MONOSPACE);
+						edi.setTypefaceText(Typeface.MONOSPACE);
 
-//							edi.setOverScrollEnabled(true);
+//						edi.setOverScrollEnabled(true);
 
-							edi.setEditorLanguage(new JavaLanguage());
+						edi.setEditorLanguage(new JavaLanguage());
 
-							edi.setColorScheme(new SchemeDarcula());
+						edi.setColorScheme(new SchemeDarcula());
 
-							edi.setTextSize(13);
+						edi.setTextSize(13);
 							
-							File smaliFile = new File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
+						File smaliFile = new File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
 							
-							try {
-							    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
-							} catch (IOException e) {
-								dialog("Cannot read file", Log.getStackTraceString(e), true);
-							}
-
-							final AlertDialog dialog = new AlertDialog.Builder(
-									MainActivity.this).setView(edi).create();
-							dialog.setCanceledOnTouchOutside(true);
-							dialog.show();
+						try {
+						    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
+						} catch (IOException e) {
+							dialog("Cannot read file", Log.getStackTraceString(e), true);
 						}
 
-	private String formatSmali(String in) {
+						final AlertDialog dialog = new AlertDialog.Builder(
+								MainActivity.this).setView(edi).create();
+						dialog.setCanceledOnTouchOutside(true);
+						dialog.show();
+			});
 
-		ArrayList<String> lines = new ArrayList<>(
-				Arrays.asList(in.split("\n")));
+			private String formatSmali(String in) {
 
-		boolean insideMethod = false;
+				ArrayList<String> lines = new ArrayList<>(
+					Arrays.asList(in.split("\n"))
+				);
 
-		for (int i = 0; i < lines.size(); i++) {
+				boolean insideMethod = false;
 
-			String line = lines.get(i);
+				for (int i = 0; i < lines.size(); i++) {
 
-			if (line.startsWith(".method")) {
-				insideMethod = true;
+					String line = lines.get(i);
+
+					if (line.startsWith(".method"))
+						insideMethod = true;
+
+					if (line.startsWith(".end method"))
+						insideMethod = false;
+
+					if (insideMethod && !shouldSkip(line))
+						lines.set(i, line + "\n");
+				}
+
+				StringBuilder result = new StringBuilder();
+
+				for (int i = 0; i < lines.size(); i++) {
+					if (i != 0)
+						result.append("\n");
+
+					result.append(lines.get(i));
+				}
+
+				return result.toString();
 			}
 
-			if (line.startsWith(".end method")) {
-				insideMethod = false;
+			private boolean shouldSkip(String smaliLine) {
+
+				String[] ops = {".line", ":", ".prologue"};
+
+				for (String op : ops) {
+					if (smaliLine.trim().startsWith(op)) return true;
+				}
+				return false;
 			}
-
-			if (insideMethod && !shouldSkip(line)) {
-				lines.set(i, line + "\n");
-			}
-		}
-
-		StringBuilder result = new StringBuilder();
-
-		for (int i = 0; i < lines.size(); i++) {
-			if (i != 0) {
-				result.append("\n");
-			}
-
-			result.append(lines.get(i));
-		}
-
-		return result.toString();
-	}
-
-	private boolean shouldSkip(String smaliLine) {
-
-		String[] ops = {".line", ":", ".prologue"};
-
-		for (String op : ops) {
-
-			if (smaliLine.trim().startsWith(op)) {
-				return true;
-			}
-		}
-
-		return false;
-	}});}catch(
-	Throwable e){
-	dialog("Failed to extract smali source", Log.getStackTraceString(e),
+		} catch (Throwable e) {
+			dialog("Failed to extract smali source", Log.getStackTraceString(e),
 					true);
 		}
 	}
@@ -409,7 +402,6 @@ public class MainActivity extends AppCompatActivity {
 													true);
 										}
 										latch.countDown();
-									}
 								});
 
 						try {
@@ -445,8 +437,8 @@ public class MainActivity extends AppCompatActivity {
 								MainActivity.this).setView(edi).create();
 						d.setCanceledOnTouchOutside(true);
 						d.show();
-					}
-	});}
+	});
+	}
 
 	public void disassemble() {
 		final String[] classes = getClassesFromDex();
@@ -456,30 +448,30 @@ public class MainActivity extends AppCompatActivity {
 				(dialog, pos) -> {
 					final String claz = classes[pos].replace(".", "/");
 						
-						final CodeEditor edi = new CodeEditor(
-								MainActivity.this);
+					final CodeEditor edi = new CodeEditor(
+							MainActivity.this);
 
-						edi.setTypefaceText(Typeface.MONOSPACE);
+					edi.setTypefaceText(Typeface.MONOSPACE);
 
-//						edi.setOverScrollEnabled(true);
+//					edi.setOverScrollEnabled(true);
 
-						edi.setEditorLanguage(new JavaLanguage());
+					edi.setEditorLanguage(new JavaLanguage());
 
-						edi.setColorScheme(new SchemeDarcula());
+					edi.setColorScheme(new SchemeDarcula());
 
-						edi.setTextSize(12);
-						
-						try {
-							final String disassembly = new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
-							
-							edi.setText(disassembly);
-							
-							final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-							d.setCanceledOnTouchOutside(true);
-							d.show();
-						} catch (Throwable e) {
-							dialog("Failed to disassemble", Log.getStackTraceString(e), true);
-						}
+					edi.setTextSize(12);
+
+					try {
+						final String disassembly = new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
+
+						edi.setText(disassembly);
+
+						final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+						d.setCanceledOnTouchOutside(true);
+						d.show();
+					} catch (Throwable e) {
+						dialog("Failed to disassemble", Log.getStackTraceString(e), true);
+					}
 				});
 	}
 
@@ -497,16 +489,12 @@ public class MainActivity extends AppCompatActivity {
 						.setNegativeButton("CANCEL", null);
 		if (copyButton)
 			dialog.setNeutralButton("COPY",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface,
-								int i) {
-							((ClipboardManager) getSystemService(
-									getApplicationContext().CLIPBOARD_SERVICE))
-											.setPrimaryClip(ClipData
-													.newPlainText("clipboard",
-															message));
-						}
+					(dialogInterface, i) -> {
+						((ClipboardManager) getSystemService(
+								getApplicationContext().CLIPBOARD_SERVICE))
+										.setPrimaryClip(ClipData
+												.newPlainText("clipboard",
+														message));
 					});
 		dialog.create().show();
 	}

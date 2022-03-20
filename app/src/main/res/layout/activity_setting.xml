@@ -9,13 +9,13 @@
 		android:id="@+id/_app_bar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:theme="@style/AppTheme.AppBarOverlay">
+		android:theme="@theme/Theme.JavaIDE.AppBarOverlay">
 		<androidx.appcompat.widget.Toolbar
 			android:id="@+id/_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:background="?attr/colorPrimary"
-			app:popupTheme="@style/AppTheme.PopupOverlay" />
+			app:popupTheme="@theme/Theme.JavaIDE.PopupOverlay" />
 	</com.google.android.material.appbar.AppBarLayout>
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -103,7 +103,7 @@
 			android:id="@+id/textinputlayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+			style="@theme/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 			<androidx.appcompat.widget.AppCompatEditText
 				android:id="@+id/classpath"
 				android:layout_width="match_parent"

@@ -11,7 +11,7 @@ public class FileUtil {
 	private static Context mContext;
 
 	public static void initializeContext(Context context) {
-		this.mContext = context;
+		mContext = context;
 	}
 	public static void deleteFile(String path) {
 		File file = new File(path);

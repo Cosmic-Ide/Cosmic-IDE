@@ -10,11 +10,6 @@ java {
 
 dependencies {
     implementation project(path: ':lib-dx')
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     compileOnly files('android-stubs.jar')
-    implementation 'org.benf:cfr:0.152'
-    implementation 'org.smali:dexlib2:2.5.2'
-    implementation 'com.google.guava:guava:31.1-android'
-    implementation 'io.github.Rosemoe.sora-editor:editor-kt:0.10.8'
-    implementation 'io.github.Rosemoe.sora-editor:language-java:0.10.8'
 }

@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:name=".ApplicationLoader"
 		android:requestLegacyExternalStorage="true"
-        android:theme="@style/Theme.JavaIDE"
+        android:theme="@style/Theme.JavaIDE.NoActionBar"
         tools:targetApi="31">
         <activity
 			android:name=".MainActivity"
@@ -24,8 +24,7 @@
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
-			android:screenOrientation="portrait"
-			android:theme="@style/Theme.JavaIDE.NoActionBar">
+			android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

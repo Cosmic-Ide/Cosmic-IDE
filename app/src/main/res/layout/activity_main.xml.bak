@@ -57,10 +57,10 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="@theme/colorPrimary"
 					app:cornerRadius="8dp"
-					style="@theme/Widget.MaterialComponents.Button" />
+					style="@style/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
 					android:id="@+id/btn_smali"
 					android:layout_width="wrap_content"
@@ -73,10 +73,10 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="@theme/colorPrimary"
 					app:cornerRadius="8dp"
-					style="@theme/Widget.MaterialComponents.Button" />
+					style="@style/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
 					android:id="@+id/btn_disassemble"
 					android:layout_width="wrap_content"
@@ -88,10 +88,10 @@
 					android:text="Disassemble"
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="@theme/colorPrimary"
 					app:cornerRadius="8dp"
-					style="@theme/Widget.MaterialComponents.Button" />
+					style="@style/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
 					android:id="@+id/btn_smali2java"
 					android:layout_width="wrap_content"
@@ -102,10 +102,10 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
-					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
 					app:backgroundTint="@theme/colorPrimary"
 					app:cornerRadius="8dp"
-					style="@theme/Widget.MaterialComponents.Button" />
+					style="@style/Widget.MaterialComponents.Button" />
 			</LinearLayout>
 		</HorizontalScrollView>
 	</LinearLayout>

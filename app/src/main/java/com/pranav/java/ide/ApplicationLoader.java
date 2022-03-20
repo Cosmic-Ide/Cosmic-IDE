@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
-import com.pranav.android_lib.util.FileUtil;
+import com.pranav.lib_android.util.FileUtil;
 
 public class ApplicationLoader extends Application {
 

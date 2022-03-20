@@ -62,7 +62,7 @@ public class CompileJavaTask extends Task {
 		args.add(" ");
 		args.add(FileUtil.getJavaDir());
 
-		PrintWriter writer = new PrintWriter((p1) -> errs.append((char) p1););
+		PrintWriter writer = new PrintWriter((p1) -> errs.append((char) p1));
 
 		Main main = new Main(writer, writer, false, null, null);
 

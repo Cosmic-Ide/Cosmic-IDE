@@ -10,6 +10,7 @@ java {
 
 dependencies {
     implementation project(path: ':lib-dx')
+    implementation("com.google.guava:guava:31.1-android")
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compileOnly files('classpath/android-stubs.jar')
 }

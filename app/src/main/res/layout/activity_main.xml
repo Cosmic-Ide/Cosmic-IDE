@@ -9,13 +9,13 @@
 		android:id="@+id/_app_bar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:theme="@theme/Theme.JavaIDE.AppBarOverlay">
+		android:theme="@style/Theme.JavaIDE.AppBarOverlay">
 		<androidx.appcompat.widget.Toolbar
 			android:id="@+id/_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:background="?attr/colorPrimary"
-			app:popupTheme="@theme/Theme.JavaIDE.PopupOverlay" />
+			app:popupTheme="@style/Theme.JavaIDE.PopupOverlay" />
 	</com.google.android.material.appbar.AppBarLayout>
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -58,7 +58,7 @@
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
 					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
-					app:backgroundTint="@theme/colorPrimary"
+					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
@@ -74,7 +74,7 @@
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
 					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
-					app:backgroundTint="@theme/colorPrimary"
+					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
@@ -89,7 +89,7 @@
 					android:textSize="12sp"
 					android:textColor="#FFFFFF"
 					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
-					app:backgroundTint="@theme/colorPrimary"
+					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
 				<com.google.android.material.button.MaterialButton
@@ -103,7 +103,7 @@
 					android:textColor="#FFFFFF"
 					android:layout_weight="1"
 					android:textAppearance="@theme/TextAppearance.MaterialComponents.Button"
-					app:backgroundTint="@theme/colorPrimary"
+					app:backgroundTint="?attr/colorPrimary"
 					app:cornerRadius="8dp"
 					style="@theme/Widget.MaterialComponents.Button" />
 			</LinearLayout>

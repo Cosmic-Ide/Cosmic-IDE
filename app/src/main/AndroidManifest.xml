@@ -20,6 +20,7 @@
         tools:targetApi="31">
         <activity
 			android:name=".MainActivity"
+			android:exported="true"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
@@ -31,12 +32,14 @@
 		</activity>
 		<activity
 			android:name=".SettingActivity"
+			android:exported="true"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:screenOrientation="portrait" />
 		<activity
 			android:name=".DebugActivity"
+			android:exported="false"
 			android:screenOrientation="portrait" />
     </application>
 

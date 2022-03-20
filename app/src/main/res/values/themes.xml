@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.JavaIDE.NoActionBar">
+    <style name="Theme.JavaIDE.NoActionBar" parent="Theme.JavaIDE">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 	private void initialize() {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
-		final Toolbar toolbar = findViewById(R.id._toolbar);
+		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 		getSupportActionBar().setHomeButtonEnabled(false);

@@ -42,7 +42,6 @@ public class SettingActivity extends AppCompatActivity {
 	
 	private Toolbar toolbar;
 	
-	private TextInputLayout textinputlayout1;
 	private MaterialRadioButton java3;
 	private MaterialRadioButton java4;
 	private MaterialRadioButton java5;
@@ -69,7 +68,6 @@ public class SettingActivity extends AppCompatActivity {
 		toolbar.setNavigationOnClickListener((v) -> {
 			onBackPressed();
 		});
-		textinputlayout1 = findViewById(R.id.textinputlayout1);
 		java3 = findViewById(R.id.java3);
 		java4 = findViewById(R.id.java4);
 		java5 = findViewById(R.id.java5);
@@ -81,7 +79,6 @@ public class SettingActivity extends AppCompatActivity {
 	}
 	
 	private void initializeLogic() {
-		if (settings.contains("javaVersion")) {
 			switch (settings.getString("javaVersion", "1.7")) {
 				
 				case "1.3":
@@ -113,14 +110,13 @@ public class SettingActivity extends AppCompatActivity {
 				    break;
 			}
 			classpath.setText(settings.getString("classpath", ""));
-		}
 	}
 	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 		//Set a default value to local variable version to avoid npe
-		double version = 7;
+		double version = 1.7;
 		if (java3.isChecked()) version = 1.3;
 		else if (java4.isChecked()) version = 1.4;
 		else if (java5.isChecked()) version = 1.5;

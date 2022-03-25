@@ -56,11 +56,7 @@ public class SettingActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
-		initialize();
-		initializeLogic();
-	}
 	
-	private void initialize() {
 		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -76,40 +72,38 @@ public class SettingActivity extends AppCompatActivity {
 		java8 = findViewById(R.id.java8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", Activity.MODE_PRIVATE);
-	}
-	
-	private void initializeLogic() {
-			switch (settings.getString("javaVersion", "1.7")) {
+
+		switch (settings.getString("javaVersion", "1.7")) {
 				
-				case "1.3":
-				    java3.setChecked(true);
-				    break;
+			case "1.3":
+			    java3.setChecked(true);
+				  break;
 				
-				case "1.4":
-				    java4.setChecked(true);
-				    break;
+			case "1.4":
+			    java4.setChecked(true);
+			    break;
 				
-				case "1.5":
-				    java5.setChecked(true);
-				    break;
+			case "1.5":
+			    java5.setChecked(true);
+			    break;
 				
-				case "1.6":
-				    java6.setChecked(true);
-				    break;
+			case "1.6":
+			    java6.setChecked(true);
+			    break;
 				
-				case "1.7":
-				    java7.setChecked(true);
-				    break;
+			case "1.7":
+			    java7.setChecked(true);
+			    break;
 				
-				case "1.8":
-				    java8.setChecked(true);
-				    break;
+			case "1.8":
+			    java8.setChecked(true);
+			    break;
 				
-				default:
-				    java7.setChecked(true);
-				    break;
-			}
-			classpath.setText(settings.getString("classpath", ""));
+			default:
+			    java7.setChecked(true);
+			    break;
+		}
+		classpath.setText(settings.getString("classpath", ""));
 	}
 	
 	@Override

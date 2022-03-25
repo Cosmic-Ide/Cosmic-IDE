@@ -46,6 +46,8 @@ import org.jf.dexlib2.iface.DexFile;
 public class MainActivity extends AppCompatActivity {
 
 	private CodeEditor editor;
+	
+	public LinearLayout container;
 
 	private long dxTime = 0;
 	private long ecjTime = 0;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 		getSupportActionBar().setHomeButtonEnabled(false);
 
 		editor = findViewById(R.id.editor);
+		container = findViewById(R.id.container);
 		final MaterialButton btn_disassemble = findViewById(
 				R.id.btn_disassemble);
 		final MaterialButton btn_run = findViewById(R.id.btn_run);
@@ -196,8 +199,8 @@ public class MainActivity extends AppCompatActivity {
 		});
 	}
 
-	private void showErr(final String e) {
-		Snackbar.make(findViewById(R.id.container), "An error occurred",
+	public void showErr(final String e) {
+		Snackbar.make(container, "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
 				.setAction("Show error", (view) -> {
 					dialog("Failed...", e, true);

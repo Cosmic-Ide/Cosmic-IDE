@@ -103,6 +103,7 @@
 			android:id="@+id/textinputlayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			app:placeholderText="separated by ':'"
 			style="@theme/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 			<androidx.appcompat.widget.AppCompatEditText
 				android:id="@+id/classpath"
@@ -110,9 +111,7 @@
 				android:layout_height="wrap_content"
 				android:padding="8dp"
 				android:textSize="12sp"
-				android:textColor="#000000"
-				android:hint="seperated by ':'"
-				android:textColorHint="#607D8B" />
+				android:textColor="#000000" />
 		</com.google.android.material.textfield.TextInputLayout>
 	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		initialize();
 		initializeLogic();
-		grantChmod(getFilesDir().getParentFile());
+		// was for giving execute perms to zipalign native, currently zipalign is not being used
+//		grantChmod(getFilesDir().getParentFile());
 	}
 
 	private void initialize() {
@@ -93,22 +94,22 @@ public class MainActivity extends AppCompatActivity {
 			final CountDownLatch latch = new CountDownLatch(1);
 			Executors.newSingleThreadExecutor().execute(() -> {
 				try {
-					// code that prepares the files
+					// Delete previous build files
 					FileUtil.deleteFile(FileUtil.getBinDir());
 					new File(FileUtil.getBinDir()).mkdirs();
 					final File mainFile = new File(
 							FileUtil.getJavaDir() + "Main.java");
 					Files.createParentDirs(mainFile);
+					// a simple workaround to prevent calls to system.exit
 					Files.write(editor.getText().toString()
 							.replace("System.exit(",
 									"System.err.print(\"Exit code \" + ")
 							.getBytes(), mainFile);
 				} catch (IOException e) {
-
+          dialog("Cannot save program", Log.getStackTraceString(e), true);
 				}
-				// code that copies android.jar and
-				// core-lambda-stubs.jar from
-				// assets to temp folder (if not exists)
+				// code that extracts android.jar and
+				// core-lambda-stubs.jar.
 				if (!new File(FileUtil.getClasspathDir() + "android.jar")
 						.exists()) {
 					ZipUtil.unzipFromAssets(getApplicationContext(),
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 								"core-lambda-stubs.jar");
 						Files.write(ByteStreams.toByteArray(input), output);
 					} catch (Exception e) {
-
+            showErr(Log.getStackTraceString(e));
 					}
 				}
 				// code that runs ecj
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
 					javaTask.doFullTask();
 				} catch (Throwable e) {
 					errors = true;
+					// Choose whether the stack trace is needed or not
 					if (e instanceof CompilationFailedException) {
 						showErr(e.getMessage());
 					} else {
@@ -137,9 +139,10 @@ public class MainActivity extends AppCompatActivity {
 					latch.countDown();
 					return;
 				}
+
 				ecjTime = System.currentTimeMillis() - time;
-				// code that packages classes to a JAR
 				time = System.currentTimeMillis();
+				// run dx
 				try {
 					new DexTask(builder).doFullTask();
 				} catch (Exception e) {
@@ -154,50 +157,44 @@ public class MainActivity extends AppCompatActivity {
 			try {
 				latch.await();
 			} catch (Throwable e) {
-				dialog("eww", Log.getStackTraceString(e), true);
+				dialog("Unable to wait for dx to complete", Log.getStackTraceString(e), true);
 			}
 			// code that loads the final dex
 			if (!errors) {
-				{
 					try {
 						final String[] classes = getClassesFromDex();
 						if (classes == null)
 							return;
 						listDialog("Select a class to execute", classes,
-								new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog,
-											int pos) {
-										ExecuteJavaTask task = new ExecuteJavaTask(
-												builder, classes[pos]);
-										try {
-											task.doFullTask();
-										} catch (java.lang.reflect.InvocationTargetException e) {
-											dialog("Failed...",
-													"Runtime error: "
-															+ e.getCause()
-																	.toString(),
-													true);
-										} catch (Exception e) {
-											dialog("Failed..",
-													"Couldn't execute the dex: "
-															+ e.toString()
-															+ "\n\nSystem logs:\n"
-															+ task.getLogs(),
-													true);
-										}
-										dialog("Success! Ecj took: "
-												+ String.valueOf(ecjTime) + " "
-												+ "ms" + ", Dx took: "
-												+ String.valueOf(dxTime),
-												task.getLogs(), true);
+								(dialog, pos) -> {
+									ExecuteJavaTask task = new ExecuteJavaTask(
+									  	builder, classes[pos]);
+							  	try {
+										task.doFullTask();
+									} catch (java.lang.reflect.InvocationTargetException e) {
+										dialog("Failed...",
+												"Runtime error: "
+												    + e.getMessage()
+												    + "\n\n"
+														+ Log.getStackTraceString(e),
+											true);
+									} catch (Exception e) {
+										dialog("Failed..",
+												"Couldn't execute the dex: "
+														+ e.toString()
+														+ "\n\nSystem logs:\n"
+														+ task.getLogs(),
+												true);
 									}
-								});
+									dialog("Success! Ecj took: "
+											+ String.valueOf(ecjTime) + " "
+											+ "ms" + ", Dx took: "
+											+ String.valueOf(dxTime),
+											task.getLogs(), true);
+							});
 					} catch (Throwable e) {
-						final String stack = Log.getStackTraceString(e);
-						showErr(stack);
+						showErr(Log.getStackTraceString(e));
 					}
-				}
 			}
 		});
 	}
@@ -205,18 +202,13 @@ public class MainActivity extends AppCompatActivity {
 	private void showErr(final String e) {
 		Snackbar.make(findViewById(R.id.container), "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
-				.setAction("Show error", new View.OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						dialog("Failed..", e, true);
-					}
+				.setAction("Show error", (view) -> {
+					dialog("Failed...", e, true);
 				}).show();
 	}
 
 	private void initializeLogic() {
 		editor.setTypefaceText(Typeface.MONOSPACE);
-
-		// editor.setOverScrollEnabled(true);
 
 		editor.setEditorLanguage(new JavaLanguage());
 
@@ -279,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 						final CountDownLatch latch = new CountDownLatch(1);
 						Executors.newSingleThreadExecutor()
 								.execute(() -> {
-									String[] str = new String[]{"-f",
+									String[] str = new String[] {"-f",
 											"-o",
 											FileUtil.getBinDir()
 													.concat("smali/"),
@@ -298,8 +290,6 @@ public class MainActivity extends AppCompatActivity {
 						CodeEditor edi = new CodeEditor(MainActivity.this);
 
 						edi.setTypefaceText(Typeface.MONOSPACE);
-
-//						edi.setOverScrollEnabled(true);
 
 						edi.setEditorLanguage(new JavaLanguage());
 
@@ -337,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
 					Executors.newSingleThreadExecutor().execute(() -> {
 
 						String[] args = {
-								// "-jar",
 								FileUtil.getBinDir() + "classes/" + claz
 										+ ".class",
 								"--extraclasspath",
@@ -364,8 +353,6 @@ public class MainActivity extends AppCompatActivity {
 					final CodeEditor edi = new CodeEditor(MainActivity.this);
 
 					edi.setTypefaceText(Typeface.MONOSPACE);
-
-					// edi.setOverScrollEnabled(true);
 
 					edi.setEditorLanguage(new JavaLanguage());
 
@@ -402,8 +389,6 @@ public class MainActivity extends AppCompatActivity {
 			final CodeEditor edi = new CodeEditor(MainActivity.this);
 
 			edi.setTypefaceText(Typeface.MONOSPACE);
-
-			// edi.setOverScrollEnabled(true);
 
 			edi.setEditorLanguage(new JavaLanguage());
 
@@ -495,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
 		dialog.create().show();
 	}
 
+// for granting execute permissions to file/folder (currently unused)
 	public void grantChmod(File file) {
 		try {
 			if (file.isDirectory()) {

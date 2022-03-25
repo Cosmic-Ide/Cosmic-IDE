@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
 				return;
 			listDialog("Select a class to extract source", classes,
 					(d, pos) -> {
-						final String claz = classes[0];
+						final String claz = classes[pos];
 						final CountDownLatch latch = new CountDownLatch(1);
 						Executors.newSingleThreadExecutor()
 								.execute(() -> {

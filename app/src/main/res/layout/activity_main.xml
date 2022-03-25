@@ -2,7 +2,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 	<com.google.android.material.appbar.AppBarLayout
@@ -23,7 +22,7 @@
 		android:orientation="vertical"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 		<androidx.coordinatorlayout.widget.CoordinatorLayout
-			android:id="@+id/container"
+			android:id="@+id/coordinator"
 			android:layout_width="0dp"
 			android:layout_height="0dp"
 			android:padding="8dp" />
@@ -42,7 +41,7 @@
 			android:background="#2B2B2B"
 			android:orientation="horizontal">
 			<LinearLayout
-				android:id="@+id/functions"
+				android:id="@+id/container"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:padding="8dp"

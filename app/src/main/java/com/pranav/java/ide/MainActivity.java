@@ -9,13 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -28,23 +25,23 @@ import com.pranav.lib_android.task.java.*;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.util.*;
-import dalvik.system.PathClassLoader;
+
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.Enumeration;
+
+import org.jf.dexlib2.DexFileFactory;
+import org.jf.dexlib2.Opcodes;
+import org.jf.dexlib2.iface.ClassDef;
+import org.jf.dexlib2.iface.DexFile;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -360,12 +357,12 @@ public class MainActivity extends AppCompatActivity {
 
 					edi.setTextSize(12);
 
-					File decompiledClass = new File(
+					File decompiledFile = new File(
 							FileUtil.getBinDir() + "cfr/" + claz + ".java");
 
 					try {
 						edi.setText(Files
-								.asCharSource(decompiledClass, Charsets.UTF_8)
+								.asCharSource(decompiledFile, Charsets.UTF_8)
 								.read());
 					} catch (IOException e) {
 						dialog("Cannot read file", Log.getStackTraceString(e),
@@ -397,11 +394,11 @@ public class MainActivity extends AppCompatActivity {
 			edi.setTextSize(12);
 
 			try {
-				final String disassembly = new ClassFileDisassembler(
+				final String disassembled = new ClassFileDisassembler(
 						FileUtil.getBinDir() + "classes/" + claz + ".class")
 								.disassemble();
 
-				edi.setText(disassembly);
+				edi.setText(disassembled);
 
 				final AlertDialog d = new AlertDialog.Builder(MainActivity.this)
 						.setView(edi).create();
@@ -501,11 +498,11 @@ public class MainActivity extends AppCompatActivity {
 	public String[] getClassesFromDex() {
 		try {
 			final ArrayList<String> classes = new ArrayList<>();
-			org.jf.dexlib2.iface.DexFile dexfile = org.jf.dexlib2.DexFileFactory
+			DexFile dexfile = DexFileFactory
 					.loadDexFile(FileUtil.getBinDir().concat("classes.dex"),
-							org.jf.dexlib2.Opcodes.forApi(21));
-			for (org.jf.dexlib2.iface.ClassDef f : dexfile.getClasses()
-					.toArray(new org.jf.dexlib2.iface.ClassDef[0])) {
+							Opcodes.forApi(21));
+			for (ClassDef f : dexfile.getClasses()
+					.toArray(new ClassDef[0])) {
 				final String name = f.getType().replace("/", ".");
 				classes.add(name.substring(1, name.length() - 1));
 			}

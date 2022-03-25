@@ -2,16 +2,14 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/_coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/_app_bar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:theme="@style/Theme.JavaIDE.AppBarOverlay">
 		<androidx.appcompat.widget.Toolbar
-			android:id="@+id/_toolbar"
+			android:id="@+id/toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
 			android:background="?attr/colorPrimary"
@@ -23,7 +21,6 @@
 		android:orientation="vertical"
 		app:layout_behavior="@string/appbar_scrolling_view_behavior">
 		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/versionTxt"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="4dp"
@@ -32,11 +29,9 @@
 			android:textStyle="bold"
 			android:textColor="#000000" />
 		<HorizontalScrollView
-			android:id="@+id/hscroll3"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 			<RadioGroup
-				android:id="@+id/javaGroup"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal">
@@ -91,7 +86,6 @@
 			</RadioGroup>
 		</HorizontalScrollView>
 		<com.google.android.material.textview.MaterialTextView
-			android:id="@+id/classpathTxt"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:padding="4dp"
@@ -100,7 +94,6 @@
 			android:textStyle="bold"
 			android:textColor="#000000" />
 		<com.google.android.material.textfield.TextInputLayout
-			android:id="@+id/textinputlayout1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			style="@theme/Widget.MaterialComponents.TextInputLayout.OutlinedBox">

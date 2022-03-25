@@ -1,7 +1,6 @@
 package com.pranav.java.ide;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.*;
 import androidx.appcompat.widget.Toolbar;
 import android.app.*;
 import android.os.*;
@@ -43,11 +42,7 @@ public class SettingActivity extends AppCompatActivity {
 	
 	private Toolbar toolbar;
 	
-	private MaterialTextView versionTxt;
-	private HorizontalScrollView hscroll3;
-	private MaterialTextView classpathTxt;
 	private TextInputLayout textinputlayout1;
-	private RadioGroup javaGroup;
 	private MaterialRadioButton java3;
 	private MaterialRadioButton java4;
 	private MaterialRadioButton java5;
@@ -67,21 +62,14 @@ public class SettingActivity extends AppCompatActivity {
 	}
 	
 	private void initialize() {
-		toolbar = findViewById(R.id._toolbar);
+		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View _v) {
-				onBackPressed();
-			}
+		toolbar.setNavigationOnClickListener((v) -> {
+			onBackPressed();
 		});
-		versionTxt = findViewById(R.id.versionTxt);
-		hscroll3 = findViewById(R.id.hscroll3);
-		classpathTxt = findViewById(R.id.classpathTxt);
 		textinputlayout1 = findViewById(R.id.textinputlayout1);
-		javaGroup = findViewById(R.id.javaGroup);
 		java3 = findViewById(R.id.java3);
 		java4 = findViewById(R.id.java4);
 		java5 = findViewById(R.id.java5);

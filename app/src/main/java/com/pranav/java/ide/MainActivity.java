@@ -514,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	publid boolean exists(String path) {
+	public boolean exists(String path) {
 	  return new File(path).exists();
 	}
 }

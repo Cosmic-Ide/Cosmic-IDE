@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 			File output = file(FileUtil.getClasspathDir(),
 					"core-lambda-stubs.jar");
-			if (!exists(output) && 
+			if (!output.exists() && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
 				    .getString("javaVersion", "1.7")
 			        .equals("1.8")) {

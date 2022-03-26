@@ -62,13 +62,31 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		initialize();
-		initializeLogic();
-		// was for giving execute perms to zipalign native, currently zipalign is not being used
+		
+		editor.setTypefaceText(Typeface.MONOSPACE);
+		editor.setEditorLanguage(new JavaLanguage());
+		editor.setColorScheme(new SchemeDarcula());
+		editor.setTextSize(12);
+		
+		final File file = file(FileUtil.getJavaDir() + "Main.java");
+		
+		if (file.exists()) {
+			try {
+				editor.setText(Files.asCharSource(file, Charsets.UTF_8).read());
+			} catch (Exception e) {
+				dialog("Cannot read file", Log.getStackTraceString(e), true);
+			}
+		} else {
+			editor.setText("package com.example;\n\nimport java.util.*;\n\n"
+					+ "public class Main {\n\n"
+					+ "\tpublic static void main(String[] args) {\n"
+					+ "\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n"
+					+ "}\n");
+		}
+		
+// was for giving execute perms to zipalign native, currently zipalign is not being used
 //		grantChmod(getFilesDir().getParentFile());
-	}
 
-	private void initialize() {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 		setSupportActionBar(findViewById(R.id.toolbar));
@@ -77,18 +95,13 @@ public class MainActivity extends AppCompatActivity {
 
 		editor = findViewById(R.id.editor);
 		container = findViewById(R.id.container);
-		final MaterialButton btn_disassemble = findViewById(
-				R.id.btn_disassemble);
-		final MaterialButton btn_run = findViewById(R.id.btn_run);
-		final MaterialButton btn_smali = findViewById(R.id.btn_smali);
-		final MaterialButton btn_smali2java = findViewById(R.id.btn_smali2java);
 		
 		Executors.newSingleThreadExecutor().execute(() -> {
 			if (!exists(FileUtil.getClasspathDir() + "android.jar")) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
 			}
-			File output = new File(FileUtil.getClasspathDir(),
+			File output = file(FileUtil.getClasspathDir(),
 					"core-lambda-stubs.jar");
 			if (!exists(output) && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
@@ -102,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
 		 }
 		});
 
-		btn_disassemble.setOnClickListener(v -> disassemble());
-		btn_smali2java.setOnClickListener(v -> decompile());
-		btn_smali.setOnClickListener(v -> smali());
-		btn_run.setOnClickListener(view -> {
+		findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
+		findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
+		findViewById(btn_smali).setOnClickListener(v -> smali());
+		findViewById(btn_run).setOnClickListener(view -> {
 			try {
 				// Delete previous build files
 				FileUtil.deleteFile(FileUtil.getBinDir());
-				new File(FileUtil.getBinDir()).mkdirs();
-				final File mainFile = new File(
+				file(FileUtil.getBinDir()).mkdirs();
+				final File mainFile = file(
 						FileUtil.getJavaDir() + "Main.java");
 				Files.createParentDirs(mainFile);
 				// a simple workaround to prevent calls to system.exit
@@ -118,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 						.replace("System.exit(",
 								"System.err.print(\"Exit code \" + ")
 						.getBytes(), mainFile);
-			} catch (IOException e) {
+			} catch (final IOException e) {
         dialog("Cannot save program", Log.getStackTraceString(e), true);
 			}
 			
@@ -205,14 +218,11 @@ public class MainActivity extends AppCompatActivity {
 
 	private void initializeLogic() {
 		editor.setTypefaceText(Typeface.MONOSPACE);
-
 		editor.setEditorLanguage(new JavaLanguage());
-
 		editor.setColorScheme(new SchemeDarcula());
-
 		editor.setTextSize(12);
 
-		final File file = new File(FileUtil.getJavaDir() + "Main.java");
+		final File file = file(FileUtil.getJavaDir() + "Main.java");
 
 		if (file.exists()) {
 			try {
@@ -246,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
 				break;
 
 			case 1 :
-				final Intent intent = getIntent();
+				Intent intent = getIntent();
 				intent.setClass(getApplicationContext(), SettingActivity.class);
 				startActivity(intent);
 				break;
@@ -285,16 +295,12 @@ public class MainActivity extends AppCompatActivity {
 							e.printStackTrace();
 						}
 						CodeEditor edi = new CodeEditor(MainActivity.this);
-
 						edi.setTypefaceText(Typeface.MONOSPACE);
-
 						edi.setEditorLanguage(new JavaLanguage());
-
 						edi.setColorScheme(new SchemeDarcula());
-
 						edi.setTextSize(13);
 							
-						File smaliFile = new File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
+						File smaliFile = file(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
 							
 						try {
 						    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
@@ -328,7 +334,9 @@ public class MainActivity extends AppCompatActivity {
 										+ ".class",
 								"--extraclasspath",
 								FileUtil.getClasspathDir() + "android.jar",
-								"--outputdir", FileUtil.getBinDir() + "cfr/"};
+								"--outputdir",
+								FileUtil.getBinDir() + "cfr/"
+						};
 
 						try {
 							org.benf.cfr.reader.Main.main(args);
@@ -342,22 +350,17 @@ public class MainActivity extends AppCompatActivity {
 					try {
 						latch.await();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
 						dialog("Thread was interrupted while decompiling...",
-								e.getMessage(), true);
+								Log.getStackTraceString(e), true);
 					}
 
 					final CodeEditor edi = new CodeEditor(MainActivity.this);
-
 					edi.setTypefaceText(Typeface.MONOSPACE);
-
 					edi.setEditorLanguage(new JavaLanguage());
-
 					edi.setColorScheme(new SchemeDarcula());
-
 					edi.setTextSize(12);
 
-					File decompiledFile = new File(
+					File decompiledFile = file(
 							FileUtil.getBinDir() + "cfr/" + claz + ".java");
 
 					try {
@@ -384,13 +387,9 @@ public class MainActivity extends AppCompatActivity {
 			final String claz = classes[pos].replace(".", "/");
 
 			final CodeEditor edi = new CodeEditor(MainActivity.this);
-
 			edi.setTypefaceText(Typeface.MONOSPACE);
-
 			edi.setEditorLanguage(new JavaLanguage());
-
 			edi.setColorScheme(new SchemeDarcula());
-
 			edi.setTextSize(12);
 
 			try {
@@ -468,12 +467,12 @@ public class MainActivity extends AppCompatActivity {
 						.setPositiveButton("GOT IT", null)
 						.setNegativeButton("CANCEL", null);
 		if (copyButton)
-			dialog.setNeutralButton("COPY", (dialogInterface, i) -> {
+			dialog.setNeutralButton("COPY", (dialogInterface, i) -> 
 				((ClipboardManager) getSystemService(
 						getApplicationContext().CLIPBOARD_SERVICE))
 								.setPrimaryClip(ClipData
 										.newPlainText("clipboard", message));
-			});
+			);
 		dialog.create().show();
 	}
 
@@ -482,10 +481,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			if (file.isDirectory()) {
 				Runtime.getRuntime()
-						.exec("chmod 777 " + file.getAbsolutePath());
-				for (File f : file.listFiles()) {
-					grantChmod(f);
-				}
+						.exec("chmod 777 " + file.getAbsolutePath() + " -R");
 			} else {
 				Runtime.getRuntime()
 						.exec("chmod 777 " + file.getAbsolutePath());
@@ -514,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	public boolean exists(String path) {
-	  return new File(path).exists();
+	public File file(String path) {
+	  return new File(path);
 	}
 }

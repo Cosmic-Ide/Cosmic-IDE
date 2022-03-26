@@ -10,9 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.base.Charsets;
+import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.task.java.*;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
 	private long dxTime = 0;
 	private long ecjTime = 0;
 
-	private boolean errors = false;
+	private boolean errorsArePresent = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
 	private void initialize() {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
-		final Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		setSupportActionBar(findViewById(R.id.toolbar));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 		getSupportActionBar().setHomeButtonEnabled(false);
 
@@ -81,17 +81,10 @@ public class MainActivity extends AppCompatActivity {
 		final MaterialButton btn_smali = findViewById(R.id.btn_smali);
 		final MaterialButton btn_smali2java = findViewById(R.id.btn_smali2java);
 
-		btn_disassemble.setOnClickListener((v) -> {
-			disassemble();
-		});
-		btn_smali2java.setOnClickListener((v) -> {
-			decompile();
-		});
-		btn_smali.setOnClickListener((v) -> {
-			smali();
-		});
+		btn_disassemble.setOnClickListener((v) -> disassemble());
+		btn_smali2java.setOnClickListener((v) -> decompile());
+		btn_smali.setOnClickListener((v) -> smali());
 		btn_run.setOnClickListener((view) -> {
-			errors = false;
 			final CountDownLatch latch = new CountDownLatch(1);
 			Executors.newSingleThreadExecutor().execute(() -> {
 				try {
@@ -115,11 +108,12 @@ public class MainActivity extends AppCompatActivity {
 						.exists()) {
 					ZipUtil.unzipFromAssets(getApplicationContext(),
 							"android.jar.zip", FileUtil.getClasspathDir());
-					try (InputStream input = getAssets()
-							.open("core-lambda-stubs.jar")) {
-						File output = new File(FileUtil.getClasspathDir(),
-								"core-lambda-stubs.jar");
-						Files.write(ByteStreams.toByteArray(input), output);
+				}
+				File output = new File(FileUtil.getClasspathDir(),
+						"core-lambda-stubs.jar");
+				if (!output.exists() && getSharedPreferences("compiler_settings").getString("javaVersion", "1.7").equals("1.8")) {
+				  try {
+						Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
 					} catch (Exception e) {
             showErr(Log.getStackTraceString(e));
 					}
@@ -130,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 					CompileJavaTask javaTask = new CompileJavaTask(builder);
 					javaTask.doFullTask();
 				} catch (Throwable e) {
-					errors = true;
+					errorsArePresent = true;
 					// Choose whether the stack trace is needed or not
 					if (e instanceof CompilationFailedException) {
 						showErr(e.getMessage());
@@ -147,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 				try {
 					new DexTask(builder).doFullTask();
 				} catch (Exception e) {
-					errors = true;
+					errorsArePresent = true;
 					showErr(e.toString());
 					latch.countDown();
 					return;
@@ -161,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 				dialog("Unable to wait for dx to complete", Log.getStackTraceString(e), true);
 			}
 			// code that loads the final dex
-			if (!errors) {
+			if (!errorsArePresent) {
 					try {
 						final String[] classes = getClassesFromDex();
 						if (classes == null)
@@ -196,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
 					} catch (Throwable e) {
 						showErr(Log.getStackTraceString(e));
 					}
+			} else {
+			  errorsArePresent = false;
 			}
 		});
 	}
@@ -203,9 +199,8 @@ public class MainActivity extends AppCompatActivity {
 	public void showErr(final String e) {
 		Snackbar.make(container, "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
-				.setAction("Show error", (view) -> {
-					dialog("Failed...", e, true);
-				}).show();
+				.setAction("Show error", (view) -> dialog("Failed...", e, true))
+			    .show();
 	}
 
 	private void initializeLogic() {
@@ -251,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
 				break;
 
 			case 1 :
-				final Intent intent = new Intent();
+				final Intent intent = getIntent();
 				intent.setClass(getApplicationContext(), SettingActivity.class);
 				startActivity(intent);
 				break;
@@ -270,16 +265,17 @@ public class MainActivity extends AppCompatActivity {
 					(d, pos) -> {
 						final String claz = classes[pos];
 						final CountDownLatch latch = new CountDownLatch(1);
+						final String[] args = new String[] {
+						  "-f",
+						  "-o",
+						  FileUtil.getBinDir()
+						      .concat("smali/"),
+						  FileUtil.getBinDir()
+						      .concat("classes.dex")
+						};
 						Executors.newSingleThreadExecutor()
 								.execute(() -> {
-									String[] str = new String[] {"-f",
-											"-o",
-											FileUtil.getBinDir()
-													.concat("smali/"),
-											FileUtil.getBinDir()
-													.concat("classes.dex")};
-									com.googlecode.d2j.smali.BaksmaliCmd
-											.main(str);
+									BaksmaliCmd.main(args);
 									latch.countDown();
 						});
 

@@ -16,10 +16,6 @@ android {
 
     buildTypes {
         release {
-//            crunchPngs false
-//            shrinkResources true
-//            minifyEnabled false
-            multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {

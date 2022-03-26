@@ -18,7 +18,7 @@ public class DebugActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
            .setTitle("An error occurred")
            .setMessage(errorMessage)
-           .setPositiveButton("End Application", (dialog, which) -> finish())
+           .setPositiveButton("Quit", (dialog, which) -> finish())
            .create()
            .show();
     }

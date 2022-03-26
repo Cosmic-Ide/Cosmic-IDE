@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.io.ByteStreams;
@@ -35,7 +34,6 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -214,29 +212,6 @@ public class MainActivity extends AppCompatActivity {
 				Snackbar.LENGTH_INDEFINITE)
 				.setAction("Show error", (view) -> dialog("Failed...", e, true))
 			    .show();
-	}
-
-	private void initializeLogic() {
-		editor.setTypefaceText(Typeface.MONOSPACE);
-		editor.setEditorLanguage(new JavaLanguage());
-		editor.setColorScheme(new SchemeDarcula());
-		editor.setTextSize(12);
-
-		final File file = file(FileUtil.getJavaDir() + "Main.java");
-
-		if (file.exists()) {
-			try {
-				editor.setText(Files.asCharSource(file, Charsets.UTF_8).read());
-			} catch (Exception e) {
-				dialog("Cannot read file", Log.getStackTraceString(e), true);
-			}
-		} else {
-			editor.setText("package com.example;\n\nimport java.util.*;\n\n"
-					+ "public class Main {\n\n"
-					+ "\tpublic static void main(String[] args) {\n"
-					+ "\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n"
-					+ "}\n");
-		}
 	}
 
 	@Override

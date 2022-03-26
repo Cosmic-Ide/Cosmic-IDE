@@ -14,10 +14,9 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 public class JarTask extends Task {
-	private final Builder mBuilder;
 
 	public JarTask(Builder builder) {
-		this.mBuilder = builder;
+	  
 	}
 
 	@Override
@@ -97,12 +96,5 @@ public class JarTask extends Task {
 				in.close();
 			}
 		}
-	}
-	
-	private static Attributes getDefAttrs() {
-		Attributes attrs = new Attributes();
-		attrs.put(new Attributes.Name("Created-By"), "heystudios");
-		
-		return attrs;
 	}
 }

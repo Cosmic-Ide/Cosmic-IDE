@@ -11,11 +11,10 @@ import java.util.concurrent.CountDownLatch;
 
 public class D8Task extends Task {
 
-	private final Builder mBuilder;
 	private Exception ex = null;
 
 	public D8Task(Builder builder) {
-	  this.mBuilder = builder;
+	  
 	}
 
 	@Override

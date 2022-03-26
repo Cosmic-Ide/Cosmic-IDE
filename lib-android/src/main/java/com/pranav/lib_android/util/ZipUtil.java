@@ -20,8 +20,6 @@ public class ZipUtil {
 	public static void unzipFromAssets(Context context, String zipFile,
 	String destination) {
 		try {
-			if (destination == null || destination.length() == 0)
-			destination = context.getFilesDir().getAbsolutePath();
 			InputStream stream = context.getAssets().open(zipFile);
 			unzip(stream, destination);
 		} catch (IOException e) {
@@ -69,10 +67,8 @@ public class ZipUtil {
 		File f = new File(destination, dir);
 		
 		if (!f.isDirectory()) {
-			boolean success = f.mkdirs();
-			if (!success) {
-				Log.w(TAG, "Failed to create folder " + f.getName());
-			}
+			if (!f.mkdirs())
+			  	Log.w(TAG, "Failed to create folder " + f.getName());
 		}
 	}
 	

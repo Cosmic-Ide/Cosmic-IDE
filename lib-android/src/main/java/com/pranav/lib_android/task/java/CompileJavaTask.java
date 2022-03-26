@@ -11,13 +11,11 @@ import java.util.ArrayList;
 
 public class CompileJavaTask extends Task {
 
-	private final Builder mBuilder;
 	private final StringBuilder errs = new StringBuilder();
 	private final SharedPreferences prefs;
 
 	public CompileJavaTask(Builder builder) {
-		this.mBuilder = builder;
-		prefs = mBuilder.getContext().getSharedPreferences("compiler_settings",
+		prefs = builder.getContext().getSharedPreferences("compiler_settings",
 				Context.MODE_PRIVATE);
 	}
 
@@ -49,11 +47,11 @@ public class CompileJavaTask extends Task {
 					+ "core-lambda-stubs.jar");
 		}
 		final String clspath = prefs.getString("classpath", "");
-		if (clspath != "") {
-			if (classpath.toString() != "") classpath.append(":");
+		if (!clspath.equals("")) {
+			if (classpath.toString().equals("")) classpath.append(":");
 			classpath.append(clspath);
 		}
-		if (classpath.toString() != "") {
+		if (!classpath.toString().equals("")) {
 			args.add("-cp");
 			args.add(classpath.toString());
 		}

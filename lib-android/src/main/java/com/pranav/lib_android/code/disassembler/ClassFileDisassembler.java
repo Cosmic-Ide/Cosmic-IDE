@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jdt.internal.core.util.Disassembler;
-import org.eclipse.jdt.core.util.ClassFormatException;
 
 public class ClassFileDisassembler {
     

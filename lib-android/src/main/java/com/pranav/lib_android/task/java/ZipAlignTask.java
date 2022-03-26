@@ -24,6 +24,7 @@ public class ZipAlignTask extends Task {
 
 	@Override
 	public void doFullTask() throws Exception {
+	  CountDownLatch latch = new CountDownLatch(1);
 		Executors.newSingleThreadExecutor().execute(() -> {
 			try {
 				final String zipalign = mBuilder.getContext().getFilesDir()
@@ -44,7 +45,15 @@ public class ZipAlignTask extends Task {
 			} catch (Exception e) {
 				ex = e;
 			}
+			latch.countdown();
 		});
+		
+		try {
+		  latch.await();
+		} catch (InterruptedException e) {
+		  e.printStackTrace();
+		}
+		
 		if (!executor.getLogs().isEmpty()) {
 			throw new CompilationFailedException(executor.getLogs());
 		}

@@ -2,8 +2,6 @@ package com.pranav.lib_android.util;
 
 import android.content.Context;
 
-import com.google.common.io.Files;
-
 import java.io.File;
 
 public class FileUtil {

@@ -24,23 +24,15 @@ import java.util.*;
 import java.util.regex.*;
 import java.text.*;
 import org.json.*;
-import android.widget.HorizontalScrollView;
 import com.google.android.material.textfield.*;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import io.github.rosemoe.sora.langs.java.*;
 import io.github.rosemoe.sora.*;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.DialogFragment;
 import com.google.android.material.radiobutton.*;
 import androidx.appcompat.widget.AppCompatEditText;
-import com.google.android.material.textview.MaterialTextView;
-
 
 public class SettingActivity extends AppCompatActivity {
-	
-	private Toolbar toolbar;
 	
 	private MaterialRadioButton java3;
 	private MaterialRadioButton java4;
@@ -56,14 +48,14 @@ public class SettingActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
+		
+		final Toolbar toolbar = findViewById(R.id.toolbar);
 	
-		toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		toolbar.setNavigationOnClickListener((v) -> {
-			onBackPressed();
-		});
+		toolbar.setNavigationOnClickListener((v) -> onBackPressed());
+		
 		java3 = findViewById(R.id.java3);
 		java4 = findViewById(R.id.java4);
 		java5 = findViewById(R.id.java5);

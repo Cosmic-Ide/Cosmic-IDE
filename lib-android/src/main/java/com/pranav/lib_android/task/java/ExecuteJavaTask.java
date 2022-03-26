@@ -57,13 +57,14 @@ public class ExecuteJavaTask extends Task {
 				Method method = calledClass.getDeclaredMethod("main", String[].class);
 				
 				String[] param = {};
-				Object result;
+				Object result = null:
 				if (Modifier.isStatic(method.getModifiers())) {
 					result = method.invoke(null, new Object[] {param});
 				} else if (Modifier.isPublic(method.getModifiers())) {
 					Object classInstance = calledClass.newInstance();
 					result = method.invoke(classInstance, new Object[] {param});
 				}
+				if (result != null) Sytem.out.println(result.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

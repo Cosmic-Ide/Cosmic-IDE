@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 
-public class DexTask extends Task {
+public class D8Task extends Task {
 
 	private final Builder mBuilder;
 	private Exception ex = null;

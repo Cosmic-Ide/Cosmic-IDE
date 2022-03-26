@@ -97,12 +97,11 @@ public class MainActivity extends AppCompatActivity {
 		container = findViewById(R.id.container);
 		
 		Executors.newSingleThreadExecutor().execute(() -> {
-			if (!exists(FileUtil.getClasspathDir() + "android.jar")) {
+			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
 			}
-			File output = file(FileUtil.getClasspathDir(),
-					"core-lambda-stubs.jar");
+			File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
 			if (!output.exists() && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
 				    .getString("javaVersion", "1.7")
@@ -117,8 +116,8 @@ public class MainActivity extends AppCompatActivity {
 
 		findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
 		findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
-		findViewById(btn_smali).setOnClickListener(v -> smali());
-		findViewById(btn_run).setOnClickListener(view -> {
+		findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+		findViewById(R.id.btn_run).setOnClickListener(view -> {
 			try {
 				// Delete previous build files
 				FileUtil.deleteFile(FileUtil.getBinDir());

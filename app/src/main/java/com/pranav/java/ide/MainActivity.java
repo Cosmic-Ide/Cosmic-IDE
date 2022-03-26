@@ -135,17 +135,16 @@ public class MainActivity extends AppCompatActivity {
 			
 			// code that runs ecj
 			long time = System.currentTimeMillis();
+			errorsArePresent = true;
 			try {
 				CompileJavaTask javaTask = new CompileJavaTask(builder);
 				javaTask.doFullTask();
+				errorsArePresent = false;
+			} catch (CompilationFailedException e) {
+				showErr(e.getMessage());
+				return;
 			} catch (Throwable e) {
-				errorsArePresent = true;
-				// Choose whether the stack trace is needed or not
-				if (e instanceof CompilationFailedException) {
-					showErr(e.getMessage());
-				} else {
-					showErr(Log.getStackTraceString(e));
-				}
+				showErr(Log.getStackTraceString(e));
 				return;
 			}
 
@@ -153,12 +152,12 @@ public class MainActivity extends AppCompatActivity {
 			time = System.currentTimeMillis();
 			// run dx
 			try {
-		    if (Build.VERSION.SDK_INT >= 26) {
-			    new JarTask(builder).doFullTask();
-			    new D8Task(builder).doFullTask();
-			  } else {
+//		    if (Build.VERSION.SDK_INT >= 26) {
+//			    new JarTask(builder).doFullTask();
+//			    new D8Task(builder).doFullTask();
+//			  } else {
 				  new DexTask(builder).doFullTask();
-				}
+//				}
 			} catch (Exception e) {
 				errorsArePresent = true;
 				showErr(e.toString());

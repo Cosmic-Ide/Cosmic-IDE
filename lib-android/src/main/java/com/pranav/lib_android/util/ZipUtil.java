@@ -17,7 +17,7 @@ public class ZipUtil {
 	private static final int BUFFER_SIZE = 1024 * 10;
 	private static final String TAG = "ZipUtil";
 	
-	private static void unzipFromAssets(Context context, String zipFile,
+	public static void unzipFromAssets(Context context, String zipFile,
 	String destination) {
 		try {
 			InputStream stream = context.getAssets().open(zipFile);
@@ -72,7 +72,7 @@ public class ZipUtil {
 	}
 	
 	
-	private static void copyFileFromAssets(Context context, String inputFile, String fileName) throws IOException {
+	public static void copyFileFromAssets(Context context, String inputFile, String fileName) throws IOException {
 		final InputStream in = context.getAssets().open(inputFile);
 		final String outputPath = context.getFilesDir() + "/" + fileName;
 		final File out = new File(outputPath);

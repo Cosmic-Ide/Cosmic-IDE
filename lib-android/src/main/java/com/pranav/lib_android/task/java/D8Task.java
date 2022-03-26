@@ -24,7 +24,7 @@ public class D8Task extends Task {
 			try {
 				final File f = new File(
 						FileUtil.getBinDir()
-								+ "classes");
+								+ "classes/");
 				ArrayList<String> args = new ArrayList<>();
 				args.add("--release");
 				args.add("--lib");

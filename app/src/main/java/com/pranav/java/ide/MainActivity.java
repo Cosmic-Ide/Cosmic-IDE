@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -122,6 +123,12 @@ public class MainActivity extends AppCompatActivity {
             showErr(Log.getStackTraceString(e));
 					}
 				}
+				latch.countDown();
+				try {
+				  latch.await();
+				} catch (InterruptedException e) {
+				  dialog("Unable to wait for files to be extracted", Log.getStackTraceString(e), true);
+				}
 				// code that runs ecj
 				long time = System.currentTimeMillis();
 				try {
@@ -135,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
 					} else {
 						showErr(Log.getStackTraceString(e));
 					}
-					latch.countDown();
 					return;
 				}
 
@@ -143,21 +149,18 @@ public class MainActivity extends AppCompatActivity {
 				time = System.currentTimeMillis();
 				// run dx
 				try {
-					new DexTask(builder).doFullTask();
+				  if (Build.VERSION.SDK_INT >= 26) {
+				    new D8Task(builder).doFullTask();
+				  } else {
+				    new DexTask(builder).doFullTask();
+				  }
 				} catch (Exception e) {
 					errorsArePresent = true;
 					showErr(e.toString());
-					latch.countDown();
 					return;
 				}
 				dxTime = System.currentTimeMillis() - time;
-				latch.countDown();
 			});
-			try {
-				latch.await();
-			} catch (Throwable e) {
-				dialog("Unable to wait for dx to complete", Log.getStackTraceString(e), true);
-			}
 			// code that loads the final dex
 			if (!errorsArePresent) {
 					try {

@@ -467,12 +467,12 @@ public class MainActivity extends AppCompatActivity {
 						.setPositiveButton("GOT IT", null)
 						.setNegativeButton("CANCEL", null);
 		if (copyButton)
-			dialog.setNeutralButton("COPY", (dialogInterface, i) -> 
+			dialog.setNeutralButton("COPY", (dialogInterface, i) -> {
 				((ClipboardManager) getSystemService(
 						getApplicationContext().CLIPBOARD_SERVICE))
 								.setPrimaryClip(ClipData
 										.newPlainText("clipboard", message));
-			);
+			});
 		dialog.create().show();
 	}
 

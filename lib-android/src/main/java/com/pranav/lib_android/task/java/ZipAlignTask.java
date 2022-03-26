@@ -45,7 +45,7 @@ public class ZipAlignTask extends Task {
 			} catch (Exception e) {
 				ex = e;
 			}
-			latch.countdown();
+			latch.countDown();
 		});
 		
 		try {

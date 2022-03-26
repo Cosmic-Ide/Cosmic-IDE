@@ -66,7 +66,7 @@ public class ZipUtil {
 	private static void dirChecker(String destination, String dir) {
 		File f = new File(destination, dir);
 		
-		if (!f.isDirectory() && !f.mkdirs) {
+		if (!f.isDirectory() && !f.mkdirs()) {
 			  	Log.w(TAG, "Failed to create folder " + f.getName());
 		}
 	}

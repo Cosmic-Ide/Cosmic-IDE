@@ -26,11 +26,11 @@ public class D8Task extends Task {
 				final File f = new File(
 						FileUtil.getBinDir()
 								+ "classes.jar");
-				D8Command command = D8Command.builder();
+				D8Command command = D8Command.builder()
 						.setMinApiLevel(21)
-						.addLibraryFiles(new File(FileUtil.getClasspathDir() + "android.jar").toPath());
-						.addProgramFiles(f.toPath());
-						.setOutput(new File(FileUtil.getBinDir() + "classes.dex").toPath(), OutputMode.DexIndexed);
+						.addLibraryFiles(new File(FileUtil.getClasspathDir() + "android.jar").toPath())
+						.addProgramFiles(f.toPath())
+						.setOutput(new File(FileUtil.getBinDir() + "classes.dex").toPath(), OutputMode.DexIndexed)
 						.build();
 				D8.run(command);
 

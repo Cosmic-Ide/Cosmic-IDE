@@ -24,13 +24,13 @@ public class D8Task extends Task {
 			try {
 				final File f = new File(
 						FileUtil.getBinDir()
-								+ "classes.dex");
+								+ "classes/");
 				ArrayList<String> args = new ArrayList<>();
 				args.add("--release");
 				args.add("--lib");
 				args.add(FileUtil.getClasspathDir() + "android.jar");
 				args.add("--output");
-				args.add(f.getParent());
+				args.add(f.getParent() + "/classes.dex");
 				args.add(f.getAbsolutePath());
 
 				D8.main(args.toArray(new String[0]));

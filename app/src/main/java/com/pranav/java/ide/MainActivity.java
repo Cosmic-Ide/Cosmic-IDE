@@ -82,85 +82,78 @@ public class MainActivity extends AppCompatActivity {
 		final MaterialButton btn_run = findViewById(R.id.btn_run);
 		final MaterialButton btn_smali = findViewById(R.id.btn_smali);
 		final MaterialButton btn_smali2java = findViewById(R.id.btn_smali2java);
-
-		btn_disassemble.setOnClickListener((v) -> disassemble());
-		btn_smali2java.setOnClickListener((v) -> decompile());
-		btn_smali.setOnClickListener((v) -> smali());
-		btn_run.setOnClickListener((view) -> {
-			final CountDownLatch latch = new CountDownLatch(1);
-			Executors.newSingleThreadExecutor().execute(() -> {
-				try {
-					// Delete previous build files
-					FileUtil.deleteFile(FileUtil.getBinDir());
-					new File(FileUtil.getBinDir()).mkdirs();
-					final File mainFile = new File(
-							FileUtil.getJavaDir() + "Main.java");
-					Files.createParentDirs(mainFile);
-					// a simple workaround to prevent calls to system.exit
-					Files.write(editor.getText().toString()
-							.replace("System.exit(",
-									"System.err.print(\"Exit code \" + ")
-							.getBytes(), mainFile);
-				} catch (IOException e) {
-          dialog("Cannot save program", Log.getStackTraceString(e), true);
-				}
-				// code that extracts android.jar and
-				// core-lambda-stubs.jar.
-				if (!new File(FileUtil.getClasspathDir() + "android.jar")
-						.exists()) {
-					ZipUtil.unzipFromAssets(getApplicationContext(),
-							"android.jar.zip", FileUtil.getClasspathDir());
-				}
-				File output = new File(FileUtil.getClasspathDir(),
-						"core-lambda-stubs.jar");
-				if (!output.exists() && 
-				  getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
+		
+		Executors.newSingleThreadExecutor().execute(() -> {
+			if (!exists(FileUtil.getClasspathDir() + "android.jar")) {
+				ZipUtil.unzipFromAssets(MainActivity.this,
+					"android.jar.zip", FileUtil.getClasspathDir());
+			}
+			File output = new File(FileUtil.getClasspathDir(),
+					"core-lambda-stubs.jar");
+			if (!exists(output) && 
+					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
 				    .getString("javaVersion", "1.7")
-				        .equals("1.8")) {
-				  try {
-						Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
-					} catch (Exception e) {
-            showErr(Log.getStackTraceString(e));
-					}
-				}
-				latch.countDown();
-				try {
-				  latch.await();
-				} catch (InterruptedException e) {
-				  dialog("Unable to wait for files to be extracted", Log.getStackTraceString(e), true);
-				}
-				// code that runs ecj
-				long time = System.currentTimeMillis();
-				try {
-					CompileJavaTask javaTask = new CompileJavaTask(builder);
-					javaTask.doFullTask();
-				} catch (Throwable e) {
-					errorsArePresent = true;
-					// Choose whether the stack trace is needed or not
-					if (e instanceof CompilationFailedException) {
-						showErr(e.getMessage());
-					} else {
-						showErr(Log.getStackTraceString(e));
-					}
-					return;
-				}
-
-				ecjTime = System.currentTimeMillis() - time;
-				time = System.currentTimeMillis();
-				// run dx
-				try {
-				  if (Build.VERSION.SDK_INT >= 26) {
-				    new D8Task(builder).doFullTask();
-				  } else {
-				    new DexTask(builder).doFullTask();
-				  }
+			        .equals("1.8")) {
+		    try {
+					Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
 				} catch (Exception e) {
-					errorsArePresent = true;
-					showErr(e.toString());
-					return;
+          showErr(Log.getStackTraceString(e));
+        }
+		 }
+		});
+
+		btn_disassemble.setOnClickListener(v -> disassemble());
+		btn_smali2java.setOnClickListener(v -> decompile());
+		btn_smali.setOnClickListener(v -> smali());
+		btn_run.setOnClickListener(view -> {
+			try {
+				// Delete previous build files
+				FileUtil.deleteFile(FileUtil.getBinDir());
+				new File(FileUtil.getBinDir()).mkdirs();
+				final File mainFile = new File(
+						FileUtil.getJavaDir() + "Main.java");
+				Files.createParentDirs(mainFile);
+				// a simple workaround to prevent calls to system.exit
+				Files.write(editor.getText().toString()
+						.replace("System.exit(",
+								"System.err.print(\"Exit code \" + ")
+						.getBytes(), mainFile);
+			} catch (IOException e) {
+        dialog("Cannot save program", Log.getStackTraceString(e), true);
+			}
+			
+			// code that runs ecj
+			long time = System.currentTimeMillis();
+			try {
+				CompileJavaTask javaTask = new CompileJavaTask(builder);
+				javaTask.doFullTask();
+			} catch (Throwable e) {
+				errorsArePresent = true;
+				// Choose whether the stack trace is needed or not
+				if (e instanceof CompilationFailedException) {
+					showErr(e.getMessage());
+				} else {
+					showErr(Log.getStackTraceString(e));
 				}
-				dxTime = System.currentTimeMillis() - time;
-			});
+				return;
+			}
+
+			ecjTime = System.currentTimeMillis() - time;
+			time = System.currentTimeMillis();
+			// run dx
+			try {
+		    if (Build.VERSION.SDK_INT >= 26) {
+			    new JarTask(builder).doFullTask();
+			    new D8Task(builder).doFullTask();
+			  } else {
+				  new DexTask(builder).doFullTask();
+				}
+			} catch (Exception e) {
+				errorsArePresent = true;
+				showErr(e.toString());
+				return;
+			}
+			dxTime = System.currentTimeMillis() - time;
 			// code that loads the final dex
 			if (!errorsArePresent) {
 					try {
@@ -519,5 +512,9 @@ public class MainActivity extends AppCompatActivity {
 					Log.getStackTraceString(e), true);
 			return null;
 		}
+	}
+	
+	publid boolean exists(String path) {
+	  return new File(path).exists();
 	}
 }

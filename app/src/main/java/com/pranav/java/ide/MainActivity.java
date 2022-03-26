@@ -2,6 +2,7 @@ package com.pranav.java.ide;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -111,7 +112,10 @@ public class MainActivity extends AppCompatActivity {
 				}
 				File output = new File(FileUtil.getClasspathDir(),
 						"core-lambda-stubs.jar");
-				if (!output.exists() && getSharedPreferences("compiler_settings").getString("javaVersion", "1.7").equals("1.8")) {
+				if (!output.exists() && 
+				  getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
+				    .getString("javaVersion", "1.7")
+				        .equals("1.8")) {
 				  try {
 						Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
 					} catch (Exception e) {

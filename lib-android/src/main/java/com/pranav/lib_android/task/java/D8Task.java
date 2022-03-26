@@ -30,8 +30,8 @@ public class D8Task extends Task {
 				args.add("--lib");
 				args.add(FileUtil.getClasspathDir() + "android.jar");
 				args.add("--output");
-				args.add(f.getParent() + "/classes.dex");
-				args.add(f.getAbsolutePath());
+				args.add(FileUtil.getBinDir() + "classes.dex");
+				args.add(FileUtil.getBinDir() + "classes.jar");
 
 				D8.main(args.toArray(new String[0]));
 			} catch (Exception e) {

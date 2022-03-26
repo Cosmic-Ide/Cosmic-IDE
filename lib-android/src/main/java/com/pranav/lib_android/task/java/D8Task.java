@@ -6,7 +6,6 @@ import com.android.tools.r8.D8;
 import com.android.tools.r8.D8Command;
 import com.android.tools.r8.OutputMode;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.CountDownLatch;
 
@@ -33,9 +32,8 @@ public class D8Task extends Task {
 									.addProgramFiles(f.toPath());
 									.setOutput(new File(FileUtil.getBinDir() + "classes.dex").toPath(), OutputMode.DexIndexed);
 									.build();
-							D8.run(command);
+				D8.run(command);
 
-				D8.main(args.toArray(new String[0]));
 			} catch (Exception e) {
 				ex = e;
 			}

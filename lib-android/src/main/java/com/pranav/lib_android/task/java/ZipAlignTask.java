@@ -45,7 +45,7 @@ public class ZipAlignTask extends Task {
 				ex = e;
 			}
 		});
-		if (executor.getLogs() != "") {
+		if (!executor.getLogs().isEmpty()) {
 			throw new CompilationFailedException(executor.getLogs());
 		}
 		if (ex != null)

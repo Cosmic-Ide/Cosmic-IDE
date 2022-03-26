@@ -63,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		setSupportActionBar(findViewById(R.id.toolbar));
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		getSupportActionBar().setHomeButtonEnabled(false);
+		
+		editor = findViewById(R.id.editor);
+		container = findViewById(R.id.container);
+	
 		editor.setTypefaceText(Typeface.MONOSPACE);
 		editor.setEditorLanguage(new JavaLanguage());
 		editor.setColorScheme(new SchemeDarcula());
@@ -89,13 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
-		setSupportActionBar(findViewById(R.id.toolbar));
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-		getSupportActionBar().setHomeButtonEnabled(false);
 
-		editor = findViewById(R.id.editor);
-		container = findViewById(R.id.container);
-		
 		Executors.newSingleThreadExecutor().execute(() -> {
 			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,

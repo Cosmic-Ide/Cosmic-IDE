@@ -17,7 +17,7 @@ public class ZipUtil {
 	private static final int BUFFER_SIZE = 1024 * 10;
 	private static final String TAG = "ZipUtil";
 	
-	public static void unzipFromAssets(Context context, String zipFile,
+	private static void unzipFromAssets(Context context, String zipFile,
 	String destination) {
 		try {
 			InputStream stream = context.getAssets().open(zipFile);
@@ -27,7 +27,7 @@ public class ZipUtil {
 		}
 	}
 	
-	public static void unzip(InputStream stream, String destination) {
+	private static void unzip(InputStream stream, String destination) {
 		dirChecker(destination, "");
 		byte[] buffer = new byte[BUFFER_SIZE];
 		try {
@@ -66,14 +66,13 @@ public class ZipUtil {
 	private static void dirChecker(String destination, String dir) {
 		File f = new File(destination, dir);
 		
-		if (!f.isDirectory()) {
-			if (!f.mkdirs())
+		if (!f.isDirectory() && !f.mkdirs) {
 			  	Log.w(TAG, "Failed to create folder " + f.getName());
 		}
 	}
 	
 	
-	public static void copyFileFromAssets(Context context, String inputFile, String fileName) throws IOException {
+	private static void copyFileFromAssets(Context context, String inputFile, String fileName) throws IOException {
 		final InputStream in = context.getAssets().open(inputFile);
 		final String outputPath = context.getFilesDir() + "/" + fileName;
 		final File out = new File(outputPath);

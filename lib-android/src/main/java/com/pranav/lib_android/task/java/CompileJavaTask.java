@@ -47,11 +47,11 @@ public class CompileJavaTask extends Task {
 					+ "core-lambda-stubs.jar");
 		}
 		final String clspath = prefs.getString("classpath", "");
-		if (!clspath.equals("")) {
-			if (classpath.toString().equals("")) classpath.append(":");
+		if (clspath != "" && classpath.length > 0) {
+			classpath.append(":");
 			classpath.append(clspath);
 		}
-		if (!classpath.toString().equals("")) {
+		if (classpath.toString() != "") {
 			args.add("-cp");
 			args.add(classpath.toString());
 		}
@@ -60,13 +60,7 @@ public class CompileJavaTask extends Task {
 		args.add(" ");
 		args.add(FileUtil.getJavaDir());
 
-		PrintWriter writer = new PrintWriter(new OutputStream() {
-			@Override
-			public void write(int p1) throws IOException {
-				errs.append((char) p1);
-			}
-		},
-		true);
+		PrintWriter writer = new PrintWriter(new OutputStream(p1 -> errs.append((char) p1)), true);
 
 		Main main = new Main(writer, writer, false, null, null);
 

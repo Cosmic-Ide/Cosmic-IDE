@@ -14,6 +14,7 @@ public class ExecuteJavaTask extends Task {
 	
 	private final Builder mBuilder;
 	private final String clazz;
+	private Object result;
 	public StringBuilder log = new StringBuilder();
 	
 	public ExecuteJavaTask(Builder builder, String claz) {
@@ -57,7 +58,7 @@ public class ExecuteJavaTask extends Task {
 				Method method = calledClass.getDeclaredMethod("main", String[].class);
 				
 				String[] param = {};
-				Object result;
+				
 				if (Modifier.isStatic(method.getModifiers())) {
 					result = method.invoke(null, new Object[] {param});
 				} else if (Modifier.isPublic(method.getModifiers())) {

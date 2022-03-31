@@ -41,7 +41,6 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java7;
 	private MaterialRadioButton java8;
 	
-	private MaterialRadioButton dexer_dx;
 	private MaterialRadioButton dexer_d8;
 	
 	private AppCompatEditText classpath;
@@ -67,7 +66,7 @@ public class SettingActivity extends AppCompatActivity {
 		java7 = findViewById(R.id.java7);
 		java8 = findViewById(R.id.java8);
 		
-		dexer_dx = findViewById(R.id.dexer_dx);
+		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
 		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", Activity.MODE_PRIVATE);

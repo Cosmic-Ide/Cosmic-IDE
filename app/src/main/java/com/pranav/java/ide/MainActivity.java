@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 			} catch (Throwable e) {
 				showErr(Log.getStackTraceString(e));
 			}
-			if (errorsArePresent == true) return;
+			if (errorsArePresent) return;
 
 			ecjTime = System.currentTimeMillis() - time;
 			time = System.currentTimeMillis();

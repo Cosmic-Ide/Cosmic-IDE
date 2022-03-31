@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -149,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
 			// run dx
 			try {
 		    if (getSharedPreferences("compiler_settings", MODE_PRIVATE).getString("dexer", "dx").equals("d8")) {
-		      new JarTask(builder).doFullTask();
-			    new D8Task(builder).doFullTask();
+		      new JarTask().doFullTask();
+			    new D8Task().doFullTask();
 			  } else {
-				  new DexTask(builder).doFullTask();
+				  new DexTask().doFullTask();
 				}
 			} catch (Exception e) {
 				errorsArePresent = true;

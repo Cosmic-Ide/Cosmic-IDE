@@ -13,10 +13,6 @@ public class D8Task extends Task {
 
 	private Exception ex = null;
 
-	public D8Task(Builder builder) {
-	  
-	}
-
 	@Override
 	public void doFullTask() throws Exception {
 		final CountDownLatch latch = new CountDownLatch(1);

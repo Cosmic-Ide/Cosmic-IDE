@@ -13,10 +13,6 @@ public class DexTask extends Task {
 
 	private Exception ex = null;
 
-	public DexTask(Builder builder) {
-	  
-	}
-
 	@Override
 	public void doFullTask() throws Exception {
 		final CountDownLatch latch = new CountDownLatch(1);

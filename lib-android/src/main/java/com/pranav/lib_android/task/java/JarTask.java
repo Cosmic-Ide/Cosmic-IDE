@@ -1,6 +1,5 @@
 package com.pranav.lib_android.task.java;
 
-import android.net.Uri;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.interfaces.*;
 import java.io.BufferedInputStream;
@@ -14,10 +13,6 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 public class JarTask extends Task {
-
-	public JarTask(Builder builder) {
-	  
-	}
 
 	@Override
 	public void doFullTask() throws Exception {

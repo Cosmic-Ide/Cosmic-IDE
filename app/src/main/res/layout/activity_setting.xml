@@ -144,6 +144,5 @@
 					android:textSize="12sp"
 					android:textColor="#000000" />
 			</RadioGroup>
-		</com.google.android.mateial.textview.MaterialTextView>
 	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

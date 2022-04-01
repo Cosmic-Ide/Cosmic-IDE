@@ -27,7 +27,7 @@ public class CompileJavaTask extends Task {
 	@Override
 	public void doFullTask() throws Exception {
 
-        final File output = new File(FileUtil.getBinDir() + "classes");
+    final File output = new File(FileUtil.getBinDir() + "classes");
 		final ArrayList<String> args = new ArrayList<>();
 
 		args.add("-warn:all");
@@ -47,11 +47,11 @@ public class CompileJavaTask extends Task {
 					+ "core-lambda-stubs.jar");
 		}
 		final String clspath = prefs.getString("classpath", "");
-		if (clspath != "" && classpath.length() > 0) {
+		if (!clspath.isEmpty() && classpath.length() > 0) {
 			classpath.append(":");
 			classpath.append(clspath);
 		}
-		if (classpath.toString() != "") {
+		if (!classpath.toString().isEmpty()) {
 			args.add("-cp");
 			args.add(classpath.toString());
 		}

@@ -40,6 +40,9 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java6;
 	private MaterialRadioButton java7;
 	private MaterialRadioButton java8;
+	
+	private MaterialRadioButton dexer_d8;
+	
 	private AppCompatEditText classpath;
 	
 	private SharedPreferences settings;
@@ -54,7 +57,7 @@ public class SettingActivity extends AppCompatActivity {
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		toolbar.setNavigationOnClickListener((v) -> onBackPressed());
+		toolbar.setNavigationOnClickListener(v -> onBackPressed());
 		
 		java3 = findViewById(R.id.java3);
 		java4 = findViewById(R.id.java4);
@@ -62,6 +65,9 @@ public class SettingActivity extends AppCompatActivity {
 		java6 = findViewById(R.id.java6);
 		java7 = findViewById(R.id.java7);
 		java8 = findViewById(R.id.java8);
+		
+		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
+		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", Activity.MODE_PRIVATE);
 
@@ -83,17 +89,25 @@ public class SettingActivity extends AppCompatActivity {
 			    java6.setChecked(true);
 			    break;
 				
-			case "1.7":
-			    java7.setChecked(true);
-			    break;
-				
 			case "1.8":
 			    java8.setChecked(true);
 			    break;
 				
+			case "1.7":
 			default:
 			    java7.setChecked(true);
 			    break;
+		}
+		
+		switch (settings.getString("dexer", "dx")) {
+		  case "d8":
+		    dexer_d8.setChecked(true);
+		    break;
+		  
+		  case "dx":
+		  default:
+		    dexer_dx.setChecked(true);
+		    break;
 		}
 		classpath.setText(settings.getString("classpath", ""));
 	}
@@ -107,9 +121,14 @@ public class SettingActivity extends AppCompatActivity {
 		else if (java4.isChecked()) version = 1.4;
 		else if (java5.isChecked()) version = 1.5;
 		else if (java6.isChecked()) version = 1.6;
-		else if (java7.isChecked()) version = 1.7;
+    // java 7 is already set to variable, and hence doesn't need to be put again
 		else if (java8.isChecked()) version = 1.8;
 		settings.edit().putString("javaVersion", String.valueOf(version)).commit();
+		
+		String dexer = "dx";
+		if (dexer_d8.isChecked()) dexer = "d8";
+		settings.edit().putString("dexer", dexer).commit();
+		
 		settings.edit().putString("classpath", classpath.getText().toString()).commit();
 	}
 	

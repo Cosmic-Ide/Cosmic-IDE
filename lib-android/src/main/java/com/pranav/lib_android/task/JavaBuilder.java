@@ -20,7 +20,7 @@ public class JavaBuilder extends Builder {
 	public Task[] getTasks() {
 		ArrayList<Task> tasks = new ArrayList<>();
 		tasks.add(new CompileJavaTask(this));
-		tasks.add(new DexTask(this));
+		tasks.add(new DexTask());
 		// tasks.add(new ExecuteDexTask());
 		return tasks.toArray(new Task[0]);
 	}

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -89,9 +88,6 @@ public class MainActivity extends AppCompatActivity {
 					+ "}\n");
 		}
 		
-// was for giving execute perms to zipalign native, currently zipalign is not being used
-//		grantChmod(getFilesDir().getParentFile());
-
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 
@@ -142,22 +138,21 @@ public class MainActivity extends AppCompatActivity {
 				errorsArePresent = false;
 			} catch (CompilationFailedException e) {
 				showErr(e.getMessage());
-				return;
 			} catch (Throwable e) {
 				showErr(Log.getStackTraceString(e));
-				return;
 			}
+			if (errorsArePresent) return;
 
 			ecjTime = System.currentTimeMillis() - time;
 			time = System.currentTimeMillis();
 			// run dx
 			try {
-//		    if (Build.VERSION.SDK_INT >= 26) {
-//			    new JarTask(builder).doFullTask();
-//			    new D8Task(builder).doFullTask();
-//			  } else {
-				  new DexTask(builder).doFullTask();
-//				}
+		    if (getSharedPreferences("compiler_settings", MODE_PRIVATE).getString("dexer", "dx").equals("d8")) {
+		      new JarTask().doFullTask();
+			    new D8Task().doFullTask();
+			  } else {
+				  new DexTask().doFullTask();
+				}
 			} catch (Exception e) {
 				errorsArePresent = true;
 				showErr(e.toString());

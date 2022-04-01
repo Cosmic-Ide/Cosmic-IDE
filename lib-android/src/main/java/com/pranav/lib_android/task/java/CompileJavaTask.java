@@ -51,7 +51,7 @@ public class CompileJavaTask extends Task {
 			classpath.append(":");
 			classpath.append(clspath);
 		}
-		if (classpath.toString().isEmpty()) {
+		if (!classpath.toString().isEmpty()) {
 			args.add("-cp");
 			args.add(classpath.toString());
 		}

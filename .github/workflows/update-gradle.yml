@@ -23,9 +23,10 @@ jobs:
     - name: Update gradle wrapper
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: wrapper
-        arguments: --gradle-version
-        arguments: ${{ secrets.GRADLE_VERSION }}
+        arguments: |
+            wrapper
+            --gradle-version
+            ${{ secrets.GRADLE_VERSION }}
 
     - name: Add updated files to stage
       run: git add --all

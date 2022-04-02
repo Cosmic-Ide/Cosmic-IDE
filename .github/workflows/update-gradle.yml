@@ -10,24 +10,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: set up JDK 11
+
+    - name: set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: gradle
+        java-version: '17'
+        distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+
     - name: Update gradle wrapper
-      run: ./gradlew wrapper --gradle-version 7.4.1
-    - name: Run git
+      uses: gradle/gradle-build-action@v2
+        with:
+          arguments: wrapper
+          arguments: --gradle-version
+          arguments: ${{ secrets.GRADLE_VERSION }}
+
+    - name: Add updated files to stage
       run: git add --all
+
     - name: Setup email
       run: git config --global user.email "${{ secrets.EMAIL }}"
+
     - name: Setup name
-      run: git config --global user.name "Update Gradle Wrapper"
-    - name: commit
-      run: git commit -m "Update gradle Wrapper"
-    - name: push
+      run: git config --global user.name "Gradle Wrapper"
+
+    - name: Commit latest gradle wrapper
+      run: git commit -m "Update gradle wrapper to v${{ secrets.GRADLE_VERSION }}"
+
+    - name: Push all changes
       run: git push

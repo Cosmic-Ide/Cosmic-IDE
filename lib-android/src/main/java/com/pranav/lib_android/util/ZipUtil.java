@@ -41,6 +41,8 @@ public class ZipUtil {
 					dirChecker(destination, ze.getName());
 				} else {
 					File f = new File(destination, ze.getName());
+					if (!f.toPath().normalize().startsWith(destination.toPath()))
+					        throw new SecurityException("Potentially harmful files detected inside zip");
 					if (!f.exists()) {
 						boolean success = f.createNewFile();
 						if (!success) {
@@ -58,7 +60,7 @@ public class ZipUtil {
 				}
 			}
 			zin.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			Log.e(TAG, "unzip", e);
 		}
 	}

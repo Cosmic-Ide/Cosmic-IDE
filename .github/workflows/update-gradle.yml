@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  update_wrapper:
 
     runs-on: ubuntu-latest
 

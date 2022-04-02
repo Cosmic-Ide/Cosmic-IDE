@@ -29,11 +29,12 @@ public class ZipAlignTask extends Task {
 			try {
 				final String zipalign = mBuilder.getContext().getFilesDir()
 						+ "/arm64-v8a";
-				if (!new File(zipalign).exists()) {
+				final File executable = new File(zipalign);
+				if (!executable.exists()) {
 					ZipUtil.copyFileFromAssets(mBuilder.getContext(),
 							"zipalign/arm64-v8a", "arm64-v8a");
 				}
-				Runtime.getRuntime().exec("chmod 777 " + zipalign);
+				executable.setExecutable(true);
 				final ArrayList<String> args = new ArrayList<>();
 				args.add(zipalign);
 				args.add("4");

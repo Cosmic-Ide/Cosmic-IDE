@@ -19,10 +19,12 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    - name: Give permission to executable
+      run: chmod +x gradlew
+
     - name: Build with gradle
       uses: gradle/gradle-build-action@v2
       with:
-        gradle-version: wrapper
         arguments: build
 
     - name: Upload debug apk

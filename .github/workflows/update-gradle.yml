@@ -3,7 +3,6 @@ name: Update Gradle Wrapper
 
 on:
   workflow_dispatch:
----
 
 jobs:
   update_wrapper:

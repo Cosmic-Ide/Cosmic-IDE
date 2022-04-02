@@ -66,8 +66,8 @@ public class SettingActivity extends AppCompatActivity {
 		java7 = findViewById(R.id.java7);
 		java8 = findViewById(R.id.java8);
 		
-		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
-		dexer_d8 = findViewById(R.id.dexer_d8);
+//		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
+//		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", Activity.MODE_PRIVATE);
 
@@ -99,7 +99,8 @@ public class SettingActivity extends AppCompatActivity {
 			    break;
 		}
 		
-		switch (settings.getString("dexer", "dx")) {
+/*
+    switch (settings.getString("dexer", "dx")) {
 		  case "d8":
 		    dexer_d8.setChecked(true);
 		    break;
@@ -109,6 +110,7 @@ public class SettingActivity extends AppCompatActivity {
 		    dexer_dx.setChecked(true);
 		    break;
 		}
+*/
 		classpath.setText(settings.getString("classpath", ""));
 	}
 	
@@ -124,12 +126,13 @@ public class SettingActivity extends AppCompatActivity {
     // java 7 is already set to variable, and hence doesn't need to be put again
 		else if (java8.isChecked()) version = 1.8;
 		settings.edit().putString("javaVersion", String.valueOf(version)).commit();
-		
+/*
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";
 		settings.edit().putString("dexer", dexer).commit();
 		
 		settings.edit().putString("classpath", classpath.getText().toString()).commit();
+*/
 	}
 	
 

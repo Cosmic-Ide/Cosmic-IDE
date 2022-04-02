@@ -113,7 +113,8 @@
 				android:textSize="12sp"
 				android:textColor="#000000" />
 		</com.google.android.material.textfield.TextInputLayout>
-		<com.google.android.material.textview.MaterialTextView
+<!--		
+    <com.google.android.material.textview.MaterialTextView
 			android:id="@+id/dexerType"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -144,5 +145,6 @@
 					android:textSize="12sp"
 					android:textColor="#000000" />
 			</RadioGroup>
+		-->
 	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

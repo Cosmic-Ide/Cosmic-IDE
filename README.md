@@ -18,7 +18,8 @@
   - [x] Smali Dex File
   - [x] ZipAlign
   - [x] Dx
-  - [x] D8
+  - [ ] D8
+  - [ ] Support these features for external files as well
   - [ ] Directly run other than main method
   - [ ] File Tree viewer
 

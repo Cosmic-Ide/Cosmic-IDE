@@ -64,10 +64,11 @@ public class SettingActivity extends AppCompatActivity {
 		java6 = findViewById(R.id.java6);
 		java8 = findViewById(R.id.java8);
 		
+		final MaterialRadioButton java7 = findViewById(R.id.java7);
 //		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
 //		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
-		settings = getSharedPreferences("compiler_settings", Activity.MODE_PRIVATE);
+		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
 		switch (settings.getString("javaVersion", "1.7")) {
 				
@@ -93,7 +94,7 @@ public class SettingActivity extends AppCompatActivity {
 				
 			case "1.7":
 			default:
-			    findViewById(R.id.java7).setChecked(true);
+			    java7.setChecked(true);
 			    break;
 		}
 		
@@ -121,7 +122,6 @@ public class SettingActivity extends AppCompatActivity {
 		else if (java4.isChecked()) version = 1.4;
 		else if (java5.isChecked()) version = 1.5;
 		else if (java6.isChecked()) version = 1.6;
-    // java 7 is already set to variable, and hence doesn't need to be put again
 		else if (java8.isChecked()) version = 1.8;
 		settings.edit().putString("javaVersion", String.valueOf(version)).commit();
 /*

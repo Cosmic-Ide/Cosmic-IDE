@@ -1,36 +1,13 @@
 package com.pranav.java.ide;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import android.app.*;
-import android.os.*;
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-import android.content.*;
-import android.content.res.*;
-import android.graphics.*;
-import android.graphics.drawable.*;
-import android.media.*;
-import android.net.*;
-import android.text.*;
-import android.text.style.*;
-import android.util.*;
-import android.webkit.*;
-import android.animation.*;
-import android.view.animation.*;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
-import java.text.*;
-import org.json.*;
-import com.google.android.material.textfield.*;
-import android.app.Activity;
 import android.content.SharedPreferences;
-import io.github.rosemoe.sora.langs.java.*;
-import io.github.rosemoe.sora.*;
-import com.google.android.material.radiobutton.*;
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.Toolbar;
+
+import com.google.android.material.radiobutton.MaterialRadioButton;
 
 public class SettingActivity extends AppCompatActivity {
 	
@@ -40,7 +17,7 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java6;
 	private MaterialRadioButton java8;
 	
-	private MaterialRadioButton dexer_d8;
+//	private MaterialRadioButton dexer_d8;
 	
 	private AppCompatEditText classpath;
 	
@@ -130,8 +107,5 @@ public class SettingActivity extends AppCompatActivity {
 		settings.edit().putString("dexer", dexer).commit();
 */
 		settings.edit().putString("classpath", classpath.getText().toString()).commit();
-
 	}
-	
-
 }

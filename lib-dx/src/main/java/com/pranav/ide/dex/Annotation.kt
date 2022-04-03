@@ -42,6 +42,10 @@ class Annotation(
     }
 
     override fun toString(): String {
-        return if (dex == null) "$visibility $typeIndex" else "$visibility " + dex.typeNames()[typeIndex]
+        return if (dex == null)
+          "$visibility $typeIndex"
+        else
+          "$visibility " +
+          dex.typeNames()[typeIndex]
     }
 }

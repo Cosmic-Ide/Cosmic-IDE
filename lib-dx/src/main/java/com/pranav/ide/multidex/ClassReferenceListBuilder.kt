@@ -60,7 +60,8 @@ class ClassReferenceListBuilder(private val path: Path) {
                 } catch (e: FileNotFoundException) {
                     throw IOException(
                         "Class " + name +
-                                " is missing form original class path " + path, e
+                            " is missing form original class path " + path,
+                        e
                     )
                 }
                 addDependencies(classFile)
@@ -109,8 +110,8 @@ class ClassReferenceListBuilder(private val path: Path) {
                 addClassWithHierachy(typeDescriptor.substring(1, typeDescriptor.length - 1))
             } else {
                 assert(
-                    typeDescriptor.length > lastBrace + 3
-                            && typeDescriptor[lastBrace + 1] == 'L'
+                    typeDescriptor.length > lastBrace + 3 &&
+                        typeDescriptor[lastBrace + 1] == 'L'
                 )
                 addClassWithHierachy(
                     typeDescriptor.substring(

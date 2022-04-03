@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 class ExampleInstrumentedTest {
 // Check the package name of project.
     @Test
+    // Check if app context is accessible.
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext

@@ -86,9 +86,9 @@ class MainDexListBuilder(keepAnnotated: Boolean, rootJar: String, pathString: St
         private const val STATUS_ERROR = 1
         private val EOL = System.getProperty("line.separator")
         private val USAGE_MESSAGE = "Usage:" + EOL + EOL +
-                "Short version: Don't use this." + EOL + EOL +
-                "Slightly longer version: This tool is used by mainDexClasses script to build" + EOL +
-                "the main dex list." + EOL
+            "Short version: Don't use this." + EOL + EOL +
+            "Slightly longer version: This tool is used by mainDexClasses script to build" + EOL +
+            "the main dex list." + EOL
 
         /**
          * By default we force all classes annotated with runtime annotation to be kept in the
@@ -152,8 +152,9 @@ class MainDexListBuilder(keepAnnotated: Boolean, rootJar: String, pathString: St
                 ZipFile(rootJar)
             } catch (e: IOException) {
                 throw IOException(
-                    "\"" + rootJar + "\" can not be read as a zip archive. ("
-                            + e.message + ")", e
+                    "\"" + rootJar + "\" can not be read as a zip archive. (" +
+                        e.message + ")",
+                    e
                 )
             }
             path = Path(pathString!!)

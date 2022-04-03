@@ -16,8 +16,10 @@
 package com.pranav.ide.dex
 
 class ClassData(
-    val staticFields: Array<Field>, val instanceFields: Array<Field>,
-    val directMethods: Array<Method>, val virtualMethods: Array<Method>
+    val staticFields: Array<Field>,
+    val instanceFields: Array<Field>,
+    val directMethods: Array<Method>,
+    val virtualMethods: Array<Method>
 ) {
     fun allFields(): Array<Field?> {
         val result = arrayOfNulls<Field>(

@@ -33,14 +33,19 @@ class MethodHandle(
      * https://source.android.com/devices/tech/dalvik/dex-format#method-handle-type-codes
      */
     enum class MethodHandleType(internal val value: Int) {
-        METHOD_HANDLE_TYPE_STATIC_PUT(0x00), METHOD_HANDLE_TYPE_STATIC_GET(0x01), METHOD_HANDLE_TYPE_INSTANCE_PUT(
+        METHOD_HANDLE_TYPE_STATIC_PUT(0x00),
+        METHOD_HANDLE_TYPE_STATIC_GET(0x01),
+        METHOD_HANDLE_TYPE_INSTANCE_PUT(
             0x02
         ),
         METHOD_HANDLE_TYPE_INSTANCE_GET(0x03);
 
         val isField: Boolean
             get() = when (this) {
-                METHOD_HANDLE_TYPE_STATIC_PUT, METHOD_HANDLE_TYPE_STATIC_GET, METHOD_HANDLE_TYPE_INSTANCE_PUT, METHOD_HANDLE_TYPE_INSTANCE_GET -> true
+                METHOD_HANDLE_TYPE_STATIC_PUT,
+                METHOD_HANDLE_TYPE_STATIC_GET,
+                METHOD_HANDLE_TYPE_INSTANCE_PUT,
+                METHOD_HANDLE_TYPE_INSTANCE_GET -> true
             }
 
         companion object {

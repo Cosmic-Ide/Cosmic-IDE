@@ -16,8 +16,13 @@
 package com.pranav.ide.dex
 
 class Code(
-    val registersSize: Int, val insSize: Int, val outsSize: Int, val debugInfoOffset: Int,
-    val instructions: ShortArray, val tries: Array<Try?>, val catchHandlers: Array<CatchHandler>
+    val registersSize: Int,
+    val insSize: Int,
+    val outsSize: Int,
+    val debugInfoOffset: Int,
+    val instructions: ShortArray,
+    val tries: Array<Try?>,
+    val catchHandlers: Array<CatchHandler>
 ) {
 
     class Try internal constructor(

@@ -116,7 +116,10 @@ object DexFormat {
         if (magic.size != 8) {
             return -1
         }
-        if (magic[0] != 'd'.code.toByte() || magic[1] != 'e'.code.toByte() || magic[2] != 'x'.code.toByte() || magic[3] != '\n'.code.toByte() ||
+        if (magic[0] != 'd'.code.toByte() ||
+            magic[1] != 'e'.code.toByte() ||
+            magic[2] != 'x'.code.toByte() ||
+            magic[3] != '\n'.code.toByte() ||
             magic[7] != '\u0000'.code.toByte()
         ) {
             return -1

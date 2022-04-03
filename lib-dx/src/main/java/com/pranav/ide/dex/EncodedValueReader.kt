@@ -71,7 +71,7 @@ class EncodedValueReader {
      * for (int i = 0, i < arraySize; i++) {
      * readByte();
      * }
-    `</pre> *
+     `</pre> *
      */
     fun readArray(): Int {
         checkType(ENCODED_ARRAY)
@@ -88,7 +88,7 @@ class EncodedValueReader {
      * readAnnotationName();
      * readByte();
      * }
-    `</pre> *
+     `</pre> *
      */
     fun readAnnotation(): Int {
         checkType(ENCODED_ANNOTATION)

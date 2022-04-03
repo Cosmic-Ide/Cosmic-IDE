@@ -98,5 +98,4 @@ object SizeOf {
      * handler_off ushort
      */
     const val TRY_ITEM = UINT + USHORT + USHORT
-
 }

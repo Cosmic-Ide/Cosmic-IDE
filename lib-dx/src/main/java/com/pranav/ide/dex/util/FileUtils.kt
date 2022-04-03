@@ -83,8 +83,10 @@ object FileUtils {
      */
     @JvmStatic
     fun hasArchiveSuffix(fileName: String): Boolean {
-        return (fileName.endsWith(".zip")
-                || fileName.endsWith(".jar")
-                || fileName.endsWith(".apk"))
+        return (
+            fileName.endsWith(".zip") ||
+            fileName.endsWith(".jar") ||
+            fileName.endsWith(".apk")
+        )
     }
 }

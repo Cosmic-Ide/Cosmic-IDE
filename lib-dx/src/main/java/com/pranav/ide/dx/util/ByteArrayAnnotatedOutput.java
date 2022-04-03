@@ -188,12 +188,7 @@ public final class ByteArrayAnnotatedOutput
         int writeAt = cursor;
         int end = writeAt + 1;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         data[writeAt] = (byte) value;
         cursor = end;
@@ -207,12 +202,7 @@ public final class ByteArrayAnnotatedOutput
         int writeAt = cursor;
         int end = writeAt + 2;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         data[writeAt] = (byte) value;
         data[writeAt + 1] = (byte) (value >> 8);
@@ -227,12 +217,7 @@ public final class ByteArrayAnnotatedOutput
         int writeAt = cursor;
         int end = writeAt + 4;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         data[writeAt] = (byte) value;
         data[writeAt + 1] = (byte) (value >> 8);
@@ -249,12 +234,7 @@ public final class ByteArrayAnnotatedOutput
         int writeAt = cursor;
         int end = writeAt + 8;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         int half = (int) value;
         data[writeAt] = (byte) half;
@@ -306,12 +286,7 @@ public final class ByteArrayAnnotatedOutput
         int writeAt = cursor;
         int end = writeAt + blen;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         bytes.getBytes(data, writeAt);
         cursor = end;
@@ -333,12 +308,7 @@ public final class ByteArrayAnnotatedOutput
                     offset + "..!" + end);
         }
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         System.arraycopy(bytes, offset, data, writeAt, length);
         cursor = end;
@@ -363,12 +333,7 @@ public final class ByteArrayAnnotatedOutput
 
         int end = cursor + count;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         /*
          * We need to write zeroes, since the array might be reused across different dx invocations.
@@ -376,6 +341,14 @@ public final class ByteArrayAnnotatedOutput
         Arrays.fill(data, cursor, end, (byte) 0);
 
         cursor = end;
+    }
+    
+    private void ensure(int end) {
+      if (stretchy) {
+        ensureCapacity(end);
+      } else if (end > data.length) {
+        throwBounds();
+      }
     }
 
     /**
@@ -391,12 +364,7 @@ public final class ByteArrayAnnotatedOutput
 
         int end = (cursor + mask) & ~mask;
 
-        if (stretchy) {
-            ensureCapacity(end);
-        } else if (end > data.length) {
-            throwBounds();
-            return;
-        }
+        ensure(end);
 
         /*
          * We need to write zeroes, since the array might be reused across different dx invocations.

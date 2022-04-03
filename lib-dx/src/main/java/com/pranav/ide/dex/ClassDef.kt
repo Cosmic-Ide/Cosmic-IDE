@@ -19,9 +19,16 @@ package com.pranav.ide.dex
  * A type definition.
  */
 class ClassDef(
-    private val buffer: Dex?, val offset: Int, val typeIndex: Int, val accessFlags: Int,
-    val supertypeIndex: Int, val interfacesOffset: Int, val sourceFileIndex: Int,
-    val annotationsOffset: Int, val classDataOffset: Int, val staticValuesOffset: Int
+    private val buffer: Dex?,
+    val offset: Int,
+    val typeIndex: Int,
+    val accessFlags: Int,
+    val supertypeIndex: Int,
+    val interfacesOffset: Int,
+    val sourceFileIndex: Int,
+    val annotationsOffset: Int,
+    val classDataOffset: Int,
+    val staticValuesOffset: Int
 ) {
     val interfaces: ShortArray
         get() = buffer!!.readTypeList(interfacesOffset).types

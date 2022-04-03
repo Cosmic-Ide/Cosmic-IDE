@@ -5,15 +5,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  update_wrapper:
+  update-gradle-wrapper:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
 
       - name: set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -39,7 +39,7 @@ jobs:
         run: git config --global user.name "Gradle Wrapper"
 
       - name: Commit latest gradle wrapper
-        run: git commit -m "Update gradle wrapper to v${{ secrets.GRADLE_VERSION }}"
+        run: git commit -m "Update gradle to v${{ secrets.GRADLE_VERSION }}"
 
       - name: Push all changes
         run: git push

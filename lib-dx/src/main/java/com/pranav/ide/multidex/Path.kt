@@ -17,7 +17,11 @@ package com.pranav.ide.multidex
 
 import com.pranav.ide.dx.cf.direct.DirectClassFile
 import com.pranav.ide.dx.cf.direct.StdAttributeFactory
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.File
+import java.io.FileNotFoundException
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
@@ -74,7 +78,7 @@ class Path(private val definition: String) {
             } else if (file.exists()) {
                 throw IOException(
                     "\"" + file.path +
-                            "\" is not a directory neither a zip file"
+                        "\" is not a directory neither a zip file"
                 )
             } else {
                 throw FileNotFoundException("File \"" + file.path + "\" not found")
@@ -103,13 +107,15 @@ class Path(private val definition: String) {
     }
 
     init {
-        for (filePath in definition.split(Pattern.quote(File.pathSeparator).toRegex())
-            .toTypedArray()) {
-            try {
+        for (
+            filePath in definition.split(Pattern.quote(File.pathSeparator).toRegex())
+                .toTypedArray()
+            ) {
+              try {
                 addElement(getClassPathElement(File(filePath)))
-            } catch (e: IOException) {
+              } catch (e: IOException) {
                 throw IOException("Wrong classpath: " + e.message, e)
+              }
             }
-        }
     }
 }

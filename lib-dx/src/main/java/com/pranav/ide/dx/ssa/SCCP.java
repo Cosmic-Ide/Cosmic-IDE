@@ -254,8 +254,8 @@ public class SCCP {
      *
      * @param block Block to visit
      */
-    private void simulatePhiBlock(com.pranav.ide.dx.ssa.SsaBasicBlock block) {
-        for (com.pranav.ide.dx.ssa.SsaInsn insn : block.getInsns()) {
+    private void simulatePhiBlock(SsaBasicBlock block) {
+        for (SsaInsn insn : block.getInsns()) {
             if (insn instanceof PhiInsn) {
                 simulatePhi((PhiInsn) insn);
             } else {

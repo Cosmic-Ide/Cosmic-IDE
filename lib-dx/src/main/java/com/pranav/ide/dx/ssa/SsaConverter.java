@@ -85,7 +85,7 @@ public class SsaConverter {
      */
     public static com.pranav.ide.dx.ssa.SsaMethod testEdgeSplit(com.pranav.ide.dx.rop.code.RopMethod rmeth, int paramWidth,
                                                                 boolean isStatic) {
-        com.pranav.ide.dx.ssa.SsaMethod result;
+        SsaMethod result;
 
         result = com.pranav.ide.dx.ssa.SsaMethod.newFromRopMethod(rmeth, paramWidth, isStatic);
 
@@ -105,9 +105,7 @@ public class SsaConverter {
      */
     public static com.pranav.ide.dx.ssa.SsaMethod testPhiPlacement(RopMethod rmeth, int paramWidth,
                                                                    boolean isStatic) {
-        com.pranav.ide.dx.ssa.SsaMethod result;
-
-        result = com.pranav.ide.dx.ssa.SsaMethod.newFromRopMethod(rmeth, paramWidth, isStatic);
+        SsaMethod result = com.pranav.ide.dx.ssa.SsaMethod.newFromRopMethod(rmeth, paramWidth, isStatic);
 
         edgeSplit(result);
 
@@ -237,18 +235,17 @@ public class SsaConverter {
          * this iteration.
          */
         for (int i = blocks.size() - 1; i >= 0; i--) {
-            com.pranav.ide.dx.ssa.SsaBasicBlock block = blocks.get(i);
+            SsaBasicBlock block = blocks.get(i);
 
             // Successors list is modified in loop below.
             BitSet successors = (BitSet) block.getSuccessors().clone();
             for (int j = successors.nextSetBit(0);
                  j >= 0; j = successors.nextSetBit(j + 1)) {
 
-                com.pranav.ide.dx.ssa.SsaBasicBlock succ = blocks.get(j);
+                SsaBasicBlock succ = blocks.get(j);
 
-                if (needsNewSuccessor(block, succ)) {
+                if (needsNewSuccessor(block, succ))
                     block.insertNewSuccessor(succ);
-                }
             }
         }
     }

@@ -125,8 +125,8 @@ class TableOfContents {
         val magic = headerIn.readByteArray(8)
         if (!isSupportedDexMagic(magic)) {
             val msg = String.format(
-                "Unexpected magic: [0x%02x, 0x%02x, 0x%02x, 0x%02x, "
-                        + "0x%02x, 0x%02x, 0x%02x, 0x%02x]",
+                "Unexpected magic: [0x%02x, 0x%02x, 0x%02x, 0x%02x, " +
+                    "0x%02x, 0x%02x, 0x%02x, 0x%02x]",
                 magic[0], magic[1], magic[2], magic[3],
                 magic[4], magic[5], magic[6], magic[7]
             )
@@ -176,10 +176,13 @@ class TableOfContents {
             val section = getSection(type)
             val size = `in`.readInt()
             val offset = `in`.readInt()
-            if (section.size != 0 && section.size != size
-                || section.off != -1 && section.off != offset
+            if (section.size != 0 && section.size != size ||
+                section.off != -1 && section.off != offset
             ) {
-                throw DexException("Unexpected map value for 0x" + Integer.toHexString(type.toInt()))
+                throw DexException(
+                    "Unexpected map value for 0x" +
+                    Integer.toHexString(type.toInt())
+                )
             }
             section.size = size
             section.off = offset

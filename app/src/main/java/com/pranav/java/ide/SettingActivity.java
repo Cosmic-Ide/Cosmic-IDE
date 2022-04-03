@@ -38,7 +38,6 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java4;
 	private MaterialRadioButton java5;
 	private MaterialRadioButton java6;
-	private MaterialRadioButton java7;
 	private MaterialRadioButton java8;
 	
 	private MaterialRadioButton dexer_d8;
@@ -63,7 +62,6 @@ public class SettingActivity extends AppCompatActivity {
 		java4 = findViewById(R.id.java4);
 		java5 = findViewById(R.id.java5);
 		java6 = findViewById(R.id.java6);
-		java7 = findViewById(R.id.java7);
 		java8 = findViewById(R.id.java8);
 		
 //		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
@@ -95,7 +93,7 @@ public class SettingActivity extends AppCompatActivity {
 				
 			case "1.7":
 			default:
-			    java7.setChecked(true);
+			    findViewById(R.id.java7).setChecked(true);
 			    break;
 		}
 		
@@ -130,9 +128,9 @@ public class SettingActivity extends AppCompatActivity {
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";
 		settings.edit().putString("dexer", dexer).commit();
-		
-		settings.edit().putString("classpath", classpath.getText().toString()).commit();
 */
+		settings.edit().putString("classpath", classpath.getText().toString()).commit();
+
 	}
 	
 

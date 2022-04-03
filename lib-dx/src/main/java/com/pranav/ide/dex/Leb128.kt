@@ -115,8 +115,10 @@ object Leb128 {
         var hasMore = true
         val end = if (value and Int.MIN_VALUE == 0) 0 else -1
         while (hasMore) {
-            hasMore = (remaining != end
-                    || remaining and 1 != value shr 6 and 1)
+            hasMore = (
+                remaining != end ||
+                    remaining and 1 != value shr 6 and 1
+            )
             out.writeByte((value and 0x7f or if (hasMore) 0x80 else 0).toByte().toInt())
             value = remaining
             remaining = remaining shr 7

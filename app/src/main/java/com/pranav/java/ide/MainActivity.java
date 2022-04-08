@@ -428,8 +428,9 @@ public class MainActivity extends AppCompatActivity {
 			DialogInterface.OnClickListener listener) {
 		new MaterialAlertDialogBuilder(MainActivity.this)
 	  	  .setTitle(title)
-		    .setItems(items, listener);
-	      .create().show();
+		    .setItems(items, listener)
+	      .create()
+	      .show();
 	}
 
 	public void dialog(String title, final String message, boolean copyButton) {

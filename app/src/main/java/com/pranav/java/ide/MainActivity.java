@@ -78,14 +78,14 @@ public class MainActivity extends AppCompatActivity {
 			try {
 				editor.setText(Files.asCharSource(file, Charsets.UTF_8).read());
 			} catch (Exception e) {
-				dialog("Cannot read file", Log.getStackTraceString(e), true);
+				dialog("Cannot read file", getString(e), true);
 			}
 		} else {
-			editor.setText("package com.example;\n\nimport java.util.*;\n\n"
-					+ "public class Main {\n\n"
-					+ "\tpublic static void main(String[] args) {\n"
-					+ "\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n"
-					+ "}\n");
+			editor.setText("package com.example;\n\nimport java.util.*;\n\n" +
+					"public class Main {\n\n" +
+					"\tpublic static void main(String[] args) {\n" +
+					"\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n" +
+					"}\n");
 		}
 		
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 		    try {
 					Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
 				} catch (Exception e) {
-          showErr(Log.getStackTraceString(e));
+          showErr(getString(e));
         }
 		 }
 		});
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 								"System.err.print(\"Exit code \" + ")
 						.getBytes(), mainFile);
 			} catch (final IOException e) {
-        dialog("Cannot save program", Log.getStackTraceString(e), true);
+        dialog("Cannot save program", getString(e), true);
 			}
 			
 			// code that runs ecj
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 			} catch (CompilationFailedException e) {
 				showErr(e.getMessage());
 			} catch (Throwable e) {
-				showErr(Log.getStackTraceString(e));
+				showErr(getString(e));
 			}
 			if (errorsArePresent) return;
 
@@ -173,10 +173,10 @@ public class MainActivity extends AppCompatActivity {
 										task.doFullTask();
 									} catch (java.lang.reflect.InvocationTargetException e) {
 										dialog("Failed...",
-												"Runtime error: "
-												    + e.getMessage()
-												    + "\n\n"
-														+ Log.getStackTraceString(e),
+												"Runtime error: " +
+												    e.getMessage() +
+												    "\n\n" +
+														getString(e),
 											true);
 									} catch (Exception e) {
 										dialog("Failed..",
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 											task.getLogs(), true);
 							});
 					} catch (Throwable e) {
-						showErr(Log.getStackTraceString(e));
+						showErr(getString(e));
 					}
 			} else {
 			  errorsArePresent = false;
@@ -274,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
 						try {
 						    edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
 						} catch (IOException e) {
-							dialog("Cannot read file", Log.getStackTraceString(e), true);
+							dialog("Cannot read file", getString(e), true);
 						}
 
 						final AlertDialog dialog = new AlertDialog.Builder(
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 						dialog.show();
 			});
 		} catch (Throwable e) {
-			dialog("Failed to extract smali source", Log.getStackTraceString(e),
+			dialog("Failed to extract smali source", getString(e),
 					true);
 		}
 	}
@@ -309,9 +309,9 @@ public class MainActivity extends AppCompatActivity {
 
 						try {
 							org.benf.cfr.reader.Main.main(args);
-						} catch (final Exception e) {
+						} catch (Exception e) {
 							dialog("Failed to decompile...",
-									Log.getStackTraceString(e), true);
+									getString(e), true);
 						}
 						latch.countDown();
 					});
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 						latch.await();
 					} catch (InterruptedException e) {
 						dialog("Thread was interrupted while decompiling...",
-								Log.getStackTraceString(e), true);
+								getString(e), true);
 					}
 
 					final CodeEditor edi = new CodeEditor(MainActivity.this);
@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
 								.asCharSource(decompiledFile, Charsets.UTF_8)
 								.read());
 					} catch (IOException e) {
-						dialog("Cannot read file", Log.getStackTraceString(e),
+						dialog("Cannot read file", getString(e),
 								true);
 					}
 
@@ -368,12 +368,12 @@ public class MainActivity extends AppCompatActivity {
 
 				edi.setText(disassembled);
 
-				final AlertDialog d = new AlertDialog.Builder(MainActivity.this)
+				AlertDialog d = new AlertDialog.Builder(MainActivity.this)
 						.setView(edi).create();
 				d.setCanceledOnTouchOutside(true);
 				d.show();
 			} catch (Throwable e) {
-				dialog("Failed to disassemble", Log.getStackTraceString(e),
+				dialog("Failed to disassemble", getString(e),
 						true);
 			}
 		});
@@ -382,7 +382,8 @@ public class MainActivity extends AppCompatActivity {
 	private String formatSmali(String in) {
 
 		ArrayList<String> lines = new ArrayList<>(
-				Arrays.asList(in.split("\n")));
+				Arrays.asList(in.split("\n"))
+		);
 
 		boolean insideMethod = false;
 
@@ -425,9 +426,10 @@ public class MainActivity extends AppCompatActivity {
 
 	public void listDialog(String title, String[] items,
 			DialogInterface.OnClickListener listener) {
-		final MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(
-				MainActivity.this).setTitle(title).setItems(items, listener);
-		dialog.create().show();
+		new MaterialAlertDialogBuilder(MainActivity.this)
+	  	  .setTitle(title)
+		    .setItems(items, listener);
+	      .create().show();
 	}
 
 	public void dialog(String title, final String message, boolean copyButton) {
@@ -452,8 +454,7 @@ public class MainActivity extends AppCompatActivity {
 				Runtime.getRuntime()
 						.exec("chmod 777 " + file.getAbsolutePath() + " -R");
 			} else {
-				Runtime.getRuntime()
-						.exec("chmod 777 " + file.getAbsolutePath());
+			  file.setExecutable(true, true);
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -463,23 +464,28 @@ public class MainActivity extends AppCompatActivity {
 	public String[] getClassesFromDex() {
 		try {
 			final ArrayList<String> classes = new ArrayList<>();
-			DexFile dexfile = DexFileFactory
-					.loadDexFile(FileUtil.getBinDir().concat("classes.dex"),
-							Opcodes.forApi(21));
+			DexFile dexfile = DexFileFactory.loadDexFile(FileUtil.getBinDir().concat("classes.dex"),
+							Opcodes.forApi(21)
+			);
 			for (ClassDef f : dexfile.getClasses()
-					.toArray(new ClassDef[0])) {
-				final String name = f.getType().replace("/", ".");
+					.toArray(new ClassDef[0])
+					) {
+				String name = f.getType().replace("/", "."); // convert class name to standard form
 				classes.add(name.substring(1, name.length() - 1));
 			}
 			return classes.toArray(new String[0]);
 		} catch (Exception e) {
 			dialog("Failed to get available classes in dex...",
-					Log.getStackTraceString(e), true);
+					getString(e), true);
 			return null;
 		}
 	}
 	
 	public File file(String path) {
 	  return new File(path);
+	}
+	
+	private String getString(Throwable e) {
+	  return Log.getStackTraceString(e);
 	}
 }

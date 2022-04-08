@@ -59,7 +59,7 @@ public class ExecuteJavaTask extends Task {
 				if (Modifier.isStatic(method.getModifiers())) {
 					result = method.invoke(null, new Object[] {param});
 				} else if (Modifier.isPublic(method.getModifiers())) {
-					Class classInstance = calledClass.newInstance();
+					Object classInstance = calledClass.newInstance();
 					result = method.invoke(classInstance, new Object[] {param});
 				}
 				if (result != null) System.out.println(result.toString());

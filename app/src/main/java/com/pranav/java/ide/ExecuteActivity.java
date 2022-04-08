@@ -24,6 +24,6 @@ public class ExecuteActivity extends AppCompatActivity {
     
     public void write(String text) {
       logs.concat(text);
-      terminal.append(text);
+//      terminal.append(text);
     }
 }

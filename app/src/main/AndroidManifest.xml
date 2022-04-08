@@ -11,7 +11,7 @@
     android:allowBackup="true"
     android:supportsRtl="true"
     android:theme="@style/Theme.JavaIDE.NoActionBar"
-    android:resizableActivity="true"
+    android:resizeableActivity="true"
     android:hardwareAccelerated="true"
 	  android:requestLegacyExternalStorage="true"
     tools:targetApi="32">

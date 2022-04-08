@@ -3,11 +3,11 @@ package com.pranav.lib_android.task.java;
 import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
 import dalvik.system.PathClassLoader;
-import java.io.*;
+import java.io.PrintStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Executors;
-import java.util.concurrent.CountDownLatch;
 
 public class ExecuteJavaTask extends Task {
 	
@@ -30,10 +30,8 @@ public class ExecuteJavaTask extends Task {
 	public void doFullTask() throws Exception {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
-		final String dexFile = FileUtil.getBinDir()
-		+ "classes.dex";
-		final CountDownLatch latch = new CountDownLatch(1);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		final String dexFile = FileUtil.getBinDir() + "classes.dex";
+		Executors.newCachedThreadPool().execute(() -> {
 			final OutputStream out = new OutputStream() {
 				@Override
 				public void write(int b) {
@@ -61,21 +59,16 @@ public class ExecuteJavaTask extends Task {
 				if (Modifier.isStatic(method.getModifiers())) {
 					result = method.invoke(null, new Object[] {param});
 				} else if (Modifier.isPublic(method.getModifiers())) {
-					Object classInstance = calledClass.newInstance();
+					Class classInstance = calledClass.newInstance();
 					result = method.invoke(classInstance, new Object[] {param});
 				}
 				if (result != null) System.out.println(result.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			latch.countDown();
+			System.setErr(defaultErr);
+			System.setOut(defaultOut);
 		});
-		try {
-			latch.await();
-		} catch (InterruptedException ignored) {
-		}
-		System.setOut(defaultOut);
-		System.setErr(defaultErr);
 	}
 	
 	public String getLogs() {

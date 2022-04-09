@@ -100,12 +100,12 @@ public class SettingActivity extends AppCompatActivity {
 		else if (java5.isChecked()) version = 1.5;
 		else if (java6.isChecked()) version = 1.6;
 		else if (java8.isChecked()) version = 1.8;
-		settings.edit().putString("javaVersion", String.valueOf(version)).commit();
+		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
 /*
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";
 		settings.edit().putString("dexer", dexer).commit();
 */
-		settings.edit().putString("classpath", classpath.getText().toString()).commit();
+		settings.edit().putString("classpath", classpath.getText().toString()).apply();
 	}
 }

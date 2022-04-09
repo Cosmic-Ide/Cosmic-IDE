@@ -20,7 +20,7 @@ public class Formatter {
 	}
 	
 	public String format() {
-		DefaultCodeFormatterOptions options = DefaultCodeFormatterConstants.getEclipse21Settings();
+		Map options = DefaultCodeFormatterConstants.getEclipse21Settings();
 		
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,

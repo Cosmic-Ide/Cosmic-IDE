@@ -1,5 +1,5 @@
 ---
-name: Android CI
+name: Lint Gradle
 
 on:
   workflow_dispatch:

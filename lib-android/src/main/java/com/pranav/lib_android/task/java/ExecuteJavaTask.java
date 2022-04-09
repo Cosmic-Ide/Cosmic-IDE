@@ -4,7 +4,7 @@ import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
 import dalvik.system.PathClassLoader;
 import java.io.PrintStream;
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Executors;
@@ -35,7 +35,7 @@ public class ExecuteJavaTask extends Task {
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
 		ExecutorCompletionService service = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
 		service.submit(() -> {
-			final OutputStream out = new OutputStream() {
+			final ByteArrayOutputStream out = new ByteArrayOutputStream() {
 				@Override
 				public void write(int b) {
 					log.append(String.valueOf((char) b));
@@ -65,7 +65,9 @@ public class ExecuteJavaTask extends Task {
 					Object classInstance = calledClass.newInstance();
 					result = method.invoke(classInstance, new Object[] {param});
 				}
-				if (result != null) System.out.println(result.toString());
+				if (result != null) {
+				  System.out.println(result.toString());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

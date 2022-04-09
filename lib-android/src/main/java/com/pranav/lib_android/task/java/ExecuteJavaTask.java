@@ -73,6 +73,7 @@ public class ExecuteJavaTask extends Task {
 			}
 			System.setErr(defaultErr);
 			System.setOut(defaultOut);
+			return null;
 		});
 		service.take();
 	}

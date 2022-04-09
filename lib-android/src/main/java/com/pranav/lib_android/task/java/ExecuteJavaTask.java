@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Future;
 
 public class ExecuteJavaTask extends Task {
 	
@@ -31,7 +33,8 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		Executors.newCachedThreadPool().execute(() -> {
+		ExecutorCompletionService service = new ExecutorCompletionService<boolean>(Executors.newCachedThreadPool());
+		service.submit(() -> {
 			final OutputStream out = new OutputStream() {
 				@Override
 				public void write(int b) {
@@ -68,7 +71,9 @@ public class ExecuteJavaTask extends Task {
 			}
 			System.setErr(defaultErr);
 			System.setOut(defaultOut);
+			return true;
 		});
+		service.take();
 	}
 	
 	public String getLogs() {

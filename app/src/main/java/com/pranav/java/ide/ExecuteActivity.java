@@ -19,7 +19,7 @@ public class ExecuteActivity extends AppCompatActivity {
       terminal = findViewById(R.id.terminal);
       setContentView(R.layout.activity_execute);
       
-      Console console = System.console();
+//      Console console = System.console();
       logs = "";
     }
     

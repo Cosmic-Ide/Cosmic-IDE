@@ -33,7 +33,7 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		ExecutorCompletionService service = new ExecutorCompletionService<boolean>(Executors.newCachedThreadPool());
+		ExecutorCompletionService service = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
 		service.submit(() -> {
 			final OutputStream out = new OutputStream() {
 				@Override
@@ -71,7 +71,6 @@ public class ExecuteJavaTask extends Task {
 			}
 			System.setErr(defaultErr);
 			System.setOut(defaultOut);
-			return true;
 		});
 		service.take();
 	}

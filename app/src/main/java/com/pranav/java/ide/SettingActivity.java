@@ -16,6 +16,13 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java5;
 	private MaterialRadioButton java6;
 	private MaterialRadioButton java8;
+	private MaterialRadioButton java9;
+	private MaterialRadioButton java10;
+	private MaterialRadioButton java11;
+	private MaterialRadioButton java12;
+	private MaterialRadioButton java13;
+	private MaterialRadioButton java14;
+	private MaterialRadioButton java15;
 	
 	private MaterialRadioButton dexer_d8;
 	
@@ -40,6 +47,13 @@ public class SettingActivity extends AppCompatActivity {
 		java5 = findViewById(R.id.java5);
 		java6 = findViewById(R.id.java6);
 		java8 = findViewById(R.id.java8);
+		java9 = findViewById(R.id.java9);
+		java10 = findViewById(R.id.java10);
+		java11 = findViewById(R.id.java11);
+		java12 = findViewById(R.id.java12);
+		java13 = findViewById(R.id.java13);
+		java14 = findViewById(R.id.java14);
+		java15 = findViewById(R.id.java15);
 		
 		final MaterialRadioButton java7 = findViewById(R.id.java7);
 		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);

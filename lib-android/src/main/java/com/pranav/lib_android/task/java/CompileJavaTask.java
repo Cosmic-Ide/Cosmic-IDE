@@ -38,7 +38,7 @@ public class CompileJavaTask extends Task {
 		args.add("-" + prefs.getString("javaVersion", "1.7"));
 		args.add("-d");
 		args.add(output.getAbsolutePath());
-		args.add("-bootclasspath");
+		args.add("-classpath");
 		args.add(FileUtil.getClasspathDir()
 				+ "android.jar");
 		StringBuilder classpath = new StringBuilder();

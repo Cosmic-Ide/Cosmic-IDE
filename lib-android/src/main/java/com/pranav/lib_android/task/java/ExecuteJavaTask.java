@@ -32,7 +32,7 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		ExecutorCompletionService service = new ExecutorCompletionService<>(Executors.newSingleThreadExecutor());
+		ExecutorCompletionService service = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
 		service.submit(() -> {
 			final ByteArrayOutputStream out = new ByteArrayOutputStream() {
 				@Override
@@ -75,6 +75,13 @@ public class ExecuteJavaTask extends Task {
 			return null;
 		});
 		service.take();
+		try {
+		  service.get();
+		} catch (Exception e) {
+		  log.append("Cannot wait for execution to complete:");
+		  log.append("\n");
+		  log.append(e.getMessage());
+		}
 	}
 	
 	public String getLogs() {

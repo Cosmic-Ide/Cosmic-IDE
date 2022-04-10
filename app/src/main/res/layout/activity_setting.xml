@@ -88,6 +88,62 @@
 					android:text="1.8"
 					android:textSize="12sp"
 					android:textColor="#000000" />
+					<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java9"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="9.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java10"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="10.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java11"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="11.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java12"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="12.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java13"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="13.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java14"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="14.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+        <com.google.android.material.radiobutton.MaterialRadioButton
+          android:id="@+id/java15"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:padding="8dp"
+          android:text="15.0"
+          android:textSize="12sp"
+          android:textColor="#000000" />
 			</RadioGroup>
 		</HorizontalScrollView>
 		<com.google.android.material.textview.MaterialTextView
@@ -113,7 +169,6 @@
 				android:textSize="12sp"
 				android:textColor="#000000" />
 		</com.google.android.material.textfield.TextInputLayout>
-<!--		
     <com.google.android.material.textview.MaterialTextView
 			android:id="@+id/dexerType"
 			android:layout_width="wrap_content"
@@ -145,6 +200,5 @@
 					android:textSize="12sp"
 					android:textColor="#000000" />
 			</RadioGroup>
-		-->
 	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

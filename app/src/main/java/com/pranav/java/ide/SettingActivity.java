@@ -17,7 +17,7 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java6;
 	private MaterialRadioButton java8;
 	
-//	private MaterialRadioButton dexer_d8;
+	private MaterialRadioButton dexer_d8;
 	
 	private AppCompatEditText classpath;
 	
@@ -42,8 +42,8 @@ public class SettingActivity extends AppCompatActivity {
 		java8 = findViewById(R.id.java8);
 		
 		final MaterialRadioButton java7 = findViewById(R.id.java7);
-//		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
-//		dexer_d8 = findViewById(R.id.dexer_d8);
+		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
+		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
@@ -75,7 +75,6 @@ public class SettingActivity extends AppCompatActivity {
 			    break;
 		}
 		
-/*
     switch (settings.getString("dexer", "dx")) {
 		  case "d8":
 		    dexer_d8.setChecked(true);
@@ -86,7 +85,6 @@ public class SettingActivity extends AppCompatActivity {
 		    dexer_dx.setChecked(true);
 		    break;
 		}
-*/
 		classpath.setText(settings.getString("classpath", ""));
 	}
 	
@@ -97,15 +95,20 @@ public class SettingActivity extends AppCompatActivity {
 		double version = 1.7;
 		if (java3.isChecked()) version = 1.3;
 		else if (java4.isChecked()) version = 1.4;
-		else if (java5.isChecked()) version = 1.5;
-		else if (java6.isChecked()) version = 1.6;
-		else if (java8.isChecked()) version = 1.8;
+		else if (java5.isChecked()) version = 5.0;
+		else if (java6.isChecked()) version = 6.0;
+		else if (java8.isChecked()) version = 8.0;
+		else if (java9.isChecked()) version = 9.0;
+		else if (java10.isChecked()) version = 10.0;
+		else if (java11.isChecked()) version = 11.0;
+		else if (java12.isChecked()) version = 12.0;
+		else if (java13.isChecked()) version = 13.0;
+		else if (java14.isChecked()) version = 14.0;
+		else if (java15.isChecked()) version = 15.0;
 		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
-/*
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";
 		settings.edit().putString("dexer", dexer).commit();
-*/
 		settings.edit().putString("classpath", classpath.getText().toString()).apply();
 	}
 }

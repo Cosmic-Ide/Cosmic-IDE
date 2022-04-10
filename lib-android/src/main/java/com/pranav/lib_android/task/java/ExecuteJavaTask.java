@@ -81,6 +81,7 @@ public class ExecuteJavaTask extends Task {
 		  log.append("Cannot wait for execution to complete:");
 		  log.append("\n");
 		  log.append(e.getMessage());
+		  System.err.println(log.toString());
 		}
 	}
 	

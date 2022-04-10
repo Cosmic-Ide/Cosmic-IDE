@@ -74,9 +74,9 @@ public class ExecuteJavaTask extends Task {
 			System.setOut(defaultOut);
 			return null;
 		});
-		service.take();
 		try {
-		  service.get();
+		  service.take()
+		      .get();
 		} catch (Exception e) {
 		  log.append("Cannot wait for execution to complete:");
 		  log.append("\n");

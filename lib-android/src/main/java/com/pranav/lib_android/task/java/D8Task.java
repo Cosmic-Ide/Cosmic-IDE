@@ -23,7 +23,7 @@ public class D8Task extends Task {
 				args.add(FileUtil.getBinDir());
 				args.add("--lib");
 				args.add(FileUtil.getClasspathDir() + "android.jar");
-				args.add(FileUtil.getBinDir() + "classes");
+				args.add(FileUtil.getBinDir() + "classes.jar");
 
 				D8.main(args.toArray(new String[0]));
 

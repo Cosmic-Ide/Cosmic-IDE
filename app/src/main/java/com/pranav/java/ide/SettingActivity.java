@@ -66,24 +66,52 @@ public class SettingActivity extends AppCompatActivity {
 			case "1.3":
 			    java3.setChecked(true);
 				  break;
-				
+			
 			case "1.4":
 			    java4.setChecked(true);
 			    break;
-				
-			case "1.5":
+			
+			case "5.0":
 			    java5.setChecked(true);
 			    break;
-				
-			case "1.6":
+			
+			case "6.0":
 			    java6.setChecked(true);
 			    break;
-				
-			case "1.8":
+			
+			case "8.0":
 			    java8.setChecked(true);
 			    break;
-				
-			case "1.7":
+		  
+			case "9.0":
+			    java9.setChecked(true);
+			    break;
+			
+			case "10.0":
+			    java10.setChecked(true);
+			    break;
+		  
+			case "11.0":
+			    java11.setChecked(true);
+			    break;
+			
+			case "12.0":
+			    java12.setChecked(true);
+			    break;
+			
+			case "13.0":
+			    java13.setChecked(true);
+			    break;
+			
+			case "14.0":
+			    java14.setChecked(true);
+			    break;
+			
+			case "15.0":
+			    java15.setChecked(true);
+			    break;
+			
+			case "7.0":
 			default:
 			    java7.setChecked(true);
 			    break;
@@ -105,7 +133,6 @@ public class SettingActivity extends AppCompatActivity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		//Set a default value to local variable version to avoid npe
 		double version = 1.7;
 		if (java3.isChecked()) version = 1.3;
 		else if (java4.isChecked()) version = 1.4;

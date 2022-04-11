@@ -4,11 +4,11 @@ import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
 import dalvik.system.PathClassLoader;
 import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.CountDownLatch;
 
 public class ExecuteJavaTask extends Task {
 	
@@ -32,18 +32,18 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		ExecutorCompletionService service = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
-		service.submit(() -> {
-			final ByteArrayOutputStream out = new ByteArrayOutputStream() {
-				@Override
-				public void write(int b) {
-					log.append(String.valueOf((char) b));
-				}
-				
-				@Override
-				public String toString() {
-					return log.toString();
-				}
+		final CountDownLatch latch = new CountDownLatch(1);
+		Executors.newSingleThreadExecutor().execute(() -> {
+			final OutputStream out = new OutputStream() {
+			  @Override
+			  public void write(int b) {
+			    log.append((char) b);
+			  }
+			  
+			  @Override
+			  public String toString() {
+			    return log.toString();
+			  }
 			};
 			System.setOut(new PrintStream(out));
 			System.setErr(new PrintStream(out));
@@ -70,18 +70,14 @@ public class ExecuteJavaTask extends Task {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.setErr(defaultErr);
 			System.setOut(defaultOut);
-			return null;
+			System.setErr(defaultErr);
+			// retrieve logs
+			latch.countDown();
 		});
 		try {
-		  service.take()
-		      .get();
-		} catch (Exception e) {
-		  log.append("Cannot wait for execution to complete:");
-		  log.append("\n");
-		  log.append(e.getMessage());
-		  System.err.println(log.toString());
+			latch.await();
+		} catch (InterruptedException ignored) {
 		}
 	}
 	

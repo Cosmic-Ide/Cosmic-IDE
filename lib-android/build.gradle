@@ -13,6 +13,8 @@ dependencies {
     implementation 'org.eclipse.jdt:org.eclipse.jdt.core:3.26.0'
     // improved version of javax model classes required by the eclipse project
     implementation 'com.zeoflow:jx:1.2.1'
+    // r8 dependency
+    implementation 'com.android.tools:r8:3.3.28'
     implementation project(path: ':lib-dx')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     compileOnly files('classpath/android-stubs.jar')

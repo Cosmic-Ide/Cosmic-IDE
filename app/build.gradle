@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.pranav.java.ide"
-        minSdk 21
+        minSdk 26
         targetSdk 32
         versionCode 2
         versionName "0.0.2"

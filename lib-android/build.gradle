@@ -14,5 +14,5 @@ dependencies {
     implementation 'com.android.tools:r8:3.3.28'
     implementation project(path: ':lib-dx')
     implementation project(path: ':lib-eclipse')
-    compileOnly files('classpath/android-stubs.jar')
+    compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
 }

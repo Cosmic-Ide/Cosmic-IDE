@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdkPreview "android-Tiramisu"
+    compileSdkPreview "Tiramisu"
 
     defaultConfig {
         applicationId "com.pranav.java.ide"

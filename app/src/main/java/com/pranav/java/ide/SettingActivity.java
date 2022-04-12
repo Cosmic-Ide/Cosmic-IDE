@@ -23,6 +23,8 @@ public class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java13;
 	private MaterialRadioButton java14;
 	private MaterialRadioButton java15;
+	private MaterialRadioButton java16;
+	private MaterialRadioButton java17;
 	
 	private MaterialRadioButton dexer_d8;
 	
@@ -54,6 +56,8 @@ public class SettingActivity extends AppCompatActivity {
 		java13 = findViewById(R.id.java13);
 		java14 = findViewById(R.id.java14);
 		java15 = findViewById(R.id.java15);
+		java16 = findViewById(R.id.java16);
+		java17 = findViewById(R.id.java17);
 		
 		final MaterialRadioButton java7 = findViewById(R.id.java7);
 		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
@@ -110,6 +114,14 @@ public class SettingActivity extends AppCompatActivity {
 			case "15.0":
 			    java15.setChecked(true);
 			    break;
+			    
+			case "16.0":
+			    java16.setChecked(true);
+			    break
+
+            case "17.0":
+                java17.setChecked(true);
+                break;
 			
 			case "7.0":
 			default:
@@ -146,6 +158,8 @@ public class SettingActivity extends AppCompatActivity {
 		else if (java13.isChecked()) version = 13.0;
 		else if (java14.isChecked()) version = 14.0;
 		else if (java15.isChecked()) version = 15.0;
+		else if (java16.isChecked()) version = 16.0;
+		else if (java17.isChecked()) version = 17.0;
 		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";

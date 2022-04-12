@@ -117,11 +117,11 @@ public class SettingActivity extends AppCompatActivity {
 			    
 			case "16.0":
 			    java16.setChecked(true);
-			    break
+			    break;
 
-            case "17.0":
-                java17.setChecked(true);
-                break;
+      case "17.0":
+          java17.setChecked(true);
+          break;
 			
 			case "7.0":
 			default:
@@ -144,8 +144,8 @@ public class SettingActivity extends AppCompatActivity {
 	
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		double version = 1.7;
+		
 		if (java3.isChecked()) version = 1.3;
 		else if (java4.isChecked()) version = 1.4;
 		else if (java5.isChecked()) version = 5.0;
@@ -160,10 +160,14 @@ public class SettingActivity extends AppCompatActivity {
 		else if (java15.isChecked()) version = 15.0;
 		else if (java16.isChecked()) version = 16.0;
 		else if (java17.isChecked()) version = 17.0;
+		
 		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
+		
 		String dexer = "dx";
 		if (dexer_d8.isChecked()) dexer = "d8";
+		
 		settings.edit().putString("dexer", dexer).commit();
 		settings.edit().putString("classpath", classpath.getText().toString()).apply();
+		super.onDestroy();
 	}
 }

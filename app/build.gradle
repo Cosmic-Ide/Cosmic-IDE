@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdk "android-Tiramisu"
+    compileSdkPreview "android-Tiramisu"
 
     defaultConfig {
         applicationId "com.pranav.java.ide"
         minSdk 26
-        targetSdk "Tiramisu"
+        targetSdkPreview "Tiramisu"
         versionCode 2
         versionName "0.0.2"
     }

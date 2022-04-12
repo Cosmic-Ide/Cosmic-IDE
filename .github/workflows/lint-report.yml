@@ -26,7 +26,10 @@ jobs:
         with:
           arguments: build
 
-      - name: Upload debug apk
+      - name: Move lint reports to one place
+        run: mv lib-android/build/reports app/build/reports
+
+      - name: Upload lint report
         uses: actions/upload-artifact@v2
         if: ${{ !github.head_ref }}
         with:

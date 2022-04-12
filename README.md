@@ -10,15 +10,16 @@
 
 - [x] Java Compiler
 - [x] Java Highlight
+- [x] Java 17
 - [x] Run Java File
 - [x] Add Classpath
 - [x] Decompile Class File
 - [x] Disassemble Class File
-- [x] Format Java File
+- [x] Format Java Code
 - [x] Smali Dex File
 - [x] ZipAlign
 - [x] Dx
-- [ ] D8
+- [x] D8
 - [ ] Support these features for external files as well
 - [ ] Directly run other than main method
 - [ ] File Tree viewer

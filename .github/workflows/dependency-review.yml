@@ -1,3 +1,4 @@
+---
 name: 'Dependency Review'
 on:
   workflow_dispatch:

@@ -26,7 +26,8 @@ class Code(
 ) {
 
     class Try internal constructor(
-        val startAddress: Int, val instructionCount: Int,
+        val startAddress: Int,
+        val instructionCount: Int,
         /**
          * Returns this try's catch handler **index**. Note that
          * this is distinct from the its catch handler **offset**.

@@ -85,8 +85,8 @@ object FileUtils {
     fun hasArchiveSuffix(fileName: String): Boolean {
         return (
             fileName.endsWith(".zip") ||
-            fileName.endsWith(".jar") ||
-            fileName.endsWith(".apk")
-        )
+                fileName.endsWith(".jar") ||
+                fileName.endsWith(".apk")
+            )
     }
 }

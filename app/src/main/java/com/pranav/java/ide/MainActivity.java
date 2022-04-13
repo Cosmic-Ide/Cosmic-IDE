@@ -23,10 +23,15 @@ import com.google.common.base.Charsets;
 import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.task.JavaBuilder;
-import com.pranav.lib_android.task.java.*;
+import com.pranav.lib_android.task.java.CompileJavaTask;
+import com.pranav.lib_android.task.java.D8Task;
+import com.pranav.lib_android.task.java.DexTask;
+import com.pranav.lib_android.task.java.ExecuteJavaTask;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
-import com.pranav.lib_android.util.*;
+import com.pranav.lib_android.util.ZipUtil;
+import com.pranav.lib_android.util.FileUtil;
+import com.pranav.lib_android.util.ConcurrentUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -42,46 +47,50 @@ import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 
-public class MainActivity extends AppCompatActivity {
+final class MainActivity extends AppCompatActivity {
 
 	private CodeEditor editor;
-	
 
-	private long dxTime = 0;
+	private long dexerTime = 0;
 	private long ecjTime = 0;
 
 	private boolean errorsArePresent = false;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		setSupportActionBar(findViewById(R.id.toolbar));
 		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 		getSupportActionBar().setHomeButtonEnabled(false);
-		
+
 		editor = findViewById(R.id.editor);
-	
+
 		editor.setTypefaceText(Typeface.MONOSPACE);
 		editor.setEditorLanguage(new JavaLanguage());
 		editor.setColorScheme(new SchemeDarcula());
 		editor.setTextSize(12);
-		
+
 		final File file = file(FileUtil.getJavaDir() + "Main.java");
-		
+
 		if (file.exists()) {
 			try {
-				editor.setText(Files.asCharSource(file, Charsets.UTF_8).read());
+				editor.setText(
+				    Files.asCharSource(file, Charsets.UTF_8)
+				        .read()
+				    );
 			} catch (Exception e) {
 				dialog("Cannot read file", getString(e), true);
 			}
 		} else {
-			editor.setText("package com.example;\n\nimport java.util.*;\n\n" +
-					"public class Main {\n\n" +
-					"\tpublic static void main(String[] args) {\n" +
-					"\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n" +
-					"}\n");
+			editor.setText(
+              "package com.example;\n\nimport java.util.*;\n\n" +
+              "public class Main {\n\n" +
+              "\tpublic static void main(String[] args) {\n" +
+              "\t\tSystem.out.print(\"Hello, World!\");\n" + "\t}\n" +
+              "}\n"
+					);
 		}
 		
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
@@ -95,10 +104,14 @@ public class MainActivity extends AppCompatActivity {
 			File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
 			if (!output.exists() && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-				    .getString("javaVersion", "1.7")
-			        .equals("1.8")) {
+				    .getString("javaVersion", "7.0")
+			        .equals("8.0")) {
 		    try {
-					Files.write(ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
+					Files.write(
+					  ByteStreams.toByteArray(
+					    getAssets().open("core-lambda-stubs.jar")
+					   ),
+					 output);
 				} catch (Exception e) {
           showErr(getString(e));
         }
@@ -124,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 			} catch (final IOException e) {
         dialog("Cannot save program", getString(e), true);
 			}
-			
+
 			// code that runs ecj
 			long time = System.currentTimeMillis();
 			errorsArePresent = true;
@@ -137,14 +150,19 @@ public class MainActivity extends AppCompatActivity {
 			} catch (Throwable e) {
 				showErr(getString(e));
 			}
-			if (errorsArePresent) return;
+			if (errorsArePresent) {
+			  return;
+			}
 
 			ecjTime = System.currentTimeMillis() - time;
 			time = System.currentTimeMillis();
+			
+			final boolean useD8 = getSharedPreferences("compiler_settings", MODE_PRIVATE)
+					        .getString("dexer", "dx")
+					          .equals("d8");
 			// run dx
 			try {
-		    if (getSharedPreferences("compiler_settings", MODE_PRIVATE).getString("dexer", "dx").equals("d8")) {
-		      new JarTask().doFullTask();
+		    if (useD8) {
 			    new D8Task().doFullTask();
 			  } else {
 				  new DexTask().doFullTask();
@@ -154,45 +172,50 @@ public class MainActivity extends AppCompatActivity {
 				showErr(e.toString());
 				return;
 			}
-			dxTime = System.currentTimeMillis() - time;
+			dexerTime = System.currentTimeMillis() - time;
 			// code that loads the final dex
-			if (!errorsArePresent) {
-					try {
-						final String[] classes = getClassesFromDex();
-						if (classes == null)
-							return;
-						listDialog("Select a class to execute", classes,
-								(dialog, pos) -> {
-									ExecuteJavaTask task = new ExecuteJavaTask(
-									  	builder, classes[pos]);
-							  	try {
-										task.doFullTask();
-									} catch (java.lang.reflect.InvocationTargetException e) {
-										dialog("Failed...",
-												"Runtime error: " +
-												    e.getMessage() +
-												    "\n\n" +
-														getString(e),
-											true);
-									} catch (Exception e) {
-										dialog("Failed..",
-												"Couldn't execute the dex: "
-														+ e.toString()
-														+ "\n\nSystem logs:\n"
-														+ task.getLogs(),
-												true);
-									}
-									dialog("Success! Ecj took: "
-											+ String.valueOf(ecjTime) + " "
-											+ "ms" + ", Dx took: "
-											+ String.valueOf(dxTime),
-											task.getLogs(), true);
-							});
-					} catch (Throwable e) {
-						showErr(getString(e));
-					}
-			} else {
-			  errorsArePresent = false;
+			try {
+				final String[] classes = getClassesFromDex();
+				if (classes == null) {
+					return;
+				}
+				listDialog("Select a class to execute", classes,
+						(dialog, pos) -> {
+							ExecuteJavaTask task = new ExecuteJavaTask(
+							  	builder, classes[pos]);
+					  	try {
+								task.doFullTask();
+							} catch (java.lang.reflect.InvocationTargetException e) {
+								dialog("Failed...",
+										"Runtime error: " +
+										    e.getMessage() +
+										    "\n\n" +
+												getString(e),
+									true);
+							} catch (Exception e) {
+								dialog("Failed..",
+										"Couldn't execute the dex: "
+												+ e.toString()
+												+ "\n\nSystem logs:\n"
+												+ task.getLogs(),
+										true);
+							}
+							StringBuilder s = new StringBuilder();
+							s.append("Success! ECJ took: ");
+							s.append(String.valueOf(ecjtime));
+							s.append("ms, ");
+							if (useD8) {
+							  s.append("D8");
+							} else {
+							  s.append("Dx");
+							}
+							s.append(" took: ");
+							s.append(String.valueOf(dexerTime));
+							s.append("ms");
+							dialog(s.toString(), task.getLogs(), true);
+					});
+			} catch (Throwable e) {
+				showErr(getString(e));
 			}
 		});
 	}
@@ -281,19 +304,18 @@ public class MainActivity extends AppCompatActivity {
 		listDialog("Select a class to extract source", classes,
 				(dialog, pos) -> {
 					final String claz = classes[pos].replace(".", "/");
-
-					ConcurrentUtil.execute(() -> {
-						String[] args = {
-								FileUtil.getBinDir() +
-								    "classes/" +
-								    claz + // full class name
-										".class",
-								"--extraclasspath",
-								FileUtil.getClasspathDir() + "android.jar",
-								"--outputdir",
-								FileUtil.getBinDir() + "cfr/"
+          String[] args = {
+							FileUtil.getBinDir() +
+                  "classes/" +
+                  claz + // full class name
+                  ".class",
+							"--extraclasspath",
+							FileUtil.getClasspathDir() + "android.jar",
+							"--outputdir",
+							FileUtil.getBinDir() + "cfr/"
 						};
 
+					ConcurrentUtil.execute(() -> {
 						try {
 							org.benf.cfr.reader.Main.main(args);
 						} catch (Exception e) {
@@ -463,11 +485,11 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	public File file(String path) {
+	public File file(final String path) {
 	  return new File(path);
 	}
 	
-	private String getString(Throwable e) {
+	private String getString(final Throwable e) {
 	  return Log.getStackTraceString(e);
 	}
 }

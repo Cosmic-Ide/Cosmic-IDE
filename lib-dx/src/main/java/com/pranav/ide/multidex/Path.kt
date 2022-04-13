@@ -110,12 +110,12 @@ class Path(private val definition: String) {
         for (
             filePath in definition.split(Pattern.quote(File.pathSeparator).toRegex())
                 .toTypedArray()
-            ) {
-              try {
-                addElement(getClassPathElement(File(filePath)))
-              } catch (e: IOException) {
-                throw IOException("Wrong classpath: " + e.message, e)
-              }
-            }
+        ) {
+          try {
+            addElement(getClassPathElement(File(filePath)))
+          } catch (e: IOException) {
+            throw IOException("Wrong classpath: " + e.message, e)
+          }
+        }
     }
 }

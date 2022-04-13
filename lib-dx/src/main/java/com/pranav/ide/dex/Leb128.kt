@@ -118,7 +118,7 @@ object Leb128 {
             hasMore = (
                 remaining != end ||
                     remaining and 1 != value shr 6 and 1
-            )
+                )
             out.writeByte((value and 0x7f or if (hasMore) 0x80 else 0).toByte().toInt())
             value = remaining
             remaining = remaining shr 7

@@ -181,7 +181,7 @@ class TableOfContents {
             ) {
                 throw DexException(
                     "Unexpected map value for 0x" +
-                    Integer.toHexString(type.toInt())
+                        Integer.toHexString(type.toInt())
                 )
             }
             section.size = size

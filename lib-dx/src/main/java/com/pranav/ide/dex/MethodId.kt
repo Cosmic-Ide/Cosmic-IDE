@@ -43,8 +43,8 @@ class MethodId(
             "$declaringClassIndex $protoIndex $nameIndex"
         } else dex.typeNames()[declaringClassIndex]
             .toString() +
-                "." +
-                dex.strings()[nameIndex] +
-                dex.readTypeList(dex.protoIds()[protoIndex].parametersOffset)
+            "." +
+            dex.strings()[nameIndex] +
+            dex.readTypeList(dex.protoIds()[protoIndex].parametersOffset)
     }
 }

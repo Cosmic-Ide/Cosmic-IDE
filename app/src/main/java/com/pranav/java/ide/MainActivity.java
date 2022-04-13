@@ -36,8 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
 
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
@@ -48,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
 	private CodeEditor editor;
 	
-	public LinearLayout container;
 
 	private long dxTime = 0;
 	private long ecjTime = 0;
@@ -65,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 		getSupportActionBar().setHomeButtonEnabled(false);
 		
 		editor = findViewById(R.id.editor);
-		container = findViewById(R.id.container);
 	
 		editor.setTypefaceText(Typeface.MONOSPACE);
 		editor.setEditorLanguage(new JavaLanguage());
@@ -91,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 
-		Executors.newSingleThreadExecutor().execute(() -> {
+		ConcurrentUtil.executeInBackground(() -> {
 			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
@@ -202,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void showErr(final String e) {
-		Snackbar.make(container, "An error occurred",
+		Snackbar.make((LinearLayout) findViewById(R.id.container), "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
 				.setAction("Show error", (view) -> dialog("Failed...", e, true))
 			    .show();
@@ -243,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
 			listDialog("Select a class to extract source", classes,
 					(d, pos) -> {
 						final String claz = classes[pos];
-						final CountDownLatch latch = new CountDownLatch(1);
 						final String[] args = new String[] {
 						  "-f",
 						  "-o",
@@ -252,17 +247,8 @@ public class MainActivity extends AppCompatActivity {
 						  FileUtil.getBinDir()
 						      .concat("classes.dex")
 						};
-						Executors.newSingleThreadExecutor()
-								.execute(() -> {
-									BaksmaliCmd.main(args);
-									latch.countDown();
-						});
+						ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
 
-						try {
-							latch.await();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
 						CodeEditor edi = new CodeEditor(MainActivity.this);
 						edi.setTypefaceText(Typeface.MONOSPACE);
 						edi.setEditorLanguage(new JavaLanguage());
@@ -295,12 +281,13 @@ public class MainActivity extends AppCompatActivity {
 		listDialog("Select a class to extract source", classes,
 				(dialog, pos) -> {
 					final String claz = classes[pos].replace(".", "/");
-					final CountDownLatch latch = new CountDownLatch(1);
-					Executors.newSingleThreadExecutor().execute(() -> {
 
+					ConcurrentUtil.execute(() -> {
 						String[] args = {
-								FileUtil.getBinDir() + "classes/" + claz
-										+ ".class",
+								FileUtil.getBinDir() +
+								    "classes/" +
+								    claz + // full class name
+										".class",
 								"--extraclasspath",
 								FileUtil.getClasspathDir() + "android.jar",
 								"--outputdir",
@@ -313,15 +300,7 @@ public class MainActivity extends AppCompatActivity {
 							dialog("Failed to decompile...",
 									getString(e), true);
 						}
-						latch.countDown();
 					});
-
-					try {
-						latch.await();
-					} catch (InterruptedException e) {
-						dialog("Thread was interrupted while decompiling...",
-								getString(e), true);
-					}
 
 					final CodeEditor edi = new CodeEditor(MainActivity.this);
 					edi.setTypefaceText(Typeface.MONOSPACE);
@@ -345,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
 							MainActivity.this).setView(edi).create();
 					d.setCanceledOnTouchOutside(true);
 					d.show();
-				});
+		});
 	}
 
 	public void disassemble() {
@@ -449,14 +428,16 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 // for granting execute permissions to file/folder (currently unused)
-	public void grantChmod(File file) {
+  public void grantChmod(File file) {
+	  File[] files = file.listFiles();
 		try {
-			if (file.isDirectory()) {
-				Runtime.getRuntime()
-						.exec("chmod 777 " + file.getAbsolutePath() + " -R");
-			} else {
-			  file.setExecutable(true, true);
-			}
+		  for (File f : files) {
+		    if (f.isDirectory()) {
+          grantChmod(f);
+        } else {
+          f.setExecutable(true, true);
+        }
+		  }
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -466,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			final ArrayList<String> classes = new ArrayList<>();
 			DexFile dexfile = DexFileFactory.loadDexFile(FileUtil.getBinDir().concat("classes.dex"),
-							Opcodes.forApi(21)
+							Opcodes.forApi(26)
 			);
 			for (ClassDef f : dexfile.getClasses()
 					.toArray(new ClassDef[0])

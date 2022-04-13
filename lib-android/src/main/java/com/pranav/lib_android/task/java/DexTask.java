@@ -1,13 +1,12 @@
 package com.pranav.lib_android.task.java;
 
 import com.pranav.lib_android.util.FileUtil;
+import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.interfaces.*;
 import com.pranav.ide.dx.command.dexer.Main;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.CountDownLatch;
 
 public class DexTask extends Task {
 
@@ -15,8 +14,7 @@ public class DexTask extends Task {
 
 	@Override
 	public void doFullTask() throws Exception {
-		final CountDownLatch latch = new CountDownLatch(1);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		ConcurrentUtil.execute(() -> {
 			try {
 				final File f = new File(
 						FileUtil.getBinDir()
@@ -25,7 +23,7 @@ public class DexTask extends Task {
 				args.add("--debug");
 				args.add("--verbose");
 				args.add("--min-sdk-version");
-				args.add("21");
+				args.add("26");
 				args.add("--output");
 				args.add(f.getParent());
 				args.add(f.getAbsolutePath());
@@ -41,13 +39,7 @@ public class DexTask extends Task {
 			} catch (Exception e) {
 				ex = e;
 			}
-			latch.countDown();
 		});
-		try {
-			latch.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		if (ex != null) {
 			throw ex;
 		}

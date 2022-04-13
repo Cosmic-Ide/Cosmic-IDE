@@ -2,13 +2,12 @@ package com.pranav.lib_android.task.java;
 
 import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
+import com.pranav.lib_android.util.ConcurrentUtil;
 import dalvik.system.PathClassLoader;
 import java.io.PrintStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.concurrent.Executors;
-import java.util.concurrent.CountDownLatch;
 
 public class ExecuteJavaTask extends Task {
 	
@@ -32,8 +31,7 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		final CountDownLatch latch = new CountDownLatch(1);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		ConcurrentUtil.execute(() -> {
 			final OutputStream out = new OutputStream() {
 			  @Override
 			  public void write(int b) {
@@ -72,13 +70,7 @@ public class ExecuteJavaTask extends Task {
 			}
 			System.setOut(defaultOut);
 			System.setErr(defaultErr);
-			// retrieve logs
-			latch.countDown();
 		});
-		try {
-			latch.await();
-		} catch (InterruptedException ignored) {
-		}
 	}
 	
 	public String getLogs() {

@@ -1,9 +1,7 @@
 package com.pranav.lib_android.task.java;
 
 import com.pranav.lib_android.interfaces.*;
-import com.pranav.lib_android.util.BinaryExecutor;
-import com.pranav.lib_android.util.ZipUtil;
-import com.pranav.lib_android.util.FileUtil;
+import com.pranav.lib_android.util.*;
 import com.pranav.lib_android.exception.CompilationFailedException;
 
 import java.io.File;
@@ -24,8 +22,7 @@ public class ZipAlignTask extends Task {
 
 	@Override
 	public void doFullTask() throws Exception {
-	  CountDownLatch latch = new CountDownLatch(1);
-		Executors.newSingleThreadExecutor().execute(() -> {
+		ConcurrentUtil.execute(() -> {
 			try {
 				final String zipalign = mBuilder.getContext().getFilesDir()
 						+ "/arm64-v8a";
@@ -46,14 +43,7 @@ public class ZipAlignTask extends Task {
 			} catch (Exception e) {
 				ex = e;
 			}
-			latch.countDown();
 		});
-		
-		try {
-		  latch.await();
-		} catch (InterruptedException e) {
-		  e.printStackTrace();
-		}
 		
 		if (!executor.getLogs().isEmpty()) {
 			throw new CompilationFailedException(executor.getLogs());

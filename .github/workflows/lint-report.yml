@@ -24,10 +24,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
-
-      - name: Move lint reports to one place
-        run: mv /lib-android/build /app/build/reports/lib-android
+          arguments: lint
 
       - name: Upload lint report
         uses: actions/upload-artifact@v2

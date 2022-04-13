@@ -202,7 +202,7 @@ final class MainActivity extends AppCompatActivity {
 							}
 							StringBuilder s = new StringBuilder();
 							s.append("Success! ECJ took: ");
-							s.append(String.valueOf(ecjtime));
+							s.append(String.valueOf(ecjTime));
 							s.append("ms, ");
 							if (useD8) {
 							  s.append("D8");

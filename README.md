@@ -17,7 +17,6 @@
 - [x] Disassemble Class File
 - [x] Format Java Code
 - [x] Smali Dex File
-- [x] ZipAlign
 - [x] Dx
 - [x] D8
 - [ ] Support these features for external files as well

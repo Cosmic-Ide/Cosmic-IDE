@@ -27,7 +27,7 @@ jobs:
           arguments: build
 
       - name: Move lint reports to one place
-        run: mv /lib-android/build/reports /app/build/reports
+        run: mv /lib-android/build /app/build/reports/lib-android
 
       - name: Upload lint report
         uses: actions/upload-artifact@v2

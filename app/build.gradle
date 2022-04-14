@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -39,10 +38,6 @@ android {
         resources.excludes.add("about_files/*")
         resources.excludes.add("META-INF/*")
     }
-    
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
 }
 
 dependencies {
@@ -54,8 +49,6 @@ dependencies {
     implementation 'io.github.Rosemoe.sora-editor:language-java:0.10.11'
     implementation 'androidx.appcompat:appcompat:1.6.0-alpha01'
     implementation 'com.google.android.material:material:1.6.0-beta01'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.work:work-runtime:2.8.0-alpha02'
     implementation project(path: ':lib-android')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha05'

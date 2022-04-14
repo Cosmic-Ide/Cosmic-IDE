@@ -9,7 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.radiobutton.MaterialRadioButton;
 
-public class SettingActivity extends AppCompatActivity {
+public final class SettingActivity extends AppCompatActivity {
 	
 	private MaterialRadioButton java3;
 	private MaterialRadioButton java4;

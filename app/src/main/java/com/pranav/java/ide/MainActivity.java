@@ -47,7 +47,7 @@ import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
 
-final class MainActivity extends AppCompatActivity {
+public final class MainActivity extends AppCompatActivity {
 
 	private CodeEditor editor;
 
@@ -245,9 +245,8 @@ final class MainActivity extends AppCompatActivity {
 
 			case 1 :
 				Intent intent = getIntent();
-				intent.setClass(getApplicationContext(), SettingActivity.class);
+				intent.setClass(this, SettingActivity.class);
 				startActivity(intent);
-				break;
 			default :
 				break;
 		}

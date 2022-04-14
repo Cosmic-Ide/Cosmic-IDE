@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-final class DebugActivity extends AppCompatActivity {
+public final class DebugActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {

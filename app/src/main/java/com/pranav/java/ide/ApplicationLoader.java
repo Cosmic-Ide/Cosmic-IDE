@@ -9,7 +9,7 @@ import android.os.Process;
 import android.util.Log;
 import com.pranav.lib_android.util.FileUtil;
 
-final class ApplicationLoader extends Application {
+public final class ApplicationLoader extends Application {
 
   private static Context mContext;
 

@@ -6,6 +6,10 @@
 
 </div>
 
+## How to get?
+
+You can get the latest app release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug app from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
+
 ## Features
 
 - [x] Java Compiler
@@ -41,3 +45,5 @@ I would really love all kinds of contributions. If you have any questions, ideas
 - [Rosemoe/sora-editor](https://github.com/Rosemoe/sora-editor)
 
 - [tyron12233/CodeAssist](https://github.com/tyron12233/CodeAssist)
+
+- [Sketchware-Pro/Sketchware-Pro](https://github.com/Sketchware-Pro)

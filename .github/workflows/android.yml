@@ -36,7 +36,7 @@ jobs:
           arguments: build
 
       - name: Upload debug apk
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
           name: apk-debug

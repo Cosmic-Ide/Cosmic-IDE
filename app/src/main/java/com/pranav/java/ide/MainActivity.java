@@ -30,7 +30,7 @@ import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.util.ZipUtil;
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtil;
+import com.pranav.lib_android.util.ConcurrentUtilKt;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -95,7 +95,7 @@ public final class MainActivity extends AppCompatActivity {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 
-		ConcurrentUtil.executeInBackground(() -> {
+		ConcurrentUtilKt.executeInBackground(() -> {
 			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
@@ -257,7 +257,7 @@ public final class MainActivity extends AppCompatActivity {
 						  FileUtil.getBinDir()
 						      .concat("classes.dex")
 						};
-						ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
+						ConcurrentUtilKt.execute(() -> BaksmaliCmd.main(args));
 
 						CodeEditor edi = new CodeEditor(MainActivity.this);
 						edi.setTypefaceText(Typeface.MONOSPACE);
@@ -302,7 +302,7 @@ public final class MainActivity extends AppCompatActivity {
 							FileUtil.getBinDir() + "cfr/"
 						};
 
-					ConcurrentUtil.execute(() -> {
+					ConcurrentUtilKt.execute(() -> {
 						try {
 							org.benf.cfr.reader.Main.main(args);
 						} catch (Exception e) {

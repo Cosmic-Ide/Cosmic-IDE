@@ -1,7 +1,7 @@
 package com.pranav.lib_android.task.java;
 
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtil;
+import com.pranav.lib_android.util.ConcurrentUtilKt;
 import com.pranav.lib_android.interfaces.*;
 import com.android.tools.r8.D8;
 import com.android.tools.r8.D8Command;
@@ -20,7 +20,7 @@ public class D8Task extends Task {
 
 	@Override
 	public void doFullTask() throws Exception {
-		ConcurrentUtil.execute(() -> {
+		ConcurrentUtilKt.execute(() -> {
 			try {
 			  D8.run(
 			    D8Command.builder()

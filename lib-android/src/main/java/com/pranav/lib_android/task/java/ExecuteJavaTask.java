@@ -2,7 +2,7 @@ package com.pranav.lib_android.task.java;
 
 import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtil;
+import com.pranav.lib_android.util.ConcurrentUtilKt;
 import dalvik.system.PathClassLoader;
 import java.io.PrintStream;
 import java.io.OutputStream;
@@ -31,7 +31,7 @@ public class ExecuteJavaTask extends Task {
 		final PrintStream defaultOut = System.out;
 		final PrintStream defaultErr = System.err;
 		final String dexFile = FileUtil.getBinDir() + "classes.dex";
-		ConcurrentUtil.execute(() -> {
+		ConcurrentUtilKt.execute(() -> {
 			final OutputStream out = new OutputStream() {
 			  @Override
 			  public void write(int b) {

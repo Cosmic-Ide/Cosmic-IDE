@@ -21,7 +21,6 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [x] Disassemble Class File
 - [x] Format Java Code
 - [x] Smali Dex File
-- [x] Dx
 - [x] D8
 - [ ] Support these features for external files as well
 - [ ] Directly run other than main method

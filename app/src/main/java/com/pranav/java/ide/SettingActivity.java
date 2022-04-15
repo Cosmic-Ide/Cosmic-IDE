@@ -26,8 +26,6 @@ public final class SettingActivity extends AppCompatActivity {
 	private MaterialRadioButton java16;
 	private MaterialRadioButton java17;
 	
-	private MaterialRadioButton dexer_d8;
-	
 	private AppCompatEditText classpath;
 	
 	private SharedPreferences settings;
@@ -60,12 +58,10 @@ public final class SettingActivity extends AppCompatActivity {
 		java17 = findViewById(R.id.java17);
 		
 		final MaterialRadioButton java7 = findViewById(R.id.java7);
-		final MaterialRadioButton dexer_dx = findViewById(R.id.dexer_dx);
-		dexer_d8 = findViewById(R.id.dexer_d8);
 		classpath = findViewById(R.id.classpath);
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-		switch (settings.getString("javaVersion", "1.7")) {
+		switch (settings.getString("javaVersion", "7.0")) {
 				
 			case "1.3":
 			    java3.setChecked(true);
@@ -129,16 +125,6 @@ public final class SettingActivity extends AppCompatActivity {
 			    break;
 		}
 		
-    switch (settings.getString("dexer", "dx")) {
-		  case "d8":
-		    dexer_d8.setChecked(true);
-		    break;
-		  
-		  case "dx":
-		  default:
-		    dexer_dx.setChecked(true);
-		    break;
-		}
 		classpath.setText(settings.getString("classpath", ""));
 	}
 	
@@ -163,10 +149,6 @@ public final class SettingActivity extends AppCompatActivity {
 		
 		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
 		
-		String dexer = "dx";
-		if (dexer_d8.isChecked()) dexer = "d8";
-		
-		settings.edit().putString("dexer", dexer).commit();
 		settings.edit().putString("classpath", classpath.getText().toString()).apply();
 		super.onDestroy();
 	}

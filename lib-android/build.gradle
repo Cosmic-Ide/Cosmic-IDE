@@ -12,7 +12,6 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-android'
     // r8 dependency
     implementation 'com.android.tools:r8:3.3.28'
-    implementation project(path: ':lib-dx')
     implementation project(path: ':lib-eclipse')
     compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
 }

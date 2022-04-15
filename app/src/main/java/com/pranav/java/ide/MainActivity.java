@@ -51,7 +51,7 @@ public final class MainActivity extends AppCompatActivity {
 
 	private CodeEditor editor;
 
-	private long dexerTime = 0;
+	private long d8Time = 0;
 	private long ecjTime = 0;
 
 	private boolean errorsArePresent = false;
@@ -157,22 +157,15 @@ public final class MainActivity extends AppCompatActivity {
 			ecjTime = System.currentTimeMillis() - time;
 			time = System.currentTimeMillis();
 			
-			final boolean useD8 = getSharedPreferences("compiler_settings", MODE_PRIVATE)
-					        .getString("dexer", "dx")
-					          .equals("d8");
-			// run dx
+			// run d8
 			try {
-		    if (useD8) {
-			    new D8Task().doFullTask();
-			  } else {
-				  new DexTask().doFullTask();
-				}
+        new D8Task().doFullTask();
 			} catch (Exception e) {
 				errorsArePresent = true;
 				showErr(e.toString());
 				return;
 			}
-			dexerTime = System.currentTimeMillis() - time;
+			d8Time = System.currentTimeMillis() - time;
 			// code that loads the final dex
 			try {
 				final String[] classes = getClassesFromDex();
@@ -204,13 +197,9 @@ public final class MainActivity extends AppCompatActivity {
 							s.append("Success! ECJ took: ");
 							s.append(String.valueOf(ecjTime));
 							s.append("ms, ");
-							if (useD8) {
-							  s.append("D8");
-							} else {
-							  s.append("Dx");
-							}
+							s.append("D8");
 							s.append(" took: ");
-							s.append(String.valueOf(dexerTime));
+							s.append(String.valueOf(d8Time));
 							s.append("ms");
 							dialog(s.toString(), task.getLogs(), true);
 					});

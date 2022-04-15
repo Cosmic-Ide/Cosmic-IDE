@@ -20,6 +20,5 @@ dependencyResolutionManagement {
 rootProject.name = "Java IDE"
 
 include ':app'
-include ':lib-dx'
 include ':lib-android'
 include ':lib-eclipse'

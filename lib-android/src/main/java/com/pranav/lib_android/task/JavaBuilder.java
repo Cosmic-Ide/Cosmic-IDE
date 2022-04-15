@@ -21,7 +21,7 @@ public class JavaBuilder extends Builder {
 		ArrayList<Task> tasks = new ArrayList<>();
 		tasks.add(new CompileJavaTask(this));
 		tasks.add(new D8Task());
-		tasks.add(new ExecuteJavaTask());
+		tasks.add(new ExecuteJavaTask(this));
 		return tasks.toArray(new Task[0]);
 	}
 

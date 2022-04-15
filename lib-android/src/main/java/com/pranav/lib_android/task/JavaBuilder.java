@@ -17,15 +17,6 @@ public class JavaBuilder extends Builder {
 	}
 
 	@Override
-	public Task[] getTasks() {
-		ArrayList<Task> tasks = new ArrayList<>();
-		tasks.add(new CompileJavaTask(this));
-		tasks.add(new D8Task());
-		tasks.add(new ExecuteJavaTask(this));
-		return tasks.toArray(new Task[0]);
-	}
-
-	@Override
 	public Context getContext() {
 		return mContext;
 	}

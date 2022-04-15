@@ -1,18 +1,16 @@
 package com.pranav.lib_android.util
 
-import kotlinx.coroutines.Async
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.*
 
-  suspend fun execute(runnable: Runnable) {
-    val task = Async(Default) {
-      runnable.run()
-    }
-    task.await()
+fun execute(runnable: Runnable) = runBlocking {
+  val deferred: Deferred = async {
+    runnable.run()
   }
-  
-  fun executeInBackground(runnable: Runnable) {
-    launch(IO)  {
-      runnable.run()
-    }
+  deferred.await()
+}
+
+fun executeInBackground(runnable: Runnable) = runBlocking {
+  launch {
+    runnable.run()
   }
+}

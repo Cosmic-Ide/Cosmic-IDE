@@ -8,14 +8,16 @@ class ConcurrentUtil {
     // empty
   }
 
-  suspend fun execute(runnable: Runnable) {
+  fun execute(runnable: Runnable) = runBlocking {
     val deferred: Deferred<Unit> = async {
       runnable.run()
     }
     deferred.await()
   }
 
-  suspend fun executeInBackground(runnable: Runnable) {
-    runnable.run()
+  fun executeInBackground(runnable: Runnable) = runBlocking {
+    launch {
+      runnable.run()
+    }
   }
 }

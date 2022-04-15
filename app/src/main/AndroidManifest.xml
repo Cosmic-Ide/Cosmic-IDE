@@ -12,7 +12,6 @@
     android:theme="@style/Theme.JavaIDE.NoActionBar"
     android:resizeableActivity="true"
     android:hardwareAccelerated="true"
-	  android:requestLegacyExternalStorage="true"
     tools:targetApi="32">
     <activity
 			android:name=".MainActivity"

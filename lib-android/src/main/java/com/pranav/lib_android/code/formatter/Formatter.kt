@@ -28,13 +28,13 @@ class Formatter(javaSource: String) {
 		)
 		
 		val document = Document(source)
-		ConcurrentUtilKt.execute(() -> {
+		ConcurrentUtilKt.execute({
 			try {
 				edit.apply(document)
-			} catch (Exception e) {
+			} catch (e: Exception) {
 				throw IllegalStateException(e)
 			}
-		});
+		})
 		// return the formatted code
 		return document.get()
 	}

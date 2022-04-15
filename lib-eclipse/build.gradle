@@ -8,7 +8,7 @@ java {
 }
 
 dependencies {
-    implementation 'com.google.guava:guava:31.1-android'
+    api 'com.google.guava:guava:31.1-android'
 
     api 'org.eclipse.platform:org.eclipse.core.resources:3.16.100'
     api 'org.eclipse.platform:org.eclipse.core.runtime:3.24.100'

@@ -1,17 +1,18 @@
 package com.pranav.lib_android.util
 
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Async
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Default
 
   suspend fun execute(runnable: Runnable) {
-    CoroutineScope(Default).launch {
+    val task = Async(Default) {
       runnable.run()
     }
+    task.await()
   }
   
   fun executeInBackground(runnable: Runnable) {
-    CoroutineScope(IO).launch  {
+    launch(IO)  {
       runnable.run()
     }
   }

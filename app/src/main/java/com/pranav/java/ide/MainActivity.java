@@ -30,7 +30,7 @@ import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.util.ZipUtil;
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtilKt;
+import com.pranav.lib_android.util.ConcurrentUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -95,7 +95,7 @@ public final class MainActivity extends AppCompatActivity {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 
-		ConcurrentUtilKt.executeInBackground(() -> {
+		ConcurrentUtil.executeInBackground(() -> {
 			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
@@ -228,7 +228,7 @@ public final class MainActivity extends AppCompatActivity {
 			case 0 :
         final Formatter formatter = new Formatter(
 						  editor.getText().toString());
-				ConcurrentUtilKt.execute(() -> {
+				ConcurrentUtil.execute(() -> {
 				  editor.setText(formatter.format());
 			  });
 				break;
@@ -259,7 +259,7 @@ public final class MainActivity extends AppCompatActivity {
 						  FileUtil.getBinDir()
 						      .concat("classes.dex")
 						};
-						ConcurrentUtilKt.execute(() -> BaksmaliCmd.main(args));
+						ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
 
 						CodeEditor edi = new CodeEditor(MainActivity.this);
 						edi.setTypefaceText(Typeface.MONOSPACE);
@@ -304,7 +304,7 @@ public final class MainActivity extends AppCompatActivity {
 							FileUtil.getBinDir() + "cfr/"
 						};
 
-					ConcurrentUtilKt.execute(() -> {
+					ConcurrentUtil.execute(() -> {
 						try {
 							org.benf.cfr.reader.Main.main(args);
 						} catch (Exception e) {
@@ -352,7 +352,7 @@ public final class MainActivity extends AppCompatActivity {
 			edi.setTextSize(12);
 
 			try {
-				final String disassembled = new ClassFileDisassembleri(
+				final String disassembled = new ClassFileDisassembler(
 						FileUtil.getBinDir() + "classes/" + claz + ".class")
 								.disassemble();
 

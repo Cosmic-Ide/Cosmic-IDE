@@ -1,6 +1,5 @@
 package com.pranav.lib_android.code.formatter
 
-import com.pranav.lib_android.util.ConcurrentUtil
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter
 import org.eclipse.jface.text.Document
@@ -28,13 +27,11 @@ class Formatter(javaSource: String) {
 		)
 		
 		val document = Document(source)
-		ConcurrentUtil.execute({
-			try {
-				edit.apply(document)
-			} catch (e: Exception) {
-				throw IllegalStateException(e)
-			}
-		})
+		try {
+			edit.apply(document)
+		} catch (e: Exception) {
+			throw IllegalStateException(e)
+		}
 		// return the formatted code
 		return document.get()
 	}

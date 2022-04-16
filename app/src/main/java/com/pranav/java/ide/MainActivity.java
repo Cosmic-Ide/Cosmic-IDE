@@ -226,9 +226,11 @@ public final class MainActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0 :
-				FormatterKt formatter = new Formatter(
-						editor.getText().toString());
-				editor.setText(formatter.format());
+        final FormatterKt formatter = new Formatter(
+						  editor.getText().toString());
+				ConcurrentUtilKt.execute(() -> {
+				  editor.setText(formatter.format());
+			  });
 				break;
 
 			case 1 :

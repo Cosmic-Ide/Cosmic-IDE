@@ -3,7 +3,7 @@ package com.pranav.lib_android.task.java;
 import android.content.Context;
 import android.content.SharedPreferences;
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtilKt;
+import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.interfaces.*;
 import org.eclipse.jdt.internal.compiler.batch.Main;
@@ -42,7 +42,7 @@ public class CompileJavaTask extends Task {
 	  
 	  final File output = new File(FileUtil.getBinDir(), "classes");
 	  
-    ConcurrentUtilKt.execute(() -> {
+    ConcurrentUtil.execute(() -> {
 		  final ArrayList<String> args = new ArrayList<>();
 
       args.add("-log");

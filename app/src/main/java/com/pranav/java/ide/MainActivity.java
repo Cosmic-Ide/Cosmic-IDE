@@ -27,7 +27,7 @@ import com.pranav.lib_android.task.java.CompileJavaTask;
 import com.pranav.lib_android.task.java.D8Task;
 import com.pranav.lib_android.task.java.ExecuteJavaTask;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
-import com.pranav.lib_android.code.formatter.FormatterKt;
+import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.util.ZipUtil;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ConcurrentUtilKt;
@@ -226,7 +226,7 @@ public final class MainActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0 :
-        final FormatterKt formatter = new Formatter(
+        final Formatter formatter = new Formatter(
 						  editor.getText().toString());
 				ConcurrentUtilKt.execute(() -> {
 				  editor.setText(formatter.format());
@@ -352,7 +352,7 @@ public final class MainActivity extends AppCompatActivity {
 			edi.setTextSize(12);
 
 			try {
-				final String disassembled = new ClassFileDisassemblerKt(
+				final String disassembled = new ClassFileDisassembleri(
 						FileUtil.getBinDir() + "classes/" + claz + ".class")
 								.disassemble();
 

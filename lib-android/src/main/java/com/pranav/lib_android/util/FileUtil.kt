@@ -7,7 +7,7 @@ import java.io.File
 class FileUtil {
 
   companion object {
-    var mContext: Context
+    lateinit var mContext: Context
 
     @JvmStatic
     fun initializeContext(context: Context) {
@@ -15,13 +15,13 @@ class FileUtil {
     }
 
     @JvmStatic
-    fun deleteFile(String path) {
+    fun deleteFile(@NonNull path: String) {
       File(path).deleteRecursively()
     }
 
     @JvmStatic
     fun getDataDir(): String {
-      return mContext.getExternalFilesDir(null).getAbsolutePath()
+      return mContext?.getExternalFilesDir(null).getAbsolutePath()
     }
 
     @JvmStatic

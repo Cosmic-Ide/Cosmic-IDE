@@ -8,6 +8,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+kotlin {
+  jvmTarget = JavaVersion.VERSION_11
+}
+
 dependencies {
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
     // r8 dependency

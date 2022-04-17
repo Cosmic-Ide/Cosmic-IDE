@@ -26,8 +26,9 @@ class ZipUtil {
 		dirChecker(destination, "")
 		try {
 			val zin = ZipInputStream(stream)
+			var ze: ZipEntry = zin.getNextEntry()
 
-			loop@ while (var ze = zin.getNextEntry(); ze != null) {
+			label@ while (ze != null) {
 				if (ze.isDirectory()) {
 					dirChecker(destination, ze.getName())
 				} else {
@@ -36,14 +37,12 @@ class ZipUtil {
 						throw SecurityException("Potentially harmful files detected inside zip")
 					if (!f.exists()) {
 						val success = f.createNewFile()
-						if (!success) {
-							Log.w(TAG, "Failed to create file " + f.getName())
-							continue@loop
-						}
+						if (!success) continue@label
 						f.appendBytes(zin.readBytes())
 						zin.closeEntry()
 					}
 				}
+				ze = zin.getNextEntry()
 			}
 			zin.close()
 		} catch (e: IOException) {

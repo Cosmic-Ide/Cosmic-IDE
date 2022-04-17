@@ -19,22 +19,22 @@ public class JarTask extends Task {
 
 		//input file
 		File classesFolder = new File(FileUtil.getBinDir() + "classes");
-		
+
 		// Open archive file
 		FileOutputStream stream = new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
-		
+
 		Manifest manifest = buildManifest();
-		
+
 		//Create the jar file
 		JarOutputStream out = new JarOutputStream(stream, manifest);
-		
+
 		//Add the files..
 		if (classesFolder.listFiles() != null) {
 			for (File clazz : classesFolder.listFiles()) {
 				add(classesFolder.getPath(), clazz, out);
 			}
 		}
-		
+
 		out.close();
 		stream.close();
 	}
@@ -52,27 +52,27 @@ public class JarTask extends Task {
 	
 	private void add(String parentPath, File source, JarOutputStream target) throws IOException {
 		String name = source.getPath().substring(parentPath.length() + 1);
-		
+
 		BufferedInputStream in = null;
 		try {
 			if (source.isDirectory()) {
 				if (!name.isEmpty()) {
 					if (!name.endsWith("/"))
-					    name += "/";
-					
+						name += "/";
+
 					//Add the Entry
 					JarEntry entry = new JarEntry(name);
 					entry.setTime(source.lastModified());
 					target.putNextEntry(entry);
 					target.closeEntry();
 				}
-				
+
 				for (File nestedFile : source.listFiles()) {
 					add(parentPath, nestedFile, target);
 				}
 				return;
 			}
-			
+
 			JarEntry entry = new JarEntry(name);
 			entry.setTime(source.lastModified());
 			target.putNextEntry(entry);
@@ -85,7 +85,7 @@ public class JarTask extends Task {
 				target.write(buffer, 0, count);
 			}
 			target.closeEntry();
-			
+
 		} finally {
 			if (in != null) {
 				in.close();

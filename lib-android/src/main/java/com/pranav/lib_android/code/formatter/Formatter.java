@@ -8,27 +8,27 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Document;
 
 public class Formatter {
-	
+
 	private String source;
-	
+
 	public Formatter(String source) {
 		this.source = source;
 	}
-	
+
 	public String format() {
 		DefaultCodeFormatterOptions options = DefaultCodeFormatterOptions.getEclipseDefaultSettings();
-		
+
 		final DefaultCodeFormatter codeFormatter = new DefaultCodeFormatter(options);
-		
+
 		final TextEdit edit = codeFormatter.format(
-	    	DefaultCodeFormatter.K_COMPILATION_UNIT,
-	    	source,
-    		0, // starting index
-    		source.length(), // length
-    		0, // initial indentation
-	    	System.lineSeparator() // line separator
+			DefaultCodeFormatter.K_COMPILATION_UNIT,
+			source,
+			0, // starting index
+			source.length(), // length
+			0, // initial indentation
+			System.lineSeparator() // line separator
 		);
-		
+
 		final IDocument document = new Document(source);
 		ConcurrentUtilKt.execute(() -> {
 			try {

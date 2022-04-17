@@ -11,9 +11,9 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 class ZipUtil {
-	private val TAG = "ZipUtil"
-
   companion object {
+    private val TAG = "ZipUtil"
+
     @JvmStatic
     fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
       try {

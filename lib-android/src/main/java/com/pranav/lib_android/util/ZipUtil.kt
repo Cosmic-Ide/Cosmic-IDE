@@ -13,13 +13,16 @@ import java.util.zip.ZipInputStream
 class ZipUtil {
 	private val TAG = "ZipUtil"
 
-	fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
-		try {
-			val stream = context.getAssets().`open`(zipFile)
-			unzip(stream, destination)
-		} catch (e: IOException) {
-			e.printStackTrace()
-		}
+  companion object {
+    @JvmStatic
+    fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
+      try {
+        val stream = context.getAssets().`open`(zipFile)
+        unzip(stream, destination)
+      } catch (e: IOException) {
+        e.printStackTrace()
+      }
+    }
 	}
 
 	private fun unzip(stream: InputStream, destination: String) {

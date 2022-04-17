@@ -33,8 +33,13 @@ object ZipUtil {
   }
 
   private fun extractFile(inputStream: InputStream, destFilePath: String) {
-    val bos = FileOutputStream(destFilePath)
-    inputStream.copyTo(bos)
+    val bos = BufferedOutputStream(FileOutputStream(destFilePath))
+    val bytesIn = ByteArray(BUFFER_SIZE)
+    var read: Int
+    while (inputStream.read(bytesIn).also { read = it } != -1) {
+      bos.write(bytesIn, 0, read)
+    }
+    bos.close()
   }
 
 	fun copyFileFromAssets(context: Context, inputFile: String, outputDir: String) {

@@ -13,7 +13,7 @@ object ZipUtil {
   }
 
   fun unzip(zipFilePath: File, destDirectory: String) {
-    val destDir =  File(destDirectory).run {
+    File(destDirectory).run {
       if (!exists())
         mkdirs()
     }

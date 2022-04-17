@@ -1,5 +1,6 @@
 package com.pranav.lib_android.exception
 
-class CompilationFailedException(e: Throwable?): Exception() {
-  // empty class
+class CompilationFailedException: Exception() {
+  constructor(e?: Throwable): this(e)
+  constructor(message?: String): this(message)
 }

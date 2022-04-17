@@ -15,13 +15,13 @@ class FileUtil {
     }
 
     @JvmStatic
-    fun deleteFile(path: String) {
-      File(path)?.deleteRecursively()
+    fun deleteFile(path?: String) {
+      File(path).deleteRecursively()
     }
 
     @JvmStatic
     fun getDataDir(): String? {
-      return mContext?.getExternalFilesDir(null)?.getAbsolutePath()
+      return mContext.getExternalFilesDir(null)?.getAbsolutePath()
     }
 
     @JvmStatic

@@ -14,8 +14,7 @@ class ZipUtil {
 	private val BUFFER_SIZE = 1024 * 10
 	private val TAG = "ZipUtil"
 
-	fun unzipFromAssets(context: Context, zipFile: String,
-	destination: String) {
+	fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
 		try {
 			val stream = context.getAssets().`open`(zipFile)
 			unzip(stream, destination)

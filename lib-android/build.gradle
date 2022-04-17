@@ -9,7 +9,11 @@ java {
 }
 
 kotlin {
-  jvmTarget = JavaVersion.VERSION_11
+  jvm().compilations.main {
+    kotlinOptions {
+      jvmTarget = JavaVersion.VERSION_11
+    }
+  }
 }
 
 dependencies {

@@ -18,12 +18,12 @@ class Formatter(javaSource: String) {
 		val codeFormatter = DefaultCodeFormatter(options)
 		
 		val edit = codeFormatter.format(
-	    	DefaultCodeFormatter.K_COMPILATION_UNIT,
-	    	source,
-    		0, // starting index
-    		source.length, // length
-    		0, // initial indentation
-	    	System.lineSeparator() // line separator
+      DefaultCodeFormatter.K_COMPILATION_UNIT,
+      source,
+      0, // starting index
+      source.length, // length
+      0, // initial indentation
+      System.lineSeparator() // line separator
 		)
 		
 		val document = Document(source)

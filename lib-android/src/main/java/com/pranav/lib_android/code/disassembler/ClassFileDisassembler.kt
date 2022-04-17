@@ -5,12 +5,12 @@ import java.io.File
 import org.eclipse.jdt.internal.core.util.Disassembler
 
 class ClassFileDisassembler(classFile: String) {
+
+  val classFileBytes: ByteArray
     
-    val classFileBytes: ByteArray
-    
-    init {
-      classFileBytes = File(classFile).readBytes()
-    }
+  init {
+    classFileBytes = File(classFile).readBytes()
+  }
 	
 	fun disassemble(): String {
 		return Disassembler()

@@ -7,4 +7,12 @@ class JavaBuilder constructor(
     val mContext: Context,
     val classLoader: ClassLoader
   ): Builder() {
+  
+  fun getContext(): Context {
+    return mContext
+  }
+  
+  fun getClassloader(): ClassLoader {
+    return classLoader
+  }
 }

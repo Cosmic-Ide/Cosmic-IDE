@@ -20,7 +20,7 @@ class FileUtil {
     }
 
     @JvmStatic
-    fun getDataDir(): String {
+    fun getDataDir(): String? {
       return mContext.getExternalFilesDir(null)?.getAbsolutePath()
     }
 

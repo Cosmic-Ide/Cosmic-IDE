@@ -27,7 +27,7 @@ class ZipUtil {
 		try {
 			val zin = ZipInputStream(stream)
 
-			entries@ while ((var ze = zin.getNextEntry()) != null) {
+			loop@ while (var ze = zin.getNextEntry(); ze != null) {
 				if (ze.isDirectory()) {
 					dirChecker(destination, ze.getName())
 				} else {
@@ -38,7 +38,7 @@ class ZipUtil {
 						val success = f.createNewFile()
 						if (!success) {
 							Log.w(TAG, "Failed to create file " + f.getName())
-							continue@entries
+							continue@loop
 						}
 						f.appendBytes(zin.readBytes())
 						zin.closeEntry()

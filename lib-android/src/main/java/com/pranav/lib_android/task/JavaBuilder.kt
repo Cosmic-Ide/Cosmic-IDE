@@ -8,11 +8,11 @@ class JavaBuilder constructor(
     val classLoader: ClassLoader
   ): Builder() {
   
-  fun getContext(): Context {
+  override fun getContext(): Context {
     return mContext
   }
   
-  fun getClassloader(): ClassLoader {
+  override fun getClassloader(): ClassLoader {
     return classLoader
   }
 }

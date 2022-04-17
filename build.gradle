@@ -14,14 +14,3 @@ gradle.projectsEvaluated {
     options.compilerArgs << "-Xlint:deprecation"
   }
 }
-
-kotlin {
-  targets.all {
-    compilations.all {
-      kotlinOptions {
-        allWarningsAsErrors = true
-        jvmTarget = JavaVersion.VERSION_11
-      }
-    }
-  }
-}

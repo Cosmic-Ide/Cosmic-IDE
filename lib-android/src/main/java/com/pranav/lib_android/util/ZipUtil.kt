@@ -23,41 +23,41 @@ class ZipUtil {
         e.printStackTrace()
       }
     }
-	}
 
-	private fun unzip(stream: InputStream, destination: String) {
-		dirChecker(destination, "")
-		try {
-			val zin = ZipInputStream(stream)
-			var ze: ZipEntry = zin.getNextEntry()
+    private fun unzip(stream: InputStream, destination: String) {
+      dirChecker(destination, "")
+      try {
+      val zin = ZipInputStream(stream)
+      var ze: ZipEntry = zin.getNextEntry()
 
-			label@ while (ze != null) {
-				if (ze.isDirectory()) {
-					dirChecker(destination, ze.getName())
-				} else {
-					val f = File(destination, ze.getName())
-					if (!f.normalize().startsWith(destination))
-						throw SecurityException("Potentially harmful files detected inside zip")
-					if (!f.exists()) {
-						val success = f.createNewFile()
-						if (!success) continue@label
-						f.appendBytes(zin.readBytes())
-						zin.closeEntry()
-					}
-				}
-				ze = zin.getNextEntry()
-			}
-			zin.close()
-		} catch (e: IOException) {
-			Log.e(TAG, "unzip", e)
-		}
-	}
+      label@ while (ze != null) {
+        if (ze.isDirectory()) {
+          dirChecker(destination, ze.getName())
+        } else {
+          val f = File(destination, ze.getName())
+          if (!f.normalize().startsWith(destination))
+          throw SecurityException("Potentially harmful files detected inside zip")
+          if (!f.exists()) {
+            val success = f.createNewFile()
+            if (!success) continue@label
+            f.appendBytes(zin.readBytes())
+            zin.closeEntry()
+          }
+        }
+        ze = zin.getNextEntry()
+      }
+      zin.close()
+      } catch (e: IOException) {
+        Log.e(TAG, "unzip", e)
+      }
+  	}
 
-	private fun dirChecker(destination: String, dir: String) {
-		val f = File(destination, dir)
+    private fun dirChecker(destination: String, dir: String) {
+      val f = File(destination, dir)
 
-		if (!f.isDirectory() && !f.mkdirs()) {
-				Log.w(TAG, "Failed to create folder " + f.getName())
-		}
+      if (!f.isDirectory() && !f.mkdirs()) {
+        Log.w(TAG, "Failed to create folder " + f.getName())
+      }
+    }
 	}
 }

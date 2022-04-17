@@ -28,24 +28,23 @@ class ZipUtil {
       zip.entries().asSequence().forEach { entry ->
         zip.getInputStream(entry).use { input ->
           val output = destDirectory + File.separator + entry.name
-          if (entry.isDirectory)
+          if (entry.isDirectory) {
             File(output).mkdir()
-          else
+          } else {
             extractFile(input, output)
+          }
+          input.close()
         }
       }
     }
   }
+
   @JvmStatic
   fun extractFile(inputStream: InputStream, destFilePath: String) {
-    val bos = BufferedOutputStream(FileOutputStream(destFilePath))
-    val bytesIn = ByteArray(BUFFER_SIZE)
-    var read: Int
-    for (val byte in inputStream.readBytes()) {
-      bos.write(bytesIn, 0, byte)
-    }
-    bos.close()
+    val output = File(destFilePath)
+    output.writeBytes(inputStream.readBytes())
   }
+
   @JvmStatic
 	fun copyFileFromAssets(context: Context, inputFile: String, outputDir: String) {
 		val input = context.getAssets().`open`(inputFile)
@@ -54,6 +53,7 @@ class ZipUtil {
 		if (file.createNewFile()) {
 		  file.writeBytes(input.readBytes())
 		}
+		input.close()
 	}
 	}
 }

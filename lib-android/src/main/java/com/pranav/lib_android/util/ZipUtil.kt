@@ -2,6 +2,7 @@ package com.pranav.lib_android.util;
 
 import java.io.*
 import java.util.zip.ZipFile
+import android.content.Context
 
 object ZipUtil {
   
@@ -30,7 +31,7 @@ object ZipUtil {
   }
 
 	fun copyFileFromAssets(context: Context, inputFile: String, fileName: String) {
-		val input = context.getAssets().open(inputFile)
+		val input = context.getAssets().`open`(inputFile)
 		val outputPath = context.getFilesDir() + "/" + fileName
 		val output = FileOutputStream(outputPath)
 		input.copyTo(output)

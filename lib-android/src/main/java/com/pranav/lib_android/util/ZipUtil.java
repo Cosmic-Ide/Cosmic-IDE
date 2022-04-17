@@ -5,8 +5,6 @@ import java.util.zip.ZipFile
 
 object ZipUtil {
   
-  const val BUFFER_SIZE = 4096
-  
   fun unzip(zipFilePath: File, destDirectory: String) {
     val destDir =  File(destDirectory).run {
       if (!exists())

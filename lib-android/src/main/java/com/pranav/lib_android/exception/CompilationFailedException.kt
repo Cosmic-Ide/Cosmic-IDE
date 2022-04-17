@@ -1,12 +1,12 @@
 package com.pranav.lib_android.exception
 
-class CompilationFailedException: Exception() {
+class CompilationFailedException(): Exception() {
 
 	constructor(e: Throwable?) {
-		super(e);
+		super(e)
 	}
 
 	constructor(message: String?) {
-		super(message);
+		super(message)
 	}
 }

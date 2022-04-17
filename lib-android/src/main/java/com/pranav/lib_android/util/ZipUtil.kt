@@ -6,7 +6,9 @@ import android.content.Context
 
 class ZipUtil {
 
-  const val BUFFER_SIZE = 4096
+  companion object {
+
+  const var BUFFER_SIZE = 4096
 
   @JvmStatic
   fun unzipFromAssets(context: Context, fileName: String, outputDir: String) {
@@ -39,7 +41,7 @@ class ZipUtil {
     val bos = BufferedOutputStream(FileOutputStream(destFilePath))
     val bytesIn = ByteArray(BUFFER_SIZE)
     var read: Int
-    for (Byte byte : inputStream.readBytes()) {
+    for (Byte byte in inputStream.readBytes()) {
       bos.write(byte, 0, read)
     }
     bos.close()
@@ -52,5 +54,6 @@ class ZipUtil {
 		if (file.createNewFile()) {
 		  file.writeBytes(input.readBytes())
 		}
+	}
 	}
 }

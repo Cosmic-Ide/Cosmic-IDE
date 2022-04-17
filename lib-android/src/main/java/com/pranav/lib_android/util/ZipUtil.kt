@@ -5,7 +5,13 @@ import java.util.zip.ZipFile
 import android.content.Context
 
 object ZipUtil {
-  
+
+  fun unzipFromAssets(context: Context, fileName: String, outputDir: String) {
+    copyFileFromAssets(context, fileName, outputDir)
+    unzip(File(outputDir, fileName), outputDir)
+    File(outputDir, fileName).delete()
+  }
+
   fun unzip(zipFilePath: File, destDirectory: String) {
     val destDir =  File(destDirectory).run {
       if (!exists())
@@ -30,9 +36,9 @@ object ZipUtil {
     inputStream.copyTo(bos)
   }
 
-	fun copyFileFromAssets(context: Context, inputFile: String, fileName: String) {
+	fun copyFileFromAssets(context: Context, inputFile: String, outputDir: String) {
 		val input = context.getAssets().`open`(inputFile)
-		val outputPath = context.getFilesDir() + "/" + fileName
+		val outputPath = outputDir + inputFile
 		val output = FileOutputStream(outputPath)
 		input.copyTo(output)
 	}

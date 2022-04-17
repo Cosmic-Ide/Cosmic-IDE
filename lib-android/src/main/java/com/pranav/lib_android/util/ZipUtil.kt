@@ -6,6 +6,8 @@ import android.content.Context
 
 object ZipUtil {
 
+  const val BUFFER_SIZE = 4096
+
   @JvmStatic
   fun unzipFromAssets(context: Context, fileName: String, outputDir: String) {
     copyFileFromAssets(context, fileName, outputDir)

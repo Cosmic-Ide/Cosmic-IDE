@@ -22,17 +22,17 @@ public class D8Task extends Task {
 	public void doFullTask() throws Exception {
 		ConcurrentUtilKt.execute(() -> {
 			try {
-			  D8.run(
-			    D8Command.builder()
-			        .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
-			        .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
-			        .addProgramFiles(
-			            getClassFiles(
-			                new File(FileUtil.getBinDir(), "classes")
-			            )
-			        )
-			        .build()
-			  );
+				D8.run(
+					D8Command.builder()
+						.setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
+						.addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+						.addProgramFiles(
+							getClassFiles(
+								new File(FileUtil.getBinDir(), "classes")
+							)
+						)
+					.build()
+				);
 
 			} catch (Exception e) {
 				ex = e;
@@ -42,23 +42,23 @@ public class D8Task extends Task {
 			throw ex;
 		}
 	}
-	
+
 	private List<Path> getClassFiles(File root) {
-	  List<Path> paths = new ArrayList<>();
-	  
-	  File[] files = root.listFiles();
-	  if (files != null) {
-	    for (File f : files) {
-	      if (f.isFile()) {
-	        paths.add(f.toPath());
-	      } else {
-	        paths.addAll(getClassFiles(f));
-  	    }
-	    }
-	  }
-	  return paths;
+		List<Path> paths = new ArrayList<>();
+
+		File[] files = root.listFiles();
+		if (files != null) {
+			for (File f : files) {
+				if (f.isFile()) {
+					paths.add(f.toPath());
+				} else {
+					paths.addAll(getClassFiles(f));
+				}
+			}
+		}
+		return paths;
 	}
-	
+
 	@Override
 	public String getTaskName() {
 		return "D8 Task";

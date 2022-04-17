@@ -11,6 +11,7 @@ public class FileUtil {
 	public static void initializeContext(Context context) {
 		mContext = context;
 	}
+
 	public static void deleteFile(String path) {
 		File file = new File(path);
 
@@ -42,15 +43,15 @@ public class FileUtil {
 	private static String getDataDir() {
 		return mContext.getExternalFilesDir(null).getAbsolutePath();
 	}
-	
+
 	public static String getJavaDir() {
 		return getDataDir() + "/java/";
 	}
-	
+
 	public static String getBinDir() {
 		return getDataDir() + "/bin/";
 	}
-	
+
 	public static String getClasspathDir() {
 		return getDataDir() + "/classpath/";
 	}

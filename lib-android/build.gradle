@@ -1,17 +1,17 @@
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+	id 'java-library'
+	id 'org.jetbrains.kotlin.jvm'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
-    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
-    // r8 dependency
-    implementation 'com.android.tools:r8:3.3.28'
-    implementation project(path: ':lib-eclipse')
-    compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
+	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+	// r8 dependency
+	implementation 'com.android.tools:r8:3.3.28'
+	implementation project(path: ':lib-eclipse')
+	compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
 }

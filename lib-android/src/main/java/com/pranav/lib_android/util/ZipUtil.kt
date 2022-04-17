@@ -30,9 +30,9 @@ object ZipUtil {
   }
 
 	fun copyFileFromAssets(context: Context, inputFile: String, fileName: String) {
-		val in = context.getAssets().open(inputFile)
+		val input = context.getAssets().open(inputFile)
 		val outputPath = context.getFilesDir() + "/" + fileName
-		val out = FileOutputStream(outputPath)
-		in.copyTo(out)
+		val output = FileOutputStream(outputPath)
+		input.copyTo(output)
 	}
 }

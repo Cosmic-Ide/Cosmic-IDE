@@ -15,7 +15,7 @@ class FileUtil {
     }
 
     @JvmStatic
-    fun deleteFile(path: String?) {
+    fun deleteFile(path: String) {
       File(path).deleteRecursively()
     }
 

@@ -6,6 +6,7 @@ import android.content.Context
 
 object ZipUtil {
 
+  @JvmStatic
   fun unzipFromAssets(context: Context, fileName: String, outputDir: String) {
     copyFileFromAssets(context, fileName, outputDir)
     unzip(File(outputDir, fileName), outputDir)

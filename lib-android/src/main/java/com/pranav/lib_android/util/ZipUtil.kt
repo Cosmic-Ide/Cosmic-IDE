@@ -8,7 +8,7 @@ class ZipUtil {
 
   companion object {
 
-  const var BUFFER_SIZE = 4096
+  val BUFFER_SIZE = 4096
 
   @JvmStatic
   fun unzipFromAssets(context: Context, fileName: String, outputDir: String) {
@@ -41,8 +41,8 @@ class ZipUtil {
     val bos = BufferedOutputStream(FileOutputStream(destFilePath))
     val bytesIn = ByteArray(BUFFER_SIZE)
     var read: Int
-    for (Byte byte in inputStream.readBytes()) {
-      bos.write(byte, 0, read)
+    for (val byte in inputStream.readBytes()) {
+      bos.write(bytesIn, 0, byte)
     }
     bos.close()
   }

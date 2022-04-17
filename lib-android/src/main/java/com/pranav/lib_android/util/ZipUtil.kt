@@ -4,7 +4,7 @@ import java.io.*
 import java.util.zip.ZipFile
 import android.content.Context
 
-object ZipUtil {
+class ZipUtil {
 
   const val BUFFER_SIZE = 4096
 
@@ -15,6 +15,7 @@ object ZipUtil {
     File(outputDir, fileName).delete()
   }
 
+  @JvmStatic
   fun unzip(zipFilePath: File, destDirectory: String) {
     File(destDirectory).run {
       if (!exists())
@@ -33,17 +34,17 @@ object ZipUtil {
       }
     }
   }
-
-  private fun extractFile(inputStream: InputStream, destFilePath: String) {
+  @JvmStatic
+  fun extractFile(inputStream: InputStream, destFilePath: String) {
     val bos = BufferedOutputStream(FileOutputStream(destFilePath))
     val bytesIn = ByteArray(BUFFER_SIZE)
     var read: Int
-    while (inputStream.read(bytesIn).also { read = it } != -1) {
-      bos.write(bytesIn, 0, read)
+    for (Byte byte : inputStream.readBytes()) {
+      bos.write(byte, 0, read)
     }
     bos.close()
   }
-
+  @JvmStatic
 	fun copyFileFromAssets(context: Context, inputFile: String, outputDir: String) {
 		val input = context.getAssets().`open`(inputFile)
 		val outputPath = outputDir + inputFile

@@ -11,7 +11,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 class ZipUtil {
-	private val BUFFER_SIZE = 1024 * 10
 	private val TAG = "ZipUtil"
 
 	fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
@@ -25,12 +24,10 @@ class ZipUtil {
 
 	private fun unzip(stream: InputStream, destination: String) {
 		dirChecker(destination, "")
-		val buffer = Byte[BUFFER_SIZE]
 		try {
 			val zin = ZipInputStream(stream)
-			var ze: ZipEntry = null
 
-			while ((var ze = zin.getNextEntry()) != null) {
+			entries@ while ((var ze = zin.getNextEntry()) != null) {
 				if (ze.isDirectory()) {
 					dirChecker(destination, ze.getName())
 				} else {
@@ -41,11 +38,10 @@ class ZipUtil {
 						val success = f.createNewFile()
 						if (!success) {
 							Log.w(TAG, "Failed to create file " + f.getName())
-							continue
+							continue@entries
 						}
 						f.appendBytes(zin.readBytes())
 						zin.closeEntry()
-						fout.close()
 					}
 				}
 			}

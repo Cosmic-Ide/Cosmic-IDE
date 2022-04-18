@@ -16,8 +16,8 @@ class CompileJavaTask(
       val builder: Builder
   ): Task() {
 
-	private val StringBuilder errs = StringBuilder()
-	private var prefs: SharedPreferences
+	val errs = StringBuilder()
+	var prefs: SharedPreferences
 
 	init {
 		prefs = builder.getContext().getSharedPreferences("compiler_settings",
@@ -29,36 +29,38 @@ class CompileJavaTask(
 	}
 
 	override fun doFullTask() {
-    val writer = PrintWriter(OutputStream() {
-      override fun write(b: Int) {
-        errs.append(b)
-      }
-    })
+    val writer = PrintWriter(
+        object : OutputStream() {
+          override fun write(p1: Int) {
+            err.append(p1.toChar())
+          }
+        }
+    )
 	  
 	  val main = Main(writer, writer, false, null, null)
 	  
 	  val output = File(FileUtil.getBinDir(), "classes")
 	  
     ConcurrentUtil.execute({
-		  val args = ArrayList<>()
+		  val args = ArrayList<String>()
 
       args.add("-log")
       args.add(FileUtil.getBinDir()
-				  .concat("debug.xml"))
+				  .plus("debug.xml"))
       args.add("-g")
       args.add("-" + prefs.getString("javaVersion", "7.0"))
       args.add("-d")
       args.add(output.getAbsolutePath())
       args.add("-classpath")
       args.add(FileUtil.getClasspathDir()
-				  + "android.jar")
+				  .plus("android.jar"))
 			val classpath = StringBuilder()
 			if (prefs.getString("javaVersion", "7.0").equals("8.0")) {
 			  classpath.append(FileUtil.getClasspathDir()
 				  	+ "core-lambda-stubs.jar")
       }
       val clspath = prefs.getString("classpath", "")
-      if (!clspath.isEmpty() and classpath.length > 0) {
+      if (not clspath.isEmpty() and (classpath.length > 0)) {
         classpath.append(":")
         classpath.append(clspath)
       }
@@ -71,7 +73,7 @@ class CompileJavaTask(
       args.add(" ")
       args.add(FileUtil.getJavaDir())
 
-      main.compile(args.toArray(String[0]))
+      main.compile(args.toTypedArray())
     })
 
 		if (main.globalErrorsCount > 0 or !output.exists()) {

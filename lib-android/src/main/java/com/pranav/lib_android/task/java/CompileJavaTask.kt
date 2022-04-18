@@ -32,7 +32,7 @@ class CompileJavaTask(
     val writer = PrintWriter(
         object : OutputStream() {
           override fun write(p1: Int) {
-            err.append(p1.toChar())
+            errs.append(p1.toChar())
           }
         }
     )
@@ -60,7 +60,7 @@ class CompileJavaTask(
 				  	+ "core-lambda-stubs.jar")
       }
       val clspath = prefs.getString("classpath", "")
-      if (not clspath.isEmpty() and (classpath.length > 0)) {
+      if (!clspath.isEmpty() && classpath.length > 0) {
         classpath.append(":")
         classpath.append(clspath)
       }
@@ -76,7 +76,7 @@ class CompileJavaTask(
       main.compile(args.toTypedArray())
     })
 
-		if (main.globalErrorsCount > 0 or !output.exists()) {
+		if (main.globalErrorsCount > 0 || !output.exists()) {
 			throw CompilationFailedException(errs.toString())
 		}
 	}

@@ -23,12 +23,12 @@ class ExecuteJavaTask constructor(
 
 	@Throws(InvocationTargetException::class)
 	override fun doFullTask() {
-		val defaultOut = System.out
+		val defaultOut = System.`out`
 		val defaultErr = System.err
 		val dexFile = FileUtil.getBinDir() + "classes.dex"
 		ConcurrentUtil.execute({
 			val out = object: OutputStream() {
-			  override fun write(b: Int) {
+			  override fun write(b: Int?) {
 			    log.append(b as? Char)
 			  }
 			  
@@ -36,8 +36,8 @@ class ExecuteJavaTask constructor(
 			    return log.toString()
 			  }
 			}
-			System.setOut(PrintStream(out))
-			System.setErr(PrintStream(out))
+			System.setOut(PrintStream(`out`))
+			System.setErr(PrintStream(`out`))
 			
 			val loader = PathClassLoader(dexFile, mBuilder.getClassloader())
 			try {
@@ -61,7 +61,7 @@ class ExecuteJavaTask constructor(
 					}
 				}
 				if (result != null) {
-				  System.out.println(result.toString())
+				  log.append(result.toString())
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()

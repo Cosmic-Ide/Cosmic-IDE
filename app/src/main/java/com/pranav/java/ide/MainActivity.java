@@ -159,7 +159,7 @@ public final class MainActivity extends AppCompatActivity {
 			// run d8
 			try {
 				new D8Task().doFullTask();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				errorsArePresent = true;
 				showErr(e.toString());
 				return;

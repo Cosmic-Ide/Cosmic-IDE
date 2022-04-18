@@ -2,9 +2,9 @@ package com.pranav.lib_android.interfaces
 
 import android.content.Context
 
-open class Builder {
+abstract class Builder {
 
-	open fun getContext(): Context
+	abstract fun getContext(): Context
 
-	open fun getClassloader(): ClassLoader
+	abstract fun getClassloader(): ClassLoader
 }

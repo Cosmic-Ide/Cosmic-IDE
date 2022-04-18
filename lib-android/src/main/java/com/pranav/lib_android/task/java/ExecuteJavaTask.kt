@@ -29,7 +29,7 @@ class ExecuteJavaTask constructor(
 		ConcurrentUtil.execute({
 			val out = object: OutputStream() {
 			  override fun write(b: Int) {
-			    log.append(b as Char)
+			    log.append(b.toChar())
 			  }
 			  
 			  override fun toString(): String {

@@ -7,6 +7,7 @@ import dalvik.system.PathClassLoader
 import java.io.PrintStream
 import java.io.OutputStream
 import java.lang.reflect.Modifier
+import java.lang.reflect.InvocationTargetException
 
 class ExecuteJavaTask constructor(
     val mBuilder: Builder,
@@ -19,7 +20,8 @@ class ExecuteJavaTask constructor(
 	override fun getTaskName(): String {
 		return "Execute java Task"
 	}
-	
+
+	@Throws(InvocationTargetException::class)
 	override fun doFullTask() {
 		val defaultOut = System.`out`
 		val defaultErr = System.err

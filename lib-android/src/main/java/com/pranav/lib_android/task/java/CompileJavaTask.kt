@@ -28,6 +28,7 @@ class CompileJavaTask(
 		return "Compile Java Task"
 	}
 
+  @Throws(CompilationFailedException::class)
 	override fun doFullTask() {
     val writer = PrintWriter(
         object : OutputStream() {

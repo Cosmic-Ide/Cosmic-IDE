@@ -28,8 +28,8 @@ class ExecuteJavaTask constructor(
 		val dexFile = FileUtil.getBinDir() + "classes.dex"
 		ConcurrentUtil.execute({
 			val out = object: OutputStream() {
-			  override fun write(b: Int?) {
-			    log.append(b as? Char)
+			  override fun write(b: Int) {
+			    log.append(b as Char)
 			  }
 			  
 			  override fun toString(): String {

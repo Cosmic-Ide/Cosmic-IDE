@@ -23,13 +23,13 @@ class ExecuteJavaTask constructor(
 
 	@Throws(InvocationTargetException::class)
 	override fun doFullTask() {
-		val defaultOut = System.`out`
+		val defaultOut = System.out
 		val defaultErr = System.err
 		val dexFile = FileUtil.getBinDir() + "classes.dex"
 		ConcurrentUtil.execute({
 			val out = object: OutputStream() {
 			  override fun write(b: Int) {
-			    log.append(b)
+			    log.append(b as? Char)
 			  }
 			  
 			  override fun toString(): String {
@@ -49,10 +49,16 @@ class ExecuteJavaTask constructor(
 				var param = arrayOf<String>()
 				
 				if (Modifier.isStatic(method.getModifiers())) {
-					result = method.invoke(null, param as? Any)
+					val res = method.invoke(null, param as? Any)
+					if (res !is Unit) {
+					  result = res
+					}
 				} else if (Modifier.isPublic(method.getModifiers())) {
 					val classInstance = calledClass.newInstance()
-					result = method.invoke(classInstance, param as? Any)
+					val res = method.invoke(classInstance, param as? Any)
+					if (res !is Unit) {
+					  result = res
+					}
 				}
 				if (result != null) {
 				  System.out.println(result.toString())

@@ -32,7 +32,7 @@ class D8Task: Task() {
 	}
 	
   private fun getClassFiles(root: File): List<Path> {
-    val paths: List<Path> = ArrayList<Path>()
+    val paths = ArrayList<Path>()
     val files = root.listFiles()
     if (files != null) {
       for (file in files) {
@@ -43,7 +43,8 @@ class D8Task: Task() {
         }
       }
     }
-    return paths
+    // bad way to convert arraylist to list, but it works, so you get the idea...
+    return paths.toTypedArray().toList()
   }
 	
 	override fun getTaskName(): String {

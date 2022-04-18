@@ -13,22 +13,21 @@ import java.nio.file.Paths
 
 class D8Task: Task() {
 
-
 	override fun doFullTask() {
     var ex: Exception? = null
-		ConcurrentUtil.execute({
-			try {
-			  D8.run(
-			    D8Command.builder()
-			        .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
-			        .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
-			        .addProgramFiles(
-			            getClassFiles(
-			                File(FileUtil.getBinDir(), "classes")
-			            )
-			        )
-			        .build()
-			  )
+    ConcurrentUtil.execute({
+      try {
+        D8.run(
+          D8Command.builder()
+              .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
+              .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+              .addProgramFiles(
+                  getClassFiles(
+                      File(FileUtil.getBinDir(), "classes")
+                  )
+              )
+              .build()
+        )
 
 			} catch (e: Exception) {
 				ex = e

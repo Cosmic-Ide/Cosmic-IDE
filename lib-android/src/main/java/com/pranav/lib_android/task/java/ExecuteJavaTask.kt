@@ -13,7 +13,7 @@ class ExecuteJavaTask constructor(
     val clazz: String
   ): Task() {
 	
-	lateinit var result: Any
+	lateinit var result: Any?
 	val log = StringBuilder()
 	
 	override fun getTaskName(): String {
@@ -47,10 +47,10 @@ class ExecuteJavaTask constructor(
 				var param = arrayOf<String>()
 				
 				if (Modifier.isStatic(method.getModifiers())) {
-					result = method.invoke(null, ((Object) param))
+					result = method.invoke(null, param as? Object)
 				} else if (Modifier.isPublic(method.getModifiers())) {
 					val classInstance = calledClass.newInstance()
-					result = method.invoke(classInstance, ((Object) param))
+					result = method.invoke(classInstance, param as? Object)
 				}
 				if (result != null) {
 				  System.out.println(result.toString())

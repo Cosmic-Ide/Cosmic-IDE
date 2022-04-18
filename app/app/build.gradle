@@ -1,0 +1,61 @@
+plugins {
+	id 'com.android.application'
+	id 'org.jetbrains.kotlin.android'
+}
+
+android {
+	namespace 'com.pranav.java.ide'
+	compileSdk 32
+
+	defaultConfig {
+		applicationId 'com.pranav.java.ide'
+		minSdk 26
+		targetSdk 32
+		versionCode 3
+		versionName '0.0.3'
+	}
+
+	buildTypes {
+		release {
+			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+		}
+		
+		debug {
+			multiDexEnabled true
+		}
+	}
+	
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_11
+		targetCompatibility JavaVersion.VERSION_11
+	}
+	
+	kotlinOptions {
+	  jvmTarget = '1.8'
+	}
+	
+	packagingOptions {
+		resources.excludes.add("plugin.xml")
+		resources.excludes.add(".options")
+		resources.excludes.add("about.xml")
+		resources.excludes.add("plugin.properties")
+		resources.excludes.add(".api_description")
+		resources.excludes.add("about_files/*")
+		resources.excludes.add("META-INF/*")
+	}
+}
+
+dependencies {
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation 'com.google.guava:guava:31.1-android'
+	implementation 'org.benf:cfr:0.152'
+	implementation 'org.smali:dexlib2:2.5.2'
+	implementation 'io.github.Rosemoe.sora-editor:editor:0.10.11'
+	implementation 'io.github.Rosemoe.sora-editor:language-java:0.10.11'
+	implementation 'androidx.appcompat:appcompat:1.6.0-alpha01'
+	implementation 'com.google.android.material:material:1.6.0-beta01'
+	implementation project(path: ':lib-android')
+	testImplementation 'junit:junit:4.13.2'
+	androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha05'
+	androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha05'
+}

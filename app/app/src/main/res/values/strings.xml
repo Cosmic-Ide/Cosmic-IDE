@@ -1,0 +1,14 @@
+<resources>
+	<string name="app_name">Java IDE</string>
+	<string name="next">Next</string>
+	<string name="previous">Previous</string>
+	
+	<!-- Strings used by MainActivity -->
+	<string name="run">Run</string>
+	<string name="smali">Smali</string>
+	<string name="disassemble">Disassemble</string>
+	<string name="smali2java">Smali2Java</string>
+	
+	<!-- String used by SettingActivity -->
+	<string name="java_version">Java Version</string>
+</resources>

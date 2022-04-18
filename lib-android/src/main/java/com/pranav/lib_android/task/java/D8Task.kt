@@ -15,29 +15,19 @@ class D8Task: Task() {
 
   @Throws(Throwable::class)
 	override fun doFullTask() {
-    var ex: Throwable? = null
     ConcurrentUtil.execute({
-      try {
-        D8.run(
-          D8Command.builder()
-              .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
-              .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
-              .addProgramFiles(
-                  getClassFiles(
-                      File(FileUtil.getBinDir(), "classes")
-                  )
-              )
-              .build()
-        )
-
-			} catch (e: Exception) {
-				ex = e
-			}
+      D8.run(
+        D8Command.builder()
+            .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
+            .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+            .addProgramFiles(
+                getClassFiles(
+                    File(FileUtil.getBinDir(), "classes")
+                )
+            )
+            .build()
+      )
 		})
-		// If there were no problems, continue the build
-		if (ex != null) {
-		  throw ex
-		}
 	}
 	
   private fun getClassFiles(root: File): ArrayList<Path> {

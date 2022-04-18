@@ -13,10 +13,10 @@ import java.nio.file.Paths
 
 class D8Task: Task() {
 
-	private var ex: Exception? = null
 
 	override fun doFullTask() {
-		ConcurrentUtil.execute(() -> {
+    var ex: Exception = null
+		ConcurrentUtil.execute({
 			try {
 			  D8.run(
 			    D8Command.builder()
@@ -35,12 +35,12 @@ class D8Task: Task() {
 			}
 		})
 		if (ex != null) {
-			throw ex
+			throw ex!!
 		}
 	}
 	
   private fun getClassFiles(root: File): ArrayList<Path> {
-    val paths: ArrayList<Path> = ArrayList<>()
+    val paths = ArrayList<Path>()
     val walker = root.walk()
     walker.iterator().forEach {
       if (it.isFile()) {

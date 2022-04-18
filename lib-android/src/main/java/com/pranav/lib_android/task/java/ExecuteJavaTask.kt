@@ -13,7 +13,7 @@ class ExecuteJavaTask constructor(
     val clazz: String
   ): Task() {
 	
-	lateinit var result: Object
+	var result: Any
 	val log = StringBuilder()
 	
 	override fun getTaskName(): String {
@@ -24,8 +24,8 @@ class ExecuteJavaTask constructor(
 		val defaultOut = System.`out`
 		val defaultErr = System.err
 		val dexFile = FileUtil.getBinDir() + "classes.dex"
-		ConcurrentUtil.execute(() -> {
-			val out = OutputStream() {
+		ConcurrentUtil.execute({
+			val out = object: OutputStream() {
 			  override fun write(b: Int) {
 			    log.append((Char) b)
 			  }
@@ -44,13 +44,13 @@ class ExecuteJavaTask constructor(
 				
 				val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
 				
-				var param: Array<String> = {}
+				var param = arrayOf<String>()
 				
 				if (Modifier.isStatic(method.getModifiers())) {
-					result = method.invoke(null, Object[] {param})
+					result = method.invoke(null, arrayOf<Object>(param))
 				} else if (Modifier.isPublic(method.getModifiers())) {
 					val classInstance = calledClass.newInstance()
-					result = method.invoke(classInstance, Object[] {param})
+					result = method.invoke(classInstance, arrayOf<Object>(param))
 				}
 				if (result != null) {
 				  System.out.println(result.toString())

@@ -27,7 +27,7 @@ class ExecuteJavaTask constructor(
 		ConcurrentUtil.execute({
 			val out = object: OutputStream() {
 			  override fun write(b: Int) {
-			    log.append((b)
+			    log.append(b)
 			  }
 			  
 			  override fun toString(): String {
@@ -47,10 +47,10 @@ class ExecuteJavaTask constructor(
 				var param = arrayOf<String>()
 				
 				if (Modifier.isStatic(method.getModifiers())) {
-					result = method.invoke(null, (Object) param)
+					result = method.invoke(null, ((Object) param))
 				} else if (Modifier.isPublic(method.getModifiers())) {
 					val classInstance = calledClass.newInstance()
-					result = method.invoke(classInstance, (Object) param)
+					result = method.invoke(classInstance, ((Object) param))
 				}
 				if (result != null) {
 				  System.out.println(result.toString())

@@ -61,7 +61,7 @@ class CompileJavaTask(
 				  	+ "core-lambda-stubs.jar")
       }
       val clspath: String? = prefs.getString("classpath", "")
-      if (clspath.length > 0 && classpath.length > 0) {
+      if (clspath!!.length > 0 && classpath.length > 0) {
         classpath.append(":")
         classpath.append(clspath)
       }

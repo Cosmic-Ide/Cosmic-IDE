@@ -35,9 +35,7 @@ class D8Task: Task() {
 			}
 		})
 		// If there were no problems, continue the build
-		if (ex == null) {
-		  return
-		} else {
+		if (ex != null) {
 		  throw ex
 		}
 	}

@@ -44,7 +44,7 @@ class D8Task: Task() {
       }
     }
     // bad way to convert arraylist to list, but it works, so you get the idea...
-    return paths.toTypedArray().toList()
+    return paths.toList()
   }
 	
 	override fun getTaskName(): String {

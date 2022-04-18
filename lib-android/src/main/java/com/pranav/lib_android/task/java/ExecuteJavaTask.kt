@@ -60,9 +60,7 @@ class ExecuteJavaTask constructor(
 					  result = res
 					}
 				}
-				if (result != null) {
-				  log.append(result.toString())
-				}
+				log.append(result?.toString())
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}

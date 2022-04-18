@@ -36,13 +36,12 @@ class D8Task: Task() {
     if (files != null) {
       for (file in files) {
         if (file.isFile()) {
-          file.toPath()
+          paths.add(file.toPath())
         } else {
           paths.addAll(getClassFiles(file))
         }
       }
     }
-    // bad way to convert arraylist to list, but it works, so you get the idea...
     return paths.toList()
   }
 	

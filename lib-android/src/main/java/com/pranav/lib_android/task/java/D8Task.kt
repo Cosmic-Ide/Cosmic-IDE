@@ -41,12 +41,12 @@ class D8Task: Task() {
 	
   private fun getClassFiles(root: File): ArrayList<Path> {
     val paths = ArrayList<Path>()
-    val walker = root.walk()
-    walker.iterator().forEach {
-      if (it.isFile()) {
-        paths.add(it.toPath())
+    val files = root.listFiles()
+    for (var file in files!!) {
+      if (file.isFile()) {
+        file.toPath()
       } else {
-        paths.addAll(getClassFiles(it))
+        paths.addAll(getClassFiles(file))
       }
     }
     return paths

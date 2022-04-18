@@ -32,7 +32,7 @@ class D8Task: Task() {
 	}
 	
   private fun getClassFiles(root: File): List<Path> {
-    val paths: List<Path> = ArrayList<>()
+    val paths: List<Path> = ArrayList<Path>()
     val files = root.listFiles()
     if (files != null) {
       for (file in files) {

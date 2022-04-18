@@ -30,7 +30,7 @@ import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.util.ZipUtil;
 import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ConcurrentUtil;
+import com.pranav.lib_android.util.ConcurrentUtilKt;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -95,7 +95,7 @@ public final class MainActivity extends AppCompatActivity {
 		final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
 				getClassLoader());
 
-		ConcurrentUtil.executeInBackground(() -> {
+		ConcurrentUtilKt.executeInBackground(() -> {
 			if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
 				ZipUtil.unzipFromAssets(MainActivity.this,
 					"android.jar.zip", FileUtil.getClasspathDir());
@@ -103,18 +103,18 @@ public final class MainActivity extends AppCompatActivity {
 			File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
 			if (!output.exists() && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-				    .getString("javaVersion", "7.0")
-			        .equals("8.0")) {
-		    try {
+					.getString("javaVersion", "7.0")
+					.equals("8.0")) {
+				try {
 					Files.write(
 					  ByteStreams.toByteArray(
 					    getAssets().open("core-lambda-stubs.jar")
 					   ),
 					 output);
 				} catch (Exception e) {
-          showErr(getString(e));
-        }
-		 }
+					showErr(getString(e));
+				}
+			}
 		});
 
 		findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
@@ -158,7 +158,7 @@ public final class MainActivity extends AppCompatActivity {
 			
 			// run d8
 			try {
-        new D8Task().doFullTask();
+				new D8Task().doFullTask();
 			} catch (Exception e) {
 				errorsArePresent = true;
 				showErr(e.toString());
@@ -174,17 +174,17 @@ public final class MainActivity extends AppCompatActivity {
 				listDialog("Select a class to execute", classes,
 						(dialog, pos) -> {
 							ExecuteJavaTask task = new ExecuteJavaTask(
-							  	builder, classes[pos]);
-					  	try {
-								task.doFullTask();
-							} catch (java.lang.reflect.InvocationTargetException e) {
-								dialog("Failed...",
-										"Runtime error: " +
-										    e.getMessage() +
-										    "\n\n" +
-												getString(e),
+								builder, classes[pos]);
+						try {
+							task.doFullTask();
+						} catch (java.lang.reflect.InvocationTargetException e) {
+							dialog("Failed...",
+									"Runtime error: " +
+									e.getMessage() +
+									"\n\n" +
+									getString(e),
 									true);
-							} catch (Exception e) {
+						} catch (Exception e) {
 								dialog("Failed..",
 										"Couldn't execute the dex: "
 												+ e.toString()
@@ -212,7 +212,7 @@ public final class MainActivity extends AppCompatActivity {
 		Snackbar.make((LinearLayout) findViewById(R.id.container), "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
 				.setAction("Show error", (view) -> dialog("Failed...", e, true))
-			    .show();
+				.show();
 	}
 
 	@Override
@@ -226,11 +226,9 @@ public final class MainActivity extends AppCompatActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case 0 :
-        final Formatter formatter = new Formatter(
-						  editor.getText().toString());
-				ConcurrentUtil.execute(() -> {
-				  editor.setText(formatter.format());
-			  });
+				Formatter formatter = new Formatter(
+						editor.getText().toString());
+				editor.setText(formatter.format());
 				break;
 
 			case 1 :
@@ -259,7 +257,7 @@ public final class MainActivity extends AppCompatActivity {
 						  FileUtil.getBinDir()
 						      .concat("classes.dex")
 						};
-						ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
+						ConcurrentUtilKt.execute(() -> BaksmaliCmd.main(args));
 
 						CodeEditor edi = new CodeEditor(MainActivity.this);
 						edi.setTypefaceText(Typeface.MONOSPACE);
@@ -304,7 +302,7 @@ public final class MainActivity extends AppCompatActivity {
 							FileUtil.getBinDir() + "cfr/"
 						};
 
-					ConcurrentUtil.execute(() -> {
+					ConcurrentUtilKt.execute(() -> {
 						try {
 							org.benf.cfr.reader.Main.main(args);
 						} catch (Exception e) {
@@ -438,17 +436,17 @@ public final class MainActivity extends AppCompatActivity {
 		dialog.create().show();
 	}
 
-// for granting execute permissions to file/folder (currently unused)
-  public void grantChmod(File file) {
-	  File[] files = file.listFiles();
+	// for granting execute permissions to file/folder (currently unused)
+	public void grantChmod(File file) {
+		File[] files = file.listFiles();
 		try {
-		  for (File f : files) {
-		    if (f.isDirectory()) {
-          grantChmod(f);
-        } else {
-          f.setExecutable(true, true);
-        }
-		  }
+			for (File f : files) {
+				if (f.isDirectory()) {
+					grantChmod(f);
+				} else {
+					f.setExecutable(true, true);
+				}
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

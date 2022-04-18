@@ -5,6 +5,7 @@
 	android:id="@+id/coordinator"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
+
 	<com.google.android.material.appbar.AppBarLayout
 		android:id="@+id/appbar"
 		android:layout_width="match_parent"
@@ -17,6 +18,7 @@
 			android:background="?attr/colorPrimary"
 			app:popupTheme="@style/Theme.JavaIDE.PopupOverlay" />
 	</com.google.android.material.appbar.AppBarLayout>
+
 	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -136,15 +138,15 @@
 					android:text="14.0"
 					android:textSize="12sp"
 					android:textColor="#000000" />
-        <com.google.android.material.radiobutton.MaterialRadioButton
-          android:id="@+id/java15"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:padding="8dp"
-          android:text="15.0"
-          android:textSize="12sp"
-          android:textColor="#000000" />
-        <com.google.android.material.radiobutton.MaterialRadioButton
+				<com.google.android.material.radiobutton.MaterialRadioButton
+					android:id="@+id/java15"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:text="15.0"
+					android:textSize="12sp"
+					android:textColor="#000000" />
+				<com.google.android.material.radiobutton.MaterialRadioButton
 					android:id="@+id/java16"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -186,4 +188,5 @@
 				android:textColor="#000000" />
 		</com.google.android.material.textfield.TextInputLayout>
 	</LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

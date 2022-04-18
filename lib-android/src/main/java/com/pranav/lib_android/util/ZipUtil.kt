@@ -28,11 +28,9 @@ class ZipUtil {
       dirChecker(destination, "")
       try {
       val zin = ZipInputStream(stream)
-      var ze: ZipEntry = zin.getNextEntry()
-      val available = zin.available()
-      var current = 1 
+      var ze: ZipEntry
 
-      label@ while (current < available) {
+      label@ while ((ze = zin.getNextEntry()) != null) {
         if (ze.isDirectory()) {
           dirChecker(destination, ze.getName())
         } else {
@@ -46,8 +44,6 @@ class ZipUtil {
             zin.closeEntry()
           }
         }
-        ze = zin.getNextEntry() // add check
-        current++
       }
       zin.close()
       } catch (e: IOException) {

@@ -6,6 +6,7 @@ import com.pranav.lib_android.interfaces.Task
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
+import java.util.List
 import java.util.ArrayList
 import java.io.File
 import java.nio.file.Path
@@ -30,8 +31,8 @@ class D8Task: Task() {
 		})
 	}
 	
-  private fun getClassFiles(root: File): ArrayList<Path> {
-    val paths = ArrayList<Path>()
+  private fun getClassFiles(root: File): List<Path> {
+    val paths: List<Path> = ArrayList<>()
     val files = root.listFiles()
     if (files != null) {
       for (file in files) {

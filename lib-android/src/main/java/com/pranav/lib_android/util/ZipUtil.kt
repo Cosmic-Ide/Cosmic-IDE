@@ -46,7 +46,9 @@ class ZipUtil {
           }
           try {
             ze = zin.getNextEntry()
-          } catch (e: NullPointerException) {}
+          } catch (e: NullPointerException) {
+            ze = null
+          }
         }
         zin.close()
       } catch (e: IOException) {

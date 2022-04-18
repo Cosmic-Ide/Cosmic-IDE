@@ -34,9 +34,7 @@ class D8Task: Task() {
 				ex = e
 			}
 		})
-		if (ex != null) {
-			throw ex!!
-		}
+		throw ex?
 	}
 	
   private fun getClassFiles(root: File): ArrayList<Path> {

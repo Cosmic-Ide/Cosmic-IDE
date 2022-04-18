@@ -13,7 +13,7 @@ class ExecuteJavaTask constructor(
     val clazz: String
   ): Task() {
 	
-	var result = Any
+	var result: Any = ""
 	val log = StringBuilder()
 	
 	override fun getTaskName(): String {

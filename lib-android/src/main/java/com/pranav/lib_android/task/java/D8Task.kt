@@ -13,9 +13,9 @@ import java.nio.file.Paths
 
 class D8Task: Task() {
 
-  @Throws(Exception::class)
+  @Throws(Throwable::class)
 	override fun doFullTask() {
-    var ex: Exception? = null
+    var ex: Throwable? = null
     ConcurrentUtil.execute({
       try {
         D8.run(
@@ -34,7 +34,12 @@ class D8Task: Task() {
 				ex = e
 			}
 		})
-		throw ex?
+		// If there were no problems, continue the build
+		if (ex == null) {
+		  return
+		}
+
+		throw ex
 	}
 	
   private fun getClassFiles(root: File): ArrayList<Path> {

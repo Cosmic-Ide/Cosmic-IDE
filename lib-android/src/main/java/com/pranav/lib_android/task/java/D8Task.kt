@@ -13,6 +13,7 @@ import java.nio.file.Paths
 
 class D8Task: Task() {
 
+  @Throws(Exception::class)
 	override fun doFullTask() {
     var ex: Exception? = null
     ConcurrentUtil.execute({

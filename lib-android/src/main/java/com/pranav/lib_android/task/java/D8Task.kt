@@ -15,7 +15,7 @@ class D8Task: Task() {
 
 
 	override fun doFullTask() {
-    var ex: Exception = null
+    var ex: Exception? = null
 		ConcurrentUtil.execute({
 			try {
 			  D8.run(

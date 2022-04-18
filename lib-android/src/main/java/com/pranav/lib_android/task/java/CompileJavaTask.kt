@@ -45,7 +45,7 @@ class CompileJavaTask(
     ConcurrentUtil.execute({
 		  val args = ArrayList<String>()
 
-      args.add("-log")p
+      args.add("-log")
       args.add(FileUtil.getBinDir()
 				  .plus("debug.xml"))
       args.add("-g")
@@ -60,7 +60,7 @@ class CompileJavaTask(
 			  classpath.append(FileUtil.getClasspathDir()
 				  	+ "core-lambda-stubs.jar")
       }
-      val clspath: String = prefs.getString("classpath", "")
+      val clspath = prefs.getString("classpath", "")
       if (clspath.length > 0 && classpath.length > 0) {
         classpath.append(":")
         classpath.append(clspath)

@@ -37,9 +37,9 @@ class D8Task: Task() {
 		// If there were no problems, continue the build
 		if (ex == null) {
 		  return
+		} else {
+		  throw ex
 		}
-
-		throw ex
 	}
 	
   private fun getClassFiles(root: File): ArrayList<Path> {

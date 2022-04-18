@@ -28,7 +28,7 @@ class ZipUtil {
       dirChecker(destination, "")
       try {
         val zin = ZipInputStream(stream)
-        var ze: ZipEntry = zin.getNextEntry()
+        var ze: ZipEntry? = zin.getNextEntry()
 
         label@ while (ze != null) {
           if (ze.isDirectory()) {

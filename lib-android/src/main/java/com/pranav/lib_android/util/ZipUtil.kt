@@ -27,30 +27,32 @@ class ZipUtil {
     private fun unzip(stream: InputStream, destination: String) {
       dirChecker(destination, "")
       try {
-      val zin = ZipInputStream(stream)
-      var ze: ZipEntry = zin.getNextEntry()
+        val zin = ZipInputStream(stream)
+        var ze: ZipEntry = zin.getNextEntry()
 
-      label@ while (ze != null) {
-        if (ze.isDirectory()) {
-          dirChecker(destination, ze.getName())
-        } else {
-          val f = File(destination, ze.getName())
-          if (!f.normalize().startsWith(destination))
-          throw SecurityException("Potentially harmful files detected inside zip")
-          if (!f.exists()) {
-            val success = f.createNewFile()
-            if (!success) continue@label
-            f.appendBytes(zin.readBytes())
-            zin.closeEntry()
+        label@ while (ze != null) {
+          if (ze.isDirectory()) {
+            dirChecker(destination, ze.getName())
+          } else {
+            val f = File(destination, ze.getName())
+            if (!f.normalize().startsWith(destination))
+            throw SecurityException("Potentially harmful files detected inside zip")
+            if (!f.exists()) {
+              val success = f.createNewFile()
+              if (!success) continue@label
+              f.appendBytes(zin.readBytes())
+              zin.closeEntry()
+            }
           }
+          try {
+            ze = zin.getNextEntry()
+          } catch (e: NullPointerException) {}
         }
-        ze = zin.getNextEntry()?
-      }
-      zin.close()
+        zin.close()
       } catch (e: IOException) {
-        Log.e(TAG, "unzip", e)
+        Log.e(TAG, "Unzip", e)
       }
-  	}
+    }
 
     private fun dirChecker(destination: String, dir: String) {
       val f = File(destination, dir)

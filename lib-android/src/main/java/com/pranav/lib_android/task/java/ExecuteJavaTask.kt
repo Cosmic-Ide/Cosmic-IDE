@@ -52,7 +52,7 @@ class ExecuteJavaTask constructor(
 					val classInstance = calledClass.newInstance()
 					result = method.invoke(classInstance, param as? Any)
 				}
-				if (result.length() > 0) {
+				if (result != null) {
 				  System.out.println(result.toString())
 				}
 			} catch (e: Exception) {

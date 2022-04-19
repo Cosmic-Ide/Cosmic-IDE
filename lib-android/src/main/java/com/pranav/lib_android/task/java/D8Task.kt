@@ -11,7 +11,7 @@ import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class D8Task: Task() {
+class D8Task : Task() {
 
   @Throws(Throwable::class)
 	override fun doFullTask() {

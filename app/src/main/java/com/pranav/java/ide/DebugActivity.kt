@@ -9,7 +9,7 @@ class DebugActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		val intent = getIntent()?
+		val intent? = getIntent()
 		val errorMessage = intent?.getStringExtra("error")!!
 
 		AlertDialog.Builder(this)

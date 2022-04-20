@@ -359,7 +359,7 @@ class MainActivity: AppCompatActivity() {
 
 	private fun formatSmali(inp: String): String {
 
-		val lines = Arrays.asList(inp.split("\n"))
+		val lines: ArrayList<String> = Arrays.asList(inp.split("\n"))
 
 		var insideMethod = false
 
@@ -372,7 +372,7 @@ class MainActivity: AppCompatActivity() {
 				insideMethod = false
 
 			if (insideMethod && !shouldSkip(it))
-				lines.set(it + "\n")
+				lines.set(lines.indexOf(it), it + "\n")
 		}
 
 		val result = StringBuilder()
@@ -386,7 +386,7 @@ class MainActivity: AppCompatActivity() {
 		return result.toString()
 	}
 
-	private fun shouldSkip(smaliLine: String): Boolean {
+	private fun shouldSkip(smaliLine: String?): Boolean {
 
 		val ops = listOf(".line", ":", ".prologue")
 

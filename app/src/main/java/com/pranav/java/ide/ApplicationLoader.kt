@@ -17,14 +17,13 @@ class ApplicationLoader : Application() {
 	super.onCreate()
 		mContext = getApplicationContext()
 		FileUtil.initializeContext(mContext)
-		val uncaughtExceptionHandler =
-				Thread.getDefaultUncaughtExceptionHandler()
+		val uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
 		Thread.setDefaultUncaughtExceptionHandler({
 				thread, throwable -> 
-					var intent = Intent(getApplicationContext(), DebugActivity.class)
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-					intent.putExtra("error", Log.getStackTraceString(throwable))
+					var intent: Intent? = Intent(getApplicationContext(), DebugActivity.class)
+					intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+					intent?.putExtra("error", Log.getStackTraceString(throwable))
 					val pendingIntent =
 							PendingIntent.getActivity(
 									getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT)
@@ -33,7 +32,7 @@ class ApplicationLoader : Application() {
 					am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent)
 
 					Process.killProcess(Process.myPid())
-					exitProcess(0)
+					System.exit(0)
 
 					uncaughtExceptionHandler.uncaughtException(thread, throwable)
 				})

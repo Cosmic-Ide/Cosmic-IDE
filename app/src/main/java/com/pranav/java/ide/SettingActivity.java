@@ -131,7 +131,7 @@ public final class SettingActivity extends AppCompatActivity {
 
 	@Override
 	public void onDestroy() {
-	  super.onDestroy()
+	  super.onDestroy();
 		double version = 1.7;
 
 		if (java3.isChecked()) version = 1.3;

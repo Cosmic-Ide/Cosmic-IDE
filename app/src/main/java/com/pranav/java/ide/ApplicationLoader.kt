@@ -34,7 +34,7 @@ class ApplicationLoader : Application() {
 					Process.killProcess(Process.myPid())
 					System.exit(0)
 
-					uncaughtExceptionHandler.uncaughtException(thread, throwable)
+					uncaughtExceptionHandler?.uncaughtException(thread, throwable)
 				})
 	}
 

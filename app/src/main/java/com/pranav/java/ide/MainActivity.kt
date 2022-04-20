@@ -359,20 +359,20 @@ class MainActivity: AppCompatActivity() {
 
 	private fun formatSmali(inp: String): String {
 
-		val lines = inp.split("\n")
+		val lines = ArrayList<String>(Arrays.asList(inp.split("\n")))
 
 		var insideMethod = false
 
-		for (line in lines) {
+		lines.forEach {
 
-			if (line.startsWith(".method"))
+			if (it.startsWith(".method"))
 				insideMethod = true
 
-			if (line.startsWith(".end method"))
+			if (it.startsWith(".end method"))
 				insideMethod = false
 
 			if (insideMethod && !shouldSkip(line))
-				lines[n] = line + "\n"
+				lines.set(it + "\n")
 		}
 
 		val result = StringBuilder()
@@ -406,10 +406,10 @@ class MainActivity: AppCompatActivity() {
         .show()
 	}
 
-	fun dialog(title: String, message: String, copyButton: Boolean) {
+	fun dialog(title: String?, message: String?, copyButton: Boolean) {
 		val dialog = MaterialAlertDialogBuilder(
-				this).setTitle(title)
-            .setMessage(message)
+				this).setTitle(title?)
+            .setMessage(message?)
 						.setPositiveButton("GOT IT", null)
 						.setNegativeButton("CANCEL", null)
 		if (copyButton)
@@ -432,7 +432,7 @@ class MainActivity: AppCompatActivity() {
 					.toTypedArray()
 			) {
 				val name = f.getType().replace("/", "."); // convert class name to standard form
-				classes.add(name.substring(1, name.length() - 1))
+				classes.add(name.substring(1, name.length - 1))
 			}
 			return classes.toTypedArray()
 		} catch (e: Exception) {

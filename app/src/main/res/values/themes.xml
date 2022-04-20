@@ -12,6 +12,7 @@
 		<!-- Status bar color. -->
 		<item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
 		<!-- Customize your theme here. -->
+		<item name="textAppearanceLargePopupMenu">@style/popup</item>
 	</style>
 
 	<style name="Theme.JavaIDE.NoActionBar" parent="Theme.JavaIDE">
@@ -22,4 +23,9 @@
 	<style name="Theme.JavaIDE.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
 	<style name="Theme.JavaIDE.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+	<!-- PopupMenu Text Color in night mode -->
+	<style name="popup" parent="TextAppearance.AppCompat.Light.Widget.PopupMenu.Large">
+		<item name="android:textColor">@color/primary_text_color</item>
+	</style>
 </resources>

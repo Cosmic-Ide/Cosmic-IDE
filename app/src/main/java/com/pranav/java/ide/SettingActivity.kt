@@ -11,24 +11,24 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 
 class SettingActivity : AppCompatActivity() {
 
-	private var java3: MaterialRadioButton
-	private var java4: MaterialRadioButton
-	private var java5: MaterialRadioButton
-	private var java6: MaterialRadioButton
-	private var java8: MaterialRadioButton
-	private var java9: MaterialRadioButton
-	private var java10: MaterialRadioButton
-	private var java11: MaterialRadioButton
-	private var java12: MaterialRadioButton
-	private var java13: MaterialRadioButton
-	private var java14: MaterialRadioButton
-	private var java15: MaterialRadioButton
-	private var java16: MaterialRadioButton
-	private var java17: MaterialRadioButton
+	lateinit var java3: MaterialRadioButton
+	lateinit var java4: MaterialRadioButton
+	lateinit var java5: MaterialRadioButton
+	lateinit var java6: MaterialRadioButton
+	lateinit var java8: MaterialRadioButton
+	lateinit var java9: MaterialRadioButton
+	lateinit var java10: MaterialRadioButton
+	lateinit var java11: MaterialRadioButton
+	lateinit var java12: MaterialRadioButton
+	lateinit var java13: MaterialRadioButton
+	lateinit var java14: MaterialRadioButton
+	lateinit var java15: MaterialRadioButton
+	lateinit var java16: MaterialRadioButton
+	lateinit var java17: MaterialRadioButton
 
-	private lateinit var classpath: AppCompatEditText
+	lateinit var classpath: AppCompatEditText
 
-	private lateinit var settings: SharedPreferences
+	lateinit var settings: SharedPreferences
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class SettingActivity : AppCompatActivity() {
 		
 		classpath = findViewById(R.id.classpath)
 
-		val java7 = findViewById(R.id.java7)
+		val java7: MaterialRadioButton = findViewById(R.id.java7)
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE)
 
 		when (settings.getString("javaVersion", "7.0")) {

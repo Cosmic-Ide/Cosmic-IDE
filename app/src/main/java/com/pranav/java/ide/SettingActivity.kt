@@ -63,7 +63,7 @@ class SettingActivity : AppCompatActivity() {
 		val java7: MaterialRadioButton = findViewById(R.id.java7)
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE)
 
-		when (settings.getDouble("javaVersion", 7.0)) {
+		when (settings.getFloat("javaVersion", 7.0)) {
 
 			1.3 -> java3.setChecked(true)
 
@@ -118,7 +118,7 @@ class SettingActivity : AppCompatActivity() {
 		else if (java16.isChecked()) version = 16.0
 		else if (java17.isChecked()) version = 17.0
 
-		settings.edit().putDouble("javaVersion", version).apply()
+		settings.edit().putFloat("javaVersion", version).apply()
 
 		settings.edit().putString("classpath", classpath.getText().toString()).apply()
 	}

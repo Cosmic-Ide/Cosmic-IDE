@@ -39,7 +39,7 @@ class SettingActivity : AppCompatActivity() {
 		setSupportActionBar(toolbar)
     getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar()?.setHomeButtonEnabled(true)
-    toolbar.setNavigationOnClickListener { v ->
+    toolbar.setNavigationOnClickListener { _ ->
       onBackPressed()
 		}
 

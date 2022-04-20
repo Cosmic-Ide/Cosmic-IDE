@@ -21,12 +21,12 @@ class ApplicationLoader : Application() {
 
 		Thread.setDefaultUncaughtExceptionHandler({
 				thread, throwable -> 
-					var intent: Intent? = Intent(getApplicationContext(), DebugActivity.class)
-					intent?.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-					intent?.putExtra("error", Log.getStackTraceString(throwable))
+					val intent = Intent(mContex, DebugActivity.class)
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+					intent.putExtra("error", Log.getStackTraceString(throwable))
 					val pendingIntent =
 							PendingIntent.getActivity(
-									getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT)
+									mContext, 11111, intent, PendingIntent.FLAG_ONE_SHOT)
 
 					val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 					am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent)

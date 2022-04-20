@@ -21,7 +21,7 @@ class ApplicationLoader : Application() {
 
 		Thread.setDefaultUncaughtExceptionHandler({
 				thread, throwable -> 
-					val intent = Intent(mContex, DebugActivity.class)
+					val intent = Intent(mContext, DebugActivity::class.java)
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
 					intent.putExtra("error", Log.getStackTraceString(throwable))
 					val pendingIntent =

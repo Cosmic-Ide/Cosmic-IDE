@@ -44,9 +44,7 @@ class BinaryExecutor {
     return mWriter.toString()
 	}
 
-  fun getLogs(): String {
-    return mWriter.toString()
-  }
+  fun getLogs(): String = return mWriter.toString()
 
 	fun clear() {
 		mWriter.flush()

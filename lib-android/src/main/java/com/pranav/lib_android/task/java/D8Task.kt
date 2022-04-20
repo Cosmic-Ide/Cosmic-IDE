@@ -15,7 +15,7 @@ class D8Task : Task() {
 
   @Throws(Throwable::class)
 	override fun doFullTask() {
-    ConcurrentUtil.execute({
+    ConcurrentUtil.execute {
       D8.run(
         D8Command.builder()
             .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
@@ -27,7 +27,7 @@ class D8Task : Task() {
             )
             .build()
       )
-		})
+		}
 	}
 	
   private fun getClassFiles(root: File): List<Path> {

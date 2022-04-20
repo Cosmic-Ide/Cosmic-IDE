@@ -26,7 +26,7 @@ class ExecuteJavaTask constructor(
 		val defaultOut = System.`out`
 		val defaultErr = System.err
 		val dexFile = FileUtil.getBinDir() + "classes.dex"
-		ConcurrentUtil.execute({
+		ConcurrentUtil.execute {
 			val out = object: OutputStream() {
 			  override fun write(b: Int) {
 			    log.append(b.toChar())
@@ -68,7 +68,7 @@ class ExecuteJavaTask constructor(
 			}
 			System.setOut(defaultOut)
 			System.setErr(defaultErr)
-		})
+		}
 	}
 	
 	fun getLogs(): String {

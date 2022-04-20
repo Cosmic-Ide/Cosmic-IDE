@@ -103,8 +103,7 @@ public final class MainActivity extends AppCompatActivity {
 			File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
 			if (!output.exists() && 
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-					.getString("javaVersion", "7.0")
-					.equals("8.0")) {
+					.getDouble("javaVersion", 7.0) >= 8.0) {
 				try {
 					Files.write(
 					  ByteStreams.toByteArray(

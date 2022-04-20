@@ -63,35 +63,35 @@ class SettingActivity : AppCompatActivity() {
 		val java7: MaterialRadioButton = findViewById(R.id.java7)
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE)
 
-		when (settings.getString("javaVersion", "7.0")) {
+		when (settings.getDouble("javaVersion", 7.0)) {
 
-			"1.3" -> java3.setChecked(true)
+			1.3 -> java3.setChecked(true)
 
-			"1.4" -> java4.setChecked(true)
+			1.4 -> java4.setChecked(true)
 
-			"5.0" -> java5.setChecked(true)
+			5.0 -> java5.setChecked(true)
 
-			"6.0" -> java6.setChecked(true)
+			6.0 -> java6.setChecked(true)
 
-			"8.0" -> java8.setChecked(true)
+			8.0 -> java8.setChecked(true)
 
-			"9.0" -> java9.setChecked(true)
+			9.0 -> java9.setChecked(true)
 
-			"10.0" -> java10.setChecked(true)
+			10.0 -> java10.setChecked(true)
 
-			"11.0" -> java11.setChecked(true)
+			11.0 -> java11.setChecked(true)
 
-			"12.0" -> java12.setChecked(true)
+			12.0 -> java12.setChecked(true)
 
-			"13.0" -> java13.setChecked(true)
+			13.0 -> java13.setChecked(true)
 
-			"14.0" -> java14.setChecked(true)
+			14.0 -> java14.setChecked(true)
 
-			"15.0" -> java15.setChecked(true)
+			15.0 -> java15.setChecked(true)
 
-			"16.0" -> java16.setChecked(true)
+			16.0 -> java16.setChecked(true)
 
-			"17.0" -> java17.setChecked(true)
+			17.0 -> java17.setChecked(true)
 
 			else -> java7.setChecked(true)
 		}
@@ -118,7 +118,7 @@ class SettingActivity : AppCompatActivity() {
 		else if (java16.isChecked()) version = 16.0
 		else if (java17.isChecked()) version = 17.0
 
-		settings.edit().putString("javaVersion", String.valueOf(version)).apply()
+		settings.edit().putDouble("javaVersion", version).apply()
 
 		settings.edit().putString("classpath", classpath.getText().toString()).apply()
 	}

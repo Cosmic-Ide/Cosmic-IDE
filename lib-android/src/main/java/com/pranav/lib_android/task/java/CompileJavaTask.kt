@@ -42,21 +42,22 @@ class CompileJavaTask(
 	  
 	  val output = File(FileUtil.getBinDir(), "classes")
 	  
-    ConcurrentUtil.execute({
-		  val args = ArrayList<String>()
+    ConcurrentUtil.execute {
+      val version = prefs.getDouble("javaVersion", 7.0)
+      val args = ArrayList<String>()
 
       args.add("-log")
       args.add(FileUtil.getBinDir()
 				  .plus("debug.xml"))
       args.add("-g")
-      args.add("-" + prefs.getString("javaVersion", "7.0"))
+      args.add("-" + version.toString())
       args.add("-d")
       args.add(output.getAbsolutePath())
       args.add("-classpath")
       args.add(FileUtil.getClasspathDir()
 				  .plus("android.jar"))
 			val classpath = StringBuilder()
-			if (prefs.getString("javaVersion", "7.0").equals("8.0")) {
+			if (version >= 8.0) {
 			  classpath.append(FileUtil.getClasspathDir()
 				  	+ "core-lambda-stubs.jar")
       }
@@ -75,7 +76,7 @@ class CompileJavaTask(
       args.add(FileUtil.getJavaDir())
 
       main.compile(args.toTypedArray())
-    })
+    }
 
 		if (main.globalErrorsCount > 0 || !output.exists()) {
 			throw CompilationFailedException(errs.toString())

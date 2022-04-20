@@ -77,7 +77,7 @@ class MainActivity: AppCompatActivity() {
 			try {
 				editor.setText(
             file.readText()
-				);
+				)
 			} catch (e: Exception) {
 				dialog("Cannot read file", getString(e), true)
 			}
@@ -120,8 +120,8 @@ class MainActivity: AppCompatActivity() {
 				FileUtil.deleteFile(FileUtil.getBinDir())
 				File(FileUtil.getBinDir()).mkdirs()
 				val mainFile = File(
-						FileUtil.getJavaDir() + "Main.java");
-				Files.createParentDirs(mainFile);
+						FileUtil.getJavaDir() + "Main.java")
+				Files.createParentDirs(mainFile)
 				// a simple workaround to prevent calls to system.exit
 				mainFile.writeText(editor.getText().toString()
             .replace("System.exit(",
@@ -170,7 +170,7 @@ class MainActivity: AppCompatActivity() {
 							val task = ExecuteJavaTask(
 								builder, classes[pos])
 						try {
-							task.doFullTask();
+							task.doFullTask()
 						} catch (e: java.lang.reflect.InvocationTargetException) {
 							dialog("Failed...",
 									"Runtime error: " +
@@ -226,8 +226,8 @@ class MainActivity: AppCompatActivity() {
 			}
 
 			1 -> {
-				val intent = getIntent();
-				intent.setClass(this@MainActivity, SettingActivity::class.java)
+				val intent = getIntent()
+				intent.setClass(this, SettingActivity::class.java)
 				startActivity(intent)
 			}
 		}
@@ -322,12 +322,12 @@ class MainActivity: AppCompatActivity() {
 					val d = AlertDialog.Builder(
 							this).setView(edi).create()
 					d.setCanceledOnTouchOutside(true)
-					d.show();
+					d.show()
 		})
 	}
 
 	fun disassemble() {
-		val classes = getClassesFromDex();
+		val classes = getClassesFromDex()
 		if (classes == null)
 			return
 		listDialog("Select a class to disassemble", classes, { _, pos ->
@@ -359,7 +359,7 @@ class MainActivity: AppCompatActivity() {
 
 	private fun formatSmali(inp: String): String {
 
-		val lines = ArrayList<String>(Arrays.asList(inp.split("\n")))
+		val lines = Arrays.asList(inp.split("\n"))
 
 		var insideMethod = false
 
@@ -371,7 +371,7 @@ class MainActivity: AppCompatActivity() {
 			if (it.startsWith(".end method"))
 				insideMethod = false
 
-			if (insideMethod && !shouldSkip(line))
+			if (insideMethod && !shouldSkip(it))
 				lines.set(it + "\n")
 		}
 
@@ -380,7 +380,7 @@ class MainActivity: AppCompatActivity() {
 		for (line in lines.toTypedArray()) {
 			result.append("\n")
 
-			result.append(line);
+			result.append(line)
 		}
 
 		return result.toString()
@@ -406,32 +406,32 @@ class MainActivity: AppCompatActivity() {
         .show()
 	}
 
-	fun dialog(title: String?, message: String?, copyButton: Boolean) {
-		val dialog = MaterialAlertDialogBuilder(
-				this).setTitle(title?)
-            .setMessage(message?)
-						.setPositiveButton("GOT IT", null)
-						.setNegativeButton("CANCEL", null)
+	fun dialog(title: String, message: String?, copyButton: Boolean) {
+		val dialog = MaterialAlertDialogBuilder(this)
+        .setTitle(title)
+        .setMessage(message)
+				.setPositiveButton("GOT IT", null)
+				.setNegativeButton("CANCEL", null)
 		if (copyButton)
 			dialog.setNeutralButton("COPY", { _, _ ->
 				(getSystemService(
-						getApplicationContext().CLIPBOARD_SERVICE) as ClipboardManager)
+						Context.CLIPBOARD_SERVICE) as ClipboardManager)
 								.setPrimaryClip(ClipData
-										.newPlainText("clipboard", message));
+										.newPlainText("content", message))
 			})
 		dialog.create().show()
 	}
 
 	fun getClassesFromDex(): Array<String>? {
 		try {
-			val classes = ArrayList<String>();
+			val classes = ArrayList<String>()
 			val dexfile = DexFileFactory.loadDexFile(FileUtil.getBinDir().plus("classes.dex"),
 							Opcodes.forApi(26)
-			);
+			)
 			for (f in dexfile.getClasses()
 					.toTypedArray()
 			) {
-				val name = f.getType().replace("/", "."); // convert class name to standard form
+				val name = f.getType().replace("/", ".") // convert class name to standard form
 				classes.add(name.substring(1, name.length - 1))
 			}
 			return classes.toTypedArray()

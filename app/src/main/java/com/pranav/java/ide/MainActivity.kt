@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.LinearLayout
 
 import androidx.appcompat.app.AlertDialog
@@ -60,15 +61,15 @@ class MainActivity: AppCompatActivity() {
 		setContentView(R.layout.activity_main)
 
 		setSupportActionBar(findViewById(R.id.toolbar))
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false)
-		getSupportActionBar().setHomeButtonEnabled(false)
+		getSupportActionBar()?.setDisplayHomeAsUpEnabled(false)
+		getSupportActionBar()?.setHomeButtonEnabled(false)
 
 		editor = findViewById(R.id.editor)
 
 		editor.setTypefaceText(Typeface.MONOSPACE)
 		editor.setEditorLanguage(JavaLanguage())
 		editor.setColorScheme(SchemeDarcula())
-		editor.setTextSize(12)
+		editor.setTextSize(12f)
 
 		val file = File(FileUtil.getJavaDir(), "Main.java")
 
@@ -95,7 +96,7 @@ class MainActivity: AppCompatActivity() {
 
 		ConcurrentUtil.executeInBackground {
 			if (!File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-				ZipUtil.unzipFromAssets(MainActivity.this,
+				ZipUtil.unzipFromAssets(this,
 					"android.jar.zip", FileUtil.getClasspathDir())
 			}
 			val output = File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar")
@@ -110,10 +111,10 @@ class MainActivity: AppCompatActivity() {
 			}
 		}
 
-		findViewById(R.id.btn_disassemble).setOnClickListener { _ -> disassemble()}
-		findViewById(R.id.btn_smali2java).setOnClickListener { _ -> decompile()}
-		findViewById(R.id.btn_smali).setOnClickListener { _ -> smali()}
-		findViewById(R.id.btn_run).setOnClickListener { _ ->
+		(findViewById(R.id.btn_disassemble) as View).setOnClickListener { _ -> disassemble()}
+		(findViewById(R.id.btn_smali2java) as View).setOnClickListener { _ -> decompile()}
+		(findViewById(R.id.btn_smali) as View).setOnClickListener { _ -> smali()}
+		(findViewById(R.id.btn_run) as View).setOnClickListener { _ ->
 			try {
 				// Delete previous build files
 				FileUtil.deleteFile(FileUtil.getBinDir())
@@ -131,19 +132,19 @@ class MainActivity: AppCompatActivity() {
 			}
 
 			// code that runs ecj
-			Long time = System.currentTimeMillis()
+			var time = System.currentTimeMillis()
 			errorsArePresent = true
 			try {
 				val javaTask = CompileJavaTask(builder)
 				javaTask.doFullTask()
 				errorsArePresent = false
 			} catch (e: CompilationFailedException) {
-				showErr(e.getMessage())
+				showErr(e.message)
 			} catch (e: Throwable) {
 				showErr(getString(e))
 			}
 			if (errorsArePresent) {
-			  return
+			  return@setOnClickListener
 			}
 
 			ecjTime = System.currentTimeMillis() - time
@@ -383,11 +384,10 @@ class MainActivity: AppCompatActivity() {
 
 		val result = StringBuilder()
 
-		for (i: Int = 0; i < lines.size(); i++) {
-			if (i != 0)
-				result.append("\n")
+		for (line in lines.toTypedArray()) {
+			result.append("\n")
 
-			result.append(lines.get(i));
+			result.append(line);
 		}
 
 		return result.toString()
@@ -395,7 +395,7 @@ class MainActivity: AppCompatActivity() {
 
 	private fun shouldSkip(smaliLine: String): Boolean {
 
-		val ops = {".line", ":", ".prologue"}
+		val ops = listOf(".line", ":", ".prologue")
 
 		for (op in ops) {
 			if (smaliLine.trim().startsWith(op))

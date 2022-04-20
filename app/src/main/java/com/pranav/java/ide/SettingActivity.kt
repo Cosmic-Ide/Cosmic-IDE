@@ -101,7 +101,7 @@ class SettingActivity : AppCompatActivity() {
 
 	override fun onDestroy() {
 	  super.onDestroy()
-		Double version = 1.7
+		var version = 1.7
 
 		if (java3.isChecked()) version = 1.3
 		else if (java4.isChecked()) version = 1.4

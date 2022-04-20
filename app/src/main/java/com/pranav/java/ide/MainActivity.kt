@@ -156,14 +156,14 @@ class MainActivity: AppCompatActivity() {
 			} catch (e: Throwable) {
 				errorsArePresent = true
 				showErr(e.toString())
-				return
+				return@setOnClickListener
 			}
 			d8Time = System.currentTimeMillis() - time
 			// code that loads the final dex
 			try {
 				val classes = getClassesFromDex()
 				if (classes == null) {
-					return
+					return@setOnClickListener
 				}
 				listDialog("Select a class to execute", classes,
 						{ _, pos ->
@@ -174,7 +174,7 @@ class MainActivity: AppCompatActivity() {
 						} catch (e: java.lang.reflect.InvocationTargetException) {
 							dialog("Failed...",
 									"Runtime error: " +
-									e.getMessage() +
+									e.message +
 									"\n\n" +
 									getString(e),
 									true)
@@ -188,11 +188,11 @@ class MainActivity: AppCompatActivity() {
 							}
 							val s = StringBuilder()
 							s.append("Success! ECJ took: ")
-							s.append(String.valueOf(ecjTime))
+							s.append(ecjTime.toString())
 							s.append("ms, ")
 							s.append("D8")
 							s.append(" took: ")
-							s.append(String.valueOf(d8Time))
+							s.append(d8Time.toString())
 							s.append("ms")
 							dialog(s.toString(), task.getLogs(), true)
 					})
@@ -202,7 +202,7 @@ class MainActivity: AppCompatActivity() {
 		}
 	}
 
-	fun showErr(e: String) {
+	fun showErr(e: String?) {
 		Snackbar.make(findViewById(R.id.container) as LinearLayout, "An error occurred",
 				Snackbar.LENGTH_INDEFINITE)
 				.setAction("Show error", { _ -> dialog("Failed...", e, true)})
@@ -245,20 +245,18 @@ class MainActivity: AppCompatActivity() {
 						val args = listOf(
 						  "-f",
 						  "-o",
-						  FileUtil.getBinDir()
-						      .concat("smali/"),
-						  FileUtil.getBinDir()
-						      .concat("classes.dex")
+						  FileUtil.getBinDir() + "smali/",
+						  FileUtil.getBinDir() + "classes.dex"
 						)
 						ConcurrentUtil.execute {
-						  BaksmaliCmd.main(args)
+						  BaksmaliCmd.main(args.toTypedArray())
 						}
 
 						val edi = CodeEditor(this@MainActivity)
 						edi.setTypefaceText(Typeface.MONOSPACE)
 						edi.setEditorLanguage(JavaLanguage())
 						edi.setColorScheme(SchemeDarcula())
-						edi.setTextSize(13)
+						edi.setTextSize(13f)
 							
 						val smaliFile = File(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali")
 							
@@ -299,7 +297,6 @@ class MainActivity: AppCompatActivity() {
 
 					ConcurrentUtil.execute {
 						try {
-							org.benf.cfr.reader.Main.main(args)
 						} catch (e: Exception) {
 							dialog("Failed to decompile...",
 									getString(e), true)
@@ -310,7 +307,7 @@ class MainActivity: AppCompatActivity() {
 					edi.setTypefaceText(Typeface.MONOSPACE)
 					edi.setEditorLanguage(JavaLanguage())
 					edi.setColorScheme(SchemeDarcula())
-					edi.setTextSize(12)
+					edi.setTextSize(12f)
 
 					val decompiledFile = File(
 							FileUtil.getBinDir() + "cfr/" + claz + ".java")
@@ -340,7 +337,7 @@ class MainActivity: AppCompatActivity() {
 			edi.setTypefaceText(Typeface.MONOSPACE)
 			edi.setEditorLanguage(JavaLanguage())
 			edi.setColorScheme(SchemeDarcula())
-			edi.setTextSize(12)
+			edi.setTextSize(12f)
 
 			try {
 				val disassembled = ClassFileDisassembler(
@@ -349,7 +346,7 @@ class MainActivity: AppCompatActivity() {
 
 				edi.setText(disassembled)
 
-				val d = AlertDialog.Builder(MainActivity.this)
+				val d = AlertDialog.Builder(this)
 						.setView(edi).create()
 				d.setCanceledOnTouchOutside(true)
 				d.show()
@@ -360,17 +357,13 @@ class MainActivity: AppCompatActivity() {
 		})
 	}
 
-	private fun formatSmali(in: String): String {
+	private fun formatSmali(inp: String): String {
 
-		val lines = ArrayList<String>(
-				Arrays.asList(in.split("\n"))
-		)
+		val lines = inp.split("\n")
 
 		var insideMethod = false
 
-		for (i: Int = 0; i < lines.size(); i++) {
-
-			val line = lines.get(i)
+		for (line in lines) {
 
 			if (line.startsWith(".method"))
 				insideMethod = true
@@ -379,7 +372,7 @@ class MainActivity: AppCompatActivity() {
 				insideMethod = false
 
 			if (insideMethod && !shouldSkip(line))
-				lines.set(i, line + "\n")
+				lines[n] = line + "\n"
 		}
 
 		val result = StringBuilder()
@@ -406,7 +399,7 @@ class MainActivity: AppCompatActivity() {
 
 	fun listDialog(title: String, items: Array<String>,
 			listener: DialogInterface.OnClickListener) {
-		MaterialAlertDialogBuilder(MainActivity.this)
+		MaterialAlertDialogBuilder(this)
         .setTitle(title)
         .setItems(items, listener)
         .create()
@@ -429,10 +422,10 @@ class MainActivity: AppCompatActivity() {
 		dialog.create().show()
 	}
 
-	fun getClassesFromDex(): Array<String> {
+	fun getClassesFromDex(): Array<String>? {
 		try {
 			val classes = ArrayList<String>();
-			val dexfile = DexFileFactory.loadDexFile(FileUtil.getBinDir().concat("classes.dex"),
+			val dexfile = DexFileFactory.loadDexFile(FileUtil.getBinDir().plus("classes.dex"),
 							Opcodes.forApi(26)
 			);
 			for (f in dexfile.getClasses()

@@ -26,19 +26,19 @@ class SettingActivity : AppCompatActivity() {
 	private var java16: MaterialRadioButton
 	private var java17: MaterialRadioButton
 
-	private var classpath: AppCompatEditText
+	private lateinit var classpath: AppCompatEditText
 
-	private var settings: SharedPreferences
+	private lateinit var settings: SharedPreferences
 
-	override fun onCreate(savedInstanceState: Bundle) {
+	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_setting)
 
-		val toolbar = findViewById(R.id.toolbar)
+		val toolbar: Toolbar = findViewById(R.id.toolbar)
 
     setSupportActionBar(toolbar)
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true)
-    getSupportActionBar().setHomeButtonEnabled(true)
+    getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+    getSupportActionBar()?.setHomeButtonEnabled(true)
     toolbar.setNavigationOnClickListener { v ->
       onBackPressed()
 		}
@@ -57,9 +57,10 @@ class SettingActivity : AppCompatActivity() {
 		java15 = findViewById(R.id.java15)
 		java16 = findViewById(R.id.java16)
 		java17 = findViewById(R.id.java17)
+		
+		classpath = findViewById(R.id.classpath)
 
 		val java7 = findViewById(R.id.java7)
-		classpath = findViewById(R.id.classpath)
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE)
 
 		when (settings.getString("javaVersion", "7.0")) {
@@ -100,7 +101,7 @@ class SettingActivity : AppCompatActivity() {
 
 	override fun onDestroy() {
 	  super.onDestroy()
-		double version = 1.7
+		Double version = 1.7
 
 		if (java3.isChecked()) version = 1.3
 		else if (java4.isChecked()) version = 1.4

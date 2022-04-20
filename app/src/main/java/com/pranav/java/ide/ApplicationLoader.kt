@@ -19,7 +19,7 @@ class ApplicationLoader : Application() {
 		FileUtil.initializeContext(mContext)
 		val uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
-		Thread.setDefaultUncaughtExceptionHandler({
+		Thread.setDefaultUncaughtExceptionHandler {
 				thread, throwable -> 
 					val intent = Intent(mContext, DebugActivity::class.java)
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -35,7 +35,7 @@ class ApplicationLoader : Application() {
 					System.exit(0)
 
 					uncaughtExceptionHandler?.uncaughtException(thread, throwable)
-				})
+				}
 	}
 
 	fun getContext(): Context =  mContext

@@ -359,7 +359,7 @@ class MainActivity: AppCompatActivity() {
 
 	private fun formatSmali(inp: String): String {
 
-		val lines: ArrayList<String> = Arrays.asList(inp.split("\n"))
+		val lines: List<String> = Arrays.asList(inp.split("\n"))
 
 		var insideMethod = false
 
@@ -391,7 +391,7 @@ class MainActivity: AppCompatActivity() {
 		val ops = listOf(".line", ":", ".prologue")
 
 		for (op in ops) {
-			if (smaliLine.trim().startsWith(op))
+			if (smaliLine?.trim().startsWith(op))
 				return true
 		}
 		return false

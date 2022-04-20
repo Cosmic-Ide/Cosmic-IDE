@@ -63,35 +63,35 @@ class SettingActivity : AppCompatActivity() {
 		val java7: MaterialRadioButton = findViewById(R.id.java7)
 		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE)
 
-		when (settings.getFloat("javaVersion", 7.0)) {
+		when (settings.getFloat("javaVersion", 7.0f)) {
 
-			1.3 -> java3.setChecked(true)
+			1.3f -> java3.setChecked(true)
 
-			1.4 -> java4.setChecked(true)
+			1.4f -> java4.setChecked(true)
 
-			5.0 -> java5.setChecked(true)
+			5.0f -> java5.setChecked(true)
 
-			6.0 -> java6.setChecked(true)
+			6.0f -> java6.setChecked(true)
 
-			8.0 -> java8.setChecked(true)
+			8.0f -> java8.setChecked(true)
 
-			9.0 -> java9.setChecked(true)
+			9.0f -> java9.setChecked(true)
 
-			10.0 -> java10.setChecked(true)
+			10.0f -> java10.setChecked(true)
 
-			11.0 -> java11.setChecked(true)
+			11.0f -> java11.setChecked(true)
 
-			12.0 -> java12.setChecked(true)
+			12.0f -> java12.setChecked(true)
 
-			13.0 -> java13.setChecked(true)
+			13.0f -> java13.setChecked(true)
 
-			14.0 -> java14.setChecked(true)
+			14.0f -> java14.setChecked(true)
 
-			15.0 -> java15.setChecked(true)
+			15.0f -> java15.setChecked(true)
 
-			16.0 -> java16.setChecked(true)
+			16.0f -> java16.setChecked(true)
 
-			17.0 -> java17.setChecked(true)
+			17.0f -> java17.setChecked(true)
 
 			else -> java7.setChecked(true)
 		}
@@ -101,22 +101,22 @@ class SettingActivity : AppCompatActivity() {
 
 	override fun onDestroy() {
 	  super.onDestroy()
-		var version = 1.7
+		var version = 1.7f
 
-		if (java3.isChecked()) version = 1.3
-		else if (java4.isChecked()) version = 1.4
-		else if (java5.isChecked()) version = 5.0
-		else if (java6.isChecked()) version = 6.0
-		else if (java8.isChecked()) version = 8.0
-		else if (java9.isChecked()) version = 9.0
-		else if (java10.isChecked()) version = 10.0
-		else if (java11.isChecked()) version = 11.0
-		else if (java12.isChecked()) version = 12.0
-		else if (java13.isChecked()) version = 13.0
-		else if (java14.isChecked()) version = 14.0
-		else if (java15.isChecked()) version = 15.0
-		else if (java16.isChecked()) version = 16.0
-		else if (java17.isChecked()) version = 17.0
+		if (java3.isChecked()) version = 1.3f
+		else if (java4.isChecked()) version = 1.4f
+		else if (java5.isChecked()) version = 5.0f
+		else if (java6.isChecked()) version = 6.0f
+		else if (java8.isChecked()) version = 8.0f
+		else if (java9.isChecked()) version = 9.0f
+		else if (java10.isChecked()) version = 10.0f
+		else if (java11.isChecked()) version = 11.0f
+		else if (java12.isChecked()) version = 12.0f
+		else if (java13.isChecked()) version = 13.0f
+		else if (java14.isChecked()) version = 14.0f
+		else if (java15.isChecked()) version = 15.0f
+		else if (java16.isChecked()) version = 16.0f
+		else if (java17.isChecked()) version = 17.0f
 
 		settings.edit().putFloat("javaVersion", version).apply()
 

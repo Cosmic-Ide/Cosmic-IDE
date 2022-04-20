@@ -43,7 +43,7 @@ class CompileJavaTask(
 	  val output = File(FileUtil.getBinDir(), "classes")
 	  
     ConcurrentUtil.execute {
-      val version = prefs.getFloat("javaVersion", 7.0)
+      val version = prefs.getFloat("javaVersion", 7.0f)
       val args = ArrayList<String>()
 
       args.add("-log")

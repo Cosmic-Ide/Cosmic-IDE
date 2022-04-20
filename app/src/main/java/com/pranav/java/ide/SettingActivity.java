@@ -120,7 +120,6 @@ public final class SettingActivity extends AppCompatActivity {
 				break;
 
 			case "7.0":
-			
 
 			default:
 				java7.setChecked(true);
@@ -132,6 +131,7 @@ public final class SettingActivity extends AppCompatActivity {
 
 	@Override
 	public void onDestroy() {
+	  super.onDestroy()
 		double version = 1.7;
 
 		if (java3.isChecked()) version = 1.3;
@@ -152,6 +152,5 @@ public final class SettingActivity extends AppCompatActivity {
 		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
 
 		settings.edit().putString("classpath", classpath.getText().toString()).apply();
-		super.onDestroy();
 	}
 }

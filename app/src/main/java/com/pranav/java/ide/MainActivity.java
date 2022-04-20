@@ -233,7 +233,7 @@ public final class MainActivity extends AppCompatActivity {
 
 			case 1 :
 				Intent intent = getIntent();
-				intent.setClass(this, SettingActivity.class);
+				intent.setClass(MainActivity.this, SettingActivity.class);
 				startActivity(intent);
 				break;
 			default :

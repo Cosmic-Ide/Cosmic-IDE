@@ -11,7 +11,7 @@ import com.pranav.lib_android.util.FileUtil;
 
 public final class ApplicationLoader extends Application {
 
-	private static Context mContext;
+	private Context mContext;
 
 	@Override
 	public void onCreate() {
@@ -27,7 +27,7 @@ public final class ApplicationLoader extends Application {
 					intent.putExtra("error", Log.getStackTraceString(throwable));
 					PendingIntent pendingIntent =
 							PendingIntent.getActivity(
-									getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT);
+									getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
 
 					AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 					am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent);
@@ -38,9 +38,5 @@ public final class ApplicationLoader extends Application {
 					uncaughtExceptionHandler.uncaughtException(thread, throwable);
 				});
 		super.onCreate();
-	}
-
-	public static Context getContext() {
-		return mContext;
 	}
 }

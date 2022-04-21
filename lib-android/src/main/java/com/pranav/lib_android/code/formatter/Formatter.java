@@ -1,6 +1,5 @@
 package com.pranav.lib_android.code.formatter;
 
-import com.pranav.lib_android.util.ConcurrentUtil;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.text.edits.TextEdit;

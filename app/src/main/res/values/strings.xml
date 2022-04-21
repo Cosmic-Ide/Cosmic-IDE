@@ -1,7 +1,5 @@
 <resources>
 	<string name="app_name">Java IDE</string>
-	<string name="next">Next</string>
-	<string name="previous">Previous</string>
 	
 	<!-- Strings used by MainActivity -->
 	<string name="run">Run</string>
@@ -11,7 +9,10 @@
 	
 	<!-- String used by SettingActivity -->
 	<string name="java_version">Java Version</string>
-	<string name="classpath_dialog_title">Classpath</string>
+	<string name="classpath">Classpath</string>
+	<string name="classpath_separated_from_colon">Classpath (separated by ':')</string>
+	<string name="format">Format</string>
+	<string name="settings">Settings</string>
 	<string name="classpath_dialog_save_button">Save</string>
 	<string name="classpath_not_specified">Classpath not Specified</string>
 	<string name="classpath_edit">Edit</string>

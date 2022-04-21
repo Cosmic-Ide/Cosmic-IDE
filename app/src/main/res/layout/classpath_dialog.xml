@@ -9,9 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:text="@string/classpath_dialog_title"
+        android:text="@string/classpath"
         android:textColor="@color/primary_text_color"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -25,7 +25,7 @@
             android:id="@+id/classpath_edt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Classpath (separated by ':')"
+            android:hint="@string/classpath_separated_from_colon"
             android:inputType="text"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -34,8 +34,8 @@
         android:id="@+id/save_classpath_bttn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:layout_marginTop="4dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:text="@string/classpath_dialog_save_button" />
 </LinearLayout>

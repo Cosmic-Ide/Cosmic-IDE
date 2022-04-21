@@ -9,8 +9,6 @@ import com.android.tools.r8.OutputMode;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
-import java.io.PrintStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

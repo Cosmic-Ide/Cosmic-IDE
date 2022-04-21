@@ -49,20 +49,6 @@
 				android:padding="8dp"
 				android:orientation="horizontal">
 				<com.google.android.material.button.MaterialButton
-					android:id="@+id/btn_run"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:padding="8dp"
-					android:gravity="center_horizontal|center_vertical"
-					android:text="@string/run"
-					android:textSize="12sp"
-					android:textColor="#FFFFFF"
-					android:layout_weight="1"
-					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-					app:backgroundTint="?attr/colorPrimary"
-					app:cornerRadius="8dp"
-					style="@theme/Widget.MaterialComponents.Button" />
-				<com.google.android.material.button.MaterialButton
 					android:id="@+id/btn_smali"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"

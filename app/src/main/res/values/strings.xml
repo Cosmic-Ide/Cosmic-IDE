@@ -16,4 +16,10 @@
 	<string name="classpath_dialog_save_button">Save</string>
 	<string name="classpath_not_specified">Classpath not Specified</string>
 	<string name="classpath_edit">Edit</string>
+
+	<!-- Strings used by CompilerTask Class -->
+	<string name="stage_clean">Cleaning</string>
+	<string name="stage_ecj">Compiling</string>
+	<string name="stage_d8task">D8 Task</string>
+	<string name="stage_loading_dex">Loading DEX File</string>
 </resources>

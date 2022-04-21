@@ -1155,7 +1155,10 @@ public class Util implements SuffixConstants {
 						File[] current = systemLibrariesJars[i];
 						if (current != null) {
 							for (int j = 0, max2 = current.length; j < max2; j++) {
-								filePaths.add(current[j].getAbsolutePath());
+							  // android kernel returns .so files with system libraries, so it's important to remove them from the classpath
+							  if (!current[j].endsWith(".so")) {
+                  filePaths.add(current[j].getAbsolutePath());
+							  }
 							}
 						}
 					}

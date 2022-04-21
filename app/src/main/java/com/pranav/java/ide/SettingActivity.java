@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -115,7 +116,7 @@ public final class SettingActivity extends AppCompatActivity {
     }
 
     void buildClasspathDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
         builder.setView(dialogView);

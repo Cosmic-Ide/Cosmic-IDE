@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,10 +25,8 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.base.Charsets;
 import com.googlecode.d2j.smali.BaksmaliCmd;
-import com.pranav.lib_android.exception.CompilationFailedException;
+import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.lib_android.task.JavaBuilder;
-import com.pranav.lib_android.task.java.CompileJavaTask;
-import com.pranav.lib_android.task.java.D8Task;
 import com.pranav.lib_android.task.java.ExecuteJavaTask;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
@@ -39,6 +40,7 @@ import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -49,12 +51,17 @@ import org.jf.dexlib2.iface.DexFile;
 
 public final class MainActivity extends AppCompatActivity {
 
-    private CodeEditor editor;
+    public CodeEditor editor;
+    private AlertDialog loadingDialog;
 
     private long d8Time = 0;
     private long ecjTime = 0;
 
     private boolean errorsArePresent = false;
+
+    public File file;
+    public JavaBuilder builder;
+    private Thread runThread;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -73,7 +80,7 @@ public final class MainActivity extends AppCompatActivity {
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
 
-        final File file = file(FileUtil.getJavaDir() + "Main.java");
+        file = file(FileUtil.getJavaDir() + "Main.java");
 
         if (file.exists()) {
             try {
@@ -94,7 +101,7 @@ public final class MainActivity extends AppCompatActivity {
             );
         }
 
-        final JavaBuilder builder = new JavaBuilder(getApplicationContext(),
+        builder = new JavaBuilder(getApplicationContext(),
                 getClassLoader());
 
         ConcurrentUtilKt.executeInBackground(() -> {
@@ -119,95 +126,38 @@ public final class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* Create Loading Dialog */
+        buildLoadingDialog();
+
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
-        findViewById(R.id.btn_run).setOnClickListener(view -> {
-            try {
-                // Delete previous build files
-                FileUtil.deleteFile(FileUtil.getBinDir());
-                file(FileUtil.getBinDir()).mkdirs();
-                final File mainFile = file(
-                        FileUtil.getJavaDir() + "Main.java");
-                Files.createParentDirs(mainFile);
-                // a simple workaround to prevent calls to system.exit
-                Files.write(editor.getText().toString()
-                        .replace("System.exit(",
-                                "System.err.print(\"Exit code \" + ")
-                        .getBytes(), mainFile);
-            } catch (final IOException e) {
-                dialog("Cannot save program", getString(e), true);
-            }
+    }
 
-            // code that runs ecj
-            long time = System.currentTimeMillis();
-            errorsArePresent = true;
-            try {
-                CompileJavaTask javaTask = new CompileJavaTask(builder);
-                javaTask.doFullTask();
-                errorsArePresent = false;
-            } catch (CompilationFailedException e) {
-                showErr(e.getMessage());
-            } catch (Throwable e) {
-                showErr(getString(e));
-            }
-            if (errorsArePresent) {
-                return;
-            }
+    /* Build Loading Dialog - This dialog shows on code compilation */
+    void buildLoadingDialog() {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        View dialogView = getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
+        builder.setView(dialogView);
+        loadingDialog = builder.create();
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+    }
 
-            ecjTime = System.currentTimeMillis() - time;
-            time = System.currentTimeMillis();
-
-            // run d8
-            try {
-                new D8Task().doFullTask();
-            } catch (Exception e) {
-                errorsArePresent = true;
-                showErr(e.toString());
-                return;
-            }
-            d8Time = System.currentTimeMillis() - time;
-            // code that loads the final dex
-            try {
-                final String[] classes = getClassesFromDex();
-                if (classes == null) {
-                    return;
+    /* To Change visible to user Stage TextView Text to actually compiling stage in Compile.java */
+    void changeLoadingDialogBuildStage(String stage) {
+        if (loadingDialog.isShowing()) {
+            /* So, this method is also triggered from another thread (Compile.java)
+             * We need to make sure that this code is executed on main thread */
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView stage_txt = loadingDialog.findViewById(R.id.stage_txt);
+                    stage_txt.setText(stage);
                 }
-                listDialog("Select a class to execute", classes,
-                        (dialog, pos) -> {
-                            ExecuteJavaTask task = new ExecuteJavaTask(
-                                    builder, classes[pos]);
-                            try {
-                                task.doFullTask();
-                            } catch (java.lang.reflect.InvocationTargetException e) {
-                                dialog("Failed...",
-                                        "Runtime error: " +
-                                                e.getMessage() +
-                                                "\n\n" +
-                                                getString(e),
-                                        true);
-                            } catch (Exception e) {
-                                dialog("Failed..",
-                                        "Couldn't execute the dex: "
-                                                + e.toString()
-                                                + "\n\nSystem logs:\n"
-                                                + task.getLogs(),
-                                        true);
-                            }
-                            StringBuilder s = new StringBuilder();
-                            s.append("Success! ECJ took: ");
-                            s.append(String.valueOf(ecjTime));
-                            s.append("ms, ");
-                            s.append("D8");
-                            s.append(" took: ");
-                            s.append(String.valueOf(d8Time));
-                            s.append("ms");
-                            dialog(s.toString(), task.getLogs(), true);
-                        });
-            } catch (Throwable e) {
-                showErr(getString(e));
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -228,6 +178,29 @@ public final class MainActivity extends AppCompatActivity {
             case R.id.settings_menu_button:
                 Intent intent = new Intent(MainActivity.this, SettingActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.run_menu_button:
+                loadingDialog.show(); // Show Loading Dialog
+                runThread = new Thread(new CompileTask(MainActivity.this, new CompileTask.CompilerListeners() {
+                    @Override
+                    public void OnCurrentBuildStageChanged(String stage) {
+                        changeLoadingDialogBuildStage(stage);
+                    }
+
+                    @Override
+                    public void OnSuccess() {
+                        loadingDialog.dismiss();
+                    }
+
+                    @Override
+                    public void OnFailed() {
+                        if (loadingDialog.isShowing()) {
+                            loadingDialog.dismiss();
+                        }
+                    }
+                }));
+                runThread.start();
+                break;
             default:
                 break;
         }
@@ -412,13 +385,67 @@ public final class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void listDialog(String title, String[] items,
-                           DialogInterface.OnClickListener listener) {
-        new MaterialAlertDialogBuilder(MainActivity.this)
-                .setTitle(title)
-                .setItems(items, listener)
-                .create()
-                .show();
+    public DialogInterface.OnClickListener defaultRunListener(String[] items) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ExecuteJavaTask task = new ExecuteJavaTask(builder, items[i]);
+                        try {
+                            task.doFullTask();
+                        } catch (InvocationTargetException e) {
+                            dialog("Failed...",
+                                    "Runtime error: " +
+                                            e.getMessage() +
+                                            "\n\n" +
+                                            e.getMessage(),
+                                    true);
+                        } catch (Exception e) {
+                            dialog("Failed..",
+                                    "Couldn't execute the dex: "
+                                            + e.toString()
+                                            + "\n\nSystem logs:\n"
+                                            + task.getLogs(),
+                                    true);
+                        }
+                        StringBuilder s = new StringBuilder();
+                        s.append("Success! ECJ took: ");
+                        s.append(String.valueOf(ecjTime));
+                        s.append("ms, ");
+                        s.append("D8");
+                        s.append(" took: ");
+                        s.append(String.valueOf(d8Time));
+                        s.append("ms");
+
+                        dialog(s.toString(), task.getLogs(), true);
+                    }
+                };
+            }
+        };
+
+        return dialogClickListener;
+    }
+
+    public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                /*
+                 * @TheWolf:
+                 * This method is executed on another
+                 * Thread, so DialogBuilder must be (I didn't find other solutions)
+                 * in runOnUiThread
+                 */
+
+                new MaterialAlertDialogBuilder(MainActivity.this)
+                        .setTitle(title)
+                        .setItems(items, listener)
+                        .create()
+                        .show();
+            }
+        });
     }
 
     public void dialog(String title, final String message, boolean copyButton) {

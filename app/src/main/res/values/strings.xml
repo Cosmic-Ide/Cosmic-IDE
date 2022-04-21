@@ -11,4 +11,8 @@
 	
 	<!-- String used by SettingActivity -->
 	<string name="java_version">Java Version</string>
+	<string name="classpath_dialog_title">Classpath</string>
+	<string name="classpath_dialog_save_button">Save</string>
+	<string name="classpath_not_specified">Classpath not Specified</string>
+	<string name="classpath_edit">Edit</string>
 </resources>

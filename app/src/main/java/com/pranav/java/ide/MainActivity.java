@@ -151,12 +151,9 @@ public final class MainActivity extends AppCompatActivity {
         if (loadingDialog.isShowing()) {
             /* So, this method is also triggered from another thread (Compile.java)
              * We need to make sure that this code is executed on main thread */
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TextView stage_txt = loadingDialog.findViewById(R.id.stage_txt);
-                    stage_txt.setText(stage);
-                }
+            runOnUiThread(() -> {
+                TextView stage_txt = loadingDialog.findViewById(R.id.stage_txt);
+                stage_txt.setText(stage);
             });
         }
     }
@@ -387,22 +384,19 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                /*
-                 * @TheWolf:
-                 * This method is executed on another
-                 * Thread, so DialogBuilder must be (I didn't find other solutions)
-                 * in runOnUiThread
-                 */
+        runOnUiThread(() -> {
+            /*
+             * @TheWolf:
+             * This method is executed on another
+             * Thread, so DialogBuilder must be (I didn't find other solutions)
+             * in runOnUiThread
+             */
 
-                new MaterialAlertDialogBuilder(MainActivity.this)
-                        .setTitle(title)
-                        .setItems(items, listener)
-                        .create()
-                        .show();
-            }
+            new MaterialAlertDialogBuilder(MainActivity.this)
+                    .setTitle(title)
+                    .setItems(items, listener)
+                    .create()
+                    .show();
         });
     }
 

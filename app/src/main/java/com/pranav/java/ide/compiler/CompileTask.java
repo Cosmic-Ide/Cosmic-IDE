@@ -2,7 +2,6 @@ package com.pranav.java.ide.compiler;
 
 import android.content.Context;
 import android.os.Looper;
-import android.util.Log;
 
 import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
@@ -62,7 +61,6 @@ public class CompileTask extends Thread {
                     .getBytes(), mainFile);
         } catch (final IOException e) {
             ((MainActivity) context).dialog("Cannot save program", e.getMessage(), true);
-            Log.e("FAILED", "On Line 56");
             listener.OnFailed();
         }
 
@@ -95,7 +93,6 @@ public class CompileTask extends Thread {
         } catch (Exception e) {
             errorsArePresent = true;
             ((MainActivity) context).showErr(e.getMessage());
-            Log.e("FAILED", "On Line 86");
             listener.OnFailed();
             return;
         }

@@ -23,7 +23,7 @@ public class CompileTask extends Thread {
 
     private boolean errorsArePresent = false;
 
-    private Context context;
+    private MainActivity activity;
 
     private CompilerListeners listener;
 
@@ -33,7 +33,7 @@ public class CompileTask extends Thread {
     public static String STAGE_LOADING_DEX;
 
     public CompileTask(Context context, CompilerListeners listener) {
-        this.context = (MainActivity) context;
+        this.activity = (MainActivity) context;
         this.listener = listener;
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
@@ -50,17 +50,17 @@ public class CompileTask extends Thread {
             // Delete previous build files
             listener.OnCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
-            ((MainActivity) context).file(FileUtil.getBinDir()).mkdirs();
-            final File mainFile = ((MainActivity) context).file(
+            activity.file(FileUtil.getBinDir()).mkdirs();
+            final File mainFile = activity.file(
                     FileUtil.getJavaDir() + "Main.java");
             Files.createParentDirs(mainFile);
             // a simple workaround to prevent calls to system.exit
-            Files.write(((MainActivity) context).editor.getText().toString()
+            Files.write(activity.editor.getText().toString()
                     .replace("System.exit(",
                             "System.err.print(\"Exit code \" + ")
                     .getBytes(), mainFile);
         } catch (final IOException e) {
-            ((MainActivity) context).dialog("Cannot save program", e.getMessage(), true);
+            activity.dialog("Cannot save program", e.getMessage(), true);
             listener.OnFailed();
         }
 
@@ -69,14 +69,14 @@ public class CompileTask extends Thread {
         errorsArePresent = true;
         try {
             listener.OnCurrentBuildStageChanged(STAGE_ECJ);
-            CompileJavaTask javaTask = new CompileJavaTask(((MainActivity) context).builder);
+            CompileJavaTask javaTask = new CompileJavaTask(activity.builder);
             javaTask.doFullTask();
             errorsArePresent = false;
         } catch (CompilationFailedException e) {
-            ((MainActivity) context).showErr(e.getMessage());
+            activity.showErr(e.getMessage());
             listener.OnFailed();
         } catch (Throwable e) {
-            ((MainActivity) context).showErr(e.getMessage());
+            activity.showErr(e.getMessage());
             listener.OnFailed();
         }
         if (errorsArePresent) {
@@ -92,7 +92,7 @@ public class CompileTask extends Thread {
             new D8Task().doFullTask();
         } catch (Exception e) {
             errorsArePresent = true;
-            ((MainActivity) context).showErr(e.getMessage());
+            activity.showErr(e.getMessage());
             listener.OnFailed();
             return;
         }
@@ -100,24 +100,24 @@ public class CompileTask extends Thread {
         // code that loads the final dex
         try {
             listener.OnCurrentBuildStageChanged(STAGE_LOADING_DEX);
-            final String[] classes = ((MainActivity) context).getClassesFromDex();
+            final String[] classes = activity.getClassesFromDex();
             if (classes == null) {
                 return;
             }
             listener.OnSuccess();
-            ((MainActivity) context).listDialog("Select a class to execute", classes, (dialog, item) -> {
-                ExecuteJavaTask task = new ExecuteJavaTask(((MainActivity) context).builder, classes[item]);
+            activity.listDialog("Select a class to execute", classes, (dialog, item) -> {
+                ExecuteJavaTask task = new ExecuteJavaTask(activity.builder, classes[item]);
                 try {
                     task.doFullTask();
                 } catch (InvocationTargetException e) {
-                    ((MainActivity) context).dialog("Failed...",
+                    activity.dialog("Failed...",
                             "Runtime error: " +
                                     e.getMessage() +
                                     "\n\n" +
                                     e.getMessage(),
                             true);
                 } catch (Exception e) {
-                    ((MainActivity) context).dialog("Failed..",
+                    activity.dialog("Failed..",
                             "Couldn't execute the dex: "
                                     + e.toString()
                                     + "\n\nSystem logs:\n"
@@ -133,11 +133,11 @@ public class CompileTask extends Thread {
                 s.append(String.valueOf(d8Time));
                 s.append("ms");
 
-                ((MainActivity) context).dialog(s.toString(), task.getLogs(), true);
+                activity.dialog(s.toString(), task.getLogs(), true);
             });
         } catch (Throwable e) {
             listener.OnFailed();
-            ((MainActivity) context).showErr(e.getMessage());
+            activity.showErr(e.getMessage());
         }
     }
 

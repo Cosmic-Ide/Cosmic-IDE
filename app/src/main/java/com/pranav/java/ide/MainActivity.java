@@ -55,13 +55,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
 
-    private long d8Time = 0;
-    private long ecjTime = 0;
-
-    private boolean errorsArePresent = false;
-
     private AlertDialog loadingDialog;
-    public File file;
     public JavaBuilder builder;
     private Thread runThread;
 

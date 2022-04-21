@@ -3,7 +3,6 @@ package com.pranav.java.ide;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,8 +15,6 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
@@ -25,7 +22,6 @@ public final class SettingActivity extends AppCompatActivity {
 
     private Spinner javaVersions_spinner;
     private MaterialButton classpath_bttn;
-    private AppCompatEditText classpath;
 
     private AlertDialog alertDialog;
     private SharedPreferences settings;
@@ -76,14 +72,12 @@ public final class SettingActivity extends AppCompatActivity {
         javaVersions_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                settings.edit().putString("javaVersion", String.valueOf(javaVersions[i])).commit();
+                settings.edit().putString("javaVersion", String.valueOf(javaVersions[i])).apply();
                 Log.e(TAG, "Selected Java Version (By User): " + javaVersions[i]);
             }
-
+            
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
         buildClasspathDialog();
@@ -100,7 +94,7 @@ public final class SettingActivity extends AppCompatActivity {
 
             save_classpath_bttn.setOnClickListener(view -> {
                 String enteredClasspath = classpath_edt.getText().toString();
-                settings.edit().putString("classpath", enteredClasspath).commit();
+                settings.edit().putString("classpath", enteredClasspath).apply();
 
                 /* Check if specified classpath is empty - if yes, change button text */
                 if (enteredClasspath.equals("")) {
@@ -116,7 +110,7 @@ public final class SettingActivity extends AppCompatActivity {
     }
 
     void buildClasspathDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(SettingActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
         builder.setView(dialogView);

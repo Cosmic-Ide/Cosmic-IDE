@@ -316,11 +316,9 @@ public class Util implements SuffixConstants {
 					  }
 				}
 			}
-			if (checkFileType) {
-				  if (!f.isDirectory()) {
+			if (checkFileType && !f.isDirectory()) {
 					throw new IOException(Messages.bind(
 						Messages.output_isFile, f.getAbsolutePath()));
-				  }
 			}
 			StringBuilder outDir = new StringBuilder(outputPath);
 			outDir.append(fileSeparator);
@@ -391,6 +389,8 @@ public class Util implements SuffixConstants {
 						visibility = ClassFileConstants.AccProtected;
 					}
 					break;
+				default:
+          break;
 			}
 			typeDeclaration = typeDeclaration.enclosingType;
 		}
@@ -1576,7 +1576,7 @@ public class Util implements SuffixConstants {
 	}
 
 	public static boolean effectivelyEqual(Object [] one, Object [] two) {
-		if (one == two)
+		if (one.equals(two))
 			return true;
 		int oneLength = one == null ? 0 : one.length;
 		int twoLength = two == null ? 0 : two.length;
@@ -1585,7 +1585,7 @@ public class Util implements SuffixConstants {
 		if (oneLength == 0)
 			return true;
 		for (int i = 0; i < one.length; i++) {
-			if (one[i] != two[i])
+			if (!one[i].equals(two[i]))
 				return false;
 		}
 		return true;
@@ -1635,6 +1635,7 @@ public class Util implements SuffixConstants {
 				} else {
 					buffer.append(c);
 				}
+				break;
 		}
 	}
 

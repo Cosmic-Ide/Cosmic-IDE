@@ -40,7 +40,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:spinnerMode="dialog"
             android:padding="16dp" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -48,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:text="Classpath"
+            android:text="@string/classpath"
             android:textColor="@color/primary_text_color"
             android:textSize="16sp"
             android:textStyle="bold" />

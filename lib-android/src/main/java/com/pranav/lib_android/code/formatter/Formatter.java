@@ -1,6 +1,5 @@
 package com.pranav.lib_android.code.formatter;
 
-import com.pranav.lib_android.util.ConcurrentUtilKt;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.text.edits.TextEdit;
@@ -30,13 +29,11 @@ public class Formatter {
 		);
 
 		final IDocument document = new Document(source);
-		ConcurrentUtilKt.execute(() -> {
-			try {
-				edit.apply(document);
-			} catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
-		});
+		try {
+			edit.apply(document);
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
 		// return the formatted code
 		return document.get();
 	}

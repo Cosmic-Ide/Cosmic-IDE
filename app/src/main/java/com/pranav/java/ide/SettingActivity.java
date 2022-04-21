@@ -2,156 +2,131 @@ package com.pranav.java.ide;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.radiobutton.MaterialRadioButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
+    private String[] javaVersions = {"1.3", "1.4", "5.0", "6.0", "7.0", "8.0", "9.0", "10.0", "11.0", "12.0", "13.0", "14.0", "15.0", "16.0", "17.0"};
 
-	private MaterialRadioButton java3;
-	private MaterialRadioButton java4;
-	private MaterialRadioButton java5;
-	private MaterialRadioButton java6;
-	private MaterialRadioButton java8;
-	private MaterialRadioButton java9;
-	private MaterialRadioButton java10;
-	private MaterialRadioButton java11;
-	private MaterialRadioButton java12;
-	private MaterialRadioButton java13;
-	private MaterialRadioButton java14;
-	private MaterialRadioButton java15;
-	private MaterialRadioButton java16;
-	private MaterialRadioButton java17;
+    private Spinner javaVersions_spinner;
+    private MaterialButton classpath_bttn;
+    private AppCompatEditText classpath;
 
-	private AppCompatEditText classpath;
+    private AlertDialog alertDialog;
+    private SharedPreferences settings;
 
-	private SharedPreferences settings;
+    private String TAG = "SettingsActivity";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_setting);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_setting);
 
-		final Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
 
-		setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setHomeButtonEnabled(true);
-		toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-		java3 = findViewById(R.id.java3);
-		java4 = findViewById(R.id.java4);
-		java5 = findViewById(R.id.java5);
-		java6 = findViewById(R.id.java6);
-		java8 = findViewById(R.id.java8);
-		java9 = findViewById(R.id.java9);
-		java10 = findViewById(R.id.java10);
-		java11 = findViewById(R.id.java11);
-		java12 = findViewById(R.id.java12);
-		java13 = findViewById(R.id.java13);
-		java14 = findViewById(R.id.java14);
-		java15 = findViewById(R.id.java15);
-		java16 = findViewById(R.id.java16);
-		java17 = findViewById(R.id.java17);
+        settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-		final MaterialRadioButton java7 = findViewById(R.id.java7);
-		classpath = findViewById(R.id.classpath);
-		settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+        javaVersions_spinner = findViewById(R.id.javaVersion_spinner);
+        classpath_bttn = findViewById(R.id.classpath_bttn);
 
-		switch (settings.getString("javaVersion", "7.0")) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, javaVersions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-			case "1.3":
-				java3.setChecked(true);
-				break;
+        javaVersions_spinner.setAdapter(adapter);
 
-			case "1.4":
-				java4.setChecked(true);
-				break;
+        /* Check if Classpath stored in SharedPref is empty - if yes, change button text */
+        if (settings.getString("classpath", "").equals("")) {
+            classpath_bttn.setText(getString(R.string.classpath_not_specified));
+        } else {
+            classpath_bttn.setText(getString(R.string.classpath_edit));
+        }
 
-			case "5.0":
-				java5.setChecked(true);
-				break;
+        /* Select Version in Spinner based on SharedPreferences Value */
+        int count = 0;
+        for (String version : javaVersions) {
+            if (version.equals(settings.getString("javaVersion", "7.0"))) {
+                javaVersions_spinner.setSelection(count);
+                break;
+            }
+            count++;
+        }
 
-			case "6.0":
-				java6.setChecked(true);
-				break;
+        /* Save Selected Java Version in SharedPreferences */
+        javaVersions_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                settings.edit().putString("javaVersion", String.valueOf(javaVersions[i])).commit();
+                Log.e(TAG, "Selected Java Version (By User): " + javaVersions[i]);
+            }
 
-			case "8.0":
-				java8.setChecked(true);
-				break;
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
 
-			case "9.0":
-				java9.setChecked(true);
-				break;
+            }
+        });
 
-			case "10.0":
-				java10.setChecked(true);
-				break;
+        buildClasspathDialog();
 
-			case "11.0":
-				java11.setChecked(true);
-				break;
+        classpath_bttn.setOnClickListener(v -> {
+            alertDialog.show();
 
-			case "12.0":
-				java12.setChecked(true);
-				break;
+            TextInputEditText classpath_edt = alertDialog.findViewById(R.id.classpath_edt);
+            MaterialButton save_classpath_bttn = alertDialog.findViewById(R.id.save_classpath_bttn);
 
-			case "13.0":
-				java13.setChecked(true);
-				break;
+            if (!settings.getString("classpath", "").equals("")) {
+                classpath_edt.setText(settings.getString("classpath", ""));
+            }
 
-			case "14.0":
-				java14.setChecked(true);
-				break;
+            save_classpath_bttn.setOnClickListener(view -> {
+                String enteredClasspath = classpath_edt.getText().toString();
+                settings.edit().putString("classpath", enteredClasspath).commit();
 
-			case "15.0":
-				java15.setChecked(true);
-				break;
+                /* Check if specified classpath is empty - if yes, change button text */
+                if (enteredClasspath.equals("")) {
+                    classpath_bttn.setText(getString(R.string.classpath_not_specified));
+                } else {
+                    classpath_bttn.setText(getString(R.string.classpath_edit));
+                }
 
-			case "16.0":
-				java16.setChecked(true);
-				break;
+                /* Dismiss Dialog If Showing */
+                if (alertDialog.isShowing()) alertDialog.dismiss();
+            });
+        });
+    }
 
-			case "17.0":
-				java17.setChecked(true);
-				break;
+    void buildClasspathDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        View dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
+        builder.setView(dialogView);
+        alertDialog = builder.create();
+    }
 
-			case "7.0":
-			
-
-			default:
-				java7.setChecked(true);
-				break;
-		}
-
-		classpath.setText(settings.getString("classpath", ""));
-	}
-
-	@Override
-	public void onDestroy() {
-		double version = 1.7;
-
-		if (java3.isChecked()) version = 1.3;
-		else if (java4.isChecked()) version = 1.4;
-		else if (java5.isChecked()) version = 5.0;
-		else if (java6.isChecked()) version = 6.0;
-		else if (java8.isChecked()) version = 8.0;
-		else if (java9.isChecked()) version = 9.0;
-		else if (java10.isChecked()) version = 10.0;
-		else if (java11.isChecked()) version = 11.0;
-		else if (java12.isChecked()) version = 12.0;
-		else if (java13.isChecked()) version = 13.0;
-		else if (java14.isChecked()) version = 14.0;
-		else if (java15.isChecked()) version = 15.0;
-		else if (java16.isChecked()) version = 16.0;
-		else if (java17.isChecked()) version = 17.0;
-
-		settings.edit().putString("javaVersion", String.valueOf(version)).apply();
-
-		settings.edit().putString("classpath", classpath.getText().toString()).apply();
-		super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+        if (alertDialog.isShowing()) {
+            alertDialog.dismiss();
+        }
+        super.onDestroy();
+    }
 }

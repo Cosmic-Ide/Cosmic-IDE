@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/compilation_running"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text_color"/>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/stage_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Stage"
+        android:textSize="14dp"
+        android:textStyle="italic"
+        android:textColor="@color/grayed_text_color"/>
+</LinearLayout>

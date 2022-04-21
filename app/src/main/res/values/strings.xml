@@ -10,7 +10,7 @@
 	<!-- String used by SettingActivity -->
 	<string name="java_version">Java Version</string>
 	<string name="classpath">Classpath</string>
-	<string name="classpath_separated_from_colon">Classpath (separated by ':')</string>
+	<string name="classpath_separated_from_colon">Classpath (separated by &apos;:&apos;)</string>
 	<string name="format">Format</string>
 	<string name="settings">Settings</string>
 	<string name="classpath_dialog_save_button">Save</string>

@@ -75,6 +75,9 @@ public final class SettingActivity extends AppCompatActivity {
                 settings.edit().putString("javaVersion", String.valueOf(javaVersions[i])).apply();
                 Log.e(TAG, "Selected Java Version (By User): " + javaVersions[i]);
             }
+            
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
         buildClasspathDialog();

@@ -6,6 +6,7 @@
 	<string name="smali">Smali</string>
 	<string name="disassemble">Disassemble</string>
 	<string name="smali2java">Smali2Java</string>
+	<string name="compilation_running">Running</string>
 	
 	<!-- String used by SettingActivity -->
 	<string name="java_version">Java Version</string>

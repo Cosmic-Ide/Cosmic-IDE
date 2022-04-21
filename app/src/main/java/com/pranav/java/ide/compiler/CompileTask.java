@@ -1,11 +1,8 @@
-﻿package com.pranav.java.ide.compiler;
+package com.pranav.java.ide.compiler;
 
 import android.content.Context;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
@@ -20,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-public class CompileTask implements Runnable {
+public class CompileTask extends Thread {
 
     private long d8Time = 0;
     private long ecjTime = 0;

@@ -13,7 +13,7 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 ## Features
 
 - [x] Java Compiler
-- [x] Java Highlight
+- [x] Java Highlighter
 - [x] Java 17
 - [x] Run Java File
 - [x] Add Classpath
@@ -22,9 +22,12 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [x] Format Java Code
 - [x] Smali Dex File
 - [x] D8
-- [ ] Support these features for external files as well
-- [ ] Directly run other than main method
-- [ ] File Tree viewer
+
+## TO-DO
+
+- [ ] Support above features for external files as well
+- [ ] File Tree Viewer
+- [ ] Incremental Compilation
 
 ## Building
 
@@ -38,6 +41,8 @@ I would really love all kinds of contributions. If you have any questions, ideas
 - Create a pull request and we'll merge it after review.
  
 ## Special thanks
+
+- [TheWolf](https://github.com/thewolfprod)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 

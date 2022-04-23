@@ -10,10 +10,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.0.2
 
       - name: set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v3.1.1
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -22,7 +22,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Update gradle wrapper
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.1.5
         with:
           arguments: |
               wrapper
@@ -36,7 +36,7 @@ jobs:
         run: git config --global user.email "${{ secrets.EMAIL }}"
 
       - name: Setup name
-        run: git config --global user.name "Gradle Wrapper"
+        run: git config --global user.name "PranavPurwar"
 
       - name: Commit latest gradle wrapper
         run: git commit -m "Update gradle to v${{ secrets.GRADLE_VERSION }}"

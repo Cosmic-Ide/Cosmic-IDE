@@ -1,7 +1,8 @@
 package com.pranav.lib_android.task.java;
 
-import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.interfaces.*;
+import com.pranav.lib_android.util.FileUtil;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,82 +15,81 @@ import java.util.jar.Manifest;
 
 public class JarTask extends Task {
 
-	@Override
-	public void doFullTask() throws Exception {
+    @Override
+    public void doFullTask() throws Exception {
 
-		//input file
-		File classesFolder = new File(FileUtil.getBinDir() + "classes");
+        // input file
+        File classesFolder = new File(FileUtil.getBinDir() + "classes");
 
-		// Open archive file
-		FileOutputStream stream = new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
+        // Open archive file
+        FileOutputStream stream =
+                new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
 
-		Manifest manifest = buildManifest();
+        Manifest manifest = buildManifest();
 
-		//Create the jar file
-		JarOutputStream out = new JarOutputStream(stream, manifest);
+        // Create the jar file
+        JarOutputStream out = new JarOutputStream(stream, manifest);
 
-		//Add the files..
-		if (classesFolder.listFiles() != null) {
-			for (File clazz : classesFolder.listFiles()) {
-				add(classesFolder.getPath(), clazz, out);
-			}
-		}
+        // Add the files..
+        if (classesFolder.listFiles() != null) {
+            for (File clazz : classesFolder.listFiles()) {
+                add(classesFolder.getPath(), clazz, out);
+            }
+        }
 
-		out.close();
-		stream.close();
-	}
+        out.close();
+        stream.close();
+    }
 
-	@Override
-	public String getTaskName() {
-		return "JarTask";
-	}
+    @Override
+    public String getTaskName() {
+        return "JarTask";
+    }
 
-	private Manifest buildManifest() {
-		Manifest manifest = new Manifest();
-		manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-		return manifest;
-	}
-	
-	private void add(String parentPath, File source, JarOutputStream target) throws IOException {
-		String name = source.getPath().substring(parentPath.length() + 1);
+    private Manifest buildManifest() {
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        return manifest;
+    }
 
-		BufferedInputStream in = null;
-		try {
-			if (source.isDirectory()) {
-				if (!name.isEmpty()) {
-					if (!name.endsWith("/"))
-						name += "/";
+    private void add(String parentPath, File source, JarOutputStream target) throws IOException {
+        String name = source.getPath().substring(parentPath.length() + 1);
 
-					//Add the Entry
-					JarEntry entry = new JarEntry(name);
-					entry.setTime(source.lastModified());
-					target.putNextEntry(entry);
-					target.closeEntry();
-				}
+        BufferedInputStream in = null;
+        try {
+            if (source.isDirectory()) {
+                if (!name.isEmpty()) {
+                    if (!name.endsWith("/")) name += "/";
 
-				for (File nestedFile : source.listFiles()) {
-					add(parentPath, nestedFile, target);
-				}
-				return;
-			}
+                    // Add the Entry
+                    JarEntry entry = new JarEntry(name);
+                    entry.setTime(source.lastModified());
+                    target.putNextEntry(entry);
+                    target.closeEntry();
+                }
 
-			JarEntry entry = new JarEntry(name);
-			entry.setTime(source.lastModified());
-			target.putNextEntry(entry);
-			in = new BufferedInputStream(new FileInputStream(source));
-			byte[] buffer = new byte[1024];
-			while (true) {
-				int count = in.read(buffer);
-				if (count == -1)
-				break;
-				target.write(buffer, 0, count);
-			}
-			target.closeEntry();
+                for (File nestedFile : source.listFiles()) {
+                    add(parentPath, nestedFile, target);
+                }
+                return;
+            }
 
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-	}
+            JarEntry entry = new JarEntry(name);
+            entry.setTime(source.lastModified());
+            target.putNextEntry(entry);
+            in = new BufferedInputStream(new FileInputStream(source));
+            byte[] buffer = new byte[1024];
+            while (true) {
+                int count = in.read(buffer);
+                if (count == -1) break;
+                target.write(buffer, 0, count);
+            }
+            target.closeEntry();
+
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+    }
 }

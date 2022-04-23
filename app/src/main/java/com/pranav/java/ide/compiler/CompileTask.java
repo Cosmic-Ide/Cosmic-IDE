@@ -51,14 +51,16 @@ public class CompileTask extends Thread {
             listener.OnCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
             activity.file(FileUtil.getBinDir()).mkdirs();
-            final File mainFile = activity.file(
-                    FileUtil.getJavaDir() + "Main.java");
+            final File mainFile = activity.file(FileUtil.getJavaDir() + "Main.java");
             Files.createParentDirs(mainFile);
             // a simple workaround to prevent calls to system.exit
-            Files.write(activity.editor.getText().toString()
-                    .replace("System.exit(",
-                            "System.err.print(\"Exit code \" + ")
-                    .getBytes(), mainFile);
+            Files.write(
+                    activity.editor
+                            .getText()
+                            .toString()
+                            .replace("System.exit(", "System.err.print(\"Exit code \" + ")
+                            .getBytes(),
+                    mainFile);
         } catch (final IOException e) {
             activity.dialog("Cannot save program", e.getMessage(), true);
             listener.OnFailed();
@@ -105,36 +107,38 @@ public class CompileTask extends Thread {
                 return;
             }
             listener.OnSuccess();
-            activity.listDialog("Select a class to execute", classes, (dialog, item) -> {
-                ExecuteJavaTask task = new ExecuteJavaTask(activity.builder, classes[item]);
-                try {
-                    task.doFullTask();
-                } catch (InvocationTargetException e) {
-                    activity.dialog("Failed...",
-                            "Runtime error: " +
-                                    e.getMessage() +
-                                    "\n\n" +
-                                    e.getMessage(),
-                            true);
-                } catch (Exception e) {
-                    activity.dialog("Failed..",
-                            "Couldn't execute the dex: "
-                                    + e.toString()
-                                    + "\n\nSystem logs:\n"
-                                    + task.getLogs(),
-                            true);
-                }
-                StringBuilder s = new StringBuilder();
-                s.append("Success! ECJ took: ");
-                s.append(String.valueOf(ecjTime));
-                s.append("ms, ");
-                s.append("D8");
-                s.append(" took: ");
-                s.append(String.valueOf(d8Time));
-                s.append("ms");
+            activity.listDialog(
+                    "Select a class to execute",
+                    classes,
+                    (dialog, item) -> {
+                        ExecuteJavaTask task = new ExecuteJavaTask(activity.builder, classes[item]);
+                        try {
+                            task.doFullTask();
+                        } catch (InvocationTargetException e) {
+                            activity.dialog(
+                                    "Failed...",
+                                    "Runtime error: " + e.getMessage() + "\n\n" + e.getMessage(),
+                                    true);
+                        } catch (Exception e) {
+                            activity.dialog(
+                                    "Failed..",
+                                    "Couldn't execute the dex: "
+                                            + e.toString()
+                                            + "\n\nSystem logs:\n"
+                                            + task.getLogs(),
+                                    true);
+                        }
+                        StringBuilder s = new StringBuilder();
+                        s.append("Success! ECJ took: ");
+                        s.append(String.valueOf(ecjTime));
+                        s.append("ms, ");
+                        s.append("D8");
+                        s.append(" took: ");
+                        s.append(String.valueOf(d8Time));
+                        s.append("ms");
 
-                activity.dialog(s.toString(), task.getLogs(), true);
-            });
+                        activity.dialog(s.toString(), task.getLogs(), true);
+                    });
         } catch (Throwable e) {
             listener.OnFailed();
             activity.showErr(e.getMessage());
@@ -148,5 +152,4 @@ public class CompileTask extends Thread {
 
         public void OnFailed();
     }
-
 }

@@ -13,16 +13,16 @@ jobs:
 
     steps:
       - name: Cancel previous runs
-        uses: styfle/cancel-workflow-action@0.9.1
+        uses: styfle/cancel-workflow-action@v0.9.1
         with:
           workflow_id: 16557101
           access_token: ${{ github.token }}
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.0.2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v3.1.1
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -31,7 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.1.5
         with:
           arguments: build
 

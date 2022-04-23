@@ -1,0 +1,17 @@
+# Example workflow
+name: Format
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - uses: axel-op/googlejavaformat-action@v3.6.0
+        with:
+          args: "--aosp --replace"

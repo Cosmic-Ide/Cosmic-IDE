@@ -21,6 +21,7 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [x] Disassemble Class File
 - [x] Format Java Code
 - [x] Smali Dex File
+- [x] Basic Java auto-completion
 - [x] D8
 
 ## TO-DO
@@ -28,6 +29,9 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [ ] Support above features for external files as well
 - [ ] File Tree Viewer
 - [ ] Incremental Compilation
+- [ ] JGit support
+- [ ] Improved Code Editor
+- [ ] Java auto-complete server
 
 ## Building
 

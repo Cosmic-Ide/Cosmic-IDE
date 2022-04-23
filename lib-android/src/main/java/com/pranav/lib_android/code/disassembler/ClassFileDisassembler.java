@@ -1,6 +1,6 @@
 package com.pranav.lib_android.code.disassembler;
 
-import com.google.common.io.Files;
+import kotlin.io.FilesKt;
 
 import org.eclipse.jdt.internal.core.util.Disassembler;
 
@@ -12,7 +12,7 @@ public class ClassFileDisassembler {
     final byte[] classFileBytes;
 
     public ClassFileDisassembler(String classFile) throws IOException {
-        classFileBytes = Files.asByteSource(new File(classFile)).read();
+        classFileBytes = FilesKt.readBytes(new File(classFile));
     }
 
     public String disassemble() throws Throwable {

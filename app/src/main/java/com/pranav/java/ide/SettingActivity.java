@@ -11,14 +11,16 @@ import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
-    private String[] javaVersions = {"1.3", "1.4", "5.0", "6.0", "7.0", "8.0", "9.0", "10.0", "11.0", "12.0", "13.0", "14.0", "15.0", "16.0", "17.0"};
+    private String[] javaVersions = {
+        "1.3", "1.4", "5.0", "6.0", "7.0", "8.0", "9.0", "10.0", "11.0", "12.0", "13.0", "14.0",
+        "15.0", "16.0", "17.0"
+    };
 
     private Spinner javaVersions_spinner;
     private MaterialButton classpath_bttn;
@@ -45,8 +47,8 @@ public final class SettingActivity extends AppCompatActivity {
         javaVersions_spinner = findViewById(R.id.javaVersion_spinner);
         classpath_bttn = findViewById(R.id.classpath_bttn);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, javaVersions);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         javaVersions_spinner.setAdapter(adapter);
@@ -69,44 +71,52 @@ public final class SettingActivity extends AppCompatActivity {
         }
 
         /* Save Selected Java Version in SharedPreferences */
-        javaVersions_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                settings.edit().putString("javaVersion", String.valueOf(javaVersions[i])).apply();
-                Log.e(TAG, "Selected Java Version (By User): " + javaVersions[i]);
-            }
-            
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
-        });
+        javaVersions_spinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(
+                            AdapterView<?> adapterView, View view, int i, long l) {
+                        settings.edit()
+                                .putString("javaVersion", String.valueOf(javaVersions[i]))
+                                .apply();
+                        Log.e(TAG, "Selected Java Version (By User): " + javaVersions[i]);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {}
+                });
 
         buildClasspathDialog();
 
-        classpath_bttn.setOnClickListener(v -> {
-            alertDialog.show();
+        classpath_bttn.setOnClickListener(
+                v -> {
+                    alertDialog.show();
 
-            TextInputEditText classpath_edt = alertDialog.findViewById(R.id.classpath_edt);
-            MaterialButton save_classpath_bttn = alertDialog.findViewById(R.id.save_classpath_bttn);
+                    TextInputEditText classpath_edt = alertDialog.findViewById(R.id.classpath_edt);
+                    MaterialButton save_classpath_bttn =
+                            alertDialog.findViewById(R.id.save_classpath_bttn);
 
-            if (!settings.getString("classpath", "").equals("")) {
-                classpath_edt.setText(settings.getString("classpath", ""));
-            }
+                    if (!settings.getString("classpath", "").equals("")) {
+                        classpath_edt.setText(settings.getString("classpath", ""));
+                    }
 
-            save_classpath_bttn.setOnClickListener(view -> {
-                String enteredClasspath = classpath_edt.getText().toString();
-                settings.edit().putString("classpath", enteredClasspath).apply();
+                    save_classpath_bttn.setOnClickListener(
+                            view -> {
+                                String enteredClasspath = classpath_edt.getText().toString();
+                                settings.edit().putString("classpath", enteredClasspath).apply();
 
-                /* Check if specified classpath is empty - if yes, change button text */
-                if (enteredClasspath.equals("")) {
-                    classpath_bttn.setText(getString(R.string.classpath_not_specified));
-                } else {
-                    classpath_bttn.setText(getString(R.string.classpath_edit));
-                }
+                                /* Check if specified classpath is empty - if yes, change button text */
+                                if (enteredClasspath.equals("")) {
+                                    classpath_bttn.setText(
+                                            getString(R.string.classpath_not_specified));
+                                } else {
+                                    classpath_bttn.setText(getString(R.string.classpath_edit));
+                                }
 
-                /* Dismiss Dialog If Showing */
-                if (alertDialog.isShowing()) alertDialog.dismiss();
-            });
-        });
+                                /* Dismiss Dialog If Showing */
+                                if (alertDialog.isShowing()) alertDialog.dismiss();
+                            });
+                });
     }
 
     void buildClasspathDialog() {

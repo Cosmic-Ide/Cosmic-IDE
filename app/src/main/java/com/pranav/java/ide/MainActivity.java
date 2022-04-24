@@ -1,5 +1,6 @@
 package com.pranav.java.ide;
 
+import android.app.FragmentManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,9 +17,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -26,6 +32,8 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
+import com.pranav.java.ide.ui.TreeViewDrawer;
+import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.task.JavaBuilder;
@@ -50,29 +58,40 @@ import java.util.Arrays;
 public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
+    public DrawerLayout drawer;
 
     private AlertDialog loadingDialog;
     public JavaBuilder builder;
     private Thread runThread;
+
+    public String currentWorkingFilePath;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        editor = findViewById(R.id.editor);
+        drawer = findViewById(R.id.mDrawerLayout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
-        editor = findViewById(R.id.editor);
+        ActionBarDrawerToggle toggle =
+                new ActionBarDrawerToggle(
+                        this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setEditorLanguage(new JavaLanguage());
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
 
-        final File file = file(FileUtil.getJavaDir() + "Main.java");
+        currentWorkingFilePath = FileUtil.getJavaDir() + "Main.java";
+        final File file = file(currentWorkingFilePath);
 
         if (file.exists()) {
             try {
@@ -81,13 +100,13 @@ public final class MainActivity extends AppCompatActivity {
                 dialog("Cannot read file", getString(e), true);
             }
         } else {
-            editor.setText(
-                    "package com.example;\n\nimport java.util.*;\n\n"
-                            + "public class Main {\n\n"
-                            + "\tpublic static void main(String[] args) {\n"
-                            + "\t\tSystem.out.print(\"Hello, World!\");\n"
-                            + "\t}\n"
-                            + "}\n");
+            try {
+                Files.createParentDirs(file);
+                Files.write(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes(), file);
+                editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
+            } catch (IOException e) {
+                dialog("Cannot create file", getString(e), true);
+            }
         }
 
         builder = new JavaBuilder(getApplicationContext(), getClassLoader());
@@ -101,13 +120,11 @@ public final class MainActivity extends AppCompatActivity {
                     File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
                     if (!output.exists()
                             && getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-                                    .getString("javaVersion", "7.0")
-                                    .equals("8.0")) {
+                            .getString("javaVersion", "7.0")
+                            .equals("8.0")) {
                         try {
                             Files.write(
-                                    ByteStreams.toByteArray(
-                                            getAssets().open("core-lambda-stubs.jar")),
-                                    output);
+                                    ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
                         } catch (Exception e) {
                             showErr(getString(e));
                         }
@@ -115,6 +132,11 @@ public final class MainActivity extends AppCompatActivity {
                 });
         /* Create Loading Dialog */
         buildLoadingDialog();
+
+        /* Insert Fragment with TreeView into Drawer */
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer());
+        fragmentTransaction.commit();
 
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
@@ -144,6 +166,12 @@ public final class MainActivity extends AppCompatActivity {
                         stage_txt.setText(stage);
                     });
         }
+    }
+
+    public void loadFileToEditor(String path) throws IOException {
+        File newWorkingFile = new File(path);
+        editor.setText(Files.asCharSource(newWorkingFile, Charsets.UTF_8).read());
+        currentWorkingFilePath = path;
     }
 
     @Override
@@ -196,11 +224,19 @@ public final class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (runThread != null && runThread.isAlive()) {
+            runThread.interrupt();
+        }
+        super.onDestroy();
+    }
+
     public void showErr(final String e) {
         Snackbar.make(
-                        (LinearLayout) findViewById(R.id.container),
-                        "An error occurred",
-                        Snackbar.LENGTH_INDEFINITE)
+                (LinearLayout) findViewById(R.id.container),
+                "An error occurred",
+                Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", (view) -> dialog("Failed...", e, true))
                 .show();
     }
@@ -215,11 +251,11 @@ public final class MainActivity extends AppCompatActivity {
                     (d, pos) -> {
                         final String claz = classes[pos];
                         final String[] args =
-                                new String[] {
-                                    "-f",
-                                    "-o",
-                                    FileUtil.getBinDir().concat("smali/"),
-                                    FileUtil.getBinDir().concat("classes.dex")
+                                new String[]{
+                                        "-f",
+                                        "-o",
+                                        FileUtil.getBinDir().concat("smali/"),
+                                        FileUtil.getBinDir().concat("classes.dex")
                                 };
                         ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
 
@@ -230,16 +266,10 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setTextSize(13);
 
                         File smaliFile =
-                                file(
-                                        FileUtil.getBinDir()
-                                                + "smali/"
-                                                + claz.replace(".", "/")
-                                                + ".smali");
+                                file(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
 
                         try {
-                            edi.setText(
-                                    formatSmali(
-                                            Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
+                            edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
                         }
@@ -263,15 +293,15 @@ public final class MainActivity extends AppCompatActivity {
                 (dialog, pos) -> {
                     final String claz = classes[pos].replace(".", "/");
                     String[] args = {
-                        FileUtil.getBinDir()
-                                + "classes/"
-                                + claz
-                                + // full class name
-                                ".class",
-                        "--extraclasspath",
-                        FileUtil.getClasspathDir() + "android.jar",
-                        "--outputdir",
-                        FileUtil.getBinDir() + "cfr/"
+                            FileUtil.getBinDir()
+                                    + "classes/"
+                                    + claz
+                                    + // full class name
+                                    ".class",
+                            "--extraclasspath",
+                            FileUtil.getClasspathDir() + "android.jar",
+                            "--outputdir",
+                            FileUtil.getBinDir() + "cfr/"
                     };
 
                     ConcurrentUtil.execute(
@@ -297,8 +327,7 @@ public final class MainActivity extends AppCompatActivity {
                         dialog("Cannot read file", getString(e), true);
                     }
 
-                    final AlertDialog d =
-                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
                 });
@@ -321,14 +350,12 @@ public final class MainActivity extends AppCompatActivity {
 
                     try {
                         final String disassembled =
-                                new ClassFileDisassembler(
-                                                FileUtil.getBinDir() + "classes/" + claz + ".class")
+                                new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class")
                                         .disassemble();
 
                         edi.setText(disassembled);
 
-                        AlertDialog d =
-                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                        AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                         d.setCanceledOnTouchOutside(true);
                         d.show();
                     } catch (Throwable e) {
@@ -404,8 +431,7 @@ public final class MainActivity extends AppCompatActivity {
             dialog.setNeutralButton(
                     "COPY",
                     (dialogInterface, i) -> {
-                        ((ClipboardManager)
-                                        getSystemService(getApplicationContext().CLIPBOARD_SERVICE))
+                        ((ClipboardManager) getSystemService(getApplicationContext().CLIPBOARD_SERVICE))
                                 .setPrimaryClip(ClipData.newPlainText("clipboard", message));
                     });
         dialog.create().show();

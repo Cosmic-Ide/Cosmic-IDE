@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/create_class_menu_bttn"
+        android:title="@string/create_class"
+        app:showAsAction="never">
+    </item>
+
+    <item
+        android:id="@+id/create_directory_bttn"
+        android:title="@string/create_directory"
+        app:showAsAction="never">
+    </item>
+
+    <item
+        android:id="@+id/delete_menu_bttn"
+        android:title="@string/delete"
+        app:showAsAction="never">
+    </item>
+</menu>

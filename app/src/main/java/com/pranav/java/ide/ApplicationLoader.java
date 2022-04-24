@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
+import com.pranav.java.ide.ui.utils.dpToPx;
 import com.pranav.lib_android.util.FileUtil;
 
 public final class ApplicationLoader extends Application {
@@ -18,6 +19,7 @@ public final class ApplicationLoader extends Application {
     public void onCreate() {
         mContext = getApplicationContext();
         FileUtil.initializeContext(mContext);
+        dpToPx.initalizeContext(mContext);
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler =
                 Thread.getDefaultUncaughtExceptionHandler();
 

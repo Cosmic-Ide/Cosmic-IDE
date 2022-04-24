@@ -7,6 +7,19 @@
 	<string name="disassemble">Disassemble</string>
 	<string name="smali2java">Smali2Java</string>
 	<string name="compilation_running">Running</string>
+	<string name="open_drawer">Open Drawer</string>
+	<string name="close_drawer">Close Drawer</string>
+	<string name="create_new_file">Create New File</string>
+	<string name="create_new_directory">Create New Directory</string>
+	<string name="new_class_name">Class Name</string>
+	<string name="new_directory_name">Directory Name</string>
+	<string name="java_file_suffix">.java</string>
+	<string name="create">Create</string>
+	<string name="create_class">Create Class</string>
+	<string name="create_directory">Create Directory</string>
+	<string name="delete">Delete</string>
+	<string name="confirm">Confirm</string>
+	<string name="cancel">Cancel</string>
 	
 	<!-- String used by SettingActivity -->
 	<string name="java_version">Java Version</string>

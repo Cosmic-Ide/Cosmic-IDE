@@ -12,7 +12,7 @@
         android:layout_marginBottom="8dp"
         android:text="@string/compilation_running"
         android:textSize="18dp"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:textColor="@color/md_theme_light_primary"/>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator

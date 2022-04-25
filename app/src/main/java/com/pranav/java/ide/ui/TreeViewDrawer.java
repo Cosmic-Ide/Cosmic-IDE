@@ -84,37 +84,8 @@ public class TreeViewDrawer extends Fragment {
                         new TreeFolder(mainFolderFile),
                         0); /* Create new Root node for given Main Root Directory */
 
-        /*
-         * Level 0: Root Folder
-         * Level 1: Root Children's
-         * Level 2: Children's Children's */
-        List<File> mFiles = getSortedFilesInPath(mainFolderFile.getPath());
-        for (File file : mFiles) {
-            if (file.isFile()) {
-                /* If it's File - create file children node */
-                TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), 1);
-                mainRootNode.addChild(javaFileNode);
-            } else {
-                /* If it's a Directory - create folder children node and check ONLY if there is a files in it
-                 * @TODO:
-                 *   Sort File#listFiles properly so directories will appear on top
-                 * @TODO:
-                 *   Write a code that will be able to check for more (more as possible) directories and files in them */
-                TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), 1);
-
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File fileInNextDir : files) {
-                        if (fileInNextDir.isFile()) {
-                            TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), 2);
-                            directoryFileNode.addChild(fileChild);
-                        }
-                    }
-                }
-                mainRootNode.addChild(directoryFileNode);
-            }
-        }
-
+        /* Add all children directories and files to the list */
+        addChildDirsAndFiles(mainRootNode);
         /* Add 'java' root folder node to the list */
         rootNodesList.add(mainRootNode);
 
@@ -166,6 +137,45 @@ public class TreeViewDrawer extends Fragment {
                                 return false;
                             }
                         }));
+    }
+
+    void addChildDirsAndFiles(TreeNode mainRootNode, int n) {
+        /*
+         * Level 0: Root Folder
+         * Level 1: Root Children's
+         * Level 2: Children's Children's */
+        File rootFile = ((TreeFile) mainRootNode.getValue()).getFile()
+        List<File> mFiles = getSortedFilesInPath(rootFile.getPath());
+        for (File file : mFiles) {
+            if (file.isFile()) {
+                /* If it's File - create file children node */
+                TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
+                mainRootNode.addChild(javaFileNode);
+            } else {
+                /* If it's a Directory - create folder children node and check ONLY if there is a files in it
+                 * @TODO:
+                 *   Sort File#listFiles properly so directories will appear on top
+                 * @TODO:
+                 *   Write a code that will be able to check for more (more as possible) directories and files in them */
+                TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
+
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File fileInNextDir : files) {
+                        n++;
+                        if (fileInNextDir.isFile()) {
+                            TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), n);
+                            directoryFileNode.addChild(fileChild);
+                        } else {
+                            TreeNode dirChild = new TreeNode<>(new TreeFolder(fileInNextDir), n);
+                            n++;
+                            addChildDirsAndFiles(dirChild, n);
+                        }
+                    }
+                }
+                mainRootNode.addChild(directoryFileNode);
+            }
+        }
     }
 
     void showPopup(View v, TreeNode<TreeFile> node) {

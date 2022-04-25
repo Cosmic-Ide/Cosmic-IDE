@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 public class FileUtil {
@@ -28,17 +29,7 @@ public class FileUtil {
     }
 
     public static String readFile(File file) throws IOException {
-        StringBuilder text = new StringBuilder();
-
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = "";
-        while ((line = br.readLine()) != null) {
-            text.append(line);
-            text.append('\n');
-        }
-        br.close();
-
-        return text.toString();
+        return Files.asCharSource(file, Charsets.UTF_8).read();
     }
 
     public static void deleteFile(String path) {

@@ -33,20 +33,16 @@ public class FileUtil {
         writer.close();
     }
 
-    public static String readFile(File file) {
+    public static String readFile(File file) throws IOException {
         StringBuilder text = new StringBuilder();
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                text.append(line);
-                text.append('\n');
-            }
-            br.close();
-        } catch (IOException e) {
-            return "Error Reading File";
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            text.append(line);
+            text.append('\n');
         }
+        br.close();
 
         return text.toString();
     }

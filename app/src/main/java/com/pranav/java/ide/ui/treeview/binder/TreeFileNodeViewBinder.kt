@@ -34,9 +34,9 @@ class TreeFileNodeViewBinder(
 
         with(viewHolder.arrow) {
             setImageResource(R.drawable.arrow)
-            setColorFilter(context.getColor(R.color.primary_text_color), PorterDuff.Mode.SRC_ATOP)
-            rotation = if (treeNode.isExpanded) 90F else 0F
-            visibility = if (treeNode.isLeaf) View.INVISIBLE else View.VISIBLE
+            setColorFilter(context.getColor(R.color.md_theme_light_primary), PorterDuff.Mode.SRC_ATOP)
+            rotation = treeNode.isExpanded? 90F : 0F
+            visibility = treeNode.isLeaf? View.INVISIBLE : View.VISIBLE
         }
 
         val file = treeNode.content.file
@@ -45,7 +45,7 @@ class TreeFileNodeViewBinder(
 
         with(viewHolder.icon) {
             setImageDrawable(treeNode.content.getIcon(context))
-            setColorFilter(context.getColor(R.color.primary_text_color), PorterDuff.Mode.SRC_ATOP)
+            setColorFilter(context.getColor(R.color.md_theme_light_primary), PorterDuff.Mode.SRC_ATOP)
         }
     }
 

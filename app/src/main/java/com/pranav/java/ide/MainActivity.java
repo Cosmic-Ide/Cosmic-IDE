@@ -202,6 +202,7 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        editor.release();
         if (runThread != null && runThread.isAlive()) {
             runThread.interrupt();
         }

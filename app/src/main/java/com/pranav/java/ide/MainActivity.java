@@ -190,30 +190,7 @@ public final class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.run_menu_button:
-                loadingDialog.show(); // Show Loading Dialog
-                runThread =
-                        new Thread(
-                                new CompileTask(
-                                        MainActivity.this,
-                                        new CompileTask.CompilerListeners() {
-                                            @Override
-                                            public void OnCurrentBuildStageChanged(String stage) {
-                                                changeLoadingDialogBuildStage(stage);
-                                            }
-
-                                            @Override
-                                            public void OnSuccess() {
-                                                loadingDialog.dismiss();
-                                            }
-
-                                            @Override
-                                            public void OnFailed() {
-                                                if (loadingDialog.isShowing()) {
-                                                    loadingDialog.dismiss();
-                                                }
-                                            }
-                                        }));
-                runThread.start();
+                compile();
                 break;
             default:
                 break;
@@ -236,6 +213,35 @@ public final class MainActivity extends AppCompatActivity {
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", (view) -> dialog("Failed...", e, true))
                 .show();
+    }
+
+    public void compile() {
+        loadingDialog.show(); // Show Loading Dialog
+        runThread =
+                new Thread(
+                        new CompileTask(
+                                MainActivity.this,
+                                new CompileTask.CompilerListeners() {
+                                    @Override
+                                    public void OnCurrentBuildStageChanged(String stage) {
+                                        changeLoadingDialogBuildStage(stage);
+                                    }
+
+                                    @Override
+                                    public void OnSuccess() {
+                                        loadingDialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void OnFailed() {
+                                        if (loadingDialog.isShowing()) {
+                                            loadingDialog.dismiss();
+                                        }
+                                    }
+                                }
+                        )
+                );
+        runThread.start();
     }
 
     public void smali() {
@@ -434,28 +440,16 @@ public final class MainActivity extends AppCompatActivity {
         dialog.create().show();
     }
 
-    // for granting execute permissions to file/folder (currently unused)
-    public void grantChmod(File file) {
-        File[] files = file.listFiles();
-        try {
-            for (File f : files) {
-                if (f.isDirectory()) {
-                    grantChmod(f);
-                } else {
-                    f.setExecutable(true, true);
-                }
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
     public String[] getClassesFromDex() {
         try {
+            final dex = new File(FileUtil.getBinDir().concat("classes.dex"));
+            if (!dex.exists()) {
+                compile();
+            }
             final ArrayList<String> classes = new ArrayList<>();
             DexFile dexfile =
                     DexFileFactory.loadDexFile(
-                            FileUtil.getBinDir().concat("classes.dex"), Opcodes.forApi(26));
+                            dex.getAbsolutePath(), Opcodes.forApi(26));
             for (ClassDef f : dexfile.getClasses().toArray(new ClassDef[0])) {
                 String name = f.getType().replace("/", "."); // convert class name to standard form
                 classes.add(name.substring(1, name.length() - 1));

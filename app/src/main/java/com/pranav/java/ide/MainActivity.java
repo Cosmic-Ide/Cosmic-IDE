@@ -442,7 +442,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public String[] getClassesFromDex() {
         try {
-            final dex = new File(FileUtil.getBinDir().concat("classes.dex"));
+            final File dex = new File(FileUtil.getBinDir().concat("classes.dex"));
             if (!dex.exists()) {
                 compile();
             }

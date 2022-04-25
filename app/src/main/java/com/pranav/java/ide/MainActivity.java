@@ -99,7 +99,7 @@ public final class MainActivity extends AppCompatActivity {
         } else {
             try {
                 FileUtil.writeFile(file.getAbsolutePath(),
-                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes());
+                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
                 editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
             } catch (IOException e) {
                 dialog("Cannot create file", getString(e), true);

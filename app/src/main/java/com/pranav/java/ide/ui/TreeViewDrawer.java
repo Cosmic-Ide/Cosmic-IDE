@@ -144,7 +144,7 @@ public class TreeViewDrawer extends Fragment {
          * Level 0: Root Folder
          * Level 1: Root Children's
          * Level 2: Children's Children's */
-        File rootFile = ((TreeFile) mainRootNode.getValue()).getFile()
+        File rootFile = ((TreeFile) mainRootNode.getValue()).getFile();
         List<File> mFiles = getSortedFilesInPath(rootFile.getPath());
         for (File file : mFiles) {
             if (file.isFile()) {

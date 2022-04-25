@@ -102,10 +102,13 @@ public class TreeViewDrawer extends Fragment {
                  *   Write a code that will be able to check for more (more as possible) directories and files in them */
                 TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), 1);
 
-                for (File fileInNextDir : file.listFiles()) {
-                    if (fileInNextDir.isFile()) {
-                        TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), 2);
-                        directoryFileNode.addChild(fileChild);
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File fileInNextDir : files) {
+                        if (fileInNextDir.isFile()) {
+                            TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), 2);
+                            directoryFileNode.addChild(fileChild);
+                        }
                     }
                 }
                 mainRootNode.addChild(directoryFileNode);
@@ -386,7 +389,7 @@ public class TreeViewDrawer extends Fragment {
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        if (!target.getError().equals("")) {
+                        if (target != null && !target.getError().equals("")) {
                             target.setError("");
                         }
                     }

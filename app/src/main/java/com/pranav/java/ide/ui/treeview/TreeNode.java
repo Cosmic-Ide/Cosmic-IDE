@@ -14,8 +14,6 @@
 
 package com.pranav.java.ide.ui.treeview;
 
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.List;
 

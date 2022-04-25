@@ -16,14 +16,7 @@ package com.pranav.java.ide.ui.treeview.base;
 
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import com.pranav.java.ide.ui.treeview.TreeNode;
-import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewBinder;
-
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nonnull;
 
 /**
  * Created by zxy on 17/4/23.

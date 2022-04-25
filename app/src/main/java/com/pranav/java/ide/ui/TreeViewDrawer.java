@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
@@ -48,9 +47,6 @@ public class TreeViewDrawer extends Fragment {
     private AlertDialog createNewFileDialog, createNewDirectoryDialog, confirmDeleteDialog;
 
     private MainActivity activity;
-
-    public TreeViewDrawer() {
-    }
 
     @Nullable
     @Override
@@ -355,8 +351,6 @@ public class TreeViewDrawer extends Fragment {
                 mFiles.add(fileInDirectory);
                 Log.e("FileName", fileInDirectory.getName());
             }
-        } else {
-            /* Something is wrong... */
         }
 
 
@@ -380,7 +374,6 @@ public class TreeViewDrawer extends Fragment {
 
     public boolean isStringContainsNumbers(String target) {
         char[] chars = target.toCharArray();
-        StringBuilder sb = new StringBuilder();
         for(char c : chars){
             if(Character.isDigit(c)){
                 return true;

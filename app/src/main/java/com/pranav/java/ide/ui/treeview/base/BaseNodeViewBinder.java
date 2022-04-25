@@ -19,7 +19,6 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.TreeView;
-import com.pranav.java.ide.ui.treeview.file.TreeFile;
 
 /**
  * Created by zxy on 17/4/23.

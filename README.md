@@ -23,11 +23,11 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [x] Smali Dex File
 - [x] Basic Java auto-completion
 - [x] D8
+- [x] File Tree Viewer
 
 ## TO-DO
 
 - [ ] Support above features for external files as well
-- [ ] File Tree Viewer
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor

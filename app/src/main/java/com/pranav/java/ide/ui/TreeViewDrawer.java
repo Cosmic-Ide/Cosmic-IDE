@@ -319,13 +319,11 @@ public class TreeViewDrawer extends Fragment {
             EditText fileName = createNewDirectoryDialog.findViewById(R.id.directoryName_edt);
             MaterialButton createBttn = createNewDirectoryDialog.findViewById(R.id.create_bttn);
 
-            fileName.addTextChangedListener(getTextValidator(fileName));
-
             createBttn.setOnClickListener(
                     v -> {
                         String fileNameString = fileName.getText().toString();
 
-                        if (!fileNameString.equals("") && fileNameString.length() <= 25) {
+                        if (fileNameString != null && !fileNameString.equals("") && fileNameString.length() <= 25) {
                             /* @TODO:
                              *    Make one String instead of repeating them (fileNameString#replace)
                              *    Same for Voids above
@@ -388,27 +386,6 @@ public class TreeViewDrawer extends Fragment {
                         confirmDeleteDialog.dismiss();
                     });
         }
-    }
-
-    TextWatcher getTextValidator(EditText target) {
-        TextWatcher textWatcher =
-                new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(
-                            CharSequence charSequence, int i, int i1, int i2) {}
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        if (target != null && !target.getError().equals("")) {
-                            target.setError("");
-                        }
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {}
-                };
-
-        return textWatcher;
     }
 
     public File file(final String path) {

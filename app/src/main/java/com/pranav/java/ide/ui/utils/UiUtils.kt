@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.pranav.java.ide.ui.utils.dpToPx;
 
-fun toDp(context: Context, dp: Int) = dpToPx.dpToPx(dp.toFloat())
+fun toDp(dp: Int) = dpToPx.dpToPx(dp.toFloat())
 
 fun View.setMargins(left: Int? = null, top: Int? = null, right: Int? = null, bottom: Int? = null) {
     val params = (layoutParams as? ViewGroup.MarginLayoutParams)

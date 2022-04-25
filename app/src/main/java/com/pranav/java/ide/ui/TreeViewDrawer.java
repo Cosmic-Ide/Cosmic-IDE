@@ -85,7 +85,7 @@ public class TreeViewDrawer extends Fragment {
                         0); /* Create new Root node for given Main Root Directory */
 
         /* Add all children directories and files to the list */
-        addChildDirsAndFiles(mainRootNode);
+        addChildDirsAndFiles(mainRootNode, 0);
         /* Add 'java' root folder node to the list */
         rootNodesList.add(mainRootNode);
 

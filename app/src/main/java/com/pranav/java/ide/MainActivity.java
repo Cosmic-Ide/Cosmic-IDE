@@ -92,15 +92,14 @@ public final class MainActivity extends AppCompatActivity {
 
         if (file.exists()) {
             try {
-                editor.setText(Files.asCharSource(file, Charsets.UTF_8).read());
+                editor.setText(FileUtil.readFile(file));
             } catch (Exception e) {
                 dialog("Cannot read file", getString(e), true);
             }
         } else {
             try {
-                Files.createParentDirs(file);
-                Files.write(
-                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes(), file);
+                FileUtil.writeFile(file.getAbsolutePath(),
+                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes());
                 editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
             } catch (IOException e) {
                 dialog("Cannot create file", getString(e), true);
@@ -170,7 +169,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public void loadFileToEditor(String path) throws IOException {
         File newWorkingFile = new File(path);
-        editor.setText(Files.asCharSource(newWorkingFile, Charsets.UTF_8).read());
+        editor.setText(FileUtil.readFile(newWorkingFile));
         currentWorkingFilePath = path;
     }
 
@@ -279,7 +278,7 @@ public final class MainActivity extends AppCompatActivity {
                         try {
                             edi.setText(
                                     formatSmali(
-                                            Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
+                                            FileUtil.readFile(smaliFile)));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
                         }
@@ -332,7 +331,7 @@ public final class MainActivity extends AppCompatActivity {
                     File decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
 
                     try {
-                        edi.setText(Files.asCharSource(decompiledFile, Charsets.UTF_8).read());
+                        edi.setText(FileUtil.readFile(decompiledFile));
                     } catch (IOException e) {
                         dialog("Cannot read file", getString(e), true);
                     }

@@ -152,11 +152,7 @@ public class TreeViewDrawer extends Fragment {
                 TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
                 mainRootNode.addChild(javaFileNode);
             } else {
-                /* If it's a Directory - create folder children node and check ONLY if there is a files in it
-                 * @TODO:
-                 *   Sort File#listFiles properly so directories will appear on top
-                 * @TODO:
-                 *   Write a code that will be able to check for more (more as possible) directories and files in them */
+                /* @TODO: Sort File#listFiles properly so directories will appear on top */
                 TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
 
                 File[] files = file.listFiles();
@@ -184,18 +180,13 @@ public class TreeViewDrawer extends Fragment {
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getLevel() == 0) {
+        if (node.getLevel() == 0 && FileUtil.getFileName(node.getValue().getFile.getAbsolutePath()) == "java") {
             /* Disable Option to delete a root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }
 
-        if (node.getLevel() == 1) {
-            /* Due to folder limits (max one folder in root) - disable creating new folder */
-            popup.getMenu().getItem(1).setVisible(false);
-        }
-
         if (node.getContent().getFile().isFile()) {
-            /* We "cannot create new class" or directory in file so we disable these options */
+            /* We cannot create a new class or directory inside a file so we should disable these options */
             popup.getMenu().getItem(0).setVisible(false);
             popup.getMenu().getItem(1).setVisible(false);
         }

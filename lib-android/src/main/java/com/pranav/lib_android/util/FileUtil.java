@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.FileWriter;
 
 public class FileUtil {
 
@@ -21,18 +21,16 @@ public class FileUtil {
         return file.mkdir();
     }
 
-    public static void createAndWriteToFile(String path, String content) throws IOException {
+    public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
 
-        if (file.exists()) return;
-
-        if (file.createNewFile()) {
-            OutputStreamWriter outputStreamWriter =
-                    new OutputStreamWriter(
-                            mContext.openFileOutput("config.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(content);
-            outputStreamWriter.close();
+        if (!file.exists()) {
+            file.createNewFile();
         }
+
+        FileWriter writer = new FileWriter(path);
+        writer.write(content);
+        writer.close();
     }
 
     public static String readFile(File file) {

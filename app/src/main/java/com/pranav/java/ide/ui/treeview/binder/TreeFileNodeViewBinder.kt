@@ -9,7 +9,6 @@ import com.pranav.java.ide.ui.treeview.TreeNode
 import com.pranav.java.ide.ui.treeview.base.BaseNodeViewBinder
 import com.pranav.java.ide.ui.treeview.file.TreeFile
 import com.pranav.java.ide.ui.utils.dpToPx
-import com.pranav.java.ide.ui.utils.toDp
 import com.pranav.java.ide.ui.utils.setMargins
 
 class TreeFileNodeViewBinder(

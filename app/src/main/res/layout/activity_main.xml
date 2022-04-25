@@ -6,17 +6,100 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme.JavaIDE.AppBarOverlay">
+
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appbar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			android:background="?attr/colorPrimary"
+			app:popupTheme="@style/AppTheme.PopupOverlay" />
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+		<androidx.coordinatorlayout.widget.CoordinatorLayout
+			android:id="@+id/coordinator"
+			android:layout_width="0dp"
+			android:layout_height="0dp"
+			android:padding="8dp" />
+		<io.github.rosemoe.sora.widget.CodeEditor
+			android:id="@+id/editor"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:padding="8dp"
+			android:background="#2B2B2B"
+			android:orientation="horizontal"
+			android:layout_weight="1" />
+		<HorizontalScrollView
+			android:id="@+id/scrollview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#2B2B2B"
+			android:orientation="horizontal">
+			<LinearLayout
+				android:id="@+id/container"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:padding="8dp"
+				android:orientation="horizontal">
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_smali"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="8dp"
+					android:layout_marginEnd="4dp"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="@string/smali"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_weight="1"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="?attr/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.Material3.Button.ElevatedButton" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_disassemble"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="4dp"
+					android:layout_marginEnd="8dp"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="@string/disassemble"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="?attr/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.Material3.Button.ElevatedButton" />
+				<com.google.android.material.button.MaterialButton
+					android:id="@+id/btn_smali2java"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:padding="8dp"
+					android:gravity="center_horizontal|center_vertical"
+					android:text="@string/smali2java"
+					android:textSize="12sp"
+					android:textColor="#FFFFFF"
+					android:layout_weight="1"
+					android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+					app:backgroundTint="?attr/colorPrimary"
+					app:cornerRadius="8dp"
+					style="@style/Widget.Material3.Button.ElevatedButton" />
+			</LinearLayout>
+		</HorizontalScrollView>
+	</LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

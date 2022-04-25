@@ -9,13 +9,15 @@
 		android:roundIcon="@mipmap/ic_launcher_round"
 		android:allowBackup="true"
 		android:supportsRtl="true"
-		android:theme="@style/Theme.JavaIDE.NoActionBar"
+		android:theme="@style/AppTheme"
 		android:resizeableActivity="true"
 		android:hardwareAccelerated="true"
 		tools:targetApi="32">
 		<activity
 			android:name=".MainActivity"
-			android:exported="true">
+			android:exported="true"
+                        android:windowSoftInputMode="adjustResize"
+                        android:theme="@style/AppTheme">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

@@ -27,7 +27,9 @@ public class FileUtil {
         if (file.exists()) return;
 
         if (file.createNewFile()) {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(mContext.openFileOutput("config.txt", Context.MODE_PRIVATE));
+            OutputStreamWriter outputStreamWriter =
+                    new OutputStreamWriter(
+                            mContext.openFileOutput("config.txt", Context.MODE_PRIVATE));
             outputStreamWriter.write(content);
             outputStreamWriter.close();
         }
@@ -44,8 +46,7 @@ public class FileUtil {
                 text.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return "Error Reading File";
         }
 

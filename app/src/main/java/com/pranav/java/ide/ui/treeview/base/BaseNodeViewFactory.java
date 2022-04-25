@@ -18,15 +18,13 @@ import android.view.View;
 
 import com.pranav.java.ide.ui.treeview.TreeNode;
 
-/**
- * Created by zxy on 17/4/23.
- */
-
+/** Created by zxy on 17/4/23. */
 public abstract class BaseNodeViewFactory<D> {
 
     /**
-     * The default implementation below behaves as in previous version when TreeViewAdapter.getItemViewType always returned the level,
-     * but you can override it if you want some other viewType value to become the parameter to the method getNodeViewBinder.
+     * The default implementation below behaves as in previous version when
+     * TreeViewAdapter.getItemViewType always returned the level, but you can override it if you
+     * want some other viewType value to become the parameter to the method getNodeViewBinder.
      */
     public int getViewType(TreeNode<D> treeNode) {
         return treeNode.getLevel();
@@ -35,13 +33,12 @@ public abstract class BaseNodeViewFactory<D> {
     /**
      * If you want build a tree view,you must implement this factory method
      *
-     * @param view  The parameter for BaseNodeViewBinder's constructor, do not use this for other
-     *              purpose!
+     * @param view The parameter for BaseNodeViewBinder's constructor, do not use this for other
+     *     purpose!
      * @param viewType The viewType value is the treeNode level in the default implementation.
      * @return BaseNodeViewBinder
      */
     public abstract BaseNodeViewBinder<D> getNodeViewBinder(View view, int viewType);
-
 
     /**
      * If you want build a tree view,you must implement this factory method
@@ -50,5 +47,4 @@ public abstract class BaseNodeViewFactory<D> {
      * @return node layout id
      */
     public abstract int getNodeLayoutId(int level);
-
 }

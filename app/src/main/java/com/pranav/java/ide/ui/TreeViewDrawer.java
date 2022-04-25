@@ -24,12 +24,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
+import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.TreeView;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
-import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
 import com.pranav.lib_android.util.FileUtil;
@@ -130,10 +130,16 @@ public class TreeViewDrawer extends Fragment {
                 new TreeFileNodeViewFactory(
                         new TreeFileNodeViewBinder.TreeFileNodeListener() {
                             @Override
-                            public void onNodeClicked(@Nullable View view, @Nullable TreeNode<TreeFile> treeNode) {
-                                if (treeNode.getContent().getFile().isFile() && treeNode.getContent().getFile().getPath().contains(".java")) {
+                            public void onNodeClicked(
+                                    @Nullable View view, @Nullable TreeNode<TreeFile> treeNode) {
+                                if (treeNode.getContent().getFile().isFile()
+                                        && treeNode.getContent()
+                                                .getFile()
+                                                .getPath()
+                                                .contains(".java")) {
                                     try {
-                                        activity.loadFileToEditor(treeNode.getContent().getFile().getPath());
+                                        activity.loadFileToEditor(
+                                                treeNode.getContent().getFile().getPath());
                                         if (activity.drawer.isDrawerOpen(GravityCompat.START)) {
                                             activity.drawer.close();
                                         }
@@ -144,12 +150,14 @@ public class TreeViewDrawer extends Fragment {
                             }
 
                             @Override
-                            public void onNodeToggled(@Nullable TreeNode<TreeFile> treeNode, boolean expanded) {
-                            }
+                            public void onNodeToggled(
+                                    @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {}
 
                             @Override
                             public boolean onNodeLongClicked(
-                                    @Nullable View view, @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {
+                                    @Nullable View view,
+                                    @Nullable TreeNode<TreeFile> treeNode,
+                                    boolean expanded) {
                                 /* If long clicked item is not root : Ask user what he wanna do */
                                 showPopup(view, treeNode);
                                 return false;
@@ -202,7 +210,9 @@ public class TreeViewDrawer extends Fragment {
     void buildCreateFileDialog() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView = getLayoutInflater().inflate(R.layout.treeview_create_new_file_dialog, viewGroup, false);
+        View dialogView =
+                getLayoutInflater()
+                        .inflate(R.layout.treeview_create_new_file_dialog, viewGroup, false);
         builder.setView(dialogView);
         createNewFileDialog = builder.create();
     }
@@ -210,7 +220,9 @@ public class TreeViewDrawer extends Fragment {
     void buildCreateDirectoryDialog() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView = getLayoutInflater().inflate(R.layout.treeview_create_new_folder_dialog, viewGroup, false);
+        View dialogView =
+                getLayoutInflater()
+                        .inflate(R.layout.treeview_create_new_folder_dialog, viewGroup, false);
         builder.setView(dialogView);
         createNewDirectoryDialog = builder.create();
     }
@@ -218,7 +230,9 @@ public class TreeViewDrawer extends Fragment {
     void buildConfirmDeleteDialog() {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView = getLayoutInflater().inflate(R.layout.treeview_confirm_delete_dialog, viewGroup, false);
+        View dialogView =
+                getLayoutInflater()
+                        .inflate(R.layout.treeview_confirm_delete_dialog, viewGroup, false);
         builder.setView(dialogView);
         confirmDeleteDialog = builder.create();
     }
@@ -230,30 +244,58 @@ public class TreeViewDrawer extends Fragment {
             EditText fileName = createNewFileDialog.findViewById(R.id.fileName_edt);
             MaterialButton createBttn = createNewFileDialog.findViewById(R.id.create_bttn);
 
-            createBttn.setOnClickListener(v -> {
-                String fileNameString = fileName.getText().toString();
+            createBttn.setOnClickListener(
+                    v -> {
+                        String fileNameString = fileName.getText().toString();
 
-                if (!fileNameString.equals("") && fileNameString.length() <= 25 && !fileNameString.contains(".java") && !isStringContainsNumbers(fileNameString)) {
-                    try {
-                        File filePth = new File(node.getContent().getFile().getPath() + "/" + fileNameString + ".java");
+                        if (!fileNameString.equals("")
+                                && fileNameString.length() <= 25
+                                && !fileNameString.contains(".java")
+                                && !isStringContainsNumbers(fileNameString)) {
+                            try {
+                                File filePth =
+                                        new File(
+                                                node.getContent().getFile().getPath()
+                                                        + "/"
+                                                        + fileNameString
+                                                        + ".java");
 
-                        if (node.getParent().getContent() == null) {
-                            Files.write(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(fileNameString).getBytes(), filePth);
-                        } else {
-                            /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                            Files.write(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(fileNameString, "." + node.getContent().getFile().getName()).getBytes(), filePth);
+                                if (node.getParent().getContent() == null) {
+                                    Files.write(
+                                            TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
+                                                            fileNameString)
+                                                    .getBytes(),
+                                            filePth);
+                                } else {
+                                    /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
+                                    Files.write(
+                                            TreeCreateNewFileContent
+                                                    .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
+                                                            fileNameString,
+                                                            "."
+                                                                    + node.getContent()
+                                                                            .getFile()
+                                                                            .getName())
+                                                    .getBytes(),
+                                            filePth);
+                                }
+
+                                TreeNode newDir =
+                                        new TreeNode(
+                                                new TreeFile(filePth),
+                                                node.getLevel()
+                                                        + 1); // Get Level of parent so it will have
+                                                              // correct margin and disable some
+                                                              // popup functions if needed
+                                node.addChild(newDir);
+                                treeView.refreshTreeView();
+                                fileName.setText("");
+                                createNewFileDialog.dismiss();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-
-                        TreeNode newDir = new TreeNode(new TreeFile(filePth), node.getLevel() + 1); // Get Level of parent so it will have correct margin and disable some popup functions if needed
-                        node.addChild(newDir);
-                        treeView.refreshTreeView();
-                        fileName.setText("");
-                        createNewFileDialog.dismiss();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+                    });
         }
     }
 
@@ -266,28 +308,43 @@ public class TreeViewDrawer extends Fragment {
 
             fileName.addTextChangedListener(getTextValidator(fileName));
 
-            createBttn.setOnClickListener(v -> {
-                String fileNameString = fileName.getText().toString();
+            createBttn.setOnClickListener(
+                    v -> {
+                        String fileNameString = fileName.getText().toString();
 
-                if (!fileNameString.equals("") && fileNameString.length() <= 25) {
-                    /* @TODO:
-                     *    Make one String instead of repeating them (fileNameString#replace)
-                     *    Same for Voids above
-                     */
+                        if (!fileNameString.equals("") && fileNameString.length() <= 25) {
+                            /* @TODO:
+                             *    Make one String instead of repeating them (fileNameString#replace)
+                             *    Same for Voids above
+                             */
 
-                    FileUtil.createDirectory(node.getContent().getFile().getPath() + "/" + fileNameString.replace(" ", ""));
-                    File dirPth = new File(node.getContent().getFile().getPath() + "/" + fileNameString.replace(" ", ""));
-                    TreeNode newDir = new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
-                    node.addChild(newDir);
-                    treeView.refreshTreeView();
-                    fileName.setText("");
-                    createNewDirectoryDialog.dismiss();
-                } else {
-                    if (fileNameString.length() <= 25) {fileName.setError("Name is too long!");}
-                    if (fileNameString.contains("/") || fileNameString.contains(".")) {fileName.setError("Illegal Char!");}
-                    if (isStringContainsNumbers(fileNameString)) {fileName.setError("Name cannot contains digits!");}
-                }
-            });
+                            FileUtil.createDirectory(
+                                    node.getContent().getFile().getPath()
+                                            + "/"
+                                            + fileNameString.replace(" ", ""));
+                            File dirPth =
+                                    new File(
+                                            node.getContent().getFile().getPath()
+                                                    + "/"
+                                                    + fileNameString.replace(" ", ""));
+                            TreeNode newDir =
+                                    new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
+                            node.addChild(newDir);
+                            treeView.refreshTreeView();
+                            fileName.setText("");
+                            createNewDirectoryDialog.dismiss();
+                        } else {
+                            if (fileNameString.length() <= 25) {
+                                fileName.setError("Name is too long!");
+                            }
+                            if (fileNameString.contains("/") || fileNameString.contains(".")) {
+                                fileName.setError("Illegal Char!");
+                            }
+                            if (isStringContainsNumbers(fileNameString)) {
+                                fileName.setError("Name cannot contains digits!");
+                            }
+                        }
+                    });
         }
     }
 
@@ -299,40 +356,44 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
-            areUsure_txt.setText(getString(R.string.delete) + " " + FileUtil.getFileName(node.getContent().getFile().getPath()) + "?");
+            areUsure_txt.setText(
+                    getString(R.string.delete)
+                            + " "
+                            + FileUtil.getFileName(node.getContent().getFile().getPath())
+                            + "?");
 
-            confirmBttn.setOnClickListener(v -> {
-                FileUtil.deleteFile(node.getContent().getFile().getPath());
-                node.getParent().removeChild(node);
-                treeView.refreshTreeView();
-                confirmDeleteDialog.dismiss();
-            });
+            confirmBttn.setOnClickListener(
+                    v -> {
+                        FileUtil.deleteFile(node.getContent().getFile().getPath());
+                        node.getParent().removeChild(node);
+                        treeView.refreshTreeView();
+                        confirmDeleteDialog.dismiss();
+                    });
 
-            cancelBttn.setOnClickListener(v -> {
-                confirmDeleteDialog.dismiss();
-            });
+            cancelBttn.setOnClickListener(
+                    v -> {
+                        confirmDeleteDialog.dismiss();
+                    });
         }
     }
 
     TextWatcher getTextValidator(EditText target) {
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        TextWatcher textWatcher =
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence charSequence, int i, int i1, int i2) {}
 
-            }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        if (!target.getError().equals("")) {
+                            target.setError("");
+                        }
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (!target.getError().equals("")) {
-                    target.setError("");
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        };
+                    @Override
+                    public void afterTextChanged(Editable editable) {}
+                };
 
         return textWatcher;
     }
@@ -353,29 +414,30 @@ public class TreeViewDrawer extends Fragment {
             }
         }
 
+        Collections.sort(
+                mFiles,
+                (p1, p2) -> {
+                    if (p1.isFile() && p2.isFile()) {
+                        return p1.getName().compareTo(p2.getName());
+                    }
 
-        Collections.sort(mFiles, (p1, p2) -> {
-            if (p1.isFile() && p2.isFile()) {
-                return p1.getName().compareTo(p2.getName());
-            }
+                    if (p1.isFile() && p2.isDirectory()) {
+                        return -1;
+                    }
 
-            if (p1.isFile() && p2.isDirectory()) {
-                return -1;
-            }
-
-            if (p1.isDirectory() && p2.isDirectory()) {
-                return p1.getName().compareTo(p2.getName());
-            }
-            return 0;
-        });
+                    if (p1.isDirectory() && p2.isDirectory()) {
+                        return p1.getName().compareTo(p2.getName());
+                    }
+                    return 0;
+                });
 
         return mFiles;
     }
 
     public boolean isStringContainsNumbers(String target) {
         char[] chars = target.toCharArray();
-        for(char c : chars){
-            if(Character.isDigit(c)){
+        for (char c : chars) {
+            if (Character.isDigit(c)) {
                 return true;
             }
         }

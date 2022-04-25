@@ -5,23 +5,32 @@ import androidx.annotation.NonNull;
 public class TreeCreateNewFileContent {
 
     public static String BUILD_NEW_FILE_CONTENT(@NonNull String fileName) {
-        String content = "package com.example;\n\nimport java.util.*;\n\n"
-                + "public class "+ fileName + " {\n\n"
-                + "\tpublic static void main(String[] args) {\n"
-                + "\t\tSystem.out.print(\"Hello, World!\");\n"
-                + "\t}\n"
-                + "}\n";
+        String content =
+                "package com.example;\n\nimport java.util.*;\n\n"
+                        + "public class "
+                        + fileName
+                        + " {\n\n"
+                        + "\tpublic static void main(String[] args) {\n"
+                        + "\t\tSystem.out.print(\"Hello, World!\");\n"
+                        + "\t}\n"
+                        + "}\n";
 
         return content;
     }
 
-    public static String BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(@NonNull String fileName, String extendPackage) {
-        String content = "package com.example" + extendPackage + ";\n\nimport java.util.*;\n\n"
-                + "public class "+ fileName + " {\n\n"
-                + "\tpublic static void main(String[] args) {\n"
-                + "\t\tSystem.out.print(\"Hello, World!\");\n"
-                + "\t}\n"
-                + "}\n";
+    public static String BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
+            @NonNull String fileName, String extendPackage) {
+        String content =
+                "package com.example"
+                        + extendPackage
+                        + ";\n\nimport java.util.*;\n\n"
+                        + "public class "
+                        + fileName
+                        + " {\n\n"
+                        + "\tpublic static void main(String[] args) {\n"
+                        + "\t\tSystem.out.print(\"Hello, World!\");\n"
+                        + "\t}\n"
+                        + "}\n";
 
         return content;
     }

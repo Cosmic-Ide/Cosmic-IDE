@@ -12,7 +12,10 @@ public class dpToPx {
 
     public static int dpToPx(float dp) {
 
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dp, mContext.getResources().getDisplayMetrics()));
+        return Math.round(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        dp,
+                        mContext.getResources().getDisplayMetrics()));
     }
 }

@@ -31,10 +31,7 @@ import com.pranav.java.ide.ui.treeview.helper.TreeHelper;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by xinyuanzhong on 2017/4/20.
- */
-
+/** Created by xinyuanzhong on 2017/4/20. */
 public class TreeView<D> implements SelectableTreeAction<D> {
 
     public interface OnTreeNodeClickListener<D> {
@@ -76,9 +73,11 @@ public class TreeView<D> implements SelectableTreeAction<D> {
     private RecyclerView buildRootView() {
         RecyclerView recyclerView = new RecyclerView(context);
 
-        recyclerView.setMotionEventSplittingEnabled(false); // disable multi touch event to prevent terrible data set error when calculate list.
-        ((SimpleItemAnimator) Objects.requireNonNull(
-                recyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
+        recyclerView.setMotionEventSplittingEnabled(
+                false); // disable multi touch event to prevent terrible data set error when
+                        // calculate list.
+        ((SimpleItemAnimator) Objects.requireNonNull(recyclerView.getItemAnimator()))
+                .setSupportsChangeAnimations(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         return recyclerView;
@@ -99,7 +98,6 @@ public class TreeView<D> implements SelectableTreeAction<D> {
 
         refreshTreeView();
     }
-
 
     public void refreshTreeView() {
         if (rootView != null) {
@@ -217,5 +215,4 @@ public class TreeView<D> implements SelectableTreeAction<D> {
     public void setItemSelectable(boolean itemSelectable) {
         this.itemSelectable = itemSelectable;
     }
-
 }

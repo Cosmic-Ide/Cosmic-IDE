@@ -1,14 +1,11 @@
 package com.pranav.java.ide.ui.treeview.helper;
 
+import com.pranav.java.ide.ui.treeview.TreeNode;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pranav.java.ide.ui.treeview.TreeNode;
-
-/**
- * Created by xinyuanzhong on 2017/4/27.
- */
-
+/** Created by xinyuanzhong on 2017/4/27. */
 public class TreeHelper {
 
     public static <D> void expandAll(TreeNode<D> node) {
@@ -21,7 +18,7 @@ public class TreeHelper {
     /**
      * Expand node and calculate the visible addition nodes.
      *
-     * @param treeNode     target node to expand
+     * @param treeNode target node to expand
      * @param includeChild should expand child
      * @return the visible addition nodes
      */
@@ -52,7 +49,7 @@ public class TreeHelper {
     /**
      * Expand the same deep(level) nodes.
      *
-     * @param root  the tree root
+     * @param root the tree root
      * @param level the level to expand
      */
     public static <D> void expandLevel(TreeNode<D> root, int level) {
@@ -81,7 +78,7 @@ public class TreeHelper {
     /**
      * Collapse node and calculate the visible removed nodes.
      *
-     * @param node         target node to collapse
+     * @param node target node to collapse
      * @param includeChild should collapse child
      * @return the visible addition nodes before remove
      */
@@ -91,7 +88,8 @@ public class TreeHelper {
         return treeNodes;
     }
 
-    private static <D> List<TreeNode<D>> performCollapseNode(TreeNode<D> node, boolean includeChild) {
+    private static <D> List<TreeNode<D>> performCollapseNode(
+            TreeNode<D> node, boolean includeChild) {
         List<TreeNode<D>> collapseChildren = new ArrayList<>();
 
         if (node == null) {
@@ -150,7 +148,7 @@ public class TreeHelper {
         return allNodes;
     }
 
-    private static <D> void  fillNodeList(List<TreeNode<D>> treeNodes, TreeNode<D> treeNode) {
+    private static <D> void fillNodeList(List<TreeNode<D>> treeNodes, TreeNode<D> treeNode) {
         treeNodes.add(treeNode);
 
         if (treeNode.hasChild()) {
@@ -160,9 +158,7 @@ public class TreeHelper {
         }
     }
 
-    /**
-     * Select the node and node's children,return the visible nodes
-     */
+    /** Select the node and node's children,return the visible nodes */
     public static <D> List<TreeNode<D>> selectNodeAndChild(TreeNode<D> treeNode, boolean select) {
         List<TreeNode<D>> expandChildren = new ArrayList<>();
 
@@ -205,16 +201,17 @@ public class TreeHelper {
     }
 
     /**
-     * Select parent when all the brothers have been selected, otherwise deselect parent,
-     * and check the grand parent recursive.
+     * Select parent when all the brothers have been selected, otherwise deselect parent, and check
+     * the grand parent recursive.
      */
-    public static <D> List<TreeNode<D>> selectParentIfNeedWhenNodeSelected(TreeNode<D> treeNode, boolean select) {
+    public static <D> List<TreeNode<D>> selectParentIfNeedWhenNodeSelected(
+            TreeNode<D> treeNode, boolean select) {
         List<TreeNode<D>> impactedParents = new ArrayList<>();
         if (treeNode == null) {
             return impactedParents;
         }
 
-        //ensure that the node's level is bigger than 1(first level is 1)
+        // ensure that the node's level is bigger than 1(first level is 1)
         TreeNode<D> parent = treeNode.getParent();
         if (parent == null || parent.getParent() == null) {
             return impactedParents;
@@ -240,9 +237,7 @@ public class TreeHelper {
         return impactedParents;
     }
 
-    /**
-     * Get the selected nodes under current node, include itself
-     */
+    /** Get the selected nodes under current node, include itself */
     public static <D> List<TreeNode<D>> getSelectedNodes(TreeNode<D> treeNode) {
         List<TreeNode<D>> selectedNodes = new ArrayList<>();
         if (treeNode == null) {
@@ -258,8 +253,8 @@ public class TreeHelper {
     }
 
     /**
-     * Return true when the node has one selected child(recurse all children) at least,
-     * otherwise return false
+     * Return true when the node has one selected child(recurse all children) at least, otherwise
+     * return false
      */
     public static <D> boolean hasOneSelectedNodeAtLeast(TreeNode<D> treeNode) {
         if (treeNode == null || treeNode.getChildren().size() == 0) {

@@ -14,15 +14,12 @@
 
 package com.pranav.java.ide.ui.treeview;
 
+import com.pranav.java.ide.ui.treeview.helper.TreeHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pranav.java.ide.ui.treeview.helper.TreeHelper;
-
-/**
- * Created by xinyuanzhong on 2017/4/20.
- */
-
+/** Created by xinyuanzhong on 2017/4/20. */
 public class TreeNode<D> {
     private int level;
 
@@ -64,7 +61,6 @@ public class TreeNode<D> {
         treeNode.setIndex(getChildren().size());
         treeNode.setParent(this);
     }
-
 
     public void removeChild(TreeNode<D> treeNode) {
         if (treeNode == null || getChildren().size() < 1) {
@@ -144,9 +140,7 @@ public class TreeNode<D> {
         }
     }
 
-    /**
-     * Updating the list of children while maintaining the tree structure
-     */
+    /** Updating the list of children while maintaining the tree structure */
     public void updateChildren(List<TreeNode<D>> children) {
         List<Boolean> expands = new ArrayList<>();
         List<TreeNode<D>> allNodesPre = TreeHelper.getAllNodes(this);

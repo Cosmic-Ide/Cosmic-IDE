@@ -17,7 +17,6 @@ public class TreeFolder extends com.pranav.java.ide.ui.treeview.file.TreeFile {
 
     @Override
     public Drawable getIcon(Context context) {
-        return AppCompatResources.getDrawable(context,
-                R.drawable.folder);
+        return AppCompatResources.getDrawable(context, R.drawable.folder);
     }
 }

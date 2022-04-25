@@ -6,9 +6,9 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
 import com.pranav.java.ide.ui.treeview.model.TreeJavaFile;
-import com.pranav.java.ide.R;
 
 import java.io.File;
 import java.util.Objects;
@@ -40,8 +40,7 @@ public class TreeFile {
     }
 
     public Drawable getIcon(Context context) {
-        return AppCompatResources.getDrawable(context,
-                R.drawable.java_file);
+        return AppCompatResources.getDrawable(context, R.drawable.java_file);
     }
 
     @Override

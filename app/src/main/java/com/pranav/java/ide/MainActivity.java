@@ -99,7 +99,8 @@ public final class MainActivity extends AppCompatActivity {
         } else {
             try {
                 Files.createParentDirs(file);
-                Files.write(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes(), file);
+                Files.write(
+                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main").getBytes(), file);
                 editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
             } catch (IOException e) {
                 dialog("Cannot create file", getString(e), true);
@@ -117,11 +118,13 @@ public final class MainActivity extends AppCompatActivity {
                     File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
                     if (!output.exists()
                             && getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-                            .getString("javaVersion", "7.0")
-                            .equals("8.0")) {
+                                    .getString("javaVersion", "7.0")
+                                    .equals("8.0")) {
                         try {
                             Files.write(
-                                    ByteStreams.toByteArray(getAssets().open("core-lambda-stubs.jar")), output);
+                                    ByteStreams.toByteArray(
+                                            getAssets().open("core-lambda-stubs.jar")),
+                                    output);
                         } catch (Exception e) {
                             showErr(getString(e));
                         }
@@ -208,9 +211,9 @@ public final class MainActivity extends AppCompatActivity {
 
     public void showErr(final String e) {
         Snackbar.make(
-                (LinearLayout) findViewById(R.id.container),
-                "An error occurred",
-                Snackbar.LENGTH_INDEFINITE)
+                        (LinearLayout) findViewById(R.id.container),
+                        "An error occurred",
+                        Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", (view) -> dialog("Failed...", e, true))
                 .show();
     }
@@ -238,9 +241,7 @@ public final class MainActivity extends AppCompatActivity {
                                             loadingDialog.dismiss();
                                         }
                                     }
-                                }
-                        )
-                );
+                                }));
         runThread.start();
     }
 
@@ -254,11 +255,11 @@ public final class MainActivity extends AppCompatActivity {
                     (d, pos) -> {
                         final String claz = classes[pos];
                         final String[] args =
-                                new String[]{
-                                        "-f",
-                                        "-o",
-                                        FileUtil.getBinDir().concat("smali/"),
-                                        FileUtil.getBinDir().concat("classes.dex")
+                                new String[] {
+                                    "-f",
+                                    "-o",
+                                    FileUtil.getBinDir().concat("smali/"),
+                                    FileUtil.getBinDir().concat("classes.dex")
                                 };
                         ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
 
@@ -269,10 +270,16 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setTextSize(13);
 
                         File smaliFile =
-                                file(FileUtil.getBinDir() + "smali/" + claz.replace(".", "/") + ".smali");
+                                file(
+                                        FileUtil.getBinDir()
+                                                + "smali/"
+                                                + claz.replace(".", "/")
+                                                + ".smali");
 
                         try {
-                            edi.setText(formatSmali(Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
+                            edi.setText(
+                                    formatSmali(
+                                            Files.asCharSource(smaliFile, Charsets.UTF_8).read()));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
                         }
@@ -296,15 +303,15 @@ public final class MainActivity extends AppCompatActivity {
                 (dialog, pos) -> {
                     final String claz = classes[pos].replace(".", "/");
                     String[] args = {
-                            FileUtil.getBinDir()
-                                    + "classes/"
-                                    + claz
-                                    + // full class name
-                                    ".class",
-                            "--extraclasspath",
-                            FileUtil.getClasspathDir() + "android.jar",
-                            "--outputdir",
-                            FileUtil.getBinDir() + "cfr/"
+                        FileUtil.getBinDir()
+                                + "classes/"
+                                + claz
+                                + // full class name
+                                ".class",
+                        "--extraclasspath",
+                        FileUtil.getClasspathDir() + "android.jar",
+                        "--outputdir",
+                        FileUtil.getBinDir() + "cfr/"
                     };
 
                     ConcurrentUtil.execute(
@@ -330,7 +337,8 @@ public final class MainActivity extends AppCompatActivity {
                         dialog("Cannot read file", getString(e), true);
                     }
 
-                    final AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    final AlertDialog d =
+                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
                 });
@@ -353,12 +361,14 @@ public final class MainActivity extends AppCompatActivity {
 
                     try {
                         final String disassembled =
-                                new ClassFileDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class")
+                                new ClassFileDisassembler(
+                                                FileUtil.getBinDir() + "classes/" + claz + ".class")
                                         .disassemble();
 
                         edi.setText(disassembled);
 
-                        AlertDialog d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                        AlertDialog d =
+                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                         d.setCanceledOnTouchOutside(true);
                         d.show();
                     } catch (Throwable e) {
@@ -434,7 +444,8 @@ public final class MainActivity extends AppCompatActivity {
             dialog.setNeutralButton(
                     "COPY",
                     (dialogInterface, i) -> {
-                        ((ClipboardManager) getSystemService(getApplicationContext().CLIPBOARD_SERVICE))
+                        ((ClipboardManager)
+                                        getSystemService(getApplicationContext().CLIPBOARD_SERVICE))
                                 .setPrimaryClip(ClipData.newPlainText("clipboard", message));
                     });
         dialog.create().show();
@@ -447,9 +458,7 @@ public final class MainActivity extends AppCompatActivity {
                 compile();
             }
             final ArrayList<String> classes = new ArrayList<>();
-            DexFile dexfile =
-                    DexFileFactory.loadDexFile(
-                            dex.getAbsolutePath(), Opcodes.forApi(26));
+            DexFile dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(26));
             for (ClassDef f : dexfile.getClasses().toArray(new ClassDef[0])) {
                 String name = f.getType().replace("/", "."); // convert class name to standard form
                 classes.add(name.substring(1, name.length() - 1));

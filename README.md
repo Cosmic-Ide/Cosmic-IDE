@@ -1,5 +1,8 @@
 # Java IDE
 
+[![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml)
+[![Discord Server](https://discord.com/assets/cb48d2a8d4991281d7a6a95d2f58195e.svg)](https://discord.gg/8Gu6YCq2eS)
+
 <div align='center'>
 
   Compile and test your java code anytime anywhere from your mobile phone

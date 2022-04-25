@@ -6,7 +6,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.FileOutputStream;
+
+import com.google.common.io.Files;
 
 public class FileUtil {
 
@@ -23,17 +24,7 @@ public class FileUtil {
 
     public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
-
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-
-        FileOutputStream stream = new FileOutputStream(file);
-        try {
-            stream.write(content.getBytes());
-        } finally {
-            stream.close();
-        }
+        Files.write(content.getBytes(), file);
     }
 
     public static String readFile(File file) throws IOException {

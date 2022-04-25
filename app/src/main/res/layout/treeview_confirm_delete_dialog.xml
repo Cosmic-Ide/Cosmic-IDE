@@ -12,7 +12,7 @@
         android:text="@string/delete"
         android:textSize="16dp"
         android:textStyle="bold"
-        android:textColor="@color/primary_text_color"/>
+        android:textColor="@color/md_theme_light_primary"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/areUSure_txt"

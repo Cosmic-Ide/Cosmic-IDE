@@ -11,33 +11,35 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:text="@string/create_new_file"
-        android:textColor="@color/md_theme_light_primary"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text_color"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
         android:layout_marginTop="8dp"
-        app:suffixText="@string/java_file_suffix">
+        android:layout_marginHorizontal="8dp"
+        app:suffixText="@string/java_file_suffix"
+        app:counterEnabled="true"
+        app:counterMaxLength="25">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/classpath_edt"
+            android:id="@+id/fileName_edt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/classpath_separated_from_colon"
+            android:hint="@string/new_class_name"
             android:inputType="text"
-            android:maxLines="1" />
+            android:maxLines="1"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/save_classpath_bttn"
+        android:id="@+id/create_bttn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_gravity="right"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/classpath_dialog_save_button" />
+        android:text="@string/create"/>
 </LinearLayout>

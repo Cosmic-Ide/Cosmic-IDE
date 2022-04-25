@@ -51,7 +51,7 @@ public class CompileTask extends Thread {
             listener.OnCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
             activity.file(FileUtil.getBinDir()).mkdirs();
-            final File mainFile = activity.file(FileUtil.getJavaDir() + "Main.java");
+            final File mainFile = activity.file(activity.currentWorkingFilePath);
             Files.createParentDirs(mainFile);
             // a simple workaround to prevent calls to system.exit
             Files.write(

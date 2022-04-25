@@ -28,9 +28,12 @@ public class FileUtil {
             file.createNewFile();
         }
 
-        FileWriter writer = new FileWriter(path);
-        writer.write(content);
-        writer.close();
+        FileOutputStream stream = new FileOutputStream(file);
+        try {
+            stream.write(content.getBytes());
+        } finally {
+            stream.close();
+        }
     }
 
     public static String readFile(File file) throws IOException {

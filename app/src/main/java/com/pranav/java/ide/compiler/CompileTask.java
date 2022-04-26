@@ -53,7 +53,7 @@ public class CompileTask extends Thread {
             new File(FileUtil.getBinDir()).mkdirs();
             new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
-            FileUtil.write(
+            FileUtil.writeFile(
                     activity.currentWorkingFilePath,
                     activity.editor
                             .getText()

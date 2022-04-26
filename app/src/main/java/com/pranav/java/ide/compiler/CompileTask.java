@@ -50,17 +50,16 @@ public class CompileTask extends Thread {
             // Delete previous build files
             listener.OnCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
-            activity.file(FileUtil.getBinDir()).mkdirs();
-            final File mainFile = activity.file(activity.currentWorkingFilePath);
-            Files.createParentDirs(mainFile);
+            new File(FileUtil.getBinDir()).mkdirs();
+            new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
-            Files.write(
+            FileUtil.write(
+                    activity.currentWorkingFilePath,
                     activity.editor
                             .getText()
                             .toString()
                             .replace("System.exit(", "System.err.print(\"Exit code \" + ")
-                            .getBytes(),
-                    mainFile);
+                    );
         } catch (final IOException e) {
             activity.dialog("Cannot save program", e.getMessage(), true);
             listener.OnFailed();

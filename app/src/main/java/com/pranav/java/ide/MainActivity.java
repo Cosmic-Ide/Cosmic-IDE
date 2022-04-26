@@ -98,6 +98,7 @@ public final class MainActivity extends AppCompatActivity {
             }
         } else {
             try {
+                file.getParentFile().mkdirs();
                 FileUtil.writeFile(file.getAbsolutePath(),
                         TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
                 editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
@@ -454,6 +455,7 @@ public final class MainActivity extends AppCompatActivity {
     public String[] getClassesFromDex() {
         try {
             final File dex = new File(FileUtil.getBinDir().concat("classes.dex"));
+            /* If the project doesn't seem to have been compiled yet, compile it */
             if (!dex.exists()) {
                 compile();
             }

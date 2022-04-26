@@ -53,6 +53,8 @@ I would really love all kinds of contributions. If you have any questions, ideas
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
+- [ShineM/TreeView](https://github.com/shineM/TreeView)
+
 - [Rosemoe/sora-editor](https://github.com/Rosemoe/sora-editor)
 
 - [tyron12233/CodeAssist](https://github.com/tyron12233/CodeAssist)

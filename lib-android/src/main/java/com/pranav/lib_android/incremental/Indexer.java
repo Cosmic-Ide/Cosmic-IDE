@@ -25,11 +25,11 @@ public class Indexer {
             if (!indexFile.exists()) {
                 FileUtil.writeFile(filePath, "{}");
             }
+            String index = FileUtil.readFile(indexFile);
+            json = new JSONObject(index);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String index = FileUtil.readFile(indexFile);
-        json = new JSONObject(index);
     }
     
     public void put(String key, String value) throws JSONException {
@@ -53,7 +53,7 @@ public class Indexer {
     }
     
     public String asString() throws JSONException {
-        json.toString(4);
+        return json.toString(4);
     }
     
     public void flush() {

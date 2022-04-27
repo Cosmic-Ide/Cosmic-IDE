@@ -13,19 +13,25 @@ class Indexer(fileName: String) {
     private var filePath: String
     
     init {
+        initialise()
+    }
+    
+    fun initialise() {
         filePath = FileUtil.getCacheDir() + fileName + ".json" // append json file extension
         val indexFile = File(filePath)
-        if (!indexFile.exists()) indexFile.writeText("")
-        val index = indexFile.readText();
+        if (!indexFile.exists()) indexFile.writeText("{}")
+        val index = indexFile.readText()
         json = JSONObject(index!!)
     }
     
     fun put(key: String, value: String) {
         json.put(key, value)
+        initialise()
     }
     
     fun put(key: String, value: Long) {
         json.put(key, value)
+        initialise()
     }
     
     fun notHas(key: String): Boolean {
@@ -39,6 +45,6 @@ class Indexer(fileName: String) {
     override fun toString() = json.toString(4)
     
     fun flush() {
-        File(indexFile).writeText(toString())
+        File(filePath).writeText(toString())
     }
 }

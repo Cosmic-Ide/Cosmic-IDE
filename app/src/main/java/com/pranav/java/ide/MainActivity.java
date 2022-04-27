@@ -186,6 +186,7 @@ public final class MainActivity extends AppCompatActivity {
         File newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
+        indexer.flush();
         currentWorkingFilePath = path;
     }
 

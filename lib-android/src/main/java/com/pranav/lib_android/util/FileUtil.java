@@ -76,6 +76,11 @@ public class FileUtil {
     public static String getBinDir() {
         return getDataDir() + "/bin/";
     }
+    
+    public static String getCacheDir() {
+        // write caches to external storage because we don't want android system to delete index files
+        return getDataDir() + "/cache/";
+    }
 
     public static String getClasspathDir() {
         return getDataDir() + "/classpath/";

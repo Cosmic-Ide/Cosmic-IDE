@@ -10,7 +10,11 @@ java {
 
 dependencies {
 	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
-	// r8 dependency
+	// jackson json library dependency
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.2'
+    // r8 dependency
 	implementation 'com.android.tools:r8:3.3.28'
 	implementation project(path: ':lib-eclipse')
 	compileOnly fileTree(dir: 'classpath', include: ['*.jar'])

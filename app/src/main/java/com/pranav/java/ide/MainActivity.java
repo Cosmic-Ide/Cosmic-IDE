@@ -33,6 +33,7 @@ import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
+import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
@@ -56,12 +57,13 @@ public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
     public DrawerLayout drawer;
+    public JavaBuilder builder;
 
     private AlertDialog loadingDialog;
-    public JavaBuilder builder;
     private Thread runThread;
 
     public String currentWorkingFilePath;
+    public Indexer indexer;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -87,7 +89,12 @@ public final class MainActivity extends AppCompatActivity {
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
 
-        currentWorkingFilePath = FileUtil.getJavaDir() + "Main.java";
+        indexer = new Indexer("editor");
+        if (indexer.notHas("currentFile")) {
+            indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
+        }
+
+        currentWorkingFilePath = indexer.getString("currentFile");
         final File file = file(currentWorkingFilePath);
 
         if (file.exists()) {
@@ -171,6 +178,7 @@ public final class MainActivity extends AppCompatActivity {
     public void loadFileToEditor(String path) throws IOException {
         File newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
+        indexer.put("currentFile", path);
         currentWorkingFilePath = path;
     }
 

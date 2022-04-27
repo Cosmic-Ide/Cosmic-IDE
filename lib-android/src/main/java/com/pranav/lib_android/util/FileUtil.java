@@ -25,6 +25,7 @@ public class FileUtil {
 
     public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
+        file.getParentFile().mkdirs();
         if (!file.exists()) file.createNewFile();
         Files.write(content.getBytes(), file);
     }

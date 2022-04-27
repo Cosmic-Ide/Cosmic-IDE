@@ -92,6 +92,7 @@ public final class MainActivity extends AppCompatActivity {
         indexer = new Indexer("editor");
         if (indexer.notHas("currentFile")) {
             indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
+            indexer.flush();
         }
 
         currentWorkingFilePath = indexer.getString("currentFile");

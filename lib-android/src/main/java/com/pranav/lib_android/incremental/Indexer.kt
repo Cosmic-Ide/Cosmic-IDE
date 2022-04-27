@@ -6,11 +6,13 @@ import org.json.JSONObject
 
 import java.io.File
 
-class Indexer(fileName: String) {
+class Indexer constructor(
+  val fileName: String
+) {
     
-    private var json: JSONObject
+    private lateinit var json: JSONObject
     
-    private var filePath: String
+    private lateinit var filePath: String
     
     init {
         initialise()

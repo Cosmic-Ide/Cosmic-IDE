@@ -223,7 +223,7 @@ public final class MainActivity extends AppCompatActivity {
                         }
                         editor.insertText(formatter.format(cursor.getLeft(), cursor.getRight(), indent), cursor.getLeft());
                     } else {
-                        editor.setText(formatter.format(0, source.length(), 0));
+                        editor.setText(formatter.format(0, editor.getText().length(), 0));
                     }
                 });
                 break;

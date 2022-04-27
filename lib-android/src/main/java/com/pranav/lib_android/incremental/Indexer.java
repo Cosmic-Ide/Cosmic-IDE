@@ -14,14 +14,20 @@ public class Indexer {
     
     private String filePath;
     
-    public Indexer(String fileName) throws JSONException{
+    public Indexer(String fileName) throws JSONException {
         filePath = FileUtil.getCacheDir() + fileName + ".json";
         load();
     }
     
     public void load() throws JSONException {
         File indexFile = new File(filePath);
-        if (!indexFile.exists()) FileUtil.writeFile(filePath, "{}");
+        try {
+            if (!indexFile.exists()) {
+                FileUtil.writeFile(filePath, "{}");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String index = FileUtil.readFile(indexFile);
         json = new JSONObject(index);
     }

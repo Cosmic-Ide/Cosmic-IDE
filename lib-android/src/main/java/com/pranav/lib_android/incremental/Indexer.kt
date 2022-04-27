@@ -12,7 +12,7 @@ class Indexer(fileName: String) {
     
     init {
         filePath = FileUtil.getCacheDir() + fileName + ".json" // append json file extension
-        String index = FileUtil.readFile(filePath)
+        val index = FileUtil.readFile(filePath)
         json = JSONObject(index)
     }
     
@@ -32,7 +32,9 @@ class Indexer(fileName: String) {
     
     fun getLong(key: String) = json.getLong(key)
     
-    fun toString() = json.toString(4)
+    override fun toString() {
+        return json.toString(4)
+    }
     
     fun flush() {
         FileUtil.writeFile(filePath, toString())

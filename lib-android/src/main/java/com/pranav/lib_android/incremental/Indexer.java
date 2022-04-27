@@ -59,6 +59,6 @@ public class Indexer {
     public void flush() {
         try {
             FileUtil.writeFile(filePath, asString());
-        } catch (IOException e) {}
+        } catch (Exception e) {}
     }
 }

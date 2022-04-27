@@ -18,11 +18,11 @@ class Indexer(fileName: String) {
         json = JSONObject(index!!)
     }
     
-    fun putString(key: String, value: String) {
+    fun put(key: String, value: String) {
         json.put(key, value)
     }
     
-    fun putLong(key: String, value: Long) {
+    fun put(key: String, value: Long) {
         json.put(key, value)
     }
     

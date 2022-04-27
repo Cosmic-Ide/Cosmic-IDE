@@ -40,6 +40,7 @@ import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
+import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
@@ -201,7 +202,30 @@ public final class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.format_menu_button:
                 Formatter formatter = new Formatter(editor.getText().toString());
-                ConcurrentUtil.execute(() -> editor.setText(formatter.format()));
+                ConcurrentUtil.execute(() -> {
+                    Cursor cursor = editor.getCursor();
+
+                    if (cursor.isSelected()) {
+                        char[] leftLineChars = editor.getText()
+                                .getLine(cursor.getLeftLine())
+                                .toString()
+                                .replace("    ", '\t') // replace 4 spaces to tab so that it becomes easy to find the indents
+                                .toCharArray();
+
+                        int indent = 0;
+
+                        for (char c : leftLineChars) {
+                            if (c == '\t') {
+                                indent++;
+                            } else {
+                                break;
+                            }
+                        }
+                        editor.insertText(formatter.format(cursor.getLeft(), cursor.getRight(), indent), cursor.getLeft());
+                    } else {
+                        editor.setText(formatter.format(0, source.length(), 0));
+                    }
+                });
                 break;
 
             case R.id.settings_menu_button:

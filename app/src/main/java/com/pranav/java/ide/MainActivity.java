@@ -209,7 +209,7 @@ public final class MainActivity extends AppCompatActivity {
                         char[] leftLineChars = editor.getText()
                                 .getLine(cursor.getLeftLine())
                                 .toString()
-                                .replace("    ", '\t') // replace 4 spaces to tab so that it becomes easy to find the indents
+                                .replace("    ", "\t") // replace 4 spaces to tab so that it becomes easy to find the indents
                                 .toCharArray();
 
                         int indent = 0;

@@ -46,13 +46,13 @@ public class Indexer {
         return json.getLong(key);
     }
     
-    public String toString() throws JSONException {
+    public String asString() throws JSONException {
         json.toString(4);
     }
     
     public void flush() {
         try {
-            FileUtil.writeFile(filePath, toString());
+            FileUtil.writeFile(filePath, asString());
         } catch (IOException e) {}
     }
 }

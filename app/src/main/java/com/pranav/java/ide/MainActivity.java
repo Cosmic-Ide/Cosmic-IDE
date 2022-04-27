@@ -47,6 +47,7 @@ import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.DexFile;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,21 +92,22 @@ public final class MainActivity extends AppCompatActivity {
 
         try {
             indexer = new Indexer("editor");
-        } catch (org.json.JSONException e) {
+            if (indexer.notHas("currentFile")) {
+                indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
+                indexer.flush();
+            }
+
+            currentWorkingFilePath = indexer.getString("currentFile");
+        } catch (JSONException e) {
             dialog("JsonException", e.getMessage(), true);
         }
-        if (indexer.notHas("currentFile")) {
-            indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
-            indexer.flush();
-        }
 
-        currentWorkingFilePath = indexer.getString("currentFile");
         final File file = file(currentWorkingFilePath);
 
         if (file.exists()) {
             try {
                 editor.setText(FileUtil.readFile(file));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 dialog("Cannot read file", getString(e), true);
             }
         } else {
@@ -180,7 +182,7 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadFileToEditor(String path) throws IOException {
+    public void loadFileToEditor(String path) throws IOException, JSONException {
         File newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);

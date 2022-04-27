@@ -117,7 +117,7 @@ public class TreeViewDrawer extends Fragment {
                                         if (activity.drawer.isDrawerOpen(GravityCompat.START)) {
                                             activity.drawer.close();
                                         }
-                                    } catch (IOException e) {
+                                    } catch (Exception e) {
                                         activity.dialog("Cannot read file", e.getMessage(), true);
                                     }
                                 }

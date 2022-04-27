@@ -4,6 +4,8 @@ import com.pranav.lib_android.util.FileUtil
 
 import org.json.JSONObject
 
+import java.io.File
+
 class Indexer(fileName: String) {
     
     private var json: JSONObject
@@ -13,7 +15,7 @@ class Indexer(fileName: String) {
     init {
         filePath = FileUtil.getCacheDir() + fileName + ".json" // append json file extension
         val index = File(filePath).readText();
-        json = JSONObject(index)
+        json = JSONObject(index!!)
     }
     
     fun putString(key: String, value: String) {

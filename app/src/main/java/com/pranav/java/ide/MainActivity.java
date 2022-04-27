@@ -89,7 +89,11 @@ public final class MainActivity extends AppCompatActivity {
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
 
-        indexer = new Indexer("editor");
+        try {
+            indexer = new Indexer("editor");
+        } catch (org.json.JSONException e) {
+            dialog("JsonException", e.getMessage(), true);
+        }
         if (indexer.notHas("currentFile")) {
             indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
             indexer.flush();

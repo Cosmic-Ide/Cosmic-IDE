@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="grayed_text_color">#FF757575</color>
+    <color name="toolbar_dark">#2F2F2F</color>
 
     <color name="md_theme_light_primary">#005AC5</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>

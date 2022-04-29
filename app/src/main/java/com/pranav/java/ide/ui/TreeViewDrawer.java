@@ -78,7 +78,7 @@ public class TreeViewDrawer extends Fragment {
                 new ArrayList<>(); /* Create List of root nodes and and their children's */
 
         final File mainFolderFile =
-                file(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
+                new File(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
         TreeNode mainRootNode =
                 new TreeNode<>(
                         new TreeFolder(mainFolderFile),
@@ -109,8 +109,8 @@ public class TreeViewDrawer extends Fragment {
                                 if (treeNode.getContent().getFile().isFile()
                                         && treeNode.getContent()
                                                 .getFile()
-                                                .getPath()
-                                                .contains(".java")) {
+                                                .getName()
+                                                .endsWith(".java")) {
                                     try {
                                         activity.loadFileToEditor(
                                                 treeNode.getContent().getFile().getPath());
@@ -180,7 +180,7 @@ public class TreeViewDrawer extends Fragment {
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getLevel() == 0 && node.getValue().getFile().toPath().endsWith("java")) {
+        if (node.getLevel() == 0 && node.getValue().getFile().toName().endsWith(".java")) {
             /* Disable Option to delete a root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }

@@ -22,6 +22,7 @@ public class CompileTask extends Thread {
     private long ecjTime = 0;
 
     private boolean errorsArePresent = false;
+    private boolean showExecuteDialog = false;
 
     private MainActivity activity;
 
@@ -32,9 +33,10 @@ public class CompileTask extends Thread {
     public static String STAGE_D8TASK;
     public static String STAGE_LOADING_DEX;
 
-    public CompileTask(Context context, CompilerListeners listener) {
+    public CompileTask(Context context, CompilerListeners listener, boolean isExecuteMethod) {
         this.activity = (MainActivity) context;
         this.listener = listener;
+        this.showExecuteDialog = isExecuteMethod;
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_ECJ = context.getString(R.string.stage_ecj);
@@ -106,6 +108,7 @@ public class CompileTask extends Thread {
                 return;
             }
             listener.OnSuccess();
+            if (showExecuteDialog) {
             activity.listDialog(
                     "Select a class to execute",
                     classes,
@@ -138,6 +141,7 @@ public class CompileTask extends Thread {
 
                         activity.dialog(s.toString(), task.getLogs(), true);
                     });
+                    }
         } catch (Throwable e) {
             listener.OnFailed();
             activity.showErr(e.getMessage());

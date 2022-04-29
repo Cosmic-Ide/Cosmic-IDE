@@ -233,7 +233,7 @@ public final class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.run_menu_button:
-                compile();
+                compile(true);
                 break;
             default:
                 break;
@@ -259,7 +259,7 @@ public final class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void compile() {
+    public void compile(boolean execute) {
         loadingDialog.show(); // Show Loading Dialog
         runThread =
                 new Thread(
@@ -497,7 +497,7 @@ public final class MainActivity extends AppCompatActivity {
             final File dex = new File(FileUtil.getBinDir().concat("classes.dex"));
             /* If the project doesn't seem to have been compiled yet, compile it */
             if (!dex.exists()) {
-                compile();
+                compile(false);
             }
             final ArrayList<String> classes = new ArrayList<>();
             DexFile dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(26));

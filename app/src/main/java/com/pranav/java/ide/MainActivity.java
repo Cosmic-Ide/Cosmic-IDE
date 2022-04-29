@@ -24,7 +24,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.googlecode.d2j.smali.BaksmaliCmd;
@@ -44,6 +43,7 @@ import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
+import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
@@ -183,6 +183,7 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* Loads a file from a path to the editor */
     public void loadFileToEditor(String path) throws IOException, JSONException {
         File newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
@@ -250,6 +251,7 @@ public final class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /* Shows a snackbar indicating that there were problems during compilation */
     public void showErr(final String e) {
         Snackbar.make(
                         (LinearLayout) findViewById(R.id.container),
@@ -359,7 +361,7 @@ public final class MainActivity extends AppCompatActivity {
                     ConcurrentUtil.execute(
                             () -> {
                                 try {
-                                    org.benf.cfr.reader.Main.main(args);
+                                    Main.main(args);
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }
@@ -419,6 +421,7 @@ public final class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /* Formats a given smali code */
     private String formatSmali(String in) {
 
         ArrayList<String> lines = new ArrayList<>(Arrays.asList(in.split("\n")));
@@ -460,12 +463,6 @@ public final class MainActivity extends AppCompatActivity {
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
-                    /*
-                     * @TheWolf:
-                     * This method is executed on another
-                     * Thread, so DialogBuilder must be (I didn't find other solutions)
-                     * in runOnUiThread
-                     */
 
                     new MaterialAlertDialogBuilder(MainActivity.this)
                             .setTitle(title)
@@ -493,6 +490,7 @@ public final class MainActivity extends AppCompatActivity {
         dialog.create().show();
     }
 
+    /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
             final File dex = new File(FileUtil.getBinDir().concat("classes.dex"));

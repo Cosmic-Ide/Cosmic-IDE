@@ -33,7 +33,7 @@ public class CompileTask extends Thread {
     public static String STAGE_D8TASK;
     public static String STAGE_LOADING_DEX;
 
-    public CompileTask(Context context, CompilerListeners listener, boolean isExecuteMethod) {
+    public CompileTask(Context context, boolean isExecuteMethod, CompilerListeners listener) {
         this.activity = (MainActivity) context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;

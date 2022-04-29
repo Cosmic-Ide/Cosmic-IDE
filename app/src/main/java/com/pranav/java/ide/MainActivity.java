@@ -265,6 +265,7 @@ public final class MainActivity extends AppCompatActivity {
                 new Thread(
                         new CompileTask(
                                 MainActivity.this,
+                                execute,
                                 new CompileTask.CompilerListeners() {
                                     @Override
                                     public void OnCurrentBuildStageChanged(String stage) {

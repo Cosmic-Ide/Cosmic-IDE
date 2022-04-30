@@ -1,13 +1,14 @@
 package com.pranav.java.ide.ui.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.TypedValue;
 
 public class dpToPx {
-    private Context mContext;
+    private static Resources res;
 
     public static void initalizeContext(Context context) {
-        mContext = context;
+        res = context.getResources();
     }
 
     public static int dpToPx(float dp) {
@@ -16,6 +17,6 @@ public class dpToPx {
                 TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         dp,
-                        mContext.getResources().getDisplayMetrics()));
+                        res.getDisplayMetrics()));
     }
 }

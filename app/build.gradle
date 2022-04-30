@@ -5,14 +5,14 @@ plugins {
 
 android {
 	namespace 'com.pranav.java.ide'
-	compileSdk 32
+	compileSdkPreview 'Tiramisu'
 
 	defaultConfig {
 		applicationId 'com.pranav.java.ide'
 		minSdk 26
-		targetSdk 32
-		versionCode 3
-		versionName '0.0.3'
+		targetSdkPreview 'Tiramisu'
+		versionCode 4
+		versionName '0.0.4'
 	}
 
 	buildTypes {
@@ -52,7 +52,7 @@ dependencies {
 	implementation 'org.smali:dexlib2:2.5.2'
 	implementation 'io.github.Rosemoe.sora-editor:editor:0.10.11'
 	implementation 'io.github.Rosemoe.sora-editor:language-java:0.10.11'
-	implementation 'androidx.appcompat:appcompat:1.6.0-alpha01'
+	implementation 'androidx.appcompat:appcompat:1.6.0-alpha03'
 
 	implementation 'com.google.android.material:material:1.7.0-alpha01'
 	debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'

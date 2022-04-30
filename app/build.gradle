@@ -10,7 +10,7 @@ android {
 	defaultConfig {
 		applicationId 'com.pranav.java.ide'
 		minSdk 26
-		targetSdkPreview 'Tiramisu'
+		targetSdk 32
 		versionCode 4
 		versionName '0.0.4'
 	}

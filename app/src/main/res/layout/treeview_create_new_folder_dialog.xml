@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:text="@string/create_new_directory"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@color/md_theme_light_primary"/>
 
@@ -37,7 +37,7 @@
         android:id="@+id/create_bttn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:text="@string/create"/>

@@ -20,6 +20,8 @@
 	<string name="delete">Delete</string>
 	<string name="confirm">Confirm</string>
 	<string name="cancel">Cancel</string>
+	<string name="compile_project">Compile Project</string>
+	<string name="java_file">Java File</string>
 	
 	<!-- Strings used by SettingActivity -->
 	<string name="java_version">Java Version</string>
@@ -32,6 +34,7 @@
 	<string name="classpath_edit">Edit</string>
 
 	<!-- Strings used by CompilerTask Class -->
+	<string name="Stage">Stage</string>
 	<string name="stage_clean">Cleaning</string>
 	<string name="stage_ecj">Compiling</string>
 	<string name="stage_d8task">D8 Task</string>

@@ -16,16 +16,18 @@
 
             <ImageView
                 android:id="@+id/arrow"
+                android:src="@drawable/arrow"
                 android:layout_width="25dp"
                 android:layout_height="match_parent"
-                android:layout_marginRight="4dp"
-                android:src="@drawable/arrow" />
+                android:contentDescription="@string/compile_project"
+                android:layout_marginEnd="4dp" />
 
             <ImageView
                 android:id="@+id/icon"
+                android:src="@drawable/java_file"
                 android:layout_width="25dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/java_file" />
+                android:contentDescription="@string/java_file" />
         </LinearLayout>
 
         <TextView

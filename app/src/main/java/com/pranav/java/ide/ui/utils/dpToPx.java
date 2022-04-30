@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.TypedValue;
 
 public class dpToPx {
-    private static Context mContext;
+    private Context mContext;
 
     public static void initalizeContext(Context context) {
         mContext = context;

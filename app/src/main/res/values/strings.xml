@@ -34,7 +34,7 @@
 	<string name="classpath_edit">Edit</string>
 
 	<!-- Strings used by CompilerTask Class -->
-	<string name="Stage">Stage</string>
+	<string name="stage">Stage</string>
 	<string name="stage_clean">Cleaning</string>
 	<string name="stage_ecj">Compiling</string>
 	<string name="stage_d8task">D8 Task</string>

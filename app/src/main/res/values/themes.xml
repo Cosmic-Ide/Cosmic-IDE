@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style
-        name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
@@ -32,9 +32,9 @@
 
    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-   <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+   <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
 
-   <style name="popup" parent="TextAppearance.AppCompat.Light.Widget.PopupMenu.Large">
+   <style name="popup" parent="TextAppearance.AppCompat.Dark.Widget.PopupMenu.Large">
        <item name="android:textColor">@color/md_theme_light_primary</item>
    </style>
 </resources>

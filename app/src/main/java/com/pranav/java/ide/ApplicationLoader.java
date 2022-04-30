@@ -13,11 +13,9 @@ import com.pranav.lib_android.util.FileUtil;
 
 public final class ApplicationLoader extends Application {
 
-    private Context mContext;
-
     @Override
     public void onCreate() {
-        mContext = getApplicationContext();
+        final Context mContext = getApplicationContext();
         FileUtil.initializeContext(mContext);
         dpToPx.initalizeContext(mContext);
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler =

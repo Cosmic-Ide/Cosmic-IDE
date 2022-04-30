@@ -7,7 +7,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3.0.2
@@ -26,6 +26,11 @@ jobs:
         with:
           arguments: lint
 
+  upload-reports:
+
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Upload lint report
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}

@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="ThemeOverlay.Material3.DynamicColors.DayNight.NoActionBar" />
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
-   <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
+   <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.ActionBar" />
 
-   <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3.Dark" />
+   <style name="AppTheme.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
 </resources>

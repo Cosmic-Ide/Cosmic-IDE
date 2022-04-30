@@ -21,7 +21,7 @@
 	<string name="confirm">Confirm</string>
 	<string name="cancel">Cancel</string>
 	
-	<!-- String used by SettingActivity -->
+	<!-- Strings used by SettingActivity -->
 	<string name="java_version">Java Version</string>
 	<string name="classpath">Classpath</string>
 	<string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>

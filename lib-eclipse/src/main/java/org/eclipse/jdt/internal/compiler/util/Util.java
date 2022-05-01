@@ -470,21 +470,15 @@ public class Util implements SuffixConstants {
      * @throws IOException if a problem occurred reading the stream.
      */
     public static byte[] getInputStreamAsByteArray(InputStream input) throws IOException {
-        // android versions below tiramisu don't support this new method
-        if (Build.VERSION.SDK_INT >= 33) {
-            return input.readAllBytes(); // will have even slighly better performance as of JDK17+
-            // see JDK-8264777
-        } else {
-            final int bufLen = 4 * 0x400; // 4KB
-            byte[] buf = new byte[bufLen];
-            int readLen;
-            
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            while ((readLen = input.read(buf, 0, bufLen)) != -1) {
-                outputStream.write(buf, 0, readLen);
-            }
-            return outputStream.toByteArray();
+        final int bufLen = 4 * 0x400; // 4KB
+        byte[] buf = new byte[bufLen];
+        int readLen;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        while ((readLen = input.read(buf, 0, bufLen)) != -1) {
+            outputStream.write(buf, 0, readLen);
         }
+        return outputStream.toByteArray();
     }
 
     /**

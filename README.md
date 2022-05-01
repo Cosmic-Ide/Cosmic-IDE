@@ -53,6 +53,8 @@ I would really love all kinds of contributions. If you have any questions, ideas
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
+- [Itsaky/AndroidIde](https://github.com/Itsaky/AndroidIde)
+
 - [ShineM/TreeView](https://github.com/shineM/TreeView)
 
 - [Rosemoe/sora-editor](https://github.com/Rosemoe/sora-editor)

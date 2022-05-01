@@ -356,7 +356,7 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
             areUsure_txt.setText(
-                    getString(R.string.delete, node.getContent().getFile().getName());
+                    getString(R.string.delete, node.getContent().getFile().getName()));
 
             confirmBttn.setOnClickListener(
                     v -> {

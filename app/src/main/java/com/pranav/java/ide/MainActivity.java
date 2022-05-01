@@ -201,7 +201,7 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id.equals(R.id.format_menu_button) {
+        if (id.equals(R.id.format_menu_button)) {
 
             Formatter formatter = new Formatter(editor.getText().toString());
             ConcurrentUtil.execute(() -> {

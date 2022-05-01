@@ -6,6 +6,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
+import java.io.InputStream
 
 class FileUtil {
     companion object {
@@ -36,7 +37,7 @@ class FileUtil {
     fun readFile(file: File) = file.readText()
 
     @JvmStatic
-    fun asByteArray(in: InputStream) = in.readBytes()
+    fun asByteArray(inp: InputStream) = inp.readBytes()
 
     @JvmStatic
     fun deleteFile(path: String) {
@@ -46,11 +47,13 @@ class FileUtil {
     @JvmStatic
     fun getFileName(path: String): String {
         val splited = path.split("/")
-        return splited[splited.length - 1]
+        return splited[splited.length() - 1]
     }
 
     @JvmStatic
-    private fun getDataDir() = mContext.getFilesDir()
+    private fun getDataDir(): String {
+        return mContext.getFilesDir()
+    }
 
     @JvmStatic
     fun getJavaDir() = getDataDir() + "/java/"
@@ -63,4 +66,5 @@ class FileUtil {
 
     @JvmStatic
     fun getClasspathDir() = getDataDir() + "/classpath/"
+    }
 }

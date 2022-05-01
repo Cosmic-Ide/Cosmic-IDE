@@ -151,24 +151,10 @@ public class TreeViewDrawer extends Fragment {
                 TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
                 mainRootNode.addChild(javaFileNode);
             } else {
-                /* @TODO: Sort File#listFiles properly so directories will appear on top */
                 TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
-
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File fileInNextDir : files) {
-                        n++;
-                        if (fileInNextDir.isFile()) {
-                            TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), n);
-                            directoryFileNode.addChild(fileChild);
-                        } else {
-                            TreeNode dirChild = new TreeNode<>(new TreeFolder(fileInNextDir), n);
-                            n++;
-                            addChildDirsAndFiles(dirChild, n);
-                        }
-                    }
-                }
                 mainRootNode.addChild(directoryFileNode);
+                n++;
+                addChildDirsAndFiles(directoryFileNode, n);
             }
         }
     }
@@ -250,7 +236,7 @@ public class TreeViewDrawer extends Fragment {
 
                         if (!fileNameString.equals("")
                                 && fileNameString.length() <= 25
-                                && !fileNameString.contains(".java")
+                                && !fileNameString.endsWith(".java")
                                 && !isStringContainsNumbers(fileNameString)) {
                             try {
                                 File filePth =
@@ -261,7 +247,7 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 if (node.getParent().getContent() == null) {
-                                    FileUtil.writeFile(filePth
+                                    FileUtil.writeFile(filePth,
                                             TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
                                                             fileNameString));
                                 } else {
@@ -304,23 +290,16 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        String fileNameString = fileName.getText().toString();
+                        String fileNameString = fileName.getText().toString().replace(" ", "");
 
                         if (fileNameString != null && !fileNameString.equals("") && fileNameString.length() <= 25) {
-                            /* @TODO:
-                             *    Make one String instead of repeating them (fileNameString#replace)
-                             *    Same for Voids above
-                             */
+                            String filePath = node.getContent().getFile().getPath()
+                                    + "/"
+                                    + fileNameString;
 
-                            FileUtil.createDirectory(
-                                    node.getContent().getFile().getPath()
-                                            + "/"
-                                            + fileNameString.replace(" ", ""));
+                            FileUtil.createDirectory(filePath);
                             File dirPth =
-                                    new File(
-                                            node.getContent().getFile().getPath()
-                                                    + "/"
-                                                    + fileNameString.replace(" ", ""));
+                                    new File(filePath);
                             TreeNode newDir =
                                     new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
@@ -374,34 +353,29 @@ public class TreeViewDrawer extends Fragment {
 
     public List<File> getSortedFilesInPath(String path) {
         List<File> mFiles = new ArrayList<>();
+        List<File> mDirs = new ArrayList<>();
 
         File file = new File(path);
         File[] files = file.listFiles();
         if (files != null) {
-            for (File fileInDirectory : files) {
-                mFiles.add(fileInDirectory);
-                Log.e("FileName", fileInDirectory.getName());
+            for (File chile : files) {
+                if (child.isFile()) {
+                    mFiles.add(child);
+                } else {
+                    mDirs.add(child);
+                }
             }
         }
 
-        Collections.sort(
-                mFiles,
-                (p1, p2) -> {
-                    if (p1.isFile() && p2.isFile()) {
-                        return p1.getName().compareTo(p2.getName());
-                    }
+        // Sort files and directories according to alphabetical order
+        Collections.sort(mFiles);
+        Collections.sort(mDirs);
+        
+        // Create a new arraylist which will contain the final sorted list
+        ArrayList<File> result = mDirs;
+        result.addAll(mFiles);
 
-                    if (p1.isFile() && p2.isDirectory()) {
-                        return -1;
-                    }
-
-                    if (p1.isDirectory() && p2.isDirectory()) {
-                        return p1.getName().compareTo(p2.getName());
-                    }
-                    return 0;
-                });
-
-        return mFiles;
+        return result;
     }
 
     public boolean isStringContainsNumbers(String target) {

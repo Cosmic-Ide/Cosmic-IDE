@@ -47,12 +47,12 @@ class FileUtil {
     @JvmStatic
     fun getFileName(path: String): String {
         val splited = path.split("/")
-        return splited[splited.length() - 1]
+        return splited[splited.size - 1]
     }
 
     @JvmStatic
     private fun getDataDir(): String {
-        return mContext.getFilesDir()
+        return mContext.getFilesDir().getAbsolutePath()
     }
 
     @JvmStatic

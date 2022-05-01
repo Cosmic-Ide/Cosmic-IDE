@@ -24,8 +24,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
 import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
@@ -136,10 +134,9 @@ public final class MainActivity extends AppCompatActivity {
                                     .getString("javaVersion", "7.0")
                                     .equals("8.0")) {
                         try {
-                            Files.write(
-                                    ByteStreams.toByteArray(
-                                            getAssets().open("core-lambda-stubs.jar")),
-                                    output);
+                            FileUtil.writeBytes(output.getAbsolutePath(),
+                                    FileUtil.asByteArray(
+                                            getAssets().open("core-lambda-stubs.jar")));
                         } catch (Exception e) {
                             showErr(getString(e));
                         }
@@ -201,19 +198,19 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id.equals(R.id.format_menu_button)) {
+        if (id == R.id.format_menu_button) {
 
             Formatter formatter = new Formatter(editor.getText().toString());
             ConcurrentUtil.execute(() -> {
                 editor.setText(formatter.format(0, editor.getText().length(), 0));
             });
 
-        } else if (id.equals(R.id.settings_menu_button)) {
+        } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
 
-        } else if (id.equals(R.id.run_menu_button)) {
+        } else if (id == R.id.run_menu_button) {
 
             compile(true);
 

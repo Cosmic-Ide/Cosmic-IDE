@@ -14,8 +14,6 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.compiler.util;
 
-import com.google.common.io.ByteStreams;
-
 import org.eclipse.jdt.core.compiler.CharOperation;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
@@ -35,6 +33,7 @@ import org.eclipse.jdt.internal.compiler.lookup.WildcardBinding;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -472,9 +471,37 @@ public class Util implements SuffixConstants {
      */
     public static byte[] getInputStreamAsByteArray(InputStream input) throws IOException {
         // android versions below tiramisu don't support this new method
-        // return input.readAllBytes(); // will have even slighly better performance as of JDK17+
-        // see JDK-8264777
-        return ByteStreams.toByteArray(input);
+        if (Build.VERSION.SDK_INT >= 33) {
+            return input.readAllBytes(); // will have even slighly better performance as of JDK17+
+            // see JDK-8264777
+        } else {
+            final int bufLen = 4 * 0x400; // 4KB
+            byte[] buf = new byte[bufLen];
+            int readLen;
+            IOException exception = null;
+            
+            try {
+                try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                    while ((readLen = inputStream.read(buf, 0, bufLen)) != -1) {
+                        outputStream.write(buf, 0, readLen);
+                    }
+                    return outputStream.toByteArray();
+                }
+            } catch (IOException e) {
+                exception = e;
+                throw e;
+            } finally {
+                if (exception == null) {
+                    inputStream.close();
+                } else {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        exception.addSuppressed(e);
+                    }
+               }
+           }
+       }
     }
 
     /**

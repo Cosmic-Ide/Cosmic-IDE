@@ -22,7 +22,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
@@ -196,11 +195,11 @@ public class TreeViewDrawer extends Fragment {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         int id = item.getItemId();
-                        if (id.equals(R.id.create_class_menu_bttn)) {
+                        if (id == R.id.create_class_menu_bttn) {
                             showCreateNewFileDialog(node);
-                        } else if (id.equals(R.id.create_directory_bttn)) {
+                        } else if (id == R.id.create_directory_bttn) {
                             showCreateNewDirectoryDialog(node);
-                        } else if (id.equals(R.id.delete_menu_bttn)) {
+                        } else if (id == R.id.delete_menu_bttn) {
                             showConfirmDeleteDialog(node);
                         }
                         return false;
@@ -262,23 +261,19 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 if (node.getParent().getContent() == null) {
-                                    Files.write(
+                                    FileUtil.writeFile(filePth
                                             TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
-                                                            fileNameString)
-                                                    .getBytes(),
-                                            filePth);
+                                                            fileNameString));
                                 } else {
                                     /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                                    Files.write(
+                                    FileUtil.writeFile(filePth,
                                             TreeCreateNewFileContent
                                                     .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
                                                             fileNameString,
                                                             "."
                                                                     + node.getContent()
                                                                             .getFile()
-                                                                            .getName())
-                                                    .getBytes(),
-                                            filePth);
+                                                                            .getName()));
                                 }
 
                                 TreeNode newDir =

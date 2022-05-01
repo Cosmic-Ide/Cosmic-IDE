@@ -77,7 +77,6 @@ public class ZipUtil {
             throws IOException {
         final InputStream in = context.getAssets().open(inputFile);
         final String outputPath = context.getFilesDir() + "/" + fileName;
-        final File out = new File(outputPath);
-        Files.write(ByteStreams.toByteArray(in), out);
+        FileUtil.writeBytes(outputPath, FileUtil.asByteArray(in));
     }
 }

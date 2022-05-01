@@ -1,89 +1,66 @@
-package com.pranav.lib_android.util;
+package com.pranav.lib_android.util
 
-import android.content.Context;
+import android.content.Context
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.io.IOException
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+class FileUtil {
+    companion object {
+    private lateinit var mContext: Context
 
-public class FileUtil {
-
-    private static Context mContext;
-
-    public static void initializeContext(Context context) {
-        mContext = context;
+    @JvmStatic
+    fun initializeContext(context: Context) {
+        mContext = context
     }
 
-    public static boolean createDirectory(String path) {
-        File file = new File(path);
-        return file.mkdir();
+    @JvmStatic
+    fun createDirectory(path: String) = File(path).mkdir()
+
+    @JvmStatic
+    fun writeFile(path: String, content: String) {
+        val file = File(path)
+        file.getParentFile().mkdirs()
+        if (!file.exists()) file.createNewFile()
+        file.writeText(content)
     }
 
-    public static void writeFile(String path, String content) throws IOException {
-        File file = new File(path);
-        file.getParentFile().mkdirs();
-        if (!file.exists()) file.createNewFile();
-        Files.write(content.getBytes(), file);
+    @JvmStatic
+    fun writeBytes(path: String, bytes: ByteArray) {
+        File(path).writeBytes(bytes)
     }
 
-    public static String readFile(File file) throws IOException {
-        return Files.asCharSource(file, Charsets.UTF_8).read();
+    @JvmStatic
+    fun readFile(file: File) = file.readText()
+
+    @JvmStatic
+    fun asByteArray(in: InputStream) = in.readBytes()
+
+    @JvmStatic
+    fun deleteFile(path: String) {
+        File(path).deleteRecursively()
     }
 
-    public static void deleteFile(String path) {
-        File file = new File(path);
-
-        if (!file.exists()) return;
-
-        if (file.isFile()) {
-            file.delete();
-            return;
-        }
-
-        File[] fileArr = file.listFiles();
-
-        if (fileArr != null) {
-            for (File subFile : fileArr) {
-                if (subFile.isDirectory()) {
-                    deleteFile(subFile.getAbsolutePath());
-                }
-
-                if (subFile.isFile()) {
-                    subFile.delete();
-                }
-            }
-        }
-
-        file.delete();
+    @JvmStatic
+    fun getFileName(path: String): String {
+        val splited = path.split("/")
+        return splited[splited.length - 1]
     }
 
-    public static String getFileName(String path) {
-        String[] splited = path.split("/");
-        return splited[splited.length - 1];
-    }
+    @JvmStatic
+    private fun getDataDir() = mContext.getFilesDir()
 
-    private static String getDataDir() {
-        return mContext.getExternalFilesDir(null).getAbsolutePath();
-    }
+    @JvmStatic
+    fun getJavaDir() = getDataDir() + "/java/"
 
-    public static String getJavaDir() {
-        return getDataDir() + "/java/";
-    }
+    @JvmStatic
+    fun getBinDir() = getDataDir() + "/bin/"
 
-    public static String getBinDir() {
-        return getDataDir() + "/bin/";
-    }
-    
-    public static String getCacheDir() {
-        // write caches to external storage because we don't want android system to delete index files
-        return getDataDir() + "/cache/";
-    }
+    @JvmStatic
+    fun getCacheDir() = getDataDir() + "/cache/"
 
-    public static String getClasspathDir() {
-        return getDataDir() + "/classpath/";
-    }
+    @JvmStatic
+    fun getClasspathDir() = getDataDir() + "/classpath/"
 }

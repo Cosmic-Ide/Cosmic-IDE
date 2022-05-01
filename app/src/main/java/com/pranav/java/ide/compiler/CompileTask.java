@@ -3,7 +3,6 @@ package com.pranav.java.ide.compiler;
 import android.content.Context;
 import android.os.Looper;
 
-import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.lib_android.exception.CompilationFailedException;

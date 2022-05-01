@@ -28,7 +28,6 @@ package javax.tools;
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.Set;

@@ -27,8 +27,6 @@ package javax.lang.model.element;
 
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.AnnotationTypeMismatchException;
-import java.lang.annotation.IncompleteAnnotationException;
 import java.util.List;
 import java.util.Set;
 

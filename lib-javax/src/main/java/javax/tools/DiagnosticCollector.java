@@ -42,11 +42,6 @@ public final class DiagnosticCollector<S> implements DiagnosticListener<S> {
     private List<Diagnostic<? extends S>> diagnostics =
             Collections.synchronizedList(new ArrayList<Diagnostic<? extends S>>());
 
-    /**
-     * Creates a new instance of DiagnosticCollector.
-     */
-    public DiagnosticCollector() {}
-
     public void report(Diagnostic<? extends S> diagnostic) {
         Objects.requireNonNull(diagnostic);
         diagnostics.add(diagnostic);

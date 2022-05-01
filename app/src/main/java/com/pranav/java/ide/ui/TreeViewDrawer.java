@@ -247,12 +247,12 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 if (node.getParent().getContent() == null) {
-                                    FileUtil.writeFile(filePth,
+                                    FileUtil.writeFile(filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
                                                             fileNameString));
                                 } else {
                                     /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                                    FileUtil.writeFile(filePth,
+                                    FileUtil.writeFile(filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent
                                                     .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
                                                             fileNameString,
@@ -352,8 +352,8 @@ public class TreeViewDrawer extends Fragment {
     }
 
     public List<File> getSortedFilesInPath(String path) {
-        List<File> mFiles = new ArrayList<>();
-        List<File> mDirs = new ArrayList<>();
+        ArrayList<File> mFiles = new ArrayList<>();
+        ArrayList<File> mDirs = new ArrayList<>();
 
         File file = new File(path);
         File[] files = file.listFiles();

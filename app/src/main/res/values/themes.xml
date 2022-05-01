@@ -1,9 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
-        <item name="android:textColorPrimary">@color/m3_dark_default_color_primary_text</item>
-        <item name="android:textColorPrimaryInverse">@color/m3_default_color_primary_text</item>
-    </style>
+    <style name="AppTheme" parent="ThemeOverlay.Material3.DynamicColors.DayNight" />
 
    <style name="AppTheme.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
 </resources>

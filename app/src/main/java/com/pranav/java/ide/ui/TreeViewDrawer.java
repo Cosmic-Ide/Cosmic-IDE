@@ -195,16 +195,13 @@ public class TreeViewDrawer extends Fragment {
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.create_class_menu_bttn:
-                                showCreateNewFileDialog(node);
-                                break;
-                            case R.id.create_directory_bttn:
-                                showCreateNewDirectoryDialog(node);
-                                break;
-                            case R.id.delete_menu_bttn:
-                                showConfirmDeleteDialog(node);
-                                break;
+                        int id = item.getItemId();
+                        if (id.equals(R.id.create_class_menu_bttn)) {
+                            showCreateNewFileDialog(node);
+                        } else if (id.equals(R.id.create_directory_bttn)) {
+                            showCreateNewDirectoryDialog(node);
+                        } else if (id.equals(R.id.delete_menu_bttn)) {
+                            showConfirmDeleteDialog(node);
                         }
                         return false;
                     }
@@ -359,10 +356,7 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
             areUsure_txt.setText(
-                    getString(R.string.delete)
-                            + " "
-                            + FileUtil.getFileName(node.getContent().getFile().getPath())
-                            + "?");
+                    getString(R.string.delete, node.getContent().getFile().getName());
 
             confirmBttn.setOnClickListener(
                     v -> {

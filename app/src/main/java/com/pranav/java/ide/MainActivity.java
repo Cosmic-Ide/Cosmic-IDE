@@ -200,44 +200,23 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.format_menu_button:
-                Formatter formatter = new Formatter(editor.getText().toString());
-                ConcurrentUtil.execute(() -> {
-                    Cursor cursor = editor.getCursor();
+        int id = item.getItemId();
+        if (id.equals(R.id.format_menu_button) {
 
-                    if (cursor.isSelected()) {
-                        char[] leftLineChars = editor.getText()
-                                .getLine(cursor.getLeftLine())
-                                .toString()
-                                .replace("    ", "\t") // replace 4 spaces to tab so that it becomes easy to find the indents
-                                .toCharArray();
+            Formatter formatter = new Formatter(editor.getText().toString());
+            ConcurrentUtil.execute(() -> {
+                editor.setText(formatter.format(0, editor.getText().length(), 0));
+            });
 
-                        int indent = 0;
+        } else if (id.equals(R.id.settings_menu_button)) {
 
-                        for (char c : leftLineChars) {
-                            if (c == '\t') {
-                                indent++;
-                            } else {
-                                break;
-                            }
-                        }
-                        editor.insertText(formatter.format(cursor.getLeft(), cursor.getRight(), indent), cursor.getLeft());
-                    } else {
-                        editor.setText(formatter.format(0, editor.getText().length(), 0));
-                    }
-                });
-                break;
+            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(intent);
 
-            case R.id.settings_menu_button:
-                Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.run_menu_button:
-                compile(true);
-                break;
-            default:
-                break;
+        } else if (id.equals(R.id.run_menu_button)) {
+
+            compile(true);
+
         }
         return super.onOptionsItemSelected(item);
     }

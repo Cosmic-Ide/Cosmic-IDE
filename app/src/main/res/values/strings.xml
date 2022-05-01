@@ -17,8 +17,7 @@
 	<string name="create">Create</string>
 	<string name="create_class">Create Class</string>
 	<string name="create_directory">Create Directory</string>
-	<string name="delete">Delete</string>
-	<string name="confirm">Confirm</string>
+	<string name="delete">Delete %1$s?</string>
 	<string name="cancel">Cancel</string>
 	<string name="compile_project">Compile Project</string>
 	<string name="java_file">Java File</string>

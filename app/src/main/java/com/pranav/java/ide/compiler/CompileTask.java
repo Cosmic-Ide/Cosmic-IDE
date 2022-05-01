@@ -59,8 +59,7 @@ public class CompileTask extends Thread {
                     activity.editor
                             .getText()
                             .toString()
-                            .replace("System.exit(", "System.err.print(\"Exit code \" + ")
-                    );
+                            .replace("System.exit(", "System.err.print(\"Exit code \" + "));
         } catch (final IOException e) {
             activity.dialog("Cannot save program", e.getMessage(), true);
             listener.OnFailed();
@@ -108,39 +107,43 @@ public class CompileTask extends Thread {
             }
             listener.OnSuccess();
             if (showExecuteDialog) {
-            activity.listDialog(
-                    "Select a class to execute",
-                    classes,
-                    (dialog, item) -> {
-                        ExecuteJavaTask task = new ExecuteJavaTask(activity.builder, classes[item]);
-                        try {
-                            task.doFullTask();
-                        } catch (InvocationTargetException e) {
-                            activity.dialog(
-                                    "Failed...",
-                                    "Runtime error: " + e.getMessage() + "\n\n" + e.getMessage(),
-                                    true);
-                        } catch (Exception e) {
-                            activity.dialog(
-                                    "Failed..",
-                                    "Couldn't execute the dex: "
-                                            + e.toString()
-                                            + "\n\nSystem logs:\n"
-                                            + task.getLogs(),
-                                    true);
-                        }
-                        StringBuilder s = new StringBuilder();
-                        s.append("Success! ECJ took: ");
-                        s.append(String.valueOf(ecjTime));
-                        s.append("ms, ");
-                        s.append("D8");
-                        s.append(" took: ");
-                        s.append(String.valueOf(d8Time));
-                        s.append("ms");
+                activity.listDialog(
+                        "Select a class to execute",
+                        classes,
+                        (dialog, item) -> {
+                            ExecuteJavaTask task =
+                                    new ExecuteJavaTask(activity.builder, classes[item]);
+                            try {
+                                task.doFullTask();
+                            } catch (InvocationTargetException e) {
+                                activity.dialog(
+                                        "Failed...",
+                                        "Runtime error: "
+                                                + e.getMessage()
+                                                + "\n\n"
+                                                + e.getMessage(),
+                                        true);
+                            } catch (Exception e) {
+                                activity.dialog(
+                                        "Failed..",
+                                        "Couldn't execute the dex: "
+                                                + e.toString()
+                                                + "\n\nSystem logs:\n"
+                                                + task.getLogs(),
+                                        true);
+                            }
+                            StringBuilder s = new StringBuilder();
+                            s.append("Success! ECJ took: ");
+                            s.append(String.valueOf(ecjTime));
+                            s.append("ms, ");
+                            s.append("D8");
+                            s.append(" took: ");
+                            s.append(String.valueOf(d8Time));
+                            s.append("ms");
 
-                        activity.dialog(s.toString(), task.getLogs(), true);
-                    });
-                    }
+                            activity.dialog(s.toString(), task.getLogs(), true);
+                        });
+            }
         } catch (Throwable e) {
             listener.OnFailed();
             activity.showErr(e.getMessage());

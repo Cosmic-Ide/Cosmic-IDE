@@ -1,9 +1,6 @@
 package com.pranav.java.ide.ui;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -247,12 +244,14 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 if (node.getParent().getContent() == null) {
-                                    FileUtil.writeFile(filePth.getAbsolutePath(),
+                                    FileUtil.writeFile(
+                                            filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
-                                                            fileNameString));
+                                                    fileNameString));
                                 } else {
                                     /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                                    FileUtil.writeFile(filePth.getAbsolutePath(),
+                                    FileUtil.writeFile(
+                                            filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent
                                                     .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
                                                             fileNameString,
@@ -267,8 +266,8 @@ public class TreeViewDrawer extends Fragment {
                                                 new TreeFile(filePth),
                                                 node.getLevel()
                                                         + 1); // Get Level of parent so it will have
-                                                              // correct margin and disable some
-                                                              // popup functions if needed
+                                // correct margin and disable some
+                                // popup functions if needed
                                 node.addChild(newDir);
                                 treeView.refreshTreeView();
                                 fileName.setText("");
@@ -292,14 +291,14 @@ public class TreeViewDrawer extends Fragment {
                     v -> {
                         String fileNameString = fileName.getText().toString().replace(" ", "");
 
-                        if (fileNameString != null && !fileNameString.equals("") && fileNameString.length() <= 25) {
-                            String filePath = node.getContent().getFile().getPath()
-                                    + "/"
-                                    + fileNameString;
+                        if (fileNameString != null
+                                && !fileNameString.equals("")
+                                && fileNameString.length() <= 25) {
+                            String filePath =
+                                    node.getContent().getFile().getPath() + "/" + fileNameString;
 
                             FileUtil.createDirectory(filePath);
-                            File dirPth =
-                                    new File(filePath);
+                            File dirPth = new File(filePath);
                             TreeNode newDir =
                                     new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
@@ -329,8 +328,7 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
-            areUsure_txt.setText(
-                    getString(R.string.delete, node.getContent().getFile().getName()));
+            areUsure_txt.setText(getString(R.string.delete, node.getContent().getFile().getName()));
 
             confirmBttn.setOnClickListener(
                     v -> {
@@ -370,7 +368,7 @@ public class TreeViewDrawer extends Fragment {
         // Sort files and directories according to alphabetical order
         Collections.sort(mFiles);
         Collections.sort(mDirs);
-        
+
         // Create a new arraylist which will contain the final sorted list
         ArrayList<File> result = mDirs;
         result.addAll(mFiles);

@@ -75,7 +75,7 @@ public class TreeView<D> implements SelectableTreeAction<D> {
 
         recyclerView.setMotionEventSplittingEnabled(
                 false); // disable multi touch event to prevent terrible data set error when
-                        // calculate list.
+        // calculate list.
         ((SimpleItemAnimator) Objects.requireNonNull(recyclerView.getItemAnimator()))
                 .setSupportsChangeAnimations(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));

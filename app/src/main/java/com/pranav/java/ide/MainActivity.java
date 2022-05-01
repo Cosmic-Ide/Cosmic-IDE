@@ -37,7 +37,6 @@ import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
-import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
@@ -112,7 +111,8 @@ public final class MainActivity extends AppCompatActivity {
         } else {
             try {
                 file.getParentFile().mkdirs();
-                FileUtil.writeFile(file.getAbsolutePath(),
+                FileUtil.writeFile(
+                        file.getAbsolutePath(),
                         TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
                 editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
             } catch (IOException e) {
@@ -134,7 +134,8 @@ public final class MainActivity extends AppCompatActivity {
                                     .getString("javaVersion", "7.0")
                                     .equals("8.0")) {
                         try {
-                            FileUtil.writeBytes(output.getAbsolutePath(),
+                            FileUtil.writeBytes(
+                                    output.getAbsolutePath(),
                                     FileUtil.asByteArray(
                                             getAssets().open("core-lambda-stubs.jar")));
                         } catch (Exception e) {
@@ -201,9 +202,10 @@ public final class MainActivity extends AppCompatActivity {
         if (id == R.id.format_menu_button) {
 
             Formatter formatter = new Formatter(editor.getText().toString());
-            ConcurrentUtil.execute(() -> {
-                editor.setText(formatter.format(0, editor.getText().length(), 0));
-            });
+            ConcurrentUtil.execute(
+                    () -> {
+                        editor.setText(formatter.format(0, editor.getText().length(), 0));
+                    });
 
         } else if (id == R.id.settings_menu_button) {
 
@@ -213,7 +215,6 @@ public final class MainActivity extends AppCompatActivity {
         } else if (id == R.id.run_menu_button) {
 
             compile(true);
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -297,9 +298,7 @@ public final class MainActivity extends AppCompatActivity {
                                                 + ".smali");
 
                         try {
-                            edi.setText(
-                                    formatSmali(
-                                            FileUtil.readFile(smaliFile)));
+                            edi.setText(formatSmali(FileUtil.readFile(smaliFile)));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
                         }
@@ -439,7 +438,6 @@ public final class MainActivity extends AppCompatActivity {
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
-
                     new MaterialAlertDialogBuilder(MainActivity.this)
                             .setTitle(title)
                             .setItems(items, listener)

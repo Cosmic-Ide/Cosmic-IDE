@@ -3,9 +3,6 @@ package com.pranav.lib_android.util;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Files;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,7 +74,6 @@ public class ZipUtil {
             throws IOException {
         final InputStream in = context.getAssets().open(inputFile);
         final String outputPath = context.getFilesDir() + "/" + fileName;
-        final File out = new File(outputPath);
-        Files.write(ByteStreams.toByteArray(in), out);
+        FileUtil.writeBytes(outputPath, FileUtil.asByteArray(in));
     }
 }

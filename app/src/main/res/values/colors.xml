@@ -3,10 +3,4 @@
     <color name="grayed_text_color">#FF757575</color>
 
     <color name="md_theme_light_primary">#005AC5</color>
-    <color name="md_theme_dark_outline">#8E9099</color>
-    <color name="md_theme_dark_inverseOnSurface">#1B1B1E</color>
-    <color name="md_theme_dark_inverseSurface">#E4E2E6</color>
-    <color name="md_theme_dark_inversePrimary">#005AC5</color>
-    <color name="md_theme_dark_shadow">#000000</color>
-    <color name="md_theme_dark_primaryInverse">#005AC5</color>
 </resources>

@@ -22,7 +22,6 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
-import com.google.common.io.Files;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
@@ -152,24 +151,10 @@ public class TreeViewDrawer extends Fragment {
                 TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
                 mainRootNode.addChild(javaFileNode);
             } else {
-                /* @TODO: Sort File#listFiles properly so directories will appear on top */
                 TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
-
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File fileInNextDir : files) {
-                        n++;
-                        if (fileInNextDir.isFile()) {
-                            TreeNode fileChild = new TreeNode<TreeFile>(new TreeFile(fileInNextDir), n);
-                            directoryFileNode.addChild(fileChild);
-                        } else {
-                            TreeNode dirChild = new TreeNode<>(new TreeFolder(fileInNextDir), n);
-                            n++;
-                            addChildDirsAndFiles(dirChild, n);
-                        }
-                    }
-                }
                 mainRootNode.addChild(directoryFileNode);
+                n++;
+                addChildDirsAndFiles(directoryFileNode, n);
             }
         }
     }
@@ -195,16 +180,13 @@ public class TreeViewDrawer extends Fragment {
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.create_class_menu_bttn:
-                                showCreateNewFileDialog(node);
-                                break;
-                            case R.id.create_directory_bttn:
-                                showCreateNewDirectoryDialog(node);
-                                break;
-                            case R.id.delete_menu_bttn:
-                                showConfirmDeleteDialog(node);
-                                break;
+                        int id = item.getItemId();
+                        if (id == R.id.create_class_menu_bttn) {
+                            showCreateNewFileDialog(node);
+                        } else if (id == R.id.create_directory_bttn) {
+                            showCreateNewDirectoryDialog(node);
+                        } else if (id == R.id.delete_menu_bttn) {
+                            showConfirmDeleteDialog(node);
                         }
                         return false;
                     }
@@ -254,7 +236,7 @@ public class TreeViewDrawer extends Fragment {
 
                         if (!fileNameString.equals("")
                                 && fileNameString.length() <= 25
-                                && !fileNameString.contains(".java")
+                                && !fileNameString.endsWith(".java")
                                 && !isStringContainsNumbers(fileNameString)) {
                             try {
                                 File filePth =
@@ -265,23 +247,19 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 if (node.getParent().getContent() == null) {
-                                    Files.write(
+                                    FileUtil.writeFile(filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
-                                                            fileNameString)
-                                                    .getBytes(),
-                                            filePth);
+                                                            fileNameString));
                                 } else {
                                     /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                                    Files.write(
+                                    FileUtil.writeFile(filePth.getAbsolutePath(),
                                             TreeCreateNewFileContent
                                                     .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
                                                             fileNameString,
                                                             "."
                                                                     + node.getContent()
                                                                             .getFile()
-                                                                            .getName())
-                                                    .getBytes(),
-                                            filePth);
+                                                                            .getName()));
                                 }
 
                                 TreeNode newDir =
@@ -312,23 +290,16 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        String fileNameString = fileName.getText().toString();
+                        String fileNameString = fileName.getText().toString().replace(" ", "");
 
                         if (fileNameString != null && !fileNameString.equals("") && fileNameString.length() <= 25) {
-                            /* @TODO:
-                             *    Make one String instead of repeating them (fileNameString#replace)
-                             *    Same for Voids above
-                             */
+                            String filePath = node.getContent().getFile().getPath()
+                                    + "/"
+                                    + fileNameString;
 
-                            FileUtil.createDirectory(
-                                    node.getContent().getFile().getPath()
-                                            + "/"
-                                            + fileNameString.replace(" ", ""));
+                            FileUtil.createDirectory(filePath);
                             File dirPth =
-                                    new File(
-                                            node.getContent().getFile().getPath()
-                                                    + "/"
-                                                    + fileNameString.replace(" ", ""));
+                                    new File(filePath);
                             TreeNode newDir =
                                     new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
@@ -359,10 +330,7 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
             areUsure_txt.setText(
-                    getString(R.string.delete)
-                            + " "
-                            + FileUtil.getFileName(node.getContent().getFile().getPath())
-                            + "?");
+                    getString(R.string.delete, node.getContent().getFile().getName()));
 
             confirmBttn.setOnClickListener(
                     v -> {
@@ -384,35 +352,30 @@ public class TreeViewDrawer extends Fragment {
     }
 
     public List<File> getSortedFilesInPath(String path) {
-        List<File> mFiles = new ArrayList<>();
+        ArrayList<File> mFiles = new ArrayList<>();
+        ArrayList<File> mDirs = new ArrayList<>();
 
         File file = new File(path);
         File[] files = file.listFiles();
         if (files != null) {
-            for (File fileInDirectory : files) {
-                mFiles.add(fileInDirectory);
-                Log.e("FileName", fileInDirectory.getName());
+            for (File child : files) {
+                if (child.isFile()) {
+                    mFiles.add(child);
+                } else {
+                    mDirs.add(child);
+                }
             }
         }
 
-        Collections.sort(
-                mFiles,
-                (p1, p2) -> {
-                    if (p1.isFile() && p2.isFile()) {
-                        return p1.getName().compareTo(p2.getName());
-                    }
+        // Sort files and directories according to alphabetical order
+        Collections.sort(mFiles);
+        Collections.sort(mDirs);
+        
+        // Create a new arraylist which will contain the final sorted list
+        ArrayList<File> result = mDirs;
+        result.addAll(mFiles);
 
-                    if (p1.isFile() && p2.isDirectory()) {
-                        return -1;
-                    }
-
-                    if (p1.isDirectory() && p2.isDirectory()) {
-                        return p1.getName().compareTo(p2.getName());
-                    }
-                    return 0;
-                });
-
-        return mFiles;
+        return result;
     }
 
     public boolean isStringContainsNumbers(String target) {

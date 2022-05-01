@@ -21,3 +21,4 @@ rootProject.name = "Java IDE"
 include ':app'
 include ':lib-android'
 include ':lib-eclipse'
+include ':lib-javax'

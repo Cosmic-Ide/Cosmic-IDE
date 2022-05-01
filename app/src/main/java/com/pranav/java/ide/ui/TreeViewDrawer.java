@@ -358,7 +358,7 @@ public class TreeViewDrawer extends Fragment {
         File file = new File(path);
         File[] files = file.listFiles();
         if (files != null) {
-            for (File chile : files) {
+            for (File child : files) {
                 if (child.isFile()) {
                     mFiles.add(child);
                 } else {

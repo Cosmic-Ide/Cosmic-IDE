@@ -21,7 +21,7 @@ class FileUtil {
     fun createDirectory(path: String) = File(path).mkdir()
 
     @JvmStatic
-    @Throws(IOException:class)
+    @Throws(IOException::class)
     fun writeFile(path: String, content: String) {
         val file = File(path)
         file.getParentFile().mkdirs()
@@ -30,17 +30,17 @@ class FileUtil {
     }
 
     @JvmStatic
-    @Throws(IOException:class)
+    @Throws(IOException::class)
     fun writeBytes(path: String, bytes: ByteArray) {
         File(path).writeBytes(bytes)
     }
 
     @JvmStatic
-    @Throws(IOException:class)
+    @Throws(IOException::class)
     fun readFile(file: File) = file.readText()
 
     @JvmStatic
-    @Throws(IOException:class)
+    @Throws(IOException::class)
     fun asByteArray(inp: InputStream) = inp.readBytes()
 
     @JvmStatic

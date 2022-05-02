@@ -10,7 +10,6 @@ import com.pranav.lib_android.util.FileUtil;
 
 import com.sun.tools.javac.Main;
 import com.sun.source.util.JavacTask;
-import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,8 @@ import javax.tools.JavaCompiler;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.StandardLocation;
-import javax.tools.SourceFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.ToolProvider;
 
 public class JavacCompilationTask extends Task {
 
@@ -68,10 +68,10 @@ public class JavacCompilationTask extends Task {
             });
         }
 
-        JavaCompiler tool = JavacTool.create();
+        JavaCompiler tool = ToolProvider.getSystemJavaCompiler();
 
         StandardJavaFileManager standardJavaFileManager = tool.getStandardFileManager(
-                diagnosticCollector,
+                diagnostics,
                 Locale.getDefault(),
                 Charset.defaultCharset()
         );

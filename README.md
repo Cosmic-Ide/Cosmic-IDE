@@ -1,4 +1,4 @@
-# Java IDE
+# Java IDE PLUS
 
 [![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml)
 [![Discord Server](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
@@ -27,6 +27,7 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 - [x] Basic Java auto-completion
 - [x] D8
 - [x] File Tree Viewer
+- [ ] Kotlin Compiler
 
 ## TO-DO
 

@@ -87,7 +87,7 @@ public final class MainActivity extends AppCompatActivity {
         editor.setEditorLanguage(new JavaLanguage());
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
-        linepined();
+        editor.setPinLineNumber(true);
 
         try {
             indexer = new Indexer("editor");
@@ -493,8 +493,5 @@ public final class MainActivity extends AppCompatActivity {
     private String getString(final Throwable e) {
         return Log.getStackTraceString(e);
     }
-   public static void linepined(){
-    editor.setPinLineNumber(!editor.isLineNumberPinned());
-    editor.setNonPrintablePaintingFlags(CodeEditor.FLAG_DRAW_WHITESPACE_LEADING | CodeEditor.FLAG_DRAW_LINE_SEPARATOR);
-   }
+   
 }

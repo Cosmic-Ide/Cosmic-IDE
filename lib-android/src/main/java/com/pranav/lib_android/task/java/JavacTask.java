@@ -9,7 +9,7 @@ import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
 
 import com.sun.tools.javac.Main;
-import com.sun.tools.javac.api.JavacTool;
+import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.file.JavacFileManager;
 
 import java.io.File;
@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Collections;
 
+import javax.tools.StandardJavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaCompiler;
+import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.StandardLocation;
 import javax.tools.SourceFileObject;
@@ -61,9 +63,9 @@ public class JavacTask extends Task {
             javaFileObjects.add(new SourceFileObject(file.toPath()));
         }
 
-        JavacTool tool = JavacTool.create();
+        JavaCompiler tool = JavacTool.create();
 
-        JavacFileManager standardJavaFileManager = tool.getStandardFileManager(
+        StandardJavaFileManager standardJavaFileManager = tool.getStandardFileManager(
                 diagnosticCollector,
                 Locale.getDefault(),
                 Charset.defaultCharset()

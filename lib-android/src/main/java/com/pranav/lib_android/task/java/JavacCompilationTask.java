@@ -7,6 +7,7 @@ import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.interfaces.*;
 import com.pranav.lib_android.util.FileUtil;
 import com.sun.source.util.JavacTask;
+import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +24,6 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
-import javax.tools.ToolProvider;
 
 public class JavacCompilationTask extends Task {
 
@@ -63,7 +63,7 @@ public class JavacCompilationTask extends Task {
                     });
         }
 
-        JavaCompiler tool = ToolProvider.getSystemJavaCompiler();
+        JavaCompiler tool = JavacTool.create();
 
         StandardJavaFileManager standardJavaFileManager =
                 tool.getStandardFileManager(

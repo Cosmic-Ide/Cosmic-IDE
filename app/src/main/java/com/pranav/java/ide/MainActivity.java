@@ -37,7 +37,8 @@ import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
-import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.CodeEditor.*;
+
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import org.benf.cfr.reader.Main;
@@ -87,7 +88,9 @@ public final class MainActivity extends AppCompatActivity {
         editor.setEditorLanguage(new JavaLanguage());
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
-        linepined();
+        editor.setPinLineNumber(!editor.isLineNumberPinned());
+        editor.setNonPrintablePaintingFlags(CodeEditor.FLAG_DRAW_WHITESPACE_LEADING | CodeEditor.FLAG_DRAW_LINE_SEPARATOR);
+   
 
         try {
             indexer = new Indexer("editor");
@@ -493,8 +496,6 @@ public final class MainActivity extends AppCompatActivity {
     private String getString(final Throwable e) {
         return Log.getStackTraceString(e);
     }
-     pubilc void linepined(){
-        editor.setPinLineNumber(!editor.isLineNumberPinned());
-       editor.setNonPrintablePaintingFlags(CodeEditor.FLAG_DRAW_WHITESPACE_LEADING | CodeEditor.FLAG_DRAW_LINE_SEPARATOR);
-    }
+    
+        
 }

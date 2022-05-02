@@ -132,7 +132,7 @@ public final class MainActivity extends AppCompatActivity {
                     if (!output.exists()) {
                         try {
                             FileUtil.writeFile(
-                                    getAssets().open("core-lambda-stubs.jar")
+                                    getAssets().open("core-lambda-stubs.jar"),
                                     output.getAbsolutePath());
                         } catch (Exception e) {
                             showErr(getString(e));

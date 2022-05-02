@@ -93,23 +93,25 @@ public class JavacCompilationTask extends Task {
         try {
             standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
+            System.out.println("Set output to " + output.getAbsolutePath());
             standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath(version));
+            System.out.println("Set platform classpath to " + getPlatformClasspath(version));
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
+            System.out.println("Set classpath to " + getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
+            System.out.println("Set source path to " + javaPath);
         } catch (IOException e) {
             throw new CompilationFailedException(e);
         }
 
         final ArrayList<String> args = new ArrayList<>();
 
-        args.add("-g");
+        args.add("-proc:none");
         args.add("-source");
         args.add(version);
         args.add("-target");
         args.add(version);
-
-        args.add("-proc:none");
 
         JavacTask task =
                 (JavacTask)
@@ -163,15 +165,12 @@ public class JavacCompilationTask extends Task {
 
     public List<File> getClasspath() {
         List<File> classpath = new ArrayList<>();
-        final StringBuilder path = new StringBuilder();
         final String clspath = prefs.getString("classpath", "");
-        if (!clspath.isEmpty() && path.length() > 0) {
-            path.append(":");
-            path.append(clspath);
-        }
 
-        for (String clas : path.toString().split(":")) {
+        if (!clspath.isEmpty()) {
+        for (String clas : clspath.toString().split(":")) {
             classpath.add(new File(clas));
+        }
         }
         return classpath;
     }

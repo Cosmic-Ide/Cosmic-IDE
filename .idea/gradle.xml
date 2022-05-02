@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/lib-android" />
             <option value="$PROJECT_DIR$/lib-eclipse" />
+            <option value="$PROJECT_DIR$/lib-javac" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

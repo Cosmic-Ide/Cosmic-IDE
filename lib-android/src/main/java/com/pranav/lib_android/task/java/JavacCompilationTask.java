@@ -11,11 +11,13 @@ import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.io.PrintStream;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -45,9 +47,28 @@ public class JavacCompilationTask extends Task {
     @Override
     public void doFullTask() throws Exception {
 
+        final StringBuilder log = new StringBuilder();
+        final PrintStream sysOut = System.out;
+        final PrintStream sysErr = System.err;
+        final OutputStream out =
+                            new OutputStream() {
+                                @Override
+                                public void write(int b) {
+                                    log.append((char) b);
+                                }
+
+                                @Override
+                                public String toString() {
+                                    return log.toString();
+                                }
+                            };
+                    System.setOut(new PrintStream(out));
+                    System.setErr(new PrintStream(out));
+
+
         final File output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
-        final String version = prefs.getString("javaVersion", "7.0");
+        final String version = prefs.getString("javaVersion", "7");
 
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
@@ -72,23 +93,25 @@ public class JavacCompilationTask extends Task {
         try {
             standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
+            System.out.println("Set output to " + output.getAbsolutePath());
             standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath(version));
+            System.out.println("Set platform classpath to " + getPlatformClasspath(version));
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
+            System.out.println("Set classpath to " + getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
+            System.out.println("Set source path to " + javaFiles);
         } catch (IOException e) {
             throw new CompilationFailedException(e);
         }
 
         final ArrayList<String> args = new ArrayList<>();
 
-        args.add("-g");
+        args.add("-proc:none");
         args.add("-source");
         args.add(version);
         args.add("-target");
         args.add(version);
-
-        args.add("-proc:none");
 
         JavacTask task =
                 (JavacTask)
@@ -101,7 +124,9 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException("Javac: " + errs.toString());
+            System.setOut(sysOut);
+            System.setErr(sysErr);
+            throw new CompilationFailedException("Javac: " + log.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             switch (diagnostic.getKind()) {
@@ -140,15 +165,12 @@ public class JavacCompilationTask extends Task {
 
     public List<File> getClasspath() {
         List<File> classpath = new ArrayList<>();
-        final StringBuilder path = new StringBuilder();
         final String clspath = prefs.getString("classpath", "");
-        if (!clspath.isEmpty() && path.length() > 0) {
-            path.append(":");
-            path.append(clspath);
-        }
 
-        for (String clas : path.toString().split(":")) {
+        if (!clspath.isEmpty()) {
+        for (String clas : clspath.toString().split(":")) {
             classpath.add(new File(clas));
+        }
         }
         return classpath;
     }

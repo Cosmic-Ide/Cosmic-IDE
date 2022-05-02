@@ -53,8 +53,6 @@ public class JavacCompilationTask extends Task {
         final File output = new File(FileUtil.getBinDir(), "classes");
         final String version = prefs.getString("javaVersion", "7.0");
 
-        ConcurrentUtil.execute(
-                () -> {
             DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
         List<JavaFileObject> javaFileObjects = new ArrayList<>();
@@ -110,15 +108,12 @@ public class JavacCompilationTask extends Task {
         switch (diagnostic.getKind()) {
             case ERROR:
           errs.append(diagnostic.getMessage(Locale.getDefault()));
-          errs.append("\n");
           break;
           case WARNING:
           warnings.append(diagnostic.getMessage(Locale.getDefault()));
-          warnings.append("\n");
           break;
         }
       }
-                });
         String errors = errs.toString();
 
         if (!errors.isEmpty()) {

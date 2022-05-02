@@ -70,7 +70,7 @@ public class CompileTask extends Thread {
         errorsArePresent = true;
         try {
             listener.OnCurrentBuildStageChanged(STAGE_ECJ);
-            CompileJavaTask javaTask = new CompileJavaTask(activity.builder);
+            JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
             javaTask.doFullTask();
             errorsArePresent = false;
         } catch (CompilationFailedException e) {

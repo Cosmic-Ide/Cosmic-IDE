@@ -101,7 +101,7 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException("Javac: " + log.toString());
+            throw new CompilationFailedException("Javac: " + errs.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             switch (diagnostic.getKind()) {
@@ -117,7 +117,7 @@ public class JavacCompilationTask extends Task {
         String warnings = warns.toString();
 
         if (!errors.isEmpty()) {
-            throw new CompilationFailedException("Javac: " + warnings + errors);
+            throw new CompilationFailedException(warnings + errors);
         }
     }
 

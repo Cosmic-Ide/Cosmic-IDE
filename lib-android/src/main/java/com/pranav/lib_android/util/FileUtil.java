@@ -23,7 +23,7 @@ public class FileUtil {
         return new File(path).mkdir();
     }
     
-    public static void writeFile(InputStream in, String path) {
+    public static void writeFile(InputStream in, String path) throws IOException {
         File file = new File(path);
         FileUtils.copyInputStreamToFile(in, file);
     }

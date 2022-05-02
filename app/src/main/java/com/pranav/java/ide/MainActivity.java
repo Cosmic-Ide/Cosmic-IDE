@@ -88,9 +88,13 @@ public final class MainActivity extends AppCompatActivity {
         editor.setEditorLanguage(new JavaLanguage());
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
-        editor.setPinLineNumber(true);
-
         try {
+
+	editor.setPinLineNumber(true);
+       } catch (Exception e) {
+	 
+    }       
+ try {
             indexer = new Indexer("editor");
             if (indexer.notHas("currentFile")) {
                 indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");

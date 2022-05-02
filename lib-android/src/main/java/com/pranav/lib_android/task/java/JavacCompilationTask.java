@@ -10,7 +10,7 @@ import com.pranav.lib_android.util.FileUtil;
 
 import com.sun.tools.javac.Main;
 import com.sun.source.util.JavacTask;
-import com.sun.tools.javac.file.JavacFileManager;
+import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,13 +30,13 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.StandardLocation;
 import javax.tools.SourceFileObject;
 
-public class JavacTask extends Task {
+public class JavacCompilationTask extends Task {
 
     private final StringBuilder errs = new StringBuilder();
     private final StringBuilder warnings = new StringBuilder();
     private final SharedPreferences prefs;
 
-    public JavacTask(Builder builder) {
+    public JavacCompilationTask(Builder builder) {
         prefs =
                 builder.getContext()
                         .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
@@ -44,7 +44,7 @@ public class JavacTask extends Task {
 
     @Override
     public String getTaskName() {
-        return "Javac Task";
+        return "Javac Compilation Task";
     }
 
     @Override
@@ -55,12 +55,17 @@ public class JavacTask extends Task {
 
         ConcurrentUtil.execute(
                 () -> {
-            DiagnosticCollector<JavaFileObject> diagnosticCollector = new DiagnosticCollector<>();
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
         List<JavaFileObject> javaFileObjects = new ArrayList<>();
         List<File> javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
         for (File file : javaFiles) {
-            javaFileObjects.add(new SourceFileObject(file.toPath()));
+            javaFileObjects.add(new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                @Override
+                public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+                    return FileUtil.readFile(file);
+                }
+            });
         }
 
         JavaCompiler tool = JavacTool.create();
@@ -89,10 +94,10 @@ public class JavacTask extends Task {
                     
                     args.add("-proc:none");
 
-        JavacTaskImpl task = (JavaTaskImpl) tool.getTask(
+        JavacTask task = (JavacTask) tool.getTask(
                 null,
                 standardJavaFileManager,
-                diagnosticCollector,
+                diagnostics,
                 args,
                 null,
                 javaFileObjects

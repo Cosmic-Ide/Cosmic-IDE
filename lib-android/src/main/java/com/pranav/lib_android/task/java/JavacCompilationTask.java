@@ -48,8 +48,8 @@ public class JavacCompilationTask extends Task {
     public void doFullTask() throws Exception {
 
         final StringBuilder log = new StringBuilder();
-        final sysOut = System.out;
-        final sysErr = System.err;
+        final PrintStream sysOut = System.out;
+        final PrintStream sysErr = System.err;
         final OutputStream out =
                             new OutputStream() {
                                 @Override
@@ -122,8 +122,8 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            System.setOut(new PrintStream(sysOut));
-            System.setErr(new PrintStream(sysErr));
+            System.setOut(sysOut);
+            System.setErr(sysErr);
             throw new CompilationFailedException("Javac: " + log.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {

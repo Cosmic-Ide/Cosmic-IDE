@@ -2,10 +2,12 @@ package com.pranav.lib_android.util;
 
 import android.content.Context;
 
+import java.nio.charset.Charset;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -21,7 +23,7 @@ public class FileUtil {
         return new File(path).mkdir();
     }
     
-    public void writeFile(InputStream in, String path) {
+    public static void writeFile(InputStream in, String path) {
         File file = new File(path);
         FileUtils.copyInputStreamToFile(in, file);
     }
@@ -30,11 +32,11 @@ public class FileUtil {
         File file = new File(path);
         file.getParentFile().mkdirs();
         if (!file.exists()) file.createNewFile();
-        FileUtils.write(file, content, null);
+        FileUtils.write(file, content, Charset.defaultCharset());
     }
 
     public static String readFile(File file) throws IOException {
-        return FileUtils.readFileAsString(file, null);
+        return FileUtils.readFileToString(file, Charset.defaultCharset());
     }
 
     public static void deleteFile(String path) {

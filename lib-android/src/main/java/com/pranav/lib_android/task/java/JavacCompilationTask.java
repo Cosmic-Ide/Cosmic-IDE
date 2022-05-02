@@ -29,8 +29,6 @@ import javax.tools.StandardLocation;
 
 public class JavacCompilationTask extends Task {
 
-    private final StringBuilder errs = new StringBuilder();
-    private final StringBuilder warns = new StringBuilder();
     private final SharedPreferences prefs;
 
     public JavacCompilationTask(Builder builder) {
@@ -91,18 +89,17 @@ public class JavacCompilationTask extends Task {
         args.add(version);
 
         JavacTask task =
-                (JavacTask)
-                        tool.getTask(
-                                null,
-                                standardJavaFileManager,
-                                diagnostics,
-                                args,
-                                null,
-                                javaFileObjects);
+                tool.getTask(
+                        null,
+                        standardJavaFileManager,
+                        diagnostics,
+                        args,
+                        null,
+                        javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException("Javac: " + errs.toString());
-        }
+        StringBuilder errs = new StringBuilder();
+        StringBuilder warns = new StringBuilder();
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             switch (diagnostic.getKind()) {
                 case ERROR:
@@ -116,7 +113,6 @@ public class JavacCompilationTask extends Task {
         String errors = errs.toString();
         String warnings = warns.toString();
 
-        if (!errors.isEmpty()) {
             throw new CompilationFailedException(warnings + errors);
         }
     }

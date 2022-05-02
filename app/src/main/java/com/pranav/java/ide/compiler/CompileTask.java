@@ -133,7 +133,7 @@ public class CompileTask extends Thread {
                                         true);
                             }
                             StringBuilder s = new StringBuilder();
-                            s.append("Success! ECJ took: ");
+                            s.append("Success! Javac took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");
                             s.append("D8");

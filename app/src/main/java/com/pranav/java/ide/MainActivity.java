@@ -89,8 +89,6 @@ public final class MainActivity extends AppCompatActivity {
         editor.setColorScheme(new SchemeDarcula());
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
-        editor.setNonPrintablePaintingFlags(CodeEditor.FLAG_DRAW_WHITESPACE_LEADING | CodeEditor.FLAG_DRAW_LINE_SEPARATOR);
-   
 
         try {
             indexer = new Indexer("editor");

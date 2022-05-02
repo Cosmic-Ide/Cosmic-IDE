@@ -11,11 +11,13 @@ import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.io.PrintStream;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -44,6 +46,25 @@ public class JavacCompilationTask extends Task {
 
     @Override
     public void doFullTask() throws Exception {
+
+        final StringBuilder log = new StringBuilder();
+        final sysOut = System.out;
+        final sysErr = System.err;
+        final OutputStream out =
+                            new OutputStream() {
+                                @Override
+                                public void write(int b) {
+                                    log.append((char) b);
+                                }
+
+                                @Override
+                                public String toString() {
+                                    return log.toString();
+                                }
+                            };
+                    System.setOut(new PrintStream(out));
+                    System.setErr(new PrintStream(out));
+
 
         final File output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
@@ -101,7 +122,9 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException("Javac: " + errs.toString());
+            System.setOut(new PrintStream(sysOut));
+            System.setErr(new PrintStream(sysErr));
+            throw new CompilationFailedException("Javac: " + log.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             switch (diagnostic.getKind()) {

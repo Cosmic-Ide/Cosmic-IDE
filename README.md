@@ -16,8 +16,8 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 ## Features
 
 - [x] Java Compiler
-- [x] Eclipse Compiler for Java
-- [x] Javac (60%)
+- [x] Javac
+- [x] Eclipse Compiler for Java (ecj)
 - [x] Java Highlighter
 - [x] Java 17
 - [x] Run Java File

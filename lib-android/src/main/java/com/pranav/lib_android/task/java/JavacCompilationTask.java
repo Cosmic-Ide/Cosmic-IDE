@@ -30,7 +30,7 @@ import javax.tools.StandardLocation;
 public class JavacCompilationTask extends Task {
 
     private final StringBuilder errs = new StringBuilder();
-    private final StringBuilder warnings = new StringBuilder();
+    private final StringBuilder warns = new StringBuilder();
     private final SharedPreferences prefs;
 
     public JavacCompilationTask(Builder builder) {
@@ -46,25 +46,6 @@ public class JavacCompilationTask extends Task {
 
     @Override
     public void doFullTask() throws Exception {
-
-        final StringBuilder log = new StringBuilder();
-        final PrintStream sysOut = System.out;
-        final PrintStream sysErr = System.err;
-        final OutputStream out =
-                            new OutputStream() {
-                                @Override
-                                public void write(int b) {
-                                    log.append((char) b);
-                                }
-
-                                @Override
-                                public String toString() {
-                                    return log.toString();
-                                }
-                            };
-                    System.setOut(new PrintStream(out));
-                    System.setErr(new PrintStream(out));
-
 
         final File output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
@@ -93,14 +74,10 @@ public class JavacCompilationTask extends Task {
         try {
             standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
-            System.out.println("Set output to " + output.getAbsolutePath());
             standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath(version));
-            System.out.println("Set platform classpath to " + getPlatformClasspath(version));
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
-            System.out.println("Set classpath to " + getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
-            System.out.println("Set source path to " + javaFiles);
         } catch (IOException e) {
             throw new CompilationFailedException(e);
         }
@@ -124,8 +101,6 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            System.setOut(sysOut);
-            System.setErr(sysErr);
             throw new CompilationFailedException("Javac: " + log.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
@@ -134,14 +109,15 @@ public class JavacCompilationTask extends Task {
                     errs.append(diagnostic.getMessage(Locale.getDefault()));
                     break;
                 case WARNING:
-                    warnings.append(diagnostic.getMessage(Locale.getDefault()));
+                    warns.append(diagnostic.getMessage(Locale.getDefault()));
                     break;
             }
         }
         String errors = errs.toString();
+        String warnings = warns.toString();
 
         if (!errors.isEmpty()) {
-            throw new CompilationFailedException("Javac: " +errors);
+            throw new CompilationFailedException("Javac: " + warnings + errors);
         }
     }
 

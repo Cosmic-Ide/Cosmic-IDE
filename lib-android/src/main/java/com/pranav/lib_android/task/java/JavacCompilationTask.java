@@ -46,6 +46,7 @@ public class JavacCompilationTask extends Task {
     public void doFullTask() throws Exception {
 
         final File output = new File(FileUtil.getBinDir(), "classes");
+        output.mkdirs();
         final String version = prefs.getString("javaVersion", "7.0");
 
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
@@ -100,7 +101,7 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException(errs.toString());
+            throw new CompilationFailedException("Javac: " + errs.toString());
         }
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             switch (diagnostic.getKind()) {
@@ -115,7 +116,7 @@ public class JavacCompilationTask extends Task {
         String errors = errs.toString();
 
         if (!errors.isEmpty()) {
-            throw new CompilationFailedException(errors);
+            throw new CompilationFailedException("Javac: " +errors);
         }
     }
 

@@ -47,7 +47,7 @@ public class JavacCompilationTask extends Task {
 
         final File output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
-        final String version = prefs.getString("javaVersion", "7.0");
+        final String version = prefs.getString("javaVersion", "7");
 
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 

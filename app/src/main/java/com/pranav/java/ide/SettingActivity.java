@@ -18,8 +18,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
-        "1.3", "1.4", "5.0", "6.0", "7.0", "8.0", "9.0", "10.0", "11.0", "12.0", "13.0", "14.0",
-        "15.0", "16.0", "17.0"
+        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+        "15", "16", "17"
     };
 
     private Spinner javaVersions_spinner;
@@ -63,7 +63,7 @@ public final class SettingActivity extends AppCompatActivity {
         /* Select Version in Spinner based on SharedPreferences Value */
         int count = 0;
         for (String version : javaVersions) {
-            if (version.equals(settings.getString("javaVersion", "7.0"))) {
+            if (version.equals(settings.getString("javaVersion", "7"))) {
                 javaVersions_spinner.setSelection(count);
                 break;
             }

@@ -6,7 +6,7 @@ import android.os.Looper;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.lib_android.exception.CompilationFailedException;
-import com.pranav.lib_android.task.java.CompileJavaTask;
+import com.pranav.lib_android.task.java.JavacCompilationTask;
 import com.pranav.lib_android.task.java.D8Task;
 import com.pranav.lib_android.task.java.ExecuteJavaTask;
 import com.pranav.lib_android.util.FileUtil;

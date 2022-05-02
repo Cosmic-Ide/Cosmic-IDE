@@ -100,7 +100,7 @@ public class JavacCompilationTask extends Task {
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
             System.out.println("Set classpath to " + getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
-            System.out.println("Set source path to " + javaPath);
+            System.out.println("Set source path to " + javaFiles);
         } catch (IOException e) {
             throw new CompilationFailedException(e);
         }

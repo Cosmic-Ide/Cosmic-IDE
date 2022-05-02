@@ -10,6 +10,7 @@ java {
 
 dependencies {
 	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+	implementation 'commons-io:commons-io:2.11.0'
 	// r8 dependency
 	implementation 'com.android.tools:r8:3.3.28'
 	implementation project(path: ':lib-eclipse')

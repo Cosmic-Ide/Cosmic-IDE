@@ -124,27 +124,20 @@ public final class MainActivity extends AppCompatActivity {
 
         builder = new JavaBuilder(getApplicationContext(), getClassLoader());
 
-        ConcurrentUtil.executeInBackground(
-                () -> {
-                    if (!file(FileUtil.getClasspathDir() + "android.jar").exists()) {
+                    if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
                         ZipUtil.unzipFromAssets(
                                 MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
                     }
-                    File output = file(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
-                    if (!output.exists()
-                            && getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
-                                    .getString("javaVersion", "7.0")
-                                    .equals("8.0")) {
+                    File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+                    if (!output.exists()) {
                         try {
-                            FileUtil.writeBytes(
-                                    output.getAbsolutePath(),
-                                    FileUtil.asByteArray(
-                                            getAssets().open("core-lambda-stubs.jar")));
+                            FileUtil.writeFile(
+                                    getAssets().open("core-lambda-stubs.jar")
+                                    output.getAbsolutePath());
                         } catch (Exception e) {
                             showErr(getString(e));
                         }
                     }
-                });
         /* Create Loading Dialog */
         buildLoadingDialog();
 

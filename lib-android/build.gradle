@@ -14,4 +14,5 @@ dependencies {
 	implementation 'com.android.tools:r8:3.3.28'
 	implementation project(path: ':lib-eclipse')
 	compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
 }

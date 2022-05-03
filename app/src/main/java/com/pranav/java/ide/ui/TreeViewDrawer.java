@@ -75,7 +75,7 @@ public class TreeViewDrawer extends Fragment {
 
         final File mainFolderFile =
                 new File(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
-        TreeNode mainRootNode =
+        TreeNode<TreeFile> mainRootNode =
                 new TreeNode<>(
                         new TreeFolder(mainFolderFile),
                         0); /* Create new Root node for given Main Root Directory */
@@ -135,7 +135,7 @@ public class TreeViewDrawer extends Fragment {
                         }));
     }
 
-    void addChildDirsAndFiles(TreeNode mainRootNode, int n) {
+    void addChildDirsAndFiles(TreeNode<TreeFile> mainRootNode, int n) {
         /*
          * Level 0: Root Folder
          * Level 1: Root Children's
@@ -148,7 +148,7 @@ public class TreeViewDrawer extends Fragment {
                 TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
                 mainRootNode.addChild(javaFileNode);
             } else {
-                TreeNode directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
+                TreeNode<TreeFile> directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
                 mainRootNode.addChild(directoryFileNode);
                 n++;
                 addChildDirsAndFiles(directoryFileNode, n);
@@ -262,7 +262,7 @@ public class TreeViewDrawer extends Fragment {
                                 }
 
                                 TreeNode newDir =
-                                        new TreeNode(
+                                        new TreeNode<>(
                                                 new TreeFile(filePth),
                                                 node.getLevel()
                                                         + 1); // Get Level of parent so it will have
@@ -300,7 +300,7 @@ public class TreeViewDrawer extends Fragment {
                             FileUtil.createDirectory(filePath);
                             File dirPth = new File(filePath);
                             TreeNode newDir =
-                                    new TreeNode(new TreeFolder(dirPth), node.getLevel() + 1);
+                                    new TreeNode<>(new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");

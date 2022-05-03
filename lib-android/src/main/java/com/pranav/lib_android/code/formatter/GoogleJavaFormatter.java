@@ -1,8 +1,8 @@
 package com.pranav.lib_android.code.formatter;
 
-import com.google.googlejavaformat.Formatter;
-import com.google.googlejavaformat.JavaFormatterOptions;
-import com.google.googlejavaformat.FormatterException;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.JavaFormatterOptions;
+import com.google.googlejavaformat.java.FormatterException;
 
 public class GoogleJavaFormatter {
 

@@ -63,4 +63,4 @@ I would really love all kinds of contributions. If you have any questions, ideas
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 
-- [tyron12233](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/javac)
+- [tyron12233](https://github.com/tyron12233) for [Javac](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/javac)

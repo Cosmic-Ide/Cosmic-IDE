@@ -242,17 +242,17 @@ public final class MainActivity extends AppCompatActivity {
                                 execute,
                                 new CompileTask.CompilerListeners() {
                                     @Override
-                                    public void OnCurrentBuildStageChanged(String stage) {
+                                    public void onCurrentBuildStageChanged(String stage) {
                                         changeLoadingDialogBuildStage(stage);
                                     }
 
                                     @Override
-                                    public void OnSuccess() {
+                                    public void onSuccess() {
                                         loadingDialog.dismiss();
                                     }
 
                                     @Override
-                                    public void OnFailed() {
+                                    public void onFailed() {
                                         if (loadingDialog.isShowing()) {
                                             loadingDialog.dismiss();
                                         }

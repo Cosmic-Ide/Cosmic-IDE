@@ -100,12 +100,14 @@ public class JavacCompilationTask extends Task {
         if (!task.call()) {
         StringBuilder errs = new StringBuilder();
         StringBuilder warns = new StringBuilder();
-        for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             StringBuilder message = new StringBuilder();
-            message.append(diagnostic.getSource().getName());
-            message.append(":");
-            message.append(diagnostic.getLineNumber());
-            message.append(": ");
+            if (diagnostic.getSource() != null) {
+                message.append(diagnostic.getSource().getName());
+                message.append(":");
+                message.append(diagnostic.getLineNumber());
+                message.append(": ");
+            }
             message.append(diagnostic.getKind().name());
             message.append(": ");
             message.append(diagnostic.getMessage(Locale.getDefault()));

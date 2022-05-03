@@ -199,7 +199,7 @@ public final class MainActivity extends AppCompatActivity {
             GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
             ConcurrentUtil.execute(
                     () -> {
-                        editor.setText(formatter.format(0, editor.getText().length(), 0));
+                        editor.setText(formatter.format());
                     });
 
         } else if (id == R.id.settings_menu_button) {

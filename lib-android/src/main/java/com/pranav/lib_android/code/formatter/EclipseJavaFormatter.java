@@ -6,11 +6,11 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 
-public class Formatter {
+public class EclipseJavaFormatter {
 
     private String source;
 
-    public Formatter(String source) {
+    public EclipseJavaFormatter(String source) {
         this.source = source;
     }
 

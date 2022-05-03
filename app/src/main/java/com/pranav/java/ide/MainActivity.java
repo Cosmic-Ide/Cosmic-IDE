@@ -29,7 +29,7 @@ import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.JavapDisassembler;
-import com.pranav.lib_android.code.formatter.Formatter;
+import com.pranav.lib_android.code.formatter.GoogleJavaFormatter;
 import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
@@ -196,7 +196,7 @@ public final class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
 
-            Formatter formatter = new Formatter(editor.getText().toString());
+            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
             ConcurrentUtil.execute(
                     () -> {
                         editor.setText(formatter.format(0, editor.getText().length(), 0));

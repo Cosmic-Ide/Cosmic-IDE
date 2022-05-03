@@ -24,7 +24,8 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 - [x] Add Classpath
 - [x] Decompile Class File
 - [x] Disassemble Class File
-- [x] Format Java Code
+- [x] Google Java Formatter
+- [x] Eclipse Java Formatter
 - [x] Smali Dex File
 - [x] Basic Java auto-completion
 - [x] D8
@@ -33,7 +34,7 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 ## TO-DO
 
 - [ ] Dependency Injection
-- [ ] Allow changing Java compiler and disassemblers
+- [ ] Allow switching Java compiler, disassemblers and formatters
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor

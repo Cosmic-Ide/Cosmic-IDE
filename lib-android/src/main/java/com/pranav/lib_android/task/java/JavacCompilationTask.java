@@ -101,19 +101,31 @@ public class JavacCompilationTask extends Task {
         StringBuilder errs = new StringBuilder();
         StringBuilder warns = new StringBuilder();
         for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+            StringBuilder message = new StringBuilder();
+            message.append(diagnostic.getSource().getName());
+            message.append(":");
+            message.append(diagnostic.getLineNumber());
+            message.append(": ");
+            message.append(diagnostic.getKind());
+            message.append(": ");
+            message.append(diagnostic.getMessage(Locale.getDefault()));
+            
             switch (diagnostic.getKind()) {
                 case ERROR:
-                    errs.append(diagnostic.getMessage(Locale.getDefault()));
+                case OTHER:
+                    errs.append(message.toString());
                     break;
+                case NOTE:
                 case WARNING:
-                    warns.append(diagnostic.getMessage(Locale.getDefault()));
+                case MANDATORY_WARNING:
+                    warns.append(message.toString());
                     break;
             }
         }
         String errors = errs.toString();
         String warnings = warns.toString();
 
-            throw new CompilationFailedException(warnings + errors);
+            throw new CompilationFailedException(warnings + "\n" + errors);
         }
     }
 

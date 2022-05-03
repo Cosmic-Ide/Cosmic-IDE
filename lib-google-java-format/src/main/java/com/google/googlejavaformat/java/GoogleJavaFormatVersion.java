@@ -17,6 +17,6 @@ package com.google.googlejavaformat.java;
 class GoogleJavaFormatVersion {
 
   static String version() {
-    return "%VERSION%";
+    return "1.15.0 commit-hash: 27670be";
   }
 }

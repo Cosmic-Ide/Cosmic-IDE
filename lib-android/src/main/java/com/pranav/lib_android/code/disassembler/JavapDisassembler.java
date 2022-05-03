@@ -17,13 +17,14 @@ public class JavapDisassembler {
         // Create an arraylist for storing javap arguments
         ArrayList<String> args = new ArrayList<>();
         args.add("-c");
-        args.add(classFile);
+        args.add(path);
         // Create a StringWriter object that will store the output
         StringWriter writer = new StringWriter();
         // Create a JavapTask to handle the arguments
         JavapTask task = new JavapTask();
+        task.handleOptions(args.toArray(new String[0]));
         task.setLog(writer);
-        task.run(args.toArray(new String[0]));
+        task.run();
         // return the disassembled file as string
         return writer.toString();
     }

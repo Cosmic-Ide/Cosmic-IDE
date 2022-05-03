@@ -28,7 +28,7 @@ import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
-import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
+import com.pranav.lib_android.code.disassembler.JavapDisassembler;
 import com.pranav.lib_android.code.formatter.Formatter;
 import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
@@ -375,7 +375,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     try {
                         final String disassembled =
-                                new ClassFileDisassembler(
+                                new JavapDisassembler(
                                                 FileUtil.getBinDir() + "classes/" + claz + ".class")
                                         .disassemble();
 

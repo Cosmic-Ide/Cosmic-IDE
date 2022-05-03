@@ -7,11 +7,11 @@ import org.eclipse.jdt.internal.core.util.Disassembler;
 import java.io.File;
 import java.io.IOException;
 
-public class ClassFileDisassembler {
+public class EclipseDisassembler {
 
     final byte[] classFileBytes;
 
-    public ClassFileDisassembler(String classFile) throws IOException {
+    public EclipseDisassembler(String classFile) throws IOException {
         classFileBytes = FilesKt.readBytes(new File(classFile));
     }
 

@@ -101,6 +101,8 @@ import static com.sun.tools.javac.main.Option.EXTDIRS;
 import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_APPEND;
 import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_PREPEND;
 
+import jdk.internal.jrtfs.JrtFileSystemProvider;
+
 /**
  * This class converts command line arguments, environment variables and system properties (in
  * File.pathSeparator-separated String form) into a boot class path, user class path, and source

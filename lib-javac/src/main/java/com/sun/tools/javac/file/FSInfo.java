@@ -25,6 +25,8 @@
 
 package com.sun.tools.javac.file;
 
+import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
+
 import java.io.IOError;
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -31,7 +31,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileAttributeView;
 import java.nio.file.spi.FileSystemProvider;
-import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,15 +47,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
 
     public String getScheme() {
         return "jrt";
-    }
-
-    private void checkPermission() {
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            RuntimePermission perm = new RuntimePermission("accessSystemModules");
-            sm.checkPermission(perm);
-        }
-
     }
 
     private void checkUri(URI uri) {
@@ -77,7 +67,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
 
     public FileSystem newFileSystem(URI uri, Map<String, ?> env) throws IOException {
         Objects.requireNonNull(env);
-        this.checkPermission();
         this.checkUri(uri);
         return (FileSystem)(env.containsKey("java.home") ? this.newFileSystem((String)env.get("java.home"), uri, env) : new JrtFileSystemWrapper(new JrtFileSystem(this, env)) {
 
@@ -98,7 +87,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
     }
 
     public Path getPath(URI uri) {
-        this.checkPermission();
         if (!uri.getScheme().equalsIgnoreCase(this.getScheme())) {
             throw new IllegalArgumentException("URI does not match this provider");
         } else if (uri.getAuthority() != null) {
@@ -118,7 +106,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
     }
 
     private FileSystem getTheFileSystem() {
-        this.checkPermission();
         FileSystem fs = this.theFileSystem;
         if (fs == null) {
             synchronized(this) {
@@ -133,11 +120,10 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
             }
         }
 
-        return (FileSystem)fs;
+        return fs;
     }
 
     public FileSystem getFileSystem(URI uri) {
-        this.checkPermission();
         this.checkUri(uri);
         return this.getTheFileSystem();
     }

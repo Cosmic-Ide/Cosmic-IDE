@@ -27,9 +27,6 @@ abstract class SystemImage {
     static final boolean modulesImageExists;
     static final Path explodedModulesDir;
 
-    SystemImage() {
-    }
-
     abstract Node findNode(String var1) throws IOException;
 
     abstract byte[] getResource(Node var1) throws IOException;

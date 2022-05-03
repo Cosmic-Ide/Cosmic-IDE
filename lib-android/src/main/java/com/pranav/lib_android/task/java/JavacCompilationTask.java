@@ -116,11 +116,13 @@ public class JavacCompilationTask extends Task {
                 case ERROR:
                 case OTHER:
                     errs.append(message.toString());
+                    errs.append("\n");
                     break;
                 case NOTE:
                 case WARNING:
                 case MANDATORY_WARNING:
                     warns.append(message.toString());
+                    warns.append("\n");
                     break;
             }
         }

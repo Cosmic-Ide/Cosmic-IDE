@@ -11,7 +11,7 @@
 
 ## How to get?
 
-You can get the latest app release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug app from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
+You can get the latest release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
 
 ## Features
 
@@ -32,7 +32,8 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 
 ## TO-DO
 
-- [ ] Support above features for external files as well
+- [ ] Dependency Injection
+- [ ] Allow changing Java compiler and disassemblers
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor
@@ -40,7 +41,10 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 
 ## Building
 
-Clone this repository on your device and compile using Android Studio or Gradle.
+Clone this repository on your device and compile using Android Studio or by running the command
+```
+./gradlew build
+```
 
 ## Contributing
 
@@ -55,12 +59,8 @@ I would really love all kinds of contributions. If you have any questions, ideas
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
-- [Itsaky/AndroidIde](https://github.com/Itsaky/AndroidIde)
+- [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 
-- [ShineM/TreeView](https://github.com/shineM/TreeView)
+- [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 
-- [Rosemoe/sora-editor](https://github.com/Rosemoe/sora-editor)
-
-- [tyron12233/CodeAssist](https://github.com/tyron12233/CodeAssist)
-
-- [Sketchware-Pro/Sketchware-Pro](https://github.com/Sketchware-Pro)
+- [tyron12233](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/javac)

@@ -27,9 +27,9 @@ public class CompileTask extends Thread {
     private CompilerListeners listener;
 
     public static String STAGE_CLEAN;
-    public static final String STAGE_ECJ;
-    public static final String STAGE_D8TASK;
-    public static final String STAGE_LOADING_DEX;
+    public static String STAGE_ECJ;
+    public static String STAGE_D8TASK;
+    public static String STAGE_LOADING_DEX;
 
     public CompileTask(Context context, boolean isExecuteMethod, CompilerListeners listener) {
         this.activity = (MainActivity) context;

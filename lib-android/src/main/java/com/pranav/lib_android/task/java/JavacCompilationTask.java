@@ -106,7 +106,7 @@ public class JavacCompilationTask extends Task {
             message.append(":");
             message.append(diagnostic.getLineNumber());
             message.append(": ");
-            message.append(diagnostic.getKind());
+            message.append(diagnostic.getKind().name());
             message.append(": ");
             message.append(diagnostic.getMessage(Locale.getDefault()));
             

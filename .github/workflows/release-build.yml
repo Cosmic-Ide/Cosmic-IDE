@@ -1,5 +1,5 @@
 ---
-name: Release Build CI
+name: 'Release Build CI'
 
 on:
   workflow_dispatch:
@@ -31,5 +31,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
-          name: apk-debug
-          path: app/build/outputs/apk/debug
+          name: apk-release
+          path: app/build/outputs/apk/release

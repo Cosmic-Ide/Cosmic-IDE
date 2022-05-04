@@ -1,5 +1,5 @@
 ---
-name: Lint with Gradle
+name: 'Lint with Gradle'
 
 on:
   workflow_dispatch:

@@ -93,7 +93,7 @@ final class UsageException extends Exception {
     appendLines(builder, USAGE);
     appendLines(builder, ADDITIONAL_USAGE);
     appendLines(builder, new String[] {""});
-    appendLine(builder, Main.versionString());
+    appendLine(builder, "google-java-format: Version v1.15.0 commit-hash: 27670be");
     appendLines(builder, DOCS_LINK);
     return builder.toString();
   }

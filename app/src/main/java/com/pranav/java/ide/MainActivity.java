@@ -390,7 +390,7 @@ ConcurrentUtil.execute(
 } else {
 disassembled = new EclipseDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
                         edi.setText(disassembled);
-
+}
                         
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);

@@ -25,6 +25,32 @@
 
 package com.sun.tools.javac.file;
 
+import static com.sun.tools.javac.main.Option.BOOT_CLASS_PATH;
+import static com.sun.tools.javac.main.Option.ENDORSEDDIRS;
+import static com.sun.tools.javac.main.Option.EXTDIRS;
+import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_APPEND;
+import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_PREPEND;
+
+import static javax.tools.StandardLocation.PLATFORM_CLASS_PATH;
+import static javax.tools.StandardLocation.SYSTEM_MODULES;
+
+import com.sun.tools.javac.code.Lint;
+import com.sun.tools.javac.code.Lint.LintCategory;
+import com.sun.tools.javac.jvm.ModuleNameReader;
+import com.sun.tools.javac.main.Option;
+import com.sun.tools.javac.resources.CompilerProperties.Errors;
+import com.sun.tools.javac.resources.CompilerProperties.Warnings;
+import com.sun.tools.javac.util.DefinedBy;
+import com.sun.tools.javac.util.DefinedBy.Api;
+import com.sun.tools.javac.util.Iterators;
+import com.sun.tools.javac.util.JCDiagnostic.Warning;
+import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Log;
+import com.sun.tools.javac.util.Pair;
+import com.sun.tools.javac.util.StringUtils;
+
+import jdk.internal.jrtfs.JrtFileSystemProvider;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -58,16 +84,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import javax.lang.model.SourceVersion;
 import javax.tools.JavaFileManager;
@@ -77,57 +103,24 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardJavaFileManager.PathFactory;
 import javax.tools.StandardLocation;
 
-import com.sun.tools.javac.code.Lint;
-import com.sun.tools.javac.code.Lint.LintCategory;
-import com.sun.tools.javac.main.Option;
-import com.sun.tools.javac.resources.CompilerProperties.Errors;
-import com.sun.tools.javac.resources.CompilerProperties.Warnings;
-import com.sun.tools.javac.util.DefinedBy;
-import com.sun.tools.javac.util.DefinedBy.Api;
-import com.sun.tools.javac.util.JCDiagnostic.Warning;
-import com.sun.tools.javac.util.ListBuffer;
-import com.sun.tools.javac.util.Log;
-import com.sun.tools.javac.jvm.ModuleNameReader;
-import com.sun.tools.javac.util.Iterators;
-import com.sun.tools.javac.util.Pair;
-import com.sun.tools.javac.util.StringUtils;
-
-import static javax.tools.StandardLocation.SYSTEM_MODULES;
-import static javax.tools.StandardLocation.PLATFORM_CLASS_PATH;
-
-import static com.sun.tools.javac.main.Option.BOOT_CLASS_PATH;
-import static com.sun.tools.javac.main.Option.ENDORSEDDIRS;
-import static com.sun.tools.javac.main.Option.EXTDIRS;
-import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_APPEND;
-import static com.sun.tools.javac.main.Option.XBOOTCLASSPATH_PREPEND;
-
-import jdk.internal.jrtfs.JrtFileSystemProvider;
-
 /**
  * This class converts command line arguments, environment variables and system properties (in
  * File.pathSeparator-separated String form) into a boot class path, user class path, and source
  * path (in {@code Collection<String>} form).
  *
- * <p>
- * <b>This is NOT part of any supported API. If you write code that depends on this, you do so at
+ * <p><b>This is NOT part of any supported API. If you write code that depends on this, you do so at
  * your own risk. This code and its internal interfaces are subject to change or deletion without
  * notice.</b>
  */
 public class Locations {
 
-    /**
-     * The log to use for warning output
-     */
+    /** The log to use for warning output */
     private Log log;
 
-    /**
-     * Access to (possibly cached) file info
-     */
+    /** Access to (possibly cached) file info */
     private FSInfo fsInfo;
 
-    /**
-     * Whether to warn about non-existent path elements
-     */
+    /** Whether to warn about non-existent path elements */
     private boolean warn;
 
     private ModuleNameReader moduleNameReader;
@@ -139,7 +132,7 @@ public class Locations {
 
     Map<Path, FileSystem> fileSystems = new LinkedHashMap<>();
     List<Closeable> closeables = new ArrayList<>();
-    private Map<String,String> fsEnv = Collections.emptyMap();
+    private Map<String, String> fsEnv = Collections.emptyMap();
 
     Locations() {
         initHandlers();
@@ -155,17 +148,17 @@ public class Locations {
 
     public void close() throws IOException {
         ListBuffer<IOException> list = new ListBuffer<>();
-        closeables.forEach(closeable -> {
-            try {
-                closeable.close();
-            } catch (IOException ex) {
-                list.add(ex);
-            }
-        });
+        closeables.forEach(
+                closeable -> {
+                    try {
+                        closeable.close();
+                    } catch (IOException ex) {
+                        list.add(ex);
+                    }
+                });
         if (list.nonEmpty()) {
             IOException ex = new IOException();
-            for (IOException e: list)
-                ex.addSuppressed(e);
+            for (IOException e : list) ex.addSuppressed(e);
             throw ex;
         }
     }
@@ -181,14 +174,13 @@ public class Locations {
     }
 
     boolean isDefaultBootClassPath() {
-        BootClassPathLocationHandler h
-                = (BootClassPathLocationHandler) getHandler(PLATFORM_CLASS_PATH);
+        BootClassPathLocationHandler h =
+                (BootClassPathLocationHandler) getHandler(PLATFORM_CLASS_PATH);
         return h.isDefault();
     }
 
     boolean isDefaultSystemModulesPath() {
-        SystemModulesLocationHandler h
-                = (SystemModulesLocationHandler) getHandler(SYSTEM_MODULES);
+        SystemModulesLocationHandler h = (SystemModulesLocationHandler) getHandler(SYSTEM_MODULES);
         return !h.isExplicit();
     }
 
@@ -203,18 +195,18 @@ public class Locations {
     }
 
     /**
-     * Split a search path into its elements. If emptyPathDefault is not null, all empty elements in the
-     * path, including empty elements at either end of the path, will be replaced with the value of
-     * emptyPathDefault.
+     * Split a search path into its elements. If emptyPathDefault is not null, all empty elements in
+     * the path, including empty elements at either end of the path, will be replaced with the value
+     * of emptyPathDefault.
      *
      * @param searchPath The search path to be split
      * @param emptyPathDefault The value to substitute for empty path elements, or null, to ignore
-     * empty path elements
+     *     empty path elements
      * @return The elements of the path
      */
     private Iterable<Path> getPathEntries(String searchPath, Path emptyPathDefault) {
         ListBuffer<Path> entries = new ListBuffer<>();
-        for (String s: searchPath.split(Pattern.quote(File.pathSeparator), -1)) {
+        for (String s : searchPath.split(Pattern.quote(File.pathSeparator), -1)) {
             if (s.isEmpty()) {
                 if (emptyPathDefault != null) {
                     entries.add(emptyPathDefault);
@@ -262,8 +254,7 @@ public class Locations {
                     && nf.startsWith(np)) {
                 return true;
             }
-            if (enclosingJar != null
-                    && Files.isSameFile(enclosingJar, np)) {
+            if (enclosingJar != null && Files.isSameFile(enclosingJar, np)) {
                 return true;
             }
         }
@@ -287,9 +278,7 @@ public class Locations {
             return this;
         }
 
-        /**
-         * What to use when path element is the empty string
-         */
+        /** What to use when path element is the empty string */
         private transient Path emptyPathDefault = null;
 
         public SearchPath emptyPathDefault(Path x) {
@@ -319,15 +308,13 @@ public class Locations {
         private void addDirectory(Path dir, boolean warn) {
             if (!Files.isDirectory(dir)) {
                 if (warn) {
-                    log.warning(Lint.LintCategory.PATH,
-                                Warnings.DirPathElementNotFound(dir));
+                    log.warning(Lint.LintCategory.PATH, Warnings.DirPathElementNotFound(dir));
                 }
                 return;
             }
 
             try (Stream<Path> s = Files.list(dir)) {
-                s.filter(Locations.this::isArchive)
-                        .forEach(dirEntry -> addFile(dirEntry, warn));
+                s.filter(Locations.this::isArchive).forEach(dirEntry -> addFile(dirEntry, warn));
             } catch (IOException ignore) {
             }
         }
@@ -365,8 +352,7 @@ public class Locations {
             if (!fsInfo.exists(file)) {
                 /* No such file or directory exists */
                 if (warn) {
-                    log.warning(Lint.LintCategory.PATH,
-                                Warnings.PathElementNotFound(file));
+                    log.warning(Lint.LintCategory.PATH, Warnings.PathElementNotFound(file));
                 }
                 super.add(file);
                 return;
@@ -380,36 +366,36 @@ public class Locations {
 
             if (fsInfo.isFile(file)) {
                 /* File is an ordinary file. */
-                if (   !file.getFileName().toString().endsWith(".jmod")
-                    && !file.endsWith("modules")) {
+                if (!file.getFileName().toString().endsWith(".jmod") && !file.endsWith("modules")) {
                     if (!isArchive(file)) {
                         /* Not a recognized extension; open it to see if
-                         it looks like a valid zip file. */
+                        it looks like a valid zip file. */
                         try {
-                            FileSystems.newFileSystem(file, (ClassLoader)null).close();
+                            FileSystems.newFileSystem(file, (ClassLoader) null).close();
                             if (warn) {
-                                log.warning(Lint.LintCategory.PATH,
-                                            Warnings.UnexpectedArchiveFile(file));
+                                log.warning(
+                                        Lint.LintCategory.PATH,
+                                        Warnings.UnexpectedArchiveFile(file));
                             }
                         } catch (IOException | ProviderNotFoundException e) {
                             // FIXME: include e.getLocalizedMessage in warning
                             if (warn) {
-                                log.warning(Lint.LintCategory.PATH,
-                                            Warnings.InvalidArchiveFile(file));
+                                log.warning(
+                                        Lint.LintCategory.PATH, Warnings.InvalidArchiveFile(file));
                             }
                             return;
                         }
                     } else {
                         if (fsInfo.getJarFSProvider() == null) {
                             log.error(Errors.NoZipfsForArchive(file));
-                            return ;
+                            return;
                         }
                     }
                 }
             }
 
             /* Now what we have left is either a directory or a file name
-             conforming to archive naming convention */
+            conforming to archive naming convention */
             super.add(file);
             canonicalValues.add(canonFile);
 
@@ -436,15 +422,14 @@ public class Locations {
     /**
      * Base class for handling support for the representation of Locations.
      *
-     * Locations are (by design) opaque handles that can easily be implemented
-     * by enums like StandardLocation. Within JavacFileManager, each Location
-     * has an associated LocationHandler, which provides much of the appropriate
-     * functionality for the corresponding Location.
+     * <p>Locations are (by design) opaque handles that can easily be implemented by enums like
+     * StandardLocation. Within JavacFileManager, each Location has an associated LocationHandler,
+     * which provides much of the appropriate functionality for the corresponding Location.
      *
      * @see #initHandlers
      * @see #getHandler
      */
-    protected static abstract class LocationHandler {
+    protected abstract static class LocationHandler {
 
         /**
          * @see JavaFileManager#handleOption
@@ -486,7 +471,7 @@ public class Locations {
         /**
          * @see JavaFileManager#getLocationForModule(Location, JavaFileObject, String)
          */
-        Location getLocationForModule(Path file) throws IOException  {
+        Location getLocationForModule(Path file) throws IOException {
             return null;
         }
 
@@ -510,10 +495,8 @@ public class Locations {
         abstract boolean contains(Path file) throws IOException;
     }
 
-    /**
-     * A LocationHandler for a given Location, and associated set of options.
-     */
-    private static abstract class BasicLocationHandler extends LocationHandler {
+    /** A LocationHandler for a given Location, and associated set of options. */
+    private abstract static class BasicLocationHandler extends LocationHandler {
 
         final Location location;
         final Set<Option> options;
@@ -530,13 +513,15 @@ public class Locations {
          */
         protected BasicLocationHandler(Location location, Option... options) {
             this.location = location;
-            this.options = options.length == 0
-                    ? EnumSet.noneOf(Option.class)
-                    : EnumSet.copyOf(Arrays.asList(options));
+            this.options =
+                    options.length == 0
+                            ? EnumSet.noneOf(Option.class)
+                            : EnumSet.copyOf(Arrays.asList(options));
         }
 
         @Override
-        void setPathsForModule(String moduleName, Iterable<? extends Path> files) throws IOException {
+        void setPathsForModule(String moduleName, Iterable<? extends Path> files)
+                throws IOException {
             // should not happen: protected by check in JavacFileManager
             throw new UnsupportedOperationException("not supported for " + location);
         }
@@ -569,13 +554,12 @@ public class Locations {
         boolean isExplicit() {
             return explicit;
         }
-
     }
 
     /**
      * General purpose implementation for output locations, such as -d/CLASS_OUTPUT and
-     * -s/SOURCE_OUTPUT. All options are treated as equivalent (i.e. aliases.)
-     * The value is a single file, possibly null.
+     * -s/SOURCE_OUTPUT. All options are treated as equivalent (i.e. aliases.) The value is a single
+     * file, possibly null.
      */
     private class OutputLocationHandler extends BasicLocationHandler {
 
@@ -627,8 +611,13 @@ public class Locations {
             ModuleLocationHandler l = moduleTable.get(name);
             if (l == null) {
                 Path out = outputDir.resolve(name);
-                l = new ModuleLocationHandler(this, location.getName() + "[" + name + "]",
-                        name, Collections.singletonList(out), true);
+                l =
+                        new ModuleLocationHandler(
+                                this,
+                                location.getName() + "[" + name + "]",
+                                name,
+                                Collections.singletonList(out),
+                                true);
                 moduleTable.add(l);
             }
             return l;
@@ -642,8 +631,13 @@ public class Locations {
             }
             ModuleLocationHandler l = moduleTable.get(name);
             if (l == null) {
-                l = new ModuleLocationHandler(this, location.getName() + "[" + name + "]",
-                        name, Collections.singletonList(out), true);
+                l =
+                        new ModuleLocationHandler(
+                                this,
+                                location.getName() + "[" + name + "]",
+                                name,
+                                Collections.singletonList(out),
+                                true);
                 moduleTable.add(l);
             } else {
                 l.searchPath = Collections.singletonList(out);
@@ -670,8 +664,7 @@ public class Locations {
                 listed = true;
             }
 
-            if (moduleTable == null || moduleTable.isEmpty())
-                return Collections.emptySet();
+            if (moduleTable == null || moduleTable.isEmpty()) return Collections.emptySet();
 
             return Collections.singleton(moduleTable.locations());
         }
@@ -687,10 +680,9 @@ public class Locations {
     }
 
     /**
-     * General purpose implementation for search path locations,
-     * such as -sourcepath/SOURCE_PATH and -processorPath/ANNOTATION_PROCESSOR_PATH.
-     * All options are treated as equivalent (i.e. aliases.)
-     * The value is an ordered set of files and/or directories.
+     * General purpose implementation for search path locations, such as -sourcepath/SOURCE_PATH and
+     * -processorPath/ANNOTATION_PROCESSOR_PATH. All options are treated as equivalent (i.e.
+     * aliases.) The value is an ordered set of files and/or directories.
      */
     private class SimpleLocationHandler extends BasicLocationHandler {
 
@@ -708,8 +700,10 @@ public class Locations {
 
             explicit = true;
 
-            searchPath = value == null ? null
-                    : Collections.unmodifiableCollection(createPath().addFiles(value));
+            searchPath =
+                    value == null
+                            ? null
+                            : Collections.unmodifiableCollection(createPath().addFiles(value));
             return true;
         }
 
@@ -745,8 +739,8 @@ public class Locations {
     }
 
     /**
-     * Subtype of SimpleLocationHandler for -classpath/CLASS_PATH.
-     * If no value is given, a default is provided, based on system properties and other values.
+     * Subtype of SimpleLocationHandler for -classpath/CLASS_PATH. If no value is given, a default
+     * is provided, based on system properties and other values.
      */
     private class ClassPathLocationHandler extends SimpleLocationHandler {
 
@@ -787,7 +781,7 @@ public class Locations {
         protected SearchPath createPath() {
             return new SearchPath()
                     .expandJarClassPaths(true) // Only search user jars for Class-Paths
-                    .emptyPathDefault(getPath("."));  // Empty path elt ==> current directory
+                    .emptyPathDefault(getPath(".")); // Empty path elt ==> current directory
         }
 
         private void lazy() {
@@ -798,32 +792,31 @@ public class Locations {
     }
 
     /**
-     * Custom subtype of LocationHandler for PLATFORM_CLASS_PATH.
-     * Various options are supported for different components of the
-     * platform class path.
-     * Setting a value with setLocation overrides all existing option values.
-     * Setting any option overrides any value set with setLocation, and
-     * reverts to using default values for options that have not been set.
-     * Setting -bootclasspath or -Xbootclasspath overrides any existing
-     * value for -Xbootclasspath/p: and -Xbootclasspath/a:.
+     * Custom subtype of LocationHandler for PLATFORM_CLASS_PATH. Various options are supported for
+     * different components of the platform class path. Setting a value with setLocation overrides
+     * all existing option values. Setting any option overrides any value set with setLocation, and
+     * reverts to using default values for options that have not been set. Setting -bootclasspath or
+     * -Xbootclasspath overrides any existing value for -Xbootclasspath/p: and -Xbootclasspath/a:.
      */
     private class BootClassPathLocationHandler extends BasicLocationHandler {
 
         private Collection<Path> searchPath;
         final Map<Option, String> optionValues = new EnumMap<>(Option.class);
 
-        /**
-         * Is the bootclasspath the default?
-         */
+        /** Is the bootclasspath the default? */
         private boolean isDefault;
 
         BootClassPathLocationHandler() {
-            super(StandardLocation.PLATFORM_CLASS_PATH,
-                    Option.BOOT_CLASS_PATH, Option.XBOOTCLASSPATH,
+            super(
+                    StandardLocation.PLATFORM_CLASS_PATH,
+                    Option.BOOT_CLASS_PATH,
+                    Option.XBOOTCLASSPATH,
                     Option.XBOOTCLASSPATH_PREPEND,
                     Option.XBOOTCLASSPATH_APPEND,
-                    Option.ENDORSEDDIRS, Option.DJAVA_ENDORSED_DIRS,
-                    Option.EXTDIRS, Option.DJAVA_EXT_DIRS);
+                    Option.ENDORSEDDIRS,
+                    Option.DJAVA_ENDORSED_DIRS,
+                    Option.EXTDIRS,
+                    Option.DJAVA_EXT_DIRS);
         }
 
         boolean isDefault() {
@@ -845,7 +838,7 @@ public class Locations {
                 optionValues.remove(XBOOTCLASSPATH_PREPEND);
                 optionValues.remove(XBOOTCLASSPATH_APPEND);
             }
-            searchPath = null;  // reset to "uninitialized"
+            searchPath = null; // reset to "uninitialized"
             return true;
         }
         // where
@@ -873,7 +866,7 @@ public class Locations {
         @Override
         void setPaths(Iterable<? extends Path> files) {
             if (files == null) {
-                searchPath = null;  // reset to "uninitialized"
+                searchPath = null; // reset to "uninitialized"
             } else {
                 isDefault = false;
                 explicit = true;
@@ -922,7 +915,7 @@ public class Locations {
                 path.addDirectories(extdirsOpt);
             } else {
                 // Add lib/jfxrt.jar to the search path
-               Path jfxrt = javaHome.resolve("lib/jfxrt.jar");
+                Path jfxrt = javaHome.resolve("lib/jfxrt.jar");
                 if (Files.exists(jfxrt)) {
                     path.addFile(jfxrt, false);
                 }
@@ -930,16 +923,16 @@ public class Locations {
             }
 
             isDefault =
-                       (xbootclasspathPrependOpt == null)
-                    && (bootclasspathOpt == null)
-                    && (xbootclasspathAppendOpt == null);
+                    (xbootclasspathPrependOpt == null)
+                            && (bootclasspathOpt == null)
+                            && (xbootclasspathAppendOpt == null);
 
             return path;
         }
 
         /**
-         * Return a collection of files containing system classes.
-         * Returns {@code null} if not running on a modular image.
+         * Return a collection of files containing system classes. Returns {@code null} if not
+         * running on a modular image.
          *
          * @throws UncheckedIOException if an I/O errors occurs
          */
@@ -979,12 +972,11 @@ public class Locations {
     }
 
     /**
-     * A LocationHandler to represent modules found from a module-oriented
-     * location such as MODULE_SOURCE_PATH, UPGRADE_MODULE_PATH,
-     * SYSTEM_MODULES and MODULE_PATH.
+     * A LocationHandler to represent modules found from a module-oriented location such as
+     * MODULE_SOURCE_PATH, UPGRADE_MODULE_PATH, SYSTEM_MODULES and MODULE_PATH.
      *
-     * The Location can be specified to accept overriding classes from the
-     * {@code --patch-module <module>=<path> } parameter.
+     * <p>The Location can be specified to accept overriding classes from the {@code --patch-module
+     * <module>=<path> } parameter.
      */
     private class ModuleLocationHandler extends LocationHandler implements Location {
         private final LocationHandler parent;
@@ -994,8 +986,12 @@ public class Locations {
         boolean explicit;
         Collection<Path> searchPath;
 
-        ModuleLocationHandler(LocationHandler parent, String name, String moduleName,
-                Collection<Path> searchPath, boolean output) {
+        ModuleLocationHandler(
+                LocationHandler parent,
+                String name,
+                String moduleName,
+                Collection<Path> searchPath,
+                boolean output) {
             this.parent = parent;
             this.name = name;
             this.moduleName = moduleName;
@@ -1003,12 +999,14 @@ public class Locations {
             this.output = output;
         }
 
-        @Override @DefinedBy(Api.COMPILER)
+        @Override
+        @DefinedBy(Api.COMPILER)
         public String getName() {
             return name;
         }
 
-        @Override @DefinedBy(Api.COMPILER)
+        @Override
+        @DefinedBy(Api.COMPILER)
         public boolean isOutputLocation() {
             return output;
         }
@@ -1055,9 +1053,7 @@ public class Locations {
         }
     }
 
-    /**
-     * A table of module location handlers, indexed by name and path.
-     */
+    /** A table of module location handlers, indexed by name and path. */
     private class ModuleTable {
         private final Map<String, ModuleLocationHandler> nameMap = new LinkedHashMap<>();
         private final Map<Path, ModuleLocationHandler> pathMap = new LinkedHashMap<>();
@@ -1071,7 +1067,8 @@ public class Locations {
 
         void updatePaths(ModuleLocationHandler h) {
             // use iterator, to be able to remove old entries
-            for (Iterator<Map.Entry<Path, ModuleLocationHandler>> iter = pathMap.entrySet().iterator();
+            for (Iterator<Map.Entry<Path, ModuleLocationHandler>> iter =
+                            pathMap.entrySet().iterator();
                     iter.hasNext(); ) {
                 Map.Entry<Path, ModuleLocationHandler> e = iter.next();
                 if (e.getValue() == h) {
@@ -1091,8 +1088,7 @@ public class Locations {
             while (path != null) {
                 ModuleLocationHandler l = pathMap.get(path);
 
-                if (l != null)
-                    return l;
+                if (l != null) return l;
 
                 path = path.getParent();
             }
@@ -1114,21 +1110,22 @@ public class Locations {
         }
 
         Set<Location> locations() {
-            return Collections.unmodifiableSet(nameMap.values().stream().collect(Collectors.toSet()));
+            return Collections.unmodifiableSet(
+                    nameMap.values().stream().collect(Collectors.toSet()));
         }
 
         Set<Location> explicitLocations() {
-            return Collections.unmodifiableSet(nameMap.entrySet()
-                                                      .stream()
-                                                      .filter(e -> e.getValue().explicit)
-                                                      .map(e -> e.getValue())
-                                                      .collect(Collectors.toSet()));
+            return Collections.unmodifiableSet(
+                    nameMap.entrySet().stream()
+                            .filter(e -> e.getValue().explicit)
+                            .map(e -> e.getValue())
+                            .collect(Collectors.toSet()));
         }
     }
 
     /**
-     * A LocationHandler for simple module-oriented search paths,
-     * like UPGRADE_MODULE_PATH and MODULE_PATH.
+     * A LocationHandler for simple module-oriented search paths, like UPGRADE_MODULE_PATH and
+     * MODULE_PATH.
      */
     private class ModulePathLocationHandler extends SimpleLocationHandler {
         private ModuleTable moduleTable;
@@ -1160,20 +1157,20 @@ public class Locations {
 
         @Override
         Iterable<Set<Location>> listLocationsForModules() {
-            Set<Location> explicitLocations = moduleTable != null ?
-                    moduleTable.explicitLocations() : Collections.emptySet();
-            Iterable<Set<Location>> explicitLocationsList = !explicitLocations.isEmpty()
-                    ? Collections.singletonList(explicitLocations)
-                    : Collections.emptyList();
+            Set<Location> explicitLocations =
+                    moduleTable != null ? moduleTable.explicitLocations() : Collections.emptySet();
+            Iterable<Set<Location>> explicitLocationsList =
+                    !explicitLocations.isEmpty()
+                            ? Collections.singletonList(explicitLocations)
+                            : Collections.emptyList();
 
-            if (searchPath == null)
-                return explicitLocationsList;
+            if (searchPath == null) return explicitLocationsList;
 
-            Iterable<Set<Location>> searchPathLocations =
-                    () -> new ModulePathIterator();
-            return () -> Iterators.createCompoundIterator(Arrays.asList(explicitLocationsList,
-                                                                        searchPathLocations),
-                                                          Iterable::iterator);
+            Iterable<Set<Location>> searchPathLocations = () -> new ModulePathIterator();
+            return () ->
+                    Iterators.createCompoundIterator(
+                            Arrays.asList(explicitLocationsList, searchPathLocations),
+                            Iterable::iterator);
         }
 
         @Override
@@ -1187,7 +1184,7 @@ public class Locations {
         @Override
         void setPaths(Iterable<? extends Path> paths) {
             if (paths != null) {
-                for (Path p: paths) {
+                for (Path p : paths) {
                     checkValidModulePathEntry(p);
                 }
             }
@@ -1203,10 +1200,15 @@ public class Locations {
             initModuleLocations();
             ModuleLocationHandler l = moduleTable.get(name);
             if (l == null) {
-                l = new ModuleLocationHandler(this, location.getName() + "[" + name + "]",
-                        name, checkedPaths, true);
+                l =
+                        new ModuleLocationHandler(
+                                this,
+                                location.getName() + "[" + name + "]",
+                                name,
+                                checkedPaths,
+                                true);
                 moduleTable.add(l);
-           } else {
+            } else {
                 l.searchPath = checkedPaths;
                 moduleTable.updatePaths(l);
             }
@@ -1272,8 +1274,7 @@ public class Locations {
 
             @Override
             public boolean hasNext() {
-                if (next != null)
-                    return true;
+                if (next != null) return true;
 
                 while (next == null) {
                     if (pathIter.hasNext()) {
@@ -1284,8 +1285,7 @@ public class Locations {
                             next = scanFile(path);
                         }
                         pathIndex++;
-                    } else
-                        return false;
+                    } else return false;
                 }
                 return true;
             }
@@ -1305,10 +1305,10 @@ public class Locations {
                 Set<Path> paths = new LinkedHashSet<>();
                 Path moduleInfoClass = null;
                 try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
-                    for (Path entry: stream) {
+                    for (Path entry : stream) {
                         if (entry.endsWith("module-info.class")) {
                             moduleInfoClass = entry;
-                            break;  // no need to continue scanning
+                            break; // no need to continue scanning
                         }
                         paths.add(entry);
                     }
@@ -1323,11 +1323,14 @@ public class Locations {
                     // read module-info.class.
                     try {
                         String moduleName = readModuleName(moduleInfoClass);
-                        String name = location.getName()
-                                + "[" + pathIndex + ":" + moduleName + "]";
-                        ModuleLocationHandler l = new ModuleLocationHandler(
-                                ModulePathLocationHandler.this, name, moduleName,
-                                Collections.singletonList(path), false);
+                        String name = location.getName() + "[" + pathIndex + ":" + moduleName + "]";
+                        ModuleLocationHandler l =
+                                new ModuleLocationHandler(
+                                        ModulePathLocationHandler.this,
+                                        name,
+                                        moduleName,
+                                        Collections.singletonList(path),
+                                        false);
                         return Collections.singleton(l);
                     } catch (ModuleNameReader.BadClassFile e) {
                         log.error(Errors.LocnBadModuleInfo(path));
@@ -1342,46 +1345,59 @@ public class Locations {
                 Set<Location> result = new LinkedHashSet<>();
                 int index = 0;
                 for (Path entry : paths) {
-                    Pair<String,Path> module = inferModuleName(entry);
+                    Pair<String, Path> module = inferModuleName(entry);
                     if (module == null) {
                         // diagnostic reported if necessary; skip to next
                         continue;
                     }
                     String moduleName = module.fst;
                     Path modulePath = module.snd;
-                    String name = location.getName()
-                            + "[" + pathIndex + "." + (index++) + ":" + moduleName + "]";
-                    ModuleLocationHandler l = new ModuleLocationHandler(
-                            ModulePathLocationHandler.this, name, moduleName,
-                            Collections.singletonList(modulePath), false);
+                    String name =
+                            location.getName()
+                                    + "["
+                                    + pathIndex
+                                    + "."
+                                    + (index++)
+                                    + ":"
+                                    + moduleName
+                                    + "]";
+                    ModuleLocationHandler l =
+                            new ModuleLocationHandler(
+                                    ModulePathLocationHandler.this,
+                                    name,
+                                    moduleName,
+                                    Collections.singletonList(modulePath),
+                                    false);
                     result.add(l);
                 }
                 return result;
             }
 
             private Set<Location> scanFile(Path path) {
-                Pair<String,Path> module = inferModuleName(path);
+                Pair<String, Path> module = inferModuleName(path);
                 if (module == null) {
                     // diagnostic reported if necessary
                     return Collections.emptySet();
                 }
                 String moduleName = module.fst;
                 Path modulePath = module.snd;
-                String name = location.getName()
-                        + "[" + pathIndex + ":" + moduleName + "]";
-                ModuleLocationHandler l = new ModuleLocationHandler(
-                        ModulePathLocationHandler.this, name, moduleName,
-                        Collections.singletonList(modulePath), false);
+                String name = location.getName() + "[" + pathIndex + ":" + moduleName + "]";
+                ModuleLocationHandler l =
+                        new ModuleLocationHandler(
+                                ModulePathLocationHandler.this,
+                                name,
+                                moduleName,
+                                Collections.singletonList(modulePath),
+                                false);
                 return Collections.singleton(l);
             }
 
-            private Pair<String,Path> inferModuleName(Path p) {
+            private Pair<String, Path> inferModuleName(Path p) {
                 if (Files.isDirectory(p)) {
-                    if (Files.exists(p.resolve("module-info.class")) ||
-                        Files.exists(p.resolve("module-info.sig"))) {
+                    if (Files.exists(p.resolve("module-info.class"))
+                            || Files.exists(p.resolve("module-info.sig"))) {
                         String name = p.getFileName().toString();
-                        if (SourceVersion.isName(name))
-                            return new Pair<>(name, p);
+                        if (SourceVersion.isName(name)) return new Pair<>(name, p);
                     }
                     return null;
                 }
@@ -1404,7 +1420,9 @@ public class Locations {
                                 Manifest man = new Manifest(in);
                                 Attributes attrs = man.getMainAttributes();
                                 if (attrs != null) {
-                                    String moduleName = attrs.getValue(new Attributes.Name("Automatic-Module-Name"));
+                                    String moduleName =
+                                            attrs.getValue(
+                                                    new Attributes.Name("Automatic-Module-Name"));
                                     if (moduleName != null) {
                                         if (isModuleName(moduleName)) {
                                             return new Pair<>(moduleName, p);
@@ -1424,12 +1442,12 @@ public class Locations {
                         return null;
                     }
 
-                    //automatic module:
+                    // automatic module:
                     String fn = p.getFileName().toString();
-                    //from ModulePath.deriveModuleDescriptor:
+                    // from ModulePath.deriveModuleDescriptor:
 
                     // drop .jar
-                    String mn = fn.substring(0, fn.length()-4);
+                    String mn = fn.substring(0, fn.length() - 4);
 
                     // find first occurrence of -${NUMBER}. or -${NUMBER}$
                     Matcher matcher = Pattern.compile("-(\\d+(\\.|$))").matcher(mn);
@@ -1440,11 +1458,11 @@ public class Locations {
                     }
 
                     // finally clean up the module name
-                    mn =  mn.replaceAll("[^A-Za-z0-9]", ".")  // replace non-alphanumeric
-                            .replaceAll("(\\.)(\\1)+", ".")   // collapse repeating dots
-                            .replaceAll("^\\.", "")           // drop leading dots
-                            .replaceAll("\\.$", "");          // drop trailing dots
-
+                    mn =
+                            mn.replaceAll("[^A-Za-z0-9]", ".") // replace non-alphanumeric
+                                    .replaceAll("(\\.)(\\1)+", ".") // collapse repeating dots
+                                    .replaceAll("^\\.", "") // drop leading dots
+                                    .replaceAll("\\.$", ""); // drop trailing dots
 
                     if (!mn.isEmpty()) {
                         return new Pair<>(mn, p);
@@ -1454,31 +1472,30 @@ public class Locations {
                     return null;
                 }
 
-                if (warn && false) {  // temp disable, when enabled, massage examples.not-yet.txt suitably.
+                if (warn
+                        && false) { // temp disable, when enabled, massage examples.not-yet.txt
+                                    // suitably.
                     log.warning(Warnings.LocnUnknownFileOnModulePath(p));
                 }
                 return null;
             }
 
-            private String readModuleName(Path path) throws IOException, ModuleNameReader.BadClassFile {
-                if (moduleNameReader == null)
-                    moduleNameReader = new ModuleNameReader();
+            private String readModuleName(Path path)
+                    throws IOException, ModuleNameReader.BadClassFile {
+                if (moduleNameReader == null) moduleNameReader = new ModuleNameReader();
                 return moduleNameReader.readModuleName(path);
             }
         }
 
-        //from jdk.internal.module.Checks:
-        /**
-         * Returns {@code true} if the given name is a legal module name.
-         */
+        // from jdk.internal.module.Checks:
+        /** Returns {@code true} if the given name is a legal module name. */
         private boolean isModuleName(String name) {
             int next;
             int off = 0;
             while ((next = name.indexOf('.', off)) != -1) {
                 String id = name.substring(off, next);
-                if (!SourceVersion.isName(id))
-                    return false;
-                off = next+1;
+                if (!SourceVersion.isName(id)) return false;
+                off = next + 1;
             }
             String last = name.substring(off);
             return SourceVersion.isName(last);
@@ -1490,8 +1507,7 @@ public class Locations {
         private List<Path> paths;
 
         ModuleSourcePathLocationHandler() {
-            super(StandardLocation.MODULE_SOURCE_PATH,
-                    Option.MODULE_SOURCE_PATH);
+            super(StandardLocation.MODULE_SOURCE_PATH, Option.MODULE_SOURCE_PATH);
         }
 
         @Override
@@ -1502,9 +1518,8 @@ public class Locations {
         }
 
         /**
-         * Initializes the module table, based on a string containing the composition
-         * of a series of command-line options.
-         * At most one pattern to initialize a series of modules can be given.
+         * Initializes the module table, based on a string containing the composition of a series of
+         * command-line options. At most one pattern to initialize a series of modules can be given.
          * At most one module-specific search path per module can be given.
          *
          * @param value a series of values, separated by NUL.
@@ -1558,7 +1573,7 @@ public class Locations {
          */
         void initFromPattern(String value) {
             Collection<String> segments = new ArrayList<>();
-            for (String s: value.split(File.pathSeparator)) {
+            for (String s : value.split(File.pathSeparator)) {
                 expandBraces(s, segments);
             }
 
@@ -1566,7 +1581,7 @@ public class Locations {
             List<Path> noSuffixPaths = new ArrayList<>();
             boolean anySuffix = false;
             final String MARKER = "*";
-            for (String seg: segments) {
+            for (String seg : segments) {
                 int markStart = seg.indexOf(MARKER);
                 if (markStart == -1) {
                     Path p = getPath(seg);
@@ -1574,7 +1589,8 @@ public class Locations {
                     noSuffixPaths.add(p);
                 } else {
                     if (markStart == 0 || !isSeparator(seg.charAt(markStart - 1))) {
-                        throw new IllegalArgumentException("illegal use of " + MARKER + " in " + seg);
+                        throw new IllegalArgumentException(
+                                "illegal use of " + MARKER + " in " + seg);
                     }
                     Path prefix = getPath(seg.substring(0, markStart - 1));
                     Path suffix;
@@ -1583,7 +1599,8 @@ public class Locations {
                         suffix = null;
                     } else if (!isSeparator(seg.charAt(markEnd))
                             || seg.indexOf(MARKER, markEnd) != -1) {
-                        throw new IllegalArgumentException("illegal use of " + MARKER + " in " + seg);
+                        throw new IllegalArgumentException(
+                                "illegal use of " + MARKER + " in " + seg);
                     } else {
                         suffix = getPath(seg.substring(markEnd + 1));
                         anySuffix = true;
@@ -1601,20 +1618,21 @@ public class Locations {
 
         private void initModuleTable(Map<String, List<Path>> map) {
             moduleTable = new ModuleTable();
-            map.forEach((modName, modPath) -> {
-                boolean hasModuleInfo = modPath.stream().anyMatch(checkModuleInfo);
-                if (hasModuleInfo) {
-                    String locnName = location.getName() + "[" + modName + "]";
-                    ModuleLocationHandler l = new ModuleLocationHandler(this, locnName, modName,
-                            modPath, false);
-                    moduleTable.add(l);
-                }
-            });
+            map.forEach(
+                    (modName, modPath) -> {
+                        boolean hasModuleInfo = modPath.stream().anyMatch(checkModuleInfo);
+                        if (hasModuleInfo) {
+                            String locnName = location.getName() + "[" + modName + "]";
+                            ModuleLocationHandler l =
+                                    new ModuleLocationHandler(
+                                            this, locnName, modName, modPath, false);
+                            moduleTable.add(l);
+                        }
+                    });
         }
-        //where:
-            private final Predicate<Path> checkModuleInfo =
-                    p -> Files.exists(p.resolve("module-info.java"));
-
+        // where:
+        private final Predicate<Path> checkModuleInfo =
+                p -> Files.exists(p.resolve("module-info.java"));
 
         private boolean isSeparator(char ch) {
             // allow both separators on Windows
@@ -1624,21 +1642,22 @@ public class Locations {
         void add(Map<String, List<Path>> map, Path prefix, Path suffix) {
             if (!Files.isDirectory(prefix)) {
                 if (warn) {
-                    Warning key = Files.exists(prefix)
-                            ? Warnings.DirPathElementNotDirectory(prefix)
-                            : Warnings.DirPathElementNotFound(prefix);
+                    Warning key =
+                            Files.exists(prefix)
+                                    ? Warnings.DirPathElementNotDirectory(prefix)
+                                    : Warnings.DirPathElementNotFound(prefix);
                     log.warning(Lint.LintCategory.PATH, key);
                 }
                 return;
             }
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(prefix, path -> Files.isDirectory(path))) {
-                for (Path entry: stream) {
+            try (DirectoryStream<Path> stream =
+                    Files.newDirectoryStream(prefix, path -> Files.isDirectory(path))) {
+                for (Path entry : stream) {
                     Path path = (suffix == null) ? entry : entry.resolve(suffix);
                     if (Files.isDirectory(path)) {
                         String name = entry.getFileName().toString();
                         List<Path> paths = map.get(name);
-                        if (paths == null)
-                            map.put(name, paths = new ArrayList<>());
+                        if (paths == null) map.put(name, paths = new ArrayList<>());
                         paths.add(path);
                     }
                 }
@@ -1688,8 +1707,7 @@ public class Locations {
                         break;
                 }
             }
-            if (depth > 0)
-                throw new IllegalArgumentException("mismatched braces");
+            if (depth > 0) throw new IllegalArgumentException("mismatched braces");
             results.add(value);
         }
 
@@ -1702,8 +1720,7 @@ public class Locations {
                         break;
 
                     case '}':
-                        if (--depth == 0)
-                            return i;
+                        if (--depth == 0) return i;
                         break;
                 }
             }
@@ -1743,18 +1760,19 @@ public class Locations {
         void setPathsForModule(String name, Iterable<? extends Path> paths) throws IOException {
             List<Path> validPaths = checkPaths(paths);
 
-            if (moduleTable == null)
-                moduleTable = new ModuleTable();
+            if (moduleTable == null) moduleTable = new ModuleTable();
 
             ModuleLocationHandler l = moduleTable.get(name);
             if (l == null) {
-                l = new ModuleLocationHandler(this,
-                        location.getName() + "[" + name + "]",
-                        name,
-                        validPaths,
-                        true);
+                l =
+                        new ModuleLocationHandler(
+                                this,
+                                location.getName() + "[" + name + "]",
+                                name,
+                                validPaths,
+                                true);
                 moduleTable.add(l);
-           } else {
+            } else {
                 l.searchPath = validPaths;
                 moduleTable.updatePaths(l);
             }
@@ -1782,8 +1800,7 @@ public class Locations {
 
         @Override
         Iterable<Set<Location>> listLocationsForModules() {
-            if (moduleTable == null)
-                return Collections.emptySet();
+            if (moduleTable == null) return Collections.emptySet();
 
             return Collections.singleton(moduleTable.locations());
         }
@@ -1792,7 +1809,6 @@ public class Locations {
         boolean contains(Path file) throws IOException {
             return (moduleTable == null) ? false : moduleTable.contains(file);
         }
-
     }
 
     private class SystemModulesLocationHandler extends BasicLocationHandler {
@@ -1848,13 +1864,15 @@ public class Locations {
             initSystemModules();
             ModuleLocationHandler l = moduleTable.get(name);
             if (l == null) {
-                l = new ModuleLocationHandler(this,
-                        location.getName() + "[" + name + "]",
-                        name,
-                        checkedPaths,
-                        true);
+                l =
+                        new ModuleLocationHandler(
+                                this,
+                                location.getName() + "[" + name + "]",
+                                name,
+                                checkedPaths,
+                                true);
                 moduleTable.add(l);
-           } else {
+            } else {
                 l.searchPath = checkedPaths;
                 moduleTable.updatePaths(l);
             }
@@ -1871,8 +1889,9 @@ public class Locations {
         }
 
         private void update(Path p) {
-            if (!isCurrentPlatform(p) && !Files.exists(p.resolve("lib").resolve("jrt-fs.jar")) &&
-                    !Files.exists(systemJavaHome.resolve("modules")))
+            if (!isCurrentPlatform(p)
+                    && !Files.exists(p.resolve("lib").resolve("jrt-fs.jar"))
+                    && !Files.exists(systemJavaHome.resolve("modules")))
                 throw new IllegalArgumentException(p.toString());
             systemJavaHome = p;
             modules = null;
@@ -1911,8 +1930,7 @@ public class Locations {
         }
 
         private void initSystemModules() throws IOException {
-            if (moduleTable != null)
-                return;
+            if (moduleTable != null) return;
 
             if (systemJavaHome == null) {
                 moduleTable = new ModuleTable();
@@ -1925,12 +1943,15 @@ public class Locations {
                     FileSystem jrtfs;
 
                     if (isCurrentPlatform(systemJavaHome)) {
-                        Map<String, String> attrMap = Collections.singletonMap("java.home", this.systemJavaHome.toString());
+                        Map<String, String> attrMap =
+                                Collections.singletonMap(
+                                        "java.home", this.systemJavaHome.toString());
                         jrtfs = new JrtFileSystemProvider().newFileSystem(jrtURI, attrMap);
                     } else {
                         try {
                             Map<String, String> attrMap =
-                                    Collections.singletonMap("java.home", systemJavaHome.toString());
+                                    Collections.singletonMap(
+                                            "java.home", systemJavaHome.toString());
                             jrtfs = FileSystems.newFileSystem(jrtURI, attrMap);
                         } catch (ProviderNotFoundException ex) {
                             URL javaHomeURL = systemJavaHome.resolve("jrt-fs.jar").toUri().toURL();
@@ -1938,7 +1959,9 @@ public class Locations {
                             URLClassLoader fsLoader =
                                     new URLClassLoader(new URL[] {javaHomeURL}, currentLoader);
 
-                            jrtfs = FileSystems.newFileSystem(jrtURI, Collections.emptyMap(), fsLoader);
+                            jrtfs =
+                                    FileSystems.newFileSystem(
+                                            jrtURI, Collections.emptyMap(), fsLoader);
 
                             closeables.add(fsLoader);
                         }
@@ -1955,12 +1978,18 @@ public class Locations {
             }
 
             moduleTable = new ModuleTable();
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(modules, Files::isDirectory)) {
+            try (DirectoryStream<Path> stream =
+                    Files.newDirectoryStream(modules, Files::isDirectory)) {
                 for (Path entry : stream) {
                     String moduleName = entry.getFileName().toString();
                     String name = location.getName() + "[" + moduleName + "]";
-                    ModuleLocationHandler h = new ModuleLocationHandler(this,
-                            name, moduleName, Collections.singletonList(entry), false);
+                    ModuleLocationHandler h =
+                            new ModuleLocationHandler(
+                                    this,
+                                    name,
+                                    moduleName,
+                                    Collections.singletonList(entry),
+                                    false);
                     moduleTable.add(h);
                 }
             }
@@ -1993,11 +2022,10 @@ public class Locations {
                 int eq = v.indexOf('=');
                 if (eq > 0) {
                     String moduleName = v.substring(0, eq);
-                    SearchPath mPatchPath = new SearchPath()
-                            .addFiles(v.substring(eq + 1));
+                    SearchPath mPatchPath = new SearchPath().addFiles(v.substring(eq + 1));
                     String name = location.getName() + "[" + moduleName + "]";
-                    ModuleLocationHandler h = new ModuleLocationHandler(this, name,
-                            moduleName, mPatchPath, false);
+                    ModuleLocationHandler h =
+                            new ModuleLocationHandler(this, name, moduleName, mPatchPath, false);
                     moduleTable.add(h);
                 } else {
                     // Should not be able to get here;
@@ -2025,7 +2053,8 @@ public class Locations {
         }
 
         @Override // defined by LocationHandler
-        void setPathsForModule(String moduleName, Iterable<? extends Path> files) throws IOException {
+        void setPathsForModule(String moduleName, Iterable<? extends Path> files)
+                throws IOException {
             throw new UnsupportedOperationException(); // not yet
         }
 
@@ -2061,14 +2090,18 @@ public class Locations {
             new BootClassPathLocationHandler(),
             new ClassPathLocationHandler(),
             new SimpleLocationHandler(StandardLocation.SOURCE_PATH, Option.SOURCE_PATH),
-            new SimpleLocationHandler(StandardLocation.ANNOTATION_PROCESSOR_PATH, Option.PROCESSOR_PATH),
-            new SimpleLocationHandler(StandardLocation.ANNOTATION_PROCESSOR_MODULE_PATH, Option.PROCESSOR_MODULE_PATH),
+            new SimpleLocationHandler(
+                    StandardLocation.ANNOTATION_PROCESSOR_PATH, Option.PROCESSOR_PATH),
+            new SimpleLocationHandler(
+                    StandardLocation.ANNOTATION_PROCESSOR_MODULE_PATH,
+                    Option.PROCESSOR_MODULE_PATH),
             new OutputLocationHandler(StandardLocation.CLASS_OUTPUT, Option.D),
             new OutputLocationHandler(StandardLocation.SOURCE_OUTPUT, Option.S),
             new OutputLocationHandler(StandardLocation.NATIVE_HEADER_OUTPUT, Option.H),
             new ModuleSourcePathLocationHandler(),
             new PatchModulesLocationHandler(),
-            new ModulePathLocationHandler(StandardLocation.UPGRADE_MODULE_PATH, Option.UPGRADE_MODULE_PATH),
+            new ModulePathLocationHandler(
+                    StandardLocation.UPGRADE_MODULE_PATH, Option.UPGRADE_MODULE_PATH),
             new ModulePathLocationHandler(StandardLocation.MODULE_PATH, Option.MODULE_PATH),
             new SystemModulesLocationHandler(),
         };
@@ -2132,8 +2165,8 @@ public class Locations {
         return (h == null ? null : h.getLocationForModule(file));
     }
 
-    void setLocationForModule(Location location, String moduleName,
-            Iterable<? extends Path> files) throws IOException {
+    void setLocationForModule(Location location, String moduleName, Iterable<? extends Path> files)
+            throws IOException {
         LocationHandler h = getHandler(location);
         if (h == null) {
             if (location.isOutputLocation()) {
@@ -2158,8 +2191,7 @@ public class Locations {
 
     boolean contains(Location location, Path file) throws IOException {
         LocationHandler h = getHandler(location);
-        if (h == null)
-            throw new IllegalArgumentException("unknown location");
+        if (h == null) throw new IllegalArgumentException("unknown location");
         return h.contains(file);
     }
 
@@ -2170,13 +2202,10 @@ public class Locations {
                 : handlersForLocation.get(location);
     }
 
-    /**
-     * Is this the name of an archive file?
-     */
+    /** Is this the name of an archive file? */
     private boolean isArchive(Path file) {
         String n = StringUtils.toLowerCase(file.getFileName().toString());
-        return fsInfo.isFile(file)
-                && (n.endsWith(".jar") || n.endsWith(".zip"));
+        return fsInfo.isFile(file) && (n.endsWith(".jar") || n.endsWith(".zip"));
     }
 
     static Path normalize(Path p) {

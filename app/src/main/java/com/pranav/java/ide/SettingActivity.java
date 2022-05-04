@@ -2,7 +2,6 @@ package com.pranav.java.ide;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,22 +17,15 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
-        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-        "15", "16", "17"
+        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"
     };
-    
-    private String[] javaCompilers = {
-        "Javac", "Eclipse Compiler for Java"
-    };
-    
-    private String[] javaFormatters = {
-        "Google Java Formatter", "Eclipse Java Formatter"
-    };
-    
-    private String[] javaDisassemblers = {
-        "Javap", "Eclipse Class Disassembler"
-    };
-    
+
+    private String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};
+
+    private String[] javaFormatters = {"Google Java Formatter", "Eclipse Java Formatter"};
+
+    private String[] javaDisassemblers = {"Javap", "Eclipse Class Disassembler"};
+
     private Spinner javaVersions_spinner;
     private Spinner javaCompilers_spinner;
     private Spinner javaFormatters_spinner;
@@ -72,21 +64,23 @@ public final class SettingActivity extends AppCompatActivity {
         ArrayAdapter<String> compilerAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaCompilers);
         compilerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
+
         ArrayAdapter<String> formatterAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaFormatters);
+                new ArrayAdapter<String>(
+                        this, android.R.layout.simple_spinner_item, javaFormatters);
         versionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         ArrayAdapter<String> disassemblerAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaDisassemblers);
+                new ArrayAdapter<String>(
+                        this, android.R.layout.simple_spinner_item, javaDisassemblers);
         disassemblerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         javaVersions_spinner.setAdapter(versionAdapter);
-        
+
         javaCompilers_spinner.setAdapter(compilerAdapter);
-        
+
         javaFormatters_spinner.setAdapter(formatterAdapter);
-        
+
         javaDisassemblers_spinner.setAdapter(disassemblerAdapter);
 
         /* Check if Classpath stored in SharedPref is empty - if yes, change button text */
@@ -106,7 +100,7 @@ public final class SettingActivity extends AppCompatActivity {
             }
             count++;
         }
-        
+
         String compiler = settings.getString("compiler", "Javac");
         count = 0;
         for (String comp : javaCompilers) {
@@ -116,7 +110,7 @@ public final class SettingActivity extends AppCompatActivity {
             }
             count++;
         }
-        
+
         String formatter = settings.getString("formatter", "Google Java Formatter");
         count = 0;
         for (String form : javaFormatters) {
@@ -126,7 +120,7 @@ public final class SettingActivity extends AppCompatActivity {
             }
             count++;
         }
-        
+
         String disassembler = settings.getString("disassembler", "Javap");
         count = 0;
         for (String dis : javaDisassemblers) {
@@ -143,51 +137,43 @@ public final class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(
                             AdapterView<?> adapterView, View view, int i, long l) {
-                        settings.edit()
-                                .putString("version", javaVersions[i])
-                                .apply();
+                        settings.edit().putString("version", javaVersions[i]).apply();
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
-                
-                javaCompilers_spinner.setOnItemSelectedListener(
+
+        javaCompilers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
                             AdapterView<?> adapterView, View view, int i, long l) {
-                        settings.edit()
-                                .putString("compiler", javaCompilers[i])
-                                .apply();
+                        settings.edit().putString("compiler", javaCompilers[i]).apply();
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
-                
-                javaFormatters_spinner.setOnItemSelectedListener(
+
+        javaFormatters_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
                             AdapterView<?> adapterView, View view, int i, long l) {
-                        settings.edit()
-                                .putString("formatter", javaFormatters[i])
-                                .apply();
+                        settings.edit().putString("formatter", javaFormatters[i]).apply();
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {}
                 });
-                
-                javaDisassemblers_spinner.setOnItemSelectedListener(
+
+        javaDisassemblers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
                             AdapterView<?> adapterView, View view, int i, long l) {
-                        settings.edit()
-                                .putString("disassembler", javaDisassemblers[i])
-                                .apply();
+                        settings.edit().putString("disassembler", javaDisassemblers[i]).apply();
                     }
 
                     @Override

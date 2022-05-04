@@ -47,7 +47,8 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
-SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        SharedPreferences prefs =
+                activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
@@ -73,9 +74,9 @@ SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", Con
         errorsArePresent = true;
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
-            listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-            JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
-            javaTask.doFullTask();
+                listener.onCurrentBuildStageChanged(STAGE_JAVAC);
+                JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
+                javaTask.doFullTask();
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
                 ECJCompilationTask javaTask = new ECJCompilationTask(activity.builder);

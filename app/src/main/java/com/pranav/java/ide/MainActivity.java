@@ -2,10 +2,9 @@ package com.pranav.java.ide;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.SharedPreferences;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,7 +38,6 @@ import com.pranav.lib_android.util.ZipUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
-
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import org.benf.cfr.reader.Main;
@@ -72,7 +70,7 @@ public final class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+        prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
@@ -128,20 +126,19 @@ prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         builder = new JavaBuilder(getApplicationContext(), getClassLoader());
 
-                    if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-                        ZipUtil.unzipFromAssets(
-                                MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
-                    }
-                    File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
-                    if (!output.exists()) {
-                        try {
-                            FileUtil.writeFile(
-                                    getAssets().open("core-lambda-stubs.jar"),
-                                    output.getAbsolutePath());
-                        } catch (Exception e) {
-                            showErr(getString(e));
-                        }
-                    }
+        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
+            ZipUtil.unzipFromAssets(
+                    MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
+        }
+        File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        if (!output.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
+            } catch (Exception e) {
+                showErr(getString(e));
+            }
+        }
         /* Create Loading Dialog */
         buildLoadingDialog();
 
@@ -199,16 +196,19 @@ prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
-ConcurrentUtil.execute(
+            ConcurrentUtil.execute(
                     () -> {
-            if (prefs.getString("formatter", "Google Java Formatter").equals("Google Java Formatter")) {
-            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
-                        editor.setText(formatter.format());
-            } else {
-            EclipseJavaFormatter formatter = new EclipseJavaFormatter(editor.getText().toString());
-            editor.setText(formatter.format());
-            }
-            });
+                        if (prefs.getString("formatter", "Google Java Formatter")
+                                .equals("Google Java Formatter")) {
+                            GoogleJavaFormatter formatter =
+                                    new GoogleJavaFormatter(editor.getText().toString());
+                            editor.setText(formatter.format());
+                        } else {
+                            EclipseJavaFormatter formatter =
+                                    new EclipseJavaFormatter(editor.getText().toString());
+                            editor.setText(formatter.format());
+                        }
+                    });
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
@@ -381,24 +381,33 @@ ConcurrentUtil.execute(
                     edi.setTextSize(12);
 
                     try {
-                    String disassembled = "";
-                    if (prefs.getString("disassembler", "Javap").equals("Javap")) {
-                        disassembled =
-                                new JavapDisassembler(
-                                                FileUtil.getBinDir() + "classes/" + claz + ".class")
-                                        .disassemble();
-} else {
-disassembled = new EclipseDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
-                        edi.setText(disassembled);
-}
-                        
+                        String disassembled = "";
+                        if (prefs.getString("disassembler", "Javap").equals("Javap")) {
+                            disassembled =
+                                    new JavapDisassembler(
+                                                    FileUtil.getBinDir()
+                                                            + "classes/"
+                                                            + claz
+                                                            + ".class")
+                                            .disassemble();
+                        } else {
+                            disassembled =
+                                    new EclipseDisassembler(
+                                                    FileUtil.getBinDir()
+                                                            + "classes/"
+                                                            + claz
+                                                            + ".class")
+                                            .disassemble();
+                            edi.setText(disassembled);
+                        }
+
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
                     AlertDialog d =
-                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-                        d.setCanceledOnTouchOutside(true);
-                        d.show();
+                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    d.setCanceledOnTouchOutside(true);
+                    d.show();
                 });
     }
 

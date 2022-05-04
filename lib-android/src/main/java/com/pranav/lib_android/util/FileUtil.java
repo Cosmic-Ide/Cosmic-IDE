@@ -2,14 +2,11 @@ package com.pranav.lib_android.util;
 
 import android.content.Context;
 
-import java.nio.charset.Charset;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.Files;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class FileUtil {
 
@@ -22,7 +19,7 @@ public class FileUtil {
     public static boolean createDirectory(String path) {
         return new File(path).mkdir();
     }
-    
+
     public static void writeFile(InputStream in, String path) throws IOException {
         File file = new File(path);
         Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -82,9 +79,10 @@ public class FileUtil {
     public static String getBinDir() {
         return getDataDir() + "/bin/";
     }
-    
+
     public static String getCacheDir() {
-        // write caches to external storage because we don't want android system to delete index files
+        // write caches to external storage because we don't want android system to delete index
+        // files
         return getDataDir() + "/cache/";
     }
 

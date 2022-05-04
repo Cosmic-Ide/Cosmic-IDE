@@ -17,13 +17,14 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 
 - [x] Java Compiler
 - [x] Javac
+- [x] Javap
 - [x] Eclipse Compiler for Java (ecj)
+- [x] Eclipse class disassembler
 - [x] Java Highlighter
 - [x] Java 17
 - [x] Run Java File
 - [x] Add Classpath
 - [x] Decompile Class File
-- [x] Disassemble Class File
 - [x] Google Java Formatter
 - [x] Eclipse Java Formatter
 - [x] Smali Dex File
@@ -38,7 +39,7 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor
-- [ ] Java auto-complete server
+- [ ] Java auto-complete server or auto-completion service
 
 ## Building
 
@@ -63,5 +64,3 @@ I would really love all kinds of contributions. If you have any questions, ideas
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
-
-- [tyron12233](https://github.com/tyron12233) for [Javac](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/javac)

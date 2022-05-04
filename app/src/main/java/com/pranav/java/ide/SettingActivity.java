@@ -59,10 +59,10 @@ public final class SettingActivity extends AppCompatActivity {
 
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        javaVersions_spinner = findViewById(R.id.javaVersion_spinner);
-        javaCompilers_spinner = findViewById(R.id.javaCompiler_spinner);
-        javaFormatters_spinner = findViewById(R.id.javaFormatter_spinner);
-        javaDisassemblers_spinner = findViewById(R.id.classDisassemblers_spinner);
+        javaVersions_spinner = findViewById(R.id.javaVersions_spinner);
+        javaCompilers_spinner = findViewById(R.id.javaCompilers_spinner);
+        javaFormatters_spinner = findViewById(R.id.javaFormatters_spinner);
+        javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
         classpath_bttn = findViewById(R.id.classpath_bttn);
 
         ArrayAdapter<String> versionAdapter =

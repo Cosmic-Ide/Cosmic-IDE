@@ -7,9 +7,7 @@ import android.os.Looper;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.lib_android.exception.CompilationFailedException;
-import com.pranav.lib_android.task.java.D8Task;
-import com.pranav.lib_android.task.java.ECJCompilationTask;
-import com.pranav.lib_android.task.java.JavacCompilationTask;
+import com.pranav.lib_android.task.java.*;
 import com.pranav.lib_android.util.FileUtil;
 
 import java.io.File;
@@ -50,7 +48,7 @@ public class CompileTask extends Thread {
         Looper.prepare();
 
         try {
-            SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", MODE_PRIVATE);
+            SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
@@ -74,7 +72,7 @@ public class CompileTask extends Thread {
         long time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
-            if (prefs.getString(compiler, "Javac")) {
+            if (prefs.getString("compiler", "Javac")) {
             listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
             javaTask.doFullTask();

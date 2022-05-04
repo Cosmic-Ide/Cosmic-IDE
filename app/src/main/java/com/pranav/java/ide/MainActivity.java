@@ -382,7 +382,7 @@ ConcurrentUtil.execute(
 
                     try {
                     String disassembled = "";
-                    if (prefs.getString("disassembler", "Javap")) {
+                    if (prefs.getString("disassembler", "Javap").equals("Javap")) {
                         disassembled =
                                 new JavapDisassembler(
                                                 FileUtil.getBinDir() + "classes/" + claz + ".class")

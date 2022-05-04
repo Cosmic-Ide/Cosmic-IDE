@@ -3,13 +3,14 @@ package com.pranav.lib_android.util;
 import android.content.Context;
 
 import java.nio.charset.Charset;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.io.FileUtils;
 
 public class FileUtil {
 
@@ -25,18 +26,17 @@ public class FileUtil {
     
     public static void writeFile(InputStream in, String path) throws IOException {
         File file = new File(path);
-        FileUtils.copyInputStreamToFile(in, file);
+        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
         file.getParentFile().mkdirs();
-        if (!file.exists()) file.createNewFile();
-        FileUtils.write(file, content, Charset.defaultCharset());
+        Files.write(file.toPath(), content.getBytes(), StandardOpenOption.CREATE);
     }
 
     public static String readFile(File file) throws IOException {
-        return FileUtils.readFileToString(file, Charset.defaultCharset());
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
     public static void deleteFile(String path) {

@@ -20,7 +20,6 @@ public class CompileTask extends Thread {
     private long d8Time = 0;
     private long ecjTime = 0;
 
-    private boolean errorsArePresent = false;
     private boolean showExecuteDialog = false;
 
     private MainActivity activity;
@@ -49,7 +48,7 @@ public class CompileTask extends Thread {
 
         try {
             // Delete previous build files
-            listener.OnCurrentBuildStageChanged(STAGE_CLEAN);
+            listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
             new File(FileUtil.getBinDir()).mkdirs();
             new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
@@ -62,23 +61,25 @@ public class CompileTask extends Thread {
                             .replace("System.exit(", "System.err.print(\"Exit code \" + "));
         } catch (final IOException e) {
             activity.dialog("Cannot save program", e.getMessage(), true);
-            listener.OnFailed();
+            listener.onFailed();
         }
 
-        // code that runs ecj
+        boolean errorsArePresent = false;
+
+        // code that runs Javac
         long time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
-            listener.OnCurrentBuildStageChanged(STAGE_ECJ);
+            listener.onCurrentBuildStageChanged(STAGE_ECJ);
             JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
             javaTask.doFullTask();
             errorsArePresent = false;
         } catch (CompilationFailedException e) {
             activity.showErr(e.getMessage());
-            listener.OnFailed();
+            listener.onFailed();
         } catch (Throwable e) {
             activity.showErr(e.getMessage());
-            listener.OnFailed();
+            listener.onFailed();
         }
         if (errorsArePresent) {
             return;
@@ -89,23 +90,23 @@ public class CompileTask extends Thread {
 
         // run d8
         try {
-            listener.OnCurrentBuildStageChanged(STAGE_D8TASK);
+            listener.onCurrentBuildStageChanged(STAGE_D8TASK);
             new D8Task().doFullTask();
         } catch (Exception e) {
             errorsArePresent = true;
             activity.showErr(e.getMessage());
-            listener.OnFailed();
+            listener.onFailed();
             return;
         }
         d8Time = System.currentTimeMillis() - time;
         // code that loads the final dex
         try {
-            listener.OnCurrentBuildStageChanged(STAGE_LOADING_DEX);
+            listener.onCurrentBuildStageChanged(STAGE_LOADING_DEX);
             final String[] classes = activity.getClassesFromDex();
             if (classes == null) {
                 return;
             }
-            listener.OnSuccess();
+            listener.onSuccess();
             if (showExecuteDialog) {
                 activity.listDialog(
                         "Select a class to execute",
@@ -133,7 +134,7 @@ public class CompileTask extends Thread {
                                         true);
                             }
                             StringBuilder s = new StringBuilder();
-                            s.append("Success! ECJ took: ");
+                            s.append("Success! Javac took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");
                             s.append("D8");
@@ -145,16 +146,16 @@ public class CompileTask extends Thread {
                         });
             }
         } catch (Throwable e) {
-            listener.OnFailed();
+            listener.onFailed();
             activity.showErr(e.getMessage());
         }
     }
 
     public static interface CompilerListeners {
-        public void OnCurrentBuildStageChanged(String stage);
+        public void onCurrentBuildStageChanged(String stage);
 
-        public void OnSuccess();
+        public void onSuccess();
 
-        public void OnFailed();
+        public void onFailed();
     }
 }

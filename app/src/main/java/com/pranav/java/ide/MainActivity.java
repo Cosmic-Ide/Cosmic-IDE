@@ -28,8 +28,8 @@ import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
-import com.pranav.lib_android.code.disassembler.ClassFileDisassembler;
-import com.pranav.lib_android.code.formatter.Formatter;
+import com.pranav.lib_android.code.disassembler.JavapDisassembler;
+import com.pranav.lib_android.code.formatter.GoogleJavaFormatter;
 import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
@@ -200,10 +200,10 @@ public final class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
 
-            Formatter formatter = new Formatter(editor.getText().toString());
+            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
             ConcurrentUtil.execute(
                     () -> {
-                        editor.setText(formatter.format(0, editor.getText().length(), 0));
+                        editor.setText(formatter.format());
                     });
 
         } else if (id == R.id.settings_menu_button) {
@@ -246,17 +246,17 @@ public final class MainActivity extends AppCompatActivity {
                                 execute,
                                 new CompileTask.CompilerListeners() {
                                     @Override
-                                    public void OnCurrentBuildStageChanged(String stage) {
+                                    public void onCurrentBuildStageChanged(String stage) {
                                         changeLoadingDialogBuildStage(stage);
                                     }
 
                                     @Override
-                                    public void OnSuccess() {
+                                    public void onSuccess() {
                                         loadingDialog.dismiss();
                                     }
 
                                     @Override
-                                    public void OnFailed() {
+                                    public void onFailed() {
                                         if (loadingDialog.isShowing()) {
                                             loadingDialog.dismiss();
                                         }
@@ -379,7 +379,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     try {
                         final String disassembled =
-                                new ClassFileDisassembler(
+                                new JavapDisassembler(
                                                 FileUtil.getBinDir() + "classes/" + claz + ".class")
                                         .disassemble();
 

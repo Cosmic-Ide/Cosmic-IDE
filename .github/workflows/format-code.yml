@@ -1,5 +1,5 @@
-# Example workflow
-name: Format
+---
+name: 'Java Code Formatter'
 
 on:
   workflow_dispatch:

@@ -11,20 +11,22 @@
 
 ## How to get?
 
-You can get the latest app release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug app from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
+You can get the latest release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
 
 ## Features
 
 - [x] Java Compiler
 - [x] Javac
+- [x] Javap
 - [x] Eclipse Compiler for Java (ecj)
+- [x] Eclipse class disassembler
 - [x] Java Highlighter
 - [x] Java 17
 - [x] Run Java File
 - [x] Add Classpath
 - [x] Decompile Class File
-- [x] Disassemble Class File
-- [x] Format Java Code
+- [x] Google Java Formatter
+- [x] Eclipse Java Formatter
 - [x] Smali Dex File
 - [x] Basic Java auto-completion
 - [x] D8
@@ -33,15 +35,19 @@ You can get the latest app release from [here](https://github.com/PranavPurwar/J
 
 ## TO-DO
 
-- [ ] Support above features for external files as well
+- [ ] Dependency Injection
+- [ ] Allow switching Java compiler, disassemblers and formatters
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor
-- [ ] Java auto-complete server
+- [ ] Java auto-complete server or auto-completion service
 
 ## Building
 
-Clone this repository on your device and compile using Android Studio or Gradle.
+Clone this repository on your device and compile using Android Studio or by running the command
+```
+./gradlew build
+```
 
 ## Contributing
 
@@ -56,12 +62,6 @@ I would really love all kinds of contributions. If you have any questions, ideas
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
-- [Itsaky/AndroidIde](https://github.com/Itsaky/AndroidIde)
+- [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 
-- [ShineM/TreeView](https://github.com/shineM/TreeView)
-
-- [Rosemoe/sora-editor](https://github.com/Rosemoe/sora-editor)
-
-- [tyron12233/CodeAssist](https://github.com/tyron12233/CodeAssist)
-
-- [Sketchware-Pro/Sketchware-Pro](https://github.com/Sketchware-Pro)
+- [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)

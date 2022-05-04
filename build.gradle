@@ -9,8 +9,10 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-gradle.projectsEvaluated {
-  tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked"
+allprojects {
+  gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+      options.compilerArgs << "-Xlint:unchecked"
+    }
   }
 }

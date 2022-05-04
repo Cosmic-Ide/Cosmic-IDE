@@ -11,13 +11,11 @@ import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.io.PrintStream;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -29,8 +27,6 @@ import javax.tools.StandardLocation;
 
 public class JavacCompilationTask extends Task {
 
-    private final StringBuilder errs = new StringBuilder();
-    private final StringBuilder warns = new StringBuilder();
     private final SharedPreferences prefs;
 
     public JavacCompilationTask(Builder builder) {
@@ -90,34 +86,48 @@ public class JavacCompilationTask extends Task {
         args.add("-target");
         args.add(version);
 
-        JavacTask task =
-                (JavacTask)
-                        tool.getTask(
-                                null,
-                                standardJavaFileManager,
-                                diagnostics,
-                                args,
-                                null,
-                                javaFileObjects);
+        JavacTask task = (JavacTask)
+                tool.getTask(
+                        null,
+                        standardJavaFileManager,
+                        diagnostics,
+                        args,
+                        null,
+                        javaFileObjects);
 
         if (!task.call()) {
-            throw new CompilationFailedException("Javac: " + errs.toString());
-        }
-        for (final Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+        StringBuilder errs = new StringBuilder();
+        StringBuilder warns = new StringBuilder();
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+            StringBuilder message = new StringBuilder();
+            if (diagnostic.getSource() != null) {
+                message.append(diagnostic.getSource().getName());
+                message.append(":");
+                message.append(diagnostic.getLineNumber());
+                message.append(": ");
+            }
+            message.append(diagnostic.getKind().name());
+            message.append(": ");
+            message.append(diagnostic.getMessage(Locale.getDefault()));
+            
             switch (diagnostic.getKind()) {
                 case ERROR:
-                    errs.append(diagnostic.getMessage(Locale.getDefault()));
+                case OTHER:
+                    errs.append(message.toString());
+                    errs.append("\n");
                     break;
+                case NOTE:
                 case WARNING:
-                    warns.append(diagnostic.getMessage(Locale.getDefault()));
+                case MANDATORY_WARNING:
+                    warns.append(message.toString());
+                    warns.append("\n");
                     break;
             }
         }
         String errors = errs.toString();
         String warnings = warns.toString();
 
-        if (!errors.isEmpty()) {
-            throw new CompilationFailedException(warnings + errors);
+            throw new CompilationFailedException(warnings + "\n" + errors);
         }
     }
 

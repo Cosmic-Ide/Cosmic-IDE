@@ -52,7 +52,7 @@ dependencies {
     implementation 'io.github.Rosemoe.sora-editor:language-java:0.11.1'
     implementation 'androidx.appcompat:appcompat:1.6.0-alpha03'
 
-    implementation 'com.google.android.material:material:1.7.0-alpha01'
+    implementation 'com.google.android.material:material:1.6.0'
     implementation project(path: ':lib-android')
     implementation project(path: ':lib-java-completions')
     testImplementation 'junit:junit:4.13.2'

@@ -47,8 +47,8 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
+SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
-            SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());

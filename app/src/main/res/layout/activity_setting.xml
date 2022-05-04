@@ -34,7 +34,7 @@
             android:textStyle="bold" />
 
         <Spinner
-            android:id="@+id/javaVersion_spinner"
+            android:id="@+id/javaVersions_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -56,6 +56,52 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="4dp"
             android:text="@string/classpath_not_specified" />
+            
+            <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/compilerTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/java_compiler"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+                <Spinner
+            android:id="@+id/javaCompilers_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:padding="16dp" />
+            <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/formatterTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/java_formatter"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+                <Spinner
+            android:id="@+id/javaFormatters_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:padding="16dp" />
+            <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/disassemblerTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/java_disassembler"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+                <Spinner
+            android:id="@+id/javaDisassemblers_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:padding="16dp" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

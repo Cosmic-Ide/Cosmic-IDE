@@ -1,13 +1,14 @@
 package com.pranav.java.ide.compiler;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Looper;
 
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.task.java.D8Task;
-import com.pranav.lib_android.task.java.ExecuteJavaTask;
+import com.pranav.lib_android.task.java.ECJCompilationTask;
 import com.pranav.lib_android.task.java.JavacCompilationTask;
 import com.pranav.lib_android.util.FileUtil;
 
@@ -27,6 +28,7 @@ public class CompileTask extends Thread {
     private CompilerListeners listener;
 
     public static String STAGE_CLEAN;
+    public static String STAGE_JAVAC;
     public static String STAGE_ECJ;
     public static String STAGE_D8TASK;
     public static String STAGE_LOADING_DEX;
@@ -37,6 +39,7 @@ public class CompileTask extends Thread {
         this.showExecuteDialog = isExecuteMethod;
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
+        STAGE_JAVAC = context.getString(R.string.stage_javac);
         STAGE_ECJ = context.getString(R.string.stage_ecj);
         STAGE_D8TASK = context.getString(R.string.stage_d8task);
         STAGE_LOADING_DEX = context.getString(R.string.stage_loading_dex);
@@ -47,6 +50,7 @@ public class CompileTask extends Thread {
         Looper.prepare();
 
         try {
+            SharedPreferences prefs = activity.getSharedPreferences("compiler_settings", MODE_PRIVATE);
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             FileUtil.deleteFile(FileUtil.getBinDir());
@@ -70,9 +74,15 @@ public class CompileTask extends Thread {
         long time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
-            listener.onCurrentBuildStageChanged(STAGE_ECJ);
+            if (prefs.getString(compiler, "Javac")) {
+            listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
             javaTask.doFullTask();
+            } else {
+                listener.onCurrentBuildStageChanged(STAGE_ECJ);
+                ECJCompilationTask javaTask = new ECJCompilationTask(activity.builder);
+                javaTask.doFullTask();
+            }
             errorsArePresent = false;
         } catch (CompilationFailedException e) {
             activity.showErr(e.getMessage());

@@ -35,7 +35,6 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 ## TO-DO
 
 - [ ] Dependency Injection
-- [ ] Allow switching Java compiler, disassemblers and formatters
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor

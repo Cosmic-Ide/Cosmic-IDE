@@ -2,6 +2,7 @@ package com.pranav.java.ide;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.SharedPreferences;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,8 +29,8 @@ import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
-import com.pranav.lib_android.code.disassembler.JavapDisassembler;
-import com.pranav.lib_android.code.formatter.GoogleJavaFormatter;
+import com.pranav.lib_android.code.disassembler.*;
+import com.pranav.lib_android.code.formatter.*;
 import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
@@ -58,6 +59,7 @@ public final class MainActivity extends AppCompatActivity {
     public CodeEditor editor;
     public DrawerLayout drawer;
     public JavaBuilder builder;
+    public SharedPreferences prefs;
 
     private AlertDialog loadingDialog;
     private Thread runThread;
@@ -69,6 +71,8 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
@@ -195,13 +199,16 @@ public final class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
-
-            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
-            ConcurrentUtil.execute(
+ConcurrentUtil.execute(
                     () -> {
+            if (prefs.getString("formatter", "Google Java Formatter").equals("Google Java Formatter")) {
+            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
                         editor.setText(formatter.format());
-                    });
-
+            } else {
+            EclipseJavaFormatter formatter = new EclipseJavaFormatter(editor.getText().toString());
+            editor.setText(formatter.format());
+            }
+            });
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
@@ -374,20 +381,24 @@ public final class MainActivity extends AppCompatActivity {
                     edi.setTextSize(12);
 
                     try {
-                        final String disassembled =
+                    String disassembled = "";
+                    if (prefs.getString("disassembler", "Javap")) {
+                        disassembled =
                                 new JavapDisassembler(
                                                 FileUtil.getBinDir() + "classes/" + claz + ".class")
                                         .disassemble();
-
+} else {
+disassembled = new EclipseDisassembler(FileUtil.getBinDir() + "classes/" + claz + ".class").disassemble();
                         edi.setText(disassembled);
 
-                        AlertDialog d =
-                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-                        d.setCanceledOnTouchOutside(true);
-                        d.show();
+                        
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
+                    AlertDialog d =
+                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                        d.setCanceledOnTouchOutside(true);
+                        d.show();
                 });
     }
 

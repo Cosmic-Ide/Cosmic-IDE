@@ -16,12 +16,12 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class CompileJavaTask extends Task {
+public class ECJCompilationTask extends Task {
 
     private final StringBuilder errs = new StringBuilder();
     private final SharedPreferences prefs;
 
-    public CompileJavaTask(Builder builder) {
+    public ECJCompilationTask(Builder builder) {
         prefs =
                 builder.getContext()
                         .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
@@ -29,7 +29,7 @@ public class CompileJavaTask extends Task {
 
     @Override
     public String getTaskName() {
-        return "Compile Java Task";
+        return "ECJ Compilation Task";
     }
 
     @Override

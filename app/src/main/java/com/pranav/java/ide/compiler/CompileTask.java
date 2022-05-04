@@ -72,7 +72,7 @@ public class CompileTask extends Thread {
         long time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
-            if (prefs.getString("compiler", "Javac")) {
+            if (prefs.getString("compiler", "Javac").equals("Javac")) {
             listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
             javaTask.doFullTask();

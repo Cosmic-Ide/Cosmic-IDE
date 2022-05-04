@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.nio.charset.Charset;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.Files;
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,7 +31,8 @@ public class FileUtil {
     public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
         file.getParentFile().mkdirs();
-        Files.write(file.toPath(), content.getBytes(), StandardOpenOption.CREATE);
+        file.delete();
+        Files.write(file.toPath(), content.getBytes());
     }
 
     public static String readFile(File file) throws IOException {

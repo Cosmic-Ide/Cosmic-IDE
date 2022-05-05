@@ -161,6 +161,16 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+        
+        CompletionResult result = completions.getProject()
+                .getCompletionResult(newWorkingFile.toPath(), 8 /** line **/, 13 /** column **/);
+ 
+        String s = "";
+        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
+            s += candidate.getName();
+            s += "\n";
+        }
+        editor.setText(s);
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -195,15 +205,7 @@ public final class MainActivity extends AppCompatActivity {
         indexer.put("currentFile", path);
         indexer.flush();
         
-        CompletionResult result = completions.getProject()
-                .getCompletionResult(newWorkingFile.toPath(), 8 /** line **/, 13 /** column **/);
- 
-        String s = "";
-        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
-            s += candidate.getName();
-            s += "\n";
-        }
-        editor.setText(s);
+        
         currentWorkingFilePath = path;
     }
 

@@ -55,6 +55,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 public final class MainActivity extends AppCompatActivity {
 
@@ -80,7 +81,7 @@ public final class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        completions.initialize(FileUtil.getJavaDir(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.SEVERE, null, null));
+        completions.initialize(FileUtil.getJavaDir(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);

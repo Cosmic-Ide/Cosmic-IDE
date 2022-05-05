@@ -27,7 +27,7 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 - [x] Decompile Class File
 - [x] Google Java Formatter
 - [x] Eclipse Java Formatter
-- [x] Smali Dex File
+- [x] Baksmali Dex File
 - [x] Basic Java auto-completion
 - [x] D8
 - [x] File Tree Viewer
@@ -52,7 +52,7 @@ Clone this repository on your device and compile using Android Studio or by runn
 I would really appreciate all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
 
 - Contributions are highly appreciated.
-- Create a pull request and we'll merge it after review.
+- Create a pull request and we'll merge it after thorough review.
  
 ## Special thanks
 

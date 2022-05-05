@@ -141,7 +141,7 @@ public class PathUtils {
         } catch (URISyntaxException e) {
             throw new IOException(e);
         }
-        FileSystem fs = ZipFileSystemProvider().newFileSystem(uri, ImmutableMap.of() /* env */);
+        FileSystem fs = ZipFileSystemProvider.newJarFileSystem(uri, ImmutableMap.of() /* env */);
         return fs.getPath("/");
     }
 }

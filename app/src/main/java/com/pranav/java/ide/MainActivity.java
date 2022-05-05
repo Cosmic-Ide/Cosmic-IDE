@@ -196,19 +196,21 @@ public final class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
+            String formattedCode = "";
             ConcurrentUtil.execute(
                     () -> {
                         if (prefs.getString("formatter", "Google Java Formatter")
                                 .equals("Google Java Formatter")) {
                             GoogleJavaFormatter formatter =
                                     new GoogleJavaFormatter(editor.getText().toString());
-                            editor.setText(formatter.format());
+                            formattedCode = formatter.format();
                         } else {
                             EclipseJavaFormatter formatter =
                                     new EclipseJavaFormatter(editor.getText().toString());
-                            editor.setText(formatter.format());
+                            formattedCode = formatter.format();
                         }
                     });
+                    editor.setText(formattedCode);
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);

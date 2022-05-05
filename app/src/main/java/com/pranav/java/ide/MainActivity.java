@@ -398,8 +398,8 @@ public final class MainActivity extends AppCompatActivity {
                                                             + claz
                                                             + ".class")
                                             .disassemble();
-                            edi.setText(disassembled);
                         }
+                        edi.setText(disassembled);
 
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);

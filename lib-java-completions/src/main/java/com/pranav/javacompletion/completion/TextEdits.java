@@ -1,16 +1,16 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.base.Joiner;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.TreeScanner;
-import com.sun.tools.javac.tree.EndPosTable;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
+import org.openjdk.source.tree.CompilationUnitTree;
+import org.openjdk.source.tree.IdentifierTree;
+import org.openjdk.source.tree.ImportTree;
+import org.openjdk.source.tree.LineMap;
+import org.openjdk.source.tree.MemberSelectTree;
+import org.openjdk.source.tree.Tree;
+import org.openjdk.source.util.TreeScanner;
+import org.openjdk.tools.javac.tree.EndPosTable;
+import org.openjdk.tools.javac.tree.JCTree;
+import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;

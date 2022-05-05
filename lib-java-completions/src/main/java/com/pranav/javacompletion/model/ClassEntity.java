@@ -18,9 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Represents a class, interface, enum, or annotation.
- */
+/** Represents a class, interface, enum, or annotation. */
 public class ClassEntity extends Entity implements EntityScope {
     public static final Set<Entity.Kind> ALLOWED_KINDS =
             EnumSet.of(
@@ -165,9 +163,6 @@ public class ClassEntity extends Entity implements EntityScope {
         return typeParameters;
     }
 
-    public ImmutableList<MethodEntity> getMethods() {
-        return ImmutableList.copyOf(methods.values());
-    }
     @Override
     public String toString() {
         return "ClassEntity<"

@@ -35,8 +35,7 @@ public class Indexer {
 
     private final ParserContext parserContext = new ParserContext();
 
-    public Indexer() {
-    }
+    public Indexer() {}
 
     public void run(
             List<String> inputPaths,
@@ -56,17 +55,17 @@ public class Indexer {
             ImmutableMap<String, Consumer<Path>> handlers =
                     ImmutableMap.<String, Consumer<Path>>of(
                             ".class",
-                            classModuleBuilder::processClassFile,
+                            subpath -> classModuleBuilder.processClassFile(subpath),
                             ".java",
                             subpath -> addJavaFile(subpath, moduleManager.getModule(), fileManager));
             if (Files.isDirectory(path)) {
-                System.out.println("Indexing directory: " + inputPath);
+                System.out.println("Indexing directory: " + inputPath.toString());
                 PathUtils.walkDirectory(
                         path,
                         handlers,
-                        /* ignorePredicate= */ fileManager::shouldIgnorePath);
+                        /* ignorePredicate= */ subpath -> fileManager.shouldIgnorePath(subpath));
             } else if (inputPath.endsWith(".jar") || inputPath.endsWith(".srcjar")) {
-                System.out.println("Indexing JAR file: " + inputPath);
+                System.out.println("Indexing JAR file: " + inputPath.toString());
                 try {
                     PathUtils.walkDirectory(
                             PathUtils.getRootPathForJarFile(path),
@@ -89,29 +88,26 @@ public class Indexer {
 
     private void addJavaFile(Path path, Module module, FileManager fileManager) {
         Optional<CharSequence> content = fileManager.getFileContent(path);
-        if (content.isPresent()) {
-            FileScope fileScope =
-                    new AstScanner(IndexOptions.NON_PRIVATE_BUILDER.build())
-                            .startScan(
-                                    parserContext.parse(path.toString(), content.get()),
-                                    path.toString(),
-                                    content.get());
-            module.addOrReplaceFileScope(fileScope);
-        }
+        FileScope fileScope =
+                new AstScanner(IndexOptions.NON_PRIVATE_BUILDER.build())
+                        .startScan(
+                                parserContext.parse(path.toString(), content.get()),
+                                path.toString(),
+                                content.get());
+        module.addOrReplaceFileScope(fileScope);
     }
 
     /**
-     * Convenience method for invoking the Indexer through code
-     * @param jarFiles List of jar paths to index
+     * Programmatic entry to indexing jar Files
+     * @param jarFiles List of jar files to index
      * @param outputFile The output file (not a directory)
-     * @param ignoredPaths List of paths to ignore
-     * @param indexFiles List of other indexes that this library might depend on
      */
-    public static void createIndex(List<String> jarFiles,
-                                   String outputFile,
-                                   List<String> ignoredPaths,
-                                   List<String> indexFiles) {
-        new Indexer().run(jarFiles, outputFile, ignoredPaths, indexFiles, false);
+    public static void createIndex(List<File> jarFiles, File outputFile) {
+        List<String> args = new ArrayList<>();
+        args.add(jarFiles.stream().map(File::getAbsolutePath).collect(Collectors.joining(File.pathSeparator)));
+        args.add("-o");
+        args.add(outputFile.getAbsolutePath());
+        main(args.toArray(new String[0]));
     }
 
     public static void main(String[] args) {

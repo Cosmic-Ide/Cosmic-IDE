@@ -1,15 +1,15 @@
 package com.pranav.javacompletion.parser;
 
-import com.sun.tools.javac.file.JavacFileManager;
-import com.sun.tools.javac.parser.JavacParser;
-import com.sun.tools.javac.parser.ParserFactory;
-import com.sun.tools.javac.parser.Scanner;
-import com.sun.tools.javac.parser.ScannerFactory;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Log;
+import org.openjdk.tools.javac.file.JavacFileManager;
+import org.openjdk.tools.javac.parser.JavacParser;
+import org.openjdk.tools.javac.parser.ParserFactory;
+import org.openjdk.tools.javac.parser.Scanner;
+import org.openjdk.tools.javac.parser.ScannerFactory;
+import org.openjdk.tools.javac.util.Context;
+import org.openjdk.tools.javac.util.Log;
 
 import static com.google.common.base.Charsets.UTF_8;
-import static com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
+import static org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
 
 /**
  * Environment for using Javac Parser

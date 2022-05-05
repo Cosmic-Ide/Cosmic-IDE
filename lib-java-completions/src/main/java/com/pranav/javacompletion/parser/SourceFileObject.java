@@ -2,7 +2,7 @@ package com.pranav.javacompletion.parser;
 
 import java.nio.file.Paths;
 
-import javax.tools.SimpleJavaFileObject;
+import org.openjdk.javax.tools.SimpleJavaFileObject;
 
 /** A {@link SimpleJavaFileObject} for Java source code. */
 public class SourceFileObject extends SimpleJavaFileObject {

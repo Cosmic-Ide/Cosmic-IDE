@@ -7,18 +7,32 @@ import static java.util.stream.Collectors.toList;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import com.pranav.javacompletion.model.*;
-import com.pranav.javacompletion.model.util.MethodInvocationEntity;
-import com.sun.source.tree.*;
-import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.TreeScanner;
-import com.sun.tools.javac.tree.DocCommentTable;
-import com.sun.tools.javac.tree.EndPosTable;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
-import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
-import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
+import org.openjdk.source.tree.BlockTree;
+import org.openjdk.source.tree.ClassTree;
+import org.openjdk.source.tree.CompilationUnitTree;
+import org.openjdk.source.tree.EnhancedForLoopTree;
+import org.openjdk.source.tree.ExpressionStatementTree;
+import org.openjdk.source.tree.ForLoopTree;
+import org.openjdk.source.tree.IdentifierTree;
+import org.openjdk.source.tree.IfTree;
+import org.openjdk.source.tree.ImportTree;
+import org.openjdk.source.tree.MemberSelectTree;
+import org.openjdk.source.tree.MethodTree;
+import org.openjdk.source.tree.ModifiersTree;
+import org.openjdk.source.tree.StatementTree;
+import org.openjdk.source.tree.Tree;
+import org.openjdk.source.tree.TypeParameterTree;
+import org.openjdk.source.tree.VariableTree;
+import org.openjdk.source.tree.WhileLoopTree;
+import org.openjdk.source.util.TreePathScanner;
+import org.openjdk.source.util.TreeScanner;
+import org.openjdk.tools.javac.tree.DocCommentTable;
+import org.openjdk.tools.javac.tree.EndPosTable;
+import org.openjdk.tools.javac.tree.JCTree;
+import org.openjdk.tools.javac.tree.JCTree.JCClassDecl;
+import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import org.openjdk.tools.javac.tree.JCTree.JCMethodDecl;
+import org.openjdk.tools.javac.tree.JCTree.JCVariableDecl;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -27,8 +41,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.lang.model.element.Modifier;
+import org.openjdk.javax.lang.model.element.Modifier;
 import com.pranav.javacompletion.logging.JLogger;
+import com.pranav.javacompletion.model.BlockScope;
+import com.pranav.javacompletion.model.ClassEntity;
+import com.pranav.javacompletion.model.Entity;
+import com.pranav.javacompletion.model.EntityScope;
+import com.pranav.javacompletion.model.FileScope;
+import com.pranav.javacompletion.model.MethodEntity;
+import com.pranav.javacompletion.model.TypeParameter;
+import com.pranav.javacompletion.model.TypeReference;
+import com.pranav.javacompletion.model.VariableEntity;
 import com.pranav.javacompletion.model.util.NestedRangeMapBuilder;
 import com.pranav.javacompletion.options.IndexOptions;
 
@@ -234,7 +257,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
             parameterListBuilder.add(parameterScanner.getParameter(parameter, methodEntity));
         }
         methodEntity.setParameters(parameterListBuilder.build());
-        methodEntity.setModifiers(node.getModifiers().getFlags());
+
         // TODO: distinguish between static and non-static methods.
         currentScope.addEntity(methodEntity);
         List<String> previousQualifiers = this.currentQualifiers;
@@ -245,59 +268,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
             addScopeRange(methodNode, methodEntity);
         }
         this.currentQualifiers = previousQualifiers;
-        return null;
-    }
-
-    @Override
-    public Void visitMethodInvocation(MethodInvocationTree node, EntityScope currentScope) {
-        JCTree.JCMethodInvocation invocationNode = (JCTree.JCMethodInvocation) node;
-        ExpressionTree methodSelect = node.getMethodSelect();
-        String name = getName(methodSelect);
-        MethodInvocationEntity entity =
-                new MethodInvocationEntity(
-                        name,
-                        currentScope,
-                        this.currentQualifiers,
-                        ImmutableList.of(),
-                        ImmutableList.of(),
-                        Range.open(0, 1));
-        List<?> args = invocationNode.getArguments();
-
-        currentScope.addEntity(entity);
-        for (JCTree.JCExpression argument : invocationNode.getArguments()) {
-            scan(argument, entity);
-            addScopeRange(invocationNode, entity);
-        }
-        return null;
-    }
-
-    @Override
-    public Void visitLambdaExpression(LambdaExpressionTree node, EntityScope currentScope) {
-
-        LambdaEntity lambdaEntity = new LambdaEntity(
-                currentScope);
-        ImmutableList.Builder<VariableEntity> parameterListBuilder = new ImmutableList.Builder<>();
-        for (Tree parameter : node.getParameters()) {
-            parameterListBuilder.add(parameterScanner.getParameter(parameter, lambdaEntity));
-        }
-        lambdaEntity.setParameters(parameterListBuilder.build());
-
-        currentScope.addEntity(lambdaEntity);
-        if (node.getBody() != null) {
-            scan(node.getBody(), lambdaEntity);
-            addScopeRange((JCTree.JCLambda) node, lambdaEntity);
-        }
-        return null;
-    }
-
-    private static String getName(ExpressionTree tree) {
-        if (tree instanceof IdentifierTree) {
-            return ((IdentifierTree) tree).getName().toString();
-        }
-
-        if (tree instanceof JCTree.JCFieldAccess) {
-            return ((JCTree.JCFieldAccess) tree).getIdentifier().toString();
-        }
         return null;
     }
 
@@ -315,10 +285,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         TypeReference variableType;
         if (node.getType() == null) {
             // This can happen in the case of untyped lambda function parameters.
-            variableType = TypeReference.builder()
-                    .setFullName()
-                    .setSimpleName(variableNode.getName().toString())
-                    .build();
+            variableType = TypeReference.EMPTY_TYPE;
         } else {
             variableType = typeReferenceScanner.getTypeReference(node.getType());
         }
@@ -526,14 +493,12 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         private final TypeReferenceScanner typeReferenceScanner;
         private String name = "";
         private TypeReference type = TypeReference.EMPTY_TYPE;
-        private EntityScope currentScope;
 
         private ParameterScanner(TypeReferenceScanner typeReferenceScanner) {
             this.typeReferenceScanner = typeReferenceScanner;
         }
 
         private VariableEntity getParameter(Tree node, EntityScope currentScope) {
-            this.currentScope = currentScope;
             name = "";
             type = TypeReference.EMPTY_TYPE;
             scan(node, null);
@@ -558,9 +523,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         public Void visitVariable(VariableTree node, Void unused) {
             name = node.getName().toString();
             type = typeReferenceScanner.getTypeReference(node.getType());
-            if (type == TypeReference.EMPTY_TYPE && currentScope instanceof LambdaEntity) {
-                type = new LambdaTypeReference(name);
-            }
             return null;
         }
     }

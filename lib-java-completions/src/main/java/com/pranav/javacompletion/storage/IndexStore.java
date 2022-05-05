@@ -51,7 +51,7 @@ public class IndexStore {
     private static final Range<Integer> EMPTY_RANGE = Range.closedOpen(0, 0);
     private static final ImmutableList<String> EMPTY_QUALIFIERS = ImmutableList.of();
 
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private final TypeSolver typeSolver = new TypeSolver();
 
     private final Map<Entity, Entity> visitedEntities = new HashMap<>();
@@ -109,7 +109,7 @@ public class IndexStore {
         ret.entities =
                 fileScopes.stream()
                         .flatMap(fileScope -> fileScope.getMemberEntities().values().stream())
-                        .map(this::serializeEntity)
+                        .map(entity -> serializeEntity(entity))
                         .sorted()
                         .collect(Collectors.toList());
         return ret;

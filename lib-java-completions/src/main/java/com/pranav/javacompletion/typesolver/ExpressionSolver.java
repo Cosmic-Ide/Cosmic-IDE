@@ -4,21 +4,20 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.sun.source.tree.ArrayAccessTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.LambdaExpressionTree;
-import com.sun.source.tree.LiteralTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodInvocationTree;
-import com.sun.source.tree.NewClassTree;
-import com.sun.source.tree.ParameterizedTypeTree;
-import com.sun.source.tree.PrimitiveTypeTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.TypeCastTree;
-import com.sun.source.util.TreeScanner;
-import com.sun.tools.javac.tree.JCTree;
-
+import org.openjdk.source.tree.ArrayAccessTree;
+import org.openjdk.source.tree.ExpressionTree;
+import org.openjdk.source.tree.IdentifierTree;
+import org.openjdk.source.tree.LambdaExpressionTree;
+import org.openjdk.source.tree.LiteralTree;
+import org.openjdk.source.tree.MemberSelectTree;
+import org.openjdk.source.tree.MethodInvocationTree;
+import org.openjdk.source.tree.NewClassTree;
+import org.openjdk.source.tree.ParameterizedTypeTree;
+import org.openjdk.source.tree.PrimitiveTypeTree;
+import org.openjdk.source.tree.Tree;
+import org.openjdk.source.tree.TypeCastTree;
+import org.openjdk.source.util.TreeScanner;
+import org.openjdk.tools.javac.tree.JCTree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import androidx.annotation.Nullable;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
@@ -50,9 +48,7 @@ import com.pranav.javacompletion.parser.TypeReferenceScanner;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-/**
- * Logic for solving the result type of an expression.
- */
+/** Logic for solving the result type of an expression. */
 public class ExpressionSolver {
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
@@ -84,7 +80,7 @@ public class ExpressionSolver {
 
     /**
      * @param position the position in the file that the expression is being solved. It's useful for
-     *                 filtering out variables defined after the position. It's ignored if set to negative value.
+     *     filtering out variables defined after the position. It's ignored if set to negative value.
      */
     public Optional<EntityWithContext> solve(
             ExpressionTree expression, Module module, EntityScope baseScope, int position) {
@@ -99,7 +95,7 @@ public class ExpressionSolver {
      * <p>For methods, all overloads are returned. The best matched method is the first element.
      *
      * @param position the position in the file that the expression is being solved. It's useful for
-     *                 filtering out variables defined after the position. It's ignored if set to negative value.
+     *     filtering out variables defined after the position. It's ignored if set to negative value.
      */
     public List<EntityWithContext> solveDefinitions(
             ExpressionTree expression,
@@ -158,7 +154,8 @@ public class ExpressionSolver {
         if (entity instanceof VariableEntity) {
             VariableEntity variableEntity = (VariableEntity) entity;
             return typeSolver
-                    .solve(variableEntity.getType(),
+                    .solve(
+                            variableEntity.getType(),
                             solvedTypeParameters,
                             variableEntity.getParentScope().get(),
                             module)
@@ -181,7 +178,7 @@ public class ExpressionSolver {
             for (ExpressionTree arg : node.getArguments()) {
                 methodArgs.add(
                         solve(arg, params.module(), params.baseScope(), ((JCTree) arg).getStartPosition())
-                                .map(EntityWithContext::toSolvedType));
+                                .map(entityWithContext -> entityWithContext.toSolvedType()));
             }
             // We only need to solve model entities that matches the model invocation expression.
             ExpressionDefinitionScannerParams methodOnlyParams =
@@ -261,11 +258,14 @@ public class ExpressionSolver {
             }
             List<Optional<SolvedType>> arguments =
                     node.getArguments().stream()
-                            .map(arg -> solve(arg,
-                                    params.module(),
-                                    params.baseScope(),
-                                    ((JCTree) arg).getStartPosition())
-                                    .map(EntityWithContext::toSolvedType))
+                            .map(
+                                    arg ->
+                                            solve(
+                                                    arg,
+                                                    params.module(),
+                                                    params.baseScope(),
+                                                    ((JCTree) arg).getStartPosition())
+                                                    .map(argumentWithContext -> argumentWithContext.toSolvedType()))
                             .collect(Collectors.toList());
 
             constructors =
@@ -350,15 +350,16 @@ public class ExpressionSolver {
                                             enclosingClass.getParentScope().get(),
                                             params.module())
                                     .filter(solvedType -> solvedType instanceof SolvedReferenceType)
-                                    .map(solvedType -> {
-                                        SolvedReferenceType superClass = (SolvedReferenceType) solvedType;
-                                        return EntityWithContext.builder()
-                                                .setEntity(superClass.getEntity())
-                                                .setSolvedTypeParameters(superClass.getTypeParameters())
-                                                .setArrayLevel(0)
-                                                .setInstanceContext(true)
-                                                .build();
-                                    }));
+                                    .map(
+                                            solvedType -> {
+                                                SolvedReferenceType superClass = (SolvedReferenceType) solvedType;
+                                                return EntityWithContext.builder()
+                                                        .setEntity(superClass.getEntity())
+                                                        .setSolvedTypeParameters(superClass.getTypeParameters())
+                                                        .setArrayLevel(0)
+                                                        .setInstanceContext(true)
+                                                        .build();
+                                            }));
                 }
             }
 
@@ -436,10 +437,11 @@ public class ExpressionSolver {
                     typeSolver.solve(
                             typeReference, params.contextTypeParameters(), params.baseScope(), params.module());
             return toList(
-                    solvedType.map(t ->
-                            EntityWithContext.from(t)
-                                    .setInstanceContext(!(t instanceof PrimitiveEntity))
-                                    .build()));
+                    solvedType.map(
+                            t ->
+                                    EntityWithContext.from(t)
+                                            .setInstanceContext(t instanceof PrimitiveEntity ? false : true)
+                                            .build()));
         }
 
         private List<EntityWithContext> applyTypeArguments(
@@ -451,7 +453,7 @@ public class ExpressionSolver {
             }
             ImmutableList<TypeArgument> parsedTypeArguments =
                     typeArguments.stream()
-                            .map(typeArgumentScanner::getTypeArgument)
+                            .map(node -> typeArgumentScanner.getTypeArgument(node))
                             .collect(collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
             ImmutableList.Builder<EntityWithContext> builder = new ImmutableList.Builder<>();
             for (EntityWithContext entityWithContext : entities) {

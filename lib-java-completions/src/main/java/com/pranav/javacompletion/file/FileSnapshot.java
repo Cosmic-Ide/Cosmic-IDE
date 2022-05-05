@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.tools.SimpleJavaFileObject;
+import org.openjdk.javax.tools.SimpleJavaFileObject;
 import com.pranav.javacompletion.file.EditHistory.AppliedEdit;
 
 /** Snapshot of the content of a file. */

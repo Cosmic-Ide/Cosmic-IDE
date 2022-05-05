@@ -61,6 +61,9 @@ public final class MainActivity extends AppCompatActivity {
 
     private AlertDialog loadingDialog;
     private Thread runThread;
+    // It's a variable that stores an object temporarily, for e.g. if you want to access a local
+    // variable in a lambda expression, etc.
+    private String temp;
 
     public String currentWorkingFilePath;
     public Indexer indexer;
@@ -202,13 +205,14 @@ public final class MainActivity extends AppCompatActivity {
                                 .equals("Google Java Formatter")) {
                             GoogleJavaFormatter formatter =
                                     new GoogleJavaFormatter(editor.getText().toString());
-                            editor.setText(formatter.format());
+                            temp = formatter.format();
                         } else {
                             EclipseJavaFormatter formatter =
                                     new EclipseJavaFormatter(editor.getText().toString());
-                            editor.setText(formatter.format());
+                            temp = formatter.format();
                         }
                     });
+                    editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
@@ -398,8 +402,8 @@ public final class MainActivity extends AppCompatActivity {
                                                             + claz
                                                             + ".class")
                                             .disassemble();
-                            edi.setText(disassembled);
                         }
+                        edi.setText(disassembled);
 
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);

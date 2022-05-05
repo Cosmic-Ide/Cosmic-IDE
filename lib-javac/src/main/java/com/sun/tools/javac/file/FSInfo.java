@@ -149,5 +149,11 @@ public class FSInfo {
             jarFSProvider = new ZipFileSystemProvider();
             return jarFSProvider;
         }
+//        for (FileSystemProvider provider: FileSystemProvider.installedProviders()) {
+//            if (provider.getScheme().equals("jar")) {
+//                return (jarFSProvider = provider);
+//            }
+//        }
+//        return null;
     }
 }

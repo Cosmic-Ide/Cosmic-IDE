@@ -68,7 +68,7 @@ public final class SettingActivity extends AppCompatActivity {
         ArrayAdapter<String> formatterAdapter =
                 new ArrayAdapter<String>(
                         this, android.R.layout.simple_spinner_item, javaFormatters);
-        versionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        formatterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         ArrayAdapter<String> disassemblerAdapter =
                 new ArrayAdapter<String>(

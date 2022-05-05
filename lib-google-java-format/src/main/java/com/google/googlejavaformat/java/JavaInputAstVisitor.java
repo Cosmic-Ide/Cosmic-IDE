@@ -2386,7 +2386,7 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         }
 
         boolean isAnnotation() {
-            return getKind().equals(Kind.ANNOTATION);
+            return getKind().equals(ANNOTATION);
         }
 
         int position() {
@@ -2726,7 +2726,7 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                 markForPartialFormat();
                 builder.blankLineWanted(
                         previousDirective.map(k -> !k.equals(directiveTree.getKind())).orElse(false)
-                                ? BlankLineWanted.YES
+                                ? YES
                                 : BlankLineWanted.NO);
                 builder.forcedBreak();
                 scan(directiveTree, null);
@@ -3125,7 +3125,7 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                 if (!unconsumedPrefixes.isEmpty() && i <= unconsumedPrefixes.peekFirst()) {
                     fillMode = prefixFillMode;
                 } else {
-                    fillMode = FillMode.UNIFIED;
+                    fillMode = UNIFIED;
                 }
 
                 builder.breakOp(fillMode, "", ZERO, Optional.of(nameTag));

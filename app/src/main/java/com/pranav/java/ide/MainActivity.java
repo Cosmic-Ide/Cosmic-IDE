@@ -35,6 +35,9 @@ import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
+import com.pranav.javacompletion.JavaCompletions;
+import com.pranav.javacompletion.options.JavaCompletionOptionsImpl;
+import com.pranav.javacompletion.completion.*;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -51,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 public final class MainActivity extends AppCompatActivity {
 
@@ -58,6 +62,7 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
     public JavaBuilder builder;
     public SharedPreferences prefs;
+    public JavaCompletions completions = new JavaCompletions();
 
     private AlertDialog loadingDialog;
     private Thread runThread;
@@ -74,6 +79,8 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+
+        completions.initialize(FileUtil.getJavaDir(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.SEVERE, null, null));
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
@@ -186,6 +193,16 @@ public final class MainActivity extends AppCompatActivity {
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
+        
+        CompletionResult result = completions.getProject()
+                .getCompletionResult(newWorkingFile.toPath(), 8 /** line **/, 13 /** column **/);
+ 
+        String s = "";
+        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
+            s += candidate.getName();
+            s += "\n";
+        }
+        editor.setText(s);
         currentWorkingFilePath = path;
     }
 

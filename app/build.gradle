@@ -53,6 +53,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.7.0-alpha01'
     implementation project(path: ':lib-android')
+    implementation project(path: ':lib-java-completions')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha06'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha06'

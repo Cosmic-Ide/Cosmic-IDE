@@ -163,7 +163,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
         
         CompletionResult result = completions.getProject()
-                .getCompletionResult(newWorkingFile.toPath(), 8 /** line **/, 13 /** column **/);
+                .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
  
         String s = "";
         for(CompletionCandidate candidate : result.getCompletionCandidates()) {

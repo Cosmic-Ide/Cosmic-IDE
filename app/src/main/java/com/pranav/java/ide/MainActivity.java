@@ -81,7 +81,7 @@ public final class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        completions.initialize(new File(FileUtil.getJavaDir()).toURI();, new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
+        completions.initialize(new File(FileUtil.getJavaDir()).toURI(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);

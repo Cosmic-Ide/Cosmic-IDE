@@ -45,6 +45,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'
     implementation 'io.github.Rosemoe.sora-editor:editor:0.11.1'

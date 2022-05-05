@@ -14,7 +14,7 @@ public class EclipseJavaFormatter {
         this.source = source;
     }
 
-    public String format(int start, int end, int indentLevel) {
+    public String format() {
         DefaultCodeFormatterOptions options =
                 DefaultCodeFormatterOptions.getEclipseDefaultSettings();
 
@@ -24,9 +24,9 @@ public class EclipseJavaFormatter {
                 codeFormatter.format(
                         DefaultCodeFormatter.K_COMPILATION_UNIT,
                         source,
-                        start, // starting index
-                        end, // length
-                        indentLevel, // initial indentation
+                        0, // starting index
+                        source.length(), // length
+                        0, // initial indentation
                         System.lineSeparator() // line separator
                         );
 

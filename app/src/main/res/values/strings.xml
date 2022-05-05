@@ -24,6 +24,9 @@
 	
 	<!-- Strings used by SettingActivity -->
 	<string name="java_version">Java Version</string>
+	<string name="java_compiler">Java Compiler</string>
+	<string name="java_formatter">Java Formatter</string>
+	<string name="java_disassembler">Java Disassembler</string>
 	<string name="classpath">Classpath</string>
 	<string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
 	<string name="format">Format</string>
@@ -35,7 +38,8 @@
 	<!-- Strings used by CompilerTask Class -->
 	<string name="stage">Stage</string>
 	<string name="stage_clean">Cleaning</string>
-	<string name="stage_ecj">Compiling</string>
+	<string name="stage_javac">Compiling with Javac</string>
+	<string name="stage_ecj">Compiling with ECJ</string>
 	<string name="stage_d8task">D8 Task</string>
 	<string name="stage_loading_dex">Loading DEX File</string>
 </resources>

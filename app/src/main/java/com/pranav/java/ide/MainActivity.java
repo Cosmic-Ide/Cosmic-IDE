@@ -2,9 +2,9 @@ package com.pranav.java.ide;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,17 +28,19 @@ import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
-import com.pranav.lib_android.code.disassembler.JavapDisassembler;
-import com.pranav.lib_android.code.formatter.GoogleJavaFormatter;
+import com.pranav.lib_android.code.disassembler.*;
+import com.pranav.lib_android.code.formatter.*;
 import com.pranav.lib_android.incremental.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
+import com.pranav.javacompletion.JavaCompletions;
+import com.pranav.javacompletion.options.JavaCompletionOptionsImpl;
+import com.pranav.javacompletion.completion.*;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
-
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import org.benf.cfr.reader.Main;
@@ -52,15 +54,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.logging.Level;
 
 public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
     public DrawerLayout drawer;
     public JavaBuilder builder;
+    public SharedPreferences prefs;
+    public JavaCompletions completions = new JavaCompletions();
 
     private AlertDialog loadingDialog;
     private Thread runThread;
+    // It's a variable that stores an object temporarily, for e.g. if you want to access a local
+    // variable in a lambda expression, etc.
+    private String temp;
 
     public String currentWorkingFilePath;
     public Indexer indexer;
@@ -69,6 +78,10 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+
+        completions.initialize(new File(FileUtil.getJavaDir()).toURI(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
@@ -128,20 +141,19 @@ public final class MainActivity extends AppCompatActivity {
 
         builder = new JavaBuilder(getApplicationContext(), getClassLoader());
 
-                    if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-                        ZipUtil.unzipFromAssets(
-                                MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
-                    }
-                    File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
-                    if (!output.exists()) {
-                        try {
-                            FileUtil.writeFile(
-                                    getAssets().open("core-lambda-stubs.jar"),
-                                    output.getAbsolutePath());
-                        } catch (Exception e) {
-                            showErr(getString(e));
-                        }
-                    }
+        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
+            ZipUtil.unzipFromAssets(
+                    MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
+        }
+        File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        if (!output.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
+            } catch (Exception e) {
+                showErr(getString(e));
+            }
+        }
         /* Create Loading Dialog */
         buildLoadingDialog();
 
@@ -153,6 +165,16 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+        
+        CompletionResult result = completions.getProject()
+                .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
+ 
+        String s = "";
+        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
+            s += candidate.getName();
+            s += "\n";
+        }
+        editor.setText(s);
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -186,6 +208,8 @@ public final class MainActivity extends AppCompatActivity {
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
+        
+        
         currentWorkingFilePath = path;
     }
 
@@ -199,13 +223,20 @@ public final class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
-
-            GoogleJavaFormatter formatter = new GoogleJavaFormatter(editor.getText().toString());
             ConcurrentUtil.execute(
                     () -> {
-                        editor.setText(formatter.format());
+                        if (prefs.getString("formatter", "Google Java Formatter")
+                                .equals("Google Java Formatter")) {
+                            GoogleJavaFormatter formatter =
+                                    new GoogleJavaFormatter(editor.getText().toString());
+                            temp = formatter.format();
+                        } else {
+                            EclipseJavaFormatter formatter =
+                                    new EclipseJavaFormatter(editor.getText().toString());
+                            temp = formatter.format();
+                        }
                     });
-
+                    editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);
@@ -378,20 +409,33 @@ public final class MainActivity extends AppCompatActivity {
                     edi.setTextSize(12);
 
                     try {
-                        final String disassembled =
-                                new JavapDisassembler(
-                                                FileUtil.getBinDir() + "classes/" + claz + ".class")
-                                        .disassemble();
-
+                        String disassembled = "";
+                        if (prefs.getString("disassembler", "Javap").equals("Javap")) {
+                            disassembled =
+                                    new JavapDisassembler(
+                                                    FileUtil.getBinDir()
+                                                            + "classes/"
+                                                            + claz
+                                                            + ".class")
+                                            .disassemble();
+                        } else {
+                            disassembled =
+                                    new EclipseDisassembler(
+                                                    FileUtil.getBinDir()
+                                                            + "classes/"
+                                                            + claz
+                                                            + ".class")
+                                            .disassemble();
+                        }
                         edi.setText(disassembled);
 
-                        AlertDialog d =
-                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-                        d.setCanceledOnTouchOutside(true);
-                        d.show();
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
+                    AlertDialog d =
+                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    d.setCanceledOnTouchOutside(true);
+                    d.show();
                 });
     }
 

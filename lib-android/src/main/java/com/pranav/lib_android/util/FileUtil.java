@@ -2,14 +2,11 @@ package com.pranav.lib_android.util;
 
 import android.content.Context;
 
-import java.nio.charset.Charset;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.io.FileUtils;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class FileUtil {
 
@@ -22,21 +19,21 @@ public class FileUtil {
     public static boolean createDirectory(String path) {
         return new File(path).mkdir();
     }
-    
+
     public static void writeFile(InputStream in, String path) throws IOException {
         File file = new File(path);
-        FileUtils.copyInputStreamToFile(in, file);
+        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void writeFile(String path, String content) throws IOException {
         File file = new File(path);
         file.getParentFile().mkdirs();
-        if (!file.exists()) file.createNewFile();
-        FileUtils.write(file, content, Charset.defaultCharset());
+        file.delete();
+        Files.write(file.toPath(), content.getBytes());
     }
 
     public static String readFile(File file) throws IOException {
-        return FileUtils.readFileToString(file, Charset.defaultCharset());
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
     public static void deleteFile(String path) {
@@ -82,9 +79,10 @@ public class FileUtil {
     public static String getBinDir() {
         return getDataDir() + "/bin/";
     }
-    
+
     public static String getCacheDir() {
-        // write caches to external storage because we don't want android system to delete index files
+        // write caches to external storage because we don't want android system to delete index
+        // files
         return getDataDir() + "/cache/";
     }
 

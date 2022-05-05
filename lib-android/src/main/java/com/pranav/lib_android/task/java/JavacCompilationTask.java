@@ -86,46 +86,47 @@ public class JavacCompilationTask extends Task {
         args.add("-target");
         args.add(version);
 
-        JavacTask task = (JavacTask)
-                tool.getTask(
-                        null,
-                        standardJavaFileManager,
-                        diagnostics,
-                        args,
-                        null,
-                        javaFileObjects);
+        JavacTask task =
+                (JavacTask)
+                        tool.getTask(
+                                null,
+                                standardJavaFileManager,
+                                diagnostics,
+                                args,
+                                null,
+                                javaFileObjects);
 
         if (!task.call()) {
-        StringBuilder errs = new StringBuilder();
-        StringBuilder warns = new StringBuilder();
-        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-            StringBuilder message = new StringBuilder();
-            if (diagnostic.getSource() != null) {
-                message.append(diagnostic.getSource().getName());
-                message.append(":");
-                message.append(diagnostic.getLineNumber());
+            StringBuilder errs = new StringBuilder();
+            StringBuilder warns = new StringBuilder();
+            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+                StringBuilder message = new StringBuilder();
+                if (diagnostic.getSource() != null) {
+                    message.append(diagnostic.getSource().getName());
+                    message.append(":");
+                    message.append(diagnostic.getLineNumber());
+                    message.append(": ");
+                }
+                message.append(diagnostic.getKind().name());
                 message.append(": ");
+                message.append(diagnostic.getMessage(Locale.getDefault()));
+
+                switch (diagnostic.getKind()) {
+                    case ERROR:
+                    case OTHER:
+                        errs.append(message.toString());
+                        errs.append("\n");
+                        break;
+                    case NOTE:
+                    case WARNING:
+                    case MANDATORY_WARNING:
+                        warns.append(message.toString());
+                        warns.append("\n");
+                        break;
+                }
             }
-            message.append(diagnostic.getKind().name());
-            message.append(": ");
-            message.append(diagnostic.getMessage(Locale.getDefault()));
-            
-            switch (diagnostic.getKind()) {
-                case ERROR:
-                case OTHER:
-                    errs.append(message.toString());
-                    errs.append("\n");
-                    break;
-                case NOTE:
-                case WARNING:
-                case MANDATORY_WARNING:
-                    warns.append(message.toString());
-                    warns.append("\n");
-                    break;
-            }
-        }
-        String errors = errs.toString();
-        String warnings = warns.toString();
+            String errors = errs.toString();
+            String warnings = warns.toString();
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
@@ -154,9 +155,9 @@ public class JavacCompilationTask extends Task {
         final String clspath = prefs.getString("classpath", "");
 
         if (!clspath.isEmpty()) {
-        for (String clas : clspath.toString().split(":")) {
-            classpath.add(new File(clas));
-        }
+            for (String clas : clspath.toString().split(":")) {
+                classpath.add(new File(clas));
+            }
         }
         return classpath;
     }

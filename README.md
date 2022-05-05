@@ -27,7 +27,7 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 - [x] Decompile Class File
 - [x] Google Java Formatter
 - [x] Eclipse Java Formatter
-- [x] Smali Dex File
+- [x] Baksmali Dex File
 - [x] Basic Java auto-completion
 - [x] D8
 - [x] File Tree Viewer
@@ -36,7 +36,6 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 ## TO-DO
 
 - [ ] Dependency Injection
-- [ ] Allow switching Java compiler, disassemblers and formatters
 - [ ] Incremental Compilation
 - [ ] JGit support
 - [ ] Improved Code Editor
@@ -51,16 +50,18 @@ Clone this repository on your device and compile using Android Studio or by runn
 
 ## Contributing
 
-I would really love all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
+I would really appreciate all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
 
 - Contributions are highly appreciated.
-- Create a pull request and we'll merge it after review.
+- Create a pull request and we'll merge it after thorough review.
  
 ## Special thanks
 
 - [TheWolf](https://github.com/thewolfprod)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
+
+- [Tyron12233](https://github.com/tyron12233) for [JavaCompletions](https://github.com/tyron12233/JavaCompletions)
 
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 

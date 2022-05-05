@@ -49,7 +49,7 @@ Clone this repository on your device and compile using Android Studio or by runn
 
 ## Contributing
 
-I would really love all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
+I would really appreciate all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
 
 - Contributions are highly appreciated.
 - Create a pull request and we'll merge it after review.

@@ -2,10 +2,10 @@ package com.pranav.javacompletion.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
-import org.openjdk.tools.javac.parser.Scanner;
-import org.openjdk.tools.javac.parser.Tokens.Token;
-import org.openjdk.tools.javac.parser.Tokens.TokenKind;
-import org.openjdk.tools.javac.util.Position.LineMap;
+import com.sun.tools.javac.parser.Scanner;
+import com.sun.tools.javac.parser.Tokens.Token;
+import com.sun.tools.javac.parser.Tokens.TokenKind;
+import com.sun.tools.javac.util.Position.LineMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -104,7 +104,7 @@ public class FileContentFixer {
     public abstract static class FixedContent {
         public abstract String getContent();
 
-        public abstract org.openjdk.source.tree.LineMap getAdjustedLineMap();
+        public abstract com.sun.source.tree.LineMap getAdjustedLineMap();
 
         public static FixedContent create(CharSequence content, AdjustedLineMap lineMap) {
             return new AutoValue_FileContentFixer_FixedContent(content.toString(), lineMap);

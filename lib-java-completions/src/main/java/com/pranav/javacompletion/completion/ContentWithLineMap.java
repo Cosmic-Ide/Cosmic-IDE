@@ -2,8 +2,8 @@ package com.pranav.javacompletion.completion;
 
 import com.google.auto.value.AutoValue;
 import com.pranav.javacompletion.parser.FileContentFixer;
-import org.openjdk.source.tree.LineMap;
-import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+import com.sun.source.tree.LineMap;
+import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import java.nio.file.Path;
 import com.pranav.javacompletion.file.FileManager;
 import com.pranav.javacompletion.logging.JLogger;

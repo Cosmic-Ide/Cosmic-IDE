@@ -1,6 +1,6 @@
 package com.pranav.javacompletion.parser;
 
-import org.openjdk.source.tree.LineMap;
+import com.sun.source.tree.LineMap;
 
 /** Utility methods for working with {@link LineMap}. */
 public final class LineMapUtil {

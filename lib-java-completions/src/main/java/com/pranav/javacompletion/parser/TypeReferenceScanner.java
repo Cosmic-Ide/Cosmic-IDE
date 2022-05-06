@@ -1,12 +1,12 @@
 package com.pranav.javacompletion.parser;
 
-import org.openjdk.source.tree.ArrayTypeTree;
-import org.openjdk.source.tree.IdentifierTree;
-import org.openjdk.source.tree.MemberSelectTree;
-import org.openjdk.source.tree.ParameterizedTypeTree;
-import org.openjdk.source.tree.PrimitiveTypeTree;
-import org.openjdk.source.tree.Tree;
-import org.openjdk.source.util.TreeScanner;
+import com.sun.source.tree.ArrayTypeTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.ParameterizedTypeTree;
+import com.sun.source.tree.PrimitiveTypeTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.util.TreeScanner;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

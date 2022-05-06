@@ -3,7 +3,7 @@ package com.pranav.javacompletion.completion;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.openjdk.source.tree.ExpressionTree;
+import com.sun.source.tree.ExpressionTree;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;

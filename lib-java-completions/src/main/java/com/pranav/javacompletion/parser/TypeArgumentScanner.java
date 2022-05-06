@@ -1,8 +1,8 @@
 package com.pranav.javacompletion.parser;
 
-import org.openjdk.source.tree.Tree;
-import org.openjdk.source.tree.WildcardTree;
-import org.openjdk.source.util.TreeScanner;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.WildcardTree;
+import com.sun.source.util.TreeScanner;
 import java.util.Optional;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.TypeArgument;

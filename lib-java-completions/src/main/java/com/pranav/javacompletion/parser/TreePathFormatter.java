@@ -1,12 +1,12 @@
 package com.pranav.javacompletion.parser;
 
-import org.openjdk.source.tree.ClassTree;
-import org.openjdk.source.tree.IdentifierTree;
-import org.openjdk.source.tree.MemberSelectTree;
-import org.openjdk.source.tree.MethodTree;
-import org.openjdk.source.tree.Tree;
-import org.openjdk.source.util.SimpleTreeVisitor;
-import org.openjdk.source.util.TreePath;
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.util.SimpleTreeVisitor;
+import com.sun.source.util.TreePath;
 
 /** A utility that converts {@link TreePath} to string for debugging. */
 public class TreePathFormatter {

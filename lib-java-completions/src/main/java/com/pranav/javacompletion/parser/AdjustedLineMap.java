@@ -6,7 +6,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
-import org.openjdk.source.tree.LineMap;
+import com.sun.source.tree.LineMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

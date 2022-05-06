@@ -1,13 +1,13 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.collect.ImmutableList;
-import org.openjdk.source.tree.ExpressionTree;
-import org.openjdk.source.tree.ImportTree;
-import org.openjdk.source.tree.LiteralTree;
-import org.openjdk.source.tree.MemberReferenceTree;
-import org.openjdk.source.tree.MemberSelectTree;
-import org.openjdk.source.tree.Tree;
-import org.openjdk.source.util.TreePath;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.LiteralTree;
+import com.sun.source.tree.MemberReferenceTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.util.TreePath;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;

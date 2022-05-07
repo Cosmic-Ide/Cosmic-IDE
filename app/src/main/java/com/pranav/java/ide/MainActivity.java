@@ -63,7 +63,6 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
     public JavaBuilder builder;
     public SharedPreferences prefs;
-    public JavaCompletions completions = new JavaCompletions();
 
     private AlertDialog loadingDialog;
     private Thread runThread;
@@ -80,8 +79,6 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
-
-        completions.initialize(new File(FileUtil.getJavaDir()).toURI(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
@@ -161,16 +158,6 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
-        
-        CompletionResult result = completions.getProject()
-                .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
- 
-        String s = "";
-        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
-            s += candidate.getName();
-            s += "\n";
-        }
-        editor.setText(s);
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -204,7 +191,6 @@ public final class MainActivity extends AppCompatActivity {
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
-        
         
         currentWorkingFilePath = path;
     }

@@ -31,39 +31,6 @@ import com.pranav.javacompletion.storage.IndexStore;
  *
  * <p>Usage: Indexer <root path> <output file> <ignored paths...>
  */
-package com.pranav.javacompletion.tool;
-
-import com.google.common.collect.ImmutableMap;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import com.pranav.javacompletion.file.FileManager;
-import com.pranav.javacompletion.file.PathUtils;
-import com.pranav.javacompletion.file.SimpleFileManager;
-import com.pranav.javacompletion.model.FileScope;
-import com.pranav.javacompletion.model.Module;
-import com.pranav.javacompletion.options.IndexOptions;
-import com.pranav.javacompletion.parser.AstScanner;
-import com.pranav.javacompletion.parser.ParserContext;
-import com.pranav.javacompletion.parser.classfile.ClassModuleBuilder;
-import com.pranav.javacompletion.project.Project;
-import com.pranav.javacompletion.project.SimpleModuleManager;
-import com.pranav.javacompletion.storage.IndexStore;
-
-/**
- * Creates index files for specified source code.
- *
- * <p>Usage: Indexer <root path> <output file> <ignored paths...>
- */
 public class Indexer {
 
     private final ParserContext parserContext = new ParserContext();

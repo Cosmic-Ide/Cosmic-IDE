@@ -1,4 +1,4 @@
-package com.pranav.autocompletion;
+package com.pranav.javacompletion;
 
 import com.pranav.javacompletion.api.MethodItem;
 import com.pranav.lib_android.util.FileUtil;

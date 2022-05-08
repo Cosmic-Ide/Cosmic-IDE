@@ -159,7 +159,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
         StringBuilder builder = new StringBuilder();
         ArrayList<MethodItem> methods = CompletionProvider.getMethods();
-        for (MethodItem m : methods.toArray(new String[0])) {
+        for (MethodItem m : methods.toArray(new MethodItem[0])) {
           builder.append(m.getFullName());
           builder.append("\n");
         }

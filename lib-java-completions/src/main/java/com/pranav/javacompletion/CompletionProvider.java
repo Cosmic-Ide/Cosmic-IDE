@@ -2,7 +2,7 @@ package com.pranav.autocompletion;
 
 import com.pranav.javacompletion.api.MethodItem;
 import com.pranav.lib_android.util.FileUtil;
-import dalvik.system.DexClassLoader;
+import dalvik.system.PathClassLoader;
 
 import java.util.ArrayList;
 

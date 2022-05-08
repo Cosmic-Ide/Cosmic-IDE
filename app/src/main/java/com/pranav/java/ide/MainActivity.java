@@ -35,9 +35,8 @@ import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
-import com.pranav.javacompletion.JavaCompletions;
-import com.pranav.javacompletion.options.JavaCompletionOptionsImpl;
-import com.pranav.javacompletion.completion.*;
+import com.pranav.javacompletion.CompletionProvider;
+import com.pranav.javacompletion.api.MethodItem;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -158,6 +157,13 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+        StringBuilder builder = new StringBuilder();
+        ArrayList<MethodItem> methods = CompletionProvider.getMethods();
+        for (MethodItem m : methods.toArray(new String[0])) {
+          builder.append(m.getFullName());
+          builder.append("\n");
+        }
+        editor.setText(builder.toString());
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */

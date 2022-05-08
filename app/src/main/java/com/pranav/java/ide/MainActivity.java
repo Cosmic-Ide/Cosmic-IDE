@@ -63,6 +63,7 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
     public JavaBuilder builder;
     public SharedPreferences prefs;
+    public JavaCompletions completions;
 
     private AlertDialog loadingDialog;
     private Thread runThread;
@@ -77,6 +78,8 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        completions.initialize(new File(FileUtil.getJavaDir()).toURI(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
@@ -147,6 +150,17 @@ public final class MainActivity extends AppCompatActivity {
                 showErr(getString(e));
             }
         }
+
+        CompletionResult result = completions.getProject()
+                .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
+
+        String s = "";
+        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
+            s += candidate.getName();
+            s += "\n";
+        }
+        editor.setText(s);
+
         /* Create Loading Dialog */
         buildLoadingDialog();
 

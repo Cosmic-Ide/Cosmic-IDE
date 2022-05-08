@@ -3,6 +3,9 @@ package com.pranav.javacompletion.tool;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.base.Joiner;
+import com.pranav.javacompletion.parser.FileContentFixer;
+import com.pranav.javacompletion.parser.ParserContext;
+
 import org.openjdk.source.tree.ClassTree;
 import org.openjdk.source.tree.ErroneousTree;
 import org.openjdk.source.tree.IdentifierTree;
@@ -16,11 +19,10 @@ import org.openjdk.source.tree.VariableTree;
 import org.openjdk.source.tree.WildcardTree;
 import org.openjdk.source.util.TreeScanner;
 import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import com.pranav.javacompletion.parser.FileContentFixer;
-import com.pranav.javacompletion.parser.ParserContext;
 
 /**
  * Print AST tree produced by javac parser.

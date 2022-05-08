@@ -4,6 +4,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
+import com.pranav.javacompletion.file.EditHistory.AppliedEdit;
+
+import org.openjdk.javax.tools.SimpleJavaFileObject;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -12,8 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.openjdk.javax.tools.SimpleJavaFileObject;
-import com.pranav.javacompletion.file.EditHistory.AppliedEdit;
 
 /** Snapshot of the content of a file. */
 public class FileSnapshot extends SimpleJavaFileObject {
@@ -58,8 +60,8 @@ public class FileSnapshot extends SimpleJavaFileObject {
     /**
      * Applies a change to the content.
      *
-     * @param editRange the range of the content being modified. The original content within the range
-     *     will be replaced by {@code newText}
+     * @param editRange the range of the content being modified. The original content within the
+     *     range will be replaced by {@code newText}
      * @param newText the new content to replace the original content with {@code editRange}
      */
     public void applyEdit(TextRange editRange, Optional<Integer> rangeLength, String newText) {

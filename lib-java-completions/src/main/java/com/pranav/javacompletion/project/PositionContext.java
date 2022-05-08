@@ -1,7 +1,14 @@
 package com.pranav.javacompletion.project;
 
 import com.google.auto.value.AutoValue;
+import com.pranav.javacompletion.logging.JLogger;
+import com.pranav.javacompletion.model.EntityScope;
+import com.pranav.javacompletion.model.FileScope;
+import com.pranav.javacompletion.model.Module;
 import com.pranav.javacompletion.parser.FileContentFixer;
+import com.pranav.javacompletion.parser.LineMapUtil;
+import com.pranav.javacompletion.parser.TreePathFormatter;
+
 import org.openjdk.source.tree.ErroneousTree;
 import org.openjdk.source.tree.LineMap;
 import org.openjdk.source.tree.Tree;
@@ -10,14 +17,9 @@ import org.openjdk.source.util.TreePathScanner;
 import org.openjdk.tools.javac.tree.EndPosTable;
 import org.openjdk.tools.javac.tree.JCTree;
 import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+
 import java.nio.file.Path;
 import java.util.Optional;
-import com.pranav.javacompletion.logging.JLogger;
-import com.pranav.javacompletion.model.EntityScope;
-import com.pranav.javacompletion.model.FileScope;
-import com.pranav.javacompletion.model.Module;
-import com.pranav.javacompletion.parser.LineMapUtil;
-import com.pranav.javacompletion.parser.TreePathFormatter;
 
 /** All information inferred from a given cursor position of a file. */
 @AutoValue
@@ -94,7 +96,12 @@ public abstract class PositionContext {
         logger.fine("TreePath for position: %s", TreePathFormatter.formatTreePath(treePath));
 
         return new AutoValue_PositionContext(
-                scopeAtPosition, module, inputFileScope, treePath, position, compilationUnit.endPositions);
+                scopeAtPosition,
+                module,
+                inputFileScope,
+                treePath,
+                position,
+                compilationUnit.endPositions);
     }
 
     /** A {@link TreePathScanner} that returns the tree path enclosing the given position. */

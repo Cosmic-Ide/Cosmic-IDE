@@ -1,5 +1,8 @@
 package com.pranav.javacompletion;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.common.collect.ImmutableList;
 import com.pranav.javacompletion.completion.CompletionResult;
 import com.pranav.javacompletion.file.FileManager;
@@ -14,9 +17,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 public class JavaCompletions {
     private static final JLogger logger = JLogger.createForEnclosingClass();
@@ -40,8 +40,12 @@ public class JavaCompletions {
 
         logger.info("Initializing project: %s", projectRootUri);
         logger.info(
-                "Options:\n  logPath: %s\n  logLevel: %s\n" + "  ignorePaths: %s\n  typeIndexFiles: %s",
-                options.getLogPath(), options.getLogLevel(), options.getIgnorePaths(), options.getTypeIndexFiles());
+                "Options:\n  logPath: %s\n  logLevel: %s\n"
+                        + "  ignorePaths: %s\n  typeIndexFiles: %s",
+                options.getLogPath(),
+                options.getLogLevel(),
+                options.getIgnorePaths(),
+                options.getTypeIndexFiles());
         if (options.getLogPath() != null) {
             JLogger.setLogFile(options.getLogPath());
         }
@@ -51,18 +55,20 @@ public class JavaCompletions {
             ignorePaths = ImmutableList.of();
         }
         mFileManager = new FileManagerImpl(projectRootUri, ignorePaths, mExecutor);
-        mProject = new Project(mFileManager, projectRootUri, IndexOptions.FULL_INDEX_BUILDER.build());
-        mExecutor.submit(() -> {
-            synchronized (JavaCompletions.this) {
-                mProject.initialize();
-                mProject.loadJdkModule();
-                if (options.getTypeIndexFiles() != null) {
-                    for (String typeIndexFile : options.getTypeIndexFiles()) {
-                        mProject.loadTypeIndexFile(typeIndexFile);
+        mProject =
+                new Project(mFileManager, projectRootUri, IndexOptions.FULL_INDEX_BUILDER.build());
+        mExecutor.submit(
+                () -> {
+                    synchronized (JavaCompletions.this) {
+                        mProject.initialize();
+                        mProject.loadJdkModule();
+                        if (options.getTypeIndexFiles() != null) {
+                            for (String typeIndexFile : options.getTypeIndexFiles()) {
+                                mProject.loadTypeIndexFile(typeIndexFile);
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
     }
 
     public synchronized void shutdown() {
@@ -82,9 +88,8 @@ public class JavaCompletions {
     }
 
     /**
-     * Used to inform the infrastructure that the contents of the file
-     * has been changed. Useful if code editors are not writing the changes
-     * to file immediately
+     * Used to inform the infrastructure that the contents of the file has been changed. Useful if
+     * code editors are not writing the changes to file immediately
      */
     public synchronized void updateFileContent(Path file, String newContent) {
         checkState(mInitialized, "Not yet initialized.");
@@ -93,6 +98,7 @@ public class JavaCompletions {
 
     /**
      * Retrieves completions with the file content
+     *
      * @param file Path of file to complete
      * @param line 0 based line of the caret
      * @param column 0 based column of the caret

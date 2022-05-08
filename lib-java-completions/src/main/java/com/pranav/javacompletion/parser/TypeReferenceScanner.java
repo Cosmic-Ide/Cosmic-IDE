@@ -1,5 +1,9 @@
 package com.pranav.javacompletion.parser;
 
+import com.pranav.javacompletion.logging.JLogger;
+import com.pranav.javacompletion.model.TypeArgument;
+import com.pranav.javacompletion.model.TypeReference;
+
 import org.openjdk.source.tree.ArrayTypeTree;
 import org.openjdk.source.tree.IdentifierTree;
 import org.openjdk.source.tree.MemberSelectTree;
@@ -7,13 +11,11 @@ import org.openjdk.source.tree.ParameterizedTypeTree;
 import org.openjdk.source.tree.PrimitiveTypeTree;
 import org.openjdk.source.tree.Tree;
 import org.openjdk.source.util.TreeScanner;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import com.pranav.javacompletion.logging.JLogger;
-import com.pranav.javacompletion.model.TypeArgument;
-import com.pranav.javacompletion.model.TypeReference;
 
 public class TypeReferenceScanner extends TreeScanner<Void, Void> {
     private static final JLogger logger = JLogger.createForEnclosingClass();

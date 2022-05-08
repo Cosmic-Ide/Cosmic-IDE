@@ -50,7 +50,8 @@ public class ConstantPoolInfo {
         public abstract int getNameAndTypeIndex();
 
         public static ConstantFieldrefInfo create(int classIndex, int nameAndTypeIndex) {
-            return new AutoValue_ConstantPoolInfo_ConstantFieldrefInfo(classIndex, nameAndTypeIndex);
+            return new AutoValue_ConstantPoolInfo_ConstantFieldrefInfo(
+                    classIndex, nameAndTypeIndex);
         }
     }
 
@@ -75,7 +76,8 @@ public class ConstantPoolInfo {
         public abstract int getNameAndTypeIndex();
 
         public static ConstantMethodrefInfo create(int classIndex, int nameAndTypeIndex) {
-            return new AutoValue_ConstantPoolInfo_ConstantMethodrefInfo(classIndex, nameAndTypeIndex);
+            return new AutoValue_ConstantPoolInfo_ConstantMethodrefInfo(
+                    classIndex, nameAndTypeIndex);
         }
     }
 
@@ -195,7 +197,8 @@ public class ConstantPoolInfo {
          * An index into the constant pool table.
          *
          * <p>The constant pool entry at the index must be a {@link ConstantUtf8Info}. It's either a
-         * special method name {@code <init>}, or a valid unqualified name denoting a field or method.
+         * special method name {@code <init>}, or a valid unqualified name denoting a field or
+         * method.
          */
         public abstract int getNameIndex();
 
@@ -208,7 +211,8 @@ public class ConstantPoolInfo {
         public abstract int getDescriptorIndex();
 
         public static ConstantNameAndTypeInfo create(int nameIndex, int descriptorIndex) {
-            return new AutoValue_ConstantPoolInfo_ConstantNameAndTypeInfo(nameIndex, descriptorIndex);
+            return new AutoValue_ConstantPoolInfo_ConstantNameAndTypeInfo(
+                    nameIndex, descriptorIndex);
         }
     }
 
@@ -243,40 +247,41 @@ public class ConstantPoolInfo {
          * <p>The constant pool entry at that index must be as follows:
          *
          * <ol>
-         *   <li>If the value of the {@link #getReferenceKind()} is 1 (REF_getField), 2 (REF_getStatic),
-         *       3 (REF_putField), or 4 (REF_putStatic), then the constant pool entry at that index must
-         *       be a {@link ConstantFieldrefInfo} structure representing a field for which a method
-         *       handle is to be created.
+         *   <li>If the value of the {@link #getReferenceKind()} is 1 (REF_getField), 2
+         *       (REF_getStatic), 3 (REF_putField), or 4 (REF_putStatic), then the constant pool
+         *       entry at that index must be a {@link ConstantFieldrefInfo} structure representing a
+         *       field for which a method handle is to be created.
          *   <li>If the value of the {@link #getReferenceKind()} is 5 (REF_invokeVirtual) or 8
          *       (REF_newInvokeSpecial), then the constant pool entry at that index must be a {@link
-         *       ConstantMethodrefInfo} structure (§4.4.2) representing a class's method or constructor
-         *       (§2.9) for which a method handle is to be created.
+         *       ConstantMethodrefInfo} structure (§4.4.2) representing a class's method or
+         *       constructor (§2.9) for which a method handle is to be created.
          *   <li>If the value of the {@link #getReferenceKind()} is 6 (REF_invokeStatic) or 7
          *       (REF_invokeSpecial), then if the class file version number is less than 52.0, the
          *       constant pool entry at that index must be a {@link ConstantMethodrefInfo} structure
-         *       representing a class's method for which a method handle is to be created; if the class
-         *       file version number is 52.0 or above, the constant_pool entry at that index must be
-         *       either a {@link ConstantMethodrefInfo} structure or a {@link
+         *       representing a class's method for which a method handle is to be created; if the
+         *       class file version number is 52.0 or above, the constant_pool entry at that index
+         *       must be either a {@link ConstantMethodrefInfo} structure or a {@link
          *       ConstantInterfaceMethodrefInfo} structure (§4.4.2) representing a class's or
          *       interface's method for which a method handle is to be created.
-         *   <li>If the value of the {@link #getReferenceKind()} is 9 (REF_invokeInterface), then the
-         *       constant_pool entry at that index must be a {@link ConstantInterfaceMethodrefInfo}
-         *       structure representing an interface's method for which a method handle is to be
-         *       created.
+         *   <li>If the value of the {@link #getReferenceKind()} is 9 (REF_invokeInterface), then
+         *       the constant_pool entry at that index must be a {@link
+         *       ConstantInterfaceMethodrefInfo} structure representing an interface's method for
+         *       which a method handle is to be created.
          * </ol>
          *
          * <p>If the value of the {@link #getReferenceKind()} is 5 (REF_invokeVirtual), 6
-         * (REF_invokeStatic), 7 (REF_invokeSpecial), or 9 (REF_invokeInterface), the name of the method
-         * represented by a {@link ConstantMethodrefInfo} structure or a {@link
+         * (REF_invokeStatic), 7 (REF_invokeSpecial), or 9 (REF_invokeInterface), the name of the
+         * method represented by a {@link ConstantMethodrefInfo} structure or a {@link
          * ConstantInterfaceMethodrefInfo} structure must not be {@code <init>} or {@code <clinit>}.
          *
-         * <p>If the value is 8 (REF_newInvokeSpecial), the name of the method represented by a {@link
-         * ConstantMethodrefInfo} structure must be <init>.
+         * <p>If the value is 8 (REF_newInvokeSpecial), the name of the method represented by a
+         * {@link ConstantMethodrefInfo} structure must be <init>.
          */
         public abstract int getReferenceIndex();
 
         public static ConstantMethodHandleInfo create(byte referenceKind, int referenceIndex) {
-            return new AutoValue_ConstantPoolInfo_ConstantMethodHandleInfo(referenceKind, referenceIndex);
+            return new AutoValue_ConstantPoolInfo_ConstantMethodHandleInfo(
+                    referenceKind, referenceIndex);
         }
     }
 

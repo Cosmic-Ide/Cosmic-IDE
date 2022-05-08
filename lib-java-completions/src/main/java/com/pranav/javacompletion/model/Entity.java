@@ -26,7 +26,8 @@ public abstract class Entity {
         // Each part of a pacakage qualifier
         // e.g org.javacomp has 2 qualifiers: org and javacomp
         QUALIFIER,
-        // A psuedo entity kind. Represents the a reference to a entity by name. May be resolved to its
+        // A psuedo entity kind. Represents the a reference to a entity by name. May be resolved to
+        // its
         // referencing entity.
         REFERENCE,
         // A premitive type.
@@ -58,8 +59,8 @@ public abstract class Entity {
     }
 
     /**
-     * Gets the name of a entity without qualifiers. For example the simple name of foo.bar.ClassName
-     * is ClassName.
+     * Gets the name of a entity without qualifiers. For example the simple name of
+     * foo.bar.ClassName is ClassName.
      */
     public String getSimpleName() {
         return simpleName;
@@ -92,16 +93,20 @@ public abstract class Entity {
     }
 
     /**
-     * @return {@code true} if the entity is a member of a class instance, which can only be access in
-     *     an instance context of that class.
+     * @return {@code true} if the entity is a member of a class instance, which can only be access
+     *     in an instance context of that class.
      */
     public boolean isInstanceMember() {
         return !isStatic();
     }
 
-    /** @return a {@link EntityScope} that this entity defines. */
+    /**
+     * @return a {@link EntityScope} that this entity defines.
+     */
     public abstract EntityScope getScope();
 
-    /** @return a {@link EntityScope} that defines this entity. */
+    /**
+     * @return a {@link EntityScope} that defines this entity.
+     */
     public abstract Optional<EntityScope> getParentScope();
 }

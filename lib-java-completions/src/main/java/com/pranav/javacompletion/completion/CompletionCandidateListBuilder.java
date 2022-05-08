@@ -1,16 +1,18 @@
 package com.pranav.javacompletion.completion;
 
+import androidx.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.pranav.javacompletion.model.Entity;
+import com.pranav.javacompletion.typesolver.EntityShadowingListBuilder;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import androidx.annotation.Nullable;
-import com.pranav.javacompletion.model.Entity;
-import com.pranav.javacompletion.typesolver.EntityShadowingListBuilder;
 
 /**
  * A builder for bulding a {@link List} of {@link CompletionCandidate} instances that dedups the
@@ -40,7 +42,8 @@ public class CompletionCandidateListBuilder {
         return this;
     }
 
-    public CompletionCandidateListBuilder addCandidates(Collection<CompletionCandidate> candidates) {
+    public CompletionCandidateListBuilder addCandidates(
+            Collection<CompletionCandidate> candidates) {
         for (CompletionCandidate candidate : candidates) {
             addCandidate(candidate);
         }

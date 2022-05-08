@@ -1,13 +1,14 @@
 package com.pranav.javacompletion.typesolver;
 
 import com.google.common.collect.ImmutableList;
+import com.pranav.javacompletion.model.Entity;
+import com.pranav.javacompletion.model.EntityScope;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import com.pranav.javacompletion.model.Entity;
-import com.pranav.javacompletion.model.EntityScope;
 
 /**
  * A build of {@link List} that ignores a new element the list if any {@link Entity} from existing
@@ -26,8 +27,8 @@ public class EntityShadowingListBuilder<E> {
 
     /**
      * @param getEntityFunction a function to get an {@link Entity} from an element for shadowing
-     *     check. If the function returns {@code null}, the element won't shadow any other element and
-     *     won't be shadowed
+     *     check. If the function returns {@code null}, the element won't shadow any other element
+     *     and won't be shadowed
      */
     public EntityShadowingListBuilder(Function<E, Entity> getEntityFunction) {
         this.elements = new ArrayList<>();

@@ -19,8 +19,8 @@ public interface EntityScope {
     /**
      * The range that defines this scope.
      *
-     * <p>The range includes the whole defining entity if present. For example for a method it starts
-     * from the first modifier of the method and ends with the closing bracket.
+     * <p>The range includes the whole defining entity if present. For example for a method it
+     * starts from the first modifier of the method and ends with the closing bracket.
      */
     Range<Integer> getDefinitionRange();
 

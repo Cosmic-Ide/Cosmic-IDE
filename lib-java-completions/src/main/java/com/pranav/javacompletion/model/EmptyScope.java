@@ -1,10 +1,10 @@
 package com.pranav.javacompletion.model;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +26,8 @@ public class EmptyScope implements EntityScope {
 
     @Override
     public void addEntity(Entity entity) {
-        throw new UnsupportedOperationException("No entity is allowed to be added to a EmptyScope.");
+        throw new UnsupportedOperationException(
+                "No entity is allowed to be added to a EmptyScope.");
     }
 
     @Override

@@ -110,7 +110,7 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
         } else {
             throw new LinkageError(
                     "BindingPatternTree must have either getVariable() or both getType() and"
-                        + " getBinding(), but does not");
+                            + " getBinding(), but does not");
         }
         return null;
     }

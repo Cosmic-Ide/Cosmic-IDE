@@ -1,7 +1,6 @@
 package com.pranav.javacompletion.model;
 
 import com.google.common.collect.*;
-import org.openjdk.source.tree.LambdaExpressionTree;
 
 import java.util.ArrayList;
 import java.util.List;

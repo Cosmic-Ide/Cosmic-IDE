@@ -4,13 +4,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
 import com.pranav.javacompletion.model.Entity;
 import com.pranav.javacompletion.model.TypeReference;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantClassInfo;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantUtf8Info;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 
 /** A converter that converts a {@link ClassFileInfo} to a {@link ParsedClassFile}. */
 public class ClassInfoConverter {
@@ -29,7 +30,8 @@ public class ClassInfoConverter {
     private void convertBaseClassInfo(ParsedClassFile.Builder builder, ClassInfoReader reader) {
         String classBinaryName = reader.getClassName(reader.getClassFileInfo().getThisClassIndex());
         TypeReference className =
-                new SignatureParser(classBinaryName, reader.getInnerClassMap()).parseClassBinaryName();
+                new SignatureParser(classBinaryName, reader.getInnerClassMap())
+                        .parseClassBinaryName();
         EnumSet<ClassAccessFlag> accessFlags;
         builder.setClassBinaryName(classBinaryName);
         builder.setSimpleName(className.getSimpleName());
@@ -72,7 +74,8 @@ public class ClassInfoConverter {
         if (superClassIndex > 0) {
             String superClassName = reader.getClassName(superClassIndex);
             classSignatureBuilder.setSuperClass(
-                    new SignatureParser(superClassName, reader.getInnerClassMap()).parseClassBinaryName());
+                    new SignatureParser(superClassName, reader.getInnerClassMap())
+                            .parseClassBinaryName());
         } else {
             classSignatureBuilder.setSuperClass(TypeReference.JAVA_LANG_OBJECT);
         }
@@ -80,7 +83,8 @@ public class ClassInfoConverter {
         for (int interfaceIndex : reader.getClassFileInfo().getInterfaceIndeces()) {
             String interfaceName = reader.getClassName(interfaceIndex);
             classSignatureBuilder.addInterface(
-                    new SignatureParser(interfaceName, reader.getInnerClassMap()).parseClassBinaryName());
+                    new SignatureParser(interfaceName, reader.getInnerClassMap())
+                            .parseClassBinaryName());
         }
 
         classSignatureBuilder.setTypeParameters(ImmutableList.of());
@@ -89,7 +93,9 @@ public class ClassInfoConverter {
     }
 
     private void convertClassEntityFromSignature(
-            ParsedClassFile.Builder builder, ClassInfoReader reader, AttributeInfo.Signature signature) {
+            ParsedClassFile.Builder builder,
+            ClassInfoReader reader,
+            AttributeInfo.Signature signature) {
         SignatureParser parser =
                 new SignatureParser(
                         reader.getUtf8(signature.getSignatureIndex()), reader.getInnerClassMap());
@@ -111,7 +117,8 @@ public class ClassInfoConverter {
                     new SignatureParser(reader.getUtf8(signatureIndex), reader.getInnerClassMap())
                             .parseMethodSignature();
             boolean isStatic = methodInfo.getAccessFlags().contains(MethodInfo.AccessFlag.STATIC);
-            builder.addMethod(ParsedClassFile.ParsedMethod.create(simpleName, methodSignature, isStatic));
+            builder.addMethod(
+                    ParsedClassFile.ParsedMethod.create(simpleName, methodSignature, isStatic));
         }
     }
 
@@ -125,12 +132,14 @@ public class ClassInfoConverter {
                 String signatureString = reader.getUtf8(signature.get().getSignatureIndex());
                 // Signature can only be a reference type.
                 fieldType =
-                        new SignatureParser(signatureString, reader.getInnerClassMap()).parseFieldReference();
+                        new SignatureParser(signatureString, reader.getInnerClassMap())
+                                .parseFieldReference();
             } else {
                 String descriptor = reader.getUtf8(fieldInfo.getDescriptorIndex());
                 // Descriptor can be either a reference type or a base type.
                 fieldType =
-                        new SignatureParser(descriptor, reader.getInnerClassMap()).parseJavaTypeSignature();
+                        new SignatureParser(descriptor, reader.getInnerClassMap())
+                                .parseJavaTypeSignature();
             }
             boolean isStatic = fieldInfo.getAccessFlags().contains(FieldInfo.AccessFlag.STATIC);
             builder.addField(ParsedClassFile.ParsedField.create(simpleName, fieldType, isStatic));
@@ -159,7 +168,8 @@ public class ClassInfoConverter {
 
         private ImmutableMap<String, InnerClassEntry> buildInnerClassMap() {
             Optional<AttributeInfo.InnerClass> innerClass =
-                    getAttributeOfType(classFileInfo.getAttributes(), AttributeInfo.InnerClass.class);
+                    getAttributeOfType(
+                            classFileInfo.getAttributes(), AttributeInfo.InnerClass.class);
             if (!innerClass.isPresent()) {
                 return ImmutableMap.of();
             }
@@ -182,7 +192,8 @@ public class ClassInfoConverter {
                 String innerName = getUtf8(innerNameIndex);
                 builder.put(
                         innerClassName,
-                        InnerClassEntry.create(outerClassName, innerName, classInfo.getAccessFlags()));
+                        InnerClassEntry.create(
+                                outerClassName, innerName, classInfo.getAccessFlags()));
             }
             return builder.build();
         }

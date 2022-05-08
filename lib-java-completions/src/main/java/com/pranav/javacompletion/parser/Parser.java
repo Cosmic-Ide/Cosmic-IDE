@@ -4,6 +4,7 @@ import com.pranav.javacompletion.file.FileManager;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.FileScope;
 import com.pranav.javacompletion.options.IndexOptions;
+
 import org.openjdk.source.tree.LineMap;
 
 import java.nio.file.Path;
@@ -40,7 +41,10 @@ public class Parser {
         }
         FileScope fileScope =
                 new AstScanner(indexOptions)
-                        .startScan(parserContext.parse(path.toString(), content), path.toString(), content);
+                        .startScan(
+                                parserContext.parse(path.toString(), content),
+                                path.toString(),
+                                content);
         if (adjustedLineMap != null) {
             fileScope.setAdjustedLineMap(adjustedLineMap);
         }

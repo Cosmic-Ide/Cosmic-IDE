@@ -2,9 +2,10 @@ package com.pranav.javacompletion.parser.classfile;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-import java.util.Optional;
 import com.pranav.javacompletion.model.Entity;
 import com.pranav.javacompletion.model.TypeReference;
+
+import java.util.Optional;
 
 /** Information about the parsed .class file */
 @AutoValue
@@ -58,7 +59,8 @@ public abstract class ParsedClassFile {
 
         public abstract boolean isStatic();
 
-        public static ParsedField create(String simpleName, TypeReference fieldType, boolean isStatic) {
+        public static ParsedField create(
+                String simpleName, TypeReference fieldType, boolean isStatic) {
             return new AutoValue_ParsedClassFile_ParsedField(simpleName, fieldType, isStatic);
         }
     }

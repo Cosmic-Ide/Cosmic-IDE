@@ -9,10 +9,14 @@ import com.google.auto.value.AutoValue;
  */
 @AutoValue
 public abstract class TextRange {
-    /** @return the range's start position, inclusive. */
+    /**
+     * @return the range's start position, inclusive.
+     */
     public abstract TextPosition getStart();
 
-    /** @return the range's end position, exclusive. */
+    /**
+     * @return the range's end position, exclusive.
+     */
     public abstract TextPosition getEnd();
 
     public static TextRange create(TextPosition start, TextPosition end) {

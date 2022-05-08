@@ -2,6 +2,7 @@ package com.pranav.javacompletion.completion;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.nio.file.Path;
 
 /** Result of completion request. */
@@ -27,8 +28,8 @@ public abstract class CompletionResult {
     }
 
     /**
-     * Check if the completor is processing a completion request that is an incremental completion of
-     * the cached completion.
+     * Check if the completor is processing a completion request that is an incremental completion
+     * of the cached completion.
      */
     boolean isIncrementalCompletion(Path filePath, int line, int column, String prefix) {
         if (!getFilePath().equals(filePath)) {

@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.model;
 
 import com.google.common.collect.ImmutableMap;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

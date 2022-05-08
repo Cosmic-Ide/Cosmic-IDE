@@ -5,13 +5,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.pranav.javacompletion.model.util.QualifiedNames;
+
+import org.openjdk.javax.lang.model.element.Modifier;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import com.pranav.javacompletion.model.util.QualifiedNames;
-import org.openjdk.javax.lang.model.element.Modifier;
 
 /** Represents a method. */
 public class MethodEntity extends Entity implements EntityScope {

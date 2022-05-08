@@ -2,6 +2,7 @@ package com.pranav.javacompletion.model;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public abstract class TypeParameter {
         return getName()
                 + " extends "
                 + getExtendBounds().stream()
-                .map(b -> b.toDisplayString())
-                .collect(Collectors.joining(", "));
+                        .map(b -> b.toDisplayString())
+                        .collect(Collectors.joining(", "));
     }
 }

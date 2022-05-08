@@ -21,9 +21,10 @@ public interface FileManager {
      * @param editRange the range of the content being modified. Note that only part of the content
      *     within the range will be replaced, depending on the value of {@code rangeLength}
      * @param rangeLength the length of the content within {@code editRange} to be replaced. If it's
-     *     shorter than the actual range in {@code editRange}, only the partial of the range starting
-     *     from the begin of {@code editRange} will be replaced. If it's longer than the actual range
-     *     in {@code editRange}, or it's absent, the whole {@code editRange} will be replaced
+     *     shorter than the actual range in {@code editRange}, only the partial of the range
+     *     starting from the begin of {@code editRange} will be replaced. If it's longer than the
+     *     actual range in {@code editRange}, or it's absent, the whole {@code editRange} will be
+     *     replaced
      * @param newText the new content to replace the original content with {@code editRange}
      */
     void applyEditToSnapshot(

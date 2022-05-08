@@ -18,13 +18,13 @@ public class MethodInvocationEntity extends Entity implements EntityScope {
     private final List<EntityScope> childScopes;
     private final EntityScope parent;
 
-    public MethodInvocationEntity(String simpleName,
-                                  EntityScope parent,
-                                  List<String> qualifiers,
-                                  List<TypeParameter> typeParameters,
-                                  List<VariableEntity> parameters,
-                                  Range<Integer> symbolRange
-                                  ) {
+    public MethodInvocationEntity(
+            String simpleName,
+            EntityScope parent,
+            List<String> qualifiers,
+            List<TypeParameter> typeParameters,
+            List<VariableEntity> parameters,
+            Range<Integer> symbolRange) {
         super(simpleName, Kind.REFERENCE, qualifiers, false, Optional.empty(), symbolRange);
         this.parent = parent;
         this.typeParameters = typeParameters;

@@ -1,5 +1,9 @@
 package com.pranav.javacompletion.parser;
 
+import static com.google.common.base.Charsets.UTF_8;
+
+import static org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+
 import org.openjdk.tools.javac.file.JavacFileManager;
 import org.openjdk.tools.javac.parser.JavacParser;
 import org.openjdk.tools.javac.parser.ParserFactory;
@@ -8,12 +12,7 @@ import org.openjdk.tools.javac.parser.ScannerFactory;
 import org.openjdk.tools.javac.util.Context;
 import org.openjdk.tools.javac.util.Log;
 
-import static com.google.common.base.Charsets.UTF_8;
-import static org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
-
-/**
- * Environment for using Javac Parser
- */
+/** Environment for using Javac Parser */
 public class ParserContext {
     private final Context javacContext;
     private final JavacFileManager javacFileManager;
@@ -26,8 +25,8 @@ public class ParserContext {
     /**
      * Set source file of the log.
      *
-     * <p>This method should be called before parsing or lexing. If not set, IllegalArgumentException
-     * will be thrown if the parser enconters errors.
+     * <p>This method should be called before parsing or lexing. If not set,
+     * IllegalArgumentException will be thrown if the parser enconters errors.
      */
     public void setupLoggingSource(String filename) {
         SourceFileObject sourceFileObject = new SourceFileObject(filename);
@@ -48,7 +47,10 @@ public class ParserContext {
         JavacParser parser =
                 ParserFactory.instance(javacContext)
                         .newParser(
-                                content, true /* keepDocComments */, true /* keepEndPos */, true /* keepLineMap */);
+                                content,
+                                true /* keepDocComments */,
+                                true /* keepEndPos */,
+                                true /* keepLineMap */);
         return parser.parseCompilationUnit();
     }
 

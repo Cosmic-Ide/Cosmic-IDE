@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.auto.value.AutoValue;
+
 import java.util.Optional;
 
 @AutoValue

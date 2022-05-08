@@ -1,11 +1,6 @@
 package com.pranav.javacompletion.parser.classfile;
 
 import com.google.common.collect.ImmutableList;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.EnumSet;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantClassInfo;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantDoubleInfo;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantFieldrefInfo;
@@ -20,6 +15,12 @@ import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantMetho
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantNameAndTypeInfo;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantStringInfo;
 import com.pranav.javacompletion.parser.classfile.ConstantPoolInfo.ConstantUtf8Info;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.EnumSet;
 
 /**
  * A parser for Java .class files.
@@ -86,7 +87,8 @@ public class ClassFileParser {
         // constantPoolCount is the number of constantPool + 1
         ImmutableList.Builder<ConstantPoolInfo> builder = new ImmutableList.Builder<>();
 
-        // The first element is a place holder. We cannot use null because ImmutableList doesn't allow
+        // The first element is a place holder. We cannot use null because ImmutableList doesn't
+        // allow
         // null to be its element.
         builder.add(new ConstantPoolInfo());
         for (int i = 1; i < constantPoolCount; i++) {
@@ -170,7 +172,8 @@ public class ClassFileParser {
         return ConstantClassInfo.create(nameIndex);
     }
 
-    private ConstantFieldrefInfo parseConstantFieldref(DataInputStream inStream) throws IOException {
+    private ConstantFieldrefInfo parseConstantFieldref(DataInputStream inStream)
+            throws IOException {
         // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2
         int classIndex = inStream.readUnsignedShort();
         int nameAndTypeIndex = inStream.readUnsignedShort();
@@ -296,7 +299,8 @@ public class ClassFileParser {
         for (int i = 0; i < methodsCount; i++) {
             // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.6
             int accessFlagsInt = inStream.readUnsignedShort();
-            EnumSet<MethodInfo.AccessFlag> accessFlags = EnumSet.noneOf(MethodInfo.AccessFlag.class);
+            EnumSet<MethodInfo.AccessFlag> accessFlags =
+                    EnumSet.noneOf(MethodInfo.AccessFlag.class);
             for (MethodInfo.AccessFlag flag : MethodInfo.AccessFlag.values()) {
                 if ((accessFlagsInt & flag.getValue()) != 0) {
                     accessFlags.add(flag);
@@ -329,7 +333,8 @@ public class ClassFileParser {
                 // Each class has 4 u16 fields, plus a u16 for numClasses.
                 if (length != 2 * 4 * numClasses + 2) {
                     throw new ClassFileParserError(
-                            "Attribute length %s dosn't match the length of InnerClass attribute with %s classes",
+                            "Attribute length %s dosn't match the length of InnerClass attribute"
+                                + " with %s classes",
                             length, numClasses);
                 }
 
@@ -347,7 +352,8 @@ public class ClassFileParser {
                 // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.9
                 if (length != 2) {
                     throw new ClassFileParserError(
-                            "Attribute length %s doesn't match the size of Signature attribute", length);
+                            "Attribute length %s doesn't match the size of Signature attribute",
+                            length);
                 }
                 int signatureIndex = inStream.readUnsignedShort();
                 builder.add(AttributeInfo.Signature.create(signatureIndex));

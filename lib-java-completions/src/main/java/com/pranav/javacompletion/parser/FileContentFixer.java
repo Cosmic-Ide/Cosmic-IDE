@@ -2,10 +2,12 @@ package com.pranav.javacompletion.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
+
 import org.openjdk.tools.javac.parser.Scanner;
 import org.openjdk.tools.javac.parser.Tokens.Token;
 import org.openjdk.tools.javac.parser.Tokens.TokenKind;
 import org.openjdk.tools.javac.util.Position.LineMap;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -61,7 +63,8 @@ public class FileContentFixer {
         int nextLine = lineMap.getLineNumber(nextToken.pos);
 
         if (nextLine > tokenLine) {
-            // The line ends with a dot. It's likely the user is entering a dot and waiting for member
+            // The line ends with a dot. It's likely the user is entering a dot and waiting for
+            // member
             // completion. The current line is incomplete and syntextually invalid.
             insertions.add(Insertion.create(token.endPos, "dumbIdent;"));
         } else if (!VALID_MEMBER_SELECTION_TOKENS.contains(nextToken.kind)) {

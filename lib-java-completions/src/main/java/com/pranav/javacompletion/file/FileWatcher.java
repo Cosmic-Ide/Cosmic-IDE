@@ -43,7 +43,9 @@ class FileWatcher {
     private FileChangeListener listener = null;
 
     FileWatcher(
-            Path projectRoot, ImmutableList<PathMatcher> ignorePathMatchers, ExecutorService executor) {
+            Path projectRoot,
+            ImmutableList<PathMatcher> ignorePathMatchers,
+            ExecutorService executor) {
         try {
             this.watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {

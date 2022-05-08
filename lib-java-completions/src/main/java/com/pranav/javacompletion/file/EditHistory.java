@@ -1,8 +1,8 @@
 package com.pranav.javacompletion.file;
 
-
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 import java.util.Optional;
 

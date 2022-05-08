@@ -3,6 +3,7 @@ package com.pranav.javacompletion.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
+
 import java.util.Map;
 import java.util.Optional;
 

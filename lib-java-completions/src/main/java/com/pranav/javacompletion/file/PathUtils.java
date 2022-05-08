@@ -53,9 +53,9 @@ public class PathUtils {
      * <p>A pseudo absolute is {@code entryPath} itself if it's not under {@code projectRootPath} or
      * {@code entryPath} with the {@code projectRootPath} part removed and the remaining path as an
      * absolute path. For * example, if {@code entryPath} is {@code /root/path/foo/bar}, and {@code
-     * projectRootPath} is {@code /root/path}, then the pseudo absolute path is {@code /foo/bar}. This
-     * allows clients easily configre matchers relative to the project root path without worrying what
-     * the root path is.
+     * projectRootPath} is {@code /root/path}, then the pseudo absolute path is {@code /foo/bar}.
+     * This allows clients easily configre matchers relative to the project root path without
+     * worrying what the root path is.
      */
     public static boolean shouldIgnorePath(
             Path entryPath, Path projectRootPath, List<PathMatcher> ignorePathMatchers) {
@@ -89,12 +89,12 @@ public class PathUtils {
 
     /**
      * @param rootPath the root path to walk through
-     * @param extensionHandlers map of extension (with leading dot) to consumers The consumers will be
-     *     called when accessing files with corresponding extensions. The consumers are only called on
-     *     files, not directories
-     * @param ignorePredicate a predicate to determine whether a path should be ignored. If it returns
-     *     true, the path will not be consumed by {@code extensionHandlers} if its a file, or walked
-     *     through if it's a directory
+     * @param extensionHandlers map of extension (with leading dot) to consumers The consumers will
+     *     be called when accessing files with corresponding extensions. The consumers are only
+     *     called on files, not directories
+     * @param ignorePredicate a predicate to determine whether a path should be ignored. If it
+     *     returns true, the path will not be consumed by {@code extensionHandlers} if its a file,
+     *     or walked through if it's a directory
      */
     public static void walkDirectory(
             Path rootPath,
@@ -116,7 +116,8 @@ public class PathUtils {
                                 return;
                             }
 
-                            for (Map.Entry<String, Consumer<Path>> entry : extensionHandlers.entrySet()) {
+                            for (Map.Entry<String, Consumer<Path>> entry :
+                                    extensionHandlers.entrySet()) {
                                 if (entryPath.toString().endsWith(entry.getKey())) {
                                     entry.getValue().accept(entryPath);
                                     return;
@@ -132,7 +133,8 @@ public class PathUtils {
     /** Returns a {@link Path} that can be use for walking through its content. */
     public static Path getRootPathForJarFile(Path jarFilePath) throws IOException {
         // JAR specific URI pattern.
-        // See https://docs.oracle.com/javase/8/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+        // See
+        // https://docs.oracle.com/javase/8/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
         logger.fine("Parsing jar file: %s", jarFilePath);
         URI uri = null;
         try {

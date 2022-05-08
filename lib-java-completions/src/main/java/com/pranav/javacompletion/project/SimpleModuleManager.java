@@ -1,12 +1,13 @@
 package com.pranav.javacompletion.project;
 
-import java.nio.file.Path;
-import java.util.Optional;
 import com.pranav.javacompletion.file.SimpleFileManager;
 import com.pranav.javacompletion.model.FileScope;
 import com.pranav.javacompletion.model.Module;
 import com.pranav.javacompletion.options.IndexOptions;
 import com.pranav.javacompletion.parser.Parser;
+
+import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * A {@link ModuleManager} that requires manually adding files.

@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.file;
 
 import com.google.auto.value.AutoValue;
+
 import java.nio.file.Path;
 
 /** Represents a range in a file. */

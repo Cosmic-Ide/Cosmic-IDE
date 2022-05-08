@@ -2,6 +2,7 @@ package com.pranav.javacompletion.parser.classfile;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.util.EnumSet;
 
 /**
@@ -22,29 +23,29 @@ public abstract class AttributeInfo {
              * A valid index into the constant_pool table.
              *
              * <p>The constant pool entry at that index must be a {@link
-             * ConstantPoolInfo#ConstantClassInfo} structure representing the class. The remaining items
-             * in the classes array entry give information about the class.
+             * ConstantPoolInfo#ConstantClassInfo} structure representing the class. The remaining
+             * items in the classes array entry give information about the class.
              */
             public abstract int getInnerClassInfoIndex();
 
             /**
              * If the class is not a member of a class or an interface (that is, if the class is a
-             * top-level class or interface or a local class or an anonymous class), its value must be
-             * zero.
+             * top-level class or interface or a local class or an anonymous class), its value must
+             * be zero.
              *
-             * <p>Otherwise, the value must be a valid index into the constant pool table, and the entry
-             * at that index must be a {@link ConstantPoolInfo#ConstantClassInfo} representing the class
-             * or interface of which this class is a member.
+             * <p>Otherwise, the value must be a valid index into the constant pool table, and the
+             * entry at that index must be a {@link ConstantPoolInfo#ConstantClassInfo} representing
+             * the class or interface of which this class is a member.
              */
             public abstract int getOuterClassInfoIndex();
 
             /**
              * If the class is anonymous, the value must be zero.
              *
-             * <p>Otherwise, the value must be a valid index into the constant pool table, and the entry
-             * at that index must be a {@link ConstantPoolInfo#ConstantUtf8Info} that represents the
-             * original simple name of the class, as given in the source code from which this class file
-             * was compiled.
+             * <p>Otherwise, the value must be a valid index into the constant pool table, and the
+             * entry at that index must be a {@link ConstantPoolInfo#ConstantUtf8Info} that
+             * represents the original simple name of the class, as given in the source code from
+             * which this class file was compiled.
              */
             public abstract int getInnerNameIndex();
 

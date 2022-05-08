@@ -1,14 +1,20 @@
 package com.pranav.javacompletion.parser;
 
 import static com.google.common.base.Preconditions.checkArgument;
+
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
+import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.*;
 import com.pranav.javacompletion.model.util.MethodInvocationEntity;
+import com.pranav.javacompletion.model.util.NestedRangeMapBuilder;
+import com.pranav.javacompletion.options.IndexOptions;
+
+import org.openjdk.javax.lang.model.element.Modifier;
 import org.openjdk.source.tree.*;
 import org.openjdk.source.util.TreePathScanner;
 import org.openjdk.source.util.TreeScanner;
@@ -19,18 +25,13 @@ import org.openjdk.tools.javac.tree.JCTree.JCClassDecl;
 import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
 import org.openjdk.tools.javac.tree.JCTree.JCMethodDecl;
 import org.openjdk.tools.javac.tree.JCTree.JCVariableDecl;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.openjdk.javax.lang.model.element.Modifier;
-import com.pranav.javacompletion.logging.JLogger;
-import com.pranav.javacompletion.model.util.NestedRangeMapBuilder;
-import com.pranav.javacompletion.options.IndexOptions;
 
 public class AstScanner extends TreePathScanner<Void, EntityScope> {
     private static final List<String> UNAVAILABLE_QUALIFIERS = ImmutableList.of();
@@ -91,9 +92,11 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
             }
             if (ON_DEMAND_IMPORT_WILDCARD.equals(qualifiers.get(qualifiers.size() - 1))) {
                 if (importTree.isStatic()) {
-                    this.fileScope.addOnDemandStaticImport(qualifiers.subList(0, qualifiers.size() - 1));
+                    this.fileScope.addOnDemandStaticImport(
+                            qualifiers.subList(0, qualifiers.size() - 1));
                 } else {
-                    this.fileScope.addOnDemandClassImport(qualifiers.subList(0, qualifiers.size() - 1));
+                    this.fileScope.addOnDemandClassImport(
+                            qualifiers.subList(0, qualifiers.size() - 1));
                 }
             } else {
                 if (importTree.isStatic()) {
@@ -145,7 +148,8 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         ImmutableList.Builder<TypeReference> interfaceBuilder = new ImmutableList.Builder<>();
         Optional<TypeReference> superClass = Optional.empty();
         if (node.getExtendsClause() != null) {
-            superClass = Optional.of(typeReferenceScanner.getTypeReference(node.getExtendsClause()));
+            superClass =
+                    Optional.of(typeReferenceScanner.getTypeReference(node.getExtendsClause()));
         }
         for (Tree implementClause : node.getImplementsClause()) {
             interfaceBuilder.add(typeReferenceScanner.getTypeReference(implementClause));
@@ -192,7 +196,9 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
                             ImmutableList<TypeReference> extendBounds =
                                     node.getBounds().stream()
                                             .map(typeReferenceScanner::getTypeReference)
-                                            .collect(collectingAndThen(toList(), ImmutableList::copyOf));
+                                            .collect(
+                                                    collectingAndThen(
+                                                            toList(), ImmutableList::copyOf));
                             return TypeParameter.create(node.getName().toString(), extendBounds);
                         })
                 .collect(collectingAndThen(toList(), ImmutableList::copyOf));
@@ -206,7 +212,8 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         }
 
         checkArgument(
-                currentScope instanceof ClassEntity, "Method's parent scope must be a class entity");
+                currentScope instanceof ClassEntity,
+                "Method's parent scope must be a class entity");
         TypeReference returnType;
         if (node.getReturnType() == null) {
             // Constructor doesn't have return type.
@@ -214,7 +221,8 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         } else {
             returnType = typeReferenceScanner.getTypeReference(node.getReturnType());
         }
-        ImmutableList<TypeParameter> typeParameters = convertTypeParameters(node.getTypeParameters());
+        ImmutableList<TypeParameter> typeParameters =
+                convertTypeParameters(node.getTypeParameters());
         ClassEntity classEntity = (ClassEntity) currentScope;
         Range<Integer> range = getMethodNameRange(methodNode, classEntity.getSimpleName());
         MethodEntity methodEntity =
@@ -274,8 +282,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     @Override
     public Void visitLambdaExpression(LambdaExpressionTree node, EntityScope currentScope) {
 
-        LambdaEntity lambdaEntity = new LambdaEntity(
-                currentScope);
+        LambdaEntity lambdaEntity = new LambdaEntity(currentScope);
         ImmutableList.Builder<VariableEntity> parameterListBuilder = new ImmutableList.Builder<>();
         for (Tree parameter : node.getParameters()) {
             parameterListBuilder.add(parameterScanner.getParameter(parameter, lambdaEntity));
@@ -315,10 +322,11 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         TypeReference variableType;
         if (node.getType() == null) {
             // This can happen in the case of untyped lambda function parameters.
-            variableType = TypeReference.builder()
-                    .setFullName()
-                    .setSimpleName(variableNode.getName().toString())
-                    .build();
+            variableType =
+                    TypeReference.builder()
+                            .setFullName()
+                            .setSimpleName(variableNode.getName().toString())
+                            .build();
         } else {
             variableType = typeReferenceScanner.getTypeReference(node.getType());
         }
@@ -435,7 +443,8 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     private boolean shouldScanWithModifiers(EntityScope scope, Set<Modifier> modifiers) {
         if (scope instanceof ClassEntity) {
             Entity.Kind parentEntityKind = ((ClassEntity) scope).getKind();
-            if (parentEntityKind == Entity.Kind.INTERFACE || parentEntityKind == Entity.Kind.ANNOTATION) {
+            if (parentEntityKind == Entity.Kind.INTERFACE
+                    || parentEntityKind == Entity.Kind.ANNOTATION) {
                 // Interface and annotation members are public by default.
                 return true;
             }

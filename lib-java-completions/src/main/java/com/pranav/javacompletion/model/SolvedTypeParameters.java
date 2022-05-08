@@ -2,6 +2,7 @@ package com.pranav.javacompletion.model;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -14,7 +15,6 @@ public abstract class SolvedTypeParameters {
     public Optional<SolvedType> getTypeParameter(String name) {
         return Optional.ofNullable(getTypeVariableMap().get(name));
     }
-
 
     public abstract Builder toBuilder();
 

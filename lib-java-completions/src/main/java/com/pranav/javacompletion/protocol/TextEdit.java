@@ -7,8 +7,8 @@ package com.pranav.javacompletion.protocol;
  */
 public class TextEdit {
     /**
-     * The range of the text document to be manipulated. To insert text into a document create a range
-     * where start === end.
+     * The range of the text document to be manipulated. To insert text into a document create a
+     * range where start === end.
      */
     public Range range;
 

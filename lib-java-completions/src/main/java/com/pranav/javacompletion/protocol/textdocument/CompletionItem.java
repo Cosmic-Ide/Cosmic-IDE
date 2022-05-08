@@ -1,9 +1,10 @@
 package com.pranav.javacompletion.protocol.textdocument;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.JsonElement;
 import com.pranav.javacompletion.protocol.TextEdit;
 
-import androidx.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 
@@ -15,8 +16,7 @@ public class CompletionItem {
     public String label;
 
     /** The kind of this completion item. Based of the kind an icon is chosen by the editor. */
-    @Nullable
-    public CompletionItemKind kind;
+    @Nullable public CompletionItemKind kind;
 
     /**
      * A human-readable string with additional information about this item, like type or symbol
@@ -46,14 +46,14 @@ public class CompletionItem {
     @Nullable public String insertText;
 
     /**
-     * The format of the insert text. The format applies to both the {@link #insertText} property and
-     * the {@link #newText} property of a provided {@link #textEdit}.
+     * The format of the insert text. The format applies to both the {@link #insertText} property
+     * and the {@link #newText} property of a provided {@link #textEdit}.
      */
     @Nullable public InsertTextFormat insertTextFormat;
 
     /**
-     * An edit which is applied to a document when selecting this completion. When an edit is provided
-     * the value of {@link #insertText} is ignored.
+     * An edit which is applied to a document when selecting this completion. When an edit is
+     * provided the value of {@link #insertText} is ignored.
      *
      * <p><b>Note:</b> The range of the edit must be a single line range and it must contain the
      * position at which completion has been requested.
@@ -71,7 +71,7 @@ public class CompletionItem {
      * additional modifications to the current document should be described with the
      * additionalTextEdits-property.
      */
-  //  @Nullable public Command command;
+    //  @Nullable public Command command;
 
     /**
      * An data entry field that is preserved on a completion item between a completion and a
@@ -94,7 +94,8 @@ public class CompletionItem {
          *
          * <p>A snippet can define tab stops and placeholders with {@code $1}, {@code $2} and {@code
          * ${3:foo}}. {@code $0} defines the final tab stop, it defaults to the end of the snippet.
-         * Placeholders with equal identifiers are linked, that is typing in one will update others too.
+         * Placeholders with equal identifiers are linked, that is typing in one will update others
+         * too.
          *
          * <p>See also:
          * https://github.com/Microsoft/vscode/blob/master/src/vs/editor/contrib/snippet/common/snippet.md
@@ -139,8 +140,8 @@ public class CompletionItem {
         /**
          * Convert the documentation from JavaDoc format to Markdown format.
          *
-         * <p>We defer the conversion from completion time to resolve time to reduce unnecessary cost
-         * and latency.
+         * <p>We defer the conversion from completion time to resolve time to reduce unnecessary
+         * cost and latency.
          */
         FORMAT_JAVADOC,
     }

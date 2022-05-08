@@ -3,6 +3,7 @@ package com.pranav.javacompletion.model;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,7 +44,8 @@ public class AggregatePackageScope extends PackageScope {
 
             AggregatePackageScope aggregatePackageScope = null;
             AggregatePackageEntity aggregatePackageEntity =
-                    new AggregatePackageEntity(name, Iterables.getFirst(entities, null).getQualifiers());
+                    new AggregatePackageEntity(
+                            name, Iterables.getFirst(entities, null).getQualifiers());
             aggregatePackageScope = aggregatePackageEntity.getScope();
             members.put(name, aggregatePackageEntity);
 

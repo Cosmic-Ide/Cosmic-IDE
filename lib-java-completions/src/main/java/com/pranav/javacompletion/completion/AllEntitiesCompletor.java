@@ -1,13 +1,14 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
 import com.pranav.javacompletion.model.FileScope;
 import com.pranav.javacompletion.model.Module;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /** Completor for all entities accessible from a module */
 class AllEntitiesCompletor {

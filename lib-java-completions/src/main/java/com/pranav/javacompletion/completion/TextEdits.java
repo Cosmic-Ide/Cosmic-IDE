@@ -1,6 +1,13 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.base.Joiner;
+import com.pranav.javacompletion.model.FileScope;
+import com.pranav.javacompletion.project.FileItem;
+import com.pranav.javacompletion.project.ModuleManager;
+import com.pranav.javacompletion.protocol.Position;
+import com.pranav.javacompletion.protocol.Range;
+import com.pranav.javacompletion.protocol.TextEdit;
+
 import org.openjdk.source.tree.CompilationUnitTree;
 import org.openjdk.source.tree.IdentifierTree;
 import org.openjdk.source.tree.ImportTree;
@@ -11,16 +18,11 @@ import org.openjdk.source.util.TreeScanner;
 import org.openjdk.tools.javac.tree.EndPosTable;
 import org.openjdk.tools.javac.tree.JCTree;
 import org.openjdk.tools.javac.tree.JCTree.JCCompilationUnit;
+
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
-import com.pranav.javacompletion.model.FileScope;
-import com.pranav.javacompletion.project.FileItem;
-import com.pranav.javacompletion.project.ModuleManager;
-import com.pranav.javacompletion.protocol.Position;
-import com.pranav.javacompletion.protocol.Range;
-import com.pranav.javacompletion.protocol.TextEdit;
 
 /** Generates text edits for completion items. */
 public class TextEdits {
@@ -86,7 +88,9 @@ public class TextEdits {
 
     private static Range createRange(long pos, LineMap lineMap) {
         Position position =
-                new Position((int) lineMap.getLineNumber(pos) - 1, (int) lineMap.getColumnNumber(pos) - 1);
+                new Position(
+                        (int) lineMap.getLineNumber(pos) - 1,
+                        (int) lineMap.getColumnNumber(pos) - 1);
         return new Range(position, position);
     }
 

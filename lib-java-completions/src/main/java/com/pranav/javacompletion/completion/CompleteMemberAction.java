@@ -3,13 +3,6 @@ package com.pranav.javacompletion.completion;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import org.openjdk.source.tree.ExpressionTree;
-
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
@@ -18,9 +11,14 @@ import com.pranav.javacompletion.project.PositionContext;
 import com.pranav.javacompletion.typesolver.ExpressionSolver;
 import com.pranav.javacompletion.typesolver.TypeSolver;
 
-/**
- * An action to get completion candidates for member selection.
- */
+import org.openjdk.source.tree.ExpressionTree;
+
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/** An action to get completion candidates for member selection. */
 class CompleteMemberAction implements CompletionAction {
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
@@ -69,24 +67,33 @@ class CompleteMemberAction implements CompletionAction {
     }
 
     static CompleteMemberAction forMemberSelect(
-            ExpressionTree parentExpression, TypeSolver typeSolver, ExpressionSolver expressionSolver) {
+            ExpressionTree parentExpression,
+            TypeSolver typeSolver,
+            ExpressionSolver expressionSolver) {
         return new CompleteMemberAction(
                 parentExpression, typeSolver, expressionSolver, MEMBER_SELECT_OPTIONS);
     }
 
     static CompleteMemberAction forMethodReference(
-            ExpressionTree parentExpression, TypeSolver typeSolver, ExpressionSolver expressionSolver) {
+            ExpressionTree parentExpression,
+            TypeSolver typeSolver,
+            ExpressionSolver expressionSolver) {
         return new CompleteMemberAction(
                 parentExpression, typeSolver, expressionSolver, METHOD_REFERENCE_OPTIONS);
     }
 
     static CompleteMemberAction forImport(
-            ExpressionTree parentExpression, TypeSolver typeSolver, ExpressionSolver expressionSolver) {
-        return new CompleteMemberAction(parentExpression, typeSolver, expressionSolver, IMPORT_OPTIONS);
+            ExpressionTree parentExpression,
+            TypeSolver typeSolver,
+            ExpressionSolver expressionSolver) {
+        return new CompleteMemberAction(
+                parentExpression, typeSolver, expressionSolver, IMPORT_OPTIONS);
     }
 
     static CompleteMemberAction forImportStatic(
-            ExpressionTree parentExpression, TypeSolver typeSolver, ExpressionSolver expressionSolver) {
+            ExpressionTree parentExpression,
+            TypeSolver typeSolver,
+            ExpressionSolver expressionSolver) {
         return new CompleteMemberAction(
                 parentExpression, typeSolver, expressionSolver, IMPORT_STATIC_OPTIONS);
     }
@@ -106,43 +113,52 @@ class CompleteMemberAction implements CompletionAction {
         }
 
         if (solvedParent.get().getArrayLevel() > 0) {
-            return ImmutableList.of(new CompletionCandidate() {
-                @Override
-                public String getName() {
-                    return "length";
-                }
+            return ImmutableList.of(
+                    new CompletionCandidate() {
+                        @Override
+                        public String getName() {
+                            return "length";
+                        }
 
-                @Override
-                public Kind getKind() {
-                    return Kind.FIELD;
-                }
+                        @Override
+                        public Kind getKind() {
+                            return Kind.FIELD;
+                        }
 
-                @Override
-                public Optional<String> getDetail() {
-                    return Optional.of("int");
-                }
-            });
+                        @Override
+                        public Optional<String> getDetail() {
+                            return Optional.of("int");
+                        }
+                    });
         }
 
         if (solvedParent.get().getEntity() instanceof ClassEntity) {
             return new ClassMemberCompletor(typeSolver, expressionSolver)
                     .getClassMembers(
-                            solvedParent.get(), positionContext.getModule(), completionPrefix, options);
+                            solvedParent.get(),
+                            positionContext.getModule(),
+                            completionPrefix,
+                            options);
         }
 
         // Parent is a package.
         return completePackageMembers(
-                solvedParent.get().getEntity().getScope().getMemberEntities().values(), completionPrefix);
+                solvedParent.get().getEntity().getScope().getMemberEntities().values(),
+                completionPrefix);
     }
 
     private ImmutableList<CompletionCandidate> completePackageMembers(
             Collection<Entity> entities, String completionPrefix) {
         return entities.stream()
-                .filter((entity) -> options.allowedKinds().contains(entity.getKind())
-                        && CompletionPrefixMatcher.matches(entity.getSimpleName(), completionPrefix))
-                .map((entity) ->
-                        new EntityCompletionCandidate(
-                                entity, CompletionCandidate.SortCategory.DIRECT_MEMBER))
+                .filter(
+                        (entity) ->
+                                options.allowedKinds().contains(entity.getKind())
+                                        && CompletionPrefixMatcher.matches(
+                                                entity.getSimpleName(), completionPrefix))
+                .map(
+                        (entity) ->
+                                new EntityCompletionCandidate(
+                                        entity, CompletionCandidate.SortCategory.DIRECT_MEMBER))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
 }

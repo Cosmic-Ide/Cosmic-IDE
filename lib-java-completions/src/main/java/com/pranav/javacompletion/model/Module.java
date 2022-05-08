@@ -72,7 +72,8 @@ public class Module {
                 currentPackage = packageEntity.get().getScope();
             } else {
                 PackageScope packageScope = new PackageScope();
-                currentPackage.addEntity(new PackageEntity(qualifier, currentQualifiers, packageScope));
+                currentPackage.addEntity(
+                        new PackageEntity(qualifier, currentQualifiers, packageScope));
                 currentPackage = packageScope;
             }
             currentQualifiers.add(qualifier);
@@ -92,7 +93,8 @@ public class Module {
         Deque<PackageEntity> stack = new ArrayDeque<>();
         PackageScope currentPackage = rootPackage;
         for (String qualifier : fileScope.getPackageQualifiers()) {
-            Optional<PackageEntity> optionalPackageEntity = getPackageEntity(qualifier, currentPackage);
+            Optional<PackageEntity> optionalPackageEntity =
+                    getPackageEntity(qualifier, currentPackage);
             if (!optionalPackageEntity.isPresent()) {
                 throw new RuntimeException("Package " + qualifier + " not found");
             }

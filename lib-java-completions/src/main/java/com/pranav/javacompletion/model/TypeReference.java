@@ -3,6 +3,7 @@ package com.pranav.javacompletion.model;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,7 +67,8 @@ public abstract class TypeReference implements TypeArgument {
 
             for (SimpleType enclosingClass : getEnclosingClasses().get()) {
                 builder.add(
-                        enclosingClass.getSimpleName() + typeArgumentString(enclosingClass.getTypeArguments()));
+                        enclosingClass.getSimpleName()
+                                + typeArgumentString(enclosingClass.getTypeArguments()));
             }
             return builder.add(getSimpleName()).build();
         } else {

@@ -47,7 +47,8 @@ public class FileManagerImpl implements FileManager {
             ignorePathMatchers = PathUtils.DEFAULT_IGNORE_MATCHERS;
         } else {
             FileSystem fs = FileSystems.getDefault();
-            ImmutableList.Builder<PathMatcher> ignorePathMatchersBuilder = new ImmutableList.Builder<>();
+            ImmutableList.Builder<PathMatcher> ignorePathMatchersBuilder =
+                    new ImmutableList.Builder<>();
             for (String pattern : ignorePathPatterns) {
                 PathMatcher matcher;
                 try {
@@ -69,7 +70,8 @@ public class FileManagerImpl implements FileManager {
     public void openFileForSnapshot(URI fileUri, String content) throws IOException {
         Path filePath = uriToNormalizedPath(fileUri);
         if (fileSnapshots.containsKey(filePath)) {
-            throw new IllegalStateException(String.format("File %s has already been opened.", fileUri));
+            throw new IllegalStateException(
+                    String.format("File %s has already been opened.", fileUri));
         }
         FileSnapshot fileSnapshot = FileSnapshot.create(filePath.toUri(), content);
         fileSnapshots.put(filePath, fileSnapshot);
@@ -137,7 +139,7 @@ public class FileManagerImpl implements FileManager {
             }
 
             try (DirectoryStream<Path> directoryStream =
-                         Files.newDirectoryStream(directory, file -> Files.isDirectory(file))) {
+                    Files.newDirectoryStream(directory, file -> Files.isDirectory(file))) {
                 for (Path subDir : directoryStream) {
                     directories.add(subDir);
                 }
@@ -157,7 +159,9 @@ public class FileManagerImpl implements FileManager {
         Path normalizedPath = filePath.normalize();
         if (fileSnapshots.containsKey(normalizedPath)) {
             return Optional.of(
-                    fileSnapshots.get(normalizedPath).getCharContent(true /* ignoreEncodingErrors */));
+                    fileSnapshots
+                            .get(normalizedPath)
+                            .getCharContent(true /* ignoreEncodingErrors */));
         }
 
         try {

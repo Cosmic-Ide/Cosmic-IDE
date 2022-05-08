@@ -2,7 +2,10 @@ package com.pranav.javacompletion.storage;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
+
+import androidx.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
@@ -10,21 +13,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import androidx.annotation.Nullable;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
@@ -41,6 +29,21 @@ import com.pranav.javacompletion.model.TypeReference;
 import com.pranav.javacompletion.model.VariableEntity;
 import com.pranav.javacompletion.model.WildcardTypeArgument;
 import com.pranav.javacompletion.typesolver.TypeSolver;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /** Storing and loading indexed Java modules from storage. */
 public class IndexStore {
@@ -83,7 +86,9 @@ public class IndexStore {
                 module.getAllFiles().stream()
                         .collect(
                                 Collectors.groupingBy(
-                                        fileScope -> QUALIFIER_JOINER.join(fileScope.getPackageQualifiers())))
+                                        fileScope ->
+                                                QUALIFIER_JOINER.join(
+                                                        fileScope.getPackageQualifiers())))
                         .entrySet()
                         .stream()
                         .map(entry -> serializeFileScopes(entry.getKey(), entry.getValue()))
@@ -103,7 +108,8 @@ public class IndexStore {
         return module;
     }
 
-    private SerializedFileScope serializeFileScopes(String packageName, List<FileScope> fileScopes) {
+    private SerializedFileScope serializeFileScopes(
+            String packageName, List<FileScope> fileScopes) {
         SerializedFileScope ret = new SerializedFileScope();
         ret.packageName = packageName;
         ret.entities =
@@ -173,7 +179,8 @@ public class IndexStore {
                         .collect(Collectors.toList()));
         if (entity.getSuperClass().isPresent()) {
             ret.superClass =
-                    serializeTypeReference(entity.getSuperClass().get(), entity.getParentScope().get());
+                    serializeTypeReference(
+                            entity.getSuperClass().get(), entity.getParentScope().get());
         }
         ret.interfaces =
                 entity.getInterfaces().stream()
@@ -229,7 +236,8 @@ public class IndexStore {
             return deserializeClassEntity(serializedEntity, entityKind, qualifiers, parentScope);
         } else if (entityKind == Entity.Kind.METHOD) {
             checkArgument(
-                    parentScope instanceof ClassEntity, "parentScope must be ClassEntity for methods.");
+                    parentScope instanceof ClassEntity,
+                    "parentScope must be ClassEntity for methods.");
             return deserializeMethodEntity(
                     serializedEntity, entityKind, qualifiers, (ClassEntity) parentScope);
         } else {
@@ -294,8 +302,13 @@ public class IndexStore {
                             .map(
                                     p ->
                                             deserializeVariableEntity(
-                                                    p, Entity.Kind.VARIABLE, EMPTY_QUALIFIERS, classEntity))
-                            .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
+                                                    p,
+                                                    Entity.Kind.VARIABLE,
+                                                    EMPTY_QUALIFIERS,
+                                                    classEntity))
+                            .collect(
+                                    Collectors.collectingAndThen(
+                                            Collectors.toList(), ImmutableList::copyOf));
         }
         ImmutableList<TypeParameter> typeParameters =
                 deserializeTypeParameters(serializedEntity.typeParameters);
@@ -362,8 +375,8 @@ public class IndexStore {
         }
         if (optionalEntityWithContext.isPresent()
                 && Objects.equals(
-                optionalEntityWithContext.get().getEntity().getSimpleName(),
-                typeToSolve.getSimpleName())) {
+                        optionalEntityWithContext.get().getEntity().getSimpleName(),
+                        typeToSolve.getSimpleName())) {
             EntityWithContext entityWithContext = optionalEntityWithContext.get();
             boolean isArray = entityWithContext.getArrayLevel() > 0;
             ret.fullName = entityWithContext.getEntity().getQualifiedName();
@@ -427,7 +440,8 @@ public class IndexStore {
         } else if (typeArgument instanceof WildcardTypeArgument) {
             WildcardTypeArgument wildcardTypeArgument = (WildcardTypeArgument) typeArgument;
             if (wildcardTypeArgument.getBound().isPresent()) {
-                WildcardTypeArgument.Bound.Kind boundKind = wildcardTypeArgument.getBound().get().getKind();
+                WildcardTypeArgument.Bound.Kind boundKind =
+                        wildcardTypeArgument.getBound().get().getKind();
                 switch (boundKind) {
                     case SUPER:
                         ret.kind = SerializedTypeArgumentKind.WILDCARD_SUPER;
@@ -438,7 +452,8 @@ public class IndexStore {
                 }
                 ret.bound =
                         serializeTypeReference(
-                                wildcardTypeArgument.getBound().get().getTypeReference(), baseScope);
+                                wildcardTypeArgument.getBound().get().getTypeReference(),
+                                baseScope);
             } else {
                 ret.kind = SerializedTypeArgumentKind.WILDCARD_UNBOUNDED;
             }
@@ -464,16 +479,16 @@ public class IndexStore {
                         typeArgument.bound,
                         "Type Argument with kind %s should have bound set",
                         typeArgument.kind);
-            {
-                WildcardTypeArgument.Bound.Kind boundKind =
-                        typeArgument.kind == SerializedTypeArgumentKind.WILDCARD_SUPER
-                                ? WildcardTypeArgument.Bound.Kind.SUPER
-                                : WildcardTypeArgument.Bound.Kind.EXTENDS;
-                WildcardTypeArgument.Bound bound =
-                        WildcardTypeArgument.Bound.create(
-                                boundKind, deserializeTypeReference(typeArgument.bound));
-                return WildcardTypeArgument.create(Optional.of(bound));
-            }
+                {
+                    WildcardTypeArgument.Bound.Kind boundKind =
+                            typeArgument.kind == SerializedTypeArgumentKind.WILDCARD_SUPER
+                                    ? WildcardTypeArgument.Bound.Kind.SUPER
+                                    : WildcardTypeArgument.Bound.Kind.EXTENDS;
+                    WildcardTypeArgument.Bound bound =
+                            WildcardTypeArgument.Bound.create(
+                                    boundKind, deserializeTypeReference(typeArgument.bound));
+                    return WildcardTypeArgument.create(Optional.of(bound));
+                }
             default:
                 throw new RuntimeException("Unknown type argument " + typeArgument);
         }
@@ -549,7 +564,8 @@ public class IndexStore {
                 return 0;
             }
 
-            int ret = Objects.compare(this.packageName, other.packageName, Comparator.naturalOrder());
+            int ret =
+                    Objects.compare(this.packageName, other.packageName, Comparator.naturalOrder());
             if (ret != 0) {
                 return ret;
             }
@@ -602,7 +618,9 @@ public class IndexStore {
 
             ret =
                     Objects.compare(
-                            this.javadoc, other.javadoc, Comparator.nullsLast(Comparator.naturalOrder()));
+                            this.javadoc,
+                            other.javadoc,
+                            Comparator.nullsLast(Comparator.naturalOrder()));
             if (ret != 0) {
                 return ret;
             }

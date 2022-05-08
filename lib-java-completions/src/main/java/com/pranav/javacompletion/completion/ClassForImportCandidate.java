@@ -1,15 +1,16 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.collect.ImmutableMap;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.Optional;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.protocol.textdocument.CompletionItem.ResolveAction;
 import com.pranav.javacompletion.protocol.textdocument.CompletionItem.ResolveActionParams;
 import com.pranav.javacompletion.protocol.textdocument.CompletionItem.ResolveAddImportTextEditsParams;
 import com.pranav.javacompletion.typesolver.EntityShadowingListBuilder.ForImportEntity;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Optional;
 
 /** A candidate with import class edit actions. */
 class ClassForImportCandidate extends EntityBasedCompletionCandidate {
@@ -42,7 +43,8 @@ class ClassForImportCandidate extends EntityBasedCompletionCandidate {
 
     @Override
     public Map<ResolveAction, ResolveActionParams> getResolveActions() {
-        ImmutableMap.Builder<ResolveAction, ResolveActionParams> builder = new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<ResolveAction, ResolveActionParams> builder =
+                new ImmutableMap.Builder<>();
         ResolveAddImportTextEditsParams params = new ResolveAddImportTextEditsParams();
         params.uri = filePath.toUri();
         params.classFullName = getEntity().getQualifiedName();

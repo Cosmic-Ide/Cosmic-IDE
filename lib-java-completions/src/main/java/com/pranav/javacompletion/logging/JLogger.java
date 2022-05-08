@@ -70,7 +70,8 @@ public class JLogger {
     }
 
     /**
-     * Logs a message at severe level with formatting parameters and associated Throwable information.
+     * Logs a message at severe level with formatting parameters and associated Throwable
+     * information.
      *
      * @param thrown Throwable associated with the log message
      * @param msgfmt the message format string that can be accepted by {@link String#format}

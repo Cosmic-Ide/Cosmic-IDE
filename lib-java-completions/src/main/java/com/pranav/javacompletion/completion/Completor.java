@@ -1,16 +1,6 @@
 package com.pranav.javacompletion.completion;
 
 import com.google.common.collect.ImmutableList;
-import org.openjdk.source.tree.ExpressionTree;
-import org.openjdk.source.tree.ImportTree;
-import org.openjdk.source.tree.LiteralTree;
-import org.openjdk.source.tree.MemberReferenceTree;
-import org.openjdk.source.tree.MemberSelectTree;
-import org.openjdk.source.tree.Tree;
-import org.openjdk.source.util.TreePath;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
 import com.pranav.javacompletion.file.FileManager;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.project.ModuleManager;
@@ -20,9 +10,19 @@ import com.pranav.javacompletion.typesolver.MemberSolver;
 import com.pranav.javacompletion.typesolver.OverloadSolver;
 import com.pranav.javacompletion.typesolver.TypeSolver;
 
-/**
- * Entry point of completion logic
- */
+import org.openjdk.source.tree.ExpressionTree;
+import org.openjdk.source.tree.ImportTree;
+import org.openjdk.source.tree.LiteralTree;
+import org.openjdk.source.tree.MemberReferenceTree;
+import org.openjdk.source.tree.MemberSelectTree;
+import org.openjdk.source.tree.Tree;
+import org.openjdk.source.util.TreePath;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+
+/** Entry point of completion logic */
 public class Completor {
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
@@ -63,7 +63,8 @@ public class Completor {
         // (position < node's endPosition). However, for completions, we want the leaf node either
         // includes the position, or just before the position (position == node's endPosition).
         // Decreasing column by 1 will decrease position by 1, which makes
-        // adjustedPosition == node's endPosition - 1 if the node is just before the actual position.
+        // adjustedPosition == node's endPosition - 1 if the node is just before the actual
+        // position.
         int contextColumn = column > 0 ? column - 1 : 0;
         Optional<PositionContext> positionContext =
                 PositionContext.createForPosition(moduleManager, filePath, line, contextColumn);
@@ -79,14 +80,16 @@ public class Completor {
         }
 
         ContentWithLineMap contentWithLineMap =
-                ContentWithLineMap.create(positionContext.get().getFileScope(), fileManager, filePath);
+                ContentWithLineMap.create(
+                        positionContext.get().getFileScope(), fileManager, filePath);
         String prefix = contentWithLineMap.extractCompletionPrefix(line, column);
         // TODO: limit the number of the candidates.
         if (cachedCompletion.isIncrementalCompletion(filePath, line, column, prefix)) {
             return getCompletionCandidatesFromCache(line, column, prefix);
         } else {
             cachedCompletion =
-                    computeCompletionResult(positionContext.get(), contentWithLineMap, line, column, prefix);
+                    computeCompletionResult(
+                            positionContext.get(), contentWithLineMap, line, column, prefix);
             return cachedCompletion;
         }
     }
@@ -102,25 +105,31 @@ public class Completor {
         TextEditOptions.Builder textEditOptions =
                 TextEditOptions.builder().setAppendMethodArgumentSnippets(false);
         if (treePath.getLeaf() instanceof MemberSelectTree) {
-            ExpressionTree parentExpression = ((MemberSelectTree) treePath.getLeaf()).getExpression();
+            ExpressionTree parentExpression =
+                    ((MemberSelectTree) treePath.getLeaf()).getExpression();
             Optional<ImportTree> importNode = findNodeOfType(treePath, ImportTree.class);
             if (importNode.isPresent()) {
                 if (importNode.get().isStatic()) {
                     action =
-                            CompleteMemberAction.forImportStatic(parentExpression, typeSolver, expressionSolver);
+                            CompleteMemberAction.forImportStatic(
+                                    parentExpression, typeSolver, expressionSolver);
                 } else {
-                    action = CompleteMemberAction.forImport(parentExpression, typeSolver, expressionSolver);
+                    action =
+                            CompleteMemberAction.forImport(
+                                    parentExpression, typeSolver, expressionSolver);
                 }
             } else {
                 action =
-                        CompleteMemberAction.forMemberSelect(parentExpression, typeSolver, expressionSolver);
+                        CompleteMemberAction.forMemberSelect(
+                                parentExpression, typeSolver, expressionSolver);
                 textEditOptions.setAppendMethodArgumentSnippets(true);
             }
         } else if (treePath.getLeaf() instanceof MemberReferenceTree) {
             ExpressionTree parentExpression =
                     ((MemberReferenceTree) treePath.getLeaf()).getQualifierExpression();
             action =
-                    CompleteMemberAction.forMethodReference(parentExpression, typeSolver, expressionSolver);
+                    CompleteMemberAction.forMethodReference(
+                            parentExpression, typeSolver, expressionSolver);
         } else if (treePath.getLeaf() instanceof LiteralTree) {
             // Do not complete on any literals, especially strings.
             action = NoCandidateAction.INSTANCE;
@@ -154,8 +163,7 @@ public class Completor {
                 new CompletionCandidateListBuilder(prefix)
                         .addCandidates(cachedCompletion.getCompletionCandidates())
                         .build();
-        return cachedCompletion
-                .toBuilder()
+        return cachedCompletion.toBuilder()
                 .setCompletionCandidates(narrowedCandidates)
                 .setLine(line)
                 .setColumn(column)

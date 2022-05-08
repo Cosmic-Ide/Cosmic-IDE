@@ -1,9 +1,10 @@
 package com.pranav.javacompletion.project;
 
 import com.google.auto.value.AutoValue;
-import java.nio.file.Path;
 import com.pranav.javacompletion.model.FileScope;
 import com.pranav.javacompletion.model.Module;
+
+import java.nio.file.Path;
 
 /** Information about a parsed file in a project. */
 @AutoValue

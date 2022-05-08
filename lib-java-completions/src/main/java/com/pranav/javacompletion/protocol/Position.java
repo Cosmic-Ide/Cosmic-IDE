@@ -1,7 +1,8 @@
 package com.pranav.javacompletion.protocol;
 
-import java.util.Objects;
 import com.pranav.javacompletion.file.TextPosition;
+
+import java.util.Objects;
 
 /**
  * Position in a text document expressed as zero-based line and character offset. A position is

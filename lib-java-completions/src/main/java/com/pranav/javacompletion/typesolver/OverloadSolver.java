@@ -2,22 +2,17 @@ package com.pranav.javacompletion.typesolver;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
+
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import androidx.annotation.Nullable;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.EntityWithContext;
@@ -30,6 +25,14 @@ import com.pranav.javacompletion.model.SolvedPrimitiveType;
 import com.pranav.javacompletion.model.SolvedReferenceType;
 import com.pranav.javacompletion.model.SolvedType;
 import com.pranav.javacompletion.model.TypeReference;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Find which method overload should be invoked with given arguments
@@ -86,13 +89,13 @@ public class OverloadSolver {
          */
         VARIABLE_ARITY_LOOSE_INVOCATION,
         /**
-         * If consider boxing/unboxing but not varargs, the method signagure matches. This is described
-         * as phase 2 in the spec.
+         * If consider boxing/unboxing but not varargs, the method signagure matches. This is
+         * described as phase 2 in the spec.
          */
         LOOSE_INVOCATION,
         /**
-         * All argument type matches without boxing/unboxing or varargs. This is described as phase 1 in
-         * the spec.
+         * All argument type matches without boxing/unboxing or varargs. This is described as phase
+         * 1 in the spec.
          */
         STRICT_INVOCATION,
     }
@@ -127,7 +130,9 @@ public class OverloadSolver {
      * @return one of the methods in {@code methods}
      */
     public MethodEntity solve(
-            List<EntityWithContext> entities, List<Optional<SolvedType>> argumentTypes, Module module) {
+            List<EntityWithContext> entities,
+            List<Optional<SolvedType>> argumentTypes,
+            Module module) {
         List<MethodEntity> methods =
                 entities.stream()
                         .map(EntityWithContext::getEntity)
@@ -150,12 +155,14 @@ public class OverloadSolver {
                     // The previous matched methods are better match than this method, skip it.
                     continue;
                 case 0:
-                    // This method is as good as previously matched methods. Add it the the list of matched
+                    // This method is as good as previously matched methods. Add it the the list of
+                    // matched
                     // methods.
                     matchedMethods.add(method);
                     break;
                 case 1:
-                    // The method is better than previously matched methods. Clear all matched methods and add
+                    // The method is better than previously matched methods. Clear all matched
+                    // methods and add
                     // it.
                     previousMatchLevel = matchLevel;
                     matchedMethods.clear();
@@ -164,7 +171,8 @@ public class OverloadSolver {
             }
         }
 
-        return getMostSpecificMethod(matchedMethods, argumentTypes.size(), previousMatchLevel, module);
+        return getMostSpecificMethod(
+                matchedMethods, argumentTypes.size(), previousMatchLevel, module);
     }
 
     private SignatureMatchLevel matchMethodSignature(
@@ -175,7 +183,8 @@ public class OverloadSolver {
                         .collect(collectingAndThen(toList(), ImmutableList::copyOf));
 
         boolean isVariableArityInvocation =
-                !parameterTypes.isEmpty() && parameterTypes.get(parameterTypes.size() - 1).isArray();
+                !parameterTypes.isEmpty()
+                        && parameterTypes.get(parameterTypes.size() - 1).isArray();
         if (!isVariableArityInvocation && argumentTypes.size() != parameterTypes.size()) {
             return SignatureMatchLevel.LENGTH_NOT_MATCH;
         }
@@ -192,11 +201,15 @@ public class OverloadSolver {
         // Assuming we are at the highest possible match level. Downgrade once we find violations.
         SignatureMatchLevel matchLevel = SignatureMatchLevel.STRICT_INVOCATION;
 
-        // Check all parameters other than the last one. The last one will be checked against variable
+        // Check all parameters other than the last one. The last one will be checked against
+        // variable
         // arity.
         for (int i = 0; i < parameterTypes.size() - 1; i++) {
             Optional<SolvedType> solvedParameterType =
-                    typeSolver.solve(parameterTypes.get(i), method.getScope().getParentScope().get(), module);
+                    typeSolver.solve(
+                            parameterTypes.get(i),
+                            method.getScope().getParentScope().get(),
+                            module);
             switch (matchArgumentType(argumentTypes.get(i), solvedParameterType, module)) {
                 case NOT_MATCH:
                     return SignatureMatchLevel.TYPE_NOT_MATCH;
@@ -224,11 +237,13 @@ public class OverloadSolver {
             return SignatureMatchLevel.TYPE_NOT_MATCH;
         }
         TypeMatchLevel lastParameterMatchLevel =
-                matchArgumentType(argumentTypes.get(parameterTypes.size() - 1), lastParameterType, module);
+                matchArgumentType(
+                        argumentTypes.get(parameterTypes.size() - 1), lastParameterType, module);
         if (lastParameterMatchLevel == TypeMatchLevel.MATCH_WITH_BOXING) {
             matchLevel = SignatureMatchLevel.LOOSE_INVOCATION;
         }
-        // If the last parameter matches without variable arity, we are good to return. Otherwise, give
+        // If the last parameter matches without variable arity, we are good to return. Otherwise,
+        // give
         // it another chance with variable arity considered.
         if (lastParameterMatchLevel != TypeMatchLevel.NOT_MATCH
                 && argumentTypes.size() == parameterTypes.size()) {
@@ -275,7 +290,8 @@ public class OverloadSolver {
             return TypeMatchLevel.NOT_MATCH;
         }
 
-        return matchArgumentType(argumentType.get(), parameterType.get(), module).getTypeMatchLevel();
+        return matchArgumentType(argumentType.get(), parameterType.get(), module)
+                .getTypeMatchLevel();
     }
 
     private TypeMatchResult matchArgumentType(
@@ -285,7 +301,7 @@ public class OverloadSolver {
                 TypeMatchResult.builder().setHasPrimitiveWidening(false);
         if ((parameterType instanceof SolvedReferenceType)
                 && OBJECT_FULL_NAME.equals(
-                ((SolvedReferenceType) parameterType).getEntity().getQualifiedName())) {
+                        ((SolvedReferenceType) parameterType).getEntity().getQualifiedName())) {
             if (argumentType instanceof SolvedPrimitiveType) {
                 return resultBuilder.setTypeMatchLevel(TypeMatchLevel.MATCH_WITH_BOXING).build();
             } else {
@@ -317,7 +333,8 @@ public class OverloadSolver {
                             ((SolvedArrayType) parameterType).getBaseType(),
                             ((SolvedArrayType) argumentType).getBaseType(),
                             module);
-            // Array type are not compatible if auto-boxing or primitive widening are needed for matching
+            // Array type are not compatible if auto-boxing or primitive widening are needed for
+            // matching
             // base types.
             if (baseTypeMatch.getTypeMatchLevel() != TypeMatchLevel.MATCH_WITHOUT_BOXING
                     || baseTypeMatch.getHasPrimitiveWidening()) {
@@ -329,11 +346,13 @@ public class OverloadSolver {
         /// Handle primitive type matching
 
         if (argumentType instanceof SolvedPrimitiveType) {
-            return primitiveTypeMatch(((SolvedPrimitiveType) argumentType).getEntity(), parameterType);
+            return primitiveTypeMatch(
+                    ((SolvedPrimitiveType) argumentType).getEntity(), parameterType);
         }
         if (parameterType instanceof SolvedPrimitiveType) {
             TypeMatchResult parameterPrimitiveMatch =
-                    primitiveTypeMatch(((SolvedPrimitiveType) parameterType).getEntity(), argumentType);
+                    primitiveTypeMatch(
+                            ((SolvedPrimitiveType) parameterType).getEntity(), argumentType);
             if (parameterPrimitiveMatch.getHasPrimitiveWidening()) {
                 // Argument type needs to be narrowed to match parameter type. Not a match.
                 return resultBuilder.setTypeMatchLevel(TypeMatchLevel.NOT_MATCH).build();
@@ -351,7 +370,9 @@ public class OverloadSolver {
 
         for (EntityWithContext argumentBaseClass :
                 typeSolver.classHierarchy(
-                        EntityWithContext.ofEntity(((SolvedReferenceType) argumentType).getEntity()), module)) {
+                        EntityWithContext.ofEntity(
+                                ((SolvedReferenceType) argumentType).getEntity()),
+                        module)) {
             if (argumentBaseClass
                     .getEntity()
                     .getQualifiedName()
@@ -366,8 +387,8 @@ public class OverloadSolver {
     /**
      * Checks if the primitive argumentType can be assigned to parameterType.
      *
-     * <p>artumentType can be assigned to parameterType if they are the same type, or argumentType can
-     * be widening converted to parameterType.
+     * <p>artumentType can be assigned to parameterType if they are the same type, or argumentType
+     * can be widening converted to parameterType.
      */
     private static TypeMatchResult primitiveTypeMatch(
             PrimitiveEntity argumentType, PrimitiveEntity parameterType) {
@@ -391,11 +412,13 @@ public class OverloadSolver {
     private static TypeMatchResult primitiveTypeMatch(
             PrimitiveEntity primitiveEntity, SolvedType otherType) {
         if (otherType instanceof SolvedPrimitiveType) {
-            return primitiveTypeMatch(primitiveEntity, ((SolvedPrimitiveType) otherType).getEntity());
+            return primitiveTypeMatch(
+                    primitiveEntity, ((SolvedPrimitiveType) otherType).getEntity());
         }
 
         if (otherType instanceof SolvedReferenceType) {
-            String primitiveOtherType = primitiveTypeOf(((SolvedReferenceType) otherType).getEntity());
+            String primitiveOtherType =
+                    primitiveTypeOf(((SolvedReferenceType) otherType).getEntity());
             if (primitiveEntity.getSimpleName().equals(primitiveOtherType)) {
                 return TypeMatchResult.builder()
                         .setTypeMatchLevel(TypeMatchLevel.MATCH_WITH_BOXING)
@@ -411,7 +434,8 @@ public class OverloadSolver {
     /**
      * Try to get the primitive type of given solvedType.
      *
-     * @return the name of the primitive type, or {@code null} if cannot be unboxed to primitive type
+     * @return the name of the primitive type, or {@code null} if cannot be unboxed to primitive
+     *     type
      */
     @Nullable
     private static String primitiveTypeOf(ClassEntity classEntity) {
@@ -423,7 +447,8 @@ public class OverloadSolver {
      *
      * @return one of -1, 0, and 1. -1 means overloads with match level of {@code lhs} is more
      *     preferred over those of {@code rhs}. 1 means overloads with match level of {@code rhs} is
-     *     more preferred over thos of {@code lhs}. 0 means {@code rhs} and {@code lhs} are identical
+     *     more preferred over thos of {@code lhs}. 0 means {@code rhs} and {@code lhs} are
+     *     identical
      */
     private static int compareMatchLevel(SignatureMatchLevel rhs, SignatureMatchLevel lhs) {
         int rordinal = rhs.ordinal();
@@ -455,7 +480,8 @@ public class OverloadSolver {
                     continue;
                 }
                 int compareResult =
-                        compareMethodSpecificity(method1, method2, numArguments, signatureMatchLevel, module);
+                        compareMethodSpecificity(
+                                method1, method2, numArguments, signatureMatchLevel, module);
                 switch (compareResult) {
                     case -1:
                         // method 1 is less specific than method 2.
@@ -486,8 +512,8 @@ public class OverloadSolver {
     /**
      * Checks which method is more specific than the other.
      *
-     * @return -1 if {@code lhs} is less specific than {@code rhs}, 1 if {@code lhs} is more specific
-     *     than {@code rhs}, 0 otherwise.
+     * @return -1 if {@code lhs} is less specific than {@code rhs}, 1 if {@code lhs} is more
+     *     specific than {@code rhs}, 0 otherwise.
      */
     private int compareMethodSpecificity(
             MethodEntity lhs,
@@ -497,11 +523,21 @@ public class OverloadSolver {
             Module module) {
         List<Optional<SolvedType>> lhsParameterTypes =
                 lhs.getParameters().stream()
-                        .map(p -> typeSolver.solve(p.getType(), lhs.getScope().getParentScope().get(), module))
+                        .map(
+                                p ->
+                                        typeSolver.solve(
+                                                p.getType(),
+                                                lhs.getScope().getParentScope().get(),
+                                                module))
                         .collect(Collectors.toList());
         List<Optional<SolvedType>> rhsParameterTypes =
                 rhs.getParameters().stream()
-                        .map(p -> typeSolver.solve(p.getType(), rhs.getScope().getParentScope().get(), module))
+                        .map(
+                                p ->
+                                        typeSolver.solve(
+                                                p.getType(),
+                                                rhs.getScope().getParentScope().get(),
+                                                module))
                         .collect(Collectors.toList());
         if (methodMoreSpecific(
                 lhs,
@@ -528,7 +564,9 @@ public class OverloadSolver {
 
     /** Moves the best matched method to the first element. */
     public List<EntityWithContext> prioritizeMatchedMethod(
-            List<EntityWithContext> entities, List<Optional<SolvedType>> argumentTypes, Module module) {
+            List<EntityWithContext> entities,
+            List<Optional<SolvedType>> argumentTypes,
+            Module module) {
         if (entities.isEmpty()) {
             return entities;
         }
@@ -545,7 +583,8 @@ public class OverloadSolver {
 
         checkState(
                 matchedIndex >= 0,
-                "The matched method returned by solve() is not in the entity list: matched is %s, the list is %s",
+                "The matched method returned by solve() is not in the entity list: matched is %s,"
+                    + " the list is %s",
                 matchedMethod,
                 entities);
 
@@ -570,7 +609,8 @@ public class OverloadSolver {
             SignatureMatchLevel signatureMatchLevel,
             Module module) {
         int maxParameterSize =
-                Math.max(Math.max(lhsParameterTypes.size(), rhsParameterTypes.size()), numArguments);
+                Math.max(
+                        Math.max(lhsParameterTypes.size(), rhsParameterTypes.size()), numArguments);
         boolean isVariableArityInvocation =
                 (signatureMatchLevel == SignatureMatchLevel.VARIABLE_ARITY_LOOSE_INVOCATION);
         for (int i = 0; i < maxParameterSize; i++) {
@@ -594,9 +634,9 @@ public class OverloadSolver {
      * <p>If the index-th parameter is before the last formal parameter, return the type itself.
      *
      * <p>If the index-th parameter is the last formal parameter or after the last formal parameter.
-     * Then it depends on whether the method invocation is a variable-arity invocation. If the method
-     * invocation is a variable-arity invocation, then return the base type of the array of the last
-     * formal parameter. Otherwise:
+     * Then it depends on whether the method invocation is a variable-arity invocation. If the
+     * method invocation is a variable-arity invocation, then return the base type of the array of
+     * the last formal parameter. Otherwise:
      *
      * <ol>
      *   <li>If the index-th parameter is the last formal parameter, then return the type itself.

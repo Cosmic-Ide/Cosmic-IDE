@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
+
 import java.util.Map;
 
 /** A solved type that is primitive. */

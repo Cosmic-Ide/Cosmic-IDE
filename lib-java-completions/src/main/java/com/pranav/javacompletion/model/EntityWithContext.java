@@ -50,7 +50,8 @@ public abstract class EntityWithContext {
                             .setEntity(solvedEntityType.getEntity())
                             .setInstanceContext(false);
             if (solvedType instanceof SolvedReferenceType) {
-                builder.setSolvedTypeParameters(((SolvedReferenceType) solvedType).getTypeParameters());
+                builder.setSolvedTypeParameters(
+                        ((SolvedReferenceType) solvedType).getTypeParameters());
             } else {
                 builder.setSolvedTypeParameters(SolvedTypeParameters.EMPTY);
             }
@@ -69,7 +70,8 @@ public abstract class EntityWithContext {
         } else if (entity instanceof NullEntity) {
             solvedType = SolvedNullType.INSTANCE;
         } else if (entity instanceof ClassEntity) {
-            solvedType = SolvedReferenceType.create((ClassEntity) entity, getSolvedTypeParameters());
+            solvedType =
+                    SolvedReferenceType.create((ClassEntity) entity, getSolvedTypeParameters());
         } else if (entity instanceof PackageEntity) {
             solvedType = SolvedPackageType.create((PackageEntity) entity);
         } else {
@@ -102,7 +104,8 @@ public abstract class EntityWithContext {
 
         public Builder decrementArrayLevel() {
             int currentArrayLevel = getArrayLevel();
-            checkState(currentArrayLevel > 0, "Cannot decrement array level when it's already zero");
+            checkState(
+                    currentArrayLevel > 0, "Cannot decrement array level when it's already zero");
             return setArrayLevel(currentArrayLevel - 1);
         }
 

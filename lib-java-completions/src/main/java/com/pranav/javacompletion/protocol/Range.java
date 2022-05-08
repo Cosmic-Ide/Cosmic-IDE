@@ -1,7 +1,8 @@
 package com.pranav.javacompletion.protocol;
 
-import java.util.Objects;
 import com.pranav.javacompletion.file.TextRange;
+
+import java.util.Objects;
 
 /**
  * A range in a text document expressed as (zero-based) start and end positions.

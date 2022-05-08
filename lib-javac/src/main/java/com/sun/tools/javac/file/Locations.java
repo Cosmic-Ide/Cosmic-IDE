@@ -1472,9 +1472,8 @@ public class Locations {
                     return null;
                 }
 
-                if (warn
-                        && false) { // temp disable, when enabled, massage examples.not-yet.txt
-                                    // suitably.
+                if (warn && false) { // temp disable, when enabled, massage examples.not-yet.txt
+                    // suitably.
                     log.warning(Warnings.LocnUnknownFileOnModulePath(p));
                 }
                 return null;

@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.parser.classfile;
 
 import com.google.auto.value.AutoValue;
+
 import java.util.EnumSet;
 
 @AutoValue

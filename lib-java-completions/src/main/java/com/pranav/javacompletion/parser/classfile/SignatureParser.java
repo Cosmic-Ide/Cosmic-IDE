@@ -7,14 +7,15 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import com.pranav.javacompletion.model.SimpleType;
 import com.pranav.javacompletion.model.TypeArgument;
 import com.pranav.javacompletion.model.TypeParameter;
 import com.pranav.javacompletion.model.TypeReference;
 import com.pranav.javacompletion.model.WildcardTypeArgument;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * A parser for the content of {@link AttributeInfo.Signature}.
@@ -76,7 +77,8 @@ public class SignatureParser {
         }
 
         // Parse parameters
-        checkState(ch == '(', "Method parameters do not start with '(': %s", lexer.remainingContent());
+        checkState(
+                ch == '(', "Method parameters do not start with '(': %s", lexer.remainingContent());
         lexer.skipChar();
         ch = lexer.peekChar();
         while (ch != ')') {
@@ -101,7 +103,8 @@ public class SignatureParser {
             ch = lexer.nextChar();
             switch (ch) {
                 case 'L':
-                    builder.addThrowsSignature(parseClassTypeSignatureContent(false /* endsWithEos */));
+                    builder.addThrowsSignature(
+                            parseClassTypeSignatureContent(false /* endsWithEos */));
                     break;
                 case 'T':
                     builder.addThrowsSignature(parseTypeVariableSignatureContent());
@@ -126,7 +129,10 @@ public class SignatureParser {
     ImmutableList<TypeParameter> parseTypeParameters() {
         char ch = lexer.nextChar();
         checkState(
-                ch == '<', "TypeParameters do not start with '<': %s%s", ch, lexer.remainingContent());
+                ch == '<',
+                "TypeParameters do not start with '<': %s%s",
+                ch,
+                lexer.remainingContent());
 
         ImmutableList.Builder<TypeParameter> builder = new ImmutableList.Builder<>();
         while (true) {
@@ -290,7 +296,8 @@ public class SignatureParser {
      * <p>See JVMS 4.2.1: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1
      */
     public TypeReference parseClassBinaryName() {
-        // The binary name is a subset of the class type signature, with the exception that it doesn't
+        // The binary name is a subset of the class type signature, with the exception that it
+        // doesn't
         // have the leading "L" and ends without a semicolon.
         return parseClassTypeSignatureContent(true /* endsWithEos */);
     }
@@ -313,7 +320,8 @@ public class SignatureParser {
     }
 
     private SimpleType parseSimpleClassTypeSignatureContent(String identifier) {
-        SimpleType.Builder builder = SimpleType.builder().setPrimitive(false).setSimpleName(identifier);
+        SimpleType.Builder builder =
+                SimpleType.builder().setPrimitive(false).setSimpleName(identifier);
         char ch = lexer.peekChar();
         if (ch == '<') {
             builder.setTypeArguments(parseTypeArguments());
@@ -326,7 +334,11 @@ public class SignatureParser {
     /** &lt; TypeArgument {TypeArgument} &gt; */
     private ImmutableList<TypeArgument> parseTypeArguments() {
         char ch = lexer.nextChar();
-        checkState(ch == '<', "TypeArguments do no start with '<': %s%s", ch, lexer.remainingContent());
+        checkState(
+                ch == '<',
+                "TypeArguments do no start with '<': %s%s",
+                ch,
+                lexer.remainingContent());
         ImmutableList.Builder<TypeArgument> builder = new ImmutableList.Builder<>();
         while (true) {
             builder.add(parseTypeArgument());
@@ -358,13 +370,15 @@ public class SignatureParser {
                 return WildcardTypeArgument.create(
                         Optional.of(
                                 WildcardTypeArgument.Bound.create(
-                                        WildcardTypeArgument.Bound.Kind.EXTENDS, parseReferenceTypeSignature())));
+                                        WildcardTypeArgument.Bound.Kind.EXTENDS,
+                                        parseReferenceTypeSignature())));
             case '-':
                 lexer.skipChar();
                 return WildcardTypeArgument.create(
                         Optional.of(
                                 WildcardTypeArgument.Bound.create(
-                                        WildcardTypeArgument.Bound.Kind.SUPER, parseReferenceTypeSignature())));
+                                        WildcardTypeArgument.Bound.Kind.SUPER,
+                                        parseReferenceTypeSignature())));
             default:
                 return parseReferenceTypeSignature();
         }

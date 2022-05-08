@@ -2,6 +2,7 @@ package com.pranav.javacompletion.model;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.util.Collection;
 
 /** A type without information about its package name and enclosing classes. */

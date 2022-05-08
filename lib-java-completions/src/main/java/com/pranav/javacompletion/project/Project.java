@@ -2,8 +2,20 @@ package com.pranav.javacompletion.project;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
+import com.pranav.javacompletion.completion.CompletionResult;
+import com.pranav.javacompletion.completion.Completor;
+import com.pranav.javacompletion.file.FileChangeListener;
+import com.pranav.javacompletion.file.FileManager;
+import com.pranav.javacompletion.logging.JLogger;
+import com.pranav.javacompletion.model.Module;
+import com.pranav.javacompletion.options.IndexOptions;
+// import com.pranav.javacompletion.protocol.TextEdit;
+// import com.pranav.javacompletion.reference.DefinitionSolver;
+// import com.pranav.javacompletion.reference.MethodSignatures;
+// import com.pranav.javacompletion.reference.ReferenceSolver;
+// import com.pranav.javacompletion.reference.SignatureSolver;
+import com.pranav.javacompletion.storage.IndexStore;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -13,27 +25,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
-import java.util.List;
-import java.util.Optional;
-//import com.pranav.javacompletion.completion.CompletionResult;
-//import com.pranav.javacompletion.completion.Completor;
-//import com.pranav.javacompletion.completion.TextEdits;
-import com.pranav.javacompletion.completion.CompletionResult;
-import com.pranav.javacompletion.completion.Completor;
-import com.pranav.javacompletion.file.FileChangeListener;
-import com.pranav.javacompletion.file.FileManager;
-import com.pranav.javacompletion.logging.JLogger;
-import com.pranav.javacompletion.model.Entity;
-import com.pranav.javacompletion.model.FileScope;
-import com.pranav.javacompletion.model.Module;
-import com.pranav.javacompletion.options.IndexOptions;
-//import com.pranav.javacompletion.protocol.TextEdit;
-//import com.pranav.javacompletion.reference.DefinitionSolver;
-//import com.pranav.javacompletion.reference.MethodSignatures;
-//import com.pranav.javacompletion.reference.ReferenceSolver;
-//import com.pranav.javacompletion.reference.SignatureSolver;
-import com.pranav.javacompletion.storage.IndexStore;
-
+// import com.pranav.javacompletion.completion.CompletionResult;
+// import com.pranav.javacompletion.completion.Completor;
+// import com.pranav.javacompletion.completion.TextEdits;
 
 public class Project {
 
@@ -44,22 +38,24 @@ public class Project {
 
     private final FileManager fileManager;
     private final Completor completor;
-//    private final DefinitionSolver definitionSolver;
-//    private final SignatureSolver signatureSolver;
+    //    private final DefinitionSolver definitionSolver;
+    //    private final SignatureSolver signatureSolver;
     private final ModuleManager moduleManager;
     private Path lastCompletedFile = null;
 
     private boolean initialized;
 
     public Project(FileManager fileManager, URI rootUri, IndexOptions indexOptions) {
-        this(new FileSystemModuleManager(fileManager, Paths.get(rootUri), indexOptions), fileManager);
+        this(
+                new FileSystemModuleManager(fileManager, Paths.get(rootUri), indexOptions),
+                fileManager);
     }
 
     public Project(ModuleManager moduleManager, FileManager fileManager) {
         completor = new Completor(fileManager);
         this.fileManager = fileManager;
-    //    this.definitionSolver = new DefinitionSolver();
-  //      this.signatureSolver = new SignatureSolver();
+        //    this.definitionSolver = new DefinitionSolver();
+        //      this.signatureSolver = new SignatureSolver();
         this.moduleManager = moduleManager;
     }
 
@@ -76,15 +72,17 @@ public class Project {
 
     private synchronized void addOrUpdateFile(Path filePath) {
         // Only fix content for files that are under completion.
-        boolean fixContentForParsing = lastCompletedFile != null && lastCompletedFile.equals(filePath);
+        boolean fixContentForParsing =
+                lastCompletedFile != null && lastCompletedFile.equals(filePath);
         moduleManager.addOrUpdateFile(filePath, fixContentForParsing);
     }
 
     public synchronized void loadJdkModule() {
         logger.info("Loading JDK module");
         try (BufferedReader reader =
-                     new BufferedReader(
-                             new InputStreamReader(this.getClass().getResourceAsStream(JDK_RESOURCE_PATH), UTF_8))) {
+                new BufferedReader(
+                        new InputStreamReader(
+                                this.getClass().getResourceAsStream(JDK_RESOURCE_PATH), UTF_8))) {
             moduleManager.addDependingModule(new IndexStore().readModule(reader));
             logger.info("JDK module loaded");
         } catch (Throwable t) {
@@ -137,7 +135,8 @@ public class Project {
                     addOrUpdateFile(filePath);
                 }
             } else if (changeKind == StandardWatchEventKinds.ENTRY_DELETE) {
-                // Do not check if the file is a java source file here. Deleted file is not a regular file.
+                // Do not check if the file is a java source file here. Deleted file is not a
+                // regular file.
                 // The module handles nonexistence file correctly.
                 moduleManager.removeFile(filePath);
             }

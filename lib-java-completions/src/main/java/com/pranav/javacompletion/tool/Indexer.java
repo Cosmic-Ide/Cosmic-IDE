@@ -1,18 +1,6 @@
 package com.pranav.javacompletion.tool;
 
 import com.google.common.collect.ImmutableMap;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import com.pranav.javacompletion.file.FileManager;
 import com.pranav.javacompletion.file.PathUtils;
 import com.pranav.javacompletion.file.SimpleFileManager;
@@ -26,6 +14,15 @@ import com.pranav.javacompletion.project.Project;
 import com.pranav.javacompletion.project.SimpleModuleManager;
 import com.pranav.javacompletion.storage.IndexStore;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 /**
  * Creates index files for specified source code.
  *
@@ -35,8 +32,7 @@ public class Indexer {
 
     private final ParserContext parserContext = new ParserContext();
 
-    public Indexer() {
-    }
+    public Indexer() {}
 
     public void run(
             List<String> inputPaths,
@@ -52,19 +48,19 @@ public class Indexer {
             // Do not use module manager's file manager because we need to setup root
             // path and ignore paths per directory.
             FileManager fileManager = new SimpleFileManager(path, ignorePaths);
-            ClassModuleBuilder classModuleBuilder = new ClassModuleBuilder(moduleManager.getModule());
+            ClassModuleBuilder classModuleBuilder =
+                    new ClassModuleBuilder(moduleManager.getModule());
             ImmutableMap<String, Consumer<Path>> handlers =
                     ImmutableMap.<String, Consumer<Path>>of(
                             ".class",
                             classModuleBuilder::processClassFile,
                             ".java",
-                            subpath -> addJavaFile(subpath, moduleManager.getModule(), fileManager));
+                            subpath ->
+                                    addJavaFile(subpath, moduleManager.getModule(), fileManager));
             if (Files.isDirectory(path)) {
                 System.out.println("Indexing directory: " + inputPath);
                 PathUtils.walkDirectory(
-                        path,
-                        handlers,
-                        /* ignorePredicate= */ fileManager::shouldIgnorePath);
+                        path, handlers, /* ignorePredicate= */ fileManager::shouldIgnorePath);
             } else if (inputPath.endsWith(".jar") || inputPath.endsWith(".srcjar")) {
                 System.out.println("Indexing JAR file: " + inputPath);
                 try {
@@ -102,22 +98,25 @@ public class Indexer {
 
     /**
      * Convenience method for invoking the Indexer through code
+     *
      * @param jarFiles List of jar paths to index
      * @param outputFile The output file (not a directory)
      * @param ignoredPaths List of paths to ignore
      * @param indexFiles List of other indexes that this library might depend on
      */
-    public static void createIndex(List<String> jarFiles,
-                                   String outputFile,
-                                   List<String> ignoredPaths,
-                                   List<String> indexFiles) {
+    public static void createIndex(
+            List<String> jarFiles,
+            String outputFile,
+            List<String> ignoredPaths,
+            List<String> indexFiles) {
         new Indexer().run(jarFiles, outputFile, ignoredPaths, indexFiles, false);
     }
 
     public static void main(String[] args) {
         if (args.length < 3) {
             System.out.println(
-                    "Usage: Indexer <directory or jar file>[, directory or jar file...]  -o <output file> [options]");
+                    "Usage: Indexer <directory or jar file>[, directory or jar file...]  -o <output"
+                        + " file> [options]");
             System.out.println("  Options:");
             System.out.println("    --depend|-d <index files...>");
             System.out.println("    --ignore|-i <ignored paths...>]");

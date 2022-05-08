@@ -2,9 +2,6 @@ package com.pranav.javacompletion.typesolver;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
@@ -14,6 +11,10 @@ import com.pranav.javacompletion.model.Module;
 import com.pranav.javacompletion.model.PrimitiveEntity;
 import com.pranav.javacompletion.model.TypeArgument;
 import com.pranav.javacompletion.model.VariableEntity;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /** Logic for finding the entity that defines the member of a class. */
 public class MemberSolver {
@@ -61,12 +62,12 @@ public class MemberSolver {
                 && !baseEntity.isInstanceContext()
                 && IDENT_THIS.equals(identifier)) {
             return Optional.of(
-                    baseEntity
-                            .toBuilder()
+                    baseEntity.toBuilder()
                             .setInstanceContext(true)
                             .setSolvedTypeParameters(
                                     typeSolver.solveTypeParameters(
-                                            ((ClassEntity) baseEntity.getEntity()).getTypeParameters(),
+                                            ((ClassEntity) baseEntity.getEntity())
+                                                    .getTypeParameters(),
                                             ImmutableList.<TypeArgument>of(),
                                             baseEntity.getSolvedTypeParameters(),
                                             baseEntity.getEntity().getScope(),
@@ -79,12 +80,15 @@ public class MemberSolver {
         return typeSolver.findEntityMember(identifier, baseEntity, module, allowedKinds);
     }
 
-    /** @return a list of {@link MethodEntity} instances. */
+    /**
+     * @return a list of {@link MethodEntity} instances.
+     */
     public List<EntityWithContext> findMethodMembers(
             String identifier, EntityWithContext baseEntity, Module module) {
         // Methods must be defined in classes.
         if (!(baseEntity.getEntity() instanceof ClassEntity)) {
-            logger.warning(new Throwable(), "Cannot find method of non-class entities %s", baseEntity);
+            logger.warning(
+                    new Throwable(), "Cannot find method of non-class entities %s", baseEntity);
             return ImmutableList.of();
         }
 

@@ -3,6 +3,7 @@ package com.pranav.javacompletion.file;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -17,10 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * A simple implementation of {@link FileManager} that only loads file content
- * as-is.
- */
+/** A simple implementation of {@link FileManager} that only loads file content as-is. */
 public class SimpleFileManager implements FileManager {
 
     private final Path rootPath;
@@ -37,7 +35,9 @@ public class SimpleFileManager implements FileManager {
         this.ignorePathMatchers =
                 ignorePaths.stream()
                         .map(fs::getPathMatcher)
-                        .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
+                        .collect(
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(), ImmutableList::copyOf));
         this.snapshots = new HashMap<>();
     }
 

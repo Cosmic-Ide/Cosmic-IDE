@@ -4,14 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
@@ -24,6 +16,15 @@ import com.pranav.javacompletion.model.TypeReference;
 import com.pranav.javacompletion.model.VariableEntity;
 import com.pranav.javacompletion.parser.classfile.ParsedClassFile.ParsedField;
 import com.pranav.javacompletion.parser.classfile.ParsedClassFile.ParsedMethod;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /** Builder of {@link Module} with classes parsed from .class files. */
 public class ClassModuleBuilder {
@@ -61,9 +62,11 @@ public class ClassModuleBuilder {
                     parentScope = classEntityMap.get(outerClassBinaryName);
                 }
             } else {
-                PackageScope packageScope = module.getOrCreatePackage(parsedClassFile.getClassQualifiers());
+                PackageScope packageScope =
+                        module.getOrCreatePackage(parsedClassFile.getClassQualifiers());
                 FileScope fileScope =
-                        FileScope.createFromClassFile(classFilePath, parsedClassFile.getClassQualifiers());
+                        FileScope.createFromClassFile(
+                                classFilePath, parsedClassFile.getClassQualifiers());
                 module.addOrReplaceFileScope(fileScope);
                 parentScope = fileScope;
             }
@@ -81,7 +84,8 @@ public class ClassModuleBuilder {
         }
     }
 
-    private ClassEntity createClassEntity(ParsedClassFile parsedClassFile, EntityScope parentScope) {
+    private ClassEntity createClassEntity(
+            ParsedClassFile parsedClassFile, EntityScope parentScope) {
         ClassSignature signature = parsedClassFile.getClassSignature();
         ClassEntity classEntity =
                 new ClassEntity(

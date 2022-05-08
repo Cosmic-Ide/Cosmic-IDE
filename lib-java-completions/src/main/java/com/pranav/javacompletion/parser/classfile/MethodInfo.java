@@ -2,6 +2,7 @@ package com.pranav.javacompletion.parser.classfile;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+
 import java.util.EnumSet;
 
 /**

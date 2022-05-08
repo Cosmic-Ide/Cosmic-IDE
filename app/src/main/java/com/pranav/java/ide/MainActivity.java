@@ -28,6 +28,9 @@ import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
+import com.pranav.javacompletion.JavaCompletions;
+import com.pranav.javacompletion.completion.*;
+import com.pranav.javacompletion.options.JavaCompletionOptionsImpl;
 import com.pranav.lib_android.code.disassembler.*;
 import com.pranav.lib_android.code.formatter.*;
 import com.pranav.lib_android.incremental.Indexer;
@@ -35,9 +38,6 @@ import com.pranav.lib_android.task.JavaBuilder;
 import com.pranav.lib_android.util.ConcurrentUtil;
 import com.pranav.lib_android.util.FileUtil;
 import com.pranav.lib_android.util.ZipUtil;
-import com.pranav.javacompletion.JavaCompletions;
-import com.pranav.javacompletion.options.JavaCompletionOptionsImpl;
-import com.pranav.javacompletion.completion.*;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -54,7 +54,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 public final class MainActivity extends AppCompatActivity {
@@ -79,7 +78,10 @@ public final class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        completions.initialize(new File(FileUtil.getJavaDir()).toURI(), new JavaCompletionOptionsImpl(FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
+        completions.initialize(
+                new File(FileUtil.getJavaDir()).toURI(),
+                new JavaCompletionOptionsImpl(
+                        FileUtil.getBinDir() + "log.txt", Level.ALL, null, null));
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
@@ -152,15 +154,25 @@ public final class MainActivity extends AppCompatActivity {
         }
 
         final StringBuilder s = new StringBuilder();
-        ConcurrentUtil.execute(() -> {
-        CompletionResult result = completions.getProject()
-                .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
+        ConcurrentUtil.execute(
+                () -> {
+                    CompletionResult result =
+                            completions
+                                    .getProject()
+                                    .getCompletionResult(
+                                            new File(currentWorkingFilePath).toPath(),
+                                            8
+                                            /** line * */
+                                            ,
+                                            13
+                                            /** column * */
+                                            );
 
-        for(CompletionCandidate candidate : result.getCompletionCandidates()) {
-            s.append(candidate.getName());
-            s.append("\n");
-        }
-        });
+                    for (CompletionCandidate candidate : result.getCompletionCandidates()) {
+                        s.append(candidate.getName());
+                        s.append("\n");
+                    }
+                });
         editor.setText(s.toString());
 
         /* Create Loading Dialog */
@@ -207,7 +219,7 @@ public final class MainActivity extends AppCompatActivity {
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
-        
+
         currentWorkingFilePath = path;
     }
 
@@ -234,7 +246,7 @@ public final class MainActivity extends AppCompatActivity {
                             temp = formatter.format();
                         }
                     });
-                    editor.setText(temp);
+            editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
 
             Intent intent = new Intent(MainActivity.this, SettingActivity.class);

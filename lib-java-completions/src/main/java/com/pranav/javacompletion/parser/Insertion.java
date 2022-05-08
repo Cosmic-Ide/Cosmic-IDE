@@ -2,6 +2,7 @@ package com.pranav.javacompletion.parser;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Ordering;
+
 import java.util.List;
 
 @AutoValue

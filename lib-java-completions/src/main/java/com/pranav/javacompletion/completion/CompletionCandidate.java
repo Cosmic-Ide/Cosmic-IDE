@@ -23,11 +23,11 @@ public interface CompletionCandidate {
     /**
      * The category a candidate belongs to for sorting purposes.
      *
-     * <p>Candidates are sorted by SortCategory first, then by their other characteristics such as the
-     * label.
+     * <p>Candidates are sorted by SortCategory first, then by their other characteristics such as
+     * the label.
      *
-     * <p>SortCategory values are compared using their ordinal values. Do not change the order of the
-     * values unless there is a good reason.
+     * <p>SortCategory values are compared using their ordinal values. Do not change the order of
+     * the values unless there is a good reason.
      */
     public enum SortCategory {
         /** A member name defined by the class of the instance. */

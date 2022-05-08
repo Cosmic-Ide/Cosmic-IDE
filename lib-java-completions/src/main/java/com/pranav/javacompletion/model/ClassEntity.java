@@ -18,13 +18,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Represents a class, interface, enum, or annotation.
- */
+/** Represents a class, interface, enum, or annotation. */
 public class ClassEntity extends Entity implements EntityScope {
     public static final Set<Entity.Kind> ALLOWED_KINDS =
             EnumSet.of(
-                    Entity.Kind.CLASS, Entity.Kind.INTERFACE, Entity.Kind.ANNOTATION, Entity.Kind.ENUM);
+                    Entity.Kind.CLASS,
+                    Entity.Kind.INTERFACE,
+                    Entity.Kind.ANNOTATION,
+                    Entity.Kind.ENUM);
 
     // Map of simple names -> fields.
     private final Map<String, VariableEntity> fields;
@@ -89,8 +90,7 @@ public class ClassEntity extends Entity implements EntityScope {
     @Override
     public Multimap<String, Entity> getMemberEntities() {
         ImmutableMultimap.Builder<String, Entity> builder = new ImmutableMultimap.Builder<>();
-        return builder
-                .putAll(fields.entrySet())
+        return builder.putAll(fields.entrySet())
                 .putAll(methods)
                 .putAll(innerClasses.entrySet())
                 .build();
@@ -168,6 +168,7 @@ public class ClassEntity extends Entity implements EntityScope {
     public ImmutableList<MethodEntity> getMethods() {
         return ImmutableList.copyOf(methods.values());
     }
+
     @Override
     public String toString() {
         return "ClassEntity<"

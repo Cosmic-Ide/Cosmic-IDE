@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.model;
 
 import com.google.auto.value.AutoValue;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Optional;
@@ -31,7 +32,10 @@ public abstract class SolvedReferenceType extends SolvedEntityType {
             } else if (parent.get() instanceof PackageEntity) {
                 packages.addFirst(parent.get().getSimpleName());
             }
-            parent = parent.get().getParentScope().map(scope -> scope.getDefiningEntity().orElse(null));
+            parent =
+                    parent.get()
+                            .getParentScope()
+                            .map(scope -> scope.getDefiningEntity().orElse(null));
         }
         return TypeReference.formalizedBuilder()
                 .setPrimitive(false)

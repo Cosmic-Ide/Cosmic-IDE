@@ -2,16 +2,6 @@ package com.pranav.javacompletion.tool;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.stream.Stream;
 import com.pranav.javacompletion.parser.classfile.AttributeInfo;
 import com.pranav.javacompletion.parser.classfile.ClassFileInfo;
 import com.pranav.javacompletion.parser.classfile.ClassFileParser;
@@ -22,6 +12,17 @@ import com.pranav.javacompletion.parser.classfile.MethodInfo;
 import com.pranav.javacompletion.parser.classfile.ParsedClassFile;
 import com.pranav.javacompletion.parser.classfile.ParsedClassFile.ParsedField;
 import com.pranav.javacompletion.parser.classfile.ParsedClassFile.ParsedMethod;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Print result of parsing a .jar file.
@@ -44,7 +45,8 @@ public class JarPrinter {
 
     public void parseAndPrint(String jarFilename, Optional<String> classFilename) {
         // JAR specific URI pattern.
-        // See https://docs.oracle.com/javase/8/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+        // See
+        // https://docs.oracle.com/javase/8/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
         FileSystem fs;
         try {
             Path jarPath = Paths.get(jarFilename);
@@ -60,7 +62,8 @@ public class JarPrinter {
                         if (!path.toString().endsWith(".class")) {
                             return;
                         }
-                        if (!classFilename.isPresent() || path.toString().endsWith(classFilename.get())) {
+                        if (!classFilename.isPresent()
+                                || path.toString().endsWith(classFilename.get())) {
                             printClassFile(path);
                         }
                     });
@@ -119,8 +122,10 @@ public class JarPrinter {
         System.out.println("    Class binary name: " + parsedClassFile.getClassBinaryName());
         System.out.println("    Simple name: " + parsedClassFile.getSimpleName());
         System.out.println(
-                "    Class qualifiers: " + QUALIFIER_JOINER.join(parsedClassFile.getClassQualifiers()));
-        System.out.println("    Outer class binary name: " + parsedClassFile.getOuterClassBinaryName());
+                "    Class qualifiers: "
+                        + QUALIFIER_JOINER.join(parsedClassFile.getClassQualifiers()));
+        System.out.println(
+                "    Outer class binary name: " + parsedClassFile.getOuterClassBinaryName());
         System.out.println("    Class signature: " + parsedClassFile.getClassSignature());
         System.out.println("    Kind: " + parsedClassFile.getEntityKind());
         System.out.println("    Static? " + parsedClassFile.isStatic());
@@ -179,7 +184,8 @@ public class JarPrinter {
         System.out.println();
         System.out.println("  If only <jar-file> exists, print all .class files in the jar file.");
         System.out.println();
-        System.out.println("  If only <class-file> exists, print the .class file in the file system.");
+        System.out.println(
+                "  If only <class-file> exists, print the .class file in the file system.");
         System.exit(1);
     }
 }

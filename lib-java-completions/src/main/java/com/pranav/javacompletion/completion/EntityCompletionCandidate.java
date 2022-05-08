@@ -1,13 +1,14 @@
 package com.pranav.javacompletion.completion;
 
-import java.util.List;
-import java.util.Optional;
 import com.pranav.javacompletion.model.ClassEntity;
 import com.pranav.javacompletion.model.Entity;
 import com.pranav.javacompletion.model.MethodEntity;
 import com.pranav.javacompletion.model.TypeParameter;
 import com.pranav.javacompletion.model.TypeReference;
 import com.pranav.javacompletion.model.VariableEntity;
+
+import java.util.List;
+import java.util.Optional;
 
 /** A {@link CompletionCandidate} backed by {@link Entity}. */
 class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
@@ -32,28 +33,28 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
     public Optional<String> getInsertSnippet(TextEditOptions textEditOptions) {
         switch (getEntity().getKind()) {
             case METHOD:
-            {
-                if (textEditOptions.getAppendMethodArgumentSnippets()) {
-                    MethodEntity method = (MethodEntity) getEntity();
-                    StringBuilder sb = new StringBuilder(getName());
-                    sb.append("(");
-                    boolean firstParam = true;
-                    int nParam = 0;
-                    for (VariableEntity param : method.getParameters()) {
-                        if (!firstParam) {
-                            sb.append(", ");
-                        } else {
-                            firstParam = false;
+                {
+                    if (textEditOptions.getAppendMethodArgumentSnippets()) {
+                        MethodEntity method = (MethodEntity) getEntity();
+                        StringBuilder sb = new StringBuilder(getName());
+                        sb.append("(");
+                        boolean firstParam = true;
+                        int nParam = 0;
+                        for (VariableEntity param : method.getParameters()) {
+                            if (!firstParam) {
+                                sb.append(", ");
+                            } else {
+                                firstParam = false;
+                            }
+                            nParam++;
+                            sb.append(String.format("${%d:%s}", nParam, param.getSimpleName()));
                         }
-                        nParam++;
-                        sb.append(String.format("${%d:%s}", nParam, param.getSimpleName()));
+                        sb.append(")");
+                        return Optional.of(sb.toString());
+                    } else {
+                        return Optional.empty();
                     }
-                    sb.append(")");
-                    return Optional.of(sb.toString());
-                } else {
-                    return Optional.empty();
                 }
-            }
             default:
                 return Optional.empty();
         }
@@ -64,61 +65,61 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
         Entity entity = getEntity();
         switch (entity.getKind()) {
             case METHOD:
-            {
-                StringBuilder sb = new StringBuilder();
-                MethodEntity method = (MethodEntity) entity;
-                if (!method.getTypeParameters().isEmpty()) {
-                    appendTypeParameters(sb, method.getTypeParameters());
-                    sb.append(" ");
-                }
-                sb.append("(");
-                boolean firstParam = true;
-                for (VariableEntity param : method.getParameters()) {
-                    if (firstParam) {
-                        firstParam = false;
-                    } else {
-                        sb.append(", ");
+                {
+                    StringBuilder sb = new StringBuilder();
+                    MethodEntity method = (MethodEntity) entity;
+                    if (!method.getTypeParameters().isEmpty()) {
+                        appendTypeParameters(sb, method.getTypeParameters());
+                        sb.append(" ");
                     }
-                    sb.append(param.getType().toDisplayString());
-                    sb.append(" ");
-                    sb.append(param.getSimpleName());
+                    sb.append("(");
+                    boolean firstParam = true;
+                    for (VariableEntity param : method.getParameters()) {
+                        if (firstParam) {
+                            firstParam = false;
+                        } else {
+                            sb.append(", ");
+                        }
+                        sb.append(param.getType().toDisplayString());
+                        sb.append(" ");
+                        sb.append(param.getSimpleName());
+                    }
+                    sb.append("): ");
+                    sb.append(method.getReturnType().toDisplayString());
+                    return Optional.of(sb.toString());
                 }
-                sb.append("): ");
-                sb.append(method.getReturnType().toDisplayString());
-                return Optional.of(sb.toString());
-            }
             case CLASS:
             case INTERFACE:
-            {
-                ClassEntity classEntity = (ClassEntity) entity;
-                if (classEntity.getTypeParameters().isEmpty()
-                        && !classEntity.getSuperClass().isPresent()
-                        && classEntity.getInterfaces().isEmpty()) {
-                    return Optional.empty();
-                }
-                StringBuilder sb = new StringBuilder();
-                if (!classEntity.getTypeParameters().isEmpty()) {
-                    appendTypeParameters(sb, classEntity.getTypeParameters());
-                }
-                TypeReference superClassOrOnlyInterface = null;
-                if (classEntity.getSuperClass().isPresent()) {
-                    superClassOrOnlyInterface = classEntity.getSuperClass().get();
-                } else if (classEntity.getInterfaces().size() == 1) {
-                    superClassOrOnlyInterface = classEntity.getInterfaces().get(0);
-                }
+                {
+                    ClassEntity classEntity = (ClassEntity) entity;
+                    if (classEntity.getTypeParameters().isEmpty()
+                            && !classEntity.getSuperClass().isPresent()
+                            && classEntity.getInterfaces().isEmpty()) {
+                        return Optional.empty();
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    if (!classEntity.getTypeParameters().isEmpty()) {
+                        appendTypeParameters(sb, classEntity.getTypeParameters());
+                    }
+                    TypeReference superClassOrOnlyInterface = null;
+                    if (classEntity.getSuperClass().isPresent()) {
+                        superClassOrOnlyInterface = classEntity.getSuperClass().get();
+                    } else if (classEntity.getInterfaces().size() == 1) {
+                        superClassOrOnlyInterface = classEntity.getInterfaces().get(0);
+                    }
 
-                if (superClassOrOnlyInterface != null) {
-                    sb.append(": ");
-                    sb.append(superClassOrOnlyInterface.getSimpleName());
+                    if (superClassOrOnlyInterface != null) {
+                        sb.append(": ");
+                        sb.append(superClassOrOnlyInterface.getSimpleName());
+                    }
+                    return Optional.of(sb.toString());
                 }
-                return Optional.of(sb.toString());
-            }
             case VARIABLE:
             case FIELD:
-            {
-                VariableEntity variable = (VariableEntity) entity;
-                return Optional.of(variable.getType().toDisplayString());
-            }
+                {
+                    VariableEntity variable = (VariableEntity) entity;
+                    return Optional.of(variable.getType().toDisplayString());
+                }
             default:
                 return Optional.empty();
         }

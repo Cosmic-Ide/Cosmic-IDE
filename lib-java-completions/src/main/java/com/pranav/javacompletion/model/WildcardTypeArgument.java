@@ -1,6 +1,7 @@
 package com.pranav.javacompletion.model;
 
 import com.google.auto.value.AutoValue;
+
 import java.util.Optional;
 
 /** A {@link TypeArgument} starting with question mark (?). */
@@ -30,7 +31,8 @@ public abstract class WildcardTypeArgument implements TypeArgument {
             return Optional.empty();
         }
         return Optional.of(
-                WildcardTypeArgument.create(Bound.create(bound.get().getKind(), typeReference.get())));
+                WildcardTypeArgument.create(
+                        Bound.create(bound.get().getKind(), typeReference.get())));
     }
 
     @Override

@@ -1,13 +1,6 @@
 package com.pranav.javacompletion.project;
 
 import com.google.common.collect.ImmutableMap;
-import java.nio.file.Path;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Consumer;
 import com.pranav.javacompletion.file.FileManager;
 import com.pranav.javacompletion.file.PathUtils;
 import com.pranav.javacompletion.logging.JLogger;
@@ -16,6 +9,14 @@ import com.pranav.javacompletion.model.Module;
 import com.pranav.javacompletion.options.IndexOptions;
 import com.pranav.javacompletion.parser.Parser;
 import com.pranav.javacompletion.parser.classfile.ClassModuleBuilder;
+
+import java.nio.file.Path;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class FileSystemModuleManager implements ModuleManager {
     private static final JLogger logger = JLogger.createForEnclosingClass();
@@ -101,7 +102,9 @@ public class FileSystemModuleManager implements ModuleManager {
         ImmutableMap<String, Consumer<Path>> handlers =
                 ImmutableMap.<String, Consumer<Path>>of(
                         JAVA_EXTENSION,
-                        path -> addOrUpdateFile(projectModule, path, /* fixContentForParsing= */ false),
+                        path ->
+                                addOrUpdateFile(
+                                        projectModule, path, /* fixContentForParsing= */ false),
                         JAR_EXTENSION,
                         path -> addJarModule(path),
                         SRCJAR_EXTENSION,
@@ -119,16 +122,20 @@ public class FileSystemModuleManager implements ModuleManager {
             ImmutableMap<String, Consumer<Path>> handlers =
                     ImmutableMap.<String, Consumer<Path>>of(
                             JAVA_EXTENSION,
-                            filePath -> addOrUpdateFile(jarModule, filePath, /* fixContentForParsing= */ false),
+                            filePath ->
+                                    addOrUpdateFile(
+                                            jarModule, filePath, /* fixContentForParsing= */ false),
                             CLASS_EXTENSION,
                             filePath -> {
                                 try {
                                     classModuleBuilder.processClassFile(filePath);
                                 } catch (Throwable t) {
-                                    logger.warning(t, "Failed to process .class file: %s", filePath);
+                                    logger.warning(
+                                            t, "Failed to process .class file: %s", filePath);
                                 }
                             });
-            PathUtils.walkDirectory(rootJarPath, handlers, /* ignorePathPredicate= */ filePath -> false);
+            PathUtils.walkDirectory(
+                    rootJarPath, handlers, /* ignorePathPredicate= */ filePath -> false);
             projectModule.addDependingModule(jarModule);
         } catch (Throwable t) {
             logger.warning(t, "Failed to create module for JAR file %s", path);

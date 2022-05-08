@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,8 @@ public class PackageScope implements EntityScope {
     public void addEntity(Entity entity) {
         checkArgument(
                 entity instanceof PackageEntity,
-                "Only sub package can be added to a package. Found " + entity.getClass().getSimpleName());
+                "Only sub package can be added to a package. Found "
+                        + entity.getClass().getSimpleName());
         subPackages.put(entity.getSimpleName(), (PackageEntity) entity);
     }
 
@@ -60,7 +62,9 @@ public class PackageScope implements EntityScope {
         files.remove(fileScope);
     }
 
-    /** @return whether the package has sub packages or files. */
+    /**
+     * @return whether the package has sub packages or files.
+     */
     public boolean hasChildren() {
         return !(subPackages.isEmpty() && files.isEmpty());
     }

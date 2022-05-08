@@ -1,16 +1,9 @@
 package com.pranav.javacompletion.completion;
 
-import com.pranav.javacompletion.typesolver.ExpressionSolver;
-import com.pranav.javacompletion.typesolver.TypeSolver;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import com.pranav.javacompletion.completion.CompletionCandidate.SortCategory;
 import com.pranav.javacompletion.logging.JLogger;
 import com.pranav.javacompletion.model.ClassEntity;
@@ -25,6 +18,11 @@ import com.pranav.javacompletion.model.VariableEntity;
 import com.pranav.javacompletion.project.PositionContext;
 import com.pranav.javacompletion.typesolver.ExpressionSolver;
 import com.pranav.javacompletion.typesolver.TypeSolver;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /** An action that returns any visible entities as completion candidates. */
 class CompleteSymbolAction implements CompletionAction {
@@ -55,11 +53,12 @@ class CompleteSymbolAction implements CompletionAction {
     @Override
     public ImmutableList<CompletionCandidate> getCompletionCandidates(
             PositionContext positionContext, String completionPrefix) {
-        CompletionCandidateListBuilder builder = new CompletionCandidateListBuilder(completionPrefix);
+        CompletionCandidateListBuilder builder =
+                new CompletionCandidateListBuilder(completionPrefix);
         addKeywords(builder);
         for (EntityScope currentScope = positionContext.getScopeAtPosition();
-             currentScope != null;
-             currentScope = currentScope.getParentScope().orElse(null)) {
+                currentScope != null;
+                currentScope = currentScope.getParentScope().orElse(null)) {
             logger.fine("Adding member entities in scope: %s", currentScope);
             if (currentScope instanceof ClassEntity) {
                 builder.addCandidates(
@@ -79,7 +78,9 @@ class CompleteSymbolAction implements CompletionAction {
             }
         }
         builder.addEntities(
-                typeSolver.getAggregateRootPackageScope(positionContext.getModule()).getMemberEntities(),
+                typeSolver
+                        .getAggregateRootPackageScope(positionContext.getModule())
+                        .getMemberEntities(),
                 SortCategory.UNKNOWN);
 
         Optional<PackageScope> javaLangPackage =
@@ -108,7 +109,8 @@ class CompleteSymbolAction implements CompletionAction {
         // import foo.Bar;
         for (List<String> fullClassName : fileScope.getAllImportedClasses()) {
             Optional<ClassEntity> importedEntity =
-                    typeSolver.findClassInModule(fullClassName, module, true /* useCanonicalName */);
+                    typeSolver.findClassInModule(
+                            fullClassName, module, true /* useCanonicalName */);
             if (importedEntity.isPresent()) {
                 builder.addEntity(importedEntity.get(), SortCategory.ACCESSIBLE_SYMBOL);
             } else {
@@ -126,7 +128,9 @@ class CompleteSymbolAction implements CompletionAction {
         // import static foo.Bar.BAZ;
         for (List<String> fullMemberName : fileScope.getAllImportedStaticMembers()) {
             ClassEntity enclosingClass =
-                    typeSolver.solveClassOfStaticImport(fullMemberName, fileScope, module).orElse(null);
+                    typeSolver
+                            .solveClassOfStaticImport(fullMemberName, fileScope, module)
+                            .orElse(null);
             if (enclosingClass == null) {
                 continue;
             }
@@ -144,11 +148,17 @@ class CompleteSymbolAction implements CompletionAction {
 
         // import foo.Bar.*;
         addOnDemandImportedEntities(
-                builder, fileScope.getOnDemandClassImportQualifiers(), module, ClassEntity.ALLOWED_KINDS);
+                builder,
+                fileScope.getOnDemandClassImportQualifiers(),
+                module,
+                ClassEntity.ALLOWED_KINDS);
 
         // import static foo.Bar.*;
         addOnDemandImportedEntities(
-                builder, fileScope.getOnDemandStaticImportQualifiers(), module, METHOD_VARIABLE_KINDS);
+                builder,
+                fileScope.getOnDemandStaticImportQualifiers(),
+                module,
+                METHOD_VARIABLE_KINDS);
     }
 
     private void addOnDemandImportedEntities(

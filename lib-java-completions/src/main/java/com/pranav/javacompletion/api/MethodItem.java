@@ -1,6 +1,7 @@
 package com.pranav.autocompletion.api;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 public class MethodItem extends Item {
 
@@ -34,7 +35,7 @@ parameters.add(cl.getName());
     }
   }
 
-  public Class<?> getClass() {
+  public Class<?> getDeclaringClass() {
     return declaringClass;
   }
 }

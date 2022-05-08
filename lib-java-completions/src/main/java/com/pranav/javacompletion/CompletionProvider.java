@@ -5,6 +5,8 @@ import com.pranav.lib_android.util.FileUtil;
 import dalvik.system.PathClassLoader;
 
 import java.util.ArrayList;
+import java.io.File;
+import java.lang.reflect.Method;
 
 public class CompletionProvider {
 
@@ -15,7 +17,7 @@ public class CompletionProvider {
     File libs = new File(libPath);
     for (File lib : libs.listFiles()) {
       if (lib.getName().endsWith(".dex")) {
-        PathClassLoader loader = new PathClassLoader(lib.getAbsolutePath(), ClassLoader.getSystemClassloader());
+        PathClassLoader loader = new PathClassLoader(lib.getAbsolutePath(), ClassLoader.getSystemClassLoader());
         try {
           Class dynamicClass = loader.loadClass("java.lang.Class");
           for (Method m : dynamicClass.getDeclaredMethods()) {

@@ -54,7 +54,7 @@ public class ExecuteJavaTask extends Task {
                             new PathClassLoader(dexFile, mBuilder.getClassloader());
                     try {
 
-                        Class calledClass = loader.loadClass(clazz);
+                        Class<?> calledClass = loader.loadClass(clazz);
 
                         Method method = calledClass.getDeclaredMethod("main", String[].class);
 

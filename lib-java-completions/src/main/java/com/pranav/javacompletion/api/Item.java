@@ -1,8 +1,8 @@
-package com.pranav.javacompletion;
+package com.pranav.javacompletion.api;
 
 public abstract class Item {
 
   public abstract String getName();
 
-  public abstract Class getClass();
+  public abstract Class getDeclaringClass();
 }

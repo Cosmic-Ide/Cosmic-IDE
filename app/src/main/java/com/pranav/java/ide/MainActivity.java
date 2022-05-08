@@ -151,7 +151,7 @@ public final class MainActivity extends AppCompatActivity {
             }
         }
 
-        final StringBuilder s = new StringBuilder()!
+        final StringBuilder s = new StringBuilder();
         ConcurrentUtil.execute(() -> {
         CompletionResult result = completions.getProject()
                 .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
@@ -160,7 +160,7 @@ public final class MainActivity extends AppCompatActivity {
             s.append(candidate.getName());
             s.append("\n");
         }
-        }
+        });
         editor.setText(s.toString());
 
         /* Create Loading Dialog */

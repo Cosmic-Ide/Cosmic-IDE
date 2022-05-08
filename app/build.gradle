@@ -33,6 +33,7 @@ android {
     }
     
     packagingOptions {
+        // miscellaneous resources from eclipse jdt core
         resources.excludes.add("plugin.xml")
         resources.excludes.add(".options")
         resources.excludes.add("about.xml")
@@ -40,6 +41,13 @@ android {
         resources.excludes.add(".api_description")
         resources.excludes.add("about_files/*")
         resources.excludes.add("META-INF/*")
+        resources.excludes.add("ant_tasks/*")
+        resources.excludes.add("api_database/*")
+        // resources from nb-javac
+        resources.excludes.add("README.md")
+        resources.excludes.add("SECURITY.md")
+        // resources from kotlin stdlib
+        resources.excludes.add("kotlin/*")
     }
 }
 

@@ -13,9 +13,9 @@ public class MethodItem extends Item {
 
   public MethodItem(Method method) {
     this.method = method;
-for (Class<?> cl : method.getParameterTypes()) {
-parameters.add(cl.getName());
-}
+    for (Class<?> cl : method.getParameterTypes()) {
+      parameters.add(cl.getName());
+    }
     declaringClass = method.getDeclaringClass();
   }
 
@@ -33,6 +33,7 @@ parameters.add(cl.getName());
       builder.append(param);
       builder.append(", ");
     }
+    return builder.toString();
   }
 
   public Class<?> getDeclaringClass() {

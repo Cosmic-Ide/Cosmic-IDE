@@ -1,4 +1,4 @@
-package com.pranav.autocompletion.api;
+package com.pranav.javacompletion.api;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

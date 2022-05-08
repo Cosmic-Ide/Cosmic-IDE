@@ -151,6 +151,7 @@ public final class MainActivity extends AppCompatActivity {
             }
         }
 
+        ConcurrentUtil.execute(() -> {
         CompletionResult result = completions.getProject()
                 .getCompletionResult(new File(currentWorkingFilePath).toPath(), 8 /** line **/, 13 /** column **/);
 
@@ -158,6 +159,7 @@ public final class MainActivity extends AppCompatActivity {
         for(CompletionCandidate candidate : result.getCompletionCandidates()) {
             s += candidate.getName();
             s += "\n";
+        }
         }
         editor.setText(s);
 

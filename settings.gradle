@@ -19,7 +19,6 @@ dependencyResolutionManagement {
 rootProject.name = "Java IDE"
 
 include ':app'
-include ':android-stubs'
 include ':lib-android'
 include ':lib-eclipse'
 include ':lib-javac'

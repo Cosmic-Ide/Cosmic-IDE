@@ -15,5 +15,5 @@ dependencies {
 	implementation project(path: ':lib-google-java-format')
 	implementation project(path: ':lib-eclipse')
 	implementation project(path: ':lib-javac')
-	implementation project(path: ':android-stubs')
+	compileOnly fileTree(dir: 'classpath', include: ['*.jar'])
 }

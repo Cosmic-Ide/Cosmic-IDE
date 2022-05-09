@@ -2,7 +2,6 @@
 
 -dontwarn
 -dontnote
--dontobfuscate
 
--keep public class com.google.googlejavaformat.java.JavaInputAstVistor
+-keep class com.google.googlejavaformat.** { *; }
 -keep public class org.eclipse.jdt.internal.core.util.Disassembler

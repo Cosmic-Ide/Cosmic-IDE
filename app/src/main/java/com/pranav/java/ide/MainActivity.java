@@ -80,7 +80,7 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         completions.initialize(
-                new URI(FileUtil.getJavaDir()),
+                URI.create(FileUtil.getJavaDir()),
                 new JavaCompletionOptionsImpl(
                         FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
 

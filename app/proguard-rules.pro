@@ -1,7 +1,7 @@
 -ignorewarnings
 
--dontwarn
 -dontnote
+-dontobfuscate
 
 -keep class com.google.googlejavaformat.** { *; }
--keep public class org.eclipse.jdt.internal.core.util.Disassembler
+-keep class org.eclipse.util.** { *; }

@@ -52,6 +52,7 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -79,7 +80,7 @@ public final class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         completions.initialize(
-                new File(FileUtil.getJavaDir()).toURI(),
+                new URI(FileUtil.getJavaDir()),
                 new JavaCompletionOptionsImpl(
                         FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
 

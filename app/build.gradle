@@ -39,15 +39,15 @@ android {
         resources.excludes.add("about.xml")
         resources.excludes.add("plugin.properties")
         resources.excludes.add(".api_description")
-        resources.excludes.add("about_files/*")
-        resources.excludes.add("META-INF/*")
-        resources.excludes.add("ant_tasks/*")
-        resources.excludes.add("api_database/*")
+        resources.excludes.add("about_files/**")
+        resources.excluded.add("OSGI-INF/**")
+        resources.excludes.add("ant_tasks/**")
+        resources.excludes.add("api_database/**")
         // resources from nb-javac
         resources.excludes.add("README.md")
         resources.excludes.add("SECURITY.md")
         // resources from kotlin stdlib
-        resources.excludes.add("kotlin/*")
+        resources.excludes.add("kotlin/**")
     }
 }
 

@@ -4,4 +4,4 @@
 -dontnote
 -dontobfuscate
 
--keep class org.eclipse.** { *; }
+#-keep class org.eclipse.** { *; }

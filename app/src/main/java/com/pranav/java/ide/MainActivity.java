@@ -79,11 +79,6 @@ public final class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        completions.initialize(
-                URI.create(FileUtil.getJavaDir()),
-                new JavaCompletionOptionsImpl(
-                        FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
-
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         editor = findViewById(R.id.editor);
@@ -157,6 +152,12 @@ public final class MainActivity extends AppCompatActivity {
         final StringBuilder s = new StringBuilder();
         ConcurrentUtil.execute(
                 () -> {
+                    try {
+                    completions.initialize(
+                    new URI("json", FileUtil.getJavaDir(), null),
+                    new JavaCompletionOptionsImpl(
+                            FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
+
                     CompletionResult result =
                             completions
                                     .getProject()
@@ -172,6 +173,9 @@ public final class MainActivity extends AppCompatActivity {
                     for (CompletionCandidate candidate : result.getCompletionCandidates()) {
                         s.append(candidate.getName());
                         s.append("\n");
+                    }
+                    } catch (Throwable e) {
+                        showErr(Log.getStackTraceString(e);
                     }
                 });
         editor.setText(s.toString());

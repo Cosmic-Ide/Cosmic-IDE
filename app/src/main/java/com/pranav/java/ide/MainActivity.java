@@ -175,7 +175,7 @@ public final class MainActivity extends AppCompatActivity {
                         s.append("\n");
                     }
                     } catch (Throwable e) {
-                        showErr(Log.getStackTraceString(e);
+                        showErr(getString(e));
                     }
                 });
         editor.setText(s.toString());

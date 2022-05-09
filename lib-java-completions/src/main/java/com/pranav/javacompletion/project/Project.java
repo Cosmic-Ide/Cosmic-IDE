@@ -33,7 +33,7 @@ public class Project {
 
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
-    private static final String JDK_RESOURCE_PATH = "/resources/jdk/index.json";
+    private static final String JDK_RESOURCE_PATH = "index.json";
     private static final String JAVA_EXTENSION = ".java";
 
     private final FileManager fileManager;

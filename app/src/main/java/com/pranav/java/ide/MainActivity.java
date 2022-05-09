@@ -63,7 +63,7 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
     public JavaBuilder builder;
     public SharedPreferences prefs;
-    public JavaCompletions completions;
+    public JavaCompletions completions = new JavaCompletions();
 
     private AlertDialog loadingDialog;
     private Thread runThread;

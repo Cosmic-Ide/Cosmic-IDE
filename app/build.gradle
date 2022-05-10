@@ -55,7 +55,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+    implementation 'com.github.ThexXTURBOXx.dex2jar:dex-tools:v35'
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'
     implementation 'io.github.Rosemoe.sora-editor:editor:0.11.1'

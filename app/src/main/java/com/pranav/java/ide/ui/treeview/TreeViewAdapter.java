@@ -100,6 +100,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onBindViewHolder(
             @NonNull final RecyclerView.ViewHolder holder, final int position) {
         final View nodeView = holder.itemView;

@@ -261,7 +261,7 @@ public class TreeViewDrawer extends Fragment {
                                                                             .getName()));
                                 }
 
-                                TreeNode newDir =
+                                TreeNode<> newDir =
                                         new TreeNode<>(
                                                 new TreeFile(filePth),
                                                 node.getLevel()
@@ -299,7 +299,7 @@ public class TreeViewDrawer extends Fragment {
 
                             FileUtil.createDirectory(filePath);
                             File dirPth = new File(filePath);
-                            TreeNode newDir =
+                            TreeNode<> newDir =
                                     new TreeNode<>(new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();

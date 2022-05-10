@@ -6,7 +6,7 @@ pluginManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://maven.scijava.org' }
+        maven { url 'https://maven.scijava.org/content/groups/public' }
     }
 }
 

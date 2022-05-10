@@ -60,8 +60,6 @@ I would really appreciate all kinds of contributions. If you have any questions,
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
-- [Tyron12233](https://github.com/tyron12233) for [JavaCompletions](https://github.com/tyron12233/JavaCompletions)
-
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)

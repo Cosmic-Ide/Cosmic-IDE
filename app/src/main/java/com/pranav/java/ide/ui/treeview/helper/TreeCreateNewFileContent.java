@@ -6,7 +6,7 @@ public class TreeCreateNewFileContent {
 
     public static String BUILD_NEW_FILE_CONTENT(@NonNull String fileName) {
         String content =
-                "package com.example;\n\nimport java.util.*;\n\n"
+                "\n\nimport java.util.*;\n\n"
                         + "public class "
                         + fileName
                         + " {\n\n"
@@ -21,7 +21,7 @@ public class TreeCreateNewFileContent {
     public static String BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
             @NonNull String fileName, String extendPackage) {
         String content =
-                "package com.example"
+                "package "
                         + extendPackage
                         + ";\n\nimport java.util.*;\n\n"
                         + "public class "

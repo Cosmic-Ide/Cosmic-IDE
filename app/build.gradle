@@ -34,20 +34,23 @@ android {
     
     packagingOptions {
         // miscellaneous resources from eclipse jdt core
-        resources.excludes.add("plugin.xml")
-        resources.excludes.add(".options")
-        resources.excludes.add("about.xml")
-        resources.excludes.add("plugin.properties")
-        resources.excludes.add(".api_description")
-        resources.excludes.add("about_files/**")
-        resources.excludes.add("OSGI-INF/**")
-        resources.excludes.add("ant_tasks/**")
-        resources.excludes.add("api_database/**")
+        exclude "plugin.xml"
+        exclude ".options"
+        exclude "about.xml"
+        exclude "plugin.properties"
+        exclude ".api_description"
+        exclude "META-INF/eclipse.inf"
+        exclude "META-INF/INDEX.LIST"
         // resources from nb-javac
-        resources.excludes.add("README.md")
-        resources.excludes.add("SECURITY.md")
+        exclude "README.md"
+        exclude "SECURITY.md"
+        exclude "about_files/*"
+        exclude "OSGI-INF/*"
+        exclude "ant_tasks/*"
+        exclude "api_database/*"
         // resources from kotlin stdlib
-        resources.excludes.add("kotlin/**")
+        exclude "kotlin/*"
+        exclude "kotlin/**"
     }
 }
 

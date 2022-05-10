@@ -154,7 +154,7 @@ public final class MainActivity extends AppCompatActivity {
                 () -> {
                     try {
                     completions.initialize(
-                    new URI("json", FileUtil.getJavaDir(), null),
+                    new URI("file", FileUtil.getJavaDir(), null),
                     new JavaCompletionOptionsImpl(
                             FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
 

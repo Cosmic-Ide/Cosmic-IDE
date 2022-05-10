@@ -1782,10 +1782,7 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         if (tag.isPostUnaryOp()) {
             return false;
         }
-        if (!operatorName(node).startsWith(operatorName)) {
-            return false;
-        }
-        return true;
+        return operatorName(node).startsWith(operatorName);
     }
 
     private JCTree.Tag unaryTag(ExpressionTree expression) {

@@ -330,10 +330,7 @@ public class RemoveUnusedImports {
         if (usedNames.contains(simpleName)) {
             return false;
         }
-        if (usedInJavadoc.containsKey(simpleName)) {
-            return false;
-        }
-        return true;
+        return !usedInJavadoc.containsKey(simpleName);
     }
 
     /** Applies the replacements to the given source, and re-format any edited javadoc. */

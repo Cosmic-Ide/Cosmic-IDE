@@ -163,16 +163,14 @@ public final class JavaOutput extends Output {
                             spacesPending = new StringBuilder();
                         }
                         lineBuilder.append(c);
-                        if (!range.isEmpty()) {
-                            if (!rangesSet) {
-                                while (ranges.size() <= mutableLines.size()) {
-                                    ranges.add(Formatter.EMPTY_RANGE);
-                                }
-                                ranges.set(
-                                        mutableLines.size(),
-                                        union(ranges.get(mutableLines.size()), range));
-                                rangesSet = true;
+                        if (!range.isEmpty() && !rangesSet) {
+                            while (ranges.size() <= mutableLines.size()) {
+                                ranges.add(Formatter.EMPTY_RANGE);
                             }
+                            ranges.set(
+                                    mutableLines.size(),
+                                    union(ranges.get(mutableLines.size()), range));
+                            rangesSet = true;
                         }
                 }
             }

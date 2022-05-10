@@ -3,15 +3,12 @@
 [![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml)
 [![Discord Server](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
 
-<div align='center'>
+Compile and test your java code anytime anywhere from your mobile phone
 
-  Compile and test your java code anytime anywhere from your mobile phone
+## How to get
 
-</div>
-
-## How to get?
-
-You can get the latest release from [here](https://github.com/PranavPurwar/Java-Ide/releases) and latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
+You can get the latest release from [here](https://github.com/PranavPurwar/Java-Ide/releases)
+and the latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
 
 ## Features
 
@@ -43,17 +40,19 @@ You can get the latest release from [here](https://github.com/PranavPurwar/Java-
 ## Building
 
 Clone this repository on your device and compile using Android Studio or by running the command
-```
+
+```sh
 ./gradlew build
 ```
 
 ## Contributing
 
-I would really appreciate all kinds of contributions. If you have any questions, ideas, need help or want to propose a change just open an issue.
+I would really appreciate all kinds of contributions.
+If you have any questions, ideas, need help or want to propose a change just open an issue.
 
 - Contributions are highly appreciated.
 - Create a pull request and we'll merge it after thorough review.
- 
+
 ## Special thanks
 
 - [TheWolf](https://github.com/thewolfprod)

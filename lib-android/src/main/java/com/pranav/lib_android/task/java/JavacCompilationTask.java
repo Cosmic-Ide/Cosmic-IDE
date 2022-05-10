@@ -155,7 +155,7 @@ public class JavacCompilationTask extends Task {
         final String clspath = prefs.getString("classpath", "");
 
         if (!clspath.isEmpty()) {
-            for (String clas : clspath.toString().split(":")) {
+            for (String clas : clspath.split(":")) {
                 classpath.add(new File(clas));
             }
         }

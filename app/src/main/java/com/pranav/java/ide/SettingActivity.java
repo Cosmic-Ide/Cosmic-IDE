@@ -35,8 +35,6 @@ public final class SettingActivity extends AppCompatActivity {
     private AlertDialog alertDialog;
     private SharedPreferences settings;
 
-    private String TAG = "SettingsActivity";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -32,6 +32,10 @@ android {
       jvmTarget = '1.8'
     }
     
+    lintOptions {
+        checkDependencies true
+    }
+    
     packagingOptions {
         // miscellaneous resources from eclipse jdt core
         exclude "plugin.xml"

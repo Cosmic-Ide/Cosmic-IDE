@@ -24,7 +24,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.1.5
         with:
-          arguments: lint
+          arguments: lintDebug
       - name: Upload lint report
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}

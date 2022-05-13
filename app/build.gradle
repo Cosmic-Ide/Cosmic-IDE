@@ -70,6 +70,7 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.7.0-alpha01'
     implementation project(path: ':common')
+    implementation project(path: ':java-completions')
     implementation project(path: ':android-compiler')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha06'

@@ -11,7 +11,7 @@ public class TreeCreateNewFileContent {
                         + fileName
                         + " {\n\n"
                         + "\tpublic static void main(String[] args) {\n"
-                        + "\t\tSystem.out.println(\"Hello, World!\");\n"
+                        + "\t\tSystem.out.\n"
                         + "\t}\n"
                         + "}\n";
 

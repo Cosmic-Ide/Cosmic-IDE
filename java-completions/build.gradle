@@ -1,0 +1,15 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation files("libs/javac-new.jar")
+    implementation files("libs/JavaComp.jar")
+}

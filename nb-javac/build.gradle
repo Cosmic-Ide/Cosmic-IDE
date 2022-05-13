@@ -1,4 +1,4 @@
-apply plugins: 'java-library'
+apply plugin: 'java-library'
 apply plugin: 'com.android.lint'
 
 java {

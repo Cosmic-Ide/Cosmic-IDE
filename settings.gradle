@@ -21,7 +21,8 @@ dependencyResolutionManagement {
 rootProject.name = "Java IDE"
 
 include ':app'
-include ':lib-android'
-include ':lib-eclipse'
-include ':lib-javac'
-include ':lib-google-java-format'
+include ':android-compiler'
+include ':eclipse-jdt'
+include ':nb-javac'
+include ':google-java-format'
+include ':common'

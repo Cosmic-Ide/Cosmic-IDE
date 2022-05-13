@@ -11,10 +11,11 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/lib-android" />
-            <option value="$PROJECT_DIR$/lib-eclipse" />
-            <option value="$PROJECT_DIR$/lib-javac" />
-            <option value="$PROJECT_DIR$/lib-google-java-format" />
+            <option value="$PROJECT_DIR$/android-compiler" />
+            <option value="$PROJECT_DIR$/eclipse-jdt" />
+            <option value="$PROJECT_DIR$/nb-javac" />
+            <option value="$PROJECT_DIR$/google-java-format" />
+            <option value="$PROJECT_DIR$/common" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

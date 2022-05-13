@@ -1,0 +1,15 @@
+plugins {
+	id 'java-library'
+	id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	compileOnly files('libs/android-stubs.jar')
+}

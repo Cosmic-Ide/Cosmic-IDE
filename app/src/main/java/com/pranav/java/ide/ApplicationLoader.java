@@ -9,7 +9,7 @@ import android.os.Process;
 import android.util.Log;
 
 import com.pranav.java.ide.ui.utils.dpToPx;
-import com.pranav.lib_android.util.FileUtil;
+import com.pranav.common.util.FileUtil;
 
 public final class ApplicationLoader extends Application {
 

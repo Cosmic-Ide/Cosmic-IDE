@@ -30,11 +30,11 @@ import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.*;
 import com.pranav.lib_android.code.formatter.*;
-import com.pranav.lib_android.incremental.Indexer;
+import com.pranav.common.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
-import com.pranav.lib_android.util.ConcurrentUtil;
-import com.pranav.lib_android.util.FileUtil;
-import com.pranav.lib_android.util.ZipUtil;
+import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.FileUtil;
+import com.pranav.common.util.ZipUtil;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;

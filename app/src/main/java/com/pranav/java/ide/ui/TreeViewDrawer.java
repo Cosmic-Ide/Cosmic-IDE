@@ -28,7 +28,7 @@ import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
-import com.pranav.lib_android.util.FileUtil;
+import com.pranav.common.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;

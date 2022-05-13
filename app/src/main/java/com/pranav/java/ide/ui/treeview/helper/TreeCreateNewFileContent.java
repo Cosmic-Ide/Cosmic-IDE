@@ -6,7 +6,7 @@ public class TreeCreateNewFileContent {
 
     public static String BUILD_NEW_FILE_CONTENT(@NonNull String fileName) {
         String content =
-                "\n\nimport java.util.*;\n\n"
+                "import java.util.*;\n\n"
                         + "public class "
                         + fileName
                         + " {\n\n"

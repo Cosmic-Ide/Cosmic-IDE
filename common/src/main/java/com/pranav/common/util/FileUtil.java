@@ -30,6 +30,13 @@ public class FileUtil {
         Files.write(file.toPath(), content.getBytes());
     }
 
+    public static void writeFile(String path, byte[] content) throws IOException {
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+        file.delete();
+        Files.write(file.toPath(), content);
+    }
+
     public static String readFile(File file) throws IOException {
         return new String(readBytes(file));
     }

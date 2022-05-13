@@ -1,7 +1,6 @@
 package com.pranav.common.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,8 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class ZipUtil {
-    private static final int BUFFER_SIZE = 1024 * 10;
-    private static final String TAG = "ZipUtil";
 
     public static void unzipFromAssets(Context context, String zipFile, String destination) {
         try {
@@ -25,14 +22,11 @@ public class ZipUtil {
 
     private static void unzip(InputStream stream, String destination) {
         dirChecker(destination, "");
-        byte[] buffer = new byte[BUFFER_SIZE];
         try {
             ZipInputStream zin = new ZipInputStream(stream);
             ZipEntry ze = null;
 
             while ((ze = zin.getNextEntry()) != null) {
-                Log.v(TAG, "Unzipping " + ze.getName());
-
                 if (ze.isDirectory()) {
                     dirChecker(destination, ze.getName());
                 } else {
@@ -41,39 +35,27 @@ public class ZipUtil {
                         throw new SecurityException(
                                 "Potentially harmful files detected inside zip");
                     if (!f.exists()) {
-                        boolean success = f.createNewFile();
-                        if (!success) {
-                            Log.w(TAG, "Failed to create file " + f.getName());
+                        if (!f.createNewFile()) {
                             continue;
                         }
-                        FileOutputStream fout = new FileOutputStream(f);
-                        int count;
-                        while ((count = zin.read(buffer)) != -1) {
-                            fout.write(buffer, 0, count);
-                        }
+                        byte[] data = new byte[zin.available()];
+                        zin.read(data);
+                        FileUtil.writeFile(f.getAbsolutePath(), data);
                         zin.closeEntry();
-                        fout.close();
                     }
                 }
             }
             zin.close();
         } catch (IOException e) {
-            Log.e(TAG, "unzip", e);
+            e.printStackTrace();
         }
     }
 
     private static void dirChecker(String destination, String dir) {
         File f = new File(destination, dir);
 
-        if (!f.isDirectory() && !f.mkdirs()) {
-            Log.w(TAG, "Failed to create folder " + f.getName());
+        if (!f.isDirectory()) {
+            f.mkdirs();
         }
-    }
-
-    public static void copyFileFromAssets(Context context, String inputFile, String fileName)
-            throws IOException {
-        final InputStream in = context.getAssets().open(inputFile);
-        final String outputPath = context.getFilesDir() + "/" + fileName;
-        FileUtil.writeFile(in, outputPath);
     }
 }

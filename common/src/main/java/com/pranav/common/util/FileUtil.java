@@ -38,11 +38,7 @@ public class FileUtil {
     }
 
     public static String readFile(File file) throws IOException {
-        return new String(readBytes(file));
-    }
-
-    public static byte[] readBytes(File file) throws IOException {
-        return Files.readAllBytes(file.toPath());
+        return new String(Files.readAllBytes(file.toPath()));
     }
 
     public static void deleteFile(String path) {

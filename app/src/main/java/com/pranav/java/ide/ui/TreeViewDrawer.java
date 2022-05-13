@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
+import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
@@ -28,7 +29,6 @@ import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
-import com.pranav.common.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;

@@ -25,19 +25,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.googlecode.d2j.smali.BaksmaliCmd;
+import com.pranav.common.Indexer;
+import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.FileUtil;
+import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.*;
 import com.pranav.lib_android.code.formatter.*;
-import com.pranav.common.Indexer;
 import com.pranav.lib_android.task.JavaBuilder;
-import com.pranav.common.util.ConcurrentUtil;
-import com.pranav.common.util.FileUtil;
-import com.pranav.common.util.ZipUtil;
 import com.tyron.javacompletion.JavaCompletions;
-import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 import com.tyron.javacompletion.completion.*;
+import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -52,9 +52,9 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.net.URI;
 import java.util.logging.Level;
 
 public final class MainActivity extends AppCompatActivity {
@@ -153,33 +153,35 @@ public final class MainActivity extends AppCompatActivity {
         ConcurrentUtil.execute(
                 () -> {
                     try {
-                    completions.initialize(
-                    new URI("file", FileUtil.getJavaDir(), null),
-                    new JavaCompletionOptionsImpl(
-                            FileUtil.getBinDir() + "log.txt", Level.ALL, new ArrayList<String>(), new ArrayList<String>()));
+                        completions.initialize(
+                                new URI("file", FileUtil.getJavaDir(), null),
+                                new JavaCompletionOptionsImpl(
+                                        FileUtil.getBinDir() + "log.txt",
+                                        Level.ALL,
+                                        new ArrayList<String>(),
+                                        new ArrayList<String>()));
 
-                    CompletionResult result =
-                            completions
-                                    .getProject()
-                                    .getCompletionResult(
-                                            new File(currentWorkingFilePath).toPath(),
-                                            6
-                                            /** line * */
-                                            ,
-                                            13
-                                            /** column * */
-                                            );
+                        CompletionResult result =
+                                completions
+                                        .getProject()
+                                        .getCompletionResult(
+                                                new File(currentWorkingFilePath).toPath(),
+                                                6
+                                                /** line * */
+                                                ,
+                                                13
+                                                /** column * */
+                                                );
 
-                    for (CompletionCandidate candidate : result.getCompletionCandidates()) {
-                        s.append(candidate.getName());
-                        s.append("\n");
-                    }
+                        for (CompletionCandidate candidate : result.getCompletionCandidates()) {
+                            s.append(candidate.getName());
+                            s.append("\n");
+                        }
                     } catch (Throwable e) {
                         showErr(getString(e));
                     }
                 });
         editor.setText(s.toString());
-
 
         /* Create Loading Dialog */
         buildLoadingDialog();

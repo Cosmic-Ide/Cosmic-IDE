@@ -3,7 +3,6 @@ package com.pranav.common.util;
 import android.content.Context;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;

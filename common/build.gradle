@@ -1,7 +1,6 @@
-plugins {
-	id 'java-library'
-	id 'org.jetbrains.kotlin.jvm'
-}
+apply plugin: 'java-library'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'com.android.lint'
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_1_8

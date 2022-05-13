@@ -16,7 +16,8 @@ public final class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         final Context mContext = getApplicationContext();
-        FileUtil.initializeContext(mContext);
+        final String dataDirectory = mContext.getExternalFilesDir(null).getAbsolutePath();
+        FileUtil.setDataDir(dataDirectory);
         dpToPx.initalizeContext(mContext);
         Thread.UncaughtExceptionHandler uncaughtExceptionHandler =
                 Thread.getDefaultUncaughtExceptionHandler();

@@ -1,7 +1,5 @@
 package com.pranav.common.util;
 
-import android.content.Context;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,10 +8,10 @@ import java.nio.file.StandardCopyOption;
 
 public class FileUtil {
 
-    private static Context mContext;
+    private static String privateDataDirectory;
 
-    public static void initializeContext(Context context) {
-        mContext = context;
+    public static void setDataDirectory(String directory) {
+        privateDataDirectory = directory;
     }
 
     public static boolean createDirectory(String path) {
@@ -33,7 +31,11 @@ public class FileUtil {
     }
 
     public static String readFile(File file) throws IOException {
-        return new String(Files.readAllBytes(file.toPath()));
+        return new String(readBytes(file));
+    }
+
+    public static byte[] readBytes(File file) throws IOException {
+        return Files.readAllBytes(file.toPath());
     }
 
     public static void deleteFile(String path) {
@@ -69,7 +71,7 @@ public class FileUtil {
     }
 
     private static String getDataDir() {
-        return mContext.getExternalFilesDir(null).getAbsolutePath();
+        return privateDataDirectory;
     }
 
     public static String getJavaDir() {
@@ -81,8 +83,8 @@ public class FileUtil {
     }
 
     public static String getCacheDir() {
-        // write caches to external storage because we don't want android system to delete index
-        // files
+        // write caches to external storage because we don't want android system
+        // to delete index files
         return getDataDir() + "/cache/";
     }
 

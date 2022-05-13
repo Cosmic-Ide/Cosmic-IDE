@@ -11,5 +11,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
 
     implementation files("libs/javac-new.jar")
-    implementation files("libs/JavaComp.jar")
+    api files("libs/JavaComp.jar")
 }

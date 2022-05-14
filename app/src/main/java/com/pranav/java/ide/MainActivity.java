@@ -1,5 +1,8 @@
 package com.pranav.java.ide;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
@@ -83,12 +86,12 @@ public final class MainActivity extends AppCompatActivity {
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
-        ActionBarDrawerToggle toggle =
+        var toggle =
                 new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawer.addDrawerListener(toggle);
@@ -112,7 +115,7 @@ public final class MainActivity extends AppCompatActivity {
             dialog("JsonException", e.getMessage(), true);
         }
 
-        final File file = file(currentWorkingFilePath);
+        final var file = file(currentWorkingFilePath);
 
         if (file.exists()) {
             try {
@@ -138,7 +141,7 @@ public final class MainActivity extends AppCompatActivity {
             ZipUtil.unzipFromAssets(
                     MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
         }
-        File output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
         if (!output.exists()) {
             try {
                 FileUtil.writeFile(
@@ -163,7 +166,7 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+        var builder = new MaterialAlertDialogBuilder(MainActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView =
                 getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
@@ -188,7 +191,7 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Loads a file from a path to the editor */
     public void loadFileToEditor(String path) throws IOException, JSONException {
-        File newWorkingFile = new File(path);
+        var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
@@ -204,17 +207,17 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        var id = item.getItemId();
         if (id == R.id.format_menu_button) {
             ConcurrentUtil.execute(
                     () -> {
                         if (prefs.getString("formatter", "Google Java Formatter")
                                 .equals("Google Java Formatter")) {
-                            GoogleJavaFormatter formatter =
+                            var formatter =
                                     new GoogleJavaFormatter(editor.getText().toString());
                             temp = formatter.format();
                         } else {
-                            EclipseJavaFormatter formatter =
+                            var formatter =
                                     new EclipseJavaFormatter(editor.getText().toString());
                             temp = formatter.format();
                         }
@@ -222,7 +225,7 @@ public final class MainActivity extends AppCompatActivity {
             editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
 
-            Intent intent = new Intent(MainActivity.this, SettingActivity.class);
+            var intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
 
         } else if (id == R.id.run_menu_button) {
@@ -247,11 +250,24 @@ public final class MainActivity extends AppCompatActivity {
                         (LinearLayout) findViewById(R.id.container),
                         "An error occurred",
                         Snackbar.LENGTH_INDEFINITE)
-                .setAction("Show error", (view) -> dialog("Failed...", e, true))
+                .setAction("Show error", v -> dialog("Failed...", e, true))
                 .show();
     }
 
     public void compile(boolean execute) {
+        final var id = 1;
+        var channel = new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, "Build Status", NotificationManager.IMPORTANCE_DEFAULT);
+
+        final var manager =
+                (NotificationManager)
+                        activity.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.setNotificationChannel(channel);
+
+        final var mBuilder =
+                new Notification.Builder(activity, NotificationChannel.DEFAULT_CHANNEL_ID)
+                        .setContentTitle("Build Status")
+                        .setSmallIcon(R.drawable.ic_project_logo);
+
         loadingDialog.show(); // Show Loading Dialog
         runThread =
                 new Thread(
@@ -261,19 +277,25 @@ public final class MainActivity extends AppCompatActivity {
                                 new CompileTask.CompilerListeners() {
                                     @Override
                                     public void onCurrentBuildStageChanged(String stage) {
+                                        mBuilder.setContentText(stage);
+                                        manager.notify(id, mBuilder.build());
                                         changeLoadingDialogBuildStage(stage);
                                     }
 
                                     @Override
                                     public void onSuccess() {
+                                        manager.cancelAll();
                                         loadingDialog.dismiss();
                                     }
 
                                     @Override
-                                    public void onFailed() {
+                                    public void onFailed(String errorMessage) {
+                                        mBuilder.setContentText("Failure");
+                                        manager.notify(id, mBuilder.build());
                                         if (loadingDialog.isShowing()) {
                                             loadingDialog.dismiss();
                                         }
+                                        showErr(errorMessage);
                                     }
                                 }));
         runThread.start();
@@ -311,14 +333,14 @@ public final class MainActivity extends AppCompatActivity {
 
     public void smali() {
         try {
-            final String[] classes = getClassesFromDex();
+            var classes = getClassesFromDex();
             if (classes == null) return;
             listDialog(
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
-                        final String claz = classes[pos];
-                        final String[] args =
+                        var claz = classes[pos];
+                        var args =
                                 new String[] {
                                     "-f",
                                     "-o",
@@ -333,7 +355,7 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setEditorLanguage(getTextMateLanguage());
                         edi.setTextSize(13);
 
-                        File smaliFile =
+                        var smaliFile =
                                 file(
                                         FileUtil.getBinDir()
                                                 + "smali/"
@@ -346,7 +368,7 @@ public final class MainActivity extends AppCompatActivity {
                             dialog("Cannot read file", getString(e), true);
                         }
 
-                        final AlertDialog dialog =
+                        var dialog =
                                 new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                         dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
@@ -357,14 +379,14 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     public void decompile() {
-        final String[] classes = getClassesFromDex();
+        final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
                 "Select a class to extract source",
                 classes,
                 (dialog, pos) -> {
-                    final String claz = classes[pos].replace(".", "/");
-                    String[] args = {
+                    var claz = classes[pos].replace(".", "/");
+                    var args = new String[] {
                         FileUtil.getBinDir()
                                 + "classes/"
                                 + claz
@@ -385,13 +407,13 @@ public final class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-                    final CodeEditor edi = new CodeEditor(MainActivity.this);
+                    var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
                     edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
-                    File decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
+                    var decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
 
                     try {
                         edi.setText(FileUtil.readFile(decompiledFile));
@@ -399,7 +421,7 @@ public final class MainActivity extends AppCompatActivity {
                         dialog("Cannot read file", getString(e), true);
                     }
 
-                    final AlertDialog d =
+                    var d =
                             new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
@@ -407,22 +429,22 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     public void disassemble() {
-        final String[] classes = getClassesFromDex();
+        final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
                 "Select a class to disassemble",
                 classes,
                 (dialog, pos) -> {
-                    final String claz = classes[pos].replace(".", "/");
+                    var claz = classes[pos].replace(".", "/");
 
-                    final CodeEditor edi = new CodeEditor(MainActivity.this);
+                    var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
                     edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
                     try {
-                        String disassembled = "";
+                        var disassembled = "";
                         if (prefs.getString("disassembler", "Javap").equals("Javap")) {
                             disassembled =
                                     new JavapDisassembler(
@@ -445,7 +467,7 @@ public final class MainActivity extends AppCompatActivity {
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
-                    AlertDialog d =
+                    var d =
                             new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
@@ -455,13 +477,13 @@ public final class MainActivity extends AppCompatActivity {
     /* Formats a given smali code */
     private String formatSmali(String in) {
 
-        ArrayList<String> lines = new ArrayList<>(Arrays.asList(in.split("\n")));
+        var lines = new ArrayList<String>(Arrays.asList(in.split("\n")));
 
-        boolean insideMethod = false;
+        var insideMethod = false;
 
-        for (int i = 0; i < lines.size(); i++) {
+        for (var i = 0; i < lines.size(); i++) {
 
-            String line = lines.get(i);
+            var line = lines.get(i);
 
             if (line.startsWith(".method")) insideMethod = true;
 
@@ -470,9 +492,9 @@ public final class MainActivity extends AppCompatActivity {
             if (insideMethod && !shouldSkip(line)) lines.set(i, line + "\n");
         }
 
-        StringBuilder result = new StringBuilder();
+        var result = new StringBuilder();
 
-        for (int i = 0; i < lines.size(); i++) {
+        for (var i = 0; i < lines.size(); i++) {
             if (i != 0) result.append("\n");
 
             result.append(lines.get(i));
@@ -483,9 +505,9 @@ public final class MainActivity extends AppCompatActivity {
 
     private boolean shouldSkip(String smaliLine) {
 
-        String[] ops = {".line", ":", ".prologue"};
+        var ops = new String[] {".line", ":", ".prologue"};
 
-        for (String op : ops) {
+        for (var op : ops) {
             if (smaliLine.trim().startsWith(op)) return true;
         }
         return false;
@@ -503,7 +525,7 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     public void dialog(String title, final String message, boolean copyButton) {
-        final MaterialAlertDialogBuilder dialog =
+        var dialog =
                 new MaterialAlertDialogBuilder(MainActivity.this)
                         .setTitle(title)
                         .setMessage(message)
@@ -523,15 +545,15 @@ public final class MainActivity extends AppCompatActivity {
     /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
-            final File dex = new File(FileUtil.getBinDir().concat("classes.dex"));
+            var dex = new File(FileUtil.getBinDir().concat("classes.dex"));
             /* If the project doesn't seem to have been compiled yet, compile it */
             if (!dex.exists()) {
                 compile(false);
             }
-            final ArrayList<String> classes = new ArrayList<>();
-            DexFile dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(26));
-            for (ClassDef f : dexfile.getClasses().toArray(new ClassDef[0])) {
-                String name = f.getType().replace("/", "."); // convert class name to standard form
+            var classes = new ArrayList<String>();
+            var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(26));
+            for (var f : dexfile.getClasses().toArray(new ClassDef[0])) {
+                var name = f.getType().replace("/", "."); // convert class name to standard form
                 classes.add(name.substring(1, name.length() - 1));
             }
             return classes.toArray(new String[0]);

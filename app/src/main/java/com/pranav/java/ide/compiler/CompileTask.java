@@ -2,6 +2,7 @@ package com.pranav.java.ide.compiler;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
@@ -30,7 +31,7 @@ public class CompileTask extends Thread {
     public static String STAGE_CLEAN;
     public static String STAGE_JAVAC;
     public static String STAGE_ECJ;
-    public static String STAGE_D8TASK;
+    public static String STAGE_D8;
     public static String STAGE_LOADING_DEX;
 
     public CompileTask(Context context, boolean isExecuteMethod, CompilerListeners listener) {
@@ -41,7 +42,7 @@ public class CompileTask extends Thread {
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_JAVAC = context.getString(R.string.stage_javac);
         STAGE_ECJ = context.getString(R.string.stage_ecj);
-        STAGE_D8TASK = context.getString(R.string.stage_d8task);
+        STAGE_D8 = context.getString(R.string.stage_d8);
         STAGE_LOADING_DEX = context.getString(R.string.stage_loading_dex);
     }
 
@@ -49,20 +50,7 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
-        var id = 1;
-        var notification =
-                new Notification.Builder(activity)
-                        .setContentTitle("Building Project")
-                        .setContentText("Building...")
-                        .setSmallIcon(R.drawable.ic_project_logo)
-                        .build();
-
-        final var manager =
-                (NotificationManager)
-                        activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(id, notification);
-
-        var prefs =
+        final var prefs =
                 activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             // Delete previous build files
@@ -78,8 +66,7 @@ public class CompileTask extends Thread {
                             .toString()
                             .replace("System.exit(", "System.err.print(\"Exit code \" + "));
         } catch (final IOException e) {
-            activity.dialog("Cannot save program", e.getMessage(), true);
-            listener.onFailed();
+            listener.onFailed(e.getMessage());
         }
 
         var errorsArePresent = false;
@@ -99,11 +86,9 @@ public class CompileTask extends Thread {
             }
             errorsArePresent = false;
         } catch (CompilationFailedException e) {
-            activity.showErr(e.getMessage());
-            listener.onFailed();
+            listener.onFailed(e.getMessage());
         } catch (Throwable e) {
-            activity.showErr(e.getMessage());
-            listener.onFailed();
+            listener.onFailed(e.getMessage());
         }
         if (errorsArePresent) {
             return;
@@ -114,23 +99,23 @@ public class CompileTask extends Thread {
 
         // run d8
         try {
-            listener.onCurrentBuildStageChanged(STAGE_D8TASK);
+            listener.onCurrentBuildStageChanged(STAGE_D8);
             new D8Task().doFullTask();
         } catch (Exception e) {
-            errorsArePresent = true;
-            activity.showErr(e.getMessage());
-            listener.onFailed();
+            listener.onFailed(e.getMessage());
             return;
         }
         d8Time = System.currentTimeMillis() - time;
-        // code that loads the final dex
+
+        listener.onSuccess();
+
+        // Code that executes the final dex
         try {
             listener.onCurrentBuildStageChanged(STAGE_LOADING_DEX);
             final var classes = activity.getClassesFromDex();
             if (classes == null) {
                 return;
             }
-            listener.onSuccess();
             if (showExecuteDialog) {
                 activity.listDialog(
                         "Select a class to execute",
@@ -158,7 +143,9 @@ public class CompileTask extends Thread {
                                         true);
                             }
                             var s = new StringBuilder();
-                            s.append("Success! Javac took: ");
+                            s.append("Success! ");
+                            s.append(prefs.getString("compiler", "Javac"));
+                            s.append(" took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");
                             s.append("D8");
@@ -170,10 +157,8 @@ public class CompileTask extends Thread {
                         });
             }
         } catch (Throwable e) {
-            listener.onFailed();
-            activity.showErr(e.getMessage());
+            listener.onFailed(e.getMessage());
         }
-        manager.cancelAll();
     }
 
     public static interface CompilerListeners {
@@ -181,6 +166,6 @@ public class CompileTask extends Thread {
 
         public void onSuccess();
 
-        public void onFailed();
+        public void onFailed(String errorMessage);
     }
 }

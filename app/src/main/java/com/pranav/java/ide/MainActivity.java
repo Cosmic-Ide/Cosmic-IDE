@@ -41,6 +41,8 @@ import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
+import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
+import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
@@ -97,7 +99,7 @@ public final class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         editor.setTypefaceText(Typeface.MONOSPACE);
-
+        editor.setColorScheme(getColorScheme());
         editor.setEditorLanguage(getTextMateLanguage());
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
@@ -315,18 +317,25 @@ public final class MainActivity extends AppCompatActivity {
         runThread.start();
     }
 
-    private TextMateLanguage getTextMateLanguage() {
-        try {
-            var rawTheme =
+    private TextMateColorScheme getColorScheme() {
+        return new TextMateColorScheme(getDarculaTheme());
+    }
+
+    private IRawTheme getDarculaTheme() {
+        var rawTheme =
                     ThemeReader.readThemeSync(
                             "darcula.json", getAssets().open("textmate/darcula.json"));
+    }
+
+    private TextMateLanguage getTextMateLanguage() {
+        try {
             var language =
                     TextMateLanguage.create(
                             "java.tmLanguage.json",
                             getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
                             new InputStreamReader(
                                     getAssets().open("textmate/java/language-configuration.json")),
-                            rawTheme);
+                            getDarculaTheme());
             return language;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -353,6 +362,7 @@ public final class MainActivity extends AppCompatActivity {
 
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
+                        edi.setColorScheme(getColorScheme());
                         edi.setEditorLanguage(getTextMateLanguage());
                         edi.setTextSize(13);
 
@@ -410,6 +420,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     final CodeEditor edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
+                    edi.setColorScheme(getColorScheme());
                     edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
@@ -439,6 +450,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     final CodeEditor edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
+                    edi.setColorScheme(getColorScheme());
                     edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 

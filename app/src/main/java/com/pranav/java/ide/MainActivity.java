@@ -322,9 +322,14 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private IRawTheme getDarculaTheme() {
-        var rawTheme =
+        try {
+            var rawTheme =
                     ThemeReader.readThemeSync(
                             "darcula.json", getAssets().open("textmate/darcula.json"));
+            return rawTheme;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private TextMateLanguage getTextMateLanguage() {

@@ -1,0 +1,27 @@
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'io.github.rosemoe.sora'
+    compileSdkPreview 'Tiramisu'
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 32
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.3.0'
+}

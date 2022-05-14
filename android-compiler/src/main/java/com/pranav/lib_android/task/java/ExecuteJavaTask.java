@@ -30,12 +30,12 @@ public class ExecuteJavaTask extends Task {
 
     @Override
     public void doFullTask() throws Exception {
-        final PrintStream defaultOut = System.out;
-        final PrintStream defaultErr = System.err;
-        final String dexFile = FileUtil.getBinDir() + "classes.dex";
+        var defaultOut = System.out;
+        var defaultErr = System.err;
+        var dexFile = FileUtil.getBinDir() + "classes.dex";
         ConcurrentUtil.execute(
                 () -> {
-                    final OutputStream out =
+                    var out =
                             new OutputStream() {
                                 @Override
                                 public void write(int b) {
@@ -50,20 +50,20 @@ public class ExecuteJavaTask extends Task {
                     System.setOut(new PrintStream(out));
                     System.setErr(new PrintStream(out));
 
-                    PathClassLoader loader =
+                    var loader =
                             new PathClassLoader(dexFile, mBuilder.getClassloader());
                     try {
 
-                        Class<?> calledClass = loader.loadClass(clazz);
+                        var calledClass = loader.loadClass(clazz);
 
-                        Method method = calledClass.getDeclaredMethod("main", String[].class);
+                        var method = calledClass.getDeclaredMethod("main", String[].class);
 
                         String[] param = {};
 
                         if (Modifier.isStatic(method.getModifiers())) {
                             result = method.invoke(null, new Object[] {param});
                         } else if (Modifier.isPublic(method.getModifiers())) {
-                            Object classInstance = calledClass.getConstructor().newInstance();
+                            var classInstance = calledClass.getConstructor().newInstance();
                             result = method.invoke(classInstance, new Object[] {param});
                         }
                         if (result != null) {

@@ -43,15 +43,15 @@ public class JavacCompilationTask extends Task {
     @Override
     public void doFullTask() throws Exception {
 
-        final File output = new File(FileUtil.getBinDir(), "classes");
+        var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
-        final String version = prefs.getString("javaVersion", "7");
+        var version = prefs.getString("javaVersion", "7");
 
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
-        List<JavaFileObject> javaFileObjects = new ArrayList<>();
-        List<File> javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
-        for (File file : javaFiles) {
+        var javaFileObjects = new ArrayList<JavaFileObject>();
+        var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
+        for (var file : javaFiles) {
             javaFileObjects.add(
                     new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
                         @Override
@@ -62,9 +62,9 @@ public class JavacCompilationTask extends Task {
                     });
         }
 
-        JavaCompiler tool = JavacTool.create();
+        var tool = JavacTool.create();
 
-        StandardJavaFileManager standardJavaFileManager =
+        var standardJavaFileManager =
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
         try {
@@ -78,7 +78,7 @@ public class JavacCompilationTask extends Task {
             throw new CompilationFailedException(e);
         }
 
-        final ArrayList<String> args = new ArrayList<>();
+        var args = new ArrayList<String>();
 
         args.add("-proc:none");
         args.add("-source");
@@ -97,10 +97,10 @@ public class JavacCompilationTask extends Task {
                                 javaFileObjects);
 
         if (!task.call()) {
-            StringBuilder errs = new StringBuilder();
-            StringBuilder warns = new StringBuilder();
-            for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-                StringBuilder message = new StringBuilder();
+            var errs = new StringBuilder();
+            var warns = new StringBuilder();
+            for (var diagnostic : diagnostics.getDiagnostics()) {
+                var message = new StringBuilder();
                 if (diagnostic.getSource() != null) {
                     message.append(diagnostic.getSource().getName());
                     message.append(":");
@@ -125,20 +125,20 @@ public class JavacCompilationTask extends Task {
                         break;
                 }
             }
-            String errors = errs.toString();
-            String warnings = warns.toString();
+            var errors = errs.toString();
+            var warnings = warns.toString();
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
     }
 
     public ArrayList<File> getSourceFiles(File path) {
-        ArrayList<File> sourceFiles = new ArrayList<>();
-        File[] files = path.listFiles();
+        var sourceFiles = new ArrayList<File>();
+        var files = path.listFiles();
         if (files == null) {
             return new ArrayList<File>();
         }
-        for (File file : files) {
+        for (var file : files) {
             if (file.isFile()) {
                 if (file.getName().endsWith(".java")) {
                     sourceFiles.add(file);
@@ -151,11 +151,11 @@ public class JavacCompilationTask extends Task {
     }
 
     public List<File> getClasspath() {
-        List<File> classpath = new ArrayList<>();
-        final String clspath = prefs.getString("classpath", "");
+        var classpath = new ArrayList<File>();
+        var clspath = prefs.getString("classpath", "");
 
         if (!clspath.isEmpty()) {
-            for (String clas : clspath.split(":")) {
+            for (var clas : clspath.split(":")) {
                 classpath.add(new File(clas));
             }
         }
@@ -163,7 +163,7 @@ public class JavacCompilationTask extends Task {
     }
 
     public List<File> getPlatformClasspath(String version) {
-        List<File> classpath = new ArrayList<>();
+        var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         if (version.equals("8.0")) {
             classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));

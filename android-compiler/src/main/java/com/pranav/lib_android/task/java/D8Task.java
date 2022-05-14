@@ -45,12 +45,12 @@ public class D8Task extends Task {
         }
     }
 
-    private List<Path> getClassFiles(File root) {
-        List<Path> paths = new ArrayList<>();
+    private ArrayList<Path> getClassFiles(File root) {
+        var paths = new ArrayList<Path>();
 
-        File[] files = root.listFiles();
+        var files = root.listFiles();
         if (files != null) {
-            for (File f : files) {
+            for (var f : files) {
                 if (f.isFile()) {
                     paths.add(f.toPath());
                 } else {

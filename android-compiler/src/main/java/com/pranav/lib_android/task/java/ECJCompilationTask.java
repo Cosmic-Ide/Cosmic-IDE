@@ -35,7 +35,7 @@ public class ECJCompilationTask extends Task {
     @Override
     public void doFullTask() throws Exception {
 
-        PrintWriter writer =
+        var writer =
                 new PrintWriter(
                         new OutputStream() {
                             @Override
@@ -44,13 +44,13 @@ public class ECJCompilationTask extends Task {
                             }
                         });
 
-        final Main main = new Main(writer, writer, false, null, null);
+        var main = new Main(writer, writer, false, null, null);
 
-        final File output = new File(FileUtil.getBinDir(), "classes");
+        var output = new File(FileUtil.getBinDir(), "classes");
 
         ConcurrentUtil.execute(
                 () -> {
-                    final ArrayList<String> args = new ArrayList<>();
+                    final var args = new ArrayList<String>();
 
                     args.add("-log");
                     args.add(FileUtil.getBinDir().concat("debug.xml"));
@@ -60,11 +60,11 @@ public class ECJCompilationTask extends Task {
                     args.add(output.getAbsolutePath());
                     args.add("-classpath");
                     args.add(FileUtil.getClasspathDir() + "android.jar");
-                    StringBuilder classpath = new StringBuilder();
+                    var classpath = new StringBuilder();
                     if (prefs.getString("javaVersion", "7.0").equals("8.0")) {
                         classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
                     }
-                    final String clspath = prefs.getString("classpath", "");
+                    var clspath = prefs.getString("classpath", "");
                     if (!clspath.isEmpty() && classpath.length() > 0) {
                         classpath.append(":");
                         classpath.append(clspath);

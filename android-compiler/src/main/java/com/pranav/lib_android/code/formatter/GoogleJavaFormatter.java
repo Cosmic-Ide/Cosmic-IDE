@@ -13,12 +13,12 @@ public class GoogleJavaFormatter {
     }
 
     public String format() {
-        JavaFormatterOptions options =
+        var options =
                 JavaFormatterOptions.builder()
                         .style(JavaFormatterOptions.Style.AOSP) // Use AOSP formatting style
                         .formatJavadoc(true) // Format Javadoc with code
                         .build();
-        Formatter formatter = new Formatter(options);
+        var formatter = new Formatter(options);
         try {
             return formatter.formatSourceAndFixImports(source);
         } catch (FormatterException e) {

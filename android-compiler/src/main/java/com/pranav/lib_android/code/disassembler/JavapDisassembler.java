@@ -15,13 +15,13 @@ public class JavapDisassembler {
 
     public String disassemble() throws Throwable {
         // Create an arraylist for storing javap arguments
-        ArrayList<String> args = new ArrayList<>();
+        var args = new ArrayList<String>();
         args.add("-c");
         args.add(path);
         // Create a StringWriter object that will store the output
-        StringWriter writer = new StringWriter();
+        var writer = new StringWriter();
         // Create a JavapTask to handle the arguments
-        JavapTask task = new JavapTask();
+        var task = new JavapTask();
         task.handleOptions(args.toArray(new String[0]));
         task.setLog(writer);
         task.run();

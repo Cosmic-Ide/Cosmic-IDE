@@ -269,7 +269,6 @@ public class EditorSearcher {
                 new Notification.Builder(mEditor.getContext())
                         .setContentTitle("Replace All")
                         .setContentText("Replacing...")
-                        .setSmallIcon(R.drawable.ic_project_logo)
                         .build();
 
         final NotificationManager manager =

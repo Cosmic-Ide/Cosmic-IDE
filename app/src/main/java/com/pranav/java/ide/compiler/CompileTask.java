@@ -47,6 +47,19 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
+        var id = 1;
+        var notification =
+                new Notification.Builder(activity)
+                        .setContentTitle("Building Project")
+                        .setContentText("Building...")
+                        .setSmallIcon(R.drawable.ic_project_logo)
+                        .build();
+
+        final var manager =
+                (NotificationManager)
+                        activity.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(id, notification);
+
         var prefs =
                 activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
@@ -158,6 +171,7 @@ public class CompileTask extends Thread {
             listener.onFailed();
             activity.showErr(e.getMessage());
         }
+        manager.cancel(id);
     }
 
     public static interface CompilerListeners {

@@ -320,12 +320,17 @@ public final class MainActivity extends AppCompatActivity {
     }
     
     private TextMateLanguage getTextMateLanguage() {
-        IRawTheme rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
-        TextMateLanguage language = TextMateLanguage.create(
-                "java.tmLanguage.json",
-                getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                new InputStreamReader(getAssets().open("textmate/java/language-configuration.json")),
-                rawTheme);
+        try {
+            var rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
+            var language = TextMateLanguage.create(
+                    "java.tmLanguage.json",
+                    getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                    new InputStreamReader(getAssets().open("textmate/java/language-configuration.json")),
+                    rawTheme);
+            return language;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void smali() {

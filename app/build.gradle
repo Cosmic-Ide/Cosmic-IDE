@@ -53,6 +53,8 @@ android {
         // resources from kotlin stdlib
         exclude "kotlin/*"
         exclude "kotlin/**"
+        // resources from sora-editor's batik dependency
+        exclude "license/README.dom.txt"
     }
 }
 

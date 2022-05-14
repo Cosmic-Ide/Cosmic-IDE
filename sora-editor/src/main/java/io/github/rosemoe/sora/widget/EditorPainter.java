@@ -43,7 +43,6 @@ import android.graphics.RenderNode;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.Log;
-import android.util.MutableInt;
 import android.widget.OverScroller;
 
 import androidx.annotation.NonNull;
@@ -484,12 +483,12 @@ public class EditorPainter {
 
         boolean lineNumberNotPinned = mEditor.isLineNumberEnabled() && (mEditor.isWordwrap() || !mEditor.isLineNumberPinned());
 
-        LongArrayList postDrawLineNumbers = mEditor.getPostDrawLineNumbers();
+        var postDrawLineNumbers = mEditor.getPostDrawLineNumbers();
         postDrawLineNumbers.clear();
-        LongArrayList postDrawCurrentLines = mEditor.getPostDrawCurrentLines();
+        var postDrawCurrentLines = mEditor.getPostDrawCurrentLines();
         postDrawCurrentLines.clear();
-        List<DrawCursorTask> postDrawCursor = new ArrayList<>(3);
-        MutableInt firstLn = mEditor.isFirstLineNumberAlwaysVisible() && mEditor.isWordwrap() ? new MutableInt(-1) : null;
+        var postDrawCursor = new ArrayList<DrawCursorTask>(3);
+        int firstLn = mEditor.isFirstLineNumberAlwaysVisible() && mEditor.isWordwrap() ? -1 : null;
 
         drawRows(canvas, textOffset, postDrawLineNumbers, postDrawCursor, postDrawCurrentLines, firstLn);
 
@@ -510,29 +509,31 @@ public class EditorPainter {
                 drawRowBackground(canvas, currentLineBgColor, (int) postDrawCurrentLines.get(i), (int) (textOffset - mEditor.getDividerMargin()));
             }
             drawDivider(canvas, offsetX + lineNumberWidth + mEditor.getDividerMargin(), color.getColor(EditorColorScheme.LINE_DIVIDER));
-            if (firstLn != null && firstLn.value != -1) {
-                int bottom = mEditor.getRowBottom(0);
+            // This block is never executed due to the above 
+            if (firstLn != null && firstLn != -1) {
+                var bottom = mEditor.getRowBottom(0);
                 float y;
                 if (postDrawLineNumbers.size() == 0 || mEditor.getRowTop(IntPair.getSecond(postDrawLineNumbers.get(0))) - mEditor.getOffsetY() > bottom) {
                     // Free to draw at first line
                     y = (mEditor.getRowBottom(0) + mEditor.getRowTop(0)) / 2f - (mLineNumberMetrics.descent - mLineNumberMetrics.ascent) / 2f - mLineNumberMetrics.ascent;
                 } else {
-                    int row = IntPair.getSecond(postDrawLineNumbers.get(0));
+                    var row = IntPair.getSecond(postDrawLineNumbers.get(0));
                     y = (mEditor.getRowBottom(row - 1) + mEditor.getRowTop(row - 1)) / 2f - (mLineNumberMetrics.descent - mLineNumberMetrics.ascent) / 2f - mLineNumberMetrics.ascent - mEditor.getOffsetY();
                 }
                 mPaintOther.setTextAlign(mEditor.getLineNumberAlign());
                 mPaintOther.setColor(lineNumberColor);
                 switch (mEditor.getLineNumberAlign()) {
                     case LEFT:
-                        canvas.drawText(Integer.toString(firstLn.value + 1), offsetX, y, mPaintOther);
+                        canvas.drawText(Integer.toString(firstLn + 1), offsetX, y, mPaintOther);
                         break;
                     case RIGHT:
-                        canvas.drawText(Integer.toString(firstLn.value + 1), offsetX + lineNumberWidth, y, mPaintOther);
+                        canvas.drawText(Integer.toString(firstLn + 1), offsetX + lineNumberWidth, y, mPaintOther);
                         break;
                     case CENTER:
-                        canvas.drawText(Integer.toString(firstLn.value + 1), offsetX + (lineNumberWidth + mEditor.getDividerMargin()) / 2f, y, mPaintOther);
+                        canvas.drawText(Integer.toString(firstLn + 1), offsetX + (lineNumberWidth + mEditor.getDividerMargin()) / 2f, y, mPaintOther);
                 }
             }
+
             for (int i = 0; i < postDrawLineNumbers.size(); i++) {
                 long packed = postDrawLineNumbers.get(i);
                 drawLineNumber(canvas, IntPair.getFirst(packed), IntPair.getSecond(packed), offsetX, lineNumberWidth, lineNumberColor);
@@ -728,7 +729,7 @@ public class EditorPainter {
      * @param postDrawLineNumbers Line numbers to be drawn later
      * @param postDrawCursor      Cursors to be drawn later
      */
-    protected void drawRows(Canvas canvas, float offset, LongArrayList postDrawLineNumbers, List<DrawCursorTask> postDrawCursor, LongArrayList postDrawCurrentLines, MutableInt requiredFirstLn) {
+    protected void drawRows(Canvas canvas, float offset, LongArrayList postDrawLineNumbers, List<DrawCursorTask> postDrawCursor, LongArrayList postDrawCurrentLines, int requiredFirstLn) {
         int firstVis = mEditor.getFirstVisibleRow();
         final float waveLength = mEditor.getDpUnit() * mEditor.getProps().indicatorWaveLength;
         final float amplitude = mEditor.getDpUnit() * mEditor.getProps().indicatorWaveAmplitude;
@@ -828,7 +829,7 @@ public class EditorPainter {
             ContentLine contentLine = mEditor.getText().getLine(line);
             int columnCount = contentLine.length();
             if (row == firstVis && requiredFirstLn != null) {
-                requiredFirstLn.value = line;
+                requiredFirstLn = line;
             } else if (rowInf.isLeadingRow) {
                 postDrawLineNumbers.add(IntPair.pack(line, row));
             }

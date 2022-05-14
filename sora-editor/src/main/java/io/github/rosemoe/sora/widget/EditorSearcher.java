@@ -23,7 +23,8 @@
  */
 package io.github.rosemoe.sora.widget;
 
-import android.app.ProgressDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
+import io.github.rosemoe.sora.R;
 
 /**
  * Search text in editor
@@ -227,7 +229,17 @@ public class EditorSearcher {
             Toast.makeText(mEditor.getContext(), "Editor is still preparing", Toast.LENGTH_SHORT).show();
             return;
         }
-        final var dialog = ProgressDialog.show(mEditor.getContext(), "Replace All", "Replacing...", true, false);
+
+        final int mId = 10;
+        Notification notification = new Notification.Builder(mEditor.getContext())
+                .setContentTitle("Replace All")
+                .setContentText("Replacing...")
+                .setSmallIcon(R.drawable.ic_project_logo)
+                .build();
+
+        final NotificationManager manager = (NotificationManager) mEditor.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(mId, notification);
+
         final var res = mLastResults;
         new Thread(() -> {
             try {
@@ -256,7 +268,7 @@ public class EditorSearcher {
                     //stopSearch();
                     mEditor.getText().replace(0, 0, mEditor.getLineCount() - 1, mEditor.getText().getColumnCount(mEditor.getLineCount() - 1), sb);
                     mEditor.setSelectionAround(pos.line, pos.column);
-                    dialog.dismiss();
+                    manager.cancel(mId);
     
                     if (whenFinished != null) {
                         whenFinished.run ();
@@ -265,7 +277,7 @@ public class EditorSearcher {
             } catch (Exception e) {
                 mEditor.post(() -> {
                     Toast.makeText(mEditor.getContext(), "Replace failed:" + e, Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
+                    manager.cancel(mId);
                 });
             }
         }).start();

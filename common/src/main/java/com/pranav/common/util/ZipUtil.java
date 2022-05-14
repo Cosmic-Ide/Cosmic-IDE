@@ -23,8 +23,8 @@ public class ZipUtil {
         dirChecker(destination, "");
         try {
             var zin = new ZipInputStream(stream);
-
-            while ((ZipEntry ze = zin.getNextEntry()) != null) {
+            ZipEntry ze = null;
+            while ((ze = zin.getNextEntry()) != null) {
                 if (ze.isDirectory()) {
                     dirChecker(destination, ze.getName());
                 } else {

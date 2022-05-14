@@ -1,5 +1,7 @@
 package com.pranav.java.ide.compiler;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
@@ -171,7 +173,7 @@ public class CompileTask extends Thread {
             listener.onFailed();
             activity.showErr(e.getMessage());
         }
-        manager.cancel(id);
+        manager.cancelAll();
     }
 
     public static interface CompilerListeners {

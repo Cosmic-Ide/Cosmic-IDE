@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
  * Matcher utilities.
  *
  * @see https://github.com/Microsoft/vscode-textmate/blob/master/src/matcher.ts
- *
  */
 public class Matcher<T> implements Predicate<T> {
 
@@ -35,6 +34,7 @@ public class Matcher<T> implements Predicate<T> {
     private final Tokenizer tokenizer;
     private final IMatchesName<T> matchesName;
     private String token;
+
     public Matcher(String expression, IMatchesName<T> matchesName) {
         this.results = new ArrayList<>();
         this.tokenizer = new Tokenizer(expression);
@@ -71,7 +71,8 @@ public class Matcher<T> implements Predicate<T> {
         return createMatchers(expression, IMatchesName.NAME_MATCHER);
     }
 
-    private static <T> Collection<MatcherWithPriority<T>> createMatchers(String selector, IMatchesName<T> matchesName) {
+    private static <T> Collection<MatcherWithPriority<T>> createMatchers(
+            String selector, IMatchesName<T> matchesName) {
         return new Matcher<T>(selector, matchesName).results;
     }
 
@@ -160,7 +161,8 @@ public class Matcher<T> implements Predicate<T> {
 
     private static class Tokenizer {
 
-        private static final Pattern REGEXP = Pattern.compile("([LR]:|[\\w\\.:]+|[\\,\\|\\-\\(\\)])");
+        private static final Pattern REGEXP =
+                Pattern.compile("([LR]:|[\\w\\.:]+|[\\,\\|\\-\\(\\)])");
 
         private java.util.regex.Matcher regex;
 
@@ -175,5 +177,4 @@ public class Matcher<T> implements Predicate<T> {
             return null;
         }
     }
-
 }

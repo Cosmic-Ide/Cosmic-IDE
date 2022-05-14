@@ -14,11 +14,11 @@ package io.github.rosemoe.sora.textmate.core.internal.parser.json;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
+import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
-import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
 
 public class JSONPListParser<T> {
 
@@ -83,5 +83,4 @@ public class JSONPListParser<T> {
         reader.close();
         return pList.getResult();
     }
-
 }

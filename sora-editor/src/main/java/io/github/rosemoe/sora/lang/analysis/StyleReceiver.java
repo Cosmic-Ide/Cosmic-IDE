@@ -28,18 +28,17 @@ import io.github.rosemoe.sora.lang.styling.Styles;
 /**
  * A {@link StyleReceiver} receives spans and other styles from analyzers.
  *
- * The implementations of the class must make sure its code can be safely run. For example, update
- * UI by posting its actions to UI thread, but not here.
+ * <p>The implementations of the class must make sure its code can be safely run. For example,
+ * update UI by posting its actions to UI thread, but not here.
  *
- * Also, the implementations of the class should pay attention to concurrent invocations due not to
- * corrupt the information it maintains.
+ * <p>Also, the implementations of the class should pay attention to concurrent invocations due not
+ * to corrupt the information it maintains.
  */
 public interface StyleReceiver {
 
     /**
-     * Send the styles to the receiver. You can call it in any thread.
-     * The implementation of this should make sure that concurrent invocations to it are safe.
+     * Send the styles to the receiver. You can call it in any thread. The implementation of this
+     * should make sure that concurrent invocations to it are safe.
      */
     void setStyles(AnalyzeManager sourceManager, Styles styles);
-
 }

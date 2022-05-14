@@ -76,7 +76,12 @@ public class RGBColorImpl extends CSSValueImpl implements RGBColor {
      * @see org.w3c.dom.css.CSSValue#getCssText()
      */
     public String getCssText() {
-        return "rgb(" + red.getCssText() + ", " + green.getCssText() + ", "
-                + blue.getCssText() + ")";
+        return "rgb("
+                + red.getCssText()
+                + ", "
+                + green.getCssText()
+                + ", "
+                + blue.getCssText()
+                + ")";
     }
 }

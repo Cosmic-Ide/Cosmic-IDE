@@ -16,25 +16,23 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.rule;
 
+import io.github.rosemoe.sora.textmate.core.internal.oniguruma.IOnigCaptureIndex;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import io.github.rosemoe.sora.textmate.core.internal.oniguruma.IOnigCaptureIndex;
-
 /**
- *
  * @see https://github.com/Microsoft/vscode-textmate/blob/master/src/rule.ts
- *
  */
 public class RegExpSource {
 
     private static final Pattern HAS_BACK_REFERENCES = Pattern.compile("\\\\(\\d+)");
     private static final Pattern BACK_REFERENCING_END = Pattern.compile("\\\\(\\d+)");
-    private static final Pattern REGEXP_CHARACTERS = Pattern
-            .compile("[\\-\\\\\\{\\}\\*\\+\\?\\|\\^\\$\\.\\,\\[\\]\\(\\)\\#\\s]");
+    private static final Pattern REGEXP_CHARACTERS =
+            Pattern.compile("[\\-\\\\\\{\\}\\*\\+\\?\\|\\^\\$\\.\\,\\[\\]\\(\\)\\#\\s]");
 
     private int ruleId;
     private boolean _hasAnchor;
@@ -113,20 +111,27 @@ public class RegExpSource {
 
     public String resolveBackReferences(String lineText, IOnigCaptureIndex[] captureIndices) {
         try {
-            List<String> capturedValues = Arrays.stream(captureIndices)
-                    .map(capture -> lineText.substring(capture.getStart(), capture.getEnd())).collect(Collectors.toList());
+            List<String> capturedValues =
+                    Arrays.stream(captureIndices)
+                            .map(
+                                    capture ->
+                                            lineText.substring(
+                                                    capture.getStart(), capture.getEnd()))
+                            .collect(Collectors.toList());
             Matcher m = BACK_REFERENCING_END.matcher(this.source);
             StringBuffer sb = new StringBuffer();
             while (m.find()) {
                 String g1 = m.group();
                 int index = Integer.parseInt(g1.substring(1, g1.length()));
-                String replacement = escapeRegExpCharacters(capturedValues.size() > index ? capturedValues.get(index) : "");
+                String replacement =
+                        escapeRegExpCharacters(
+                                capturedValues.size() > index ? capturedValues.get(index) : "");
                 m.appendReplacement(sb, replacement);
             }
             m.appendTail(sb);
             return sb.toString();
         } catch (Throwable e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
         }
 
         return lineText;
@@ -189,13 +194,16 @@ public class RegExpSource {
             }
         }
 
-        return new IRegExpSourceAnchorCache(A0_G0_result.toString(), A0_G1_result.toString(), A1_G0_result.toString(),
+        return new IRegExpSourceAnchorCache(
+                A0_G0_result.toString(),
+                A0_G1_result.toString(),
+                A1_G0_result.toString(),
                 A1_G1_result.toString()
                 // StringUtils.join(A0_G0_result, ""),
                 // StringUtils.join(A0_G1_result, ""),
                 // StringUtils.join(A1_G0_result, ""),
                 // StringUtils.join(A1_G1_result, "")
-        );
+                );
     }
 
     public String resolveAnchors(boolean allowA, boolean allowG) {
@@ -244,5 +252,4 @@ public class RegExpSource {
     public boolean hasBackReferences() {
         return this._hasBackReferences;
     }
-
 }

@@ -15,9 +15,7 @@ import org.w3c.css.sac.Condition;
 
 public class CSSAndCondition extends AbstractCombinatorCondition {
 
-    /**
-     * Creates a new CombinatorCondition object.
-     */
+    /** Creates a new CombinatorCondition object. */
     public CSSAndCondition(Condition c1, Condition c2) {
         super(c1, c2);
     }

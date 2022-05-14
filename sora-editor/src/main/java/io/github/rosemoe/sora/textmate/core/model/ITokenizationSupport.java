@@ -26,5 +26,4 @@ public interface ITokenizationSupport {
     // stop tokenizing at absolute value stopAtOffset (i.e. stream.pos() +
     // offsetDelta > stopAtOffset)
     LineTokens tokenize(String line, TMState state, Integer offsetDelta, Integer stopAtOffset);
-
 }

@@ -35,7 +35,7 @@ public interface Indexer {
     /**
      * Get the index of (line,column)
      *
-     * @param line   The line position of index
+     * @param line The line position of index
      * @param column The column position of index
      * @return Calculated index
      */
@@ -69,7 +69,7 @@ public interface Indexer {
     /**
      * Get the CharPosition for the given (line,column)
      *
-     * @param line   The line position you want to get
+     * @param line The line position you want to get
      * @param column The column position you want to get
      * @return The CharPosition object.
      */
@@ -87,5 +87,4 @@ public interface Indexer {
      * @param dest Destination of result
      */
     void getCharPosition(int line, int column, @NonNull CharPosition dest);
-
 }

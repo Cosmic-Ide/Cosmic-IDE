@@ -32,5 +32,4 @@ public class CSSClassCondition extends CSSAttributeCondition {
     public int nbClass() {
         return 1;
     }
-
 }

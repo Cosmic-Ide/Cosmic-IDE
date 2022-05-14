@@ -23,10 +23,10 @@
  */
 package io.github.rosemoe.sora.lang.styling;
 
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class EmptyReader implements Spans.Reader {
 
@@ -38,11 +38,8 @@ public class EmptyReader implements Spans.Reader {
         spans.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
     }
 
-
     @Override
-    public void moveToLine(int line) {
-
-    }
+    public void moveToLine(int line) {}
 
     @Override
     public Span getSpanAt(int index) {

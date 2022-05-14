@@ -16,6 +16,4 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.types;
 
-public interface IBaseRaw extends Iterable<String> {
-
-}
+public interface IBaseRaw extends Iterable<String> {}

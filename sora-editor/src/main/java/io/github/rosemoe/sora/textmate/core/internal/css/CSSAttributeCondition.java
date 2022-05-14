@@ -13,22 +13,17 @@ package io.github.rosemoe.sora.textmate.core.internal.css;
 
 public class CSSAttributeCondition extends AbstractAttributeCondition {
 
-    /**
-     * The attribute's local name.
-     */
+    /** The attribute's local name. */
     protected String localName;
 
-    /**
-     * The attribute's namespace URI.
-     */
+    /** The attribute's namespace URI. */
     protected String namespaceURI;
 
-    /**
-     * Whether this condition applies to specified attributes.
-     */
+    /** Whether this condition applies to specified attributes. */
     protected boolean specified;
 
-    public CSSAttributeCondition(String localName, String namespaceURI, boolean specified, String value) {
+    public CSSAttributeCondition(
+            String localName, String namespaceURI, boolean specified, String value) {
         super(value);
         this.localName = localName;
         this.namespaceURI = namespaceURI;
@@ -57,11 +52,11 @@ public class CSSAttributeCondition extends AbstractAttributeCondition {
 
     @Override
     public int nbMatch(String... names) {
-//		String val = getValue();
-//		if (val == null) {
-//			return !e.getAttribute(getLocalName()).equals("");
-//		}
-//		return e.getAttribute(getLocalName()).equals(val);
+        //		String val = getValue();
+        //		if (val == null) {
+        //			return !e.getAttribute(getLocalName()).equals("");
+        //		}
+        //		return e.getAttribute(getLocalName()).equals(val);
         return 0;
     }
 

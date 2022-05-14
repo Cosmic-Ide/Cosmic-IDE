@@ -23,5 +23,4 @@ public interface IMatchResult {
     IOnigCaptureIndex[] getCaptureIndices();
 
     int getMatchedRuleId();
-
 }

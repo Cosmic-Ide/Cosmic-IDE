@@ -28,18 +28,15 @@ import android.graphics.RenderNode;
 
 import androidx.annotation.RequiresApi;
 
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.lang.styling.EmptyReader;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentListener;
 import io.github.rosemoe.sora.util.ArrayList;
 
+import java.util.Collections;
+
 /**
- * Hardware accelerated text render, which manages {@link RenderNode}
- * to speed up drawing process.
+ * Hardware accelerated text render, which manages {@link RenderNode} to speed up drawing process.
  *
  * @author Rosemoe
  */
@@ -71,9 +68,8 @@ class HwAcceleratedRenderer implements ContentListener {
     }
 
     /**
-     * Called by editor when text style changes.
-     * Such as text size/typeface.
-     * Also called when wordwrap state changes from true to false
+     * Called by editor when text style changes. Such as text size/typeface. Also called when
+     * wordwrap state changes from true to false
      */
     public void invalidate() {
         invalidateDirectly();
@@ -140,26 +136,36 @@ class HwAcceleratedRenderer implements ContentListener {
 
     @Override
     public void beforeReplace(Content content) {
-        //Intentionally empty
+        // Intentionally empty
     }
 
     @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         invalidateInRegion(startLine, Integer.MAX_VALUE);
     }
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         invalidateInRegion(startLine, Integer.MAX_VALUE);
     }
 
     protected static class TextRenderNode {
 
-        /**
-         * The target line of this node.
-         * -1 for unavailable
-         */
+        /** The target line of this node. -1 for unavailable */
         public int line;
+
         public RenderNode renderNode;
         public boolean isDirty;
 
@@ -172,6 +178,5 @@ class HwAcceleratedRenderer implements ContentListener {
         public boolean needsRecord() {
             return isDirty || !renderNode.hasDisplayList();
         }
-
     }
 }

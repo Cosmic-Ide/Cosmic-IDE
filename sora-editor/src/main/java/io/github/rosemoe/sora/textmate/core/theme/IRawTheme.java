@@ -18,5 +18,4 @@ public interface IRawTheme {
     String getName();
 
     Collection<IRawThemeSetting> getSettings();
-
 }

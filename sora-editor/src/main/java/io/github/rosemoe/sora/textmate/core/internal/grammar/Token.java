@@ -16,9 +16,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.textmate.core.grammar.IToken;
+
+import java.util.List;
 
 class Token implements IToken {
 

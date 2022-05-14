@@ -15,5 +15,4 @@ package io.github.rosemoe.sora.textmate.core.model;
 public interface IModelTokensChangedListener {
 
     void modelTokensChanged(ModelTokensChangedEvent e);
-
 }

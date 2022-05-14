@@ -34,12 +34,14 @@ import java.util.List;
 public class SpansUtils {
 
     /**
-     * Marks a region with the given flag.
-     * This is a general implementation for all {@link Spans} classes.
+     * Marks a region with the given flag. This is a general implementation for all {@link Spans}
+     * classes.
      */
-    public static void markProblemRegion(Spans src, int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
+    public static void markProblemRegion(
+            Spans src, int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
         if (!src.supportsModify()) {
-            throw new UnsupportedOperationException("source Spans object does not support modify()");
+            throw new UnsupportedOperationException(
+                    "source Spans object does not support modify()");
         }
         var mdf = src.modify();
         var reader = src.read();
@@ -67,7 +69,7 @@ public class SpansUtils {
                         }
                         span.problemFlags |= newFlag;
                     } else {
-                        //regionStartInSpan > span.column
+                        // regionStartInSpan > span.column
                         if (regionEndInSpan == spanEnd) {
                             increment = 2;
                             Span nSpan = span.copy();
@@ -90,5 +92,4 @@ public class SpansUtils {
             mdf.setSpansOnLine(line, spans);
         }
     }
-
 }

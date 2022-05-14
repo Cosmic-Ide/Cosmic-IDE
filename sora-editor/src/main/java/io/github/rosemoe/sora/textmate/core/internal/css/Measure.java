@@ -27,8 +27,7 @@ public class Measure extends CSSValueImpl {
     /**
      * Return a float representation of the receiver's value.
      *
-     * @param valueType a short representing the value type, see
-     *                  {@link CSSValue#getCssValueType()}
+     * @param valueType a short representing the value type, see {@link CSSValue#getCssValueType()}
      */
     public float getFloatValue(short valueType) throws DOMException {
         // If it's actually a SAC_INTEGER return the integer value, callers tend
@@ -36,8 +35,7 @@ public class Measure extends CSSValueImpl {
         // There is no getIntegerFloat(short)
         // TODO Not sure the purpose of arg valyeType, its not referenced in
         // this method
-        if (value.getLexicalUnitType() == LexicalUnit.SAC_INTEGER)
-            return value.getIntegerValue();
+        if (value.getLexicalUnitType() == LexicalUnit.SAC_INTEGER) return value.getIntegerValue();
         // TODO not sure what to do if it's not one of the lexical unit types
         // that are specified in LexicalUnit#getFloatValue()
         // ie. SAC_DEGREE, SAC_GRADIAN, SAC_RADIAN, SAC_MILLISECOND, SAC_SECOND,
@@ -48,8 +46,7 @@ public class Measure extends CSSValueImpl {
     /**
      * Return an int representation of the receiver's value.
      *
-     * @param valueType a short representing the value type, see
-     *                  {@link CSSValue#getCssValueType()}
+     * @param valueType a short representing the value type, see {@link CSSValue#getCssValueType()}
      */
     public int getIntegerValue(short valueType) throws DOMException {
         return value.getIntegerValue();
@@ -62,9 +59,9 @@ public class Measure extends CSSValueImpl {
      */
     public String getStringValue() throws DOMException {
         short lexicalUnit = value.getLexicalUnitType();
-        if ((lexicalUnit == LexicalUnit.SAC_IDENT) || (lexicalUnit == LexicalUnit.SAC_STRING_VALUE)
-                || (lexicalUnit == LexicalUnit.SAC_URI))
-            return value.getStringValue();
+        if ((lexicalUnit == LexicalUnit.SAC_IDENT)
+                || (lexicalUnit == LexicalUnit.SAC_STRING_VALUE)
+                || (lexicalUnit == LexicalUnit.SAC_URI)) return value.getStringValue();
         // TODO There are more cases to catch of getLexicalUnitType()
         throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
     }
@@ -101,7 +98,7 @@ public class Measure extends CSSValueImpl {
                 return CSS_DIMENSION;
             case LexicalUnit.SAC_OPERATOR_COMMA:
                 return CSS_CUSTOM; // TODO don't think this is right, see bug
-            // #278139
+                // #278139
             case LexicalUnit.SAC_INHERIT:
                 return CSS_INHERIT;
         }

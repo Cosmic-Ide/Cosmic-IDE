@@ -8,7 +8,6 @@ import com.pranav.lib_android.interfaces.*;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class ExecuteJavaTask extends Task {
@@ -50,8 +49,7 @@ public class ExecuteJavaTask extends Task {
                     System.setOut(new PrintStream(out));
                     System.setErr(new PrintStream(out));
 
-                    var loader =
-                            new PathClassLoader(dexFile, mBuilder.getClassloader());
+                    var loader = new PathClassLoader(dexFile, mBuilder.getClassloader());
                     try {
 
                         var calledClass = loader.loadClass(clazz);

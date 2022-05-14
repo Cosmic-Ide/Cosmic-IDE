@@ -15,9 +15,7 @@ import org.w3c.css.sac.Selector;
 
 public interface ExtendedSelector extends Selector {
 
-    /**
-     * Returns the specificity of this selector.
-     */
+    /** Returns the specificity of this selector. */
     int getSpecificity();
 
     int nbMatch(String... names);

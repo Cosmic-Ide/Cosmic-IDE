@@ -23,16 +23,15 @@
  */
 package io.github.rosemoe.sora.langs.textmate.folding;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.OnigRegExp;
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.OnigResult;
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.OnigString;
 import io.github.rosemoe.sora.textmate.languageconfiguration.internal.supports.Folding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class IndentRange {
     public static final int MAX_LINE_NUMBER = 0xFFFFFF;
@@ -68,9 +67,8 @@ public class IndentRange {
     }
 
     /**
-     * @return :
-     * - -1 => the line consists of whitespace
-     * - otherwise => the indent level is returned value
+     * @return : - -1 => the line consists of whitespace - otherwise => the indent level is returned
+     *     value
      */
     public static int computeIndentLevel(char[] line, int len, int tabSize) {
         int indent = 0;
@@ -97,13 +95,26 @@ public class IndentRange {
     }
 
     @SuppressWarnings("rawtype")
-    public static FoldingRegions computeRanges(Content model, int tabSize , boolean offSide, Folding markers, int foldingRangesLimit, AsyncIncrementalAnalyzeManager.CodeBlockAnalyzeDelegate delegate) throws Exception {
+    public static FoldingRegions computeRanges(
+            Content model,
+            int tabSize,
+            boolean offSide,
+            Folding markers,
+            int foldingRangesLimit,
+            AsyncIncrementalAnalyzeManager.CodeBlockAnalyzeDelegate delegate)
+            throws Exception {
 
         RangesCollector result = new RangesCollector(foldingRangesLimit, tabSize);
 
         OnigRegExp pattern = null;
         if (markers != null) {
-            pattern = new OnigRegExp("(" + markers.getMarkersStart() + ")|(?:" + markers.getMarkersEnd() + ")");
+            pattern =
+                    new OnigRegExp(
+                            "("
+                                    + markers.getMarkersStart()
+                                    + ")|(?:"
+                                    + markers.getMarkersEnd()
+                                    + ")");
         }
 
         List<PreviousRegion> previousRegions = new ArrayList<>();
@@ -113,7 +124,9 @@ public class IndentRange {
 
         for (line = model.getLineCount() - 1; line >= 0 && delegate.isNotCancelled(); line--) {
             String lineContent = model.getLineString(line);
-            int indent = computeIndentLevel(model.getLine(line).getRawData(), model.getColumnCount(line), tabSize);
+            int indent =
+                    computeIndentLevel(
+                            model.getLine(line).getRawData(), model.getColumnCount(line), tabSize);
             PreviousRegion previous = previousRegions.get(previousRegions.size() - 1);
             if (indent == -1) {
                 if (offSide) {
@@ -134,7 +147,7 @@ public class IndentRange {
                         i--;
                     }
                     if (i > 0) {
-                        //??? previousRegions.length = i + 1;
+                        // ??? previousRegions.length = i + 1;
                         previous = previousRegions.get(i);
 
                         // new folding range from pattern, includes the end line

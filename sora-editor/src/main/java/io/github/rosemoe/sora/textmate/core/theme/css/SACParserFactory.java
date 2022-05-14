@@ -10,17 +10,15 @@
  *******************************************************************************/
 package io.github.rosemoe.sora.textmate.core.theme.css;
 
+import io.github.rosemoe.sora.textmate.core.internal.css.SACParserFactoryImpl;
+
 import org.w3c.css.sac.Parser;
 import org.w3c.css.sac.helpers.ParserFactory;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.github.rosemoe.sora.textmate.core.internal.css.SACParserFactoryImpl;
-
-/**
- * SAC Parser Factory.
- */
+/** SAC Parser Factory. */
 public abstract class SACParserFactory extends ParserFactory implements ISACParserFactory {
 
     private static final Logger LOGGER = Logger.getLogger(SACParserFactory.class.getName());
@@ -39,14 +37,14 @@ public abstract class SACParserFactory extends ParserFactory implements ISACPars
     }
 
     /**
-     * Return default instance of SAC Parser. If preferredParserName is filled,
-     * it return the instance of SAC Parser registered with this name, otherwise
-     * this method search the SAC Parser class name to instanciate into System
-     * property with key org.w3c.css.sac.parser.
+     * Return default instance of SAC Parser. If preferredParserName is filled, it return the
+     * instance of SAC Parser registered with this name, otherwise this method search the SAC Parser
+     * class name to instanciate into System property with key org.w3c.css.sac.parser.
      */
     @Override
-    public Parser makeParser() throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-            NullPointerException, ClassCastException {
+    public Parser makeParser()
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
+                    NullPointerException, ClassCastException {
         try {
             if (preferredParserName != null) {
                 return makeParser(preferredParserName);
@@ -76,8 +74,7 @@ public abstract class SACParserFactory extends ParserFactory implements ISACPars
     }
 
     /**
-     * Return instance of SAC Parser registered into the factory with name
-     * <code>name</code>.
+     * Return instance of SAC Parser registered into the factory with name <code>name</code>.
      *
      * @param name
      * @return
@@ -88,6 +85,7 @@ public abstract class SACParserFactory extends ParserFactory implements ISACPars
      * @throws ClassCastException
      */
     @Override
-    public abstract Parser makeParser(String name) throws ClassNotFoundException, IllegalAccessException,
-            InstantiationException, NullPointerException, ClassCastException;
+    public abstract Parser makeParser(String name)
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
+                    NullPointerException, ClassCastException;
 }

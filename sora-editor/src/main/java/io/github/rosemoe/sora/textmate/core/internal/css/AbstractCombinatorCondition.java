@@ -14,14 +14,13 @@ package io.github.rosemoe.sora.textmate.core.internal.css;
 import org.w3c.css.sac.CombinatorCondition;
 import org.w3c.css.sac.Condition;
 
-public abstract class AbstractCombinatorCondition implements CombinatorCondition, ExtendedCondition {
+public abstract class AbstractCombinatorCondition
+        implements CombinatorCondition, ExtendedCondition {
     protected Condition firstCondition;
 
     protected Condition secondCondition;
 
-    /**
-     * Creates a new CombinatorCondition object.
-     */
+    /** Creates a new CombinatorCondition object. */
     protected AbstractCombinatorCondition(Condition c1, Condition c2) {
         firstCondition = c1;
         secondCondition = c2;

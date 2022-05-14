@@ -11,10 +11,10 @@
  */
 package io.github.rosemoe.sora.textmate.core.theme.css;
 
-import org.w3c.css.sac.SelectorList;
-
 import io.github.rosemoe.sora.textmate.core.theme.IStyle;
 import io.github.rosemoe.sora.textmate.core.theme.RGB;
+
+import org.w3c.css.sac.SelectorList;
 
 public class CSSStyle implements IStyle {
 
@@ -88,5 +88,4 @@ public class CSSStyle implements IStyle {
     public void setStrikeThrough(boolean strikeThrough) {
         this.strikeThrough = strikeThrough;
     }
-
 }

@@ -32,30 +32,19 @@ import android.util.SparseIntArray;
  */
 public class BinaryHeap {
 
-    /**
-     * Map from id to its position in heap array
-     */
+    /** Map from id to its position in heap array */
     private final SparseIntArray idToPosition;
 
-    /**
-     * Id allocator
-     */
+    /** Id allocator */
     private int idAllocator = 1;
 
-    /**
-     * Current node count in heap
-     */
+    /** Current node count in heap */
     private int nodeCount;
 
-    /**
-     * Node array for heap
-     */
+    /** Node array for heap */
     private Node[] nodes;
 
-    /**
-     * Create a binary heap
-     * This heap maintains its max value in heap
-     */
+    /** Create a binary heap This heap maintains its max value in heap */
     public BinaryHeap() {
         idToPosition = new SparseIntArray();
         nodeCount = 0;
@@ -158,7 +147,7 @@ public class BinaryHeap {
     /**
      * Update the value of node with given id to newValue
      *
-     * @param id       ID returned by push()
+     * @param id ID returned by push()
      * @param newValue new value for this node
      * @throws IllegalArgumentException when the id is invalid
      */
@@ -188,11 +177,11 @@ public class BinaryHeap {
             throw new IllegalArgumentException("trying to remove with an invalid id");
         }
         idToPosition.delete(id);
-        //Replace removed node with last node
+        // Replace removed node with last node
         nodes[position] = nodes[nodeCount];
-        //Release node
+        // Release node
         nodes[nodeCount--] = null;
-        //Do not update heap if it is just the last node
+        // Do not update heap if it is just the last node
         if (position == nodeCount + 1) {
             return;
         }
@@ -201,10 +190,7 @@ public class BinaryHeap {
         heapifyDown(position);
     }
 
-    /**
-     * Print elements of this heap
-     * They are printed layer by layer to system out
-     */
+    /** Print elements of this heap They are printed layer by layer to system out */
     public void print() {
         int start = 1;
         int count = 1;
@@ -239,20 +225,14 @@ public class BinaryHeap {
      */
     private static class Node {
 
-        /**
-         * A final id of node
-         */
+        /** A final id of node */
         final int id;
-        /**
-         * Saved value of this node
-         */
+        /** Saved value of this node */
         int data;
 
         Node(int id, int value) {
             this.data = value;
             this.id = id;
         }
-
     }
-
 }

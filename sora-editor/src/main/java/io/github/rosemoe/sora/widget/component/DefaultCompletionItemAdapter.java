@@ -29,12 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 
 import io.github.rosemoe.sora.R;
-import io.github.rosemoe.sora.lang.completion.CompletionItem;
 
 /**
  * Default adapter to display results
@@ -46,13 +42,19 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
     @Override
     public int getItemHeight() {
         // 45 dp
-        return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, getContext().getResources().getDisplayMetrics());
+        return (int)
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        45,
+                        getContext().getResources().getDisplayMetrics());
     }
 
     @Override
     public View getView(int pos, View view, ViewGroup parent, boolean isCurrentCursorPosition) {
         if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
+            view =
+                    LayoutInflater.from(getContext())
+                            .inflate(R.layout.default_completion_result_item, parent, false);
         }
         var item = getItem(pos);
         TextView label = view.findViewById(R.id.result_item_label);
@@ -69,5 +71,4 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         iv.setImageDrawable(item.icon);
         return view;
     }
-
 }

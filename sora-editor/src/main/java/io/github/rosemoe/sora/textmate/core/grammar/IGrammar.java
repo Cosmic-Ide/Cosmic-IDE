@@ -21,8 +21,8 @@ import java.util.Collection;
 /**
  * TextMate grammar API.
  *
- * @see <a href="https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts</a>
- *
+ * @see <a
+ *     href="https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts</a>
  */
 public interface IGrammar {
 
@@ -50,8 +50,7 @@ public interface IGrammar {
     /**
      * Tokenize `lineText`.
      *
-     * @param lineText
-     *            the line text to tokenize.
+     * @param lineText the line text to tokenize.
      * @return the result of the tokenization.
      */
     ITokenizeLineResult tokenizeLine(String lineText);
@@ -59,36 +58,27 @@ public interface IGrammar {
     /**
      * Tokenize `lineText` using previous line state `prevState`.
      *
-     * @param lineText
-     *            the line text to tokenize.
-     * @param prevState
-     *            previous line state.
+     * @param lineText the line text to tokenize.
+     * @param prevState previous line state.
      * @return the result of the tokenization.
      */
     ITokenizeLineResult tokenizeLine(String lineText, StackElement prevState);
 
     /**
-     * Tokenize `lineText` using previous line state `prevState`.
-     * The result contains the tokens in binary format, resolved with the following information:
-     *  - language
-     *  - token type (regex, string, comment, other)
-     *  - font style
-     *  - foreground color
-     *  - background color
-     * e.g. for getting the languageId: `(metadata & MetadataConsts.LANGUAGEID_MASK) >>> MetadataConsts.LANGUAGEID_OFFSET`
+     * Tokenize `lineText` using previous line state `prevState`. The result contains the tokens in
+     * binary format, resolved with the following information: - language - token type (regex,
+     * string, comment, other) - font style - foreground color - background color e.g. for getting
+     * the languageId: `(metadata & MetadataConsts.LANGUAGEID_MASK) >>>
+     * MetadataConsts.LANGUAGEID_OFFSET`
      */
     ITokenizeLineResult2 tokenizeLine2(String lineText);
 
     /**
-     * Tokenize `lineText` using previous line state `prevState`.
-     * The result contains the tokens in binary format, resolved with the following information:
-     *  - language
-     *  - token type (regex, string, comment, other)
-     *  - font style
-     *  - foreground color
-     *  - background color
-     * e.g. for getting the languageId: `(metadata & MetadataConsts.LANGUAGEID_MASK) >>> MetadataConsts.LANGUAGEID_OFFSET`
+     * Tokenize `lineText` using previous line state `prevState`. The result contains the tokens in
+     * binary format, resolved with the following information: - language - token type (regex,
+     * string, comment, other) - font style - foreground color - background color e.g. for getting
+     * the languageId: `(metadata & MetadataConsts.LANGUAGEID_MASK) >>>
+     * MetadataConsts.LANGUAGEID_OFFSET`
      */
     ITokenizeLineResult2 tokenizeLine2(String lineText, StackElement prevState);
-
 }

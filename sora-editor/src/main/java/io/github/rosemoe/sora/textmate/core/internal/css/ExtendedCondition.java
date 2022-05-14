@@ -13,9 +13,7 @@ package io.github.rosemoe.sora.textmate.core.internal.css;
 
 public interface ExtendedCondition {
 
-    /**
-     * Returns the specificity of this condition.
-     */
+    /** Returns the specificity of this condition. */
     int getSpecificity();
 
     int nbClass();

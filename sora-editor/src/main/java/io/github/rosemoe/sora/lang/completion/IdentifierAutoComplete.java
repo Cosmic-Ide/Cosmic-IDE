@@ -25,22 +25,23 @@ package io.github.rosemoe.sora.lang.completion;
 
 import android.os.Bundle;
 
+import io.github.rosemoe.sora.lang.Language;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.ContentReference;
-
 /**
  * Identifier auto-completion.
  *
- * You can use it to provide identifiers, but you can't update the given {@link CompletionPublisher}
- * if it is used. If you have to mix the result, then you should call {@link CompletionPublisher#setComparator(Comparator)}
- * with null first. Otherwise, your completion list may be corrupted. And in that case, you must do the sorting
- * work by yourself and then add your items.
+ * <p>You can use it to provide identifiers, but you can't update the given {@link
+ * CompletionPublisher} if it is used. If you have to mix the result, then you should call {@link
+ * CompletionPublisher#setComparator(Comparator)} with null first. Otherwise, your completion list
+ * may be corrupted. And in that case, you must do the sorting work by yourself and then add your
+ * items.
  *
  * @author Rosemoe
  */
@@ -49,8 +50,7 @@ public class IdentifierAutoComplete {
     private String[] mKeywords;
     private boolean mKeywordsAreLowCase;
 
-    public IdentifierAutoComplete() {
-    }
+    public IdentifierAutoComplete() {}
 
     public IdentifierAutoComplete(String[] keywords) {
         this();
@@ -70,7 +70,7 @@ public class IdentifierAutoComplete {
 
         private final List<String> identifiers = new ArrayList<>(128);
         private HashMap<String, Object> cache;
-        private final static Object SIGN = new Object();
+        private static final Object SIGN = new Object();
 
         public void addIdentifier(String identifier) {
             if (cache == null) {
@@ -94,15 +94,17 @@ public class IdentifierAutoComplete {
         public List<String> getIdentifiers() {
             return identifiers;
         }
-
     }
 
     /**
-     * Make completion items for the given arguments.
-     * Provide the required arguments passed by {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher,  Bundle)}
+     * Make completion items for the given arguments. Provide the required arguments passed by
+     * {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher,
+     * Bundle)}
+     *
      * @param prefix The prefix to make completions for.
      */
-    public void requireAutoComplete(String prefix, CompletionPublisher publisher, Identifiers userIdentifiers) {
+    public void requireAutoComplete(
+            String prefix, CompletionPublisher publisher, Identifiers userIdentifiers) {
         publisher.setComparator(COMPARATOR);
         publisher.setUpdateThreshold(0);
         int prefixLength = prefix.length();
@@ -116,13 +118,15 @@ public class IdentifierAutoComplete {
             if (lowCase) {
                 for (String kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(
+                                new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             } else {
                 for (String kw : keywordArray) {
                     if (kw.toLowerCase().startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(
+                                new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             }
@@ -131,7 +135,8 @@ public class IdentifierAutoComplete {
             List<CompletionItem> words = new ArrayList<>();
             for (String word : userIdentifiers.getIdentifiers()) {
                 if (word.toLowerCase().startsWith(match)) {
-                    publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
+                    publisher.addItem(
+                            new SimpleCompletionItem(word, "Identifier", prefixLength, word));
                 }
             }
         }
@@ -141,15 +146,14 @@ public class IdentifierAutoComplete {
         return (str instanceof String ? (String) str : str.toString());
     }
 
-    private final static Comparator<CompletionItem> COMPARATOR = (p1, p2) -> {
-        var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
-        if (cmp1 < 0) {
-            return 1;
-        } else if (cmp1 > 0) {
-            return -1;
-        }
-        return asString(p1.label).compareTo(asString(p2.label));
-    };
-
-
+    private static final Comparator<CompletionItem> COMPARATOR =
+            (p1, p2) -> {
+                var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
+                if (cmp1 < 0) {
+                    return 1;
+                } else if (cmp1 > 0) {
+                    return -1;
+                }
+                return asString(p1.label).compareTo(asString(p2.label));
+            };
 }

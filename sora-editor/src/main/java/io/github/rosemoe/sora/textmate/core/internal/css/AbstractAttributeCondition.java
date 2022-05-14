@@ -15,14 +15,10 @@ import org.w3c.css.sac.AttributeCondition;
 
 public abstract class AbstractAttributeCondition implements AttributeCondition, ExtendedCondition {
 
-    /**
-     * The attribute value.
-     */
+    /** The attribute value. */
     protected String value;
 
-    /**
-     * Creates a new AbstractAttributeCondition object.
-     */
+    /** Creates a new AbstractAttributeCondition object. */
     protected AbstractAttributeCondition(String value) {
         this.value = value;
     }

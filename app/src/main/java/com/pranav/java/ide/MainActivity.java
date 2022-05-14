@@ -260,11 +260,11 @@ public final class MainActivity extends AppCompatActivity {
 
         final var manager =
                 (NotificationManager)
-                        activity.getSystemService(Context.NOTIFICATION_SERVICE);
+                        getSystemService(Context.NOTIFICATION_SERVICE);
         manager.setNotificationChannel(channel);
 
         final var mBuilder =
-                new Notification.Builder(activity, NotificationChannel.DEFAULT_CHANNEL_ID)
+                new Notification.Builder(MainActivity.this, NotificationChannel.DEFAULT_CHANNEL_ID)
                         .setContentTitle("Build Status")
                         .setSmallIcon(R.drawable.ic_project_logo);
 

@@ -8,8 +8,8 @@ import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 
-import com.pranav.java.ide.ui.utils.dpToPx;
 import com.pranav.common.util.FileUtil;
+import com.pranav.java.ide.ui.utils.dpToPx;
 
 public final class ApplicationLoader extends Application {
 

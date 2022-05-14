@@ -488,7 +488,7 @@ public class EditorPainter {
         var postDrawCurrentLines = mEditor.getPostDrawCurrentLines();
         postDrawCurrentLines.clear();
         var postDrawCursor = new ArrayList<DrawCursorTask>(3);
-        int firstLn = mEditor.isFirstLineNumberAlwaysVisible() && mEditor.isWordwrap() ? -1 : null;
+        int firstLn = mEditor.isFirstLineNumberAlwaysVisible() && mEditor.isWordwrap() ? -1 : 0;
 
         drawRows(canvas, textOffset, postDrawLineNumbers, postDrawCursor, postDrawCurrentLines, firstLn);
 
@@ -509,8 +509,7 @@ public class EditorPainter {
                 drawRowBackground(canvas, currentLineBgColor, (int) postDrawCurrentLines.get(i), (int) (textOffset - mEditor.getDividerMargin()));
             }
             drawDivider(canvas, offsetX + lineNumberWidth + mEditor.getDividerMargin(), color.getColor(EditorColorScheme.LINE_DIVIDER));
-            // This block is never executed due to the above 
-            if (firstLn != null && firstLn != -1) {
+            if (firstLn != 0 && firstLn != -1) {
                 var bottom = mEditor.getRowBottom(0);
                 float y;
                 if (postDrawLineNumbers.size() == 0 || mEditor.getRowTop(IntPair.getSecond(postDrawLineNumbers.get(0))) - mEditor.getOffsetY() > bottom) {
@@ -828,7 +827,7 @@ public class EditorPainter {
             int line = rowInf.lineIndex;
             ContentLine contentLine = mEditor.getText().getLine(line);
             int columnCount = contentLine.length();
-            if (row == firstVis && requiredFirstLn != null) {
+            if (row == firstVis && requiredFirstLn != 0) {
                 requiredFirstLn = line;
             } else if (rowInf.isLeadingRow) {
                 postDrawLineNumbers.add(IntPair.pack(line, row));

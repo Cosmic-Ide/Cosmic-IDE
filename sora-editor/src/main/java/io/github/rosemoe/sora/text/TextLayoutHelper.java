@@ -56,11 +56,7 @@ public class TextLayoutHelper {
     private final DynamicLayout layout;
 
     private TextLayoutHelper() {
-        layout = new DynamicLayout.Builder
-                .obtain(text, new TextPaint(), Integer.MAX_VALUE / 2)
-                .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setIncludePad(true)
-                .build();
+        layout = new DynamicLayout(text, new TextPaint(), Integer.MAX_VALUE / 2, Layout.Alignment.ALIGN_NORMAL, 0, 0 , true);
     }
 
     public int getCurPosLeft(int offset, CharSequence s) {

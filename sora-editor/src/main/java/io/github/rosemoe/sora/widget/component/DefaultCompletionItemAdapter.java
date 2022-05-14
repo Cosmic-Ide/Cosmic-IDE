@@ -29,6 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 
 import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.lang.completion.CompletionItem;
@@ -51,18 +54,18 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
         }
-        CompletionItem item = getItem(pos);
-        TextView tv = view.findViewById(R.id.result_item_label);
-        tv.setText(item.label);
-        tv = view.findViewById(R.id.result_item_desc);
-        tv.setText(item.desc);
+        var item = getItem(pos);
+        var label = view.findViewById(R.id.result_item_label);
+        label.setText(item.label);
+        var desc = view.findViewById(R.id.result_item_desc);
+        desc.setText(item.desc);
         view.setTag(pos);
         if (isCurrentCursorPosition) {
-            view.setBackgroundColor(0xffdddddd);
+            view.setBackgroundColor(0x40000000);
         } else {
-            view.setBackgroundColor(0xffffffff);
+            view.setBackgroundColor(0xff2b2b2b);
         }
-        ImageView iv = view.findViewById(R.id.result_item_image);
+        var iv = view.findViewById(R.id.result_item_image);
         iv.setImageDrawable(item.icon);
         return view;
     }

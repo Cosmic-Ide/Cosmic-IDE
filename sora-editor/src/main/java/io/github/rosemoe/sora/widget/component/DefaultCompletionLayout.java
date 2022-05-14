@@ -54,7 +54,7 @@ public class DefaultCompletionLayout implements CompletionLayout {
 
     @Override
     public View inflate(Context context) {
-        RelativeLayout layout = new RelativeLayout(context);
+        var layout = new RelativeLayout(context);
         mListView = new ListView(context);
         layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1));
         mProgressBar = new ProgressBar(context);
@@ -62,7 +62,7 @@ public class DefaultCompletionLayout implements CompletionLayout {
         var params = ((RelativeLayout.LayoutParams) mProgressBar.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params.width = params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
-        GradientDrawable gd = new GradientDrawable();
+        var gd = new GradientDrawable();
         gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
         layout.setBackground(gd);
         mBackground = gd;

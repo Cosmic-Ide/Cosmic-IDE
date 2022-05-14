@@ -46,7 +46,7 @@ public final class UndoManager implements ContentListener, Parcelable {
             o.mUndoEnabled = parcel.readInt() > 0;
             var count = parcel.readInt();
             while (count > 0) {
-                o.mActionStack.add(this.readFromParcel(parcel));
+                o.mActionStack.add(parcel.readParcelable(UndoManager.class.getClassLoader()));
                 count --;
             }
             return o;
@@ -492,7 +492,7 @@ public final class UndoManager implements ContentListener, Parcelable {
                 var o = new MultiAction();
                 var count = parcel.readInt();
                 while (count > 0) {
-                    o._actions.add(this.readFromParcel(parcel));
+                    o._actions.add(parcel.readParcelable(MultiAction.class.getClassLoader()));
                     count--;
                 }
                 return o;
@@ -633,8 +633,8 @@ public final class UndoManager implements ContentListener, Parcelable {
             @Override
             public ReplaceAction createFromParcel(Parcel parcel) {
                 var o = new ReplaceAction();
-                o._insert = readFromParcel(parcel);
-                o._delete = readFromParcel(parcel);
+                o._insert = parcel.readParcelable(ReplaceAction.class.getClassLoader());
+                o._delete = parcel.readParcelable(ReplaceAction.class.getClassLoader());
                 return o;
             }
 

@@ -26,6 +26,7 @@ package io.github.rosemoe.sora.widget;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.widget.Toast;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

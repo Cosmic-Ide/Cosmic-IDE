@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileUtilTest {
     @Test
@@ -12,7 +13,7 @@ public class FileUtilTest {
     }
 
     @Test
-    public void readWriter_isWorking() {
+    public void readWriter_isWorking() throws IOException {
         FileUtil.writeFile("tempFile.txt", "Temporary Text");
         Assertions.assertEquals("Temporary Text", FileUtil.readFile(new File("tempFile.txt")));
     }

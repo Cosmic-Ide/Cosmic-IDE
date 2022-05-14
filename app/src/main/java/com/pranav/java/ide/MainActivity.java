@@ -39,7 +39,7 @@ import com.tyron.javacompletion.JavaCompletions;
 import com.tyron.javacompletion.completion.*;
 import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 
-import io.github.rosemoe.sora.langs.java.JavaLanguage;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
@@ -102,21 +102,7 @@ public final class MainActivity extends AppCompatActivity {
 
         editor.setTypefaceText(Typeface.MONOSPACE);
 
-        EditorColorScheme editorColorScheme = editor.getColorScheme();
-        if (!(editorColorScheme instanceof TextMateColorScheme)) {
-            IRawTheme rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
-            editorColorScheme = TextMateColorScheme.create(rawTheme);
-            editor.setColorScheme(editorColorScheme);
-        }
-
-
-        TextMateLanguage language = TextMateLanguage.create(
-                "java.tmLanguage.json",
-                getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                new InputStreamReader(getAssets().open("textmate/java/language-configuration.json")),
-                ((TextMateColorScheme) editorColorScheme).getRawTheme());
-
-        editor.setEditorLanguage(language);
+        editor.setEditorLanguage(getTextMateLanguage());
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
 
@@ -332,6 +318,15 @@ public final class MainActivity extends AppCompatActivity {
                                 }));
         runThread.start();
     }
+    
+    private TextMateLanguage getTextMateLanguage() {
+        IRawTheme rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
+        TextMateLanguage language = TextMateLanguage.create(
+                "java.tmLanguage.json",
+                getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                new InputStreamReader(getAssets().open("textmate/java/language-configuration.json")),
+                rawTheme);
+    }
 
     public void smali() {
         try {
@@ -351,10 +346,9 @@ public final class MainActivity extends AppCompatActivity {
                                 };
                         ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
 
-                        CodeEditor edi = new CodeEditor(MainActivity.this);
+                        var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
-                        edi.setEditorLanguage(new JavaLanguage());
-                        edi.setColorScheme(new SchemeDarcula());
+                        edi.setEditorLanguage(getTextMateLanguage());
                         edi.setTextSize(13);
 
                         File smaliFile =
@@ -411,8 +405,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     final CodeEditor edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
-                    edi.setEditorLanguage(new JavaLanguage());
-                    edi.setColorScheme(new SchemeDarcula());
+                    edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
                     File decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
@@ -441,8 +434,7 @@ public final class MainActivity extends AppCompatActivity {
 
                     final CodeEditor edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
-                    edi.setEditorLanguage(new JavaLanguage());
-                    edi.setColorScheme(new SchemeDarcula());
+                    edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
                     try {

@@ -282,10 +282,10 @@ public class EditorSearcher {
                         () -> {
                             try {
                                 var sb = mEditor.getText().toStringBuilder();
-                                int newLength = replacement.length();
+                                var newLength = replacement.length();
                                 if (mOptions.useRegex) {
-                                    int delta = 0;
-                                    for (int i = 0; i < res.size(); i++) {
+                                    var delta = 0;
+                                    for (var i = 0; i < res.size(); i++) {
                                         var region = res.get(i);
                                         var start = IntPair.getFirst(region);
                                         var end = IntPair.getSecond(region);
@@ -294,7 +294,7 @@ public class EditorSearcher {
                                         delta += newLength - oldLength;
                                     }
                                 } else {
-                                    int fromIndex = 0;
+                                    var fromIndex = 0;
                                     int foundIndex;
                                     while ((foundIndex =
                                                     TextUtils.indexOf(

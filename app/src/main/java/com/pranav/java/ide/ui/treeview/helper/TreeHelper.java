@@ -23,7 +23,7 @@ public class TreeHelper {
      * @return the visible addition nodes
      */
     public static <D> List<TreeNode<D>> expandNode(TreeNode<D> treeNode, boolean includeChild) {
-        List<TreeNode<D>> expandChildren = new ArrayList<>();
+        var expandChildren = new ArrayList<TreeNode<D>>();
 
         if (treeNode == null) {
             return expandChildren;
@@ -35,7 +35,7 @@ public class TreeHelper {
             return expandChildren;
         }
 
-        for (TreeNode<D> child : treeNode.getChildren()) {
+        for (var child : treeNode.getChildren()) {
             expandChildren.add(child);
 
             if (includeChild || child.isExpanded()) {
@@ -57,7 +57,7 @@ public class TreeHelper {
             return;
         }
 
-        for (TreeNode<D> child : root.getChildren()) {
+        for (var child : root.getChildren()) {
             if (child.getLevel() == level) {
                 expandNode(child, false);
             } else {
@@ -70,7 +70,7 @@ public class TreeHelper {
         if (node == null) {
             return;
         }
-        for (TreeNode<D> child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             performCollapseNode(child, true);
         }
     }
@@ -83,14 +83,14 @@ public class TreeHelper {
      * @return the visible addition nodes before remove
      */
     public static <D> List<TreeNode<D>> collapseNode(TreeNode<D> node, boolean includeChild) {
-        List<TreeNode<D>> treeNodes = performCollapseNode(node, includeChild);
+        var treeNodes = performCollapseNode(node, includeChild);
         node.setExpanded(false);
         return treeNodes;
     }
 
     private static <D> List<TreeNode<D>> performCollapseNode(
             TreeNode<D> node, boolean includeChild) {
-        List<TreeNode<D>> collapseChildren = new ArrayList<>();
+        var collapseChildren = new ArrayList<TreeNode<D>>();
 
         if (node == null) {
             return collapseChildren;
@@ -98,7 +98,7 @@ public class TreeHelper {
         if (includeChild) {
             node.setExpanded(false);
         }
-        for (TreeNode<D> child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             collapseChildren.add(child);
 
             if (child.isExpanded()) {
@@ -121,7 +121,7 @@ public class TreeHelper {
             return;
         }
         node.setExpanded(false);
-        for (TreeNode<D> child : node.getChildren()) {
+        for (var child : node.getChildren()) {
             performCollapseNodeInner(child);
         }
     }
@@ -130,7 +130,7 @@ public class TreeHelper {
         if (root == null) {
             return;
         }
-        for (TreeNode<D> child : root.getChildren()) {
+        for (var child : root.getChildren()) {
             if (child.getLevel() == level) {
                 collapseNode(child, false);
             } else {
@@ -140,7 +140,7 @@ public class TreeHelper {
     }
 
     public static <D> List<TreeNode<D>> getAllNodes(TreeNode<D> root) {
-        List<TreeNode<D>> allNodes = new ArrayList<>();
+        var allNodes = new ArrayList<TreeNode<D>>();
 
         fillNodeList(allNodes, root);
         allNodes.remove(root);
@@ -152,7 +152,7 @@ public class TreeHelper {
         treeNodes.add(treeNode);
 
         if (treeNode.hasChild()) {
-            for (TreeNode<D> child : treeNode.getChildren()) {
+            for (var child : treeNode.getChildren()) {
                 fillNodeList(treeNodes, child);
             }
         }
@@ -160,7 +160,7 @@ public class TreeHelper {
 
     /** Select the node and node's children,return the visible nodes */
     public static <D> List<TreeNode<D>> selectNodeAndChild(TreeNode<D> treeNode, boolean select) {
-        List<TreeNode<D>> expandChildren = new ArrayList<>();
+        var expandChildren = new ArrayList<TreeNode<D>>();
 
         if (treeNode == null) {
             return expandChildren;
@@ -173,7 +173,7 @@ public class TreeHelper {
         }
 
         if (treeNode.isExpanded()) {
-            for (TreeNode<D> child : treeNode.getChildren()) {
+            for (var child : treeNode.getChildren()) {
                 expandChildren.add(child);
 
                 if (child.isExpanded()) {
@@ -194,7 +194,7 @@ public class TreeHelper {
         }
         treeNode.setSelected(select);
         if (treeNode.hasChild()) {
-            for (TreeNode<D> child : treeNode.getChildren()) {
+            for (var child : treeNode.getChildren()) {
                 selectNodeInner(child, select);
             }
         }
@@ -206,20 +206,20 @@ public class TreeHelper {
      */
     public static <D> List<TreeNode<D>> selectParentIfNeedWhenNodeSelected(
             TreeNode<D> treeNode, boolean select) {
-        List<TreeNode<D>> impactedParents = new ArrayList<>();
+        var impactedParents = new ArrayList<TreeNode<D>>();
         if (treeNode == null) {
             return impactedParents;
         }
 
         // ensure that the node's level is bigger than 1(first level is 1)
-        TreeNode<D> parent = treeNode.getParent();
+        var parent = treeNode.getParent();
         if (parent == null || parent.getParent() == null) {
             return impactedParents;
         }
 
-        List<TreeNode<D>> brothers = parent.getChildren();
+        var brothers = parent.getChildren();
         int selectedBrotherCount = 0;
-        for (TreeNode<D> brother : brothers) {
+        for (var brother : brothers) {
             if (brother.isSelected()) selectedBrotherCount++;
         }
 
@@ -239,14 +239,14 @@ public class TreeHelper {
 
     /** Get the selected nodes under current node, include itself */
     public static <D> List<TreeNode<D>> getSelectedNodes(TreeNode<D> treeNode) {
-        List<TreeNode<D>> selectedNodes = new ArrayList<>();
+        var selectedNodes = new ArrayList<TreeNode<D>>();
         if (treeNode == null) {
             return selectedNodes;
         }
 
         if (treeNode.isSelected() && treeNode.getParent() != null) selectedNodes.add(treeNode);
 
-        for (TreeNode<D> child : treeNode.getChildren()) {
+        for (var child : treeNode.getChildren()) {
             selectedNodes.addAll(getSelectedNodes(child));
         }
         return selectedNodes;
@@ -260,8 +260,8 @@ public class TreeHelper {
         if (treeNode == null || treeNode.getChildren().size() == 0) {
             return false;
         }
-        List<TreeNode<D>> children = treeNode.getChildren();
-        for (TreeNode<D> child : children) {
+        var children = treeNode.getChildren();
+        for (var child : children) {
             if (child.isSelected() || hasOneSelectedNodeAtLeast(child)) {
                 return true;
             }

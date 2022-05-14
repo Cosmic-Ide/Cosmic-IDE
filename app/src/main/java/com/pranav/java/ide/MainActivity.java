@@ -35,9 +35,6 @@ import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.lib_android.code.disassembler.*;
 import com.pranav.lib_android.code.formatter.*;
 import com.pranav.lib_android.task.JavaBuilder;
-import com.tyron.javacompletion.JavaCompletions;
-import com.tyron.javacompletion.completion.*;
-import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
@@ -151,40 +148,6 @@ public final class MainActivity extends AppCompatActivity {
                 showErr(getString(e));
             }
         }
-
-        final StringBuilder s = new StringBuilder();
-        ConcurrentUtil.execute(
-                () -> {
-                    try {
-                        completions.initialize(
-                                new URI("file", FileUtil.getJavaDir(), null),
-                                new JavaCompletionOptionsImpl(
-                                        FileUtil.getBinDir() + "log.txt",
-                                        Level.ALL,
-                                        new ArrayList<String>(),
-                                        new ArrayList<String>()));
-
-                        CompletionResult result =
-                                completions
-                                        .getProject()
-                                        .getCompletionResult(
-                                                new File(currentWorkingFilePath).toPath(),
-                                                6
-                                                /** line * */
-                                                ,
-                                                13
-                                                /** column * */
-                                                );
-
-                        for (CompletionCandidate candidate : result.getCompletionCandidates()) {
-                            s.append(candidate.getName());
-                            s.append("\n");
-                        }
-                    } catch (Throwable e) {
-                        showErr(getString(e));
-                    }
-                });
-        editor.setText(s.toString());
 
         /* Create Loading Dialog */
         buildLoadingDialog();

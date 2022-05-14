@@ -55,20 +55,20 @@ public final class SettingActivity extends AppCompatActivity {
         javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
         classpath_bttn = findViewById(R.id.classpath_bttn);
 
-        ArrayAdapter<String> versionAdapter =
+        var versionAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);
         versionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter<String> compilerAdapter =
+        var compilerAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaCompilers);
         compilerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter<String> formatterAdapter =
+        var formatterAdapter =
                 new ArrayAdapter<String>(
                         this, android.R.layout.simple_spinner_item, javaFormatters);
         formatterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        ArrayAdapter<String> disassemblerAdapter =
+        var disassemblerAdapter =
                 new ArrayAdapter<String>(
                         this, android.R.layout.simple_spinner_item, javaDisassemblers);
         disassemblerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -89,19 +89,19 @@ public final class SettingActivity extends AppCompatActivity {
         }
 
         /* Select Version in Spinner based on SharedPreferences Value */
-        String version = settings.getString("version", "7");
-        int count = 0;
-        for (String ver : javaVersions) {
-            if (ver.equals(version)) {
+        var version = settings.getString("version", "7");
+        var count = 0;
+        for (var vers : javaVersions) {
+            if (vers.equals(version)) {
                 javaVersions_spinner.setSelection(count);
                 break;
             }
             count++;
         }
 
-        String compiler = settings.getString("compiler", "Javac");
+        var compiler = settings.getString("compiler", "Javac");
         count = 0;
-        for (String comp : javaCompilers) {
+        for (var comp : javaCompilers) {
             if (comp.equals(compiler)) {
                 javaCompilers_spinner.setSelection(count);
                 break;
@@ -109,9 +109,9 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
-        String formatter = settings.getString("formatter", "Google Java Formatter");
+        var formatter = settings.getString("formatter", "Google Java Formatter");
         count = 0;
-        for (String form : javaFormatters) {
+        for (var form : javaFormatters) {
             if (form.equals(formatter)) {
                 javaFormatters_spinner.setSelection(count);
                 break;
@@ -119,9 +119,9 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
-        String disassembler = settings.getString("disassembler", "Javap");
-        count = 0;
-        for (String dis : javaDisassemblers) {
+        var disassembler = settings.getString("disassembler", "Javap");
+        var = 0;
+        for (var dis : javaDisassemblers) {
             if (dis.equals(disassembler)) {
                 javaDisassemblers_spinner.setSelection(count);
                 break;
@@ -194,7 +194,7 @@ public final class SettingActivity extends AppCompatActivity {
 
                     save_classpath_bttn.setOnClickListener(
                             view -> {
-                                String enteredClasspath = classpath_edt.getText().toString();
+                                var enteredClasspath = classpath_edt.getText().toString();
                                 settings.edit().putString("classpath", enteredClasspath).apply();
 
                                 /* Check if specified classpath is empty - if yes, change button text */
@@ -212,9 +212,9 @@ public final class SettingActivity extends AppCompatActivity {
     }
 
     void buildClasspathDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
+        var builder = new AlertDialog.Builder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
-        View dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
+        var dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
         builder.setView(dialogView);
         alertDialog = builder.create();
     }

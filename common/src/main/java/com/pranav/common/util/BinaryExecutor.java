@@ -13,8 +13,8 @@ public class BinaryExecutor {
     public String execute(ArrayList<String> arrayList) {
         mProcess.command(arrayList);
         try {
-            Process process = mProcess.start();
-            Scanner scanner = new Scanner(process.getErrorStream());
+            var process = mProcess.start();
+            var scanner = new Scanner(process.getErrorStream());
             while (scanner.hasNextLine()) {
                 mWriter.append(scanner.nextLine());
                 mWriter.append(System.lineSeparator());
@@ -30,8 +30,8 @@ public class BinaryExecutor {
     public String execute(String command) {
         mProcess.command(command);
         try {
-            Process process = mProcess.start();
-            Scanner scanner = new Scanner(process.getErrorStream());
+            var process = mProcess.start();
+            var scanner = new Scanner(process.getErrorStream());
             while (scanner.hasNextLine()) {
                 mWriter.append(scanner.nextLine());
                 mWriter.append(System.lineSeparator());

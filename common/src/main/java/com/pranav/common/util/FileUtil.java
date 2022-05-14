@@ -19,19 +19,19 @@ public class FileUtil {
     }
 
     public static void writeFile(InputStream in, String path) throws IOException {
-        File file = new File(path);
+        var file = new File(path);
         Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void writeFile(String path, String content) throws IOException {
-        File file = new File(path);
+        var file = new File(path);
         file.getParentFile().mkdirs();
         file.delete();
         Files.write(file.toPath(), content.getBytes());
     }
 
     public static void writeFile(String path, byte[] content) throws IOException {
-        File file = new File(path);
+        var file = new File(path);
         file.getParentFile().mkdirs();
         file.delete();
         Files.write(file.toPath(), content);
@@ -42,7 +42,7 @@ public class FileUtil {
     }
 
     public static void deleteFile(String path) {
-        File file = new File(path);
+        var file = new File(path);
 
         if (!file.exists()) return;
 
@@ -51,10 +51,10 @@ public class FileUtil {
             return;
         }
 
-        File[] fileArr = file.listFiles();
+        var fileArr = file.listFiles();
 
         if (fileArr != null) {
-            for (File subFile : fileArr) {
+            for (var subFile : fileArr) {
                 if (subFile.isDirectory()) {
                     deleteFile(subFile.getAbsolutePath());
                 }
@@ -69,7 +69,7 @@ public class FileUtil {
     }
 
     public static String getFileName(String path) {
-        String[] splited = path.split("/");
+        var splited = path.split("/");
         return splited[splited.length - 1];
     }
 

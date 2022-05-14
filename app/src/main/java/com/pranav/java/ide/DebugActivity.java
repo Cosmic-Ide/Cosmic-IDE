@@ -12,8 +12,8 @@ public final class DebugActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        String errorMessage = intent.getStringExtra("error");
+        var intent = getIntent();
+        var errorMessage = intent.getStringExtra("error");
 
         new AlertDialog.Builder(this)
                 .setTitle("An error occurred")

@@ -12,7 +12,7 @@ public class ZipUtil {
 
     public static void unzipFromAssets(Context context, String zipFile, String destination) {
         try {
-            InputStream stream = context.getAssets().open(zipFile);
+            var stream = context.getAssets().open(zipFile);
             unzip(stream, destination);
         } catch (IOException e) {
             e.printStackTrace();
@@ -22,14 +22,13 @@ public class ZipUtil {
     private static void unzip(InputStream stream, String destination) {
         dirChecker(destination, "");
         try {
-            ZipInputStream zin = new ZipInputStream(stream);
-            ZipEntry ze = null;
+            var zin = new ZipInputStream(stream);
 
-            while ((ze = zin.getNextEntry()) != null) {
+            while ((var ze = zin.getNextEntry()) != null) {
                 if (ze.isDirectory()) {
                     dirChecker(destination, ze.getName());
                 } else {
-                    File f = new File(destination, ze.getName());
+                    var f = new File(destination, ze.getName());
                     if (!f.toPath().normalize().startsWith(destination))
                         throw new SecurityException(
                                 "Potentially harmful files detected inside zip");
@@ -37,7 +36,7 @@ public class ZipUtil {
                         if (!f.createNewFile()) {
                             continue;
                         }
-                        byte[] data = new byte[zin.available()];
+                        var data = new byte[zin.available()];
                         zin.read(data);
                         FileUtil.writeFile(f.getAbsolutePath(), data);
                         zin.closeEntry();
@@ -51,7 +50,7 @@ public class ZipUtil {
     }
 
     private static void dirChecker(String destination, String dir) {
-        File f = new File(destination, dir);
+        var f = new File(destination, dir);
 
         if (!f.isDirectory()) {
             f.mkdirs();

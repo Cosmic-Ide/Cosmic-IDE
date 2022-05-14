@@ -51,7 +51,7 @@ public class TreeFile {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        TreeFile treeFile = (TreeFile) o;
+        var treeFile = (TreeFile) o;
         return Objects.equals(mFile, treeFile.mFile);
     }
 

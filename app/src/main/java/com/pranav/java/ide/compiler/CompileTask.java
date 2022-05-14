@@ -47,7 +47,7 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
-        SharedPreferences prefs =
+        var prefs =
                 activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             // Delete previous build files
@@ -67,19 +67,19 @@ public class CompileTask extends Thread {
             listener.onFailed();
         }
 
-        boolean errorsArePresent = false;
+        var errorsArePresent = false;
 
         // code that runs Javac
-        long time = System.currentTimeMillis();
+        var time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-                JavacCompilationTask javaTask = new JavacCompilationTask(activity.builder);
+                var javaTask = new JavacCompilationTask(activity.builder);
                 javaTask.doFullTask();
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
-                ECJCompilationTask javaTask = new ECJCompilationTask(activity.builder);
+                var javaTask = new ECJCompilationTask(activity.builder);
                 javaTask.doFullTask();
             }
             errorsArePresent = false;
@@ -111,7 +111,7 @@ public class CompileTask extends Thread {
         // code that loads the final dex
         try {
             listener.onCurrentBuildStageChanged(STAGE_LOADING_DEX);
-            final String[] classes = activity.getClassesFromDex();
+            final var classes = activity.getClassesFromDex();
             if (classes == null) {
                 return;
             }
@@ -121,7 +121,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            ExecuteJavaTask task =
+                            var task =
                                     new ExecuteJavaTask(activity.builder, classes[item]);
                             try {
                                 task.doFullTask();
@@ -142,7 +142,7 @@ public class CompileTask extends Thread {
                                                 + task.getLogs(),
                                         true);
                             }
-                            StringBuilder s = new StringBuilder();
+                            var s = new StringBuilder();
                             s.append("Success! Javac took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");

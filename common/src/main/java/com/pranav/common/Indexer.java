@@ -20,12 +20,12 @@ public class Indexer {
     }
 
     public void load() throws JSONException {
-        File indexFile = new File(filePath);
+        var indexFile = new File(filePath);
         try {
             if (!indexFile.exists()) {
                 FileUtil.writeFile(filePath, "{}");
             }
-            String index = FileUtil.readFile(indexFile);
+            var index = FileUtil.readFile(indexFile);
             json = new JSONObject(index);
         } catch (IOException e) {
             e.printStackTrace();

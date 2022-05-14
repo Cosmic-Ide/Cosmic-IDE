@@ -61,7 +61,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     private void buildExpandedNodeList() {
         expandedNodeList.clear();
 
-        for (TreeNode<D> child : root.getChildren()) {
+        for (var child : root.getChildren()) {
             insertNode(expandedNodeList, child);
         }
     }
@@ -73,7 +73,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
             return;
         }
         if (treeNode.isExpanded()) {
-            for (TreeNode<D> child : treeNode.getChildren()) {
+            for (var child : treeNode.getChildren()) {
                 insertNode(nodeList, child);
             }
         }
@@ -83,18 +83,18 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
         // return expandedNodeList.get(position).getLevel(); // this old code row used to always
         // return the level
-        TreeNode<D> treeNode = expandedNodeList.get(position);
+        var treeNode = expandedNodeList.get(position);
         return this.baseNodeViewFactory.getViewType(treeNode);
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int level) {
-        View view =
+        var view =
                 LayoutInflater.from(context)
                         .inflate(baseNodeViewFactory.getNodeLayoutId(level), parent, false);
 
-        BaseNodeViewBinder<D> nodeViewBinder = baseNodeViewFactory.getNodeViewBinder(view, level);
+        var nodeViewBinder = baseNodeViewFactory.getNodeViewBinder(view, level);
         nodeViewBinder.setTreeView(treeView);
         return nodeViewBinder;
     }
@@ -103,12 +103,12 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     @SuppressWarnings("unchecked")
     public void onBindViewHolder(
             @NonNull final RecyclerView.ViewHolder holder, final int position) {
-        final View nodeView = holder.itemView;
-        final TreeNode<D> treeNode = expandedNodeList.get(position);
-        final BaseNodeViewBinder<D> viewBinder = (BaseNodeViewBinder<D>) holder;
+        final var nodeView = holder.itemView;
+        final var treeNode = expandedNodeList.get(position);
+        final var viewBinder = (BaseNodeViewBinder<D>) holder;
 
         if (viewBinder.getToggleTriggerViewId() != 0) {
-            View triggerToggleView = nodeView.findViewById(viewBinder.getToggleTriggerViewId());
+            var triggerToggleView = nodeView.findViewById(viewBinder.getToggleTriggerViewId());
 
             if (triggerToggleView != null) {
                 triggerToggleView.setOnClickListener(
@@ -133,9 +133,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
                     });
 
             nodeView.setOnLongClickListener(
-                    view -> {
-                        return viewBinder.onNodeLongClicked(view, treeNode, treeNode.isExpanded());
-                    });
+                    view -> viewBinder.onNodeLongClicked(view, treeNode, treeNode.isExpanded()));
         }
 
         if (viewBinder instanceof CheckableNodeViewBinder) {
@@ -149,15 +147,15 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
             View nodeView,
             final TreeNode<D> treeNode,
             final CheckableNodeViewBinder<D> viewBinder) {
-        final View view = nodeView.findViewById(viewBinder.getCheckableViewId());
+        final var view = nodeView.findViewById(viewBinder.getCheckableViewId());
 
         if (view instanceof Checkable) {
-            final Checkable checkableView = (Checkable) view;
+            final var checkableView = (Checkable) view;
             checkableView.setChecked(treeNode.isSelected());
 
             view.setOnClickListener(
                     v -> {
-                        boolean checked = checkableView.isChecked();
+                        var checked = checkableView.isChecked();
                         selectNode(checked, treeNode);
                         viewBinder.onNodeSelectedChanged(treeNode, checked);
                     });
@@ -175,7 +173,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void selectChildren(TreeNode<D> treeNode, boolean checked) {
-        List<TreeNode<D>> impactedChildren = TreeHelper.selectNodeAndChild(treeNode, checked);
+        var impactedChildren = TreeHelper.selectNodeAndChild(treeNode, checked);
         int index = expandedNodeList.indexOf(treeNode);
         if (index != -1 && impactedChildren.size() > 0) {
             notifyItemRangeChanged(index, impactedChildren.size() + 1);
@@ -183,11 +181,11 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void selectParentIfNeed(TreeNode<D> treeNode, boolean checked) {
-        List<TreeNode<D>> impactedParents =
+        var impactedParents =
                 TreeHelper.selectParentIfNeedWhenNodeSelected(treeNode, checked);
         if (impactedParents.size() > 0) {
-            for (TreeNode<D> parent : impactedParents) {
-                int position = expandedNodeList.indexOf(parent);
+            for (var parent : impactedParents) {
+                var position = expandedNodeList.indexOf(parent);
                 if (position != -1) notifyItemChanged(position);
             }
         }
@@ -201,7 +199,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             // expand folders recursively
             if (!treeNode.isLeaf() && treeNode.getChildren().size() == 1) {
-                TreeNode<D> subNode = treeNode.getChildren().get(0);
+                var subNode = treeNode.getChildren().get(0);
 
                 if (!subNode.isLeaf() && !subNode.isExpanded()) {
                     onNodeToggled(subNode);
@@ -251,8 +249,8 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (treeNode == null) {
             return;
         }
-        List<TreeNode<D>> additionNodes = TreeHelper.expandNode(treeNode, false);
-        int index = expandedNodeList.indexOf(treeNode);
+        var additionNodes = TreeHelper.expandNode(treeNode, false);
+        var index = expandedNodeList.indexOf(treeNode);
 
         insertNodesAtIndex(index, additionNodes);
     }
@@ -262,8 +260,8 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (treeNode == null) {
             return;
         }
-        List<TreeNode<D>> removedNodes = TreeHelper.collapseNode(treeNode, false);
-        int index = expandedNodeList.indexOf(treeNode);
+        var removedNodes = TreeHelper.collapseNode(treeNode, false);
+        var index = expandedNodeList.indexOf(treeNode);
 
         removeNodesAtIndex(index, removedNodes);
     }
@@ -273,7 +271,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (node == null || node.getParent() == null) {
             return;
         }
-        List<TreeNode<D>> allNodes = TreeHelper.getAllNodes(root);
+        var allNodes = TreeHelper.getAllNodes(root);
         if (allNodes.contains(node)) {
             node.getParent().removeChild(node);
         }
@@ -281,7 +279,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
         // remove children form list before delete
         collapseNode(node);
 
-        int index = expandedNodeList.indexOf(node);
+        var index = expandedNodeList.indexOf(node);
         if (index != -1) {
             expandedNodeList.remove(node);
         }

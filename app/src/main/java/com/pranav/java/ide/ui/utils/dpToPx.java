@@ -1,14 +1,13 @@
 package com.pranav.java.ide.ui.utils;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.util.TypedValue;
 
 public class dpToPx {
-    private static Resources res;
+    private static Resources resources;
 
-    public static void initalizeContext(Context context) {
-        res = context.getResources();
+    public static void initalizeResources(Resources res) {
+        resources = res;
     }
 
     public static int dpToPx(float dp) {

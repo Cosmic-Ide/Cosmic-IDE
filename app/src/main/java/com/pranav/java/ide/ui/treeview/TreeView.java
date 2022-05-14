@@ -62,7 +62,7 @@ public class TreeView<D> implements SelectableTreeAction<D> {
 
     @Nullable
     public TreeNode<D> getRoot() {
-        List<TreeNode<D>> allNodes = getAllNodes();
+        var allNodes = getAllNodes();
         if (allNodes.isEmpty()) {
             return null;
         }
@@ -71,7 +71,7 @@ public class TreeView<D> implements SelectableTreeAction<D> {
 
     @NonNull
     private RecyclerView buildRootView() {
-        RecyclerView recyclerView = new RecyclerView(context);
+        var recyclerView = new RecyclerView(context);
 
         recyclerView.setMotionEventSplittingEnabled(
                 false); // disable multi touch event to prevent terrible data set error when

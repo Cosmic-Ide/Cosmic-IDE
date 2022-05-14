@@ -55,9 +55,9 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
             view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
         }
         var item = getItem(pos);
-        var label = view.findViewById(R.id.result_item_label);
+        TextView label = view.findViewById(R.id.result_item_label);
         label.setText(item.label);
-        var desc = view.findViewById(R.id.result_item_desc);
+        TextView desc = view.findViewById(R.id.result_item_desc);
         desc.setText(item.desc);
         view.setTag(pos);
         if (isCurrentCursorPosition) {
@@ -65,7 +65,7 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         } else {
             view.setBackgroundColor(0xff2b2b2b);
         }
-        var iv = view.findViewById(R.id.result_item_image);
+        ImageView iv = view.findViewById(R.id.result_item_image);
         iv.setImageDrawable(item.icon);
         return view;
     }

@@ -49,6 +49,9 @@ public class IdentifierAutoComplete {
     private String[] mKeywords;
     private boolean mKeywordsAreLowCase;
 
+    public IdentifierAutoComplete() {
+    }
+
     public IdentifierAutoComplete(String[] keywords) {
         this();
         setKeywords(keywords, true);

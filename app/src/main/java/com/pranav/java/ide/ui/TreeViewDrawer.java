@@ -192,7 +192,7 @@ public class TreeViewDrawer extends Fragment {
 
     void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(getContext());
-        var viewGroup = activity.findViewById(android.R.id.content);
+        ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
                         .inflate(R.layout.treeview_create_new_file_dialog, viewGroup, false);

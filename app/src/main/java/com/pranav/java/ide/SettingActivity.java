@@ -120,7 +120,7 @@ public final class SettingActivity extends AppCompatActivity {
         }
 
         var disassembler = settings.getString("disassembler", "Javap");
-        var = 0;
+        count = 0;
         for (var dis : javaDisassemblers) {
             if (dis.equals(disassembler)) {
                 javaDisassemblers_spinner.setSelection(count);

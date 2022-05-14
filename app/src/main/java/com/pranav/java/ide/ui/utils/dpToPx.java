@@ -11,9 +11,8 @@ public class dpToPx {
     }
 
     public static int dpToPx(float dp) {
-
         return Math.round(
                 TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, dp, res.getDisplayMetrics()));
+                        TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics()));
     }
 }

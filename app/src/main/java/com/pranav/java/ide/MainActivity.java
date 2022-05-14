@@ -72,7 +72,6 @@ public final class MainActivity extends AppCompatActivity {
 
     public String currentWorkingFilePath;
     public Indexer indexer;
-    public JavaCompletions completions = new JavaCompletions();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

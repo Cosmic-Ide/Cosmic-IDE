@@ -48,7 +48,7 @@ public class TreeNode<D> {
     }
 
     public static <D> TreeNode<D> root(List<TreeNode<D>> children) {
-        var root = root();
+        TreeNode<D> root = root();
         root.setChildren(children);
         return root;
     }

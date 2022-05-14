@@ -23,4 +23,10 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation "org.jruby.jcodings:jcodings:1.0.57"
+    implementation "org.jruby.joni:joni:2.1.43"
+    implementation "org.apache.xmlgraphics:batik-css:1.14"
+    implementation "org.apache.xmlgraphics:batik-util:1.14"
+    implementation "xerces:xercesImpl:2.12.2"
 }

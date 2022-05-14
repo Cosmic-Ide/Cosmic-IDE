@@ -260,8 +260,8 @@ public final class MainActivity extends AppCompatActivity {
 
         final var manager =
                 (NotificationManager)
-                        getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.setNotificationChannel(channel);
+                        getSystemService(NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
 
         final var mBuilder =
                 new Notification.Builder(MainActivity.this, NotificationChannel.DEFAULT_CHANNEL_ID)

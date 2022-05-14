@@ -25,14 +25,10 @@ package io.github.rosemoe.sora.lang.smartEnter;
 
 public class NewlineHandleResult {
 
-    /**
-     * Text to insert
-     */
+    /** Text to insert */
     public final CharSequence text;
 
-    /**
-     * Count to shift left from the end of {@link NewlineHandleResult#text}
-     */
+    /** Count to shift left from the end of {@link NewlineHandleResult#text} */
     public final int shiftLeft;
 
     public NewlineHandleResult(CharSequence text, int shiftLeft) {
@@ -42,5 +38,4 @@ public class NewlineHandleResult {
             throw new IllegalArgumentException("invalid shiftLeft");
         }
     }
-
 }

@@ -16,9 +16,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar.reader;
 
-import java.io.InputStream;
-
 import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+
+import java.io.InputStream;
 
 public class SyncGrammarReader {
 

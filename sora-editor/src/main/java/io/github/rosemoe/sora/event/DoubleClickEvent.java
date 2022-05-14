@@ -31,8 +31,7 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * Report double click in editor.
- * This event can be intercepted.
+ * Report double click in editor. This event can be intercepted.
  *
  * @author Rosemoe
  */
@@ -72,11 +71,8 @@ public class DoubleClickEvent extends Event {
         return event.getY();
     }
 
-    /**
-     * Get original event object from Android framework
-     */
+    /** Get original event object from Android framework */
     public MotionEvent getCausingEvent() {
         return event;
     }
-
 }

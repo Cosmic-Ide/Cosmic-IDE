@@ -30,11 +30,10 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks those fields, methods and constructors experimentally created.
- * <p>
- * Methods, fields and constructors with this annotation is very subject to keep or delete.
- * For that reason, they are not stable for production use.
+ *
+ * <p>Methods, fields and constructors with this annotation is very subject to keep or delete. For
+ * that reason, they are not stable for production use.
  */
 @Target({ElementType.FIELD, ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface Experimental {
-}
+public @interface Experimental {}

@@ -11,6 +11,12 @@
  */
 package io.github.rosemoe.sora.textmate.core.theme.css;
 
+import io.github.rosemoe.sora.textmate.core.internal.css.CSSConditionFactory;
+import io.github.rosemoe.sora.textmate.core.internal.css.CSSDocumentHandler;
+import io.github.rosemoe.sora.textmate.core.internal.css.CSSSelectorFactory;
+import io.github.rosemoe.sora.textmate.core.internal.css.ExtendedSelector;
+import io.github.rosemoe.sora.textmate.core.theme.IStyle;
+
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.InputSource;
 import org.w3c.css.sac.Parser;
@@ -22,16 +28,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
 
-import io.github.rosemoe.sora.textmate.core.internal.css.CSSConditionFactory;
-import io.github.rosemoe.sora.textmate.core.internal.css.CSSDocumentHandler;
-import io.github.rosemoe.sora.textmate.core.internal.css.CSSSelectorFactory;
-import io.github.rosemoe.sora.textmate.core.internal.css.ExtendedSelector;
-import io.github.rosemoe.sora.textmate.core.theme.IStyle;
-
-/**
- * CSS Parser to parse style for TextMate syntax coloration.
- *
- */
+/** CSS Parser to parse style for TextMate syntax coloration. */
 public class CSSParser {
 
     private final CSSDocumentHandler handler;
@@ -87,5 +84,4 @@ public class CSSParser {
     public List<IStyle> getStyles() {
         return handler.getList();
     }
-
 }

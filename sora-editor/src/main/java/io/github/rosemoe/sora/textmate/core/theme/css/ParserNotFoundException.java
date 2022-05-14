@@ -11,9 +11,7 @@
  *******************************************************************************/
 package io.github.rosemoe.sora.textmate.core.theme.css;
 
-/**
- * Exception used when SAC parser is not retrieved.
- */
+/** Exception used when SAC parser is not retrieved. */
 public class ParserNotFoundException extends RuntimeException {
 
     private static final long serialVersionUID = 4339161134287845644L;

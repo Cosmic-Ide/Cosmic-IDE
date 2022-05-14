@@ -16,13 +16,13 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar;
 
+import io.github.rosemoe.sora.textmate.core.grammar.IToken;
+import io.github.rosemoe.sora.textmate.core.grammar.StackElement;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import io.github.rosemoe.sora.textmate.core.grammar.IToken;
-import io.github.rosemoe.sora.textmate.core.grammar.StackElement;
 
 class LineTokens {
 
@@ -30,20 +30,18 @@ class LineTokens {
 
     private final String lineText;
 
-    /**
-     * used only if `_emitBinaryTokens` is false.
-     */
+    /** used only if `_emitBinaryTokens` is false. */
     private final List<IToken> tokens;
-    /**
-     * used only if `_emitBinaryTokens` is true.
-     */
+    /** used only if `_emitBinaryTokens` is true. */
     private final List<Integer> binaryTokens;
+
     private boolean emitBinaryTokens;
     private int lastTokenEndIndex;
 
     LineTokens(boolean emitBinaryTokens, String lineText) {
         this.emitBinaryTokens = emitBinaryTokens;
-        this.lineText = LOGGER.isLoggable(Level.FINEST) ? lineText : null; // store line only if it's logged
+        this.lineText =
+                LOGGER.isLoggable(Level.FINEST) ? lineText : null; // store line only if it's logged
         if (this.emitBinaryTokens) {
             this.tokens = null;
             this.binaryTokens = new ArrayList<>();
@@ -65,7 +63,8 @@ class LineTokens {
 
         if (this.emitBinaryTokens) {
             int metadata = scopesList.metadata;
-            if (!this.binaryTokens.isEmpty() && this.binaryTokens.get(this.binaryTokens.size() - 1) == metadata) {
+            if (!this.binaryTokens.isEmpty()
+                    && this.binaryTokens.get(this.binaryTokens.size() - 1) == metadata) {
                 // no need to push a token with the same metadata
                 this.lastTokenEndIndex = endIndex;
                 return;
@@ -81,7 +80,12 @@ class LineTokens {
         List<String> scopes = scopesList.generateScopes();
 
         if (this.lineText != null) {
-            LOGGER.info("  token: |" + this.lineText.substring(this.lastTokenEndIndex, endIndex).replaceAll("\n", "\\n") + '|');
+            LOGGER.info(
+                    "  token: |"
+                            + this.lineText
+                                    .substring(this.lastTokenEndIndex, endIndex)
+                                    .replaceAll("\n", "\\n")
+                            + '|');
             for (String scope : scopes) {
                 LOGGER.info("      * " + scope);
             }
@@ -92,7 +96,8 @@ class LineTokens {
     }
 
     public IToken[] getResult(StackElement stack, int lineLength) {
-        if (!this.tokens.isEmpty() && this.tokens.get(this.tokens.size() - 1).getStartIndex() == lineLength - 1) {
+        if (!this.tokens.isEmpty()
+                && this.tokens.get(this.tokens.size() - 1).getStartIndex() == lineLength - 1) {
             // pop produced token for newline
             this.tokens.remove(this.tokens.size() - 1);
         }
@@ -107,7 +112,8 @@ class LineTokens {
     }
 
     public int[] getBinaryResult(StackElement stack, int lineLength) {
-        if (!this.binaryTokens.isEmpty() && this.binaryTokens.get(this.binaryTokens.size() - 2) == lineLength - 1) {
+        if (!this.binaryTokens.isEmpty()
+                && this.binaryTokens.get(this.binaryTokens.size() - 2) == lineLength - 1) {
             // pop produced token for newline
             this.binaryTokens.remove(this.binaryTokens.size() - 1);
             this.binaryTokens.remove(this.binaryTokens.size() - 1);

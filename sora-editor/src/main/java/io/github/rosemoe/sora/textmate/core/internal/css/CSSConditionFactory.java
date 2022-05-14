@@ -26,25 +26,27 @@ public class CSSConditionFactory implements ConditionFactory {
     public static final ConditionFactory INSTANCE = new CSSConditionFactory();
 
     @Override
-    public AttributeCondition createClassCondition(String namespaceURI, String value) throws CSSException {
+    public AttributeCondition createClassCondition(String namespaceURI, String value)
+            throws CSSException {
         return new CSSClassCondition(null, "class", value);
     }
 
     @Override
-    public AttributeCondition createAttributeCondition(String localName, String namespaceURI, boolean specified,
-                                                       String value) throws CSSException {
+    public AttributeCondition createAttributeCondition(
+            String localName, String namespaceURI, boolean specified, String value)
+            throws CSSException {
         return new CSSAttributeCondition(localName, namespaceURI, specified, value);
     }
 
     @Override
-    public CombinatorCondition createAndCondition(Condition first,
-                                                  Condition second) throws CSSException {
+    public CombinatorCondition createAndCondition(Condition first, Condition second)
+            throws CSSException {
         return new CSSAndCondition(first, second);
     }
 
     @Override
-    public AttributeCondition createBeginHyphenAttributeCondition(String arg0, String arg1, boolean arg2, String arg3)
-            throws CSSException {
+    public AttributeCondition createBeginHyphenAttributeCondition(
+            String arg0, String arg1, boolean arg2, String arg3) throws CSSException {
         throw new CSSException("Not implemented in CSS2");
     }
 
@@ -69,8 +71,8 @@ public class CSSConditionFactory implements ConditionFactory {
     }
 
     @Override
-    public AttributeCondition createOneOfAttributeCondition(String arg0, String arg1, boolean arg2, String arg3)
-            throws CSSException {
+    public AttributeCondition createOneOfAttributeCondition(
+            String arg0, String arg1, boolean arg2, String arg3) throws CSSException {
         throw new CSSException("Not implemented in CSS2");
     }
 
@@ -85,18 +87,20 @@ public class CSSConditionFactory implements ConditionFactory {
     }
 
     @Override
-    public CombinatorCondition createOrCondition(Condition arg0, Condition arg1) throws CSSException {
+    public CombinatorCondition createOrCondition(Condition arg0, Condition arg1)
+            throws CSSException {
         throw new CSSException("Not implemented in CSS2");
     }
 
     @Override
-    public PositionalCondition createPositionalCondition(int arg0, boolean arg1, boolean arg2) throws CSSException {
+    public PositionalCondition createPositionalCondition(int arg0, boolean arg1, boolean arg2)
+            throws CSSException {
         throw new CSSException("Not implemented in CSS2");
     }
 
     @Override
-    public AttributeCondition createPseudoClassCondition(String arg0, String arg1) throws CSSException {
+    public AttributeCondition createPseudoClassCondition(String arg0, String arg1)
+            throws CSSException {
         throw new CSSException("Not implemented in CSS2");
     }
-
 }

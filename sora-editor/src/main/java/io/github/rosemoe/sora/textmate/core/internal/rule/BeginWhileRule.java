@@ -16,9 +16,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.rule;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.IOnigCaptureIndex;
+
+import java.util.List;
 
 public class BeginWhileRule extends Rule {
 
@@ -32,10 +32,16 @@ public class BeginWhileRule extends Rule {
     private RegExpSourceList cachedCompiledPatterns;
     private RegExpSourceList cachedCompiledWhilePatterns;
 
-    public BeginWhileRule(/* $location:ILocation, */ int id, String name, String contentName, String begin,
-                                                     List<CaptureRule> beginCaptures, String _while, List<CaptureRule> whileCaptures,
-                                                     ICompilePatternsResult patterns) {
-        super(/* $location, */id, name, contentName);
+    public BeginWhileRule(
+            /* $location:ILocation, */ int id,
+            String name,
+            String contentName,
+            String begin,
+            List<CaptureRule> beginCaptures,
+            String _while,
+            List<CaptureRule> whileCaptures,
+            ICompilePatternsResult patterns) {
+        super(/* $location, */ id, name, contentName);
         this.begin = new RegExpSource(begin, this.id);
         this.beginCaptures = beginCaptures;
         this.whileCaptures = whileCaptures;
@@ -47,12 +53,14 @@ public class BeginWhileRule extends Rule {
         this.cachedCompiledWhilePatterns = null;
     }
 
-    public String getWhileWithResolvedBackReferences(String lineText, IOnigCaptureIndex[] captureIndices) {
+    public String getWhileWithResolvedBackReferences(
+            String lineText, IOnigCaptureIndex[] captureIndices) {
         return this._while.resolveBackReferences(lineText, captureIndices);
     }
 
     @Override
-    public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
+    public void collectPatternsRecursive(
+            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
         if (isFirst) {
             Rule rule;
             for (Integer pattern : patterns) {
@@ -65,7 +73,8 @@ public class BeginWhileRule extends Rule {
     }
 
     @Override
-    public ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compile(
+            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         this.precompile(grammar);
         return this.cachedCompiledPatterns.compile(grammar, allowA, allowG);
     }
@@ -77,7 +86,8 @@ public class BeginWhileRule extends Rule {
         }
     }
 
-    public ICompiledRule compileWhile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compileWhile(
+            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         this.precompileWhile();
         if (this._while.hasBackReferences()) {
             this.cachedCompiledWhilePatterns.setSource(0, endRegexSource);
@@ -88,8 +98,8 @@ public class BeginWhileRule extends Rule {
     private void precompileWhile() {
         if (this.cachedCompiledWhilePatterns == null) {
             this.cachedCompiledWhilePatterns = new RegExpSourceList();
-            this.cachedCompiledWhilePatterns.push(this._while.hasBackReferences() ? this._while.clone() : this._while);
+            this.cachedCompiledWhilePatterns.push(
+                    this._while.hasBackReferences() ? this._while.clone() : this._while);
         }
     }
-
 }

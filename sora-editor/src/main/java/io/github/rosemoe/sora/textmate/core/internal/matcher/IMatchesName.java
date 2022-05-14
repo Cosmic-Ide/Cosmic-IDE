@@ -22,40 +22,42 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public interface IMatchesName<T> {
 
-    public static final IMatchesName<List<String>> NAME_MATCHER = new IMatchesName<List<String>>() {
+    public static final IMatchesName<List<String>> NAME_MATCHER =
+            new IMatchesName<List<String>>() {
 
-        @Override
-        public boolean match(Collection<String> identifers, List<String> scopes) {
-            if (scopes.size() < identifers.size()) {
-                return false;
-            }
-            AtomicInteger lastIndex = new AtomicInteger();
-            // every
-            return identifers.stream().allMatch(identifier -> {
-                for (int i = lastIndex.get(); i < scopes.size(); i++) {
-                    if (scopesAreMatching(scopes.get(i), identifier)) {
-                        lastIndex.incrementAndGet();
+                @Override
+                public boolean match(Collection<String> identifers, List<String> scopes) {
+                    if (scopes.size() < identifers.size()) {
+                        return false;
+                    }
+                    AtomicInteger lastIndex = new AtomicInteger();
+                    // every
+                    return identifers.stream()
+                            .allMatch(
+                                    identifier -> {
+                                        for (int i = lastIndex.get(); i < scopes.size(); i++) {
+                                            if (scopesAreMatching(scopes.get(i), identifier)) {
+                                                lastIndex.incrementAndGet();
+                                                return true;
+                                            }
+                                        }
+                                        return false;
+                                    });
+                }
+
+                private boolean scopesAreMatching(String thisScopeName, String scopeName) {
+                    if (thisScopeName == null) {
+                        return false;
+                    }
+                    if (thisScopeName.equals(scopeName)) {
                         return true;
                     }
+                    int len = scopeName.length();
+                    return thisScopeName.length() > len
+                            && thisScopeName.substring(0, len).equals(scopeName)
+                            && thisScopeName.charAt(len) == '.';
                 }
-                return false;
-            });
-        }
-
-        private boolean scopesAreMatching(String thisScopeName, String scopeName) {
-            if (thisScopeName == null) {
-                return false;
-            }
-            if (thisScopeName.equals(scopeName)) {
-                return true;
-            }
-            int len = scopeName.length();
-            return thisScopeName.length() > len && thisScopeName.substring(0, len).equals(scopeName)
-                    && thisScopeName.charAt(len) == '.';
-        }
-
-    };
+            };
 
     boolean match(Collection<String> names, T scopes);
-
 }

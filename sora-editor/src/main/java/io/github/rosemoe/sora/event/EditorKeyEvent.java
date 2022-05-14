@@ -29,14 +29,13 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
  * Receives key related events in editor.
- * <p>
- * You may set a boolean for editor to return to the Android KeyEvent framework.
+ *
+ * <p>You may set a boolean for editor to return to the Android KeyEvent framework.
+ *
  * @see ResultedEvent#setResult(Object)
- * <p>
- * This class mirrors methods of {@link KeyEvent}, but some methods are changed:
+ *     <p>This class mirrors methods of {@link KeyEvent}, but some methods are changed:
  * @see #isAltPressed()
  * @see #isShiftPressed()
- *
  * @author Rosemoe
  */
 public class EditorKeyEvent extends ResultedEvent<Boolean> {
@@ -77,16 +76,12 @@ public class EditorKeyEvent extends ResultedEvent<Boolean> {
         return src.getEventTime();
     }
 
-    /**
-     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
-     */
+    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
     public boolean isShiftPressed() {
         return getEditor().getKeyMetaStates().isShiftPressed();
     }
 
-    /**
-     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
-     */
+    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
     public boolean isAltPressed() {
         return getEditor().getKeyMetaStates().isAltPressed();
     }

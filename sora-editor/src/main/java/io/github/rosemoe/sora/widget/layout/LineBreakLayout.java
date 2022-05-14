@@ -23,8 +23,6 @@
  */
 package io.github.rosemoe.sora.widget.layout;
 
-import java.util.NoSuchElementException;
-
 import io.github.rosemoe.sora.graphics.GraphicTextRow;
 import io.github.rosemoe.sora.graphics.RoughBufferedMeasure;
 import io.github.rosemoe.sora.text.Content;
@@ -33,9 +31,11 @@ import io.github.rosemoe.sora.util.BinaryHeap;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
+import java.util.NoSuchElementException;
+
 /**
- * Layout implementation of editor
- * This layout is never broke unless there is actually a newline character
+ * Layout implementation of editor This layout is never broke unless there is actually a newline
+ * character
  *
  * @author Rose
  */
@@ -65,7 +65,7 @@ public class LineBreakLayout extends AbstractLayout {
             line.setId(widthMaintainer.push(width));
         }
         GraphicTextRow.recycle(gtr);*/
-        for (int i = 0;i < text.getLineCount(); i++) {
+        for (int i = 0; i < text.getLineCount(); i++) {
             ContentLine line = text.getLine(i);
             var width = (int) measurer.measureText(line, 0, line.length(), editor.getTextPaint());
             line.setWidth(width);
@@ -77,11 +77,12 @@ public class LineBreakLayout extends AbstractLayout {
         if (text == null) {
             return;
         }
-        //var gtr = GraphicTextRow.obtain();
+        // var gtr = GraphicTextRow.obtain();
         while (startLine <= endLine && startLine < text.getLineCount()) {
             ContentLine line = text.getLine(startLine);
-            //gtr.set(line, 0, line.length(), editor.getTabWidth(), getSpans(startLine), editor.getTextPaint());
-            //int width = (int) gtr.measureText(0, line.length());
+            // gtr.set(line, 0, line.length(), editor.getTabWidth(), getSpans(startLine),
+            // editor.getTextPaint());
+            // int width = (int) gtr.measureText(0, line.length());
             var width = (int) measurer.measureText(line, 0, line.length(), editor.getTextPaint());
             if (line.getId() != -1) {
                 if (line.getWidth() == width) {
@@ -96,7 +97,7 @@ public class LineBreakLayout extends AbstractLayout {
             line.setWidth(width);
             startLine++;
         }
-        //GraphicTextRow.recycle(gtr);
+        // GraphicTextRow.recycle(gtr);
     }
 
     @Override
@@ -110,13 +111,25 @@ public class LineBreakLayout extends AbstractLayout {
     }
 
     @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         super.afterInsert(content, startLine, startColumn, endLine, endColumn, insertedContent);
         measureLines(startLine, endLine);
     }
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         super.afterDelete(content, startLine, startColumn, endLine, endColumn, deletedContent);
         measureLines(startLine, startLine);
     }
@@ -164,7 +177,13 @@ public class LineBreakLayout extends AbstractLayout {
         var sequence = text.getLine(line);
         dest[0] = editor.getRowHeight() * (line + 1);
         var gtr = GraphicTextRow.obtain();
-        gtr.set(sequence, 0, sequence.length(), editor.getTabWidth(), getSpans(line), editor.getTextPaint());
+        gtr.set(
+                sequence,
+                0,
+                sequence.length(),
+                editor.getTabWidth(),
+                getSpans(line),
+                editor.getTextPaint());
         dest[1] = gtr.measureText(0, column);
         GraphicTextRow.recycle(gtr);
         return dest;
@@ -234,5 +253,4 @@ public class LineBreakLayout extends AbstractLayout {
             currentRow = initRow;
         }
     }
-
 }

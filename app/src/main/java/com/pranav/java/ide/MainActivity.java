@@ -39,13 +39,9 @@ import com.tyron.javacompletion.JavaCompletions;
 import com.tyron.javacompletion.completion.*;
 import com.tyron.javacompletion.options.JavaCompletionOptionsImpl;
 
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
-import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
@@ -56,11 +52,11 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
-import java.io.InputStreamReader;
 
 public final class MainActivity extends AppCompatActivity {
 
@@ -318,15 +314,19 @@ public final class MainActivity extends AppCompatActivity {
                                 }));
         runThread.start();
     }
-    
+
     private TextMateLanguage getTextMateLanguage() {
         try {
-            var rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
-            var language = TextMateLanguage.create(
-                    "java.tmLanguage.json",
-                    getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                    new InputStreamReader(getAssets().open("textmate/java/language-configuration.json")),
-                    rawTheme);
+            var rawTheme =
+                    ThemeReader.readThemeSync(
+                            "darcula.json", getAssets().open("textmate/darcula.json"));
+            var language =
+                    TextMateLanguage.create(
+                            "java.tmLanguage.json",
+                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            new InputStreamReader(
+                                    getAssets().open("textmate/java/language-configuration.json")),
+                            rawTheme);
             return language;
         } catch (Exception e) {
             throw new RuntimeException(e);

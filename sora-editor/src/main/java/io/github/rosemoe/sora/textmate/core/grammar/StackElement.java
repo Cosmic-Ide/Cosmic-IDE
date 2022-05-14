@@ -16,56 +16,53 @@
  */
 package io.github.rosemoe.sora.textmate.core.grammar;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import io.github.rosemoe.sora.textmate.core.internal.grammar.ScopeListElement;
 import io.github.rosemoe.sora.textmate.core.internal.rule.IRuleRegistry;
 import io.github.rosemoe.sora.textmate.core.internal.rule.Rule;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a "pushed" state on the stack (as a linked list element).
  *
  * @link https://github.com/Microsoft/vscode-textmate/blob/master/src/grammar.ts
- *
  */
 public class StackElement {
 
     public static final StackElement NULL = new StackElement(null, 0, 0, null, null, null);
-    /**
-     * The previous state on the stack (or null for the root state).
-     */
+    /** The previous state on the stack (or null for the root state). */
     public final StackElement parent;
-    /**
-     * The depth of the stack.
-     */
+    /** The depth of the stack. */
     public final int depth;
-    /**
-     * The state (rule) that this element represents.
-     */
+    /** The state (rule) that this element represents. */
     public final int ruleId;
     /**
-     * The "pop" (end) condition for this state in case that it was dynamically generated through captured text.
+     * The "pop" (end) condition for this state in case that it was dynamically generated through
+     * captured text.
      */
     public final String endRule;
-    /**
-     * The list of scopes containing the "name" for this state.
-     */
+    /** The list of scopes containing the "name" for this state. */
     public final ScopeListElement nameScopesList;
     /**
-     * The list of scopes containing the "contentName" (besides "name") for this state.
-     * This list **must** contain as an element `scopeName`.
+     * The list of scopes containing the "contentName" (besides "name") for this state. This list
+     * **must** contain as an element `scopeName`.
      */
     public final ScopeListElement contentNameScopesList;
     /**
-     * The position on the current line where this state was pushed.
-     * This is relevant only while tokenizing a line, to detect endless loops.
-     * Its value is meaningless across lines.
+     * The position on the current line where this state was pushed. This is relevant only while
+     * tokenizing a line, to detect endless loops. Its value is meaningless across lines.
      */
     private int enterPosition;
 
-    public StackElement(StackElement parent, int ruleId, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
+    public StackElement(
+            StackElement parent,
+            int ruleId,
+            int enterPos,
+            String endRule,
+            ScopeListElement nameScopesList,
+            ScopeListElement contentNameScopesList) {
         this.parent = parent;
         this.depth = (this.parent != null ? this.parent.depth + 1 : 1);
         this.ruleId = ruleId;
@@ -75,9 +72,7 @@ public class StackElement {
         this.contentNameScopesList = contentNameScopesList;
     }
 
-    /**
-     * A structural equals check. Does not take into account `scopes`.
-     */
+    /** A structural equals check. Does not take into account `scopes`. */
     private static boolean structuralEquals(StackElement a, StackElement b) {
         if (a == b) {
             return true;
@@ -85,7 +80,10 @@ public class StackElement {
         if (a == null || b == null) {
             return false;
         }
-        return a.depth == b.depth && a.ruleId == b.ruleId && Objects.equals(a.endRule, b.endRule) && structuralEquals(a.parent, b.parent);
+        return a.depth == b.depth
+                && a.ruleId == b.ruleId
+                && Objects.equals(a.endRule, b.endRule)
+                && structuralEquals(a.parent, b.parent);
     }
 
     @Override
@@ -100,7 +98,8 @@ public class StackElement {
             return false;
         }
         StackElement stackElement = (StackElement) other;
-        return structuralEquals(this, stackElement) && this.contentNameScopesList.equals(stackElement.contentNameScopesList);
+        return structuralEquals(this, stackElement)
+                && this.contentNameScopesList.equals(stackElement.contentNameScopesList);
     }
 
     @Override
@@ -127,8 +126,14 @@ public class StackElement {
         return this;
     }
 
-    public StackElement push(int ruleId, int enterPos, String endRule, ScopeListElement nameScopesList, ScopeListElement contentNameScopesList) {
-        return new StackElement(this, ruleId, enterPos, endRule, nameScopesList, contentNameScopesList);
+    public StackElement push(
+            int ruleId,
+            int enterPos,
+            String endRule,
+            ScopeListElement nameScopesList,
+            ScopeListElement contentNameScopesList) {
+        return new StackElement(
+                this, ruleId, enterPos, endRule, nameScopesList, contentNameScopesList);
     }
 
     public int getEnterPos() {
@@ -143,7 +148,11 @@ public class StackElement {
         if (this.parent != null) {
             this.parent.appendString(res);
         }
-        res.add('(' + Integer.toString(this.ruleId) + ')'); //, TODO-${this.nameScopesList}, TODO-${this.contentNameScopesList})`;
+        res.add(
+                '('
+                        + Integer.toString(this.ruleId)
+                        + ')'); // , TODO-${this.nameScopesList},
+                                // TODO-${this.contentNameScopesList})`;
     }
 
     @Override
@@ -158,7 +167,7 @@ public class StackElement {
             stringBuilder.append(",");
         }
         stringBuilder.append(']');
-        //return '[' + String.join(", ", r) + ']';
+        // return '[' + String.join(", ", r) + ']';
         return stringBuilder.toString();
     }
 
@@ -166,14 +175,25 @@ public class StackElement {
         if (this.contentNameScopesList.equals(contentNameScopesList)) {
             return this;
         }
-        return this.parent.push(this.ruleId, this.enterPosition, this.endRule, this.nameScopesList, contentNameScopesList);
+        return this.parent.push(
+                this.ruleId,
+                this.enterPosition,
+                this.endRule,
+                this.nameScopesList,
+                contentNameScopesList);
     }
 
     public StackElement setEndRule(String endRule) {
         if (this.endRule != null && this.endRule.equals(endRule)) {
             return this;
         }
-        return new StackElement(this.parent, this.ruleId, this.enterPosition, endRule, this.nameScopesList, this.contentNameScopesList);
+        return new StackElement(
+                this.parent,
+                this.ruleId,
+                this.enterPosition,
+                endRule,
+                this.nameScopesList,
+                this.contentNameScopesList);
     }
 
     public boolean hasSameRuleAs(StackElement other) {

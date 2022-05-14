@@ -11,15 +11,15 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.parser;
 
+import io.github.rosemoe.sora.textmate.core.internal.grammar.parser.PListGrammar;
+import io.github.rosemoe.sora.textmate.core.internal.theme.PListTheme;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.github.rosemoe.sora.textmate.core.internal.grammar.parser.PListGrammar;
-import io.github.rosemoe.sora.textmate.core.internal.theme.PListTheme;
 
 public class PList<T> extends DefaultHandler {
 
@@ -36,7 +36,8 @@ public class PList<T> extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes)
+            throws SAXException {
         if ("dict".equals(localName)) {
             this.currObject = create(currObject, false);
         } else if ("array".equals(localName)) {

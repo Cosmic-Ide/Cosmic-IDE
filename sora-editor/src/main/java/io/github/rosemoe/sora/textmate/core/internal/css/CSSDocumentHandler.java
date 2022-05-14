@@ -11,6 +11,10 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.css;
 
+import io.github.rosemoe.sora.textmate.core.theme.IStyle;
+import io.github.rosemoe.sora.textmate.core.theme.RGB;
+import io.github.rosemoe.sora.textmate.core.theme.css.CSSStyle;
+
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.DocumentHandler;
 import org.w3c.css.sac.InputSource;
@@ -23,10 +27,6 @@ import org.w3c.dom.css.RGBColor;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.rosemoe.sora.textmate.core.theme.IStyle;
-import io.github.rosemoe.sora.textmate.core.theme.RGB;
-import io.github.rosemoe.sora.textmate.core.theme.css.CSSStyle;
-
 public class CSSDocumentHandler implements DocumentHandler {
 
     private final List<IStyle> list;
@@ -37,9 +37,7 @@ public class CSSDocumentHandler implements DocumentHandler {
     }
 
     @Override
-    public void comment(String arg0) throws CSSException {
-
-    }
+    public void comment(String arg0) throws CSSException {}
 
     @Override
     public void endDocument(InputSource arg0) throws CSSException {

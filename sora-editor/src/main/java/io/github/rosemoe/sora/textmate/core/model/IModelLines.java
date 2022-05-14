@@ -13,11 +13,7 @@ package io.github.rosemoe.sora.textmate.core.model;
 
 import java.util.function.Consumer;
 
-/**
- * Mode lines API which must be initalize with a document and changed of
- * document.
- *
- */
+/** Mode lines API which must be initalize with a document and changed of document. */
 public interface IModelLines {
 
     /**
@@ -48,7 +44,6 @@ public interface IModelLines {
     int getSize();
 
     /**
-     *
      * @param lineIndex (0-based)
      * @return
      */
@@ -59,7 +54,6 @@ public interface IModelLines {
     int getNumberOfLines();
 
     /**
-     *
      * @param line (0-based)
      * @return
      * @throws Exception
@@ -69,6 +63,4 @@ public interface IModelLines {
     int getLineLength(int lineIndex) throws Exception;
 
     void dispose();
-
-
 }

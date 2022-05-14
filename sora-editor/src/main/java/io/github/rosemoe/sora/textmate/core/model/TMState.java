@@ -16,9 +16,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.model;
 
-import java.util.Objects;
-
 import io.github.rosemoe.sora.textmate.core.grammar.StackElement;
+
+import java.util.Objects;
 
 public class TMState {
 
@@ -40,7 +40,8 @@ public class TMState {
 
     @Override
     public TMState clone() {
-        TMState parentEmbedderStateClone = this.parentEmbedderState != null ? this.parentEmbedderState.clone() : null;
+        TMState parentEmbedderStateClone =
+                this.parentEmbedderState != null ? this.parentEmbedderState.clone() : null;
         return new TMState(parentEmbedderStateClone, this.ruleStack);
     }
 
@@ -50,13 +51,12 @@ public class TMState {
             return false;
         }
         TMState otherState = (TMState) other;
-        return Objects.equals(this.parentEmbedderState, otherState.parentEmbedderState) &&
-                Objects.equals(this.ruleStack, otherState.ruleStack);
+        return Objects.equals(this.parentEmbedderState, otherState.parentEmbedderState)
+                && Objects.equals(this.ruleStack, otherState.ruleStack);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(this.parentEmbedderState, this.ruleStack);
     }
-
 }

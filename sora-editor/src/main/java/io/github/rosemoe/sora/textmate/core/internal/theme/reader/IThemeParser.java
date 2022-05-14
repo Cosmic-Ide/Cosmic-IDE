@@ -16,14 +16,11 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.theme.reader;
 
-import java.io.InputStream;
-
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 
-/**
- * TextMate Theme parser.
- *
- */
+import java.io.InputStream;
+
+/** TextMate Theme parser. */
 @FunctionalInterface
 public interface IThemeParser {
 

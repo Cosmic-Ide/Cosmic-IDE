@@ -16,6 +16,14 @@
  */
 package io.github.rosemoe.sora.textmate.core.registry;
 
+import io.github.rosemoe.sora.textmate.core.TMException;
+import io.github.rosemoe.sora.textmate.core.grammar.IGrammar;
+import io.github.rosemoe.sora.textmate.core.internal.grammar.reader.GrammarReader;
+import io.github.rosemoe.sora.textmate.core.internal.grammars.SyncRegistry;
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
+import io.github.rosemoe.sora.textmate.core.theme.Theme;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -25,19 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.github.rosemoe.sora.textmate.core.TMException;
-import io.github.rosemoe.sora.textmate.core.grammar.IGrammar;
-import io.github.rosemoe.sora.textmate.core.internal.grammar.reader.GrammarReader;
-import io.github.rosemoe.sora.textmate.core.internal.grammars.SyncRegistry;
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
-import io.github.rosemoe.sora.textmate.core.theme.Theme;
-
 /**
  * The registry that will hold all grammars.
  *
  * @see https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts
- *
  */
 public class Registry {
 
@@ -53,17 +52,12 @@ public class Registry {
         this.syncRegistry = new SyncRegistry(Theme.createFromRawTheme(locator.getTheme()));
     }
 
-    /**
-     * Change the theme. Once called, no previous `ruleStack` should be used
-     * anymore.
-     */
+    /** Change the theme. Once called, no previous `ruleStack` should be used anymore. */
     public void setTheme(IRawTheme theme) {
         this.syncRegistry.setTheme(Theme.createFromRawTheme(theme));
     }
 
-    /**
-     * Returns a lookup array for color ids.
-     */
+    /** Returns a lookup array for color ids. */
     public Set<String> getColorMap() {
         return this.syncRegistry.getColorMap();
     }
@@ -90,7 +84,8 @@ public class Registry {
             String filePath = this.locator.getFilePath(scopeName);
             if (filePath == null) {
                 if (scopeName.equals(initialScopeName)) {
-                    throw new TMException("Unknown location for grammar <" + initialScopeName + ">");
+                    throw new TMException(
+                            "Unknown location for grammar <" + initialScopeName + ">");
                     // callback(new Error('Unknown location for grammar <' +
                     // initialScopeName + '>'), null);
                     // return;
@@ -115,7 +110,8 @@ public class Registry {
                     // callback(new Error('Unknown location for grammar <' +
                     // initialScopeName + '>'), null);
                     // return;
-                    throw new TMException("Unknown location for grammar <" + initialScopeName + ">", e);
+                    throw new TMException(
+                            "Unknown location for grammar <" + initialScopeName + ">", e);
                 }
             }
         }
@@ -135,12 +131,17 @@ public class Registry {
      *
      * @throws Exception
      */
-    public IGrammar loadGrammarFromPathSync(String path, InputStream in, int initialLanguage,
-                                            Map<String, Integer> embeddedLanguages) throws Exception {
+    public IGrammar loadGrammarFromPathSync(
+            String path,
+            InputStream in,
+            int initialLanguage,
+            Map<String, Integer> embeddedLanguages)
+            throws Exception {
         IRawGrammar rawGrammar = GrammarReader.readGrammarSync(path, in);
         Collection<String> injections = this.locator.getInjections(rawGrammar.getScopeName());
         this.syncRegistry.addGrammar(rawGrammar, injections);
-        return this.grammarForScopeName(rawGrammar.getScopeName(), initialLanguage, embeddedLanguages);
+        return this.grammarForScopeName(
+                rawGrammar.getScopeName(), initialLanguage, embeddedLanguages);
     }
 
     public IGrammar grammarForScopeName(String scopeName) {
@@ -148,10 +149,11 @@ public class Registry {
     }
 
     /**
-     * Get the grammar for `scopeName`. The grammar must first be created via
-     * `loadGrammar` or `loadGrammarFromPathSync`.
+     * Get the grammar for `scopeName`. The grammar must first be created via `loadGrammar` or
+     * `loadGrammarFromPathSync`.
      */
-    public IGrammar grammarForScopeName(String scopeName, int initialLanguage, Map<String, Integer> embeddedLanguages) {
+    public IGrammar grammarForScopeName(
+            String scopeName, int initialLanguage, Map<String, Integer> embeddedLanguages) {
         return this.syncRegistry.grammarForScopeName(scopeName, initialLanguage, embeddedLanguages);
     }
 

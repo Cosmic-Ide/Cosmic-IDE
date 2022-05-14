@@ -17,19 +17,13 @@ import org.w3c.css.sac.SimpleSelector;
 
 public class CSSConditionalSelector implements ConditionalSelector, ExtendedSelector {
 
-    /**
-     * The simple selector.
-     */
+    /** The simple selector. */
     protected SimpleSelector simpleSelector;
 
-    /**
-     * The condition.
-     */
+    /** The condition. */
     protected Condition condition;
 
-    /**
-     * Creates a new ConditionalSelector object.
-     */
+    /** Creates a new ConditionalSelector object. */
     public CSSConditionalSelector(SimpleSelector simpleSelector, Condition condition) {
         this.simpleSelector = simpleSelector;
         this.condition = condition;
@@ -58,8 +52,8 @@ public class CSSConditionalSelector implements ConditionalSelector, ExtendedSele
 
     @Override
     public int nbMatch(String... names) {
-        return ((ExtendedSelector) getSimpleSelector()).nbMatch(names) +
-                ((ExtendedCondition) getCondition()).nbMatch(names);
+        return ((ExtendedSelector) getSimpleSelector()).nbMatch(names)
+                + ((ExtendedCondition) getCondition()).nbMatch(names);
     }
 
     @Override
@@ -67,5 +61,4 @@ public class CSSConditionalSelector implements ConditionalSelector, ExtendedSele
         return ((ExtendedSelector) getSimpleSelector()).nbClass()
                 + ((ExtendedCondition) getCondition()).nbClass();
     }
-
 }

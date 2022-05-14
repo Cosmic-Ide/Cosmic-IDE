@@ -58,12 +58,15 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
     public void markStartPos() {
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom =
+                editor.getLayout()
+                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos = editor.getLayout().getCharLayoutOffset(
-                editor.getCursor().getLeftLine(),
-                editor.getCursor().getLeftColumn()
-        );
+        float[] pos =
+                editor.getLayout()
+                        .getCharLayoutOffset(
+                                editor.getCursor().getLeftLine(),
+                                editor.getCursor().getLeftColumn());
         startX = pos[1] + editor.measureTextRegionOffset();
         startY = pos[0];
     }
@@ -95,30 +98,37 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
 
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom =
+                editor.getLayout()
+                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos = editor.getLayout().getCharLayoutOffset(
-                editor.getCursor().getLeftLine(),
-                editor.getCursor().getLeftColumn()
-        );
+        float[] pos =
+                editor.getLayout()
+                        .getCharLayoutOffset(
+                                editor.getCursor().getLeftLine(),
+                                editor.getCursor().getLeftColumn());
         endX = pos[1] + editor.measureTextRegionOffset();
         endY = pos[0];
 
         scaleDownAnimator = ValueAnimator.ofFloat(1.0f, 0f);
-        scaleDownAnimator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationCancel(Animator animator) {}
-            @Override
-            public void onAnimationRepeat(Animator animator) {}
-            @Override
-            public void onAnimationStart(Animator animator) {
-                phaseEnded = false;
-            }
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                phaseEnded = true;
-            }
-        });
+        scaleDownAnimator.addListener(
+                new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationCancel(Animator animator) {}
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {}
+
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        phaseEnded = false;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        phaseEnded = true;
+                    }
+                });
         scaleDownAnimator.addUpdateListener(this);
         scaleDownAnimator.setDuration(duration);
 

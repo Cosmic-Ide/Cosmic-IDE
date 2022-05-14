@@ -17,12 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 
 public class JavacCompilationTask extends Task {

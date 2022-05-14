@@ -30,24 +30,25 @@ import android.os.Build;
 import androidx.annotation.IntRange;
 import androidx.annotation.RequiresApi;
 
+import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
 
-import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
-
 /**
  * Bidi algorithm for text directions.
  *
- * Replacement of android.text.AndroidBidi
+ * <p>Replacement of android.text.AndroidBidi
+ *
  * @author Rosemoe
  */
 @SuppressLint("PrivateApi")
 @UnsupportedUserUsage
 public final class AndroidBidi {
 
-    public final static int RUN_LENGTH_MASK = 0x03ffffff;
+    public static final int RUN_LENGTH_MASK = 0x03ffffff;
     public static final int RUN_LEVEL_SHIFT = 26;
     public static final int RUN_LEVEL_MASK = 0x3f;
     public static final int RUN_RTL_FLAG = 1 << RUN_LEVEL_SHIFT;
@@ -56,10 +57,10 @@ public final class AndroidBidi {
     public static final int DIR_RIGHT_TO_LEFT = -1;
 
     public static final Directions DIRS_ALL_LEFT_TO_RIGHT =
-            new Directions(new int[] { 0, RUN_LENGTH_MASK });
+            new Directions(new int[] {0, RUN_LENGTH_MASK});
 
     public static final Directions DIRS_ALL_RIGHT_TO_LEFT =
-            new Directions(new int[] { 0, RUN_LENGTH_MASK | RUN_RTL_FLAG });
+            new Directions(new int[] {0, RUN_LENGTH_MASK | RUN_RTL_FLAG});
 
     public static final int DIR_REQUEST_LTR = 1;
     public static final int DIR_REQUEST_RTL = -1;
@@ -67,6 +68,7 @@ public final class AndroidBidi {
     public static final int DIR_REQUEST_DEFAULT_RTL = -2;
 
     private static Method bidiFunction;
+
     static {
         // Initialize reflection for low API devices.
         Class<?> bidiClass = null;
@@ -81,13 +83,23 @@ public final class AndroidBidi {
             try {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
                     // Android API 21-27
-                    // public static int bidi(int dir, char[] chs, byte[] chInfo, int n, boolean haveInfo)
-                    bidiFunction = bidiClass.getDeclaredMethod("bidi", int.class, char[].class, byte[].class, int.class, boolean.class);
+                    // public static int bidi(int dir, char[] chs, byte[] chInfo, int n, boolean
+                    // haveInfo)
+                    bidiFunction =
+                            bidiClass.getDeclaredMethod(
+                                    "bidi",
+                                    int.class,
+                                    char[].class,
+                                    byte[].class,
+                                    int.class,
+                                    boolean.class);
                     bidiFunction.setAccessible(true);
                 } else {
                     // Android API 28+
                     // public static int bidi(int dir, char[] chs, byte[] chInfo)
-                    bidiFunction = bidiClass.getDeclaredMethod("bidi", int.class, char[].class, byte[].class);
+                    bidiFunction =
+                            bidiClass.getDeclaredMethod(
+                                    "bidi", int.class, char[].class, byte[].class);
                     bidiFunction.setAccessible(true);
                 }
             } catch (NoSuchMethodException e) {
@@ -117,7 +129,7 @@ public final class AndroidBidi {
         try {
             var res = (Integer) bidiFunction.invoke(null, dir, chs, chInfo, chs.length, false);
             return Objects.requireNonNullElseGet(res, () -> bidiFallback(dir, chInfo));
-        } catch (IllegalAccessException|InvocationTargetException|NullPointerException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             e.printStackTrace();
             return bidiFallback(dir, chInfo);
         }
@@ -128,7 +140,7 @@ public final class AndroidBidi {
         try {
             var res = (Integer) bidiFunction.invoke(null, dir, chs, chInfo);
             return Objects.requireNonNullElseGet(res, () -> bidiFallback(dir, chInfo));
-        } catch (IllegalAccessException|InvocationTargetException|NullPointerException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             e.printStackTrace();
             return bidiFallback(dir, chInfo);
         }
@@ -147,11 +159,19 @@ public final class AndroidBidi {
 
         final byte paraLevel;
         switch (dir) {
-            case DIR_REQUEST_RTL: paraLevel = Bidi.RTL; break;
-            case DIR_REQUEST_DEFAULT_LTR: paraLevel = Bidi.LEVEL_DEFAULT_LTR; break;
-            case DIR_REQUEST_DEFAULT_RTL: paraLevel = Bidi.LEVEL_DEFAULT_RTL; break;
+            case DIR_REQUEST_RTL:
+                paraLevel = Bidi.RTL;
+                break;
+            case DIR_REQUEST_DEFAULT_LTR:
+                paraLevel = Bidi.LEVEL_DEFAULT_LTR;
+                break;
+            case DIR_REQUEST_DEFAULT_RTL:
+                paraLevel = Bidi.LEVEL_DEFAULT_RTL;
+                break;
             case DIR_REQUEST_LTR:
-            default: paraLevel = Bidi.LTR; break;
+            default:
+                paraLevel = Bidi.LTR;
+                break;
         }
         final Bidi icuBidi = new Bidi(length /* maxLength */, 0 /* maxRunCount */);
         icuBidi.setPara(chs, paraLevel, null /* embeddingLevels */);
@@ -165,8 +185,7 @@ public final class AndroidBidi {
     /**
      * Returns run direction information for a line within a paragraph.
      *
-     * @param dir baseline direction, either Layout.DIR_LEFT_TO_RIGHT or
-     *     Layout.DIR_RIGHT_TO_LEFT
+     * @param dir baseline direction, either Layout.DIR_LEFT_TO_RIGHT or Layout.DIR_RIGHT_TO_LEFT
      * @param levels levels as returned from {@link #bidi}
      * @param lstart start of the line in the levels array
      * @param chars the character array (used to determine whitespace)
@@ -174,8 +193,8 @@ public final class AndroidBidi {
      * @param len the length of the line
      * @return the directions
      */
-    public static Directions directions(int dir, byte[] levels, int lstart,
-                                        char[] chars, int cstart, int len) {
+    public static Directions directions(
+            int dir, byte[] levels, int lstart, char[] chars, int cstart, int len) {
         if (len == 0) {
             return DIRS_ALL_LEFT_TO_RIGHT;
         }
@@ -281,8 +300,12 @@ public final class AndroidBidi {
                             e += 2;
                         }
                         for (int low = i, hi = e - 2; low < hi; low += 2, hi -= 2) {
-                            int x = ld[low]; ld[low] = ld[hi]; ld[hi] = x;
-                            x = ld[low+1]; ld[low+1] = ld[hi+1]; ld[hi+1] = x;
+                            int x = ld[low];
+                            ld[low] = ld[hi];
+                            ld[hi] = x;
+                            x = ld[low + 1];
+                            ld[low + 1] = ld[hi + 1];
+                            ld[hi + 1] = x;
                         }
                         i = e + 2;
                     }
@@ -292,9 +315,7 @@ public final class AndroidBidi {
         return new Directions(ld);
     }
 
-    /**
-     * Replacement of {@link android.text.Layout.Directions}
-     */
+    /** Replacement of {@link android.text.Layout.Directions} */
     public static class Directions {
 
         private final int[] mDirections;
@@ -303,9 +324,7 @@ public final class AndroidBidi {
             mDirections = directions;
         }
 
-        /**
-         * Returns number of BiDi runs.
-         */
+        /** Returns number of BiDi runs. */
         public @IntRange(from = 0) int getRunCount() {
             return mDirections.length / 2;
         }
@@ -323,7 +342,7 @@ public final class AndroidBidi {
         /**
          * Returns the length of the BiDi run.
          *
-         * Note that this method may return too large number due to reducing the number of object
+         * <p>Note that this method may return too large number due to reducing the number of object
          * allocations. The too large number means the remaining part is assigned to this run. The
          * caller must clamp the returned value.
          *
@@ -343,7 +362,5 @@ public final class AndroidBidi {
         public boolean isRunRtl(int runIndex) {
             return (mDirections[runIndex * 2 + 1] & RUN_RTL_FLAG) != 0;
         }
-
     }
-
 }

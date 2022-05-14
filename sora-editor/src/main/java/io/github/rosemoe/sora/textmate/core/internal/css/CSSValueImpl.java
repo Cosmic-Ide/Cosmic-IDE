@@ -127,5 +127,4 @@ public abstract class CSSValueImpl implements CSSPrimitiveValue, CSSValue {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("NOT YET IMPLEMENTED");
     }
-
 }

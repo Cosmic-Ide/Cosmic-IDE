@@ -46,14 +46,17 @@ import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
  *
  * @author Rosemoe
  */
-public class EditorTextActionWindow extends EditorPopupWindow implements View.OnClickListener, EventReceiver<SelectionChangeEvent>, EditorBuiltinComponent {
+public class EditorTextActionWindow extends EditorPopupWindow
+        implements View.OnClickListener,
+                EventReceiver<SelectionChangeEvent>,
+                EditorBuiltinComponent {
     private final CodeEditor mEditor;
     private final Button mPasteBtn;
     private final Button mCopyBtn;
     private final Button mCutBtn;
     private final View mRootView;
     private final EditorTouchEventHandler mHandler;
-    private final static long DELAY = 200;
+    private static final long DELAY = 200;
     private long mLastScroll;
     private int mLastPosition;
     private boolean mEnabled = true;
@@ -69,7 +72,8 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
         mHandler = editor.getEventHandler();
         // Since popup window does provide decor view, we have to pass null to this method
         @SuppressLint("InflateParams")
-        View root = LayoutInflater.from(editor.getContext()).inflate(R.layout.text_compose_panel, null);
+        View root =
+                LayoutInflater.from(editor.getContext()).inflate(R.layout.text_compose_panel, null);
         Button selectAll = root.findViewById(R.id.panel_btn_select_all);
         Button cut = root.findViewById(R.id.panel_btn_cut);
         Button copy = root.findViewById(R.id.panel_btn_copy);
@@ -88,18 +92,22 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
         setSize(0, (int) (mEditor.getDpUnit() * 60));
         mRootView = root;
         editor.subscribeEvent(SelectionChangeEvent.class, this);
-        editor.subscribeEvent(ScrollEvent.class, ((event, unsubscribe) -> {
-            var last = mLastScroll;
-            mLastScroll = System.currentTimeMillis();
-            if (mLastScroll - last < DELAY) {
-                postDisplay();
-            }
-        }));
-        editor.subscribeEvent(HandleStateChangeEvent.class, ((event, unsubscribe) -> {
-            if (event.isHeld()) {
-                postDisplay();
-            }
-        }));
+        editor.subscribeEvent(
+                ScrollEvent.class,
+                ((event, unsubscribe) -> {
+                    var last = mLastScroll;
+                    mLastScroll = System.currentTimeMillis();
+                    if (mLastScroll - last < DELAY) {
+                        postDisplay();
+                    }
+                }));
+        editor.subscribeEvent(
+                HandleStateChangeEvent.class,
+                ((event, unsubscribe) -> {
+                    if (event.isHeld()) {
+                        postDisplay();
+                    }
+                }));
     }
 
     @Override
@@ -118,8 +126,8 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
     /**
      * Get the view root of the panel.
      *
-     * Root view is {@link android.widget.LinearLayout}
-     * Inside is a {@link android.widget.HorizontalScrollView}
+     * <p>Root view is {@link android.widget.LinearLayout} Inside is a {@link
+     * android.widget.HorizontalScrollView}
      *
      * @see R.id#panel_root
      * @see R.id#panel_hv
@@ -140,17 +148,20 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
         if (!mEditor.getCursor().isSelected()) {
             return;
         }
-        mEditor.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!mHandler.hasAnyHeldHandle() && System.currentTimeMillis() - mLastScroll > DELAY
-                        && mEditor.getScroller().isFinished()) {
-                    displayWindow();
-                } else {
-                    mEditor.postDelayed(this, DELAY);
-                }
-            }
-        }, DELAY);
+        mEditor.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!mHandler.hasAnyHeldHandle()
+                                && System.currentTimeMillis() - mLastScroll > DELAY
+                                && mEditor.getScroller().isFinished()) {
+                            displayWindow();
+                        } else {
+                            mEditor.postDelayed(this, DELAY);
+                        }
+                    }
+                },
+                DELAY);
     }
 
     @Override
@@ -165,7 +176,10 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
             mLastPosition = -1;
         } else {
             var show = false;
-            if (event.getCause() == SelectionChangeEvent.CAUSE_TAP && event.getLeft().index == mLastPosition && !isShowing() && !mEditor.getText().isInBatchEdit()) {
+            if (event.getCause() == SelectionChangeEvent.CAUSE_TAP
+                    && event.getLeft().index == mLastPosition
+                    && !isShowing()
+                    && !mEditor.getText().isInBatchEdit()) {
                 mEditor.post(this::displayWindow);
                 show = true;
             } else {
@@ -201,22 +215,31 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
             top = selectTop(mEditor.getInsertHandleDescriptor().position);
         }
         top = Math.max(0, Math.min(top, mEditor.getHeight() - getHeight() - 5));
-        float handleLeftX = mEditor.getOffset(mEditor.getCursor().getLeftLine(), mEditor.getCursor().getLeftColumn());
-        float handleRightX = mEditor.getOffset(mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
+        float handleLeftX =
+                mEditor.getOffset(
+                        mEditor.getCursor().getLeftLine(), mEditor.getCursor().getLeftColumn());
+        float handleRightX =
+                mEditor.getOffset(
+                        mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
         int panelX = (int) ((handleLeftX + handleRightX) / 2f);
         setLocationAbsolutely(panelX, top);
         show();
     }
 
-    /**
-     * Update the state of paste button
-     */
+    /** Update the state of paste button */
     private void updateBtnState() {
         mPasteBtn.setEnabled(mEditor.hasClip() && mEditor.isEditable());
         mCopyBtn.setVisibility(mEditor.getCursor().isSelected() ? View.VISIBLE : View.GONE);
-        mCutBtn.setVisibility(mEditor.getCursor().isSelected() && mEditor.isEditable() ? View.VISIBLE : View.GONE);
-        mRootView.measure(View.MeasureSpec.makeMeasureSpec(1000000, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(100000, View.MeasureSpec.AT_MOST));
-        setSize(Math.min(mRootView.getMeasuredWidth(), (int) (mEditor.getDpUnit() * 230)), getHeight());
+        mCutBtn.setVisibility(
+                mEditor.getCursor().isSelected() && mEditor.isEditable()
+                        ? View.VISIBLE
+                        : View.GONE);
+        mRootView.measure(
+                View.MeasureSpec.makeMeasureSpec(1000000, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(100000, View.MeasureSpec.AT_MOST));
+        setSize(
+                Math.min(mRootView.getMeasuredWidth(), (int) (mEditor.getDpUnit() * 230)),
+                getHeight());
     }
 
     @Override
@@ -241,13 +264,13 @@ public class EditorTextActionWindow extends EditorPopupWindow implements View.On
             }
         } else if (id == R.id.panel_btn_paste) {
             mEditor.pasteText();
-            mEditor.setSelection(mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
+            mEditor.setSelection(
+                    mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
         } else if (id == R.id.panel_btn_copy) {
             mEditor.copyText();
-            mEditor.setSelection(mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
+            mEditor.setSelection(
+                    mEditor.getCursor().getRightLine(), mEditor.getCursor().getRightColumn());
         }
         dismiss();
     }
-
 }
-

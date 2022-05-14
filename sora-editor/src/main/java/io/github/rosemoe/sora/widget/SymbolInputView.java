@@ -61,16 +61,12 @@ public class SymbolInputView extends LinearLayout {
         textColor = Color.BLACK;
     }
 
-    /**
-     * Bind editor for the view
-     */
+    /** Bind editor for the view */
     public void bindEditor(CodeEditor editor) {
         this.editor = editor;
     }
 
-    /**
-     * Set text color in the panel
-     */
+    /** Set text color in the panel */
     public void setTextColor(int color) {
         for (int i = 0; i < getChildCount(); i++) {
             ((Button) getChildAt(i)).setTextColor(color);
@@ -78,9 +74,7 @@ public class SymbolInputView extends LinearLayout {
         textColor = color;
     }
 
-    /**
-     * Remove all added symbols
-     */
+    /** Remove all added symbols */
     public void removeSymbols() {
         removeAllViews();
     }
@@ -88,7 +82,7 @@ public class SymbolInputView extends LinearLayout {
     /**
      * Add symbols to the view.
      *
-     * @param display    The texts displayed in button
+     * @param display The texts displayed in button
      * @param insertText The actual text to be inserted to editor when the button is clicked
      */
     public void addSymbols(String[] display, final String[] insertText) {
@@ -100,11 +94,10 @@ public class SymbolInputView extends LinearLayout {
             btn.setTextColor(textColor);
             addView(btn, new LayoutParams(-2, -1));
             int finalI = i;
-            btn.setOnClickListener((view) -> {
-                if (editor != null)
-                    editor.insertText(insertText[finalI], 1);
-            });
+            btn.setOnClickListener(
+                    (view) -> {
+                        if (editor != null) editor.insertText(insertText[finalI], 1);
+                    });
         }
     }
-
 }

@@ -10,17 +10,17 @@
  *******************************************************************************/
 package io.github.rosemoe.sora.textmate.core.internal.css;
 
+import io.github.rosemoe.sora.textmate.core.theme.css.SACConstants;
+import io.github.rosemoe.sora.textmate.core.theme.css.SACParserFactory;
+
 import org.w3c.css.sac.Parser;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import io.github.rosemoe.sora.textmate.core.theme.css.SACConstants;
-import io.github.rosemoe.sora.textmate.core.theme.css.SACParserFactory;
-
 /**
- * SAC Parser factory implementation. By default, this SAC FActory support
- * Flute, SteadyState and Batik SAC Parser.
+ * SAC Parser factory implementation. By default, this SAC FActory support Flute, SteadyState and
+ * Batik SAC Parser.
  */
 public class SACParserFactoryImpl extends SACParserFactory {
 
@@ -52,8 +52,8 @@ public class SACParserFactoryImpl extends SACParserFactory {
     }
 
     /**
-     * register SAC parser with name <code>name</code> mapped with Class name
-     * <code>classNameParser</code>.
+     * register SAC parser with name <code>name</code> mapped with Class name <code>classNameParser
+     * </code>.
      *
      * @param name
      * @param classNameParser
@@ -63,14 +63,15 @@ public class SACParserFactoryImpl extends SACParserFactory {
     }
 
     @Override
-    public Parser makeParser(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException,
-            NullPointerException, ClassCastException {
+    public Parser makeParser(String name)
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException,
+                    NullPointerException, ClassCastException {
         String classNameParser = parsers.get(name);
         if (classNameParser != null) {
             Class<?> classParser = super.getClass().getClassLoader().loadClass(classNameParser);
             return (Parser) classParser.newInstance();
         }
-        throw new IllegalAccessException("SAC parser with name=" + name
-                + " was not registered into SAC parser factory.");
+        throw new IllegalAccessException(
+                "SAC parser with name=" + name + " was not registered into SAC parser factory.");
     }
 }

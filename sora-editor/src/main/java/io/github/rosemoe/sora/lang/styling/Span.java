@@ -25,12 +25,12 @@ package io.github.rosemoe.sora.lang.styling;
 
 import androidx.annotation.NonNull;
 
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 /**
  * The span model
@@ -42,28 +42,27 @@ public class Span {
     /**
      * Flag for {@link Span#problemFlags}.
      *
-     * Indicates this span is in ERROR region
+     * <p>Indicates this span is in ERROR region
      */
     public static final int FLAG_ERROR = 1 << 3;
     /**
      * Flag for {@link Span#problemFlags}.
      *
-     * Indicates this span is in WARNING region
+     * <p>Indicates this span is in WARNING region
      */
     public static final int FLAG_WARNING = 1 << 2;
     /**
      * Flag for {@link Span#problemFlags}.
      *
-     * Indicates this span is in TYPO region
+     * <p>Indicates this span is in TYPO region
      */
     public static final int FLAG_TYPO = 1 << 1;
     /**
      * Flag for {@link Span#problemFlags}.
      *
-     * Indicates this span is in DEPRECATED region
+     * <p>Indicates this span is in DEPRECATED region
      */
     public static final int FLAG_DEPRECATED = 1;
-
 
     private static final BlockingQueue<Span> cacheQueue = new ArrayBlockingQueue<>(8192 * 2);
     public int column;
@@ -71,6 +70,7 @@ public class Span {
      * @see TextStyle
      */
     public long style;
+
     public int underlineColor;
 
     /**
@@ -80,15 +80,16 @@ public class Span {
      * @see Span#FLAG_WARNING
      * @see Span#FLAG_TYPO
      * @see Span#FLAG_DEPRECATED
-     * @see MappedSpans.Builder#markProblemRegion(int, int, int, int, int) 
+     * @see MappedSpans.Builder#markProblemRegion(int, int, int, int, int)
      */
     public int problemFlags = 0;
+
     public ExternalRenderer renderer = null;
 
     /**
      * Create a new span
      *
-     * @param column  Start column of span
+     * @param column Start column of span
      * @param style Style made from {@link TextStyle}
      * @see Span#obtain(int, long)
      * @see TextStyle
@@ -99,8 +100,8 @@ public class Span {
     }
 
     /**
-     * Get an available Span object from either cache or new instance.
-     * The result object will be initialized with the given arguments.
+     * Get an available Span object from either cache or new instance. The result object will be
+     * initialized with the given arguments.
      */
     public static Span obtain(int column, long style) {
         Span span = cacheQueue.poll();
@@ -122,8 +123,7 @@ public class Span {
     }
 
     /**
-     * Set a underline for this region
-     * Zero for no underline
+     * Set a underline for this region Zero for no underline
      *
      * @param color Color for this underline (not color id of {@link EditorColorScheme})
      */
@@ -140,17 +140,13 @@ public class Span {
         return column;
     }
 
-    /**
-     * Set column of this span
-     */
+    /** Set column of this span */
     public Span setColumn(int column) {
         this.column = column;
         return this;
     }
 
-    /**
-     * Make a copy of this span
-     */
+    /** Make a copy of this span */
     public Span copy() {
         Span copy = obtain(column, style);
         copy.setUnderlineColor(underlineColor);
@@ -161,6 +157,7 @@ public class Span {
 
     /**
      * Recycle the object
+     *
      * @return Is successful?
      */
     public boolean recycle() {
@@ -187,7 +184,11 @@ public class Span {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Span span = (Span) o;
-        return column == span.column && style == span.style && underlineColor == span.underlineColor && problemFlags == span.problemFlags && Objects.equals(renderer, span.renderer);
+        return column == span.column
+                && style == span.style
+                && underlineColor == span.underlineColor
+                && problemFlags == span.problemFlags
+                && Objects.equals(renderer, span.renderer);
     }
 
     @Override
@@ -203,13 +204,17 @@ public class Span {
     @NonNull
     @Override
     public String toString() {
-        return "Span{" +
-                "column=" + column +
-                ", style=" + style +
-                ", underlineColor=" + underlineColor +
-                ", problemFlags=" + problemFlags +
-                ", renderer=" + renderer +
-                "}";
+        return "Span{"
+                + "column="
+                + column
+                + ", style="
+                + style
+                + ", underlineColor="
+                + underlineColor
+                + ", problemFlags="
+                + problemFlags
+                + ", renderer="
+                + renderer
+                + "}";
     }
-
 }

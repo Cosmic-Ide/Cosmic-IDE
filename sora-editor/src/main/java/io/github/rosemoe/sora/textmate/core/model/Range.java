@@ -23,6 +23,7 @@ public class Range {
 
     /**
      * Constructs a range made of a single line
+     *
      * @param lineNumber
      */
     public Range(int lineNumber) {

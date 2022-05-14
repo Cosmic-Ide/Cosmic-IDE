@@ -15,19 +15,13 @@ import org.w3c.css.sac.ElementSelector;
 
 public abstract class AbstractElementSelector implements ElementSelector, ExtendedSelector {
 
-    /**
-     * The namespace URI.
-     */
+    /** The namespace URI. */
     protected String namespaceURI;
 
-    /**
-     * The local name.
-     */
+    /** The local name. */
     protected String localName;
 
-    /**
-     * Creates a new ElementSelector object.
-     */
+    /** Creates a new ElementSelector object. */
     protected AbstractElementSelector(String uri, String name) {
         namespaceURI = uri;
         localName = name;
@@ -42,5 +36,4 @@ public abstract class AbstractElementSelector implements ElementSelector, Extend
     public String getLocalName() {
         return localName;
     }
-
 }

@@ -20,11 +20,7 @@ import io.github.rosemoe.sora.textmate.core.grammar.IToken;
 import io.github.rosemoe.sora.textmate.core.grammar.ITokenizeLineResult;
 import io.github.rosemoe.sora.textmate.core.grammar.StackElement;
 
-/**
- *
- * Result of the line tokenization implementation.
- *
- */
+/** Result of the line tokenization implementation. */
 public class TokenizeLineResult implements ITokenizeLineResult {
 
     private final IToken[] tokens;
@@ -44,5 +40,4 @@ public class TokenizeLineResult implements ITokenizeLineResult {
     public StackElement getRuleStack() {
         return ruleStack;
     }
-
 }

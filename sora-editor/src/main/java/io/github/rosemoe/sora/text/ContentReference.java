@@ -29,9 +29,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Reference of a content due to accessed in read-only mode.
- * Access can be validated during accesses.
- * {@link io.github.rosemoe.sora.text.TextReference.ValidateFailedException} may be thrown if the check is failed.
+ * Reference of a content due to accessed in read-only mode. Access can be validated during
+ * accesses. {@link io.github.rosemoe.sora.text.TextReference.ValidateFailedException} may be thrown
+ * if the check is failed.
  *
  * @author Rosemoe
  */
@@ -45,7 +45,8 @@ public class ContentReference extends TextReference {
         super(ref);
         this.content = ref;
         cached = new CharPosition();
-        // Use another Indexer to query characters by index, avoiding concurrent modification to cache list
+        // Use another Indexer to query characters by index, avoiding concurrent modification to
+        // cache list
         this.indexer = new CachedIndexer(content);
     }
 
@@ -96,9 +97,7 @@ public class ContentReference extends TextReference {
         content.getLine(line).appendTo(sb);
     }
 
-    /**
-     * Create a reader to read the text
-     */
+    /** Create a reader to read the text */
     public Reader createReader() {
         return new RefReader();
     }
@@ -137,7 +136,7 @@ public class ContentReference extends TextReference {
                 read += toRead;
                 if (read < length && columnCount == column) {
                     chars[offset + read] = '\n';
-                    read ++;
+                    read++;
                     line++;
                     column = 0;
                 }

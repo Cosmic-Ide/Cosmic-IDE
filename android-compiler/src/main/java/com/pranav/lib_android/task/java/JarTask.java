@@ -22,8 +22,7 @@ public class JarTask extends Task {
         var classesFolder = new File(FileUtil.getBinDir() + "classes");
 
         // Open archive file
-        var stream =
-                new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
+        var stream = new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
 
         var manifest = buildManifest();
 

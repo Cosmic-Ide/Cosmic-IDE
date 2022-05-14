@@ -24,7 +24,7 @@ public class ZipUtil {
         try {
             var zin = new ZipInputStream(stream);
 
-            while ((var ze = zin.getNextEntry()) != null) {
+            while ((ZipEntry ze = zin.getNextEntry()) != null) {
                 if (ze.isDirectory()) {
                     dirChecker(destination, ze.getName());
                 } else {

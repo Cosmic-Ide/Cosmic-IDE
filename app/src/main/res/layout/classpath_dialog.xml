@@ -34,13 +34,12 @@
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/save_classpath_bttn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
-        android:background="#FF757575"
         android:text="@string/classpath_dialog_save_button" />
 </LinearLayout>

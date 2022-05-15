@@ -53,7 +53,7 @@
                 android:orientation="horizontal"
                 android:padding="8dp">
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btn_smali"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,10 +66,10 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
+                    android:background="@colors/grayed_text_color"
                     app:cornerRadius="8dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btn_disassemble"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,10 +81,10 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
+                    android:background="@colors/grayed_text_color"
                     app:cornerRadius="8dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btn_smali2java"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
+                    android:background="@colors/grayed_text_color"
                     app:cornerRadius="8dp" />
             </LinearLayout>
         </HorizontalScrollView>

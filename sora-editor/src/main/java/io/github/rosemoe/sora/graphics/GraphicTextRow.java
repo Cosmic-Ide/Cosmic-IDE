@@ -121,7 +121,8 @@ public class GraphicTextRow {
         if (mText.widthCache != null) {
             var cache = mText.widthCache;
             var end = mEnd;
-            int left = start, right = end;
+            int left = start;
+            int right = end;
             var base = cache[start];
             while (left <= right) {
                 var mid = (left + right) / 2;

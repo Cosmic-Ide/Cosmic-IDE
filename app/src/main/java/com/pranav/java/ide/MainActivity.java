@@ -49,16 +49,13 @@ import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
-import org.jf.dexlib2.iface.DexFile;
 import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Level;
 
 public final class MainActivity extends AppCompatActivity {
 

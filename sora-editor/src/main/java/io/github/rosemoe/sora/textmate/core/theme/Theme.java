@@ -160,12 +160,7 @@ public class Theme {
             return true;
         }
 
-        if (rgba.matcher(hex).matches()) {
-            // #rgba
-            return true;
-        }
-
-        return false;
+        return rgba.matcher(hex).matches();
     }
 
     public static Theme createFromParsedTheme(List<ParsedThemeRule> source) {

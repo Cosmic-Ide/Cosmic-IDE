@@ -51,10 +51,6 @@ class HwAcceleratedRenderer implements ContentListener {
         cache = new ArrayList<>(64);
     }
 
-    private boolean shouldUpdateCache() {
-        return !editor.isWordwrap() && editor.isHardwareAcceleratedDrawAllowed();
-    }
-
     public boolean invalidateInRegion(int startLine, int endLine) {
         var res = false;
         var itr = cache.iterator();

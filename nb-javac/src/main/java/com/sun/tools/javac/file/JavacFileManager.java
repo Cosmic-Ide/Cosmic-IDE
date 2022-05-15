@@ -1202,8 +1202,7 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         if (path.length() == 0 /* isEmpty() is mustang API */) return false;
         if (!path.equals(uri.getPath())) // implicitly checks for embedded . and ..
         return false;
-        if (path.startsWith("/") || path.startsWith("./") || path.startsWith("../")) return false;
-        return true;
+        return !(path.startsWith("/") || path.startsWith("./") || path.startsWith("../"));
     }
 
     // Convenience method

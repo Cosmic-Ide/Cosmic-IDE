@@ -72,7 +72,8 @@ public class Numbers {
     }
 
     public static void getChars(int i, int index, char[] buf) {
-        int q, r;
+        int q;
+        int r;
         int charPos = index;
         char sign = 0;
 
@@ -93,12 +94,11 @@ public class Numbers {
 
         // Fall thru to fast mode for smaller numbers
         // assert(i <= 65536, i);
-        for (; ; ) {
+        while (i != 0) {
             q = (i * 52429) >>> (16 + 3);
             r = i - ((q << 3) + (q << 1)); // r = i-(q*10) ...
             buf[--charPos] = digits[r];
             i = q;
-            if (i == 0) break;
         }
         if (sign != 0) {
             buf[--charPos] = sign;

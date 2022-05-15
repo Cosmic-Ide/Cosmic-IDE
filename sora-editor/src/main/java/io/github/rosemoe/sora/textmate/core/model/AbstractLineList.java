@@ -34,8 +34,6 @@ public abstract class AbstractLineList implements IModelLines {
 
     private TMModel model;
 
-    public AbstractLineList() {}
-
     void setModel(TMModel model) {
         this.model = model;
     }
@@ -56,11 +54,12 @@ public abstract class AbstractLineList implements IModelLines {
 
     @Override
     public void updateLine(int line) {
-        try {
-            // this.list.get(line).text = this.lineToTextResolver.apply(line);
+/*        try {
+            this.list.get(line).text = this.lineToTextResolver.apply(line);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+*/
     }
 
     @Override

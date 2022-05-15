@@ -81,25 +81,25 @@ public class RegExpSourceList {
         } else {
             if (this._anchorCache.A0_G0 == null) {
                 this._anchorCache.A0_G0 =
-                        (allowA == false && allowG == false)
+                        (!allowA && !allowG)
                                 ? this._resolveAnchors(allowA, allowG)
                                 : null;
             }
             if (this._anchorCache.A0_G1 == null) {
                 this._anchorCache.A0_G1 =
-                        (allowA == false && allowG == true)
+                        (!allowA && allowG)
                                 ? this._resolveAnchors(allowA, allowG)
                                 : null;
             }
             if (this._anchorCache.A1_G0 == null) {
                 this._anchorCache.A1_G0 =
-                        (allowA == true && allowG == false)
+                        (allowA && !allowG)
                                 ? this._resolveAnchors(allowA, allowG)
                                 : null;
             }
             if (this._anchorCache.A1_G1 == null) {
                 this._anchorCache.A1_G1 =
-                        (allowA == true && allowG == true)
+                        (allowA && allowG)
                                 ? this._resolveAnchors(allowA, allowG)
                                 : null;
             }

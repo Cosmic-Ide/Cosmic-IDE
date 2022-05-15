@@ -120,6 +120,8 @@ public class JavacCompilationTask extends Task {
                         warns.append(message.toString());
                         warns.append("\n");
                         break;
+                    default:
+                        warns.append(message.toString());
                 }
             }
             var errors = errs.toString();

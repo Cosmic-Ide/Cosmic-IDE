@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.analysis.StyleReceiver;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
+import io.github.rosemoe.sora.lang.smart.enter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;

@@ -149,7 +149,7 @@ public final class AndroidBidi {
     @RequiresApi(Build.VERSION_CODES.Q)
     private static int bidiImplQ(int dir, char[] chs, byte[] chInfo) {
         if (chs == null || chInfo == null) {
-            throw new NullPointerException();
+            throw new IllegalStateException();
         }
 
         final int length = chs.length;

@@ -15,8 +15,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
+import android.widget.Button;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 import com.pranav.common.util.FileUtil;
@@ -191,7 +191,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
@@ -201,7 +201,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
@@ -211,7 +211,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildConfirmDeleteDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
@@ -225,7 +225,7 @@ public class TreeViewDrawer extends Fragment {
             createNewFileDialog.show();
 
             EditText fileName = createNewFileDialog.findViewById(R.id.fileName_edt);
-            MaterialButton createBttn = createNewFileDialog.findViewById(R.id.create_bttn);
+            Button  createBttn = createNewFileDialog.findViewById(R.id.create_bttn);
 
             createBttn.setOnClickListener(
                     v -> {
@@ -285,7 +285,7 @@ public class TreeViewDrawer extends Fragment {
             createNewDirectoryDialog.show();
 
             EditText fileName = createNewDirectoryDialog.findViewById(R.id.directoryName_edt);
-            MaterialButton createBttn = createNewDirectoryDialog.findViewById(R.id.create_bttn);
+            Button  createBttn = createNewDirectoryDialog.findViewById(R.id.create_bttn);
 
             createBttn.setOnClickListener(
                     v -> {
@@ -325,8 +325,8 @@ public class TreeViewDrawer extends Fragment {
             confirmDeleteDialog.show();
 
             MaterialTextView areUsure_txt = confirmDeleteDialog.findViewById(R.id.areUSure_txt);
-            MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
-            MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
+            Button  confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
+            Button  cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
             areUsure_txt.setText(getString(R.string.delete, node.getContent().getFile().getName()));
 

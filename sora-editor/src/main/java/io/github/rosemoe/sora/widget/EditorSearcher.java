@@ -195,7 +195,7 @@ public class EditorSearcher {
             var cursor = text.getCursor();
             var line = cursor.getLeftLine();
             var column = cursor.getLeftColumn();
-            foi = line; i >= 0; i--) {
+            for (var i = line; i >= 0; i--) {
                 var idx =
                         column - 1 < 0
                                 ? -1

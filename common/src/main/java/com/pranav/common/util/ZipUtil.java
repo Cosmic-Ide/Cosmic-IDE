@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 
 public class ZipUtil {
 
-    private int BUFFER_SIZE = 1024 * 10;
+    private static int BUFFER_SIZE = 1024 * 10;
 
     public static void unzipFromAssets(Context context, String zipFile, String destination) {
         try {

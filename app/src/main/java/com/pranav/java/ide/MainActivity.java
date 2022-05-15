@@ -75,6 +75,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public String currentWorkingFilePath;
     public Indexer indexer;
+    public static String BUILD_STATUS = "BUILD_STATUS";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -256,7 +257,8 @@ public final class MainActivity extends AppCompatActivity {
 
     public void compile(boolean execute) {
         final var id = 1;
-        var channel = new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, "Build Status", NotificationManager.IMPORTANCE_DEFAULT);
+        var channel = new NotificationChannel(BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
+        channel.setDescription("Shows the current build status.")
 
         final var manager =
                 (NotificationManager)
@@ -264,7 +266,7 @@ public final class MainActivity extends AppCompatActivity {
         manager.createNotificationChannel(channel);
 
         final var mBuilder =
-                new Notification.Builder(MainActivity.this, NotificationChannel.DEFAULT_CHANNEL_ID)
+                new Notification.Builder(MainActivity.this, BUILD_STATUS)
                         .setContentTitle("Build Status")
                         .setSmallIcon(R.drawable.ic_project_logo);
 

@@ -75,7 +75,6 @@ public final class MainActivity extends AppCompatActivity {
 
     public String currentWorkingFilePath;
     public Indexer indexer;
-    public static String BUILD_STATUS = "BUILD_STATUS";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -167,7 +166,7 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
-        var builder = new MaterialAlertDialogBuilder(MainActivity.this);
+        var builder = new AlertDialog.Builder(MainActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView =
                 getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
@@ -257,8 +256,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public void compile(boolean execute) {
         final var id = 1;
-        var channel = new NotificationChannel(BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("Shows the current build status.");
+        var channel = new NotificationChannel(NotificationChannel.DEFAULT_CHANNEL_ID, "Build Status", NotificationManager.IMPORTANCE_DEFAULT);
 
         final var manager =
                 (NotificationManager)
@@ -266,9 +264,9 @@ public final class MainActivity extends AppCompatActivity {
         manager.createNotificationChannel(channel);
 
         final var mBuilder =
-                new Notification.Builder(MainActivity.this, BUILD_STATUS)
+                new Notification.Builder(MainActivity.this, NotificationChannel.DEFAULT_CHANNEL_ID)
                         .setContentTitle("Build Status")
-                        .setSmallIcon(R.mipmap.ic_launcher);
+                        .setSmallIcon(R.drawable.ic_project_logo);
 
         loadingDialog.show(); // Show Loading Dialog
         runThread =
@@ -518,7 +516,7 @@ public final class MainActivity extends AppCompatActivity {
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
-                    new MaterialAlertDialogBuilder(MainActivity.this)
+                    new AlertDialog.Builder(MainActivity.this)
                             .setTitle(title)
                             .setItems(items, listener)
                             .create()
@@ -528,7 +526,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public void dialog(String title, final String message, boolean copyButton) {
         var dialog =
-                new MaterialAlertDialogBuilder(MainActivity.this)
+                new AlertDialog.Builder(MainActivity.this)
                         .setTitle(title)
                         .setMessage(message)
                         .setPositiveButton("GOT IT", null)

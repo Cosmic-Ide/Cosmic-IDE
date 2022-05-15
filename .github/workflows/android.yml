@@ -27,7 +27,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.1.5
         with:
-          arguments: ${{ secrets.GRADLE_COMMAND }}
+          arguments: assembleDebug
 
       - name: Upload debug apk
         uses: actions/upload-artifact@v3

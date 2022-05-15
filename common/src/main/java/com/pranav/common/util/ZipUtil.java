@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.io.FileOutputStream;
 
 public class ZipUtil {
+
+    private int BUFFER_SIZE = 1024 * 10;
 
     public static void unzipFromAssets(Context context, String zipFile, String destination) {
         try {
@@ -21,6 +24,7 @@ public class ZipUtil {
 
     private static void unzip(InputStream stream, String destination) {
         dirChecker(destination, "");
+        byte[] buffer = new byte[BUFFER_SIZE];
         try {
             var zin = new ZipInputStream(stream);
             ZipEntry ze = null;
@@ -36,10 +40,13 @@ public class ZipUtil {
                         if (!f.createNewFile()) {
                             continue;
                         }
-                        var data = new byte[zin.available()];
-                        zin.read(data);
-                        FileUtil.writeFile(f.getAbsolutePath(), data);
+                        var fout = new FileOutputStream(f);
+                        int count;
+                        while ((count = zin.read(buffer)) != -1) {
+                            fout.write(buffer, 0, count);
+                        }
                         zin.closeEntry();
+                        fout.close();
                     }
                 }
             }

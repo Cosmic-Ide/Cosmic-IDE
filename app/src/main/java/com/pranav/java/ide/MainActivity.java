@@ -258,7 +258,7 @@ public final class MainActivity extends AppCompatActivity {
     public void compile(boolean execute) {
         final var id = 1;
         var channel = new NotificationChannel(BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("Shows the current build status.")
+        channel.setDescription("Shows the current build status.");
 
         final var manager =
                 (NotificationManager)

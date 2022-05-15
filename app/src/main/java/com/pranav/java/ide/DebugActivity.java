@@ -1,10 +1,13 @@
 package com.pranav.java.ide;
 
+import android.content.ClipboardManager;
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public final class DebugActivity extends AppCompatActivity {
 
@@ -13,12 +16,17 @@ public final class DebugActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         var intent = getIntent();
-        var errorMessage = intent.getStringExtra("error");
+        var error = intent.getStringExtra("error");
 
-        new AlertDialog.Builder(this)
-                .setTitle("An error occurred")
-                .setMessage(errorMessage)
-                .setPositiveButton("Quit", (dialog, which) -> finish())
+        new MaterialAlertDialogBuilder(MainActivity.this)
+                .setTitle("An error occurred...")
+                .setMessage(error)
+                .setPositiveButton("QUIT", (dialog, which) -> finish())
+                .setNegativeButton("COPY", (dialog, which) -> {
+                    ((ClipboardManager) 
+                            getSystemService(CLIPBOARD_SERVICE))
+                               .setPrimaryClip(ClipData.newPlainText("clipboard", error));
+                })
                 .create()
                 .show();
     }

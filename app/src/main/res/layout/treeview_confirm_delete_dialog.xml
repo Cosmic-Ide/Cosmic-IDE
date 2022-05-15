@@ -29,13 +29,13 @@
         android:layout_marginHorizontal="8dp"
         android:orientation="horizontal">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/cancel_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/cancel"/>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/confirm_delete_bttn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

@@ -11,8 +11,8 @@ import android.widget.Spinner;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import android.widget.Button;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public final class SettingActivity extends AppCompatActivity {
     private Spinner javaCompilers_spinner;
     private Spinner javaFormatters_spinner;
     private Spinner javaDisassemblers_spinner;
-    private MaterialButton classpath_bttn;
+    private Button classpath_bttn;
 
     private AlertDialog alertDialog;
     private SharedPreferences settings;
@@ -185,7 +185,7 @@ public final class SettingActivity extends AppCompatActivity {
                     alertDialog.show();
 
                     TextInputEditText classpath_edt = alertDialog.findViewById(R.id.classpath_edt);
-                    MaterialButton save_classpath_bttn =
+                    Button save_classpath_bttn =
                             alertDialog.findViewById(R.id.save_classpath_bttn);
 
                     if (!settings.getString("classpath", "").equals("")) {

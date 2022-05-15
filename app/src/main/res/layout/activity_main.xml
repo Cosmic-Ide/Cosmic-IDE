@@ -95,7 +95,7 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textColor="#FFFFFF"
                     android:textSize="12sp"
-                    android:background="@#FF757575"
+                    android:background="#FF757575"
                     app:cornerRadius="8dp" />
             </LinearLayout>
         </HorizontalScrollView>

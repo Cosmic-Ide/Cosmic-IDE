@@ -268,7 +268,7 @@ public final class MainActivity extends AppCompatActivity {
         final var mBuilder =
                 new Notification.Builder(MainActivity.this, BUILD_STATUS)
                         .setContentTitle("Build Status")
-                        .setSmallIcon(R.drawable.ic_project_logo);
+                        .setSmallIcon(R.mipmap.ic_launcher);
 
         loadingDialog.show(); // Show Loading Dialog
         runThread =

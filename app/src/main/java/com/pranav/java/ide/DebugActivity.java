@@ -2,7 +2,6 @@ package com.pranav.java.ide;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;

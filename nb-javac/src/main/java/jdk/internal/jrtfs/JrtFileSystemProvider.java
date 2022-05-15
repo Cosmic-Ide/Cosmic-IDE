@@ -55,8 +55,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
 
     private volatile FileSystem theFileSystem;
 
-    public JrtFileSystemProvider() {}
-
     @Override
     public String getScheme() {
         return "jrt";

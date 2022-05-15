@@ -1,10 +1,6 @@
 package com.pranav.java.ide.compiler;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.NotificationChannel;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Looper;
 
 import com.pranav.common.util.FileUtil;
@@ -85,8 +81,6 @@ public class CompileTask extends Thread {
                 javaTask.doFullTask();
             }
             errorsArePresent = false;
-        } catch (CompilationFailedException e) {
-            listener.onFailed(e.getMessage());
         } catch (Throwable e) {
             listener.onFailed(e.getMessage());
         }

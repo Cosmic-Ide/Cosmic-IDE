@@ -33,7 +33,8 @@ public class FormatThread extends Thread {
 
     private FormatResultReceiver mReceiver;
 
-    private CharPosition mStart, mEnd;
+    private CharPosition mStart;
+    private CharPosition mEnd;
 
     public FormatThread(CharSequence text, Language language, FormatResultReceiver receiver) {
         mText = text;

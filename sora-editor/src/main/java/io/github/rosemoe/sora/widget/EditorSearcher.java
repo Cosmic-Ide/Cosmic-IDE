@@ -31,7 +31,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.text.Content;
@@ -125,7 +124,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var right = mEditor.getCursor().getRight();
-                for (int i = 0; i < res.size(); i++) {
+                for (var i = 0; i < res.size(); i++) {
                     var data = res.get(i);
                     var start = IntPair.getFirst(data);
                     if (start >= right) {
@@ -148,8 +147,8 @@ public class EditorSearcher {
             Content text = mEditor.getText();
             Cursor cursor = text.getCursor();
             int line = cursor.getRightLine();
-            int column = cursor.getRightColumn();
-            for (int i = line; i < text.getLineCount(); i++) {
+            var column = cursor.getRightColumn();
+            for (var i = line; i < text.getLineCount(); i++) {
                 int idx =
                         column >= text.getColumnCount(i)
                                 ? -1
@@ -172,7 +171,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var left = mEditor.getCursor().getLeft();
-                for (int i = 0; i < res.size(); i++) {
+                for (var i = 0; i < res.size(); i++) {
                     var data = res.get(i);
                     var end = IntPair.getSecond(data);
                     if (end <= left) {
@@ -192,12 +191,12 @@ public class EditorSearcher {
                 }
             }
         } else {
-            Content text = mEditor.getText();
-            Cursor cursor = text.getCursor();
-            int line = cursor.getLeftLine();
-            int column = cursor.getLeftColumn();
-            for (int i = line; i >= 0; i--) {
-                int idx =
+            var text = mEditor.getText();
+            var cursor = text.getCursor();
+            var line = cursor.getLeftLine();
+            var column = cursor.getLeftColumn();
+            for (var i = line; i >= 0; i--) {
+                var idx =
                         column - 1 < 0
                                 ? -1
                                 : TextUtils.lastIndexOf(
@@ -225,7 +224,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var packed = IntPair.pack(left, right);
-                for (int i = 0; i < res.size(); i++) {
+                for (var i = 0; i < res.size(); i++) {
                     var value = res.get(i);
                     if (value == packed) {
                         return true;
@@ -264,14 +263,14 @@ public class EditorSearcher {
             return;
         }
 
-        final int mId = 10;
-        Notification notification =
+        final var mId = 10;
+        var notification =
                 new Notification.Builder(mEditor.getContext())
                         .setContentTitle("Replace All")
                         .setContentText("Replacing...")
                         .build();
 
-        final NotificationManager manager =
+        final var manager =
                 (NotificationManager)
                         mEditor.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(mId, notification);

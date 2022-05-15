@@ -21,7 +21,7 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.lang.smartEnter;
+package io.github.rosemoe.sora.lang.smart.enter;
 
 /** Perform text processing when user enters '\n' and selection size is 0 */
 public interface NewlineHandler {

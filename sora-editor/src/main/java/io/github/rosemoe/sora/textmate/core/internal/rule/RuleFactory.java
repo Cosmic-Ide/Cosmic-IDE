@@ -178,7 +178,6 @@ public class RuleFactory {
     private static ICompilePatternsResult _compilePatterns(
             Collection<IRawRule> patterns, IRuleFactoryHelper helper, IRawRepository repository) {
         Collection<Integer> r = new ArrayList<Integer>();
-        int i;
         int len;
         int patternId;
         IRawGrammar externalGrammar;
@@ -198,10 +197,6 @@ public class RuleFactory {
                             patternId =
                                     RuleFactory.getCompiledRuleId(
                                             localIncludedRule, helper, repository);
-                        } else {
-                            // console.warn('CANNOT find rule for scopeName: ' +
-                            // pattern.include + ', I am: ',
-                            // repository['$base'].name);
                         }
                     } else if (pattern.getInclude().equals("$base")
                             || pattern.getInclude().equals("$self")) {

@@ -7,8 +7,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -254,6 +256,10 @@ public final class MainActivity extends AppCompatActivity {
 
     public void compile(boolean execute) {
         final var id = 1;
+        var intent = new Intent(MainActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        var pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
         var channel = new NotificationChannel(BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription("Shows the current build status.");
 
@@ -265,7 +271,10 @@ public final class MainActivity extends AppCompatActivity {
         final var mBuilder =
                 new Notification.Builder(MainActivity.this, BUILD_STATUS)
                         .setContentTitle("Build Status")
-                        .setSmallIcon(R.mipmap.ic_launcher);
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog
         runThread =
@@ -283,8 +292,8 @@ public final class MainActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onSuccess() {
-                                        manager.cancelAll();
                                         loadingDialog.dismiss();
+                                        manager.cancel(id);
                                     }
 
                                     @Override

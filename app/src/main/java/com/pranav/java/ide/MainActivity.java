@@ -164,7 +164,7 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
-        var builder = new MaterialAlertDialogBuilder(MainActivity.this);
+        var builder = new AlertDialog.Builder(MainActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView =
                 getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
@@ -515,7 +515,7 @@ public final class MainActivity extends AppCompatActivity {
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
-                    new MaterialAlertDialogBuilder(MainActivity.this)
+                    new AlertDialog.Builder(MainActivity.this)
                             .setTitle(title)
                             .setItems(items, listener)
                             .create()
@@ -525,7 +525,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public void dialog(String title, final String message, boolean copyButton) {
         var dialog =
-                new MaterialAlertDialogBuilder(MainActivity.this)
+                new AlertDialog.Builder(MainActivity.this)
                         .setTitle(title)
                         .setMessage(message)
                         .setPositiveButton("GOT IT", null)

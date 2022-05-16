@@ -4,6 +4,7 @@ import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;

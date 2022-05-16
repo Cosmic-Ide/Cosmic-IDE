@@ -50,7 +50,6 @@ public class ExecuteJavaTask extends Task {
                     System.setErr(new PrintStream(out));
 
                     var loader = new PathClassLoader(dexFile, mBuilder.getClassloader());
-                    try {
 
                         var calledClass = loader.loadClass(clazz);
 
@@ -67,9 +66,6 @@ public class ExecuteJavaTask extends Task {
                         if (result != null) {
                             System.out.println(result.toString());
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     System.setOut(defaultOut);
                     System.setErr(defaultErr);
                 });

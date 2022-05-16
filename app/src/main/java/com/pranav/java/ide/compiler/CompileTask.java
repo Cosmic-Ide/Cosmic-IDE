@@ -124,8 +124,8 @@ public class CompileTask extends Thread {
                                         "Failed...",
                                         "Runtime error: "
                                                 + e.getMessage()
-                                                + "\n\n"
-                                                + e.getMessage(),
+                                                + "\n\nSystem logs:\n"
+                                                + task.getLogs(),
                                         true);
                             } catch (Exception e) {
                                 activity.dialog(

@@ -32,8 +32,6 @@ public class ExecuteJavaTask extends Task {
         var defaultOut = System.out;
         var defaultErr = System.err;
         var dexFile = FileUtil.getBinDir() + "classes.dex";
-        ConcurrentUtil.execute(
-                () -> {
                     var out =
                             new OutputStream() {
                                 @Override
@@ -68,7 +66,6 @@ public class ExecuteJavaTask extends Task {
                         }
                     System.setOut(defaultOut);
                     System.setErr(defaultErr);
-                });
     }
 
     public String getLogs() {

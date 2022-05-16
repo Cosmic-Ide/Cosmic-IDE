@@ -17,7 +17,7 @@ public final class DebugActivity extends AppCompatActivity {
         var intent = getIntent();
         var error = intent.getStringExtra("error");
 
-        new MaterialAlertDialogBuilder(DebugActivity.this)
+        new AlertDialog.Builder(DebugActivity.this)
                 .setTitle("An error occurred...")
                 .setMessage(error)
                 .setPositiveButton("QUIT", (dialog, which) -> finish())

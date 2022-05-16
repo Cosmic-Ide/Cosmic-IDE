@@ -190,7 +190,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
@@ -200,7 +200,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()
@@ -210,7 +210,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildConfirmDeleteDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new AlertDialog.Builder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
         var dialogView =
                 getLayoutInflater()

@@ -7,9 +7,10 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.PendingIntent;
+import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -271,7 +272,7 @@ public final class MainActivity extends AppCompatActivity {
                 new Notification.Builder(MainActivity.this, BUILD_STATUS)
                         .setContentTitle("Build Status")
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 

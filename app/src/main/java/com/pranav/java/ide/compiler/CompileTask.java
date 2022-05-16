@@ -127,6 +127,7 @@ public class CompileTask extends Thread {
                                                 + "\n\nSystem logs:\n"
                                                 + task.getLogs(),
                                         true);
+                                return;
                             } catch (Exception e) {
                                 activity.dialog(
                                         "Failed..",
@@ -135,6 +136,7 @@ public class CompileTask extends Thread {
                                                 + "\n\nSystem logs:\n"
                                                 + task.getLogs(),
                                         true);
+                                return;
                             }
                             var s = new StringBuilder();
                             s.append("Success! ");

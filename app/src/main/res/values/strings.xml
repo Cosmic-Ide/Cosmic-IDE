@@ -17,7 +17,7 @@
 	<string name="create">Create</string>
 	<string name="create_class">Create Class</string>
 	<string name="create_directory">Create Directory</string>
-	<string name="delete">Delete %s?</string>
+	<string name="delete">Delete %1$s?</string>
 	<string name="cancel">Cancel</string>
 	<string name="compile_project">Compile Project</string>
 	<string name="java_file">Java File</string>
@@ -28,6 +28,7 @@
 	<string name="java_formatter">Java Formatter</string>
 	<string name="java_disassembler">Java Disassembler</string>
 	<string name="classpath">Classpath</string>
+	<string name="enter_classpath">Enter Classpath</string>
 	<string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
 	<string name="format">Format</string>
 	<string name="settings">Settings</string>

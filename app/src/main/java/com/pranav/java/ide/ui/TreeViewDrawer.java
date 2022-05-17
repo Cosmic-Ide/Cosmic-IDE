@@ -161,7 +161,7 @@ public class TreeViewDrawer extends Fragment {
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getLevel() == 0) {
+        if (node.getContent().getFile().getName().equals("java") && node.getLevel() == 0) {
             /* Disable Option to delete a root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }

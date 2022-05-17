@@ -10,9 +10,9 @@ public class TreeCreateNewFileContent {
                         + "public class "
                         + fileName
                         + " {\n\n"
-                        + "\tpublic static void main(String[] args) {\n"
-                        + "\t\tSystem.out.println(\"Hello, World!\");\n"
-                        + "\t}\n"
+                        + "    public static void main(String[] args) {\n"
+                        + "        System.out.println(\"Hello, World!\");\n"
+                        + "    }\n"
                         + "}\n";
 
         return content;
@@ -27,9 +27,9 @@ public class TreeCreateNewFileContent {
                         + "public class "
                         + fileName
                         + " {\n\n"
-                        + "\tpublic static void main(String[] args) {\n"
-                        + "\t\tSystem.out.print(\"Hello, World!\");\n"
-                        + "\t}\n"
+                        + "    public static void main(String[] args) {\n"
+                        + "        System.out.print(\"Hello, World!\");\n"
+                        + "    }\n"
                         + "}\n";
 
         return content;

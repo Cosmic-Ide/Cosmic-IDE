@@ -67,7 +67,7 @@ public class TextUtils {
         }
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < tab; i++) {
-            s.append('\t');
+            s.append("    ");
         }
         for (int i = 0; i < space; i++) {
             s.append(' ');

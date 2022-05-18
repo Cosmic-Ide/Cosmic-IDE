@@ -25,7 +25,6 @@ package io.github.rosemoe.sora.graphics;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
-import android.os.Build;
 
 import io.github.rosemoe.sora.text.ContentLine;
 

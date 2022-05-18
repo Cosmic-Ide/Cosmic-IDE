@@ -24,7 +24,6 @@
 package io.github.rosemoe.sora.text;
 
 import android.icu.text.BreakIterator;
-import android.os.Build;
 
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.MyCharacter;

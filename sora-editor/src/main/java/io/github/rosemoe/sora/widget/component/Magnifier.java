@@ -31,7 +31,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -39,8 +38,6 @@ import android.view.LayoutInflater;
 import android.view.PixelCopy;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-
-import androidx.annotation.RequiresApi;
 
 import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.widget.CodeEditor;

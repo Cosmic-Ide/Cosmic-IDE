@@ -136,11 +136,11 @@ class EditorInputConnection extends BaseInputConnection {
             // Apply composing span
             if (mComposingLine != -1) {
                 try {
-                    var originalComposingStart =
+                    int originalComposingStart =
                             getCursor().getIndexer().getCharIndex(mComposingLine, mComposingStart);
-                    var originalComposingEnd =
+                    int originalComposingEnd =
                             getCursor().getIndexer().getCharIndex(mComposingLine, mComposingEnd);
-                    var transferredStart = originalComposingStart - start;
+                    int transferredStart = originalComposingStart - start;
                     if (transferredStart >= text.length()) {
                         return text;
                     }
@@ -181,20 +181,20 @@ class EditorInputConnection extends BaseInputConnection {
     public CharSequence getSelectedText(int flags) {
         // This text should be limited because when the user try to select all text
         // it can be quite large text and costs time, which will finally cause ANR
-        var left = getCursor().getLeft();
-        var right = getCursor().getRight();
+        int left = getCursor().getLeft();
+        int right = getCursor().getRight();
         return left == right ? null : getTextRegion(left, right, flags);
     }
 
     @Override
     public CharSequence getTextBeforeCursor(int length, int flags) {
-        var start = getCursor().getLeft();
+        int start = getCursor().getLeft();
         return getTextRegion(start - length, start, flags);
     }
 
     @Override
     public CharSequence getTextAfterCursor(int length, int flags) {
-        var end = getCursor().getRight();
+        int end = getCursor().getRight();
         return getTextRegion(end, end + length, flags);
     }
 
@@ -304,7 +304,7 @@ class EditorInputConnection extends BaseInputConnection {
 
             } else {
                 mEditor.commitText(replacement.text, applyAutoIndent);
-                var delta = (replacement.text.length() - replacement.selection);
+                int delta = (replacement.text.length() - replacement.selection);
                 if (delta != 0) {
                     var newSel = Math.max(getCursor().getLeft() - delta, 0);
                     CharPosition charPosition = getCursor().getIndexer().getCharPosition(newSel);
@@ -351,28 +351,28 @@ class EditorInputConnection extends BaseInputConnection {
             beginBatchEdit();
         }
 
-        var composing = mComposingLine != -1;
-        var composingStart =
+        int composing = mComposingLine != -1;
+        int composingStart =
                 composing
                         ? getCursor().getIndexer().getCharIndex(mComposingLine, mComposingStart)
                         : 0;
-        var composingEnd =
+        int composingEnd =
                 composing
                         ? getCursor().getIndexer().getCharIndex(mComposingLine, mComposingEnd)
                         : 0;
 
-        var rangeEnd = getCursor().getLeft();
-        var rangeStart = rangeEnd - beforeLength;
+        int rangeEnd = getCursor().getLeft();
+        int rangeStart = rangeEnd - beforeLength;
         if (rangeStart < 0) {
             rangeStart = 0;
         }
         mEditor.getText().delete(rangeStart, rangeEnd);
 
         if (composing) {
-            var crossStart = Math.max(rangeStart, composingStart);
-            var crossEnd = Math.min(rangeEnd, composingEnd);
+            int crossStart = Math.max(rangeStart, composingStart);
+            int crossEnd = Math.min(rangeEnd, composingEnd);
             composingEnd -= Math.max(0, crossEnd - crossStart);
-            var delta = Math.max(0, crossStart - rangeStart);
+            int delta = Math.max(0, crossStart - rangeStart);
             composingEnd -= delta;
             composingStart -= delta;
         }
@@ -385,10 +385,10 @@ class EditorInputConnection extends BaseInputConnection {
         mEditor.getText().delete(rangeStart, rangeEnd);
 
         if (composing) {
-            var crossStart = Math.max(rangeStart, composingStart);
-            var crossEnd = Math.min(rangeEnd, composingEnd);
+            int crossStart = Math.max(rangeStart, composingStart);
+            int crossEnd = Math.min(rangeEnd, composingEnd);
             composingEnd -= Math.max(0, crossEnd - crossStart);
-            var delta = Math.max(0, crossStart - rangeStart);
+            int delta = Math.max(0, crossStart - rangeStart);
             composingEnd -= delta;
             composingStart -= delta;
         }

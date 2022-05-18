@@ -411,7 +411,7 @@ public final class EditorTouchEventHandler
     }
 
     private int computeEdgeFlags(float x, float y) {
-        var flags = 0;
+        int flags = 0;
         if (x < edgeFieldSize) {
             flags |= LEFT_EDGE;
         }
@@ -428,8 +428,8 @@ public final class EditorTouchEventHandler
     }
 
     public void scrollIfThumbReachesEdge(MotionEvent e) {
-        var flag = computeEdgeFlags(e.getX(), e.getY());
-        var initialDelta = (int) (8 * mEditor.getDpUnit());
+        int flag = computeEdgeFlags(e.getX(), e.getY());
+        int initialDelta = (int) (8 * mEditor.getDpUnit());
         if (flag != 0 && mEdgeFlags == 0) {
             mEdgeFlags = flag;
             mThumb = MotionEvent.obtain(e);
@@ -456,8 +456,8 @@ public final class EditorTouchEventHandler
 
     public void scrollBy(float distanceX, float distanceY, boolean smooth) {
         mEditor.hideAutoCompleteWindow();
-        var endX = mScroller.getCurrX() + (int) distanceX;
-        var endY = mScroller.getCurrY() + (int) distanceY;
+        int endX = mScroller.getCurrX() + (int) distanceX;
+        int endY = mScroller.getCurrY() + (int) distanceY;
         endX = Math.max(endX, 0);
         endY = Math.max(endY, 0);
         endY = Math.min(endY, mEditor.getScrollMaxY());
@@ -494,9 +494,9 @@ public final class EditorTouchEventHandler
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         mScroller.forceFinished(true);
-        var res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
-        var line = IntPair.getFirst(res);
-        var column = IntPair.getSecond(res);
+        long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
+        int line = IntPair.getFirst(res);
+        int column = IntPair.getSecond(res);
         mEditor.performClick();
         if ((mEditor.dispatchEvent(
                                 new ClickEvent(
@@ -518,11 +518,11 @@ public final class EditorTouchEventHandler
 
     private void selectWord(int line, int column) {
         // Find word edges
-        var startLine = line, endLine = line;
-        var lineObj = mEditor.getText().getLine(line);
+        int startLine = line, endLine = line;
+        int lineObj = mEditor.getText().getLine(line);
         var edges = ICUUtils.getWordEdges(lineObj, column);
-        var startColumn = IntPair.getFirst(edges);
-        var endColumn = IntPair.getSecond(edges);
+        int startColumn = IntPair.getFirst(edges);
+        int endColumn = IntPair.getSecond(edges);
         if (startColumn == endColumn) {
             if (startColumn > 0) {
                 startColumn--;

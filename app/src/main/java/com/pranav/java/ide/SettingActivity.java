@@ -196,7 +196,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 classpath_bttn.setText(getString(R.string.edit));
 
                                 /* Dismiss Dialog If Showing */
-                                if (alertDialog.isShowing()) classpathDialog.dismiss();
+                                if (classpathDialog.isShowing()) classpathDialog.dismiss();
                             });
                 });
         buildArgumentsDialog();
@@ -221,7 +221,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 arguments_bttn.setText(getString(R.string.edit));
 
                                 /* Dismiss Dialog If Showing */
-                                if (alertDialog.isShowing()) argumentsDialog.dismiss();
+                                if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
                             });
                 });
     }
@@ -239,13 +239,16 @@ public final class SettingActivity extends AppCompatActivity {
         ViewGroup viewGroup = findViewById(android.R.id.content);
         var dialogView = getLayoutInflater().inflate(R.layout.arguments_dialog, viewGroup, false);
         builder.setView(dialogView);
-        algumentsDialog = builder.create();
+        argumentsDialog = builder.create();
     }
 
     @Override
     protected void onDestroy() {
-        if (alertDialog.isShowing()) {
-            alertDialog.dismiss();
+        if (classpathDialog.isShowing()) {
+            classpathDialog.dismiss();
+        }
+        if (argumentsDialog.isShowing()) {
+            argumentsDialog.dismiss();
         }
         super.onDestroy();
     }

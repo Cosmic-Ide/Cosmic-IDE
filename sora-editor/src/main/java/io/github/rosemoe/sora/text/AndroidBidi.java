@@ -139,7 +139,7 @@ public final class AndroidBidi {
     private static int bidiImplP(int dir, char[] chs, byte[] chInfo) {
         try {
             var res = (Integer) bidiFunction.invoke(null, dir, chs, chInfo);
-            return Objects.requireNonNullElseGet(res, () -> bidiFallback(dir, chInfo));
+            return Objects.requireNonNull(res);
         } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             e.printStackTrace();
             return bidiFallback(dir, chInfo);

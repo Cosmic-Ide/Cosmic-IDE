@@ -4,7 +4,7 @@
 [![Discord Server](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/master/ic_logo.webp" />
+  <img src="https://raw.githubusercontent.com/Arashvscode/Java-Ide/master/IMG_20220518_203818.png" />
 </p>
 
 Compile and test your java code anytime anywhere from your mobile phone

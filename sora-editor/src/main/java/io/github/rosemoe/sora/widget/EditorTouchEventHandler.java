@@ -284,9 +284,9 @@ public final class EditorTouchEventHandler
                         insert = new SelectionHandle(SelectionHandle.BOTH);
                         dispatchHandle(HandleStateChangeEvent.HANDLE_TYPE_INSERT, true);
                     }
-                    boolean left =
+                    var left =
                             mEditor.getLeftHandleDescriptor().position.contains(e.getX(), e.getY());
-                    boolean right =
+                    var right =
                             mEditor.getRightHandleDescriptor()
                                     .position
                                     .contains(e.getX(), e.getY());
@@ -311,18 +311,18 @@ public final class EditorTouchEventHandler
             case MotionEvent.ACTION_MOVE:
                 {
                     if (mHoldingScrollbarVertical) {
-                        float movedDis = e.getY() - downY;
+                        var movedDis = e.getY() - downY;
                         downY = e.getY();
-                        float all = mEditor.mLayout.getLayoutHeight() + mEditor.getHeight() / 2f;
-                        float dy = movedDis / mEditor.getHeight() * all;
+                        var all = mEditor.mLayout.getLayoutHeight() + mEditor.getHeight() / 2f;
+                        var dy = movedDis / mEditor.getHeight() * all;
                         scrollBy(0, dy);
                         return true;
                     }
                     if (mHoldingScrollbarHorizontal) {
-                        float movedDis = e.getX() - downX;
+                        var movedDis = e.getX() - downX;
                         downX = e.getX();
-                        float all = mEditor.getScrollMaxX() + mEditor.getWidth();
-                        float dx = movedDis / mEditor.getWidth() * all;
+                        var all = mEditor.getScrollMaxX() + mEditor.getWidth();
+                        var dx = movedDis / mEditor.getWidth() * all;
                         scrollBy(dx, 0);
                         return true;
                     }
@@ -411,7 +411,7 @@ public final class EditorTouchEventHandler
     }
 
     private int computeEdgeFlags(float x, float y) {
-        int flags = 0;
+        var flags = 0;
         if (x < edgeFieldSize) {
             flags |= LEFT_EDGE;
         }
@@ -428,8 +428,8 @@ public final class EditorTouchEventHandler
     }
 
     public void scrollIfThumbReachesEdge(MotionEvent e) {
-        int flag = computeEdgeFlags(e.getX(), e.getY());
-        int initialDelta = (int) (8 * mEditor.getDpUnit());
+        var flag = computeEdgeFlags(e.getX(), e.getY());
+        var initialDelta = (int) (8 * mEditor.getDpUnit());
         if (flag != 0 && mEdgeFlags == 0) {
             mEdgeFlags = flag;
             mThumb = MotionEvent.obtain(e);
@@ -456,8 +456,8 @@ public final class EditorTouchEventHandler
 
     public void scrollBy(float distanceX, float distanceY, boolean smooth) {
         mEditor.hideAutoCompleteWindow();
-        int endX = mScroller.getCurrX() + (int) distanceX;
-        int endY = mScroller.getCurrY() + (int) distanceY;
+        var endX = mScroller.getCurrX() + (int) distanceX;
+        var endY = mScroller.getCurrY() + (int) distanceY;
         endX = Math.max(endX, 0);
         endY = Math.max(endY, 0);
         endY = Math.min(endY, mEditor.getScrollMaxY());
@@ -494,9 +494,9 @@ public final class EditorTouchEventHandler
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         mScroller.forceFinished(true);
-        long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
-        int line = IntPair.getFirst(res);
-        int column = IntPair.getSecond(res);
+        var res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
+        var line = IntPair.getFirst(res);
+        var column = IntPair.getSecond(res);
         mEditor.performClick();
         if ((mEditor.dispatchEvent(
                                 new ClickEvent(
@@ -518,11 +518,11 @@ public final class EditorTouchEventHandler
 
     private void selectWord(int line, int column) {
         // Find word edges
-        int startLine = line, endLine = line;
+        var startLine = line, endLine = line;
         var lineObj = mEditor.getText().getLine(line);
-        long edges = ICUUtils.getWordEdges(lineObj, column);
-        int startColumn = IntPair.getFirst(edges);
-        int endColumn = IntPair.getSecond(edges);
+        var edges = ICUUtils.getWordEdges(lineObj, column);
+        var startColumn = IntPair.getFirst(edges);
+        var endColumn = IntPair.getSecond(edges);
         if (startColumn == endColumn) {
             if (startColumn > 0) {
                 startColumn--;
@@ -530,7 +530,7 @@ public final class EditorTouchEventHandler
                 endColumn++;
             } else {
                 if (line > 0) {
-                    int lastColumn = mEditor.getText().getColumnCount(line - 1);
+                    var lastColumn = mEditor.getText().getColumnCount(line - 1);
                     startLine = line - 1;
                     startColumn = lastColumn;
                 } else if (line < mEditor.getLineCount() - 1) {
@@ -545,9 +545,9 @@ public final class EditorTouchEventHandler
 
     @Override
     public void onLongPress(MotionEvent e) {
-        long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
-        int line = IntPair.getFirst(res);
-        int column = IntPair.getSecond(res);
+        var res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
+        var line = IntPair.getFirst(res);
+        var column = IntPair.getSecond(res);
         if ((mEditor.dispatchEvent(
                                 new LongPressEvent(
                                         mEditor,
@@ -568,19 +568,19 @@ public final class EditorTouchEventHandler
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        int endX = mScroller.getCurrX() + (int) distanceX;
-        int endY = mScroller.getCurrY() + (int) distanceY;
+        var endX = mScroller.getCurrX() + (int) distanceX;
+        var endY = mScroller.getCurrY() + (int) distanceY;
         endX = Math.max(endX, 0);
         endY = Math.max(endY, 0);
         endY = Math.min(endY, mEditor.getScrollMaxY());
         endX = Math.min(endX, mEditor.getScrollMaxX());
-        boolean notifyY = true;
-        boolean notifyX = true;
+        var notifyY = true;
+        var notifyX = true;
         if (!mEditor.getVerticalEdgeEffect().isFinished()
                 && !mEditor.getVerticalEdgeEffect().isRecede()) {
             endY = mScroller.getCurrY();
-            float displacement = Math.max(0, Math.min(1, e2.getX() / mEditor.getWidth()));
-            float distance = (topOrBottom ? distanceY : -distanceY) / mEditor.getMeasuredHeight();
+            var displacement = Math.max(0, Math.min(1, e2.getX() / mEditor.getWidth()));
+            var distance = (topOrBottom ? distanceY : -distanceY) / mEditor.getMeasuredHeight();
             if (distance < -0.001) {
                 mEditor.getVerticalEdgeEffect().finish();
             } else {
@@ -592,8 +592,8 @@ public final class EditorTouchEventHandler
         if (!mEditor.getHorizontalEdgeEffect().isFinished()
                 && !mEditor.getHorizontalEdgeEffect().isRecede()) {
             endX = mScroller.getCurrX();
-            float displacement = Math.max(0, Math.min(1, e2.getY() / mEditor.getHeight()));
-            float distance = (leftOrRight ? distanceX : -distanceX) / mEditor.getMeasuredWidth();
+            var displacement = Math.max(0, Math.min(1, e2.getY() / mEditor.getHeight()));
+            var distance = (leftOrRight ? distanceX : -distanceX) / mEditor.getMeasuredWidth();
             if (distance < -0.001) {
                 mEditor.getHorizontalEdgeEffect().finish();
             } else {
@@ -609,7 +609,7 @@ public final class EditorTouchEventHandler
                 endY - mScroller.getCurrY(),
                 0);
         mEditor.updateCompletionWindowPosition(false);
-        final float minOverPull = 2f;
+        final var minOverPull = 2f;
         if (notifyY && mScroller.getCurrY() + distanceY < -minOverPull) {
             mEditor.getVerticalEdgeEffect()
                     .onPull(
@@ -671,7 +671,7 @@ public final class EditorTouchEventHandler
                         ? (int) (20 * mEditor.getDpUnit())
                         : 0,
                 mEditor.getProps().overScrollEnabled ? (int) (20 * mEditor.getDpUnit()) : 0);
-        float minVe = mEditor.getDpUnit() * 2000;
+        var minVe = mEditor.getDpUnit() * 2000;
         if (Math.abs(velocityX) >= minVe || Math.abs(velocityY) >= minVe) {
             notifyScrolled();
             mEditor.hideAutoCompleteWindow();
@@ -692,17 +692,17 @@ public final class EditorTouchEventHandler
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
         if (mEditor.isScalable()) {
-            float newSize = mEditor.getTextSizePx() * detector.getScaleFactor();
+            var newSize = mEditor.getTextSizePx() * detector.getScaleFactor();
             if (newSize < minSize || newSize > maxSize) {
                 return true;
             }
-            float focusX = detector.getFocusX();
-            float focusY = detector.getFocusY();
-            int originHeight = mEditor.getRowHeight();
+            var focusX = detector.getFocusX();
+            var focusY = detector.getFocusY();
+            var originHeight = mEditor.getRowHeight();
             mEditor.setTextSizePxDirect(newSize);
-            float heightFactor = mEditor.getRowHeight() * 1f / originHeight;
-            float afterScrollY = (mScroller.getCurrY() + focusY) * heightFactor - focusY;
-            float afterScrollX =
+            var heightFactor = mEditor.getRowHeight() * 1f / originHeight;
+            var afterScrollY = (mScroller.getCurrY() + focusY) * heightFactor - focusY;
+            var afterScrollX =
                     (mScroller.getCurrX() + focusX) * detector.getScaleFactor() - focusX;
             afterScrollX = Math.max(0, Math.min(afterScrollX, mEditor.getScrollMaxX()));
             afterScrollY = Math.max(0, Math.min(afterScrollY, mEditor.getScrollMaxY()));
@@ -751,9 +751,9 @@ public final class EditorTouchEventHandler
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
-        int line = IntPair.getFirst(res);
-        int column = IntPair.getSecond(res);
+        var res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
+        var line = IntPair.getFirst(res);
+        var column = IntPair.getSecond(res);
         if ((mEditor.dispatchEvent(
                                 new DoubleClickEvent(
                                         mEditor,
@@ -823,7 +823,7 @@ public final class EditorTouchEventHandler
                     type == LEFT
                             ? mEditor.getRightHandleDescriptor()
                             : mEditor.getLeftHandleDescriptor();
-            float targetX =
+            var targetX =
                     mScroller.getCurrX()
                             + e.getX()
                             + (descriptor.alignment != SelectionHandleStyle.ALIGN_CENTER
@@ -832,23 +832,23 @@ public final class EditorTouchEventHandler
                                     * (descriptor.alignment == SelectionHandleStyle.ALIGN_LEFT
                                             ? 1
                                             : -1);
-            float targetY = mScroller.getCurrY() + e.getY() - descriptor.position.height();
-            int line = IntPair.getFirst(mEditor.getPointPosition(0, targetY));
+            var targetY = mScroller.getCurrY() + e.getY() - descriptor.position.height();
+            var line = IntPair.getFirst(mEditor.getPointPosition(0, targetY));
             if (line >= 0 && line < mEditor.getLineCount()) {
-                int column = IntPair.getSecond(mEditor.getPointPosition(targetX, targetY));
-                int lastLine =
+                var column = IntPair.getSecond(mEditor.getPointPosition(targetX, targetY));
+                var lastLine =
                         type == RIGHT
                                 ? mEditor.getCursor().getRightLine()
                                 : mEditor.getCursor().getLeftLine();
-                int lastColumn =
+                var lastColumn =
                         type == RIGHT
                                 ? mEditor.getCursor().getRightColumn()
                                 : mEditor.getCursor().getLeftColumn();
-                int anotherLine =
+               var anotherLine =
                         type != RIGHT
                                 ? mEditor.getCursor().getRightLine()
                                 : mEditor.getCursor().getLeftLine();
-                int anotherColumn =
+                var anotherColumn =
                         type != RIGHT
                                 ? mEditor.getCursor().getRightColumn()
                                 : mEditor.getCursor().getLeftColumn();
@@ -951,10 +951,10 @@ public final class EditorTouchEventHandler
 
         @Override
         public void run() {
-            int dx =
+            var dx =
                     (((mEdgeFlags & LEFT_EDGE) != 0) ? -deltaHorizontal : 0)
                             + (((mEdgeFlags & RIGHT_EDGE) != 0) ? deltaHorizontal : 0);
-            int dy =
+            var dy =
                     (((mEdgeFlags & TOP_EDGE) != 0) ? -deltaVertical : 0)
                             + (((mEdgeFlags & BOTTOM_EDGE) != 0) ? deltaVertical : 0);
             if (dx > 0) {
@@ -965,9 +965,9 @@ public final class EditorTouchEventHandler
                 } else {
                     line = mEditor.getCursor().getRightLine();
                 }
-                int column = mEditor.getText().getColumnCount(line);
+                var column = mEditor.getText().getColumnCount(line);
                 // Do not scroll too far from text region of this line
-                float maxOffset =
+                var maxOffset =
                         mEditor.measureTextRegionOffset()
                                 + mEditor.mLayout.getCharLayoutOffset(line, column)[1]
                                 - mEditor.getWidth() * 0.85f;

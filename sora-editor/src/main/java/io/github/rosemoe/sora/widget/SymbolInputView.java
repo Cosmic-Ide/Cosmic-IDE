@@ -68,7 +68,7 @@ public class SymbolInputView extends LinearLayout {
 
     /** Set text color in the panel */
     public void setTextColor(int color) {
-        for (int i = 0; i < getChildCount(); i++) {
+        for (var i = 0; i < getChildCount(); i++) {
             ((Button) getChildAt(i)).setTextColor(color);
         }
         textColor = color;
@@ -86,14 +86,14 @@ public class SymbolInputView extends LinearLayout {
      * @param insertText The actual text to be inserted to editor when the button is clicked
      */
     public void addSymbols(String[] display, final String[] insertText) {
-        int count = Math.max(display.length, insertText.length);
-        for (int i = 0; i < count; i++) {
-            Button btn = new Button(getContext(), null, android.R.attr.buttonStyleSmall);
+        var count = Math.max(display.length, insertText.length);
+        for (var i = 0; i < count; i++) {
+            var btn = new Button(getContext(), null, android.R.attr.buttonStyleSmall);
             btn.setText(display[i]);
             btn.setBackground(new ColorDrawable(0));
             btn.setTextColor(textColor);
             addView(btn, new LayoutParams(-2, -1));
-            int finalI = i;
+            var finalI = i;
             btn.setOnClickListener(
                     (view) -> {
                         if (editor != null) editor.insertText(insertText[finalI], 1);

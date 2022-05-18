@@ -136,11 +136,11 @@ class EditorInputConnection extends BaseInputConnection {
             // Apply composing span
             if (mComposingLine != -1) {
                 try {
-                    int originalComposingStart =
+                    var originalComposingStart =
                             getCursor().getIndexer().getCharIndex(mComposingLine, mComposingStart);
-                    int originalComposingEnd =
+                    var originalComposingEnd =
                             getCursor().getIndexer().getCharIndex(mComposingLine, mComposingEnd);
-                    int transferredStart = originalComposingStart - start;
+                    var transferredStart = originalComposingStart - start;
                     if (transferredStart >= text.length()) {
                         return text;
                     }
@@ -181,20 +181,20 @@ class EditorInputConnection extends BaseInputConnection {
     public CharSequence getSelectedText(int flags) {
         // This text should be limited because when the user try to select all text
         // it can be quite large text and costs time, which will finally cause ANR
-        int left = getCursor().getLeft();
-        int right = getCursor().getRight();
+        var left = getCursor().getLeft();
+        var right = getCursor().getRight();
         return left == right ? null : getTextRegion(left, right, flags);
     }
 
     @Override
     public CharSequence getTextBeforeCursor(int length, int flags) {
-        int start = getCursor().getLeft();
+        var start = getCursor().getLeft();
         return getTextRegion(start - length, start, flags);
     }
 
     @Override
     public CharSequence getTextAfterCursor(int length, int flags) {
-        int end = getCursor().getRight();
+        var end = getCursor().getRight();
         return getTextRegion(end, end + length, flags);
     }
 
@@ -304,9 +304,9 @@ class EditorInputConnection extends BaseInputConnection {
 
             } else {
                 mEditor.commitText(replacement.text, applyAutoIndent);
-                int delta = (replacement.text.length() - replacement.selection);
+                var delta = (replacement.text.length() - replacement.selection);
                 if (delta != 0) {
-                    int newSel = Math.max(getCursor().getLeft() - delta, 0);
+                    var newSel = Math.max(getCursor().getLeft() - delta, 0);
                     CharPosition charPosition = getCursor().getIndexer().getCharPosition(newSel);
                     mEditor.setSelection(
                             charPosition.line,
@@ -351,28 +351,28 @@ class EditorInputConnection extends BaseInputConnection {
             beginBatchEdit();
         }
 
-        boolean composing = mComposingLine != -1;
-        int composingStart =
+        var composing = mComposingLine != -1;
+        var composingStart =
                 composing
                         ? getCursor().getIndexer().getCharIndex(mComposingLine, mComposingStart)
                         : 0;
-        int composingEnd =
+        var composingEnd =
                 composing
                         ? getCursor().getIndexer().getCharIndex(mComposingLine, mComposingEnd)
                         : 0;
 
-        int rangeEnd = getCursor().getLeft();
-        int rangeStart = rangeEnd - beforeLength;
+        var rangeEnd = getCursor().getLeft();
+        var rangeStart = rangeEnd - beforeLength;
         if (rangeStart < 0) {
             rangeStart = 0;
         }
         mEditor.getText().delete(rangeStart, rangeEnd);
 
         if (composing) {
-            int crossStart = Math.max(rangeStart, composingStart);
-            int crossEnd = Math.min(rangeEnd, composingEnd);
+            var crossStart = Math.max(rangeStart, composingStart);
+            var crossEnd = Math.min(rangeEnd, composingEnd);
             composingEnd -= Math.max(0, crossEnd - crossStart);
-            int delta = Math.max(0, crossStart - rangeStart);
+            var delta = Math.max(0, crossStart - rangeStart);
             composingEnd -= delta;
             composingStart -= delta;
         }
@@ -385,10 +385,10 @@ class EditorInputConnection extends BaseInputConnection {
         mEditor.getText().delete(rangeStart, rangeEnd);
 
         if (composing) {
-            int crossStart = Math.max(rangeStart, composingStart);
-            int crossEnd = Math.min(rangeEnd, composingEnd);
+            var crossStart = Math.max(rangeStart, composingStart);
+            var crossEnd = Math.min(rangeEnd, composingEnd);
             composingEnd -= Math.max(0, crossEnd - crossStart);
-            int delta = Math.max(0, crossStart - rangeStart);
+            var delta = Math.max(0, crossStart - rangeStart);
             composingEnd -= delta;
             composingStart -= delta;
         }
@@ -398,8 +398,8 @@ class EditorInputConnection extends BaseInputConnection {
         }
 
         if (composing) {
-            CharPosition start = getCursor().getIndexer().getCharPosition(composingStart);
-            CharPosition end = getCursor().getIndexer().getCharPosition(composingEnd);
+            var start = getCursor().getIndexer().getCharPosition(composingStart);
+            var end = getCursor().getIndexer().getCharPosition(composingEnd);
             if (start.line != end.line) {
                 invalid();
                 return false;
@@ -430,7 +430,7 @@ class EditorInputConnection extends BaseInputConnection {
 
     @Override
     public synchronized boolean endBatchEdit() {
-        boolean inBatch = mEditor.getText().endBatchEdit();
+        var inBatch = mEditor.getText().endBatchEdit();
         if (!inBatch) {
             mEditor.updateSelection();
         }
@@ -524,9 +524,9 @@ class EditorInputConnection extends BaseInputConnection {
             return true;
         }
         mEditor.getComponent(EditorAutoCompletion.class).hide();
-        Content content = mEditor.getText();
-        CharPosition startPos = content.getIndexer().getCharPosition(start);
-        CharPosition endPos = content.getIndexer().getCharPosition(end);
+        var content = mEditor.getText();
+        var startPos = content.getIndexer().getCharPosition(start);
+        var endPos = content.getIndexer().getCharPosition(end);
         mEditor.setSelectionRegion(
                 startPos.line,
                 startPos.column,
@@ -554,12 +554,12 @@ class EditorInputConnection extends BaseInputConnection {
             if (start < 0) {
                 start = 0;
             }
-            Content content = mEditor.getText();
+            var content = mEditor.getText();
             if (end > content.length()) {
                 end = content.length();
             }
-            CharPosition startPos = content.getIndexer().getCharPosition(start);
-            CharPosition endPos = content.getIndexer().getCharPosition(end);
+            var startPos = content.getIndexer().getCharPosition(start);
+            var endPos = content.getIndexer().getCharPosition(end);
             if (startPos.line != endPos.line) {
                 mEditor.restartInput();
                 return false;

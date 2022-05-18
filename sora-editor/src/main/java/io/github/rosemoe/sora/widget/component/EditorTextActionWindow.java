@@ -129,8 +129,6 @@ public class EditorTextActionWindow extends EditorPopupWindow
      * <p>Root view is {@link android.widget.LinearLayout} Inside is a {@link
      * android.widget.HorizontalScrollView}
      *
-     * @see R.id#panel_root
-     * @see R.id#panel_hv
      * @see R.id#panel_btn_select_all
      * @see R.id#panel_btn_copy
      * @see R.id#panel_btn_cut

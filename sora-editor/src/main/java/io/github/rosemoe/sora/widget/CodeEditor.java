@@ -461,22 +461,8 @@ public class CodeEditor extends View
 
         mPainter = new EditorPainter(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var configuration = ViewConfiguration.get(getContext());
-            mVerticalScrollFactor = configuration.getScaledVerticalScrollFactor();
-        } else {
-            try {
-                var a =
-                        getContext()
-                                .obtainStyledAttributes(
-                                        new int[] {android.R.attr.listPreferredItemHeight});
-                mVerticalScrollFactor = a.getFloat(0, 32);
-                a.recycle();
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to get scroll factor", e);
-                mVerticalScrollFactor = 32;
-            }
-        }
+        var configuration = ViewConfiguration.get(getContext());
+        mVerticalScrollFactor = configuration.getScaledVerticalScrollFactor();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             mRenderer = new HwAcceleratedRenderer(this);
         }
@@ -546,9 +532,7 @@ public class CodeEditor extends View
         setCompletionWndPositionMode(WINDOW_POS_MODE_AUTO);
 
         // Issue #41 View being highlighted when focused on Android 11
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setDefaultFocusHighlightEnabled(false);
-        }
+        setDefaultFocusHighlightEnabled(false);
         if (getContext() instanceof ContextThemeWrapper) {
             setEdgeEffectColor(ThemeUtils.getColorPrimary((ContextThemeWrapper) getContext()));
         }

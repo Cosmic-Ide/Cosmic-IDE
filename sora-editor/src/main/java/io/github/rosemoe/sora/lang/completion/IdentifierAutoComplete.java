@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Identifier auto-completion.
@@ -113,7 +114,7 @@ public class IdentifierAutoComplete {
         }
         final String[] keywordArray = mKeywords;
         final boolean lowCase = mKeywordsAreLowCase;
-        String match = prefix.toLowerCase();
+        String match = prefix.toLowerCase(Locale.ROOT);
         if (keywordArray != null) {
             if (lowCase) {
                 for (String kw : keywordArray) {
@@ -124,7 +125,7 @@ public class IdentifierAutoComplete {
                 }
             } else {
                 for (String kw : keywordArray) {
-                    if (kw.toLowerCase().startsWith(match)) {
+                    if (kw.toLowerCase(Locale.ROOT).startsWith(match)) {
                         publisher.addItem(
                                 new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
@@ -134,7 +135,7 @@ public class IdentifierAutoComplete {
         if (userIdentifiers != null) {
             List<CompletionItem> words = new ArrayList<>();
             for (String word : userIdentifiers.getIdentifiers()) {
-                if (word.toLowerCase().startsWith(match)) {
+                if (word.toLowerCase(Locale.ROOT).startsWith(match)) {
                     publisher.addItem(
                             new SimpleCompletionItem(word, "Identifier", prefixLength, word));
                 }

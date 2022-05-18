@@ -65,20 +65,7 @@ public class Paint extends android.graphics.Paint {
     @SuppressLint("NewApi")
     public float measureTextRunAdvance(
             char[] text, int start, int end, int contextStart, int contextEnd) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return getRunAdvance(text, start, end, contextStart, contextEnd, false, end);
-        } else {
-            // Hidden, but we can call it directly on Android 21 - 22
-            return getTextRunAdvances(
-                    text,
-                    start,
-                    end - start,
-                    contextStart,
-                    contextEnd - contextStart,
-                    false,
-                    null,
-                    0);
-        }
+        return getRunAdvance(text, start, end, contextStart, contextEnd, false, end);
     }
 
     /**
@@ -98,10 +85,6 @@ public class Paint extends android.graphics.Paint {
             }
             return Math.max(offset, start);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return getOffsetForAdvance(text, start, end, start, end, false, advance);
-        } else {
-            return start + breakText(text.value, start, end - start, advance, null);
-        }
+        return getOffsetForAdvance(text, start, end, start, end, false, advance);
     }
 }

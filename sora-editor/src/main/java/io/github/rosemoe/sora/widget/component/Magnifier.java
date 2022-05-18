@@ -154,8 +154,7 @@ public class Magnifier implements EditorBuiltinComponent {
         if (!isShowing()) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && view.getContext() instanceof Activity) {
+        if (view.getContext() instanceof Activity) {
             updateDisplayOreo((Activity) view.getContext());
         } else {
             updateDisplayWithinEditor();
@@ -168,7 +167,6 @@ public class Magnifier implements EditorBuiltinComponent {
      * <p>This will include other view in the window as {@link PixelCopy} is used to capture the
      * screen.
      */
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateDisplayOreo(Activity activity) {
         var requiredWidth = (int) (popup.getWidth() / scaleFactor);
         var requiredHeight = (int) (popup.getHeight() / scaleFactor);

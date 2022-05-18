@@ -39,7 +39,8 @@
 		android:layout_marginLeft="4dp"
 		android:layout_marginRight="4dp"
 		android:id="@+id/result_item_image"
-		android:background="@drawable/circle_drawable" />
+		android:background="@drawable/circle_drawable"
+		android:contentDescription="Shows the type of completion as an image" />
 
 	<LinearLayout
 		android:layout_height="wrap_content"

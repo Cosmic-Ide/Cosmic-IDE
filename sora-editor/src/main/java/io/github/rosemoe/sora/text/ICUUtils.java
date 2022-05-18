@@ -45,16 +45,12 @@ public class ICUUtils {
      * @return Packed value of (start, end) pair. Always contains the position {@code offset}
      */
     public static long getWordEdges(CharSequence text, int offset) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            var itr = BreakIterator.getWordInstance();
-            itr.setText(new CharSequenceIterator(text));
-            int end = itr.following(offset);
-            int start = itr.previous();
-            if (offset >= start && offset <= end) {
-                return IntPair.pack(start, end);
-            } else {
-                return getWordEdgesFallback(text, offset);
-            }
+        var itr = BreakIterator.getWordInstance();
+        itr.setText(new CharSequenceIterator(text));
+        int end = itr.following(offset);
+        int start = itr.previous();
+        if (offset >= start && offset <= end) {
+            return IntPair.pack(start, end);
         } else {
             return getWordEdgesFallback(text, offset);
         }

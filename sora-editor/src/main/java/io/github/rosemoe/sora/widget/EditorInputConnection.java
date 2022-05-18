@@ -306,7 +306,7 @@ class EditorInputConnection extends BaseInputConnection {
                 mEditor.commitText(replacement.text, applyAutoIndent);
                 int delta = (replacement.text.length() - replacement.selection);
                 if (delta != 0) {
-                    var newSel = Math.max(getCursor().getLeft() - delta, 0);
+                    int newSel = Math.max(getCursor().getLeft() - delta, 0);
                     CharPosition charPosition = getCursor().getIndexer().getCharPosition(newSel);
                     mEditor.setSelection(
                             charPosition.line,
@@ -351,7 +351,7 @@ class EditorInputConnection extends BaseInputConnection {
             beginBatchEdit();
         }
 
-        int composing = mComposingLine != -1;
+        boolean composing = mComposingLine != -1;
         int composingStart =
                 composing
                         ? getCursor().getIndexer().getCharIndex(mComposingLine, mComposingStart)
@@ -398,8 +398,8 @@ class EditorInputConnection extends BaseInputConnection {
         }
 
         if (composing) {
-            var start = getCursor().getIndexer().getCharPosition(composingStart);
-            var end = getCursor().getIndexer().getCharPosition(composingEnd);
+            CharPosition start = getCursor().getIndexer().getCharPosition(composingStart);
+            CharPosition end = getCursor().getIndexer().getCharPosition(composingEnd);
             if (start.line != end.line) {
                 invalid();
                 return false;
@@ -430,7 +430,7 @@ class EditorInputConnection extends BaseInputConnection {
 
     @Override
     public synchronized boolean endBatchEdit() {
-        var inBatch = mEditor.getText().endBatchEdit();
+        boolean inBatch = mEditor.getText().endBatchEdit();
         if (!inBatch) {
             mEditor.updateSelection();
         }
@@ -524,9 +524,9 @@ class EditorInputConnection extends BaseInputConnection {
             return true;
         }
         mEditor.getComponent(EditorAutoCompletion.class).hide();
-        var content = mEditor.getText();
-        var startPos = content.getIndexer().getCharPosition(start);
-        var endPos = content.getIndexer().getCharPosition(end);
+        Content content = mEditor.getText();
+        CharPosition startPos = content.getIndexer().getCharPosition(start);
+        CharPosition endPos = content.getIndexer().getCharPosition(end);
         mEditor.setSelectionRegion(
                 startPos.line,
                 startPos.column,
@@ -554,12 +554,12 @@ class EditorInputConnection extends BaseInputConnection {
             if (start < 0) {
                 start = 0;
             }
-            var content = mEditor.getText();
+            Content content = mEditor.getText();
             if (end > content.length()) {
                 end = content.length();
             }
-            var startPos = content.getIndexer().getCharPosition(start);
-            var endPos = content.getIndexer().getCharPosition(end);
+            CharPosition startPos = content.getIndexer().getCharPosition(start);
+            CharPosition endPos = content.getIndexer().getCharPosition(end);
             if (startPos.line != endPos.line) {
                 mEditor.restartInput();
                 return false;

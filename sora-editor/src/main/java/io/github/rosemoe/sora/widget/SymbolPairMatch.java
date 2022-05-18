@@ -65,7 +65,7 @@ public class SymbolPairMatch {
     }
 
     public final Replacement getCompletion(char character) {
-        var result = parent != null ? parent.getCompletion(character) : null;
+        Replacement result = parent != null ? parent.getCompletion(character) : null;
         if (result == null) {
             result = pairMaps.get(character);
         }

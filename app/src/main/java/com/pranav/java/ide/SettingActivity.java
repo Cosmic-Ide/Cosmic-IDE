@@ -81,7 +81,7 @@ public final class SettingActivity extends AppCompatActivity {
         if (settings.getString("classpath", "").equals("")) {
             classpath_bttn.setText(getString(R.string.classpath_not_specified));
         } else {
-            classpath_bttn.setText(getString(R.string.classpath_edit));
+            classpath_bttn.setText(getString(R.string.edit));
         }
 
         /* Select Version in Spinner based on SharedPreferences Value */

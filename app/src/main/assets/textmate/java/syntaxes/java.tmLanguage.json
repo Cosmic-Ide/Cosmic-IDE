@@ -9,7 +9,7 @@
 	"scopeName": "source.java",
 	"patterns": [
 		{
-			"begin": "\\b(package)\\b\\s*",
+			"begin": "\\b(package)\\b\\s",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.other.package.java"
@@ -50,13 +50,10 @@
 			]
 		},
 		{
-			"begin": "\\b(import)\\b\\s*\\b(static)?\\b\\s",
+			"begin": "\\b(import)\\b\\s",
 			"beginCaptures": {
 				"1": {
 					"name": "keyword.other.import.java"
-				},
-				"2": {
-					"name": "storage.modifier.java"
 				}
 			},
 			"end": "\\s*(;)",

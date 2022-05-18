@@ -195,10 +195,6 @@ public final class MainActivity extends AppCompatActivity {
         editor.setText(FileUtil.readFile(newWorkingFile));
         indexer.put("currentFile", path);
         indexer.flush();
-<<<<<<< Upstream, based on branch 'mess' of https://github.com/PranavPurwar/Java-Ide.git
-
-=======
->>>>>>> 6e98ef7 feat: save path after loading a new file
         currentWorkingFilePath = path;
     }
 

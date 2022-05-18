@@ -2,7 +2,6 @@ package com.pranav.java.ide.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
+import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
@@ -28,7 +28,6 @@ import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
-import com.pranav.lib_android.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,13 +69,15 @@ public class TreeViewDrawer extends Fragment {
          * So If You want to add creating a folder next to java folder function
          * You need also create a new 'new TreeNode<>(new TreeFolder(File), Int);'
          * assign a child's to it and add to rootNodesList */
-        List<TreeNode<TreeFile>> rootNodesList =
-                new ArrayList<>(); /* Create List of root nodes and and their children's */
+        var rootNodesList =
+                new ArrayList<
+                        TreeNode<
+                                TreeFile>>(); /* Create List of root nodes and and their children's */
 
-        final File mainFolderFile =
+        final var mainFolderFile =
                 new File(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
-        TreeNode<TreeFile> mainRootNode =
-                new TreeNode<>(
+        var mainRootNode =
+                new TreeNode<TreeFile>(
                         new TreeFolder(mainFolderFile),
                         0); /* Create new Root node for given Main Root Directory */
 
@@ -140,15 +141,15 @@ public class TreeViewDrawer extends Fragment {
          * Level 0: Root Folder
          * Level 1: Root Children's
          * Level 2: Children's Children's */
-        File rootFile = ((TreeFile) mainRootNode.getValue()).getFile();
-        List<File> mFiles = getSortedFilesInPath(rootFile.getPath());
-        for (File file : mFiles) {
+        var rootFile = ((TreeFile) mainRootNode.getValue()).getFile();
+        var mFiles = getSortedFilesInPath(rootFile.getPath());
+        for (final var file : mFiles) {
             if (file.isFile()) {
                 /* If it's File - create file children node */
-                TreeNode<TreeFile> javaFileNode = new TreeNode<>(new TreeFile(file), n);
+                var javaFileNode = new TreeNode<TreeFile>(new TreeFile(file), n);
                 mainRootNode.addChild(javaFileNode);
             } else {
-                TreeNode<TreeFile> directoryFileNode = new TreeNode<>(new TreeFolder(file), n);
+                var directoryFileNode = new TreeNode<TreeFile>(new TreeFolder(file), n);
                 mainRootNode.addChild(directoryFileNode);
                 n++;
                 addChildDirsAndFiles(directoryFileNode, n);
@@ -157,12 +158,12 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void showPopup(View v, TreeNode<TreeFile> node) {
-        PopupMenu popup = new PopupMenu(activity, v);
-        MenuInflater inflater = popup.getMenuInflater();
+        var popup = new PopupMenu(activity, v);
+        var inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getLevel() == 0 && node.getValue().getFile().getName().endsWith(".java")) {
+        if (node.getContent().getFile().getName().equals("java") && node.getLevel() == 0) {
             /* Disable Option to delete a root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }
@@ -177,7 +178,7 @@ public class TreeViewDrawer extends Fragment {
                 new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        int id = item.getItemId();
+                        var id = item.getItemId();
                         if (id == R.id.create_class_menu_bttn) {
                             showCreateNewFileDialog(node);
                         } else if (id == R.id.create_directory_bttn) {
@@ -191,9 +192,9 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateFileDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView =
+        var dialogView =
                 getLayoutInflater()
                         .inflate(R.layout.treeview_create_new_file_dialog, viewGroup, false);
         builder.setView(dialogView);
@@ -201,9 +202,9 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildCreateDirectoryDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView =
+        var dialogView =
                 getLayoutInflater()
                         .inflate(R.layout.treeview_create_new_folder_dialog, viewGroup, false);
         builder.setView(dialogView);
@@ -211,9 +212,9 @@ public class TreeViewDrawer extends Fragment {
     }
 
     void buildConfirmDeleteDialog() {
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(getContext());
         ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        View dialogView =
+        var dialogView =
                 getLayoutInflater()
                         .inflate(R.layout.treeview_confirm_delete_dialog, viewGroup, false);
         builder.setView(dialogView);
@@ -229,14 +230,14 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        String fileNameString = fileName.getText().toString();
+                        var fileNameString = fileName.getText().toString();
 
                         if (!fileNameString.equals("")
                                 && fileNameString.length() <= 25
                                 && !fileNameString.endsWith(".java")
                                 && !isStringContainsNumbers(fileNameString)) {
                             try {
-                                File filePth =
+                                var filePth =
                                         new File(
                                                 node.getContent().getFile().getPath()
                                                         + "/"
@@ -261,8 +262,8 @@ public class TreeViewDrawer extends Fragment {
                                                                             .getName()));
                                 }
 
-                                TreeNode newDir =
-                                        new TreeNode<>(
+                                var newDir =
+                                        new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
                                                 node.getLevel()
                                                         + 1); // Get Level of parent so it will have
@@ -289,18 +290,19 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        String fileNameString = fileName.getText().toString().replace(" ", "");
+                        var fileNameString = fileName.getText().toString().replace(" ", "");
 
                         if (fileNameString != null
                                 && !fileNameString.equals("")
                                 && fileNameString.length() <= 25) {
-                            String filePath =
+                            var filePath =
                                     node.getContent().getFile().getPath() + "/" + fileNameString;
 
                             FileUtil.createDirectory(filePath);
-                            File dirPth = new File(filePath);
-                            TreeNode newDir =
-                                    new TreeNode<>(new TreeFolder(dirPth), node.getLevel() + 1);
+                            var dirPth = new File(filePath);
+                            var newDir =
+                                    new TreeNode<TreeFile>(
+                                            new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");
@@ -338,25 +340,18 @@ public class TreeViewDrawer extends Fragment {
                         confirmDeleteDialog.dismiss();
                     });
 
-            cancelBttn.setOnClickListener(
-                    v -> {
-                        confirmDeleteDialog.dismiss();
-                    });
+            cancelBttn.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         }
     }
 
-    public File file(final String path) {
-        return new File(path);
-    }
-
     public List<File> getSortedFilesInPath(String path) {
-        ArrayList<File> mFiles = new ArrayList<>();
-        ArrayList<File> mDirs = new ArrayList<>();
+        var mFiles = new ArrayList<File>();
+        var mDirs = new ArrayList<File>();
 
-        File file = new File(path);
-        File[] files = file.listFiles();
+        var file = new File(path);
+        var files = file.listFiles();
         if (files != null) {
-            for (File child : files) {
+            for (var child : files) {
                 if (child.isFile()) {
                     mFiles.add(child);
                 } else {
@@ -370,15 +365,15 @@ public class TreeViewDrawer extends Fragment {
         Collections.sort(mDirs);
 
         // Create a new arraylist which will contain the final sorted list
-        ArrayList<File> result = mDirs;
+        var result = mDirs;
         result.addAll(mFiles);
 
         return result;
     }
 
     public boolean isStringContainsNumbers(String target) {
-        char[] chars = target.toCharArray();
-        for (char c : chars) {
+        var chars = target.toCharArray();
+        for (var c : chars) {
             if (Character.isDigit(c)) {
                 return true;
             }

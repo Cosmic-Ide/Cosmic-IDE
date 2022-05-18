@@ -1,0 +1,17 @@
+apply plugin: 'java-library'
+apply plugin: 'com.android.lint'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+
+	api 'org.eclipse.platform:org.eclipse.core.resources:3.16.100'
+	api 'org.eclipse.platform:org.eclipse.core.runtime:3.24.100'
+	api 'org.eclipse.platform:org.eclipse.core.filesystem:1.9.300'
+	api 'org.eclipse.platform:org.eclipse.text:3.12.0'
+
+	api fileTree(dir: 'libs', include: ['*.jar'])
+}

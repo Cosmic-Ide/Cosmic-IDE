@@ -13,14 +13,17 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.scijava.org/content/groups/public' }
     }
 }
 
 rootProject.name = "Java IDE"
 
 include ':app'
-include ':lib-android'
-include ':lib-eclipse'
-include ':lib-javac'
-include ':lib-google-java-format'
-include ':lib-java-completions'
+include ':android-compiler'
+include ':eclipse-jdt'
+include ':nb-javac'
+include ':google-java-format'
+include ':common'
+include ':sora-editor'

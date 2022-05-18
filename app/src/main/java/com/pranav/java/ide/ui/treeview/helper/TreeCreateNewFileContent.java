@@ -6,13 +6,13 @@ public class TreeCreateNewFileContent {
 
     public static String BUILD_NEW_FILE_CONTENT(@NonNull String fileName) {
         String content =
-                "package com.example;\n\nimport java.util.*;\n\n"
+                "import java.util.*;\n\n"
                         + "public class "
                         + fileName
                         + " {\n\n"
-                        + "\tpublic static void main(String[] args) {\n"
-                        + "\t\tSystem.out.\n"
-                        + "\t}\n"
+                        + "    public static void main(String[] args) {\n"
+                        + "        System.out.println(\"Hello, World!\");\n"
+                        + "    }\n"
                         + "}\n";
 
         return content;
@@ -21,15 +21,15 @@ public class TreeCreateNewFileContent {
     public static String BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
             @NonNull String fileName, String extendPackage) {
         String content =
-                "package com.example"
+                "package "
                         + extendPackage
                         + ";\n\nimport java.util.*;\n\n"
                         + "public class "
                         + fileName
                         + " {\n\n"
-                        + "\tpublic static void main(String[] args) {\n"
-                        + "\t\tSystem.out.print(\"Hello, World!\");\n"
-                        + "\t}\n"
+                        + "    public static void main(String[] args) {\n"
+                        + "        System.out.print(\"Hello, World!\");\n"
+                        + "    }\n"
                         + "}\n";
 
         return content;

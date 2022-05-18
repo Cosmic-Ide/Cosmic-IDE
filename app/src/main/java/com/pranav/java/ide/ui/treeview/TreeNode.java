@@ -77,7 +77,7 @@ public class TreeNode<D> {
         if (parent == null) {
             return false;
         }
-        List<TreeNode<D>> children = parent.getChildren();
+        var children = parent.getChildren();
         return children.size() > 0 && children.indexOf(this) == children.size() - 1;
     }
 
@@ -121,8 +121,8 @@ public class TreeNode<D> {
     }
 
     public List<TreeNode<D>> getSelectedChildren() {
-        List<TreeNode<D>> selectedChildren = new ArrayList<>();
-        for (TreeNode<D> child : getChildren()) {
+        var selectedChildren = new ArrayList<TreeNode<D>>();
+        for (var child : getChildren()) {
             if (child.isSelected()) {
                 selectedChildren.add(child);
             }
@@ -135,21 +135,21 @@ public class TreeNode<D> {
             return;
         }
         this.children = new ArrayList<>();
-        for (TreeNode<D> child : children) {
+        for (var child : children) {
             addChild(child);
         }
     }
 
     /** Updating the list of children while maintaining the tree structure */
     public void updateChildren(List<TreeNode<D>> children) {
-        List<Boolean> expands = new ArrayList<>();
-        List<TreeNode<D>> allNodesPre = TreeHelper.getAllNodes(this);
-        for (TreeNode<D> node : allNodesPre) {
+        var expands = new ArrayList<Boolean>();
+        var allNodesPre = TreeHelper.getAllNodes(this);
+        for (var node : allNodesPre) {
             expands.add(node.isExpanded());
         }
 
         this.children = children;
-        List<TreeNode<D>> allNodes = TreeHelper.getAllNodes(this);
+        var allNodes = TreeHelper.getAllNodes(this);
         if (allNodes.size() == expands.size()) {
             for (int i = 0; i < allNodes.size(); i++) {
                 allNodes.get(i).setExpanded(expands.get(i));

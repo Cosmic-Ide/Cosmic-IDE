@@ -17,7 +17,7 @@
 	<string name="create">Create</string>
 	<string name="create_class">Create Class</string>
 	<string name="create_directory">Create Directory</string>
-	<string name="delete">Delete %s?</string>
+	<string name="delete">Delete %1$s?</string>
 	<string name="cancel">Cancel</string>
 	<string name="compile_project">Compile Project</string>
 	<string name="java_file">Java File</string>
@@ -28,18 +28,21 @@
 	<string name="java_formatter">Java Formatter</string>
 	<string name="java_disassembler">Java Disassembler</string>
 	<string name="classpath">Classpath</string>
+	<string name="enter_classpath">Enter Classpath</string>
 	<string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
+	<string name="program_arguments">Program Arguments</string>
+	<string name="enter_program_arguments">Enter Program Arguments</string>
 	<string name="format">Format</string>
 	<string name="settings">Settings</string>
-	<string name="classpath_dialog_save_button">Save</string>
+	<string name="save">Save</string>
 	<string name="classpath_not_specified">Specify the classpath</string>
-	<string name="classpath_edit">Edit</string>
+	<string name="edit">Edit</string>
 
 	<!-- Strings used by CompilerTask Class -->
 	<string name="stage">Stage</string>
-	<string name="stage_clean">Cleaning</string>
-	<string name="stage_javac">Compiling with Javac</string>
-	<string name="stage_ecj">Compiling with ECJ</string>
-	<string name="stage_d8task">D8 Task</string>
-	<string name="stage_loading_dex">Loading DEX File</string>
+	<string name="stage_clean">Cleaning build&#8230;</string>
+	<string name="stage_javac">Compiling source files with Javac&#8230;</string>
+	<string name="stage_ecj">Compiling source files with ECJ&#8230;</string>
+	<string name="stage_d8">Compiling class files with D8&#8230;</string>
+	<string name="stage_loading_dex">Loading DEX File&#8230;</string>
 </resources>

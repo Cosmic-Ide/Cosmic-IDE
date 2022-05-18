@@ -22,9 +22,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v2.1.5
+        uses: gradle/gradle-build-action@v2.1.6
         with:
-          arguments: lint
+          arguments: lintDebug
       - name: Upload lint report
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}

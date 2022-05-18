@@ -1,5 +1,8 @@
 package com.pranav.lib_android.task.java;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import dalvik.system.PathClassLoader;
 
 import com.pranav.common.util.ConcurrentUtil;
@@ -15,11 +18,15 @@ public class ExecuteJavaTask extends Task {
     private final Builder mBuilder;
     private final String clazz;
     private Object result;
-    public StringBuilder log = new StringBuilder();
+    private StringBuilder log = new StringBuilder();
+    private SharedPreferences prefs;
 
     public ExecuteJavaTask(Builder builder, String claz) {
         this.mBuilder = builder;
         this.clazz = claz;
+        this.prefs =
+                builder.getContext()
+                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -53,7 +60,9 @@ public class ExecuteJavaTask extends Task {
 
                         var method = calledClass.getDeclaredMethod("main", String[].class);
 
-                        String[] param = {};
+                        var args = prefs.getString("program_arguments", "").trim();
+
+                        String[] param = args.split("\\s+");
 
                         if (Modifier.isStatic(method.getModifiers())) {
                             result = method.invoke(null, new Object[] {param});

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:text="@string/enter_classpath"
+        android:text="@string/enter_program_arguments"
         android:textColor="@color/md_theme_light_primary"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -22,19 +22,17 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="8dp"
-        android:textDirection="locale"
-        app:suffixText="@string/java_file_suffix">
+        android:textDirection="locale">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/classpath_edt"
+            android:id="@+id/arguments_edt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/classpath_separated_from_colon"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/save_classpath_bttn"
+        android:id="@+id/save_arguments_bttn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"

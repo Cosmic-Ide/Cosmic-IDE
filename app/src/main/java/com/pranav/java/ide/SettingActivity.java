@@ -26,13 +26,8 @@ public final class SettingActivity extends AppCompatActivity {
 
     private String[] javaDisassemblers = {"Javap", "Eclipse Class Disassembler"};
 
-    private Spinner javaVersions_spinner;
-    private Spinner javaCompilers_spinner;
-    private Spinner javaFormatters_spinner;
-    private Spinner javaDisassemblers_spinner;
-    private MaterialButton classpath_bttn;
-
-    private AlertDialog alertDialog;
+    private AlertDialog classpathDialog;
+    private AlertDialog argumentsDialog;
     private SharedPreferences settings;
 
     @Override
@@ -49,11 +44,12 @@ public final class SettingActivity extends AppCompatActivity {
 
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        javaVersions_spinner = findViewById(R.id.javaVersions_spinner);
-        javaCompilers_spinner = findViewById(R.id.javaCompilers_spinner);
-        javaFormatters_spinner = findViewById(R.id.javaFormatters_spinner);
-        javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
-        classpath_bttn = findViewById(R.id.classpath_bttn);
+        Spinner javaVersions_spinner = findViewById(R.id.javaVersions_spinner);
+        Spinner javaCompilers_spinner = findViewById(R.id.javaCompilers_spinner);
+        Spinner javaFormatters_spinner = findViewById(R.id.javaFormatters_spinner);
+        Spinner javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
+        MaterialButton classpath_bttn = findViewById(R.id.classpath_bttn);
+        MaterialButton arguments_bttn = findViewById(R.id.arguments_bttn);
 
         var versionAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);
@@ -182,11 +178,11 @@ public final class SettingActivity extends AppCompatActivity {
 
         classpath_bttn.setOnClickListener(
                 v -> {
-                    alertDialog.show();
+                    classpathDialog.show();
 
-                    TextInputEditText classpath_edt = alertDialog.findViewById(R.id.classpath_edt);
+                    TextInputEditText classpath_edt = classpathDialog.findViewById(R.id.classpath_edt);
                     MaterialButton save_classpath_bttn =
-                            alertDialog.findViewById(R.id.save_classpath_bttn);
+                            classpathDialog.findViewById(R.id.save_classpath_bttn);
 
                     if (!settings.getString("classpath", "").equals("")) {
                         classpath_edt.setText(settings.getString("classpath", ""));
@@ -197,26 +193,53 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredClasspath = classpath_edt.getText().toString();
                                 settings.edit().putString("classpath", enteredClasspath).apply();
 
-                                /* Check if specified classpath is empty - if yes, change button text */
-                                if (enteredClasspath.equals("")) {
-                                    classpath_bttn.setText(
-                                            getString(R.string.classpath_not_specified));
-                                } else {
-                                    classpath_bttn.setText(getString(R.string.classpath_edit));
-                                }
+                                classpath_bttn.setText(getString(R.string.edit));
 
                                 /* Dismiss Dialog If Showing */
-                                if (alertDialog.isShowing()) alertDialog.dismiss();
+                                if (alertDialog.isShowing()) classpathDialog.dismiss();
+                            });
+                });
+        buildArgumentsDialog();
+        
+        arguments_bttn.setOnClickListener(
+                v -> {
+                    argumentsDialog.show();
+
+                    TextInputEditText arguments_edt = argumentsDialog.findViewById(R.id.arguments_edt);
+                    MaterialButton save_arguments_bttn =
+                            argumentsDialog.findViewById(R.id.save_arguments_bttn);
+
+                    if (!settings.getString("program_arguments", "").equals("")) {
+                        arguments_edt.setText(settings.getString("program_arguments", ""));
+                    }
+
+                    save_arguments_bttn.setOnClickListener(
+                            view -> {
+                                var enteredArgs = arguments_edt.getText().toString();
+                                settings.edit().putString("program_arguments", enteredArgs).apply();
+
+                                arguments_bttn.setText(getString(R.string.edit));
+
+                                /* Dismiss Dialog If Showing */
+                                if (alertDialog.isShowing()) argumentsDialog.dismiss();
                             });
                 });
     }
 
-    void buildClasspathDialog() {
+    private void buildClasspathDialog() {
         var builder = new AlertDialog.Builder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         var dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
         builder.setView(dialogView);
-        alertDialog = builder.create();
+        classpathDialog = builder.create();
+    }
+    
+    private void buildArgumentsDialog() {
+        var builder = new AlertDialog.Builder(SettingActivity.this);
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        var dialogView = getLayoutInflater().inflate(R.layout.arguments_dialog, viewGroup, false);
+        builder.setView(dialogView);
+        algumentsDialog = builder.create();
     }
 
     @Override

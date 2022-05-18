@@ -341,9 +341,6 @@ public class TreeViewDrawer extends Fragment {
         }
     }
 
-    public File file(final String path) {
-        return new File(path);
-    }
 
     public List<File> getSortedFilesInPath(String path) {
         var mFiles = new ArrayList<File>();

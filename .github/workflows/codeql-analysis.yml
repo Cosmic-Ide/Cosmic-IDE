@@ -40,7 +40,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.1.6
         with:
-          arguments: assembleDebug
+          arguments: clean assembleDebug
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2.1.11

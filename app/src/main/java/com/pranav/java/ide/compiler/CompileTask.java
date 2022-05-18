@@ -6,7 +6,6 @@ import android.os.Looper;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
-import com.pranav.lib_android.exception.CompilationFailedException;
 import com.pranav.lib_android.task.java.*;
 
 import java.io.File;
@@ -46,8 +45,7 @@ public class CompileTask extends Thread {
     public void run() {
         Looper.prepare();
 
-        final var prefs =
-                activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
@@ -115,8 +113,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task =
-                                    new ExecuteJavaTask(activity.builder, classes[item]);
+                            var task = new ExecuteJavaTask(activity.builder, classes[item]);
                             try {
                                 task.doFullTask();
                             } catch (InvocationTargetException e) {

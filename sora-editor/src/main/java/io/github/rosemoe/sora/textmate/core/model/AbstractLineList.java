@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -54,12 +53,12 @@ public abstract class AbstractLineList implements IModelLines {
 
     @Override
     public void updateLine(int line) {
-/*        try {
-            this.list.get(line).text = this.lineToTextResolver.apply(line);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
-*/
+        /*        try {
+                    this.list.get(line).text = this.lineToTextResolver.apply(line);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+        */
     }
 
     @Override

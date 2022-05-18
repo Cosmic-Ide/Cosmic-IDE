@@ -181,8 +181,7 @@ public class TreeViewAdapter<D> extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private void selectParentIfNeed(TreeNode<D> treeNode, boolean checked) {
-        var impactedParents =
-                TreeHelper.selectParentIfNeedWhenNodeSelected(treeNode, checked);
+        var impactedParents = TreeHelper.selectParentIfNeedWhenNodeSelected(treeNode, checked);
         if (impactedParents.size() > 0) {
             for (var parent : impactedParents) {
                 var position = expandedNodeList.indexOf(parent);

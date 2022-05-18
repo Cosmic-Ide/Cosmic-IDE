@@ -3694,7 +3694,7 @@ public class CodeEditor extends View
                                             Log.w(
                                                     LOG_TAG,
                                                     "Error occurred while calling Language's"
-                                                        + " NewlineHandler",
+                                                            + " NewlineHandler",
                                                     ex);
                                         }
                                         break;
@@ -3898,7 +3898,7 @@ public class CodeEditor extends View
             Log.i(
                     LOG_TAG,
                     "onMeasure():Code editor does not support wrap_content mode when measuring.It"
-                        + " will just fill the whole space.");
+                            + " will just fill the whole space.");
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -4234,6 +4234,6 @@ public class CodeEditor extends View
 
     private static final String COPYRIGHT =
             "sora-editor\n"
-                + "Copyright (C) Rosemoe roses2020@qq.com\n"
-                + "This project is distributed under the LGPL v2.1 license";
+                    + "Copyright (C) Rosemoe roses2020@qq.com\n"
+                    + "This project is distributed under the LGPL v2.1 license";
 }

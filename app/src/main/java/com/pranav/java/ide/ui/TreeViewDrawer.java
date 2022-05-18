@@ -70,7 +70,9 @@ public class TreeViewDrawer extends Fragment {
          * You need also create a new 'new TreeNode<>(new TreeFolder(File), Int);'
          * assign a child's to it and add to rootNodesList */
         var rootNodesList =
-                new ArrayList<TreeNode<TreeFile>>(); /* Create List of root nodes and and their children's */
+                new ArrayList<
+                        TreeNode<
+                                TreeFile>>(); /* Create List of root nodes and and their children's */
 
         final var mainFolderFile =
                 new File(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
@@ -299,7 +301,8 @@ public class TreeViewDrawer extends Fragment {
                             FileUtil.createDirectory(filePath);
                             var dirPth = new File(filePath);
                             var newDir =
-                                    new TreeNode<TreeFile>(new TreeFolder(dirPth), node.getLevel() + 1);
+                                    new TreeNode<TreeFile>(
+                                            new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");
@@ -340,7 +343,6 @@ public class TreeViewDrawer extends Fragment {
             cancelBttn.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         }
     }
-
 
     public List<File> getSortedFilesInPath(String path) {
         var mFiles = new ArrayList<File>();

@@ -1,7 +1,7 @@
 package com.pranav.java.ide;
 
-import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,11 +21,12 @@ public final class DebugActivity extends AppCompatActivity {
                 .setTitle("An error occurred...")
                 .setMessage(error)
                 .setPositiveButton("QUIT", (dialog, which) -> finish())
-                .setNegativeButton("COPY", (dialog, which) -> {
-                    ((ClipboardManager) 
-                            getSystemService(CLIPBOARD_SERVICE))
-                               .setPrimaryClip(ClipData.newPlainText("clipboard", error));
-                })
+                .setNegativeButton(
+                        "COPY",
+                        (dialog, which) -> {
+                            ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
+                                    .setPrimaryClip(ClipData.newPlainText("clipboard", error));
+                        })
                 .create()
                 .show();
     }

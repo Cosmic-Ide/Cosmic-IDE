@@ -1,16 +1,16 @@
 package com.pranav.java.ide;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.app.PendingIntent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -42,9 +42,9 @@ import com.pranav.lib_android.code.formatter.*;
 import com.pranav.lib_android.task.JavaBuilder;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
-import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
@@ -212,12 +212,10 @@ public final class MainActivity extends AppCompatActivity {
                     () -> {
                         if (prefs.getString("formatter", "Google Java Formatter")
                                 .equals("Google Java Formatter")) {
-                            var formatter =
-                                    new GoogleJavaFormatter(editor.getText().toString());
+                            var formatter = new GoogleJavaFormatter(editor.getText().toString());
                             temp = formatter.format();
                         } else {
-                            var formatter =
-                                    new EclipseJavaFormatter(editor.getText().toString());
+                            var formatter = new EclipseJavaFormatter(editor.getText().toString());
                             temp = formatter.format();
                         }
                     });
@@ -257,21 +255,24 @@ public final class MainActivity extends AppCompatActivity {
         final var id = 1;
         var intent = new Intent(MainActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        var pendingIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        var pendingIntent =
+                PendingIntent.getActivity(
+                        MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        var channel = new NotificationChannel(BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
+        var channel =
+                new NotificationChannel(
+                        BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription("Shows the current build status.");
 
-        final var manager =
-                (NotificationManager)
-                        getSystemService(NOTIFICATION_SERVICE);
+        final var manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         manager.createNotificationChannel(channel);
 
         final var mBuilder =
                 new Notification.Builder(MainActivity.this, BUILD_STATUS)
                         .setContentTitle("Build Status")
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                        .setLargeIcon(
+                                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
@@ -393,17 +394,18 @@ public final class MainActivity extends AppCompatActivity {
                 classes,
                 (dialog, pos) -> {
                     var claz = classes[pos].replace(".", "/");
-                    var args = new String[] {
-                        FileUtil.getBinDir()
-                                + "classes/"
-                                + claz
-                                + // full class name
-                                ".class",
-                        "--extraclasspath",
-                        FileUtil.getClasspathDir() + "android.jar",
-                        "--outputdir",
-                        FileUtil.getBinDir() + "cfr/"
-                    };
+                    var args =
+                            new String[] {
+                                FileUtil.getBinDir()
+                                        + "classes/"
+                                        + claz
+                                        + // full class name
+                                        ".class",
+                                "--extraclasspath",
+                                FileUtil.getClasspathDir() + "android.jar",
+                                "--outputdir",
+                                FileUtil.getBinDir() + "cfr/"
+                            };
 
                     ConcurrentUtil.execute(
                             () -> {
@@ -428,8 +430,7 @@ public final class MainActivity extends AppCompatActivity {
                         dialog("Cannot read file", getString(e), true);
                     }
 
-                    var d =
-                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    var d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
                 });
@@ -474,8 +475,7 @@ public final class MainActivity extends AppCompatActivity {
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
-                    var d =
-                            new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                    var d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
                     d.setCanceledOnTouchOutside(true);
                     d.show();
                 });

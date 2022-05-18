@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import dalvik.system.PathClassLoader;
 
-import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.lib_android.interfaces.*;
 
@@ -39,42 +38,42 @@ public class ExecuteJavaTask extends Task {
         var defaultOut = System.out;
         var defaultErr = System.err;
         var dexFile = FileUtil.getBinDir() + "classes.dex";
-                    var out =
-                            new OutputStream() {
-                                @Override
-                                public void write(int b) {
-                                    log.append((char) b);
-                                }
+        var out =
+                new OutputStream() {
+                    @Override
+                    public void write(int b) {
+                        log.append((char) b);
+                    }
 
-                                @Override
-                                public String toString() {
-                                    return log.toString();
-                                }
-                            };
-                    System.setOut(new PrintStream(out));
-                    System.setErr(new PrintStream(out));
+                    @Override
+                    public String toString() {
+                        return log.toString();
+                    }
+                };
+        System.setOut(new PrintStream(out));
+        System.setErr(new PrintStream(out));
 
-                    var loader = new PathClassLoader(dexFile, mBuilder.getClassloader());
+        var loader = new PathClassLoader(dexFile, mBuilder.getClassloader());
 
-                        var calledClass = loader.loadClass(clazz);
+        var calledClass = loader.loadClass(clazz);
 
-                        var method = calledClass.getDeclaredMethod("main", String[].class);
+        var method = calledClass.getDeclaredMethod("main", String[].class);
 
-                        var args = prefs.getString("program_arguments", "").trim();
+        var args = prefs.getString("program_arguments", "").trim();
 
-                        String[] param = args.split("\\s+");
+        String[] param = args.split("\\s+");
 
-                        if (Modifier.isStatic(method.getModifiers())) {
-                            result = method.invoke(null, new Object[] {param});
-                        } else if (Modifier.isPublic(method.getModifiers())) {
-                            var classInstance = calledClass.getConstructor().newInstance();
-                            result = method.invoke(classInstance, new Object[] {param});
-                        }
-                        if (result != null) {
-                            System.out.println(result.toString());
-                        }
-                    System.setOut(defaultOut);
-                    System.setErr(defaultErr);
+        if (Modifier.isStatic(method.getModifiers())) {
+            result = method.invoke(null, new Object[] {param});
+        } else if (Modifier.isPublic(method.getModifiers())) {
+            var classInstance = calledClass.getConstructor().newInstance();
+            result = method.invoke(classInstance, new Object[] {param});
+        }
+        if (result != null) {
+            System.out.println(result.toString());
+        }
+        System.setOut(defaultOut);
+        System.setErr(defaultErr);
     }
 
     public String getLogs() {

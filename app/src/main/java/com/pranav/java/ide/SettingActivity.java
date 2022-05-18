@@ -180,7 +180,8 @@ public final class SettingActivity extends AppCompatActivity {
                 v -> {
                     classpathDialog.show();
 
-                    TextInputEditText classpath_edt = classpathDialog.findViewById(R.id.classpath_edt);
+                    TextInputEditText classpath_edt =
+                            classpathDialog.findViewById(R.id.classpath_edt);
                     MaterialButton save_classpath_bttn =
                             classpathDialog.findViewById(R.id.save_classpath_bttn);
 
@@ -200,12 +201,13 @@ public final class SettingActivity extends AppCompatActivity {
                             });
                 });
         buildArgumentsDialog();
-        
+
         arguments_bttn.setOnClickListener(
                 v -> {
                     argumentsDialog.show();
 
-                    TextInputEditText arguments_edt = argumentsDialog.findViewById(R.id.arguments_edt);
+                    TextInputEditText arguments_edt =
+                            argumentsDialog.findViewById(R.id.arguments_edt);
                     MaterialButton save_arguments_bttn =
                             argumentsDialog.findViewById(R.id.save_arguments_bttn);
 
@@ -233,7 +235,7 @@ public final class SettingActivity extends AppCompatActivity {
         builder.setView(dialogView);
         classpathDialog = builder.create();
     }
-    
+
     private void buildArgumentsDialog() {
         var builder = new AlertDialog.Builder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);

@@ -16,30 +16,30 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 ## Features
 
-- [x] Java Compiler
-- [x] Javac
-- [x] Javap
-- [x] Eclipse Compiler for Java (ecj)
-- [x] Eclipse class disassembler
-- [x] Java Highlighter
-- [x] Java 17
-- [x] Run Java File
-- [x] Add Classpath
-- [x] Decompile Class File
-- [x] Google Java Formatter
-- [x] Eclipse Java Formatter
-- [x] Baksmali Dex File
-- [x] Basic Java auto-completion
-- [x] D8
-- [x] File Tree Viewer
+- \[x] Java Compiler
+- \[x] Javac
+- \[x] Javap
+- \[x] Eclipse Compiler for Java (ecj)
+- \[x] Eclipse class disassembler
+- \[x] Java Highlighter
+- \[x] Java 17
+- \[x] Run Java File
+- \[x] Add Classpath
+- \[x] Decompile Class File
+- \[x] Google Java Formatter
+- \[x] Eclipse Java Formatter
+- \[x] Baksmali Dex File
+- \[x] Basic Java auto-completion
+- \[x] D8
+- \[x] File Tree Viewer
 
 ## TO-DO
 
-- [ ] Dependency Injection
-- [ ] Incremental Compilation
-- [ ] JGit support
-- [ ] Improved Code Editor
-- [ ] Java auto-complete server or auto-completion service
+- \[ ] Dependency Injection
+- \[ ] Incremental Compilation
+- \[ ] JGit support
+- \[ ] Improved Code Editor
+- \[ ] Java auto-complete server or auto-completion service
 
 ## Building
 

@@ -25,6 +25,9 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.1.6
         with:
+          arguments: clean
+      - uses: gradle/gradle-build-action@v2.1.6
+        with:
           arguments: assembleRelease --no-build-cache
 
       - name: Upload release apk

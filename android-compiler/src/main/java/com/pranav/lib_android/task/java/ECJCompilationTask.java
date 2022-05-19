@@ -61,7 +61,7 @@ public class ECJCompilationTask extends Task {
                     args.add("-classpath");
                     args.add(FileUtil.getClasspathDir() + "android.jar");
                     var classpath = new StringBuilder();
-                    if (prefs.getString("javaVersion", "7.0").equals("8.0")) {
+                    if (prefs.getString("version", "7.0").equals("8.0")) {
                         classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
                     }
                     var clspath = prefs.getString("classpath", "");

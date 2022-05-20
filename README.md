@@ -16,13 +16,12 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 ## Features
 
-- \[x] Java Compiler
+- \[x] Java 17
 - \[x] Javac
 - \[x] Javap
 - \[x] Eclipse Compiler for Java (ecj)
 - \[x] Eclipse class disassembler
 - \[x] Java Highlighter
-- \[x] Java 17
 - \[x] Run Java File
 - \[x] Add Classpath
 - \[x] Decompile Class File

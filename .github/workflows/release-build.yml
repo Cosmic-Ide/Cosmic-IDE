@@ -23,7 +23,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-      - uses: gradle/gradle-build-action@v2.1.6
+        uses: gradle/gradle-build-action@v2.1.6
         with:
           arguments: assembleRelease
 

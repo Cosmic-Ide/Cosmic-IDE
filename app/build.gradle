@@ -35,11 +35,14 @@ android {
     }
     
     packagingOptions {
+        exclude 'plugin.xml'
         exclude '.options'
+        exclude 'about.xml'
+        exclude 'plugin.properties'
         exclude '.api_description'
-        exclude 'profile.list'
         exclude 'META-INF/*'
-        exclude 'META-INF/**'
+        exclude 'README.md'
+        exclude 'SECURITY.md'
         exclude 'about_files/*'
         exclude 'OSGI-INF/*'
         exclude 'ant_tasks/*'
@@ -47,9 +50,14 @@ android {
         exclude 'kotlin/*'
         exclude 'kotlin/**'
         exclude 'license/*'
-        exclude '*.properties'
-        exclude '*.profile'
-        exclude '*.xml'
+        exclude 'systembundle.properties'
+        exclude 'CDC-*_Foundation-*.profile'
+        exclude 'JRE-1.1.profile'
+        exclude 'DebugProbesKt.bin'
+        exclude 'J2SE-*.profile'
+        exclude 'JavaSE-*.profile'
+        exclude 'JavaSE_compact*-1.8.profile'
+        exclude 'OSGi_Minimum-*.profile'
     }
 }
 
@@ -58,8 +66,8 @@ dependencies {
 
     // contains d2j v50 from ThexXTURBOXx's fork
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // antlr runtime required by d2j
 
+    // antlr runtime required by d2j
     implementation 'org.antlr:antlr4-runtime:4.10.1'
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'

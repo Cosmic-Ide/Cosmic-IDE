@@ -1097,8 +1097,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         public boolean equals(Object o) {
             return (o instanceof PathAndContainer)
                     && path.equals(((PathAndContainer) o).path)
-                    && container.equals(pathAndContainer.container)
-                    && index == pathAndContainer.index;
+                    && container.equals(((PathAndContainer) o).container)
+                    && index == ((PathAndContainer) o).index;
         }
 
         @Override

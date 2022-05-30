@@ -786,8 +786,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
             return null;
         }
 
-        if (file instanceof PathFileObject pathFileObject) {
-            return pathFileObject.inferBinaryName(path);
+        if (file instanceof PathFileObject) {
+            return (PathFileObject file).inferBinaryName(path);
         } else
             throw new IllegalArgumentException(file.getClass().getName());
     }
@@ -796,8 +796,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     public boolean isSameFile(FileObject a, FileObject b) {
         nullCheck(a);
         nullCheck(b);
-        if (a instanceof PathFileObject pathFileObjectA && b instanceof PathFileObject pathFileObjectB)
-            return pathFileObjectA.isSameFile(pathFileObjectB);
+        if (a instanceof PathFileObject && b instanceof PathFileObject)
+            return ((PathFileObject) a).isSameFile((PathFileObject) b);
         return a.equals(b);
     }
 
@@ -904,8 +904,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
                 dir = getClassOutDir();
             } else {
                 String baseName = fileName.basename();
-                if (sibling != null && sibling instanceof PathFileObject pathFileObject) {
-                    return pathFileObject.getSibling(baseName);
+                if (sibling != null && sibling instanceof PathFileObject) {
+                    return (PathFileObject sibling).getSibling(baseName);
                 } else {
                     Path p = getPath(baseName);
                     Path real = fsInfo.getCanonicalFile(p);
@@ -939,8 +939,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         Iterable<? extends File> files)
     {
         ArrayList<PathFileObject> result;
-        if (files instanceof Collection<?> collection)
-            result = new ArrayList<>(collection.size());
+        if (files instanceof Collection<?>)
+            result = new ArrayList<>(((Collection<?>) files).size());
         else
             result = new ArrayList<>();
         for (File f: files) {
@@ -1095,8 +1095,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
 
         @Override
         public boolean equals(Object o) {
-            return (o instanceof PathAndContainer pathAndContainer)
-                    && path.equals(pathAndContainer.path)
+            return (o instanceof PathAndContainer)
+                    && path.equals(((PathAndContainer) o).path)
                     && container.equals(pathAndContainer.container)
                     && index == pathAndContainer.index;
         }
@@ -1152,9 +1152,9 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     @Override @DefinedBy(Api.COMPILER)
     public Location getLocationForModule(Location location, JavaFileObject fo) throws IOException {
         checkModuleOrientedOrOutputLocation(location);
-        if (!(fo instanceof PathFileObject pathFileObject))
+        if (!(fo instanceof PathFileObject))
             return null;
-        Path p = Locations.normalize(pathFileObject.path);
+        Path p = Locations.normalize(((PathFileObject) fo).path);
             // need to find p in location
         return locations.getLocationForModule(location, p);
     }
@@ -1182,8 +1182,8 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
 
     @Override @DefinedBy(Api.COMPILER)
     public Path asPath(FileObject file) {
-        if (file instanceof PathFileObject pathFileObject) {
-            return pathFileObject.path;
+        if (file instanceof PathFileObject) {
+            return ((PathFileObject) file).path;
         } else
             throw new IllegalArgumentException(file.getName());
     }

@@ -787,7 +787,7 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         }
 
         if (file instanceof PathFileObject) {
-            return (PathFileObject file).inferBinaryName(path);
+            return ((PathFileObject) file).inferBinaryName(path);
         } else
             throw new IllegalArgumentException(file.getClass().getName());
     }
@@ -905,7 +905,7 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
             } else {
                 String baseName = fileName.basename();
                 if (sibling != null && sibling instanceof PathFileObject) {
-                    return (PathFileObject sibling).getSibling(baseName);
+                    return ((PathFileObject) sibling).getSibling(baseName);
                 } else {
                     Path p = getPath(baseName);
                     Path real = fsInfo.getCanonicalFile(p);

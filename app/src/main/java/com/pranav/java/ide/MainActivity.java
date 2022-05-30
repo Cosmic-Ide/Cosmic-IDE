@@ -68,6 +68,7 @@ public final class MainActivity extends AppCompatActivity {
 
     private AlertDialog loadingDialog;
     private Thread runThread;
+    private FragmentTransaction fragmentTransaction;
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
     private String temp;
@@ -155,13 +156,18 @@ public final class MainActivity extends AppCompatActivity {
         buildLoadingDialog();
 
         /* Insert Fragment with TreeView into Drawer */
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer());
-        fragmentTransaction.commit();
+        fragmentTransaction = getFragmentManager().beginTransaction()
+                .setReorderingAllowed(true);
+        reloadTreeView();
 
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+    }
+
+    void reloadTreeView() {
+        fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer())
+                .commit();
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -206,7 +212,7 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        var id = item.getItemId();
+        int id = item.getItemId();
         if (id == R.id.format_menu_button) {
             ConcurrentUtil.execute(
                     () -> {
@@ -233,12 +239,18 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        reloadTreeView();
+    }
+
+    @Override
     protected void onDestroy() {
+        super.onDestroy();
         editor.release();
         if (runThread != null && runThread.isAlive()) {
             runThread.interrupt();
         }
-        super.onDestroy();
     }
 
     /* Shows a snackbar indicating that there were problems during compilation */
@@ -252,7 +264,7 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     public void compile(boolean execute) {
-        final var id = 1;
+        final int id = 1;
         var intent = new Intent(MainActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         var pendingIntent =

@@ -9,9 +9,18 @@ import java.nio.file.StandardCopyOption;
 public class FileUtil {
 
     private static String privateDataDirectory;
+    private static String javaDir;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory;
+        javaDir = directory + "/java/";
+    }
+    
+    public static void setJavaDirectory(String dir) {
+        if (!dir.endsWith("/")) {
+            dir += "/";
+        }
+        javaDir = dir;
     }
 
     public static boolean createDirectory(String path) {
@@ -78,7 +87,7 @@ public class FileUtil {
     }
 
     public static String getJavaDir() {
-        return getDataDir() + "/java/";
+        return javaDir;
     }
 
     public static String getBinDir() {

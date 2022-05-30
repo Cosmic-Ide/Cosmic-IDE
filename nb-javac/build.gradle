@@ -6,5 +6,6 @@ java {
 }
 
 dependencies {
-    api files('libs/nb-javac-jdk17.0.0.0.jar')
+    implementation 'com.github.marschall:zipfilesystem-standalone:1.0.1'
+    api files('libs/nb-javac-jdk18.jar')
 }

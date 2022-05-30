@@ -17,7 +17,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
-        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"
+        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
     };
 
     private String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};

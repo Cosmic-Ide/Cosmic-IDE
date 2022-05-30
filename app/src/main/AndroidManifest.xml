@@ -10,8 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:resizeableActivity="true"
-        android:hardwareAccelerated="true"
-        tools:targetApi="32">
+        android:hardwareAccelerated="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"

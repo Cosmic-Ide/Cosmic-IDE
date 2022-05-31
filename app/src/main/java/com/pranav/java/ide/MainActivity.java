@@ -156,7 +156,7 @@ public final class MainActivity extends AppCompatActivity {
         buildLoadingDialog();
 
         /* Insert Fragment with TreeView into Drawer */
-        fragmentTransaction = getFragmentManager().beginTransaction()
+        fragmentTransaction = getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(true);
         reloadTreeView();
 

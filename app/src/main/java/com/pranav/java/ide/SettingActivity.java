@@ -28,6 +28,7 @@ public final class SettingActivity extends AppCompatActivity {
 
     private AlertDialog classpathDialog;
     private AlertDialog argumentsDialog;
+    private AlertDialog javaPathDialog;
     private SharedPreferences settings;
 
     @Override
@@ -50,6 +51,7 @@ public final class SettingActivity extends AppCompatActivity {
         Spinner javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
         MaterialButton classpath_bttn = findViewById(R.id.classpath_bttn);
         MaterialButton arguments_bttn = findViewById(R.id.arguments_bttn);
+        MaterialButton java_path_bttn = findViewById(R.id.java_path_bttn);
 
         var versionAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);
@@ -226,6 +228,36 @@ public final class SettingActivity extends AppCompatActivity {
                                 if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
                             });
                 });
+        buildJavaPathDialog();
+
+        java_path_bttn.setOnClickListener(
+                v -> {
+                    javaPathDialog.show();
+
+                    var index = new Indexer("editor");
+
+                    TextInputEditText path_edt =
+                            javaPathDialog.findViewById(R.id.java_path_edt);
+                    MaterialButton save_java_path_bttn =
+                            javaPathDialog.findViewById(R.id.save_java_path_bttn);
+
+                    path_edt.setText(FileUtil.getJavaDir());
+
+                    save_java_path_bttn.setOnClickListener(
+                            view -> {
+                                var enteredPath = path_edt.getText().toString();
+                                if (enteredPath.isEmpty()) {
+                                    FileUtil.setJavaDirectory(FileUtil.getDataDir() + "/java/");
+                                } else {
+                                    FileUtil.setJavaDirectory(enteredPath);
+                                }
+
+                                save_java_path_bttn.setText(getString(R.string.edit));
+
+                                /* Dismiss Dialog If Showing */
+                                if (javaPathDialog.isShowing()) javaPathDialog.dismiss();
+                            });
+                });
     }
 
     private void buildClasspathDialog() {
@@ -244,6 +276,14 @@ public final class SettingActivity extends AppCompatActivity {
         argumentsDialog = builder.create();
     }
 
+    private void buildJavaPathDialog() {
+        var builder = new AlertDialog.Builder(SettingActivity.this);
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        var dialogView = getLayoutInflater().inflate(R.layout.enter_custom_java_path, viewGroup, false);
+        builder.setView(dialogView);
+        javaPathDialog = builder.create();
+    }
+
     @Override
     protected void onDestroy() {
         if (classpathDialog.isShowing()) {
@@ -251,6 +291,9 @@ public final class SettingActivity extends AppCompatActivity {
         }
         if (argumentsDialog.isShowing()) {
             argumentsDialog.dismiss();
+        }
+        if (javaPathDialog.isShowing()) {
+            javaPathDialog.dismiss();
         }
         super.onDestroy();
     }

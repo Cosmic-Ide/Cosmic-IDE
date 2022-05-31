@@ -29,6 +29,7 @@
 	<string name="java_disassembler">Java Disassembler</string>
 	<string name="classpath">Classpath</string>
 	<string name="enter_classpath">Enter Classpath</string>
+	<string name="enter_java_path">Enter Path containing your java files</string>
 	<string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
 	<string name="program_arguments">Program Arguments</string>
 	<string name="enter_program_arguments">Enter Program Arguments</string>

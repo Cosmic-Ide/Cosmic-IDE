@@ -1,5 +1,9 @@
 package com.pranav.common.util;
 
+import com.pranav.common.Indexer;
+
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +14,7 @@ public class FileUtil {
 
     private static String privateDataDirectory;
     private static String javaDir;
+    private Indexer indexer;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory;
@@ -21,6 +26,11 @@ public class FileUtil {
             dir += "/";
         }
         javaDir = dir;
+        try {
+            new Indexer("editor").put("java_path", dir);
+        } catch (JSONException e) {
+            dialog("JsonException", e.getMessage(), true);
+        }
     }
 
     public static boolean createDirectory(String path) {

@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.pranav.common.Indexer;
+import com.pranav.common.util.FileUtil;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
@@ -51,7 +53,7 @@ public final class SettingActivity extends AppCompatActivity {
         Spinner javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
         MaterialButton classpath_bttn = findViewById(R.id.classpath_bttn);
         MaterialButton arguments_bttn = findViewById(R.id.arguments_bttn);
-        MaterialButton java_path_bttn = findViewById(R.id.java_path_bttn);
+        MaterialButton java_path_bttn = findViewById(R.id.save_java_path_bttn);
 
         var versionAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);

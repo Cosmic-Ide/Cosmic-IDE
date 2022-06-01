@@ -92,7 +92,7 @@ public class FileUtil {
         return splited[splited.length - 1];
     }
 
-    private static String getDataDir() {
+    public static String getDataDir() {
         return privateDataDirectory;
     }
 

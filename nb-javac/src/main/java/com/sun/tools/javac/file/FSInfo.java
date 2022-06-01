@@ -25,15 +25,16 @@
 
 package com.sun.tools.javac.file;
 
-import java.io.IOError;
+import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
+import com.sun.tools.javac.util.Context;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,33 +44,29 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
-import com.sun.tools.javac.util.Context;
-
 /**
  * Get meta-info about files. Default direct (non-caching) implementation.
- * @see CacheFSInfo
  *
- * <p><b>This is NOT part of any supported API.
- * If you write code that depends on this, you do so at your own risk.
- * This code and its internal interfaces are subject to change or
- * deletion without notice.</b>
+ * @see CacheFSInfo
+ *     <p><b>This is NOT part of any supported API. If you write code that depends on this, you do
+ *     so at your own risk. This code and its internal interfaces are subject to change or deletion
+ *     without notice.</b>
  */
 public class FSInfo {
 
-    /** Get the FSInfo instance for this context.
-     *  @param context the context
-     *  @return the Paths instance for this context
+    /**
+     * Get the FSInfo instance for this context.
+     *
+     * @param context the context
+     * @return the Paths instance for this context
      */
     public static FSInfo instance(Context context) {
         FSInfo instance = context.get(FSInfo.class);
-        if (instance == null)
-            instance = new FSInfo();
+        if (instance == null) instance = new FSInfo();
         return instance;
     }
 
-    protected FSInfo() {
-    }
+    protected FSInfo() {}
 
     protected FSInfo(Context context) {
         context.put(FSInfo.class, this);
@@ -98,27 +95,23 @@ public class FSInfo {
     public List<Path> getJarClassPath(Path file) throws IOException {
         try (JarFile jarFile = new JarFile(file.toFile())) {
             Manifest man = jarFile.getManifest();
-            if (man == null)
-                return Collections.emptyList();
+            if (man == null) return Collections.emptyList();
 
             Attributes attr = man.getMainAttributes();
-            if (attr == null)
-                return Collections.emptyList();
+            if (attr == null) return Collections.emptyList();
 
             String path = attr.getValue(Attributes.Name.CLASS_PATH);
-            if (path == null)
-                return Collections.emptyList();
+            if (path == null) return Collections.emptyList();
 
             List<Path> list = new ArrayList<>();
             URL base = file.toUri().toURL();
 
-            for (StringTokenizer st = new StringTokenizer(path);
-                 st.hasMoreTokens(); ) {
+            for (StringTokenizer st = new StringTokenizer(path); st.hasMoreTokens(); ) {
                 String elt = st.nextToken();
                 try {
                     URL url = tryResolveFile(base, elt);
                     if (url != null) {
-                        list.add(Path.of(url.toURI()));
+                        list.add(Paths.get(url.toURI()));
                     }
                 } catch (URISyntaxException ex) {
                     throw new IOException(ex);
@@ -130,11 +123,10 @@ public class FSInfo {
     }
 
     /**
-     * Attempt to return a file URL by resolving input against a base file
-     * URL.
+     * Attempt to return a file URL by resolving input against a base file URL.
      *
-     * @return the resolved URL or null if the input is an absolute URL with
-     *         a scheme other than file (ignoring case)
+     * @return the resolved URL or null if the input is an absolute URL with a scheme other than
+     *     file (ignoring case)
      * @throws MalformedURLException
      */
     static URL tryResolveFile(URL base, String input) throws MalformedURLException {
@@ -153,14 +145,15 @@ public class FSInfo {
     public synchronized FileSystemProvider getJarFSProvider() {
         if (jarFSProvider != null) {
             return jarFSProvider;
+        } else {
+            jarFSProvider = new ZipFileSystemProvider();
+            return jarFSProvider;
         }
-        return (jarFSProvider = new ZipFileSystemProvider());
-//        for (FileSystemProvider provider: FileSystemProvider.installedProviders()) {
-//            if (provider.getScheme().equals("jar")) {
-//                return (jarFSProvider = provider);
-//            }
-//        }
-//        return null;
+        //        for (FileSystemProvider provider: FileSystemProvider.installedProviders()) {
+        //            if (provider.getScheme().equals("jar")) {
+        //                return (jarFSProvider = provider);
+        //            }
+        //        }
+        //        return null;
     }
-
 }

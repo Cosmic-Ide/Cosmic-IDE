@@ -14,7 +14,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.pranav.common.Indexer;
 import com.pranav.common.util.FileUtil;
 
 public final class SettingActivity extends AppCompatActivity {
@@ -235,8 +234,6 @@ public final class SettingActivity extends AppCompatActivity {
         java_path_bttn.setOnClickListener(
                 v -> {
                     javaPathDialog.show();
-
-                    var index = new Indexer("editor");
 
                     TextInputEditText path_edt =
                             javaPathDialog.findViewById(R.id.java_path_edt);

@@ -29,7 +29,7 @@ public class FileUtil {
         try {
             new Indexer("editor").put("java_path", dir);
         } catch (JSONException e) {
-            dialog("JsonException", e.getMessage(), true);
+            e.printStackTrace();
         }
     }
 

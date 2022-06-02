@@ -235,8 +235,7 @@ public final class SettingActivity extends AppCompatActivity {
                 v -> {
                     javaPathDialog.show();
 
-                    TextInputEditText path_edt =
-                            javaPathDialog.findViewById(R.id.java_path_edt);
+                    TextInputEditText path_edt = javaPathDialog.findViewById(R.id.java_path_edt);
                     MaterialButton save_java_path_bttn =
                             javaPathDialog.findViewById(R.id.save_java_path_bttn);
 
@@ -278,7 +277,8 @@ public final class SettingActivity extends AppCompatActivity {
     private void buildJavaPathDialog() {
         var builder = new AlertDialog.Builder(SettingActivity.this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
-        var dialogView = getLayoutInflater().inflate(R.layout.enter_custom_java_path, viewGroup, false);
+        var dialogView =
+                getLayoutInflater().inflate(R.layout.enter_custom_java_path, viewGroup, false);
         builder.setView(dialogView);
         javaPathDialog = builder.create();
     }

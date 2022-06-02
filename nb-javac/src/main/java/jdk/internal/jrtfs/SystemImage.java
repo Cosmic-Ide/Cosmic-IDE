@@ -91,8 +91,7 @@ abstract class SystemImage {
         moduleImageFile = fs.getPath(RUNTIME_HOME, "lib", "modules");
         explodedModulesDir = fs.getPath(RUNTIME_HOME, "modules");
 
-        modulesImageExists =
-                Files.isRegularFile(moduleImageFile);
+        modulesImageExists = Files.isRegularFile(moduleImageFile);
     }
 
     /**

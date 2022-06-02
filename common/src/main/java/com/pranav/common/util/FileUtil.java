@@ -21,14 +21,14 @@ public class FileUtil {
         privateDataDirectory = directory;
         javaDir = directory + "/java/";
     }
-    
+
     public static void setJavaDirectory(String dir) {
         if (!dir.endsWith("/")) {
             dir += "/";
         }
         javaDir = dir;
         try {
-            var path =  Paths.get(dir);
+            var path = Paths.get(dir);
             if (!Files.isDirectory(path)) {
                 Files.deleteIfExists(path);
             }

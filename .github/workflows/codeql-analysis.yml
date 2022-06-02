@@ -30,7 +30,7 @@ jobs:
           java-version: '17'
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2.1.11
+        uses: github/codeql-action/init@v2.1.12
         with:
           languages: ${{ matrix.language }}
 
@@ -43,4 +43,4 @@ jobs:
           arguments: clean assembleDebug --no-build-cache
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2.1.11
+        uses: github/codeql-action/analyze@v2.1.12

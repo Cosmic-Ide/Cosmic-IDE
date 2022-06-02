@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -68,7 +67,6 @@ public final class MainActivity extends AppCompatActivity {
 
     private AlertDialog loadingDialog;
     private Thread runThread;
-    private FragmentTransaction fragmentTransaction;
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
     private String temp;
@@ -156,8 +154,6 @@ public final class MainActivity extends AppCompatActivity {
         buildLoadingDialog();
 
         /* Insert Fragment with TreeView into Drawer */
-        fragmentTransaction = getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(true);
         reloadTreeView();
 
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
@@ -166,6 +162,8 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     void reloadTreeView() {
+        var fragmentTransaction = getSupportFragmentManager().beginTransaction()
+                .setReorderingAllowing(true);
         fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer())
                 .commit();
     }

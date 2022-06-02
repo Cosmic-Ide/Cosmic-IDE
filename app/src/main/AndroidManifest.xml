@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.pranav.java.ide"
-    android:versionCode="4"
-    android:versionName="0.0.4" >
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-sdk
         android:minSdkVersion="26"
         android:targetSdkVersion="32" />
-
+    
     <application
         android:name=".ApplicationLoader"
         android:allowBackup="true"

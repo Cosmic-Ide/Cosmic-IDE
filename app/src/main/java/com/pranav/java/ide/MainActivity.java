@@ -163,7 +163,7 @@ public final class MainActivity extends AppCompatActivity {
 
     void reloadTreeView() {
         var fragmentTransaction = getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowing(true);
+                .setReorderingAllowed(true);
         fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer())
                 .commit();
     }

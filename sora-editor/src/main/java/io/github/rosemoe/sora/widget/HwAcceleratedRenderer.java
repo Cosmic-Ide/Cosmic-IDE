@@ -68,10 +68,6 @@ class HwAcceleratedRenderer implements ContentListener {
      * wordwrap state changes from true to false
      */
     public void invalidate() {
-        invalidateDirectly();
-    }
-
-    public void invalidateDirectly() {
         cache.forEach(node -> node.isDirty = true);
     }
 

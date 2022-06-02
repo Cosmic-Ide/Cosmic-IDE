@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileUtil {
@@ -27,6 +28,11 @@ public class FileUtil {
         }
         javaDir = dir;
         try {
+            var path =  Paths.get(dir);
+            if (!Files.isDirectory(path)) {
+                Files.deleteIfExists(path);
+            }
+            Files.createDirectories(path);
             new Indexer("editor").put("java_path", dir);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -45,14 +51,12 @@ public class FileUtil {
     public static void writeFile(String path, String content) throws IOException {
         var file = new File(path);
         file.getParentFile().mkdirs();
-        file.delete();
         Files.write(file.toPath(), content.getBytes());
     }
 
     public static void writeFile(String path, byte[] content) throws IOException {
         var file = new File(path);
         file.getParentFile().mkdirs();
-        file.delete();
         Files.write(file.toPath(), content);
     }
 

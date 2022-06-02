@@ -34,7 +34,7 @@ public class FileUtil {
             }
             Files.createDirectories(path);
             new Indexer("editor").put("java_path", dir);
-        } catch (JSONException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
     }

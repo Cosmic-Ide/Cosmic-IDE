@@ -1,15 +1,21 @@
 package com.pranav.common.util;
 
+import com.pranav.common.Indexer;
+
+import org.json.JSONException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileUtil {
 
     private static String privateDataDirectory;
     private static String javaDir;
+    private Indexer indexer;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory;
@@ -21,6 +27,16 @@ public class FileUtil {
             dir += "/";
         }
         javaDir = dir;
+        try {
+            var path =  Paths.get(dir);
+            if (!Files.isDirectory(path)) {
+                Files.deleteIfExists(path);
+            }
+            Files.createDirectories(path);
+            new Indexer("editor").put("java_path", dir);
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean createDirectory(String path) {
@@ -35,14 +51,12 @@ public class FileUtil {
     public static void writeFile(String path, String content) throws IOException {
         var file = new File(path);
         file.getParentFile().mkdirs();
-        file.delete();
         Files.write(file.toPath(), content.getBytes());
     }
 
     public static void writeFile(String path, byte[] content) throws IOException {
         var file = new File(path);
         file.getParentFile().mkdirs();
-        file.delete();
         Files.write(file.toPath(), content);
     }
 
@@ -82,7 +96,7 @@ public class FileUtil {
         return splited[splited.length - 1];
     }
 
-    private static String getDataDir() {
+    public static String getDataDir() {
         return privateDataDirectory;
     }
 

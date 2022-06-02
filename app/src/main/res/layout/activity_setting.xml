@@ -116,6 +116,13 @@
             android:layout_marginHorizontal="4dp"
             android:text="@string/enter_program_arguments" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/save_java_path_bttn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            android:text="@string/enter_java_path" />
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

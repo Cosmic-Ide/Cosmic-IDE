@@ -81,7 +81,7 @@ public class JavacCompilationTask extends Task {
         args.add("-source");
         args.add(version);
         args.add("-target");
-        args.add(version)
+        args.add(version);
 
         JavacTask task =
                 (JavacTask)

@@ -1134,18 +1134,11 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
 
     @Override
     @DefinedBy(Api.COMPILER)
-    public Location getLocationForModule(Location location, String moduleName) throws IOException {
+    public Location getLocationForModule(Location location, String module) throws IOException {
         checkModuleOrientedOrOutputLocation(location);
-        nullCheck(moduleName);
+        nullCheck(module);
         if (location == SOURCE_OUTPUT && getSourceOutDir() == null) location = CLASS_OUTPUT;
-        return locations.getLocationForModule(location, moduleName);
-    }
-
-    @Override
-    @DefinedBy(Api.COMPILER)
-    public <S> ServiceLoader<S> getServiceLoader(Location location, Class<S> service)
-            throws IOException {
-        throw new UnsupportedOperationException();
+        return locations.getLocationForModule(location, module);
     }
 
     @Override
@@ -1161,11 +1154,11 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     @Override
     @DefinedBy(Api.COMPILER)
     public void setLocationForModule(
-            Location location, String moduleName, Collection<? extends Path> paths)
+            Location location, String module, Collection<? extends Path> paths)
             throws IOException {
         nullCheck(location);
         checkModuleOrientedOrOutputLocation(location);
-        locations.setLocationForModule(location, nullCheck(moduleName), nullCheck(paths));
+        locations.setLocationForModule(location, nullCheck(module), nullCheck(paths));
         clearCachesForLocation(location);
     }
 
@@ -1181,6 +1174,13 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     public Iterable<Set<Location>> listLocationsForModules(Location location) throws IOException {
         checkModuleOrientedOrOutputLocation(location);
         return locations.listLocationsForModules(location);
+    }
+
+    @Override
+    @DefinedBy(Api.COMPILER)
+    public <S> ServiceLoader<S> getServiceLoader(Location location, Class<S> service)
+            throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

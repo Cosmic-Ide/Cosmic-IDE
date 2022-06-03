@@ -1,4 +1,4 @@
-package com.pranav.lib_android.exception;
+package com.pranav.android.exception;
 
 public class CompilationFailedException extends Exception {
 

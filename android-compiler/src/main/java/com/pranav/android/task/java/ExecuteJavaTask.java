@@ -1,4 +1,4 @@
-package com.pranav.lib_android.task.java;
+package com.pranav.android.task.java;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import dalvik.system.PathClassLoader;
 
 import com.pranav.common.util.FileUtil;
-import com.pranav.lib_android.interfaces.*;
+import com.pranav.android.interfaces.*;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

@@ -1,12 +1,12 @@
-package com.pranav.lib_android.task.java;
+package com.pranav.android.task.java;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
-import com.pranav.lib_android.exception.CompilationFailedException;
-import com.pranav.lib_android.interfaces.*;
+import com.pranav.android.exception.CompilationFailedException;
+import com.pranav.android.interfaces.*;
 
 import org.eclipse.jdt.internal.compiler.batch.Main;
 
@@ -55,15 +55,13 @@ public class ECJCompilationTask extends Task {
                     args.add("-log");
                     args.add(FileUtil.getBinDir().concat("debug.xml"));
                     args.add("-g");
-                    args.add("-" + prefs.getString("javaVersion", "7.0"));
+                    args.add("-" + prefs.getString("version", "7"));
                     args.add("-d");
                     args.add(output.getAbsolutePath());
                     args.add("-classpath");
                     args.add(FileUtil.getClasspathDir() + "android.jar");
                     var classpath = new StringBuilder();
-                    if (prefs.getString("version", "7.0").equals("8.0")) {
-                        classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
-                    }
+                    classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
                     var clspath = prefs.getString("classpath", "");
                     if (!clspath.isEmpty() && classpath.length() > 0) {
                         classpath.append(":");

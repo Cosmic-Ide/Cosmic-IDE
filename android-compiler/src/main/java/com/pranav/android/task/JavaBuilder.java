@@ -1,9 +1,9 @@
-package com.pranav.lib_android.task;
+package com.pranav.android.task;
 
 import android.content.Context;
 
-import com.pranav.lib_android.interfaces.*;
-import com.pranav.lib_android.task.java.*;
+import com.pranav.android.interfaces.*;
+import com.pranav.android.task.java.*;
 
 public class JavaBuilder extends Builder {
 

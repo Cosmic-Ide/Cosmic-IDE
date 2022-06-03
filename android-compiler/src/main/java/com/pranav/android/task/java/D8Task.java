@@ -1,4 +1,4 @@
-package com.pranav.lib_android.task.java;
+package com.pranav.android.task.java;
 
 import com.android.tools.r8.D8;
 import com.android.tools.r8.D8Command;
@@ -6,7 +6,7 @@ import com.android.tools.r8.OutputMode;
 
 import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
-import com.pranav.lib_android.interfaces.*;
+import com.pranav.android.interfaces.*;
 
 import java.io.File;
 import java.nio.file.Path;

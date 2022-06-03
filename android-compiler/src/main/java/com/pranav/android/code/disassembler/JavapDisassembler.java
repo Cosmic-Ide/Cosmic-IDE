@@ -1,4 +1,4 @@
-package com.pranav.lib_android.code.disassembler;
+package com.pranav.android.code.disassembler;
 
 import com.sun.tools.javap.JavapTask;
 

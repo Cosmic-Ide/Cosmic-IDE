@@ -1,11 +1,11 @@
-package com.pranav.lib_android.task.java;
+package com.pranav.android.task.java;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.pranav.common.util.FileUtil;
-import com.pranav.lib_android.exception.CompilationFailedException;
-import com.pranav.lib_android.interfaces.*;
+import com.pranav.android.exception.CompilationFailedException;
+import com.pranav.android.interfaces.*;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
@@ -68,7 +68,7 @@ public class JavacCompilationTask extends Task {
             standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
             standardJavaFileManager.setLocation(
-                    StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath(version));
+                    StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
         } catch (IOException e) {
@@ -78,9 +78,7 @@ public class JavacCompilationTask extends Task {
         var args = new ArrayList<String>();
 
         args.add("-proc:none");
-        args.add("-source");
-        args.add(version);
-        args.add("-target");
+        args.add("-release");
         args.add(version);
 
         JavacTask task =
@@ -149,7 +147,7 @@ public class JavacCompilationTask extends Task {
         return sourceFiles;
     }
 
-    public List<File> getClasspath() {
+    public ArrayList<File> getClasspath() {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("classpath", "");
 
@@ -161,12 +159,10 @@ public class JavacCompilationTask extends Task {
         return classpath;
     }
 
-    public List<File> getPlatformClasspath(String version) {
+    public ArrayList<File> getPlatformClasspath() {
         var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
-        if (version.equals("8.0")) {
-            classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
-        }
+        classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
         return classpath;
     }
 }

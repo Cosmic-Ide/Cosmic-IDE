@@ -1,4 +1,4 @@
-package com.pranav.lib_android.code.formatter;
+package com.pranav.android.code.formatter;
 
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;

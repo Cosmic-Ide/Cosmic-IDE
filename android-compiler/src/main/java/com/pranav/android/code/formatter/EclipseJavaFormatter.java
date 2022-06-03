@@ -1,4 +1,4 @@
-package com.pranav.lib_android.code.formatter;
+package com.pranav.android.code.formatter;
 
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatter;
 import org.eclipse.jdt.internal.formatter.DefaultCodeFormatterOptions;

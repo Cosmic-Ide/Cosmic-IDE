@@ -19,6 +19,7 @@ import org.xml.sax.XMLReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -32,9 +33,11 @@ public class XMLPListParser<T> {
 
     public T parse(InputStream contents) throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         spf.setNamespaceAware(true);
         SAXParser saxParser = spf.newSAXParser();
         XMLReader xmlReader = saxParser.getXMLReader();
+        xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         xmlReader.setEntityResolver(
                 (arg0, arg1) ->
                         new InputSource(

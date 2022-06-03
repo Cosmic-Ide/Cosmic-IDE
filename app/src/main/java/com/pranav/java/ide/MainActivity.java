@@ -36,9 +36,9 @@ import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
-import com.pranav.lib_android.code.disassembler.*;
-import com.pranav.lib_android.code.formatter.*;
-import com.pranav.lib_android.task.JavaBuilder;
+import com.pranav.android.code.disassembler.*;
+import com.pranav.android.code.formatter.*;
+import com.pranav.android.task.JavaBuilder;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;

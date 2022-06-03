@@ -283,7 +283,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         }
     }
 
-    // TODO(cushon): generalize this
     private static final ImmutableMultimap<String, String> TYPE_ANNOTATIONS = typeAnnotations();
 
     private static ImmutableSetMultimap<String, String> typeAnnotations() {
@@ -394,7 +393,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         for (Tree type : node.getTypeDecls()) {
             if (type.getKind() == Tree.Kind.IMPORT) {
                 // javac treats extra semicolons in the import list as type declarations
-                // TODO(cushon): remove this if https://bugs.openjdk.java.net/browse/JDK-8027682 is
                 // fixed
                 continue;
             }
@@ -1162,7 +1160,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         }
         visitName(node.getQualifiedIdentifier());
         token(";");
-        // TODO(cushon): remove this if https://bugs.openjdk.java.net/browse/JDK-8027682 is fixed
         dropEmptyDeclarations();
         return null;
     }
@@ -1388,7 +1385,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         return null;
     }
 
-    // TODO(cushon): Use Flags if/when we drop support for Java 11
 
     protected static final long COMPACT_RECORD_CONSTRUCTOR = 1L << 51;
 
@@ -1848,7 +1844,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         return null;
     }
 
-    // TODO(cushon): is this worth special-casing?
     boolean visitSingleMemberAnnotation(AnnotationTree node) {
         if (node.getArguments().size() != 1) {
             return false;
@@ -1977,7 +1972,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                             /* receiverExpression= */ Optional.empty(),
                             /* typeWithDims= */ Optional.empty());
                 } else {
-                    // TODO(cushon): think harder about what to do with `try (resource1; resource2)
                     // {}`
                     scan(resource, null);
                 }
@@ -2177,7 +2171,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         }
         if (collapseEmptyOrNot.isYes() && node.getStatements().isEmpty()) {
             if (builder.peekToken().equals(Optional.of(";"))) {
-                // TODO(cushon): is this needed?
                 token(";");
             } else {
                 tokenBreakTrailingComment("{", plusTwo);
@@ -2556,7 +2549,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
             visitUnionType(ex);
             builder.close();
         } else {
-            // TODO(cushon): don't break after here for consistency with for, while, etc.
             builder.breakToFill();
             builder.open(ZERO);
             scan(ex, null);
@@ -2640,7 +2632,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         builder.open(ZERO);
         boolean first = true;
         if (receiver.isPresent()) {
-            // TODO(user): Use builders.
             declareOne(
                     DeclarationKind.PARAMETER,
                     Direction.HORIZONTAL,
@@ -3183,7 +3174,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                 if (!methodInvocation.getTypeArguments().isEmpty()) {
                     builder.open(plusFour);
                     addTypeArguments(methodInvocation.getTypeArguments(), ZERO);
-                    // TODO(user): Should indent the name -4.
                     builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO, tyargTag);
                     builder.close();
                 }

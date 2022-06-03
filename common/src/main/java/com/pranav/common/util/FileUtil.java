@@ -30,8 +30,8 @@ public class FileUtil {
         javaDir = dir;
         try {
             var path = Paths.get(dir);
-            if (!Files.isDirectory(path)) {
-                Files.deleteIfExists(path);
+            if (Files.isRegularFile(path)) {
+                Files.delete(path);
             }
             Files.createDirectories(path);
             new Indexer("editor").put("java_path", dir);
@@ -66,6 +66,7 @@ public class FileUtil {
     }
 
     public static void deleteFile(String p) {
+      try {
         var path  = Paths.get(p);
         if (Files.isRegularFile(path)) {
           Files.delete(path);
@@ -74,6 +75,9 @@ public class FileUtil {
         Files.walk(path)
             .map(Path::toFile)
             .forEach(File::delete);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     public static String getFileName(String path) {

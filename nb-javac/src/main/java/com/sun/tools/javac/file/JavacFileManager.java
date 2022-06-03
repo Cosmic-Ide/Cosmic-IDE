@@ -200,26 +200,6 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         return getJavaFileObjects(file).iterator().next();
     }
 
-    public JavaFileObject getFileForOutput(
-            String classname, JavaFileObject.Kind kind, JavaFileObject sibling) throws IOException {
-        return getJavaFileForOutput(CLASS_OUTPUT, classname, kind, sibling);
-    }
-
-    @Override
-    @DefinedBy(Api.COMPILER)
-    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(
-            Iterable<String> names) {
-        ListBuffer<Path> paths = new ListBuffer<>();
-        for (String name : names) paths.append(getPath(nullCheck(name)));
-        return getJavaFileObjectsFromPaths(paths.toList());
-    }
-
-    @Override
-    @DefinedBy(Api.COMPILER)
-    public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names) {
-        return getJavaFileObjectsFromStrings(Arrays.asList(nullCheck(names)));
-    }
-
     private static boolean isValidName(String name) {
         // Arguably, isValidName should reject keywords (such as in SourceVersion.isName() ),
         // but the set of keywords depends on the source level, and we don't want
@@ -938,6 +918,11 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
         }
     }
 
+    public JavaFileObject getFileForOutput(
+            String classname, JavaFileObject.Kind kind, JavaFileObject sibling) throws IOException {
+        return getJavaFileForOutput(CLASS_OUTPUT, classname, kind, sibling);
+    }
+
     @Override
     @DefinedBy(Api.COMPILER)
     public Iterable<? extends JavaFileObject> getJavaFileObjectsFromFiles(
@@ -967,6 +952,21 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
             result = new ArrayList<>();
         }
         return result;
+    }
+
+    @Override
+    @DefinedBy(Api.COMPILER)
+    public Iterable<? extends JavaFileObject> getJavaFileObjectsFromStrings(
+            Iterable<String> names) {
+        ListBuffer<Path> paths = new ListBuffer<>();
+        for (String name : names) paths.append(getPath(nullCheck(name)));
+        return getJavaFileObjectsFromPaths(paths.toList());
+    }
+
+    @Override
+    @DefinedBy(Api.COMPILER)
+    public Iterable<? extends JavaFileObject> getJavaFileObjects(String... names) {
+        return getJavaFileObjectsFromStrings(Arrays.asList(nullCheck(names)));
     }
 
     @Override
@@ -1011,18 +1011,6 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     public Collection<? extends Path> getLocationAsPaths(Location location) {
         nullCheck(location);
         return locations.getLocation(location);
-    }
-
-    private java.util.List<PathAndContainer> pathsAndContainers(
-            Location location, RelativeDirectory relativeDirectory) throws IOException {
-        try {
-            return pathsAndContainersByLocationAndRelativeDirectory
-                    .computeIfAbsent(location, this::indexPathsAndContainersByRelativeDirectory)
-                    .computeIfAbsent(
-                            relativeDirectory, d -> nonIndexingContainersByLocation.get(location));
-        } catch (UncheckedIOException e) {
-            throw e.getCause();
-        }
     }
 
     private Map<RelativeDirectory, java.util.List<PathAndContainer>>
@@ -1080,6 +1068,18 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
                     new PathAndContainer(path, container, pathsAndContainers.size()));
         }
         return pathsAndContainers;
+    }
+
+    private java.util.List<PathAndContainer> pathsAndContainers(
+            Location location, RelativeDirectory relativeDirectory) throws IOException {
+        try {
+            return pathsAndContainersByLocationAndRelativeDirectory
+                    .computeIfAbsent(location, this::indexPathsAndContainersByRelativeDirectory)
+                    .computeIfAbsent(
+                            relativeDirectory, d -> nonIndexingContainersByLocation.get(location));
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
+        }
     }
 
     private static class PathAndContainer implements Comparable<PathAndContainer> {

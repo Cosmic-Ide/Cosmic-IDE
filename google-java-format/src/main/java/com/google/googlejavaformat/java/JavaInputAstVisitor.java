@@ -1465,10 +1465,8 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                 } else {
                     first = false;
                 }
-                if (!openedNameAndTypeScope) {
-                    builder.open(make(breakBeforeType, plusFour, ZERO));
-                    openedNameAndTypeScope = true;
-                }
+                builder.open(make(breakBeforeType, plusFour, ZERO));
+                openedNameAndTypeScope = true;
                 scan(baseReturnType, null);
                 maybeAddDims(dims);
             }

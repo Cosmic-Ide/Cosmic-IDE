@@ -114,15 +114,7 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
         }
         Map<String, ?> newEnv = new HashMap<>(env);
         newEnv.remove("java.home");
-        ClassLoader cl = newJrtFsLoader(jrtfs);
-        try {
-            Class<?> c = Class.forName(JrtFileSystemProvider.class.getName(), false, cl);
-            @SuppressWarnings("deprecation")
-            Object tmp = c.newInstance();
-            return ((FileSystemProvider) tmp).newFileSystem(uri, newEnv);
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new IOException(e);
-        }
+        return newFileSystem(uri, newEnv);
     }
 
     private static class JrtFsLoader extends URLClassLoader {

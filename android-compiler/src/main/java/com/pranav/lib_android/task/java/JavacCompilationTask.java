@@ -78,7 +78,9 @@ public class JavacCompilationTask extends Task {
         var args = new ArrayList<String>();
 
         args.add("-proc:none");
-        args.add("-release");
+        args.add("-source");
+        args.add(version);
+        args.add("-target");
         args.add(version);
 
         JavacTask task =

@@ -652,13 +652,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
     }
 
     @Override
-    public Void visitBlock(BlockTree node, Void unused) {
-        visitBlock(
-                node, CollapseEmptyOrNot.NO, AllowLeadingBlankLine.NO, AllowTrailingBlankLine.NO);
-        return null;
-    }
-
-    @Override
     public Void visitCompoundAssignment(CompoundAssignmentTree node, Void unused) {
         sync(node);
         builder.open(plusFour);
@@ -2088,11 +2081,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
     }
 
     @Override
-    public Void visitUnionType(UnionTypeTree node, Void unused) {
-        throw new IllegalStateException("expected manual descent into union types");
-    }
-
-    @Override
     public Void visitWhileLoop(WhileLoopTree node, Void unused) {
         sync(node);
         token("while");
@@ -2156,6 +2144,13 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
             scan(annotation, null);
             builder.forcedBreak();
         }
+    }
+
+    @Override
+    public Void visitBlock(BlockTree node, Void unused) {
+        visitBlock(
+                node, CollapseEmptyOrNot.NO, AllowLeadingBlankLine.NO, AllowTrailingBlankLine.NO);
+        return null;
     }
 
     /** Helper method for blocks. */
@@ -2562,6 +2557,11 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                 CollapseEmptyOrNot.NO,
                 AllowLeadingBlankLine.YES,
                 allowTrailingBlankLine);
+    }
+
+    @Override
+    public Void visitUnionType(UnionTypeTree node, Void unused) {
+        throw new IllegalStateException("expected manual descent into union types");
     }
 
     /** Formats a union type declaration in a catch clause. */

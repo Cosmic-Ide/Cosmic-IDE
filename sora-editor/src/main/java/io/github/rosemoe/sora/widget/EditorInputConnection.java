@@ -489,7 +489,6 @@ class EditorInputConnection extends BaseInputConnection {
 
     @Override
     public boolean finishComposingText() {
-        // Logs.log("Finish composing text");
         if (!mEditor.isEditable() || mInvalid) {
             return false;
         }

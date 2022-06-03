@@ -64,31 +64,15 @@ public class FileUtil {
         return new String(Files.readAllBytes(file.toPath()));
     }
 
-    public static void deleteFile(String path) {
-        var file = new File(path);
-
-        if (!file.exists()) return;
-
-        if (file.isFile()) {
-            file.delete();
-            return;
+    public static void deleteFile(String p) {
+        var path  = Paths.get(p);
+        if (Files.isRegularFile(path)) {
+          Files.delete(path);
         }
 
-        var fileArr = file.listFiles();
-
-        if (fileArr != null) {
-            for (var subFile : fileArr) {
-                if (subFile.isDirectory()) {
-                    deleteFile(subFile.getAbsolutePath());
-                }
-
-                if (subFile.isFile()) {
-                    subFile.delete();
-                }
-            }
-        }
-
-        file.delete();
+        Files.walk(path)
+            .map(Path::toFile)
+            .forEach(File::delete);
     }
 
     public static String getFileName(String path) {

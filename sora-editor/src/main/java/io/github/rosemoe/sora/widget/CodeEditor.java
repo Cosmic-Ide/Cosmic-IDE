@@ -457,8 +457,6 @@ public class CodeEditor extends View
      * <p>Initialize variants
      */
     private void initialize(AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        Log.i(LOG_TAG, COPYRIGHT);
-
         mPainter = new EditorPainter(this);
 
         var configuration = ViewConfiguration.get(getContext());
@@ -1082,7 +1080,6 @@ public class CodeEditor extends View
                 i = lastVis;
             }
         }
-        // Log.d(LOG_TAG, "Allocate float[], size = " + desiredSize);
         return new float[desiredSize];
     }
 
@@ -3316,7 +3313,6 @@ public class CodeEditor extends View
     /** Update request result for monitoring request */
     protected void updateExtractedText() {
         if (mExtracting != null) {
-            // Logs.log("Send extracted text updates");
             mInputMethodManager.updateExtractedText(
                     this, mExtracting.token, extractText(mExtracting));
         }
@@ -4053,8 +4049,6 @@ public class CodeEditor extends View
             mCompletionWindow.hide();
         }
 
-        // Log.d(LOG_TAG, "Ins: " + startLine + " " + startColumn + ", " + endLine + " " + endColumn
-        // + ", content = " + insertedContent);
         updateCursorAnchor();
         mPainter.invalidateHwRenderer();
         ensureSelectionVisible();
@@ -4119,8 +4113,6 @@ public class CodeEditor extends View
             mCompletionWindow.hide();
         }
 
-        // Log.d(LOG_TAG, "Del: " + startLine + " " + startColumn + ", " + endLine + " " + endColumn
-        // + ", content = " + deletedContent);
         mPainter.invalidateHwRenderer();
         if (!mWait) {
             updateCursorAnchor();
@@ -4215,9 +4207,4 @@ public class CodeEditor extends View
             }
         }
     }
-
-    private static final String COPYRIGHT =
-            "sora-editor\n"
-                    + "Copyright (C) Rosemoe roses2020@qq.com\n"
-                    + "This project is distributed under the LGPL v2.1 license";
 }

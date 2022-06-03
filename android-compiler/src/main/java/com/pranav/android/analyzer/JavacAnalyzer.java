@@ -1,4 +1,4 @@
-package com.pranav.android.task.java;
+package com.pranav.android.analyzer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,29 +22,22 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 
-public class JavacCompilationTask extends Task {
+public class JavacAnalyzer {
 
     private final SharedPreferences prefs;
+    private final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
-    public JavacCompilationTask(Builder builder) {
+    public JavacAnalyzer(Context context) {
         prefs =
-                builder.getContext()
+                context
                         .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
-    @Override
-    public String getTaskName() {
-        return "Javac Compilation Task";
-    }
-
-    @Override
-    public void doFullTask() throws Exception {
+    public void analyze() throws Exception {
 
         var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
         var version = prefs.getString("version", "7");
-
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
         var javaFileObjects = new ArrayList<JavaFileObject>();
         var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
@@ -66,13 +59,11 @@ public class JavacCompilationTask extends Task {
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
         try {
             standardJavaFileManager.setLocation(
-                    StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
-            standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
         } catch (IOException e) {
-            throw new CompilationFailedException(e);
+            // ignored
         }
 
         var args = new ArrayList<String>();
@@ -81,9 +72,9 @@ public class JavacCompilationTask extends Task {
         args.add("-source");
         args.add(version);
         args.add("-target");
-        args.add(version)
+        args.add(version);
 
-        JavacTask task =
+        var task =
                 (JavacTask)
                         tool.getTask(
                                 null,
@@ -93,45 +84,19 @@ public class JavacCompilationTask extends Task {
                                 null,
                                 javaFileObjects);
 
-        if (!task.call()) {
-            var errs = new StringBuilder();
-            var warns = new StringBuilder();
-            for (var diagnostic : diagnostics.getDiagnostics()) {
-                var message = new StringBuilder();
-                if (diagnostic.getSource() != null) {
-                    message.append(diagnostic.getSource().getName());
-                    message.append(":");
-                    message.append(diagnostic.getLineNumber());
-                    message.append(": ");
-                }
-                message.append(diagnostic.getKind().name());
-                message.append(": ");
-                message.append(diagnostic.getMessage(Locale.getDefault()));
-
-                switch (diagnostic.getKind()) {
-                    case ERROR:
-                    case OTHER:
-                        errs.append(message.toString());
-                        errs.append("\n");
-                        break;
-                    case NOTE:
-                    case WARNING:
-                    case MANDATORY_WARNING:
-                        warns.append(message.toString());
-                        warns.append("\n");
-                        break;
-                    default:
-                        warns.append(message.toString());
-                }
-            }
-            var errors = errs.toString();
-            var warnings = warns.toString();
-
-            throw new CompilationFailedException(warnings + "\n" + errors);
-        }
+        task.parse();
+        task.analyze();
     }
 
-    public ArrayList<File> getSourceFiles(File path) {
+    public void reset() {
+      diagnostics = new DiagnosticCollector<>();
+    }
+
+    public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
+      return diagnostics.getDiagnostics();
+    }
+
+    private ArrayList<File> getSourceFiles(File path) {
         var sourceFiles = new ArrayList<File>();
         var files = path.listFiles();
         if (files == null) {
@@ -149,7 +114,7 @@ public class JavacCompilationTask extends Task {
         return sourceFiles;
     }
 
-    public ArrayList<File> getClasspath() {
+    private ArrayList<File> getClasspath() {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("classpath", "");
 
@@ -161,7 +126,7 @@ public class JavacCompilationTask extends Task {
         return classpath;
     }
 
-    public ArrayList<File> getPlatformClasspath() {
+    private ArrayList<File> getPlatformClasspath() {
         var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));

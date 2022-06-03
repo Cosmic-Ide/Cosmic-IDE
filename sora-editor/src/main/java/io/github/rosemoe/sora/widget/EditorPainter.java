@@ -1888,7 +1888,7 @@ public class EditorPainter {
             int contextEnd,
             int columnCount,
             int color) {
-        // TODO
+
         /* float accumulatedWidth = 0f;
         for (int i = 0; i < dirs.getRunCount(); i++) {
             int paintStart = Math.max(dirs.getRunStart(i), startIndex);

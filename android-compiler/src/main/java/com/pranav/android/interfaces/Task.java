@@ -1,4 +1,4 @@
-package com.pranav.lib_android.interfaces;
+package com.pranav.android.interfaces;
 
 public abstract class Task {
 

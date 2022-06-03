@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -23,7 +24,7 @@ import javax.tools.StandardLocation;
 public class JavacAnalyzer {
 
     private final SharedPreferences prefs;
-    private final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+    private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
     public JavacAnalyzer(Context context) {
         prefs =
@@ -90,7 +91,7 @@ public class JavacAnalyzer {
       diagnostics = new DiagnosticCollector<>();
     }
 
-    public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
+    public List<Diagnostic<JavaFileObject>> getDiagnostics() {
       return diagnostics.getDiagnostics();
     }
 

@@ -91,7 +91,7 @@ public class JavacAnalyzer {
       diagnostics = new DiagnosticCollector<>();
     }
 
-    public List<Diagnostic<JavaFileObject>> getDiagnostics() {
+    public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
       return diagnostics.getDiagnostics();
     }
 

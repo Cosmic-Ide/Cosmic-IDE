@@ -390,25 +390,6 @@ public final class OpsBuilder {
         breakOp(Doc.FillMode.UNIFIED, "", plusIndent);
     }
 
-    /** Emit a filled {@link Doc.Break}. */
-    public final void breakToFill() {
-        breakOp(Doc.FillMode.INDEPENDENT, "", ZERO);
-    }
-
-    /** Emit a forced {@link Doc.Break}. */
-    public final void forcedBreak() {
-        breakOp(Doc.FillMode.FORCED, "", ZERO);
-    }
-
-    /**
-     * Emit a forced {@link Doc.Break}.
-     *
-     * @param plusIndent extra indent if taken
-     */
-    public final void forcedBreak(Indent plusIndent) {
-        breakOp(Doc.FillMode.FORCED, "", plusIndent);
-    }
-
     /**
      * Emit a {@link Doc.Break}, with a specified {@code flat} value (e.g., {@code " "}).
      *
@@ -416,15 +397,6 @@ public final class OpsBuilder {
      */
     public final void breakOp(String flat) {
         breakOp(Doc.FillMode.UNIFIED, flat, ZERO);
-    }
-
-    /**
-     * Emit a {@link Doc.Break}, with a specified {@code flat} value (e.g., {@code " "}).
-     *
-     * @param flat the {@link Doc.Break} when not broken
-     */
-    public final void breakToFill(String flat) {
-        breakOp(Doc.FillMode.INDEPENDENT, flat, ZERO);
     }
 
     /**
@@ -449,6 +421,34 @@ public final class OpsBuilder {
     public final void breakOp(
             Doc.FillMode fillMode, String flat, Indent plusIndent, Optional<BreakTag> optionalTag) {
         add(Doc.Break.make(fillMode, flat, plusIndent, optionalTag));
+    }
+
+    /** Emit a filled {@link Doc.Break}. */
+    public final void breakToFill() {
+        breakOp(Doc.FillMode.INDEPENDENT, "", ZERO);
+    }
+
+    /**
+     * Emit a {@link Doc.Break}, with a specified {@code flat} value (e.g., {@code " "}).
+     *
+     * @param flat the {@link Doc.Break} when not broken
+     */
+    public final void breakToFill(String flat) {
+        breakOp(Doc.FillMode.INDEPENDENT, flat, ZERO);
+    }
+
+    /** Emit a forced {@link Doc.Break}. */
+    public final void forcedBreak() {
+        breakOp(Doc.FillMode.FORCED, "", ZERO);
+    }
+
+    /**
+     * Emit a forced {@link Doc.Break}.
+     *
+     * @param plusIndent extra indent if taken
+     */
+    public final void forcedBreak(Indent plusIndent) {
+        breakOp(Doc.FillMode.FORCED, "", plusIndent);
     }
 
     private int lastPartialFormatBoundary = -1;

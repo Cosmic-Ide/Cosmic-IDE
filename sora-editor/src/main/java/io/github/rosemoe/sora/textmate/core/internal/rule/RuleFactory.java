@@ -231,10 +231,6 @@ public class RuleFactory {
                                                     externalIncludedRule,
                                                     helper,
                                                     externalGrammar.getRepository());
-                                } else {
-                                    // console.warn('CANNOT find rule for
-                                    // scopeName: ' + pattern.include + ', I am:
-                                    // ', repository['$base'].name);
                                 }
                             } else {
                                 patternId =
@@ -243,10 +239,6 @@ public class RuleFactory {
                                                 helper,
                                                 externalGrammar.getRepository());
                             }
-                        } else {
-                            // console.warn('CANNOT find grammar for scopeName:
-                            // ' + pattern.include + ', I am: ',
-                            // repository['$base'].name);
                         }
                     }
                 } else {

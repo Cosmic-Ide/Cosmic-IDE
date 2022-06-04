@@ -92,11 +92,9 @@ public class EditorPopupWindow {
                             if (isFeatureEnabled(FEATURE_HIDE_WHEN_FAST_SCROLL)
                                     && (Math.abs(event.getEndX() - event.getStartX()) > 80
                                             || Math.abs(event.getEndY() - event.getStartY())
-                                                    > 80)) {
-                                if (isShowing()) {
-                                    dismiss();
-                                    return;
-                                }
+                                                    > 80) && isShowing()) {
+                                dismiss();
+                                return;
                             }
                             break;
                     }

@@ -2378,8 +2378,9 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
                     return modifier().getPosition();
                 case ANNOTATION:
                     return getStartPosition(annotation());
+                default:
+                    throw new AssertionError();
             }
-            throw new AssertionError();
         }
 
         private static final Comparator<AnnotationOrModifier> COMPARATOR =

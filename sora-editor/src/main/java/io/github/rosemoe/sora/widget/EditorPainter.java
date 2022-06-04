@@ -1355,7 +1355,7 @@ public class EditorPainter {
             // Draw hard wrap
             if (lastVisibleChar == columnCount
                     && (nonPrintableFlags & FLAG_DRAW_LINE_SEPARATOR) != 0) {
-                drawMiniGraph(canvas, paintingOffset, row, "\u21B5");
+                drawMiniGraph(canvas, paintingOffset, row, "\u21B5"); // '↵' symbol in unicode
             }
 
             // Recover the offset

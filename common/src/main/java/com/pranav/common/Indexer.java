@@ -32,12 +32,14 @@ public class Indexer {
         }
     }
 
-    public void put(String key, String value) throws JSONException {
+    public Indexer put(String key, String value) throws JSONException {
         json.put(key, value);
+        return this;
     }
 
-    public void put(String key, long value) throws JSONException {
+    public Indexer put(String key, long value) throws JSONException {
         json.put(key, value);
+        return this;
     }
 
     public boolean notHas(String key) throws JSONException {

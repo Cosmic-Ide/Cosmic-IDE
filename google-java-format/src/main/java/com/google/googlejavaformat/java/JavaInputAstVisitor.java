@@ -2491,6 +2491,8 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
             case ANNOTATION:
                 scan(modifier.annotation(), null);
                 break;
+            default:
+                break;
         }
     }
 

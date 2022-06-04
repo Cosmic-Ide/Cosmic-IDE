@@ -26,9 +26,7 @@ public class JavacAnalyzer {
     private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
     public JavacAnalyzer(Context context) {
-        prefs =
-                context
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
     public void analyze() throws Exception {
@@ -87,11 +85,11 @@ public class JavacAnalyzer {
     }
 
     public void reset() {
-      diagnostics = new DiagnosticCollector<>();
+        diagnostics = new DiagnosticCollector<>();
     }
 
     public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
-      return diagnostics.getDiagnostics();
+        return diagnostics.getDiagnostics();
     }
 
     private ArrayList<File> getSourceFiles(File path) {

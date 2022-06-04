@@ -93,8 +93,8 @@ public class EditorPopupWindow {
                         case ScrollEvent.CAUSE_SCALE_TEXT:
                             if (isFeatureEnabled(FEATURE_HIDE_WHEN_FAST_SCROLL)
                                     && (Math.abs(event.getEndX() - event.getStartX()) > 80
-                                            || Math.abs(event.getEndY() - event.getStartY())
-                                                    > 80) && isShowing()) {
+                                            || Math.abs(event.getEndY() - event.getStartY()) > 80)
+                                    && isShowing()) {
                                 dismiss();
                                 return;
                             }
@@ -271,16 +271,17 @@ public class EditorPopupWindow {
         }
     }
 
-     /**
-      * Set parent view of popup.
-      * @param view View for {@link PopupWindow#showAtLocation(View, int, int, int)}
-      */
-     public void setParentView(@NonNull View view) {
-         mParentView = Objects.requireNonNull(view);
-     }
-     
-     @NonNull
-     public View getParentView() {
-       return mParentView;
-     }
+    /**
+     * Set parent view of popup.
+     *
+     * @param view View for {@link PopupWindow#showAtLocation(View, int, int, int)}
+     */
+    public void setParentView(@NonNull View view) {
+        mParentView = Objects.requireNonNull(view);
+    }
+
+    @NonNull
+    public View getParentView() {
+        return mParentView;
+    }
 }

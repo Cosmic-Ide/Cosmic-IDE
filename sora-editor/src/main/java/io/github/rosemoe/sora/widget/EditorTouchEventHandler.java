@@ -58,10 +58,10 @@ public final class EditorTouchEventHandler
     private static final int HIDE_DELAY = 3000;
     private static final int HIDE_DELAY_HANDLE = 5000;
 
-     private final static int LEFT_EDGE = 1;
-     private final static int RIGHT_EDGE = 1 << 1;
-     private final static int TOP_EDGE = 1 << 2;
-     private final static int BOTTOM_EDGE = 1 << 3;
+    private static final int LEFT_EDGE = 1;
+    private static final int RIGHT_EDGE = 1 << 1;
+    private static final int TOP_EDGE = 1 << 2;
+    private static final int BOTTOM_EDGE = 1 << 3;
 
     private final CodeEditor mEditor;
     private final OverScroller mScroller;
@@ -71,24 +71,24 @@ public final class EditorTouchEventHandler
     private boolean mHoldingScrollbarHorizontal = false;
     private boolean mHoldingInsertHandle = false;
     private float mThumbDownY = 0;
-         private float mThumbDownX = 0;
-         private final SelectionHandle mInsertHandle;
-         private SelectionHandle mLeftHandle;
-         private SelectionHandle mRightHandle;
+    private float mThumbDownX = 0;
+    private final SelectionHandle mInsertHandle;
+    private SelectionHandle mLeftHandle;
+    private SelectionHandle mRightHandle;
     private int mTouchedHandleType = -1;
-    
+
     private float mEdgeFieldSize;
     private int mEdgeFlags;
     private MotionEvent mThumbRecord;
-         Magnifier mMagnifier;
-         int selHandleType = -1;
-         float motionX;
-         float motionY;
-         boolean glowTopOrBottom; //true for bottom
-         boolean glowLeftOrRight; //true for right
-         boolean isScaling = false;
-         float scaleMaxSize;
-         float scaleMinSize;
+    Magnifier mMagnifier;
+    int selHandleType = -1;
+    float motionX;
+    float motionY;
+    boolean glowTopOrBottom; // true for bottom
+    boolean glowLeftOrRight; // true for right
+    boolean isScaling = false;
+    float scaleMaxSize;
+    float scaleMinSize;
 
     /**
      * Create an event handler for the given editor
@@ -105,8 +105,8 @@ public final class EditorTouchEventHandler
                 TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP, 8, Resources.getSystem().getDisplayMetrics());
         mMagnifier = new Magnifier(editor);
-        
-                        mInsertHandle = new SelectionHandle(SelectionHandle.BOTH);
+
+        mInsertHandle = new SelectionHandle(SelectionHandle.BOTH);
     }
 
     public boolean hasAnyHeldHandle() {
@@ -320,7 +320,13 @@ public final class EditorTouchEventHandler
                         float movedDis = e.getY() - mThumbDownY;
                         mThumbDownY = e.getY();
                         float all = mEditor.mLayout.getLayoutHeight() + mEditor.getHeight() / 2f;
-                        float dy = movedDis / (mEditor.getHeight() - mEditor.getEditorPainter().getVerticalScrollBarRect().height()) * all;
+                        float dy =
+                                movedDis
+                                        / (mEditor.getHeight()
+                                                - mEditor.getEditorPainter()
+                                                        .getVerticalScrollBarRect()
+                                                        .height())
+                                        * all;
                         scrollBy(0, dy);
                         return true;
                     }
@@ -586,7 +592,8 @@ public final class EditorTouchEventHandler
                 && !mEditor.getVerticalEdgeEffect().isRecede()) {
             endY = mScroller.getCurrY();
             float displacement = Math.max(0, Math.min(1, e2.getX() / mEditor.getWidth()));
-            float distance = (glowTopOrBottom ? distanceY : -distanceY) / mEditor.getMeasuredHeight();
+            float distance =
+                    (glowTopOrBottom ? distanceY : -distanceY) / mEditor.getMeasuredHeight();
             if (distance < -0.001) {
                 mEditor.getVerticalEdgeEffect().finish();
             } else {
@@ -599,7 +606,8 @@ public final class EditorTouchEventHandler
                 && !mEditor.getHorizontalEdgeEffect().isRecede()) {
             endX = mScroller.getCurrX();
             float displacement = Math.max(0, Math.min(1, e2.getY() / mEditor.getHeight()));
-            float distance = (glowLeftOrRight ? distanceX : -distanceX) / mEditor.getMeasuredWidth();
+            float distance =
+                    (glowLeftOrRight ? distanceX : -distanceX) / mEditor.getMeasuredWidth();
             if (distance < -0.001) {
                 mEditor.getHorizontalEdgeEffect().finish();
             } else {

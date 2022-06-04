@@ -32,15 +32,14 @@ import android.widget.LinearLayout;
 
 import io.github.rosemoe.sora.R;
 
- /**
-  * A simple symbol input view implementation for editor.
-  *
-  * <p>
-  * First, add your symbols by {@link #addSymbols(String[], String[])}.
-  * Then, bind a certain editor by {@link #bindEditor(CodeEditor)} so that it works
-  *
-  * @author Rosemoe
-  */
+/**
+ * A simple symbol input view implementation for editor.
+ *
+ * <p>First, add your symbols by {@link #addSymbols(String[], String[])}. Then, bind a certain
+ * editor by {@link #bindEditor(CodeEditor)} so that it works
+ *
+ * @author Rosemoe
+ */
 public class SymbolInputView extends LinearLayout {
 
     private int textColor;
@@ -67,7 +66,8 @@ public class SymbolInputView extends LinearLayout {
     }
 
     private void init() {
-        setBackgroundColor(getContext().getResources().getColor(R.color.defaultSymbolInputBackgroundColor));
+        setBackgroundColor(
+                getContext().getResources().getColor(R.color.defaultSymbolInputBackgroundColor));
         setOrientation(HORIZONTAL);
         setTextColor(getContext().getResources().getColor(R.color.defaultSymbolInputTextColor));
     }
@@ -85,12 +85,12 @@ public class SymbolInputView extends LinearLayout {
         textColor = color;
     }
 
-     /**
-      * @see #setTextColor(int) 
-      */
-     public int getTextColor() {
-         return textColor;
-     }
+    /**
+     * @see #setTextColor(int)
+     */
+    public int getTextColor() {
+        return textColor;
+    }
 
     /** Remove all added symbols */
     public void removeSymbols() {

@@ -30,6 +30,17 @@ import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import io.github.rosemoe.sora.R;
+
+ /**
+  * A simple symbol input view implementation for editor.
+  *
+  * <p>
+  * First, add your symbols by {@link #addSymbols(String[], String[])}.
+  * Then, bind a certain editor by {@link #bindEditor(CodeEditor)} so that it works
+  *
+  * @author Rosemoe
+  */
 public class SymbolInputView extends LinearLayout {
 
     private int textColor;
@@ -56,9 +67,9 @@ public class SymbolInputView extends LinearLayout {
     }
 
     private void init() {
-        setBackgroundColor(Color.WHITE);
+        setBackgroundColor(getContext().getResources().getColor(R.color.defaultSymbolInputBackgroundColor));
         setOrientation(HORIZONTAL);
-        textColor = Color.BLACK;
+        setTextColor(getContext().getResources().getColor(R.color.defaultSymbolInputTextColor));
     }
 
     /** Bind editor for the view */
@@ -73,6 +84,13 @@ public class SymbolInputView extends LinearLayout {
         }
         textColor = color;
     }
+
+     /**
+      * @see #setTextColor(int) 
+      */
+     public int getTextColor() {
+         return textColor;
+     }
 
     /** Remove all added symbols */
     public void removeSymbols() {
@@ -90,9 +108,9 @@ public class SymbolInputView extends LinearLayout {
         for (int i = 0; i < count; i++) {
             Button btn = new Button(getContext(), null, android.R.attr.buttonStyleSmall);
             btn.setText(display[i]);
-            btn.setBackground(new ColorDrawable(0));
+            btn.setBackground(new ColorDrawable(Color.TRANSPARENT));
             btn.setTextColor(textColor);
-            addView(btn, new LayoutParams(-2, -1));
+            addView(btn, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
             int finalI = i;
             btn.setOnClickListener(
                     (view) -> {

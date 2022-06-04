@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Update spans on text change event
  *
- * @author Rose
+ * @author Rosemoe
  */
 public class MappedSpanUpdater {
 

@@ -264,10 +264,10 @@ public class CodeEditor extends View
     private InputMethodManager mInputMethodManager;
     private Cursor mCursor;
     private Content mText;
-    private ContentLine mBuffer;
     private Matrix mMatrix;
     private EditorColorScheme mColors;
-    private String mLnTip = "Line:";
+    private String mLnTip;
+    private String mFormatTip;
     private Language mLanguage;
     private long mLastMakeVisible = 0;
     private EditorAutoCompletion mCompletionWindow;
@@ -290,8 +290,6 @@ public class CodeEditor extends View
     private SelectionHandleStyle mHandleStyle;
     private CursorBlink mCursorBlink;
     protected List<Span> defSpans = new ArrayList<>(2);
-    private final LongArrayList mPostDrawLineNumbers = new LongArrayList();
-    private final LongArrayList mPostDrawCurrentLines = new LongArrayList();
     private CharPosition mSelectionAnchor;
     private HwAcceleratedRenderer mRenderer;
     private DirectAccessProps mProps;
@@ -464,6 +462,8 @@ public class CodeEditor extends View
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             mRenderer = new HwAcceleratedRenderer(this);
         }
+        mLnTip = getContext().getString(R.string.editor_line_number_tip_prefix);
+        mFormatTip = getContext().getString(R.string.editor_formatting);
         mProps = new DirectAccessProps();
         mEventManager = new EventManager();
         mDpUnit =
@@ -566,6 +566,20 @@ public class CodeEditor extends View
     public DirectAccessProps getProps() {
         return mProps;
     }
+
+     /**
+      * Set the tip text while formatting
+      */
+     public void setFormatTip(@NonNull String formatTip) {
+         this.mFormatTip = Objects.requireNonNull(formatTip);
+     }
+
+     /**
+      * @see #setFormatTip(String)
+      */
+     public String getFormatTip() {
+         return mFormatTip;
+     }
 
     /**
      * Set whether line number region will scroll together with code region
@@ -702,6 +716,7 @@ public class CodeEditor extends View
         mPainter.getPaintOther().setFontFeatureSettings(features);
         mPainter.getPaintGraph().setFontFeatureSettings(features);
         mPainter.updateTimestamp();
+        invalidate();
     }
 
     /**
@@ -905,6 +920,7 @@ public class CodeEditor extends View
      *
      * @see CursorAnimator
      * @see #getCursorAnimator()
+     * @see #setCursorAnimationEnabled(boolean) for disabling the animation
      */
     public void setCursorAnimator(@NonNull CursorAnimator cursorAnimator) {
         mCursorAnimator = cursorAnimator;
@@ -1034,14 +1050,6 @@ public class CodeEditor extends View
 
     public EditorPainter getEditorPainter() {
         return mPainter;
-    }
-
-    public LongArrayList getPostDrawLineNumbers() {
-        return mPostDrawLineNumbers;
-    }
-
-    public LongArrayList getPostDrawCurrentLines() {
-        return mPostDrawCurrentLines;
     }
 
     public Paint.FontMetricsInt getLineNumberMetrics() {
@@ -1477,21 +1485,6 @@ public class CodeEditor extends View
     }
 
     /**
-     * Switch current drawing context to the given line
-     *
-     * @param line Line going to draw or measure
-     */
-    @UnsupportedUserUsage
-    protected void prepareLine(int line) {
-        mBuffer = mText.getLine(line);
-    }
-
-    @UnsupportedUserUsage
-    ContentLine getLineBuffer() {
-        return mBuffer;
-    }
-
-    /**
      * Get the width of line number region
      *
      * @return width of line number region
@@ -1598,7 +1591,6 @@ public class CodeEditor extends View
         builder.setSelectionRange(mCursor.getLeft(), mCursor.getRight());
         int l = mCursor.getRightLine();
         int column = mCursor.getRightColumn();
-        prepareLine(l);
         boolean visible = true;
         float x = measureTextRegionOffset();
         x = x + mLayout.getCharLayoutOffset(l, column)[1];
@@ -2073,8 +2065,8 @@ public class CodeEditor extends View
         if (minSize < 2f) {
             throw new IllegalArgumentException("min size must be at least 2px");
         }
-        mEventHandler.minSize = minSize;
-        mEventHandler.maxSize = maxSize;
+        mEventHandler.scaleMinSize = minSize;
+        mEventHandler.scaleMaxSize = maxSize;
     }
 
     /**
@@ -2239,7 +2231,7 @@ public class CodeEditor extends View
                         new AlertDialog.Builder(getContext())
                                 .setTitle(replaceAll ? R.string.replaceAll : R.string.replace)
                                 .setView(et)
-                                .setNegativeButton(R.string.cancel, null)
+                                .setNegativeButton(android.R.string.cancel, null)
                                 .setPositiveButton(
                                         R.string.replace,
                                         (dialog, which) -> {
@@ -2817,6 +2809,7 @@ public class CodeEditor extends View
             mCursorPosition = findCursorBlock();
         }
         updateCursor();
+        updateSelection();
         mPainter.invalidateInCursor();
         if (!mEventHandler.hasAnyHeldHandle()) {
             mCursorAnimator.markEndPos();
@@ -2958,6 +2951,7 @@ public class CodeEditor extends View
         mCursor.setRight(lineRight, columnRight);
         mPainter.invalidateInCursor();
         updateCursor();
+        updateSelection();
         mCompletionWindow.hide();
         if (makeRightVisible) {
             ensurePositionVisible(lineRight, columnRight);
@@ -3310,6 +3304,7 @@ public class CodeEditor extends View
         }
         mInputMethodManager.updateSelection(
                 this, mCursor.getLeft(), mCursor.getRight(), candidatesStart, candidatesEnd);
+        Thread.dumpStack();
     }
 
     /** Update request result for monitoring request */
@@ -3374,7 +3369,7 @@ public class CodeEditor extends View
     public void updateCursor() {
         updateCursorAnchor();
         updateExtractedText();
-        if (!mText.isInBatchEdit()) {
+        if (!mText.isInBatchEdit() && mConnection.mComposingLine == -1) {
             updateSelection();
         }
     }
@@ -3885,9 +3880,9 @@ public class CodeEditor extends View
             warn = true;
         }
         if (warn) {
-            Log.i(
+            Log.w(
                     LOG_TAG,
-                    "onMeasure():Code editor does not support wrap_content mode when measuring.It"
+                    "onMeasure(): Code editor does not support wrap_content mode when measuring.It"
                             + " will just fill the whole space.");
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -3971,7 +3966,7 @@ public class CodeEditor extends View
                     && mHorizontalGlow.isFinished()
                     && horizontalAbsorb) {
                 mHorizontalGlow.onAbsorb((int) scroller.getCurrVelocity());
-                mEventHandler.leftOrRight = false;
+                mEventHandler.glowLeftOrRight = false;
             } else {
                 var max = getScrollMaxX();
                 if (scroller.getCurrX() >= max
@@ -3979,7 +3974,7 @@ public class CodeEditor extends View
                         && mHorizontalGlow.isFinished()
                         && horizontalAbsorb) {
                     mHorizontalGlow.onAbsorb((int) scroller.getCurrVelocity());
-                    mEventHandler.leftOrRight = true;
+                    mEventHandler.glowLeftOrRight = true;
                 }
             }
             if (scroller.getCurrY() <= 0
@@ -3987,7 +3982,7 @@ public class CodeEditor extends View
                     && mVerticalGlow.isFinished()
                     && verticalAbsorb) {
                 mVerticalGlow.onAbsorb((int) scroller.getCurrVelocity());
-                mEventHandler.topOrBottom = false;
+                mEventHandler.glowTopOrBottom = false;
             } else {
                 var max = getScrollMaxY();
                 if (scroller.getCurrY() >= max
@@ -3995,7 +3990,7 @@ public class CodeEditor extends View
                         && mVerticalGlow.isFinished()
                         && verticalAbsorb) {
                     mVerticalGlow.onAbsorb((int) scroller.getCurrVelocity());
-                    mEventHandler.topOrBottom = true;
+                    mEventHandler.glowTopOrBottom = true;
                 }
             }
             postInvalidateOnAnimation();

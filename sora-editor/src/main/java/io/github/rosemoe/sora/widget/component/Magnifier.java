@@ -36,12 +36,17 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.PixelCopy;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+
+import androidx.annotation.NonNull;
 
 import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.EditorPainter;
+
+import java.util.Objects;
 
 /**
  * Magnifier specially designed for CodeEditor
@@ -58,13 +63,15 @@ public class Magnifier implements EditorBuiltinComponent {
     private final float maxTextSize;
     private long expectedRequestTime;
     private boolean enabled = true;
+    private View parentView;
 
     /** Scale factor for regions */
-    private final float scaleFactor;
+    private float scaleFactor;
 
     public Magnifier(CodeEditor editor) {
         view = editor;
-        popup = new PopupWindow(editor);
+        parentView = editor;
+        popup = new PopupWindow();
         popup.setElevation(view.getDpUnit() * 8);
         @SuppressLint("InflateParams")
         var view = LayoutInflater.from(editor.getContext()).inflate(R.layout.magnifier_popup, null);
@@ -78,6 +85,41 @@ public class Magnifier implements EditorBuiltinComponent {
         scaleFactor = 1.35f;
         paint = new Paint();
     }
+
+    /**
+     * Set parent view for popup.
+     * @see io.github.rosemoe.sora.widget.base.EditorPopupWindow#setParentView(View)
+     */
+    public void setParentView(@NonNull View parentView) {
+        this.parentView = Objects.requireNonNull(parentView);
+    }
+
+     /**
+      * @see #setParentView(View)
+      */
+    @NonNull
+    public View getParentView() {
+        return parentView;
+    }
+
+     /**
+      * Set the scale factor of the image to be displayed in magnifier
+      * @param scaleFactor Scale factor. Must not be under 1.0
+      */
+     public void setScaleFactor(float scaleFactor) {
+         if (scaleFactor <= 1.0f) {
+             throw new IllegalArgumentException("factor can not be under 1.0");
+         }
+         this.scaleFactor = scaleFactor;
+     }
+
+     /**
+      * Get the scale factor of the image to be displayed in magnifier
+      * @see #setScaleFactor(float)
+      */
+     public float getScaleFactor() {
+         return scaleFactor;
+     }
 
     @Override
     public boolean isEnabled() {
@@ -124,7 +166,7 @@ public class Magnifier implements EditorBuiltinComponent {
         if (popup.isShowing()) {
             popup.update(left, top, popup.getWidth(), popup.getHeight());
         } else {
-            popup.showAtLocation(view, Gravity.START | Gravity.TOP, left, top);
+            popup.showAtLocation(parentView, Gravity.START | Gravity.TOP, left, top);
         }
         updateDisplay();
     }

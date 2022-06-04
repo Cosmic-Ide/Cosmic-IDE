@@ -105,6 +105,8 @@ public final class EditorTouchEventHandler
                 TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_SP, 8, Resources.getSystem().getDisplayMetrics());
         mMagnifier = new Magnifier(editor);
+        
+                        mInsertHandle = new SelectionHandle(SelectionHandle.BOTH);
     }
 
     public boolean hasAnyHeldHandle() {
@@ -286,7 +288,6 @@ public final class EditorTouchEventHandler
                         mThumbDownY = e.getY();
                         mThumbDownX = e.getX();
                         updateMagnifier(e);
-                        mInsertHandle = new SelectionHandle(SelectionHandle.BOTH);
                         dispatchHandle(HandleStateChangeEvent.HANDLE_TYPE_INSERT, true);
                     }
                     boolean left =

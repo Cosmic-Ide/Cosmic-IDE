@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -140,37 +141,6 @@ public class Content implements CharSequence {
         sInitialListCapacity = capacity;
     }
 
-    /**
-     * Test whether the two ContentLine have the same content
-     *
-     * @param a ContentLine
-     * @param b another ContentLine
-     * @return Whether equals in content
-     */
-    private static boolean equals(ContentLine a, ContentLine b) {
-        if (a.length() != b.length()) {
-            return false;
-        }
-        for (int i = 0; i < a.length(); i++) {
-            if (a.charAt(i) != b.charAt(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public char charAt(int index) {
-        checkIndex(index);
-        lock(false);
-        try {
-            CharPosition p = getIndexer().getCharPosition(index);
-            return charAt(p.line, p.column);
-        } finally {
-            unlock(false);
-        }
-    }
-
     @Override
     public int length() {
         return textLength;
@@ -218,6 +188,18 @@ public class Content implements CharSequence {
                 return '\n';
             }
             return lines.get(line).charAt(column);
+        } finally {
+            unlock(false);
+        }
+    }
+
+    @Override
+    public char charAt(int index) {
+        checkIndex(index);
+        lock(false);
+        try {
+            CharPosition p = getIndexer().getCharPosition(index);
+            return charAt(p.line, p.column);
         } finally {
             unlock(false);
         }
@@ -721,6 +703,34 @@ public class Content implements CharSequence {
         }
         c.setUndoEnabled(true);
         return c;
+    }
+
+    /*
+     * Get the hash code of this Object
+     * @return hash code of this object
+     */
+     @Override
+     public int hashCode() {
+       return Objects.hash(this.length(), this.lines);
+     }
+
+    /**
+     * Test whether the two ContentLine have the same content
+     *
+     * @param a ContentLine
+     * @param b another ContentLine
+     * @return Whether equals in content
+     */
+    private static boolean equals(ContentLine a, ContentLine b) {
+        if (a.length() != b.length()) {
+            return false;
+        }
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

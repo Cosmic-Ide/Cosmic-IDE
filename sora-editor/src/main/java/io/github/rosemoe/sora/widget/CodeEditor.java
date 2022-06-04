@@ -3532,8 +3532,9 @@ public class CodeEditor extends View
                 }
                 break;
             default:
-                return super.dispatchTouchEvent(event);
+                break;
         }
+        return super.dispatchTouchEvent(event);
     }
 
     @Override

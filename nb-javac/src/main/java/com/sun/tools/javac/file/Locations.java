@@ -1262,6 +1262,8 @@ public class Locations {
                     case ".jar":
                     case ".jmod":
                         return;
+                    default:
+                        break;
                 }
             }
             throw new IllegalArgumentException(p.toString());
@@ -1700,6 +1702,8 @@ public class Locations {
                                 depth--;
                         }
                         break;
+                    default:
+                        break;
                 }
             }
             if (depth > 0) throw new IllegalArgumentException("mismatched braces");
@@ -1716,6 +1720,8 @@ public class Locations {
 
                     case '}':
                         if (--depth == 0) return i;
+                        break;
+                    default:
                         break;
                 }
             }

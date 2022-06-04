@@ -394,6 +394,8 @@ public class EditorPainter {
                     case Span.FLAG_TYPO:
                         color = mEditor.getColorScheme().getColor(EditorColorScheme.PROBLEM_TYPO);
                         break;
+                    default:
+                        break;
                 }
                 if (color != 0 && span.column >= 0 && spanEnd - span.column >= 0) {
                     // Start and end X offset
@@ -614,6 +616,9 @@ public class EditorPainter {
                                 offsetX + (lineNumberWidth + mEditor.getDividerMargin()) / 2f,
                                 y,
                                 mPaintOther);
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -769,6 +774,9 @@ public class EditorPainter {
                         offsetX + (width + mEditor.getDividerMargin()) / 2f,
                         y,
                         mPaintOther);
+                break;
+            default:
+                break;
         }
         TemporaryCharBuffer.recycle(buffer);
     }
@@ -1224,6 +1232,8 @@ public class EditorPainter {
                                 color =
                                         mEditor.getColorScheme()
                                                 .getColor(EditorColorScheme.PROBLEM_TYPO);
+                                break;
+                            default:
                                 break;
                         }
                         if (color != 0 && span.column >= 0 && spanEnd - span.column >= 0) {

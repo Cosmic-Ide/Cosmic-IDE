@@ -2256,6 +2256,8 @@ public class CodeEditor extends View
                                         })
                                 .show();
                         break;
+                    default:
+                        break;
                 }
                 return false;
             }
@@ -3505,8 +3507,9 @@ public class CodeEditor extends View
             case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
                 movePageUp();
                 return true;
+            default:
+                return super.performAccessibilityAction(action, arguments);
         }
-        return super.performAccessibilityAction(action, arguments);
     }
 
     @Override
@@ -3528,8 +3531,9 @@ public class CodeEditor extends View
                     }
                 }
                 break;
+            default:
+                return super.dispatchTouchEvent(event);
         }
-        return super.dispatchTouchEvent(event);
     }
 
     @Override
@@ -3604,6 +3608,9 @@ public class CodeEditor extends View
                     mSelectionAnchor = null;
                 }
                 mKeyMetaStates.adjust();
+                break;
+            default:
+                break;
         }
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
@@ -3767,6 +3774,8 @@ public class CodeEditor extends View
                                 redo();
                             }
                             return e.result(true);
+                        default:
+                            break;
                     }
                 } else if (!event.isCtrlPressed() && !event.isAltPressed()) {
                     if (event.isPrintingKey() && isEditable()) {

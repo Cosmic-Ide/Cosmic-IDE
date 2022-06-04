@@ -19,7 +19,6 @@ public class FileUtil {
 
     private static String privateDataDirectory;
     private static String javaDir;
-    private Indexer indexer;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory;

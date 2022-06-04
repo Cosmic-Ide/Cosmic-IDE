@@ -116,11 +116,11 @@ public final class AndroidBidi {
         } else if (bidiFunction != null) {
             return bidiImplLollipop(dir, chs, chInfo);
         } else {
-            return bidiFallback(dir, chInfo);
+            return bidiFallback(chInfo);
         }
     }
 
-    private static int bidiFallback(int dir, byte[] chInfo) {
+    private static int bidiFallback(byte[] chInfo) {
         Arrays.fill(chInfo, (byte) 0);
         return DIR_LEFT_TO_RIGHT;
     }
@@ -131,7 +131,7 @@ public final class AndroidBidi {
             return Objects.requireNonNull(res);
         } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             e.printStackTrace();
-            return bidiFallback(dir, chInfo);
+            return bidiFallback(chInfo);
         }
     }
 
@@ -142,7 +142,7 @@ public final class AndroidBidi {
             return Objects.requireNonNull(res);
         } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
             e.printStackTrace();
-            return bidiFallback(dir, chInfo);
+            return bidiFallback(chInfo);
         }
     }
 

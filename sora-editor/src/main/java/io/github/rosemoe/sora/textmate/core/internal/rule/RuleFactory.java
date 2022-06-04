@@ -178,7 +178,6 @@ public class RuleFactory {
     private static ICompilePatternsResult _compilePatterns(
             Collection<IRawRule> patterns, IRuleFactoryHelper helper, IRawRepository repository) {
         Collection<Integer> r = new ArrayList<Integer>();
-        int len;
         int patternId;
         IRawGrammar externalGrammar;
         Rule rule;

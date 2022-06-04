@@ -900,11 +900,7 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
             dir = (getSourceOutDir() != null ? getSourceOutDir() : getClassOutDir());
         } else {
             Iterable<? extends Path> path = locations.getLocation(location);
-            dir = null;
-            for (Path f : path) {
-                dir = f;
-                break;
-            }
+            dir = path.iterator().next();
         }
 
         try {

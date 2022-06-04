@@ -249,7 +249,7 @@ public class Locations {
         Path nf = normalize(file);
         for (Path p : searchPath) {
             Path np = normalize(p);
-            if (np.getFileSystem() == nf.getFileSystem()
+            if (np.getFileSystem().equals(nf.getFileSystem())
                     && Files.isDirectory(np)
                     && nf.startsWith(np)) {
                 return true;
@@ -811,11 +811,11 @@ public class Locations {
                     StandardLocation.PLATFORM_CLASS_PATH,
                     Option.BOOT_CLASS_PATH,
                     Option.XBOOTCLASSPATH,
-                    Option.XBOOTCLASSPATH_PREPEND,
-                    Option.XBOOTCLASSPATH_APPEND,
-                    Option.ENDORSEDDIRS,
+                    XBOOTCLASSPATH_PREPEND,
+                    XBOOTCLASSPATH_APPEND,
+                    ENDORSEDDIRS,
                     Option.DJAVA_ENDORSED_DIRS,
-                    Option.EXTDIRS,
+                    EXTDIRS,
                     Option.DJAVA_EXT_DIRS);
         }
 
@@ -849,9 +849,9 @@ public class Locations {
                 case XBOOTCLASSPATH:
                     return Option.BOOT_CLASS_PATH;
                 case DJAVA_ENDORSED_DIRS:
-                    return Option.ENDORSEDDIRS;
+                    return ENDORSEDDIRS;
                 case DJAVA_EXT_DIRS:
-                    return Option.EXTDIRS;
+                    return EXTDIRS;
                 default:
                     return option;
             }
@@ -1812,7 +1812,7 @@ public class Locations {
         private ModuleTable moduleTable;
 
         SystemModulesLocationHandler() {
-            super(StandardLocation.SYSTEM_MODULES, Option.SYSTEM);
+            super(SYSTEM_MODULES, Option.SYSTEM);
             systemJavaHome = Locations.javaHome;
         }
 

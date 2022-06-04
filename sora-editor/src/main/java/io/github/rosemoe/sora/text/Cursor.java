@@ -50,16 +50,6 @@ public final class Cursor {
     }
 
     /**
-     * Whether the given character is a white space character
-     *
-     * @param c Character to check
-     * @return Result whether a space char
-     */
-    private static boolean isWhitespace(char c) {
-        return (c == '\t' || c == ' ');
-    }
-
-    /**
      * Make left and right cursor on the given position
      *
      * @param line The line position

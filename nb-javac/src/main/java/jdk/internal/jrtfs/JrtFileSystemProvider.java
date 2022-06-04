@@ -138,19 +138,6 @@ public final class JrtFileSystemProvider extends FileSystemProvider {
         }
     }
 
-    @SuppressWarnings("removal")
-    private static URLClassLoader newJrtFsLoader(Path jrtfs) {
-        final URL url;
-        try {
-            url = jrtfs.toUri().toURL();
-        } catch (MalformedURLException mue) {
-            throw new IllegalArgumentException(mue);
-        }
-
-        final URL[] urls = new URL[] {url};
-        return new JrtFsLoader(urls);
-    }
-
     @Override
     public Path getPath(URI uri) {
         //        checkPermission();

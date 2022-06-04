@@ -27,8 +27,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractLineList implements IModelLines {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractLineList.class.getName());
-
     private final List<ModelLine> list = Collections.synchronizedList(new ArrayList<>());
 
     private TMModel model;

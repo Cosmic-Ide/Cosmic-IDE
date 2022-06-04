@@ -85,7 +85,9 @@ public class FileUtil {
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
-                e.printStackTrace();
+                if (e != null) {
+                  e.printStackTrace();
+                }
                 Files.delete(dir);
                 return FileVisitResult.CONTINUE;
             }

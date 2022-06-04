@@ -228,6 +228,12 @@ public class Locations {
         fsEnv = Collections.singletonMap("releaseVersion", multiReleaseValue);
     }
 
+    boolean contains(Location location, Path file) throws IOException {
+        LocationHandler h = getHandler(location);
+        if (h == null) throw new IllegalArgumentException("unknown location");
+        return h.contains(file);
+    }
+
     private boolean contains(Collection<Path> searchPath, Path file) throws IOException {
 
         if (searchPath == null) {
@@ -646,12 +652,12 @@ public class Locations {
             explicit = true;
         }
 
+        private boolean listed;
+
         @Override
         Location getLocationForModule(Path file) {
             return (moduleTable == null) ? null : moduleTable.get(file);
         }
-
-        private boolean listed;
 
         @Override
         Iterable<Set<Location>> listLocationsForModules() throws IOException {
@@ -2188,12 +2194,6 @@ public class Locations {
     Iterable<Set<Location>> listLocationsForModules(Location location) throws IOException {
         LocationHandler h = getHandler(location);
         return (h == null ? null : h.listLocationsForModules());
-    }
-
-    boolean contains(Location location, Path file) throws IOException {
-        LocationHandler h = getHandler(location);
-        if (h == null) throw new IllegalArgumentException("unknown location");
-        return h.contains(file);
     }
 
     protected LocationHandler getHandler(Location location) {

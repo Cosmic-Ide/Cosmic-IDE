@@ -709,10 +709,10 @@ public class Content implements CharSequence {
      * Get the hash code of this Object
      * @return hash code of this object
      */
-     @Override
-     public int hashCode() {
-       return Objects.hash(this.length(), this.lines);
-     }
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.length(), this.lines);
+    }
 
     /**
      * Test whether the two ContentLine have the same content

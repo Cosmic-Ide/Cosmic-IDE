@@ -23,9 +23,6 @@
  */
 package io.github.rosemoe.sora.widget;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.app.ProgressDialog;
 import android.widget.Toast;
 
@@ -266,7 +263,13 @@ public class EditorSearcher {
         }
 
         var context = mEditor.getContext();
-        final var dialog = ProgressDialog.show(context, context.getString(R.string.replaceAll), context.getString(R.string.editor_search_replacing), true, false);
+        final var dialog =
+                ProgressDialog.show(
+                        context,
+                        context.getString(R.string.replaceAll),
+                        context.getString(R.string.editor_search_replacing),
+                        true,
+                        false);
 
         final var res = mLastResults;
         new Thread(

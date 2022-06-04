@@ -1150,8 +1150,7 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
     @Override
     @DefinedBy(Api.COMPILER)
     public void setLocationForModule(
-            Location location, String module, Collection<? extends Path> paths)
-            throws IOException {
+            Location location, String module, Collection<? extends Path> paths) throws IOException {
         nullCheck(location);
         checkModuleOrientedOrOutputLocation(location);
         locations.setLocationForModule(location, nullCheck(module), nullCheck(paths));

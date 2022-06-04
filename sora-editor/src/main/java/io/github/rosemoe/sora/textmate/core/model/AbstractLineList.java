@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Abstract class for Model lines used by the TextMate model. Implementation class must :

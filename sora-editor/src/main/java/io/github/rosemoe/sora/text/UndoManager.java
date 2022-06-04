@@ -36,10 +36,8 @@ import java.util.List;
  */
 public final class UndoManager implements ContentListener, Parcelable {
 
-    /**
-      * The max time span limit for merging actions
-      */
-     private static long sMergeTimeLimit = 8000L;
+    /** The max time span limit for merging actions */
+    private static long sMergeTimeLimit = 8000L;
 
     public static final Creator<UndoManager> CREATOR =
             new Creator<>() {
@@ -65,19 +63,20 @@ public final class UndoManager implements ContentListener, Parcelable {
             };
 
     /**
-      * Set max time span limit for merging actions
-      * @param mergeTimeLimit Time in millisecond
-      */
-     public static void setMergeTimeLimit(long mergeTimeLimit) {
-         UndoManager.sMergeTimeLimit = mergeTimeLimit;
-     }
+     * Set max time span limit for merging actions
+     *
+     * @param mergeTimeLimit Time in millisecond
+     */
+    public static void setMergeTimeLimit(long mergeTimeLimit) {
+        UndoManager.sMergeTimeLimit = mergeTimeLimit;
+    }
 
-     /**
-      * @see #setMergeTimeLimit(long)
-      */
-     public static long getMergeTimeLimit() {
-         return sMergeTimeLimit;
-     }
+    /**
+     * @see #setMergeTimeLimit(long)
+     */
+    public static long getMergeTimeLimit() {
+        return sMergeTimeLimit;
+    }
 
     private final List<ContentAction> mActionStack;
     private boolean mUndoEnabled;

@@ -88,38 +88,41 @@ public class Magnifier implements EditorBuiltinComponent {
 
     /**
      * Set parent view for popup.
+     *
      * @see io.github.rosemoe.sora.widget.base.EditorPopupWindow#setParentView(View)
      */
     public void setParentView(@NonNull View parentView) {
         this.parentView = Objects.requireNonNull(parentView);
     }
 
-     /**
-      * @see #setParentView(View)
-      */
+    /**
+     * @see #setParentView(View)
+     */
     @NonNull
     public View getParentView() {
         return parentView;
     }
 
-     /**
-      * Set the scale factor of the image to be displayed in magnifier
-      * @param scaleFactor Scale factor. Must not be under 1.0
-      */
-     public void setScaleFactor(float scaleFactor) {
-         if (scaleFactor <= 1.0f) {
-             throw new IllegalArgumentException("factor can not be under 1.0");
-         }
-         this.scaleFactor = scaleFactor;
-     }
+    /**
+     * Set the scale factor of the image to be displayed in magnifier
+     *
+     * @param scaleFactor Scale factor. Must not be under 1.0
+     */
+    public void setScaleFactor(float scaleFactor) {
+        if (scaleFactor <= 1.0f) {
+            throw new IllegalArgumentException("factor can not be under 1.0");
+        }
+        this.scaleFactor = scaleFactor;
+    }
 
-     /**
-      * Get the scale factor of the image to be displayed in magnifier
-      * @see #setScaleFactor(float)
-      */
-     public float getScaleFactor() {
-         return scaleFactor;
-     }
+    /**
+     * Get the scale factor of the image to be displayed in magnifier
+     *
+     * @see #setScaleFactor(float)
+     */
+    public float getScaleFactor() {
+        return scaleFactor;
+    }
 
     @Override
     public boolean isEnabled() {

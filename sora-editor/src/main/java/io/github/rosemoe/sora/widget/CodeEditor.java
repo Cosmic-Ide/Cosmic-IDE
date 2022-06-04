@@ -567,19 +567,17 @@ public class CodeEditor extends View
         return mProps;
     }
 
-     /**
-      * Set the tip text while formatting
-      */
-     public void setFormatTip(@NonNull String formatTip) {
-         this.mFormatTip = Objects.requireNonNull(formatTip);
-     }
+    /** Set the tip text while formatting */
+    public void setFormatTip(@NonNull String formatTip) {
+        this.mFormatTip = Objects.requireNonNull(formatTip);
+    }
 
-     /**
-      * @see #setFormatTip(String)
-      */
-     public String getFormatTip() {
-         return mFormatTip;
-     }
+    /**
+     * @see #setFormatTip(String)
+     */
+    public String getFormatTip() {
+        return mFormatTip;
+    }
 
     /**
      * Set whether line number region will scroll together with code region

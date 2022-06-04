@@ -1378,7 +1378,6 @@ public class JavaInputAstVisitor extends TreePathScanner<Void, Void> {
         return null;
     }
 
-
     protected static final long COMPACT_RECORD_CONSTRUCTOR = 1L << 51;
 
     protected static final long RECORD = 1L << 61;

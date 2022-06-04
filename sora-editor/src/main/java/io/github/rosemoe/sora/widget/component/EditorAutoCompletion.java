@@ -184,14 +184,14 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         if (mCurrent != -1) mLayout.ensureListPositionVisible(mCurrent, mAdapter.getItemHeight());
     }
 
-    /** Select current position */
-    public void select() {
-        select(mCurrent);
-    }
-
     /** Reject the IME's requests to set composing region/text */
     public boolean shouldRejectComposing() {
         return mCancelShowUp;
+    }
+
+    /** Select current position */
+    public void select() {
+        select(mCurrent);
     }
 
     /**

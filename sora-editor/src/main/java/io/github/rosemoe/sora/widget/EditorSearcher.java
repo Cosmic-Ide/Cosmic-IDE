@@ -26,7 +26,7 @@ package io.github.rosemoe.sora.widget;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.ProgressDialog;
+import android.app.ProgressDialog;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;

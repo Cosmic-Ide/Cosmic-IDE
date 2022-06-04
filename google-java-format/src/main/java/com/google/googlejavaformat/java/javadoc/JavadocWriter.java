@@ -71,6 +71,10 @@ final class JavadocWriter {
         requestWhitespace(WHITESPACE);
     }
 
+    private void requestWhitespace(RequestedWhitespace requestedWhitespace) {
+        this.requestedWhitespace = max(requestedWhitespace, this.requestedWhitespace);
+    }
+
     void requestMoeBeginStripComment(Token token) {
         // We queue this up so that we can put it after any requested whitespace.
         requestedMoeBeginStripComment = checkNotNull(token);
@@ -267,10 +271,6 @@ final class JavadocWriter {
 
     private void requestNewline() {
         requestWhitespace(NEWLINE);
-    }
-
-    private void requestWhitespace(RequestedWhitespace requestedWhitespace) {
-        this.requestedWhitespace = max(requestedWhitespace, this.requestedWhitespace);
     }
 
     /**

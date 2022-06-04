@@ -26,4 +26,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation "org.jruby.jcodings:jcodings:1.0.57"
     implementation "org.jruby.joni:joni:2.1.43"
+    implementation 'org.yaml:snakeyaml:1.30'
 }

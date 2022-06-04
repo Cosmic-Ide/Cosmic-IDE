@@ -110,6 +110,16 @@ public class WordwrapLayout extends AbstractLayout {
         return index;
     }
 
+    private int findRow(int line, int column) {
+        int row = findRow(line);
+        while (rowTable.get(row).endColumn <= column
+                && row + 1 < rowTable.size()
+                && rowTable.get(row + 1).line == line) {
+            row++;
+        }
+        return row;
+    }
+
     private void breakLines(int startLine, int endLine) {
         int insertPosition = 0;
         while (insertPosition < rowTable.size()) {
@@ -234,16 +244,6 @@ public class WordwrapLayout extends AbstractLayout {
     @Override
     public RowIterator obtainRowIterator(int initialRow) {
         return new WordwrapLayoutRowItr(initialRow);
-    }
-
-    private int findRow(int line, int column) {
-        int row = findRow(line);
-        while (rowTable.get(row).endColumn <= column
-                && row + 1 < rowTable.size()
-                && rowTable.get(row + 1).line == line) {
-            row++;
-        }
-        return row;
     }
 
     @Override

@@ -14,7 +14,7 @@ package io.github.rosemoe.sora.textmate.core.internal.parser.yaml;
 
 import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,10 +39,10 @@ public final class YAMLPListParser<T> {
 		pList.startElement(null, "array", null, null);
 
 		for (final Object item : list) {
-			if (item instanceof final List items) {
-				addListToPList(pList, items);
-			} else if (item instanceof final Map map) {
-				addMapToPList(pList, map);
+			if (item instanceof List) {
+				addListToPList(pList, (List) item);
+			} else if (item instanceof Map) {
+				addMapToPList(pList, (Map) item);
 			} else {
 				addStringToPList(pList, item.toString());
 			}
@@ -60,11 +60,10 @@ public final class YAMLPListParser<T> {
 			pList.startElement(null, "key", null, null);
 			pList.characters(entry.getKey());
 			pList.endElement(null, "key", null);
-			if (entry.getValue() instanceof final List list) {
-				addListToPList(pList, list);
+			if (entry.getValue() instanceof List) {
+				addListToPList(pList, (List) entry.getValue());
 			} else if (entry.getValue() instanceof Map) {
-			  final Map valueMap = (Map) entry.getValue();
-				addMapToPList(pList, valueMap);
+				addMapToPList(pList, (Map) entry.getValue());
 			} else {
 				addStringToPList(pList, castNonNull(entry.getValue()).toString());
 			}
@@ -80,7 +79,7 @@ public final class YAMLPListParser<T> {
 	}
 
 	@Override
-	public T parse(final Reader contents) throws SAXException, YAMLException {
+	public T parse(final InputStream contents) throws SAXException, YAMLException {
 		final var pList = new PList<T>(theme);
 		pList.startElement(null, "plist", null, null);
 		addMapToPList(pList, new Yaml().loadAs(contents, Map.class));

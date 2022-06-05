@@ -18,6 +18,7 @@ package io.github.rosemoe.sora.textmate.core.internal.theme.reader;
 
 import io.github.rosemoe.sora.textmate.core.internal.parser.json.JSONPListParser;
 import io.github.rosemoe.sora.textmate.core.internal.parser.xml.XMLPListParser;
+import io.github.rosemoe.sora.textmate.core.inernal.parser.yaml.YAMLPListParser;
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 
 import java.io.InputStream;
@@ -45,6 +46,16 @@ public class ThemeReader {
                     return parser.parse(contents);
                 }
             };
+    public static final IThemeParser YAML_PARSER =
+                new IThemeParser() {
+    
+                    private final YAMLPListParser<IRawTheme> parser = new YAMLPListParser<>(true);
+    
+                    @Override
+                    public IRawTheme parse(InputStream contents) throws Exception {
+                        return parser.parse(contents);
+                    }
+                };
 
     /** Helper class, use methods statically */
     private ThemeReader() {}
@@ -57,6 +68,9 @@ public class ThemeReader {
     private static IThemeParser getThemeParser(String filePath) {
         if (filePath.endsWith(".json")) {
             return JSON_PARSER;
+        }
+        if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
+            return YAML_PARSER;
         }
         return XML_PARSER;
     }

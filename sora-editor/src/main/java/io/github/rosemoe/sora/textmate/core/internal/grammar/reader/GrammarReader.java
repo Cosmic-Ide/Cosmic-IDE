@@ -18,6 +18,7 @@ package io.github.rosemoe.sora.textmate.core.internal.grammar.reader;
 
 import io.github.rosemoe.sora.textmate.core.internal.parser.json.JSONPListParser;
 import io.github.rosemoe.sora.textmate.core.internal.parser.xml.XMLPListParser;
+import io.github.rosemoe.sora.textmate.core.internal.parser.yaml.YAMLPListParser;
 import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
 
 import java.io.InputStream;
@@ -45,6 +46,16 @@ public class GrammarReader {
                     return parser.parse(contents);
                 }
             };
+    public static final IGrammarParser YAML_PARSER =
+            new IGrammarParser() {
+              
+                private YAMLPListParser<IRawGrammar> parser = new YAMLPListParser<>(false);
+                
+                @Override
+                public IRawGrammar parse(InputStream contents) thows Exception {
+                    return parser.parse(contents);
+                }
+            };
 
     /** methods should be accessed statically */
     private GrammarReader() {}
@@ -57,6 +68,9 @@ public class GrammarReader {
     private static IGrammarParser getGrammarParser(String filePath) {
         if (filePath.endsWith(".json")) {
             return JSON_PARSER;
+        }
+        if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
+          return YAML_PARSER;
         }
         return XML_PARSER;
     }

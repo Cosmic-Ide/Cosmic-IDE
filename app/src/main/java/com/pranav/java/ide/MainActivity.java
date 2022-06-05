@@ -340,7 +340,7 @@ public final class MainActivity extends AppCompatActivity {
                             "java.tmLanguage.json",
                             getAssets().open("textmate/java/syntaxes/java.tmLanguage.yaml"),
                             new InputStreamReader(
-                                    getAssets().open("textmate/java/language-configuration.yaml")),
+                                    getAssets().open("textmate/java/language-configuration.json")),
                             getDarculaTheme());
             return language;
         } catch (Exception e) {

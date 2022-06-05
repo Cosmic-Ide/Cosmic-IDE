@@ -81,7 +81,7 @@ public final class YAMLPListParser<T> {
 	public T parse(final InputStream contents) throws SAXException, YAMLException {
 		final var pList = new PList<T>(theme);
 		pList.startElement(null, "plist", null, null);
-		addMapToPList(pList, new Yaml().loadAs(contents, Map<String, Object>.class));
+		addMapToPList(pList, new Yaml().loadAs(contents, Map.class));
 		pList.endElement(null, "plist", null);
 		return pList.getResult();
 	}

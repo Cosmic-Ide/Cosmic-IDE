@@ -378,6 +378,8 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
                                     case MSG_EXIT:
                                         looper.quit();
                                         break;
+                                    default:
+                                    break;
                                 }
                             } catch (Exception e) {
                                 Log.w(

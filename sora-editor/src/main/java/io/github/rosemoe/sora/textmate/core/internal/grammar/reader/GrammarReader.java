@@ -52,7 +52,7 @@ public class GrammarReader {
                 private YAMLPListParser<IRawGrammar> parser = new YAMLPListParser<>(false);
                 
                 @Override
-                public IRawGrammar parse(InputStream contents) thows Exception {
+                public IRawGrammar parse(InputStream contents) throws Exception {
                     return parser.parse(contents);
                 }
             };

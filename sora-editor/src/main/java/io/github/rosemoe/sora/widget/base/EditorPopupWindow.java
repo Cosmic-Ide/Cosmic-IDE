@@ -99,6 +99,8 @@ public class EditorPopupWindow {
                                 return;
                             }
                             break;
+                        default:
+                        break;
                     }
                     if (isFeatureEnabled(FEATURE_SCROLL_AS_CONTENT)) {
                         applyWindowAttributes(false);

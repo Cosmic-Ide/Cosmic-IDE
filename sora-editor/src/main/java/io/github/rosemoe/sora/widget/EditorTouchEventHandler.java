@@ -380,6 +380,8 @@ public final class EditorTouchEventHandler
                 stopEdgeScroll();
                 dismissMagnifier();
                 break;
+            default:
+                break;
         }
         return false;
     }
@@ -403,6 +405,8 @@ public final class EditorTouchEventHandler
                 this.mRightHandle.applyPosition(e);
                 scrollIfThumbReachesEdge(e);
                 return true;
+            default:
+                break;
         }
         return false;
     }
@@ -938,6 +942,8 @@ public final class EditorTouchEventHandler
                                         false,
                                         SelectionChangeEvent.CAUSE_SELECTION_HANDLE);
                             }
+                            break;
+                        default:
                             break;
                     }
                 }

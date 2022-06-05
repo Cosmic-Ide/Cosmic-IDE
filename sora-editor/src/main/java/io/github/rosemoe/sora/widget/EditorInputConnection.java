@@ -600,6 +600,8 @@ class EditorInputConnection extends BaseInputConnection {
             case android.R.id.redo:
                 mEditor.redo();
                 return true;
+            default:
+            break;
         }
         return false;
     }

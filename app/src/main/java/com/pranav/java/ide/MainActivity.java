@@ -338,9 +338,9 @@ public final class MainActivity extends AppCompatActivity {
             var language =
                     TextMateLanguage.create(
                             "java.tmLanguage.json",
-                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.yaml"),
                             new InputStreamReader(
-                                    getAssets().open("textmate/java/language-configuration.json")),
+                                    getAssets().open("textmate/java/language-configuration.yaml")),
                             getDarculaTheme());
             return language;
         } catch (Exception e) {

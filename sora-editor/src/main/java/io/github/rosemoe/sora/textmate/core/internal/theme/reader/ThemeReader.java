@@ -18,7 +18,7 @@ package io.github.rosemoe.sora.textmate.core.internal.theme.reader;
 
 import io.github.rosemoe.sora.textmate.core.internal.parser.json.JSONPListParser;
 import io.github.rosemoe.sora.textmate.core.internal.parser.xml.XMLPListParser;
-import io.github.rosemoe.sora.textmate.core.inernal.parser.yaml.YAMLPListParser;
+import io.github.rosemoe.sora.textmate.core.internal.parser.yaml.YAMLPListParser;
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 
 import java.io.InputStream;

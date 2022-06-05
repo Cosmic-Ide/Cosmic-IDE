@@ -48,7 +48,6 @@ public class PList<T> extends DefaultHandler {
             }
         }
         this.text = new StringBuilder("");
-        super.startElement(uri, localName, qName, attributes);
     }
 
     private PListObject create(PListObject parent, boolean valueAsArray) {
@@ -61,7 +60,6 @@ public class PList<T> extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         endElement(localName);
-        super.endElement(uri, localName, qName);
     }
 
     private void endElement(String tagName) {
@@ -125,7 +123,10 @@ public class PList<T> extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         this.text.append(String.valueOf(ch, start, length));
-        super.characters(ch, start, length);
+    }
+    
+    public void characters(char[] ch) {
+      this.text.append(String.valueOf(ch));
     }
 
     public T getResult() {

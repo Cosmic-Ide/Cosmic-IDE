@@ -65,24 +65,23 @@ public final class YAMLPListParser<T> {
 			} else if (entry.getValue() instanceof Map) {
 				addMapToPList(pList, (Map) entry.getValue());
 			} else {
-				addStringToPList(pList, castNonNull(entry.getValue()).toString());
+				addStringToPList(pList, entry.getValue().toString());
 			}
 		}
 
 		pList.endElement(null, "dict", null);
 	}
 
-	private void addStringToPList(final PListContentHandler<T> pList, final String value) throws SAXException {
+	private void addStringToPList(final PList<T> pList, final String value) throws SAXException {
 		pList.startElement(null, "string", null, null);
 		pList.characters(value);
 		pList.endElement(null, "string", null);
 	}
 
-	@Override
 	public T parse(final InputStream contents) throws SAXException, YAMLException {
 		final var pList = new PList<T>(theme);
 		pList.startElement(null, "plist", null, null);
-		addMapToPList(pList, new Yaml().loadAs(contents, Map.class));
+		addMapToPList(pList, new Yaml().loadAs(contents, Map<String, Object>.class));
 		pList.endElement(null, "plist", null);
 		return pList.getResult();
 	}

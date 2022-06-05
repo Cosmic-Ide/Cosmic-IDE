@@ -24,6 +24,7 @@ public class JavacAnalyzer {
 
     private final SharedPreferences prefs;
     private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+    private boolean isFirstRun = true;
 
     public JavacAnalyzer(Context context) {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
@@ -82,6 +83,11 @@ public class JavacAnalyzer {
 
         task.parse();
         task.analyze();
+        isFirstRun = false;
+    }
+
+    public void isFirstRun() {
+      return this.isFirstRun;
     }
 
     public void reset() {

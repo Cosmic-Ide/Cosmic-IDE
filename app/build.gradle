@@ -78,6 +78,7 @@ dependencies {
     implementation project(path: ':common')
     implementation project(path: ':sora-editor')
     implementation project(path: ':android-compiler')
+    implementation project(path: ':nb-javac')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha06'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha06'

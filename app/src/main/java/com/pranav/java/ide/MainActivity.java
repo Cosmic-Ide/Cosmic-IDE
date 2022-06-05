@@ -37,6 +37,7 @@ import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
+import com.pranav.java.ide.compiler.ProblemMarker;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 
@@ -45,6 +46,7 @@ import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.event.ContentChangeEvent;
 
 import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
@@ -67,6 +69,7 @@ public final class MainActivity extends AppCompatActivity {
 
     private AlertDialog loadingDialog;
     private Thread runThread;
+    private ProblemMarker marker;
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
     private String temp;
@@ -84,6 +87,9 @@ public final class MainActivity extends AppCompatActivity {
 
         editor = findViewById(R.id.editor);
         drawer = findViewById(R.id.mDrawerLayout);
+        marker = new ProblemMarker(editor);
+        
+        ContentChangeEvent.setAfterContentChangedListener(() -> marker.run());
 
         var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

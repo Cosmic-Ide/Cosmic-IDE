@@ -125,8 +125,8 @@ public class PList<T> extends DefaultHandler {
         this.text.append(String.valueOf(ch, start, length));
     }
     
-    public void characters(char[] ch) {
-      this.text.append(String.valueOf(ch));
+    public void characters(String chars) {
+      this.text.append(chars);
     }
 
     public T getResult() {

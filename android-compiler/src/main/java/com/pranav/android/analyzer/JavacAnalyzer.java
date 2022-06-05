@@ -83,10 +83,10 @@ public class JavacAnalyzer {
 
         task.parse();
         task.analyze();
-        isFirstRun = false;
+        isFirstTime = false;
     }
 
-    public void isFirstRun() {
+    public boolean isFirstRun() {
       return this.isFirstTime;
     }
 

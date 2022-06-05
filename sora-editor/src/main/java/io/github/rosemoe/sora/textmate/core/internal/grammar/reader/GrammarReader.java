@@ -48,9 +48,9 @@ public class GrammarReader {
             };
     public static final IGrammarParser YAML_PARSER =
             new IGrammarParser() {
-              
+
                 private YAMLPListParser<IRawGrammar> parser = new YAMLPListParser<>(false);
-                
+
                 @Override
                 public IRawGrammar parse(InputStream contents) throws Exception {
                     return parser.parse(contents);
@@ -70,7 +70,7 @@ public class GrammarReader {
             return JSON_PARSER;
         }
         if (filePath.endsWith(".yaml") || filePath.endsWith(".yml")) {
-          return YAML_PARSER;
+            return YAML_PARSER;
         }
         return XML_PARSER;
     }

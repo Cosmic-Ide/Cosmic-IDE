@@ -601,7 +601,7 @@ class EditorInputConnection extends BaseInputConnection {
                 mEditor.redo();
                 return true;
             default:
-            break;
+                break;
         }
         return false;
     }

@@ -55,7 +55,7 @@ public class JSONPListParser<T> {
                 case NAME:
                     String lastName = reader.nextName();
                     pList.startElement(null, "key", null, null);
-                    pList.characters(lastName.toCharArray(), 0, lastName.length());
+                    pList.characters(lastName);
                     pList.endElement(null, "key", null);
                     break;
                 case NULL:
@@ -70,7 +70,7 @@ public class JSONPListParser<T> {
                 case STRING:
                     String value = reader.nextString();
                     pList.startElement(null, "string", null, null);
-                    pList.characters(value.toCharArray(), 0, value.length());
+                    pList.characters(value);
                     pList.endElement(null, "string", null);
                     break;
                 case END_DOCUMENT:

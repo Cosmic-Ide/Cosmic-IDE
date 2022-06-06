@@ -15,10 +15,5 @@ compileKotlin {
 
 dependencies {
 	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
 	compileOnly files('libs/android-stubs.jar')
-}
-
-test {
-    useJUnitPlatform()
 }

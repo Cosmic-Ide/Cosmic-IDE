@@ -71,7 +71,8 @@ dependencies {
     implementation 'org.antlr:antlr4-runtime:4.10.1'
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.json:json:20220320'
+    implementation 'com.google.guava:guava:31.1-android'
     implementation 'androidx.appcompat:appcompat:1.6.0-alpha04'
 
     implementation 'com.google.android.material:material:1.7.0-alpha02'
@@ -79,7 +80,4 @@ dependencies {
     implementation project(path: ':sora-editor')
     implementation project(path: ':android-compiler')
     implementation project(path: ':nb-javac')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4-alpha06'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha06'
 }

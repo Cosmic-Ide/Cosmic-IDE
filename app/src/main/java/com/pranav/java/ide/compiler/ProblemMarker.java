@@ -7,13 +7,13 @@ import javax.tools.JavaFileObject;
 
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.SpansUtil;
+import io.github.rosemoe.sora.lang.styling.SpansUtils;
 
 import java.util.List;
 
 public class ProblemMarker {
   
-  private CodeEditor editor;
+  private static CodeEditor editor;
   private JavacAnalyzer analyzer;
   
   public ProblemMarker(CodeEditor editor) {
@@ -46,9 +46,9 @@ public class ProblemMarker {
               break;
             default:
               flag = Span.FLAG_ERROR;
-              break
+              break;
           }
-          SpansUtil.markProblemRegion(editor.getStyles().getSpans(), flag, wrapper.getStartLine(), wrapper.getStartColumn(), wrapper.getEndLine(), wrapper.getEndColumn());
+          SpansUtils.markProblemRegion(editor.getStyles().getSpans(), flag, wrapper.getStartLine(), wrapper.getStartColumn(), wrapper.getEndLine(), wrapper.getEndColumn());
         }
     } catch (Exception e) {
       e.printStackTrace();

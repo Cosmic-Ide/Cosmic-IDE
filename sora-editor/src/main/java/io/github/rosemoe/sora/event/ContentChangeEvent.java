@@ -49,7 +49,7 @@ public class ContentChangeEvent extends Event {
     private final CharPosition mStart;
     private final CharPosition mEnd;
     private final CharSequence mTextChanged;
-    private static Runnable runnable = null;
+    private Runnable runnable = null;
 
     public ContentChangeEvent(
             CodeEditor editor,

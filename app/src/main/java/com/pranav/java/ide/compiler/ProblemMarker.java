@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProblemMarker {
   
-  private static CodeEditor editor;
+  private CodeEditor editor;
   private JavacAnalyzer analyzer;
   
   public ProblemMarker(CodeEditor editor) {
@@ -58,14 +58,14 @@ public class ProblemMarker {
   public static void setLineAndColumn(DiagnosticWrapper diagnostic) {
           try {
               if (diagnostic.getStartLine() <= -1 && diagnostic.getStartPosition() > 0) {
-                  var start = editor.getCharPosition(((int) diagnostic.getStartPosition()));
+                  var start = editor..getCursor().getIndexer().getCharPosition(((int) diagnostic.getStartPosition()));
                   diagnostic.setStartLine(start.getLine() + 1);
                   diagnostic.setStartColumn(start.getColumn());
                   diagnostic.setLineNumber(start.getLine() + 1);
                   diagnostic.setColumnNumber(start.getColumn());
               }
               if (diagnostic.getEndLine() <= -1 && diagnostic.getEndPosition() > 0) {
-                  var end = editor.getCharPosition(((int) diagnostic.getEndPosition()));
+                  var end = editor.getCursor().getIndexer().getCharPosition(((int) diagnostic.getEndPosition()));
                   diagnostic.setEndLine(end.getLine() + 1);
                   diagnostic.setEndColumn(end.getColumn());
               }

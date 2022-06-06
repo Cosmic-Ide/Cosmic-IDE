@@ -19,8 +19,8 @@ package io.github.rosemoe.sora.textmate.core.grammar;
 /**
  * Result of the line tokenization API.
  *
- * @see <a href="https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts</a>
- *
+ * @see <a
+ *     href="https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/main.ts</a>
  */
 public interface ITokenizeLineResult {
 
@@ -32,5 +32,4 @@ public interface ITokenizeLineResult {
      * @return the `prevState` to be passed on to the next line tokenization.
      */
     StackElement getRuleStack();
-
 }

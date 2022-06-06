@@ -87,7 +87,7 @@ public class JavacAnalyzer {
     }
 
     public boolean isFirstRun() {
-      return this.isFirstTime;
+        return this.isFirstTime;
     }
 
     public void reset() {

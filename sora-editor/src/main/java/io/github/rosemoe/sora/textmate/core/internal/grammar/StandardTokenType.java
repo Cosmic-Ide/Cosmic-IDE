@@ -11,20 +11,13 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar;
 
-/**
- * Standard TextMate token type.
- *
- */
+/** Standard TextMate token type. */
 public class StandardTokenType {
 
     public static final int Other = 0;
     public static final int Comment = 1;
     public static final int String = 2;
     public static final int RegEx = 4;
-    /**
-     * Content should be accessed statically
-     */
-    private StandardTokenType() {
-    }
-
+    /** Content should be accessed statically */
+    private StandardTokenType() {}
 }

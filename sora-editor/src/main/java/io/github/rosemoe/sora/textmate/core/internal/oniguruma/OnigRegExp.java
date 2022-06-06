@@ -30,9 +30,7 @@ import org.joni.WarnCallback;
 import java.nio.charset.StandardCharsets;
 
 /**
- *
  * @see https://github.com/atom/node-oniguruma/blob/master/src/onig-reg-exp.cc
- *
  */
 public class OnigRegExp {
 
@@ -46,13 +44,21 @@ public class OnigRegExp {
         lastSearchPosition = -1;
         lastSearchResult = null;
         byte[] pattern = source.getBytes(StandardCharsets.UTF_8);
-        this.regex = new Regex(pattern, 0, pattern.length, Option.CAPTURE_GROUP, UTF8Encoding.INSTANCE, Syntax.DEFAULT,
-                WarnCallback.DEFAULT);
+        this.regex =
+                new Regex(
+                        pattern,
+                        0,
+                        pattern.length,
+                        Option.CAPTURE_GROUP,
+                        UTF8Encoding.INSTANCE,
+                        Syntax.DEFAULT,
+                        WarnCallback.DEFAULT);
     }
 
     public OnigResult search(OnigString str, int position) {
-        if (lastSearchString == str && lastSearchPosition <= position &&
-                (lastSearchResult == null || lastSearchResult.locationAt(0) >= position)) {
+        if (lastSearchString == str
+                && lastSearchPosition <= position
+                && (lastSearchResult == null || lastSearchResult.locationAt(0) >= position)) {
             return lastSearchResult;
         }
 

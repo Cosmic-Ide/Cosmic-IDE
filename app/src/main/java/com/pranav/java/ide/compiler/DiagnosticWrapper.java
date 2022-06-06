@@ -2,12 +2,12 @@ package com.pranav.java.ide.compiler;
 
 import android.view.View;
 
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
-
 import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
+
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
 
 public class DiagnosticWrapper implements Diagnostic<File> {
 
@@ -16,7 +16,7 @@ public class DiagnosticWrapper implements Diagnostic<File> {
     private String code;
     private File source;
     private Kind kind;
-    
+
     private long position;
     private long startPosition;
     private long endPosition;
@@ -28,6 +28,7 @@ public class DiagnosticWrapper implements Diagnostic<File> {
 
     /** Extra information for this diagnostic */
     private Object mExtra;
+
     private int startLine;
     private int endLine;
     private int startColumn;
@@ -159,20 +160,44 @@ public class DiagnosticWrapper implements Diagnostic<File> {
 
     @Override
     public String toString() {
-        return "startOffset: " + startPosition + "\n" +
-                "endOffset: " + endPosition + "\n" +
-                "position: " + position + "\n" +
-                "startLine: " + startLine + "\n" +
-                "startColumn: " + startColumn + "\n" +
-                "endLine: " + endLine + "\n" +
-                "endColumn: " + endColumn + "\n" +
-                "message: " + message;
+        return "startOffset: "
+                + startPosition
+                + "\n"
+                + "endOffset: "
+                + endPosition
+                + "\n"
+                + "position: "
+                + position
+                + "\n"
+                + "startLine: "
+                + startLine
+                + "\n"
+                + "startColumn: "
+                + startColumn
+                + "\n"
+                + "endLine: "
+                + endLine
+                + "\n"
+                + "endColumn: "
+                + endColumn
+                + "\n"
+                + "message: "
+                + message;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, source, kind, position, startPosition, endPosition, lineNumber,
-                columnNumber, message, mExtra);
+        return Objects.hash(
+                code,
+                source,
+                kind,
+                position,
+                startPosition,
+                endPosition,
+                lineNumber,
+                columnNumber,
+                message,
+                mExtra);
     }
 
     @Override

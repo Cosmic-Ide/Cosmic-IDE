@@ -66,7 +66,7 @@ public class ContentChangeEvent extends Event {
     }
 
     public static void setAfterContentChangedListener(Runnable runner) {
-      runnable = runner;
+        runnable = runner;
     }
 
     /**

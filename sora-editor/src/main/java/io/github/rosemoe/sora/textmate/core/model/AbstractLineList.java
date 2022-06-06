@@ -19,14 +19,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Abstract class for Model lines used by the TextMate model. Implementation
- * class must :
+ * Abstract class for Model lines used by the TextMate model. Implementation class must :
  *
  * <ul>
- * <li>synchronizes lines with the lines of the editor content when it changed.</li>
- * <li>call {@link AbstractLineList#invalidateLine(int)} with the first changed line.</li>
+ *   <li>synchronizes lines with the lines of the editor content when it changed.
+ *   <li>call {@link AbstractLineList#invalidateLine(int)} with the first changed line.
  * </ul>
- *
  */
 public abstract class AbstractLineList implements IModelLines {
 
@@ -36,8 +34,7 @@ public abstract class AbstractLineList implements IModelLines {
 
     private TMModel model;
 
-    public AbstractLineList() {
-    }
+    public AbstractLineList() {}
 
     void setModel(TMModel model) {
         this.model = model;

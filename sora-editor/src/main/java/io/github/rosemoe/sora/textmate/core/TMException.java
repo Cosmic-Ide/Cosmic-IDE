@@ -23,10 +23,7 @@
  */
 package io.github.rosemoe.sora.textmate.core;
 
-/**
- * TextMate exception.
- *
- */
+/** TextMate exception. */
 public class TMException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

@@ -11,14 +11,15 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.theme;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 import io.github.rosemoe.sora.textmate.core.theme.IRawThemeSetting;
 import io.github.rosemoe.sora.textmate.core.theme.IThemeSetting;
 
-public class ThemeRaw extends HashMap<String, Object> implements IRawTheme, IRawThemeSetting, IThemeSetting {
+import java.util.Collection;
+import java.util.HashMap;
+
+public class ThemeRaw extends HashMap<String, Object>
+        implements IRawTheme, IRawThemeSetting, IThemeSetting {
 
     private static final long serialVersionUID = -3622927264735492387L;
 
@@ -56,5 +57,4 @@ public class ThemeRaw extends HashMap<String, Object> implements IRawTheme, IRaw
     public String getForeground() {
         return (String) super.get("foreground");
     }
-
 }

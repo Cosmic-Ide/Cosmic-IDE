@@ -20,19 +20,21 @@ public class CaptureRule extends Rule {
 
     public final Integer retokenizeCapturedWithRuleId;
 
-    public CaptureRule(int id, String name, String contentName, Integer retokenizeCapturedWithRuleId) {
+    public CaptureRule(
+            int id, String name, String contentName, Integer retokenizeCapturedWithRuleId) {
         super(id, name, contentName);
         this.retokenizeCapturedWithRuleId = retokenizeCapturedWithRuleId;
     }
 
     @Override
-    public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
+    public void collectPatternsRecursive(
+            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compile(
+            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -15,13 +15,13 @@ import java.util.List;
 
 public class ModelLine {
 
-    //String text;
+    // String text;
     boolean isInvalid;
     TMState state;
     List<TMToken> tokens;
 
-    public ModelLine(/*String text*/) {
-        //this.text = text;
+    public ModelLine(/*String text*/ ) {
+        // this.text = text;
     }
 
     public void resetTokenizationState() {

@@ -11,9 +11,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.textmate.core.theme.ThemeTrieElementRule;
+
+import java.util.List;
 
 public class ScopeMetadata {
 
@@ -22,7 +22,8 @@ public class ScopeMetadata {
     public final int tokenType;
     public final List<ThemeTrieElementRule> themeData;
 
-    public ScopeMetadata(String scopeName, int languageId, int tokenType, List<ThemeTrieElementRule> themeData) {
+    public ScopeMetadata(
+            String scopeName, int languageId, int tokenType, List<ThemeTrieElementRule> themeData) {
         this.scopeName = scopeName;
         this.languageId = languageId;
         this.tokenType = tokenType;

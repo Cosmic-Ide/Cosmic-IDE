@@ -16,9 +16,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.theme.reader;
 
-import java.io.InputStream;
-
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
+
+import java.io.InputStream;
 
 public class SyncThemeReader {
 

@@ -16,24 +16,20 @@
  */
 package io.github.rosemoe.sora.textmate.core.grammar;
 
-import java.util.Collection;
-
 import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+
+import java.util.Collection;
 
 /**
  * TextMate grammar repository API.
  *
- * @see <a href="https://github.com/Microsoft/vscode-textmate/blob/master/src/grammar.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/grammar.ts</a>
- *
+ * @see <a
+ *     href="https://github.com/Microsoft/vscode-textmate/blob/master/src/grammar.ts">https://github.com/Microsoft/vscode-textmate/blob/master/src/grammar.ts</a>
  */
 public interface IGrammarRepository {
-    /**
-     * Lookup a raw grammar.
-     */
+    /** Lookup a raw grammar. */
     IRawGrammar lookup(String scopeName);
 
-    /**
-     * Returns the injections for the given grammar
-     */
+    /** Returns the injections for the given grammar */
     Collection<String> injections(String targetScope);
 }

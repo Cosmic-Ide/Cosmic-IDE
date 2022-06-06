@@ -16,6 +16,4 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.rule;
 
-public interface IRuleFactoryHelper extends IRuleRegistry, IGrammarRegistry {
-
-}
+public interface IRuleFactoryHelper extends IRuleRegistry, IGrammarRegistry {}

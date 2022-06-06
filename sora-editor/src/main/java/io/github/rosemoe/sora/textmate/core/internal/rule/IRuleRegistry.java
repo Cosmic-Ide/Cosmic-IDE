@@ -23,4 +23,5 @@ public interface IRuleRegistry {
     Rule getRule(int patternId);
 
     Rule registerRule(IntFunction<Rule> factory);
+
 }

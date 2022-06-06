@@ -6,7 +6,7 @@
  * <p>
  * SPDX-License-Identifier: EPL-2.0
  * <p>
- * Initial code from https://github.com/microsoft/vscode-textmate/
+ * Initial code from https://github.com/Microsoft/vscode-textmate/
  * Initial copyright Copyright (C) Microsoft Corporation. All rights reserved.
  * Initial license: MIT
  * <p>
@@ -16,32 +16,32 @@
  */
 package io.github.rosemoe.sora.textmate.core.registry;
 
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
+import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
+
 public interface IRegistryOptions {
 
-    public static final IRegistryOptions DEFAULT_LOCATOR =
-            new IRegistryOptions() {
+    public static final IRegistryOptions DEFAULT_LOCATOR = new IRegistryOptions() {
 
-                @Override
-                public String getFilePath(String scopeName) {
-                    return null;
-                }
+        @Override
+        public String getFilePath(String scopeName) {
+            return null;
+        }
 
-                @Override
-                public InputStream getInputStream(String scopeName) {
-                    return null;
-                }
+        @Override
+        public InputStream getInputStream(String scopeName) {
+            return null;
+        }
 
-                @Override
-                public Collection<String> getInjections(String scopeName) {
-                    return null;
-                }
-            };
+        @Override
+        public Collection<String> getInjections(String scopeName) {
+            return null;
+        }
+
+    };
 
     default IRawTheme getTheme() {
         return null;
@@ -52,4 +52,5 @@ public interface IRegistryOptions {
     InputStream getInputStream(String scopeName) throws IOException;
 
     Collection<String> getInjections(String scopeName);
+
 }

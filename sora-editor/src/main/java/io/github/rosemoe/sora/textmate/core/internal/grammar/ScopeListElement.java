@@ -11,14 +11,14 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar;
 
-import io.github.rosemoe.sora.textmate.core.theme.FontStyle;
-import io.github.rosemoe.sora.textmate.core.theme.ThemeTrieElementRule;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
+import io.github.rosemoe.sora.textmate.core.theme.FontStyle;
+import io.github.rosemoe.sora.textmate.core.theme.ThemeTrieElementRule;
 
 public class ScopeListElement {
 
@@ -39,9 +39,7 @@ public class ScopeListElement {
         if (a == null || b == null) {
             return false;
         }
-        return Objects.equals(a.scope, b.scope)
-                && a.metadata == b.metadata
-                && equals(a.parent, b.parent);
+        return Objects.equals(a.scope, b.scope) && a.metadata == b.metadata && equals(a.parent, b.parent);
     }
 
     private static boolean matchesScope(String scope, String selector, String selectorWithDot) {
@@ -73,8 +71,7 @@ public class ScopeListElement {
         return false;
     }
 
-    public static int mergeMetadata(
-            int metadata, ScopeListElement scopesList, ScopeMetadata source) {
+    public static int mergeMetadata(int metadata, ScopeListElement scopesList, ScopeMetadata source) {
         if (source == null) {
             return metadata;
         }
@@ -95,12 +92,11 @@ public class ScopeListElement {
             }
         }
 
-        return StackElementMetadata.set(
-                metadata, source.languageId, source.tokenType, fontStyle, foreground, background);
+        return StackElementMetadata.set(metadata, source.languageId, source.tokenType, fontStyle, foreground,
+                background);
     }
 
-    private static ScopeListElement push(
-            ScopeListElement target, Grammar grammar, List<String> scopes) {
+    private static ScopeListElement push(ScopeListElement target, Grammar grammar, List<String> scopes) {
         for (String scope : scopes) {
             ScopeMetadata rawMetadata = grammar.getMetadataForScope(scope);
             int metadata = ScopeListElement.mergeMetadata(target.metadata, target, rawMetadata);
@@ -144,8 +140,7 @@ public class ScopeListElement {
         }
         if (scope.indexOf(' ') >= 0) {
             // there are multiple scopes to push
-            return ScopeListElement.push(
-                    this, grammar, Arrays.asList(scope.split(" "))); // scope.split(/
+            return ScopeListElement.push(this, grammar, Arrays.asList(scope.split(" ")));// scope.split(/
             // /g));
         }
         // there is a single scope to push

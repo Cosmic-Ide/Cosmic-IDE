@@ -14,11 +14,11 @@ package io.github.rosemoe.sora.textmate.core.internal.parser.json;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+
+import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
 
 public class JSONPListParser<T> {
 
@@ -55,7 +55,7 @@ public class JSONPListParser<T> {
                 case NAME:
                     String lastName = reader.nextName();
                     pList.startElement(null, "key", null, null);
-                    pList.characters(lastName);
+                    pList.characters(lastName.toCharArray(), 0, lastName.length());
                     pList.endElement(null, "key", null);
                     break;
                 case NULL:
@@ -70,7 +70,7 @@ public class JSONPListParser<T> {
                 case STRING:
                     String value = reader.nextString();
                     pList.startElement(null, "string", null, null);
-                    pList.characters(value);
+                    pList.characters(value.toCharArray(), 0, value.length());
                     pList.endElement(null, "string", null);
                     break;
                 case END_DOCUMENT:
@@ -83,4 +83,5 @@ public class JSONPListParser<T> {
         reader.close();
         return pList.getResult();
     }
+
 }

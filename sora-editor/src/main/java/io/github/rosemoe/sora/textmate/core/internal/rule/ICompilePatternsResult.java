@@ -27,4 +27,5 @@ public class ICompilePatternsResult {
         this.hasMissingPatterns = hasMissingPatterns;
         this.patterns = patterns.toArray(new Integer[patterns.size()]);
     }
+
 }

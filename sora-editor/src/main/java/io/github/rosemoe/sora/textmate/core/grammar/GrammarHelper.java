@@ -16,12 +16,12 @@
  */
 package io.github.rosemoe.sora.textmate.core.grammar;
 
+import java.util.Map;
+
 import io.github.rosemoe.sora.textmate.core.internal.grammar.Grammar;
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.OnigString;
 import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
 import io.github.rosemoe.sora.textmate.core.theme.IThemeProvider;
-
-import java.util.Map;
 
 public class GrammarHelper {
 
@@ -29,16 +29,13 @@ public class GrammarHelper {
         // methods should be accessed statically
     }
 
-    public static IGrammar createGrammar(
-            IRawGrammar grammar,
-            int initialLanguage,
-            Map<String, Integer> embeddedLanguages,
-            IGrammarRepository repository,
-            IThemeProvider themeProvider) {
+    public static IGrammar createGrammar(IRawGrammar grammar, int initialLanguage,
+                                         Map<String, Integer> embeddedLanguages, IGrammarRepository repository, IThemeProvider themeProvider) {
         return new Grammar(grammar, initialLanguage, embeddedLanguages, repository, themeProvider);
     }
 
     public static OnigString createOnigString(String str) {
         return new OnigString(str);
     }
+
 }

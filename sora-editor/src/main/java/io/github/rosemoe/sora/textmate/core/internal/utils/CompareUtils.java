@@ -14,13 +14,13 @@ public class CompareUtils {
         if (b == null) {
             return 1;
         }
-        //		if (a < b) {
-        //			return -1;
-        //		}
-        //		if (a > b) {
-        //			return 1;
-        //		}
-        //		return 0;
+//		if (a < b) {
+//			return -1;
+//		}
+//		if (a > b) {
+//			return 1;
+//		}
+//		return 0;
         int result = a.compareTo(b);
         if (result < 0) {
             return -1;
@@ -53,4 +53,5 @@ public class CompareUtils {
         }
         return len1 - len2;
     }
+
 }

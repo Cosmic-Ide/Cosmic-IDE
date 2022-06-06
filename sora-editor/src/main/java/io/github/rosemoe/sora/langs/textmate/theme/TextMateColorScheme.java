@@ -25,12 +25,12 @@ package io.github.rosemoe.sora.langs.textmate.theme;
 
 import android.graphics.Color;
 
+import java.util.List;
+
 import io.github.rosemoe.sora.textmate.core.internal.theme.ThemeRaw;
 import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 import io.github.rosemoe.sora.textmate.core.theme.Theme;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-
-import java.util.List;
 
 public class TextMateColorScheme extends EditorColorScheme {
 
@@ -41,6 +41,7 @@ public class TextMateColorScheme extends EditorColorScheme {
         this.iRawTheme = iRawTheme;
         this.theme = Theme.createFromRawTheme(iRawTheme);
         applyDefault();
+
     }
 
     public static TextMateColorScheme create(IRawTheme iRawTheme) {
@@ -60,6 +61,7 @@ public class TextMateColorScheme extends EditorColorScheme {
             if (caret != null) {
                 setColor(SELECTION_INSERT, Color.parseColor(caret));
             }
+
 
             String selection = (String) themeRaw.get("selection");
             if (selection != null) {
@@ -87,14 +89,13 @@ public class TextMateColorScheme extends EditorColorScheme {
                 setColor(TEXT_NORMAL, Color.parseColor(foreground));
             }
 
-            // TMTheme seems to have no fields to control BLOCK_LINE colors
-            int blockLineColor =
-                    ((getColor(WHOLE_BACKGROUND) + getColor(TEXT_NORMAL)) / 2) & 0x00FFFFFF
-                            | 0x88000000;
+            //TMTheme seems to have no fields to control BLOCK_LINE colors
+            int blockLineColor=((getColor(WHOLE_BACKGROUND)+getColor(TEXT_NORMAL))/2)&0x00FFFFFF|0x88000000;
             setColor(BLOCK_LINE, blockLineColor);
-            int blockLineColorCur = (blockLineColor) | 0xFF000000;
+            int blockLineColorCur=(blockLineColor)|0xFF000000;
             setColor(BLOCK_LINE_CURRENT, blockLineColorCur);
         }
+
     }
 
     @Override
@@ -114,4 +115,5 @@ public class TextMateColorScheme extends EditorColorScheme {
     public IRawTheme getRawTheme() {
         return iRawTheme;
     }
+
 }

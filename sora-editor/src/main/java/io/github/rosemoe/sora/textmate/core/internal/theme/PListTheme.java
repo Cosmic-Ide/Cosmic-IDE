@@ -11,9 +11,9 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.theme;
 
-import io.github.rosemoe.sora.textmate.core.internal.parser.PListObject;
-
 import java.util.Map;
+
+import io.github.rosemoe.sora.textmate.core.internal.parser.PListObject;
 
 public class PListTheme extends PListObject {
 
@@ -25,4 +25,5 @@ public class PListTheme extends PListObject {
     protected Map<String, Object> createRaw() {
         return new ThemeRaw();
     }
+
 }

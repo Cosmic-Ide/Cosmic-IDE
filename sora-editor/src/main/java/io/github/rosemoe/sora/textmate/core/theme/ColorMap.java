@@ -12,7 +12,6 @@
 package io.github.rosemoe.sora.textmate.core.theme;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -32,7 +31,7 @@ public class ColorMap {
         if (color == null) {
             return 0;
         }
-        color = color.toUpperCase(Locale.ROOT);
+        color = color.toUpperCase();
         Integer value = this.color2id.get(color);
         if (value != null) {
             return value;
@@ -74,4 +73,6 @@ public class ColorMap {
         ColorMap other = (ColorMap) obj;
         return Objects.equals(color2id, other.color2id) && lastColorId == other.lastColorId;
     }
+
+
 }

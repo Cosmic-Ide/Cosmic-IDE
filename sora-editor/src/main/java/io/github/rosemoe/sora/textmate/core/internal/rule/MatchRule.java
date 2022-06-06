@@ -32,14 +32,12 @@ public class MatchRule extends Rule {
     }
 
     @Override
-    public void collectPatternsRecursive(
-            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
+    public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
         out.push(this.match);
     }
 
     @Override
-    public ICompiledRule compile(
-            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         if (this.cachedCompiledPatterns == null) {
             this.cachedCompiledPatterns = new RegExpSourceList();
             this.collectPatternsRecursive(grammar, this.cachedCompiledPatterns, true);

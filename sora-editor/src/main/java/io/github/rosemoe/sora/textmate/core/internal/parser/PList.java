@@ -11,15 +11,15 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.parser;
 
-import io.github.rosemoe.sora.textmate.core.internal.grammar.parser.PListGrammar;
-import io.github.rosemoe.sora.textmate.core.internal.theme.PListTheme;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.github.rosemoe.sora.textmate.core.internal.grammar.parser.PListGrammar;
+import io.github.rosemoe.sora.textmate.core.internal.theme.PListTheme;
 
 public class PList<T> extends DefaultHandler {
 
@@ -36,8 +36,7 @@ public class PList<T> extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if ("dict".equals(localName)) {
             this.currObject = create(currObject, false);
         } else if ("array".equals(localName)) {
@@ -48,6 +47,7 @@ public class PList<T> extends DefaultHandler {
             }
         }
         this.text = new StringBuilder("");
+        super.startElement(uri, localName, qName, attributes);
     }
 
     private PListObject create(PListObject parent, boolean valueAsArray) {
@@ -60,6 +60,7 @@ public class PList<T> extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         endElement(localName);
+        super.endElement(uri, localName, qName);
     }
 
     private void endElement(String tagName) {
@@ -123,10 +124,7 @@ public class PList<T> extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         this.text.append(String.valueOf(ch, start, length));
-    }
-    
-    public void characters(String chars) {
-      this.text.append(chars);
+        super.characters(ch, start, length);
     }
 
     public T getResult() {

@@ -25,4 +25,5 @@ public interface IOnigCaptureIndex {
     int getEnd();
 
     int getLength();
+
 }

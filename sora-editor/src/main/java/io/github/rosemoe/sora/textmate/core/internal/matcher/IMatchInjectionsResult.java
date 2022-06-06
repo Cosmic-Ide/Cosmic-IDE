@@ -19,4 +19,6 @@ package io.github.rosemoe.sora.textmate.core.internal.matcher;
 public interface IMatchInjectionsResult extends IMatchResult {
 
     boolean isPriorityMatch();
+
+
 }

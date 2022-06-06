@@ -27,4 +27,5 @@ public class TMTokenDecodeData {
         this.scopes = scopes;
         this.scopeTokensMaps = scopeTokensMaps;
     }
+
 }

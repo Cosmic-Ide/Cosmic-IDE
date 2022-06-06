@@ -25,12 +25,8 @@ public class ThemeTrieElementRule {
     public int foreground;
     public int background;
 
-    public ThemeTrieElementRule(
-            int scopeDepth,
-            List<String> parentScopes,
-            int fontStyle,
-            int foreground,
-            int background) {
+    public ThemeTrieElementRule(int scopeDepth, List<String> parentScopes, int fontStyle, int foreground,
+                                int background) {
         this.scopeDepth = scopeDepth;
         this.parentScopes = parentScopes;
         this.fontStyle = fontStyle;
@@ -48,11 +44,7 @@ public class ThemeTrieElementRule {
 
     @Override
     public ThemeTrieElementRule clone() {
-        return new ThemeTrieElementRule(
-                this.scopeDepth,
-                this.parentScopes,
-                this.fontStyle,
-                this.foreground,
+        return new ThemeTrieElementRule(this.scopeDepth, this.parentScopes, this.fontStyle, this.foreground,
                 this.background);
     }
 
@@ -93,10 +85,9 @@ public class ThemeTrieElementRule {
             return false;
         }
         ThemeTrieElementRule other = (ThemeTrieElementRule) obj;
-        return background == other.background
-                && fontStyle == other.fontStyle
-                && foreground == other.foreground
-                && Objects.equals(parentScopes, other.parentScopes)
-                && scopeDepth == other.scopeDepth;
+        return background == other.background && fontStyle == other.fontStyle && foreground == other.foreground &&
+                Objects.equals(parentScopes, other.parentScopes) && scopeDepth == other.scopeDepth;
     }
+
+
 }

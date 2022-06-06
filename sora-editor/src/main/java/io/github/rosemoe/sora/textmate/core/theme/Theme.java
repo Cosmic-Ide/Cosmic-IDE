@@ -11,8 +11,6 @@
  */
 package io.github.rosemoe.sora.textmate.core.theme;
 
-import io.github.rosemoe.sora.textmate.core.internal.utils.CompareUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,13 +22,16 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/** TextMate theme. */
+import io.github.rosemoe.sora.textmate.core.internal.utils.CompareUtils;
+
+/**
+ * TextMate theme.
+ *
+ */
 public class Theme {
 
-    private static final Pattern rrggbb =
-            Pattern.compile("^#[0-9a-f]{6}", Pattern.CASE_INSENSITIVE);
-    private static final Pattern rrggbbaa =
-            Pattern.compile("^#[0-9a-f]{8}", Pattern.CASE_INSENSITIVE);
+    private static final Pattern rrggbb = Pattern.compile("^#[0-9a-f]{6}", Pattern.CASE_INSENSITIVE);
+    private static final Pattern rrggbbaa = Pattern.compile("^#[0-9a-f]{8}", Pattern.CASE_INSENSITIVE);
     private static final Pattern rgb = Pattern.compile("^#[0-9a-f]{3}", Pattern.CASE_INSENSITIVE);
     private static final Pattern rgba = Pattern.compile("^#[0-9a-f]{4}", Pattern.CASE_INSENSITIVE);
 
@@ -103,15 +104,13 @@ public class Theme {
 
             String foreground = null;
             Object settingsForeground = entry.getSetting().getForeground();
-            if (settingsForeground instanceof String
-                    && isValidHexColor((String) settingsForeground)) {
+            if (settingsForeground instanceof String && isValidHexColor((String) settingsForeground)) {
                 foreground = (String) settingsForeground;
             }
 
             String background = null;
             Object settingsBackground = entry.getSetting().getBackground();
-            if (settingsBackground instanceof String
-                    && isValidHexColor((String) settingsBackground)) {
+            if (settingsBackground instanceof String && isValidHexColor((String) settingsBackground)) {
                 background = (String) settingsBackground;
             }
             for (int j = 0, lenJ = scopes.size(); j < lenJ; j++) {
@@ -122,16 +121,14 @@ public class Theme {
                 String scope = segments.get(segments.size() - 1);
                 List<String> parentScopes = null;
                 if (segments.size() > 1) {
-                    parentScopes = segments.subList(0, segments.size() - 1); // slice(0,
+                    parentScopes = segments.subList(0, segments.size() - 1);// slice(0,
                     // segments.length
                     // -
                     // 1);
                     Collections.reverse(parentScopes); // parentScopes.reverse();
                 }
 
-                ParsedThemeRule t =
-                        new ParsedThemeRule(
-                                scope, parentScopes, i, fontStyle, foreground, background);
+                ParsedThemeRule t = new ParsedThemeRule(scope, parentScopes, i, fontStyle, foreground, background);
                 result.add(t);
             }
             i++;
@@ -160,28 +157,34 @@ public class Theme {
             return true;
         }
 
-        return rgba.matcher(hex).matches();
+        if (rgba.matcher(hex).matches()) {
+            // #rgba
+            return true;
+        }
+
+        return false;
     }
 
     public static Theme createFromParsedTheme(List<ParsedThemeRule> source) {
         return resolveParsedThemeRules(source);
     }
 
-    /** Resolve rules (i.e. inheritance). */
+    /**
+     * Resolve rules (i.e. inheritance).
+     */
     public static Theme resolveParsedThemeRules(List<ParsedThemeRule> parsedThemeRules) {
         // Sort rules lexicographically, and then by index if necessary
-        parsedThemeRules.sort(
-                (a, b) -> {
-                    int r = CompareUtils.strcmp(a.scope, b.scope);
-                    if (r != 0) {
-                        return r;
-                    }
-                    r = CompareUtils.strArrCmp(a.parentScopes, b.parentScopes);
-                    if (r != 0) {
-                        return r;
-                    }
-                    return a.index - b.index;
-                });
+        parsedThemeRules.sort((a, b) -> {
+            int r = CompareUtils.strcmp(a.scope, b.scope);
+            if (r != 0) {
+                return r;
+            }
+            r = CompareUtils.strArrCmp(a.parentScopes, b.parentScopes);
+            if (r != 0) {
+                return r;
+            }
+            return a.index - b.index;
+        });
 
         // Determine defaults
         int defaultFontStyle = FontStyle.None;
@@ -200,25 +203,13 @@ public class Theme {
             }
         }
         ColorMap colorMap = new ColorMap();
-        ThemeTrieElementRule defaults =
-                new ThemeTrieElementRule(
-                        0,
-                        null,
-                        defaultFontStyle,
-                        colorMap.getId(defaultForeground),
-                        colorMap.getId(defaultBackground));
+        ThemeTrieElementRule defaults = new ThemeTrieElementRule(0, null, defaultFontStyle,
+                colorMap.getId(defaultForeground), colorMap.getId(defaultBackground));
 
-        ThemeTrieElement root =
-                new ThemeTrieElement(
-                        new ThemeTrieElementRule(0, null, FontStyle.NotSet, 0, 0),
-                        Collections.emptyList());
+        ThemeTrieElement root = new ThemeTrieElement(new ThemeTrieElementRule(0, null, FontStyle.NotSet, 0, 0),
+                Collections.emptyList());
         for (ParsedThemeRule rule : parsedThemeRules) {
-            root.insert(
-                    0,
-                    rule.scope,
-                    rule.parentScopes,
-                    rule.fontStyle,
-                    colorMap.getId(rule.foreground),
+            root.insert(0, rule.scope, rule.parentScopes, rule.fontStyle, colorMap.getId(rule.foreground),
                     colorMap.getId(rule.background));
         }
 
@@ -261,9 +252,8 @@ public class Theme {
             return false;
         }
         Theme other = (Theme) obj;
-        return Objects.equals(cache, other.cache)
-                && Objects.equals(colorMap, other.colorMap)
-                && Objects.equals(defaults, other.defaults)
-                && Objects.equals(root, other.root);
+        return Objects.equals(cache, other.cache) && Objects.equals(colorMap, other.colorMap) &&
+                Objects.equals(defaults, other.defaults) && Objects.equals(root, other.root);
     }
+
 }

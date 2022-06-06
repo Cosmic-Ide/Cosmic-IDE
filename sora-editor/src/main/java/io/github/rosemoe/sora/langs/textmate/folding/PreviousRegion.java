@@ -36,4 +36,5 @@ public class PreviousRegion {
         this.endAbove = endAbove;
         this.line = line;
     }
+
 }

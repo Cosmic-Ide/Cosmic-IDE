@@ -28,6 +28,7 @@ import java.util.Arrays;
  * Oniguruma string.
  *
  * @see https://github.com/atom/node-oniguruma/blob/master/src/onig-string.cc
+ *
  */
 public class OnigString {
 
@@ -36,6 +37,7 @@ public class OnigString {
 
     private int[] charsPosFromBytePos;
     private boolean computedOffsets;
+
 
     public OnigString(String str) {
         this.string = str;
@@ -49,9 +51,7 @@ public class OnigString {
         if (charsPosFromBytePos == null) {
             // Same conditions as code below, but taking into account that the
             // bytes and chars len are the same.
-            if (posInChars < 0
-                    || this.utf8_value.length == 0
-                    || posInChars > this.utf8_value.length) {
+            if (posInChars < 0 || this.utf8_value.length == 0 || posInChars > this.utf8_value.length) {
                 throw new ArrayIndexOutOfBoundsException(posInChars);
             }
             return posInChars;
@@ -96,7 +96,7 @@ public class OnigString {
             return posInBytes;
         }
         if (posInBytes >= charsPosFromBytePos.length) {
-            // One off can happen when finding the end of a regexp (it's the right boundary).
+            //One off can happen when finding the end of a regexp (it's the right boundary).
             return charsPosFromBytePos[posInBytes - 1] + 1;
         }
         return charsPosFromBytePos[posInBytes];
@@ -106,6 +106,7 @@ public class OnigString {
         if (this.utf8_value.length != this.string.length()) {
             charsPosFromBytePos = new int[this.utf8_value.length];
             int bytesLen = 0;
+            ;
             int charsLen = 0;
             int length = this.utf8_value.length;
             for (int i = 0; i < length; ) {

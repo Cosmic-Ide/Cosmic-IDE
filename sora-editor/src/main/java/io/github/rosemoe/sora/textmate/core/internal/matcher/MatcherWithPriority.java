@@ -31,4 +31,5 @@ public class MatcherWithPriority<T> {
         this.matcher = matcher;
         this.priority = priority;
     }
+
 }

@@ -19,4 +19,5 @@ package io.github.rosemoe.sora.textmate.core.internal.types;
 public interface IRawCaptures extends IBaseRaw {
 
     IRawRule getCapture(String captureId);
+
 }

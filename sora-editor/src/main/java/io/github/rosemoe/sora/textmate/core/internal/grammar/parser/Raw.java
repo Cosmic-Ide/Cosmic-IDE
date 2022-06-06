@@ -12,12 +12,6 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar.parser;
 
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawCaptures;
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawRepository;
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawRule;
-import io.github.rosemoe.sora.textmate.core.internal.utils.CloneUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,9 +19,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/** Raw */
-public class Raw extends HashMap<String, Object>
-        implements IRawRepository, IRawRule, IRawGrammar, IRawCaptures {
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawCaptures;
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawRepository;
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawRule;
+import io.github.rosemoe.sora.textmate.core.internal.utils.CloneUtils;
+
+/**
+ * Raw
+ *
+ */
+public class Raw extends HashMap<String, Object> implements IRawRepository, IRawRule, IRawGrammar, IRawCaptures {
     private static final String FIRST_LINE_MATCH = "firstLineMatch";
     private static final String FILE_TYPES = "fileTypes";
     private static final String SCOPE_NAME = "scopeName";
@@ -279,7 +281,6 @@ public class Raw extends HashMap<String, Object>
         }
         return fileTypes;
     }
-
     @Override
     public String getFirstLineMatch() {
         return (String) super.get(FIRST_LINE_MATCH);
@@ -299,4 +300,5 @@ public class Raw extends HashMap<String, Object>
     public Object clone() {
         return CloneUtils.clone(this);
     }
+
 }

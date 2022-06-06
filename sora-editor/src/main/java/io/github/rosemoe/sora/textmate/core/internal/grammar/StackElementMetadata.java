@@ -14,11 +14,18 @@ package io.github.rosemoe.sora.textmate.core.internal.grammar;
 import io.github.rosemoe.sora.textmate.core.grammar.StackElement;
 import io.github.rosemoe.sora.textmate.core.theme.FontStyle;
 
-/** Metadata for {@link StackElement}. */
+/**
+ *
+ * Metadata for {@link StackElement}.
+ *
+ */
 public class StackElementMetadata {
 
-    /** Content should be referenced statically */
-    private StackElementMetadata() {}
+    /**
+     * Content should be referenced statically
+     */
+    private StackElementMetadata() {
+    }
 
     public static String toBinaryStr(int metadata) {
         /*
@@ -49,29 +56,15 @@ public class StackElementMetadata {
         return (metadata & MetadataConsts.BACKGROUND_MASK) >>> MetadataConsts.BACKGROUND_OFFSET;
     }
 
-    public static int set(
-            int metadata,
-            int languageId,
-            int tokenType,
-            int fontStyle,
-            int foreground,
-            int background) {
+    public static int set(int metadata, int languageId, int tokenType, int fontStyle, int foreground, int background) {
         languageId = languageId == 0 ? StackElementMetadata.getLanguageId(metadata) : languageId;
-        tokenType =
-                tokenType == StandardTokenType.Other
-                        ? StackElementMetadata.getTokenType(metadata)
-                        : tokenType;
-        fontStyle =
-                fontStyle == FontStyle.NotSet
-                        ? StackElementMetadata.getFontStyle(metadata)
-                        : fontStyle;
+        tokenType = tokenType == StandardTokenType.Other ? StackElementMetadata.getTokenType(metadata) : tokenType;
+        fontStyle = fontStyle == FontStyle.NotSet ? StackElementMetadata.getFontStyle(metadata) : fontStyle;
         foreground = foreground == 0 ? StackElementMetadata.getForeground(metadata) : foreground;
         background = background == 0 ? StackElementMetadata.getBackground(metadata) : background;
-        return ((languageId << MetadataConsts.LANGUAGEID_OFFSET)
-                        | (tokenType << MetadataConsts.TOKEN_TYPE_OFFSET)
-                        | (fontStyle << MetadataConsts.FONT_STYLE_OFFSET)
-                        | (foreground << MetadataConsts.FOREGROUND_OFFSET)
-                        | (background << MetadataConsts.BACKGROUND_OFFSET))
-                >>> 0;
+        return ((languageId << MetadataConsts.LANGUAGEID_OFFSET) | (tokenType << MetadataConsts.TOKEN_TYPE_OFFSET)
+                | (fontStyle << MetadataConsts.FONT_STYLE_OFFSET) | (foreground << MetadataConsts.FOREGROUND_OFFSET)
+                | (background << MetadataConsts.BACKGROUND_OFFSET)) >>> 0;
     }
+
 }

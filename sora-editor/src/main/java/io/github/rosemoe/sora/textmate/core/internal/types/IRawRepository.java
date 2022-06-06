@@ -29,4 +29,5 @@ public interface IRawRepository {
     IRawRule getSelf();
 
     void setSelf(IRawRule raw);
+
 }

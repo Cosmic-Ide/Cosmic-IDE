@@ -24,4 +24,5 @@ public interface IStyle {
     boolean isUnderline();
 
     boolean isStrikeThrough();
+
 }

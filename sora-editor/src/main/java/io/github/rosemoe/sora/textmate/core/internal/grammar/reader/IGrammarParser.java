@@ -16,11 +16,14 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar.reader;
 
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
-
 import java.io.InputStream;
 
-/** TextMate Grammar parser. */
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+
+/**
+ * TextMate Grammar parser.
+ *
+ */
 @FunctionalInterface
 public interface IGrammarParser {
 

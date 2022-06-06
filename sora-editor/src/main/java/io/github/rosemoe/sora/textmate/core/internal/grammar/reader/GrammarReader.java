@@ -16,27 +16,43 @@
  */
 package io.github.rosemoe.sora.textmate.core.internal.grammar.reader;
 
-import io.github.rosemoe.sora.textmate.core.internal.parser.json.JSONPListParser;
-import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
-
 import java.io.InputStream;
 
-/** TextMate Grammar reader utilities. */
+import io.github.rosemoe.sora.textmate.core.internal.parser.json.JSONPListParser;
+import io.github.rosemoe.sora.textmate.core.internal.parser.xml.XMLPListParser;
+import io.github.rosemoe.sora.textmate.core.internal.types.IRawGrammar;
+
+/**
+ * TextMate Grammar reader utilities.
+ *
+ */
 public class GrammarReader {
 
-    public static final IGrammarParser JSON_PARSER =
-            new IGrammarParser() {
+    public static final IGrammarParser XML_PARSER = new IGrammarParser() {
 
-                private JSONPListParser<IRawGrammar> parser = new JSONPListParser<>(false);
+        private XMLPListParser<IRawGrammar> parser = new XMLPListParser<>(false);
 
-                @Override
-                public IRawGrammar parse(InputStream contents) throws Exception {
-                    return parser.parse(contents);
-                }
-            };
+        @Override
+        public IRawGrammar parse(InputStream contents) throws Exception {
+            return parser.parse(contents);
+        }
+    };
+    public static final IGrammarParser JSON_PARSER = new IGrammarParser() {
 
-    /** methods should be accessed statically */
-    private GrammarReader() {}
+        private JSONPListParser<IRawGrammar> parser = new JSONPListParser<>(false);
+
+        @Override
+        public IRawGrammar parse(InputStream contents) throws Exception {
+            return parser.parse(contents);
+        }
+    };
+
+    /**
+     * methods should be accessed statically
+     */
+    private GrammarReader() {
+
+    }
 
     public static IRawGrammar readGrammarSync(String filePath, InputStream in) throws Exception {
         SyncGrammarReader reader = new SyncGrammarReader(in, getGrammarParser(filePath));
@@ -44,6 +60,9 @@ public class GrammarReader {
     }
 
     private static IGrammarParser getGrammarParser(String filePath) {
-        return JSON_PARSER;
+        if (filePath.endsWith(".json")) {
+            return JSON_PARSER;
+        }
+        return XML_PARSER;
     }
 }

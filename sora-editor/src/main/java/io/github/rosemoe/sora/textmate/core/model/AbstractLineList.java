@@ -15,20 +15,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * Abstract class for Model lines used by the TextMate model. Implementation class must :
+ * Abstract class for Model lines used by the TextMate model. Implementation
+ * class must :
  *
  * <ul>
- *   <li>synchronizes lines with the lines of the editor content when it changed.
- *   <li>call {@link AbstractLineList#invalidateLine(int)} with the first changed line.
+ * <li>synchronizes lines with the lines of the editor content when it changed.</li>
+ * <li>call {@link AbstractLineList#invalidateLine(int)} with the first changed line.</li>
  * </ul>
+ *
  */
 public abstract class AbstractLineList implements IModelLines {
+
+    private static final Logger LOGGER = Logger.getLogger(AbstractLineList.class.getName());
 
     private final List<ModelLine> list = Collections.synchronizedList(new ArrayList<>());
 
     private TMModel model;
+
+    public AbstractLineList() {
+    }
 
     void setModel(TMModel model) {
         this.model = model;
@@ -50,12 +59,11 @@ public abstract class AbstractLineList implements IModelLines {
 
     @Override
     public void updateLine(int line) {
-        /*        try {
-                    this.list.get(line).text = this.lineToTextResolver.apply(line);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                }
-        */
+        try {
+            // this.list.get(line).text = this.lineToTextResolver.apply(line);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @Override

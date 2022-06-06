@@ -46,7 +46,7 @@ public class ProblemMarker {
               break;
             default:
               flag = Span.FLAG_ERROR;
-              break
+              break;
           }
           SpansUtil.markProblemRegion(editor.getStyles().getSpans(), flag, wrapper.getStartLine(), wrapper.getStartColumn(), wrapper.getEndLine(), wrapper.getEndColumn());
         }

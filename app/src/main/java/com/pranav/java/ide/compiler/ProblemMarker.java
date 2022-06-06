@@ -7,7 +7,7 @@ import javax.tools.JavaFileObject;
 
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.SpansUtil;
+import io.github.rosemoe.sora.lang.styling.SpansUtils;
 
 import java.util.List;
 

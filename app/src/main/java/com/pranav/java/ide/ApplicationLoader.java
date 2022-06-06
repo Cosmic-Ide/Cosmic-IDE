@@ -15,6 +15,7 @@ public final class ApplicationLoader extends Application {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         final var mContext = getApplicationContext();
         final var dataDirectory = mContext.getExternalFilesDir(null).getAbsolutePath();
         FileUtil.setDataDirectory(dataDirectory);
@@ -33,14 +34,7 @@ public final class ApplicationLoader extends Application {
                                     intent,
                                     PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
-                    var am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, pendingIntent);
-
-                    Process.killProcess(Process.myPid());
                     System.exit(1);
-
-                    uncaughtExceptionHandler.uncaughtException(thread, throwable);
                 });
-        super.onCreate();
     }
 }

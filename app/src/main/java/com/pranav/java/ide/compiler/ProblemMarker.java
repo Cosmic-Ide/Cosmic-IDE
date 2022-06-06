@@ -58,7 +58,7 @@ public class ProblemMarker {
   public static void setLineAndColumn(DiagnosticWrapper diagnostic) {
           try {
               if (diagnostic.getStartLine() <= -1 && diagnostic.getStartPosition() > 0) {
-                  var start = editor..getCursor().getIndexer().getCharPosition(((int) diagnostic.getStartPosition()));
+                  var start = editor.getCursor().getIndexer().getCharPosition(((int) diagnostic.getStartPosition()));
                   diagnostic.setStartLine(start.getLine() + 1);
                   diagnostic.setStartColumn(start.getColumn());
                   diagnostic.setLineNumber(start.getLine() + 1);

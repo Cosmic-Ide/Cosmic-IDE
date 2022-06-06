@@ -48,7 +48,7 @@ public class ProblemMarker {
               flag = Span.FLAG_ERROR;
               break;
           }
-          SpansUtil.markProblemRegion(editor.getStyles().getSpans(), flag, wrapper.getStartLine(), wrapper.getStartColumn(), wrapper.getEndLine(), wrapper.getEndColumn());
+          SpansUtils.markProblemRegion(editor.getStyles().getSpans(), flag, wrapper.getStartLine(), wrapper.getStartColumn(), wrapper.getEndLine(), wrapper.getEndColumn());
         }
     } catch (Exception e) {
       e.printStackTrace();

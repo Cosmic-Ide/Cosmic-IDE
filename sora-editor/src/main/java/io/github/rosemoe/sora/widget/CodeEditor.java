@@ -77,6 +77,7 @@ import io.github.rosemoe.sora.event.EventReceiver;
 import io.github.rosemoe.sora.event.InterceptTarget;
 import io.github.rosemoe.sora.event.ScrollEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
+import io.github.rosemoe.sora.text.Indexer;
 import io.github.rosemoe.sora.event.SubscriptionReceipt;
 import io.github.rosemoe.sora.graphics.GraphicTextRow;
 import io.github.rosemoe.sora.graphics.Paint;
@@ -3579,6 +3580,10 @@ public class CodeEditor extends View
             mHorizontalGlow.onRelease();
         }
         return (res3 || res2 || res);
+    }
+                        
+    public Indexer getIndexer(){
+        return mText.getIndexer();
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProblemMarker {
   
-  private CodeEditor editor;
+  private static CodeEditor editor;
   private JavacAnalyzer analyzer;
   
   public ProblemMarker(CodeEditor editor) {

@@ -1,7 +1,5 @@
 package com.pranav.common.util;
 
-import android.view.View;
-
 import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
@@ -10,8 +8,6 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class DiagnosticWrapper implements Diagnostic<File> {
-
-    public static final int USE_LINE_POS = -31;
 
     private String code;
     private File source;
@@ -55,14 +51,6 @@ public class DiagnosticWrapper implements Diagnostic<File> {
         } catch (Throwable e) {
             // ignored
         }
-    }
-
-    public void setOnClickListener(View.OnClickListener listener) {
-        onClickListener = listener;
-    }
-
-    public View.OnClickListener getOnClickListener() {
-        return onClickListener;
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.pranav.java.ide.compiler;
 
 import com.pranav.android.analyzer.JavacAnalyzer;
+import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.DiagnosticWrapper;
 
 import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.SpansUtils;
+import io.github.rosemoe.sora.lang.styling.Spans;
 import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
@@ -21,46 +23,17 @@ public class ProblemMarker {
     }
 
     public void run() {
+        ConcurrentUtil.execute(() -> {
         if (!analyzer.isFirstRun()) {
             analyzer.reset();
         }
         try {
             analyzer.analyze();
-            for (Diagnostic<? extends JavaFileObject> diagnostic : analyzer.getDiagnostics()) {
-                if (diagnostic.getSource() == null) {
-                    return;
-                }
-                var wrapper = new DiagnosticWrapper(diagnostic);
-                setLineAndColumn(wrapper);
-                int flag;
-                switch (wrapper.getKind()) {
-                    case NOTE:
-                    case WARNING:
-                    case MANDATORY_WARNING:
-                        if (wrapper.getCode().contains("deprecated")) {
-                            flag = Span.FLAG_DEPRECATED;
-                        } else {
-                            flag = Span.FLAG_WARNING;
-                        }
-                        break;
-                    case ERROR:
-                        flag = Span.FLAG_ERROR;
-                        break;
-                    default:
-                        flag = Span.FLAG_ERROR;
-                        break;
-                }
-                SpansUtils.markProblemRegion(
-                        editor.getStyles().getSpans(),
-                        flag,
-                        wrapper.getStartLine(),
-                        wrapper.getStartColumn(),
-                        wrapper.getEndLine(),
-                        wrapper.getEndColumn());
-            }
+            HighlightUtil.markDiagnostics(editor, analyzer.getDiagnostics(), editor.getStyles());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        });
     }
 
     private void setLineAndColumn(DiagnosticWrapper diagnostic) {

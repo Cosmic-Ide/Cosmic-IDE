@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.pranav.common.util.FileUtil;
+import com.pranav.common.util.DiagnosticWrapper;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
@@ -94,8 +95,12 @@ public class JavacAnalyzer {
         diagnostics = new DiagnosticCollector<>();
     }
 
-    public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
-        return diagnostics.getDiagnostics();
+    public List<DiagnosticWrapper> getDiagnostics() {
+        var problems = new ArrayList<DiagnosticWrapper>();
+        for (var diagnostic : diagnostics.getDiagnotics()) {
+          problems.add(new DiagnosticWrapper(diagnostic));
+        }
+        return problems;
     }
 
     private ArrayList<File> getSourceFiles(File path) {

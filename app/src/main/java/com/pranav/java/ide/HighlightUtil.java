@@ -9,7 +9,7 @@ import javax.tools.Diagnostic;
 
 import java.util.ArrayList;
 import java.util.List;
-import io.github.rosemoe.sora.widget.CodeEditor:
+import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Spans;

@@ -19,8 +19,6 @@ public class D8Task extends Task {
 
     @Override
     public void doFullTask() throws Exception {
-        ConcurrentUtil.execute(
-                () -> {
                     try {
                         D8.run(
                                 D8Command.builder()
@@ -38,7 +36,6 @@ public class D8Task extends Task {
                     } catch (Exception e) {
                         ex = e;
                     }
-                });
         if (ex != null) {
             throw ex;
         }

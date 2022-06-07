@@ -48,8 +48,6 @@ public class ECJCompilationTask extends Task {
 
         var output = new File(FileUtil.getBinDir(), "classes");
 
-        ConcurrentUtil.execute(
-                () -> {
                     final var args = new ArrayList<String>();
 
                     args.add("-log");
@@ -77,7 +75,6 @@ public class ECJCompilationTask extends Task {
                     args.add(FileUtil.getJavaDir());
 
                     main.compile(args.toArray(new String[0]));
-                });
 
         if (main.globalErrorsCount > 0 | !output.exists()) {
             throw new CompilationFailedException(errs.toString());

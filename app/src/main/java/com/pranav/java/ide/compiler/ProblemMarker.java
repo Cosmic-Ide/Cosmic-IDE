@@ -23,7 +23,7 @@ public class ProblemMarker {
     }
 
     public void run() {
-        ConcurrentUtil.execute(() -> {
+        ConcurrentUtil.inParallel(() -> {
         if (!analyzer.isFirstRun()) {
             analyzer.reset();
         }

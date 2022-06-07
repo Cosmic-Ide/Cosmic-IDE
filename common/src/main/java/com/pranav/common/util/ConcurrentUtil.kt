@@ -1,6 +1,7 @@
 package com.pranav.common.util
 
 import kotlinx.coroutines.*
+import java.util.concurrent.Executors;
 
 class ConcurrentUtil {
   companion object {
@@ -9,7 +10,11 @@ class ConcurrentUtil {
       launch {
         runnable.run()
       }
-      deferred.await()
+    }
+    
+    @JvmStatic
+    fun inParallel(runnable: Runnable) {
+      Executors.newCachedThreadPool().submit(runnable);
     }
   }
 }

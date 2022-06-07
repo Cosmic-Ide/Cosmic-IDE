@@ -97,7 +97,7 @@ public class JavacAnalyzer {
 
     public List<DiagnosticWrapper> getDiagnostics() {
         var problems = new ArrayList<DiagnosticWrapper>();
-        for (var diagnostic : diagnostics.getDiagnotics()) {
+        for (var diagnostic : diagnostics.getDiagnostics()) {
           problems.add(new DiagnosticWrapper(diagnostic));
         }
         return problems;

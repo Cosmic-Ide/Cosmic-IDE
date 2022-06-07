@@ -66,7 +66,7 @@ public class ProblemMarker {
     private void setLineAndColumn(DiagnosticWrapper diagnostic) {
         try {
             // Calculate and update the start and end line number and columns
-            var lineCalculator = new LineNumberCalculator(editor.getText().toString());
+            var startCalculator = new LineNumberCalculator(editor.getText().toString());
             startCalculator.update(diagnostic.getStartLine());
             diagnostic.setStartLine(startCalculator.getLine());
             diagnostic.setStartColumn(startCalculator.getColumn());

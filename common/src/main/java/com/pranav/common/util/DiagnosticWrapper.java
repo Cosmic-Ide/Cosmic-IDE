@@ -19,7 +19,6 @@ public class DiagnosticWrapper implements Diagnostic<File> {
 
     private long lineNumber;
     private long columnNumber;
-    private View.OnClickListener onClickListener;
     private CharSequence message;
 
     /** Extra information for this diagnostic */

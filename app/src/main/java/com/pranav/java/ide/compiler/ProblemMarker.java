@@ -4,6 +4,7 @@ import com.pranav.android.analyzer.JavacAnalyzer;
 
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.SpansUtils;
+import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import javax.tools.Diagnostic;
@@ -36,11 +37,14 @@ public class ProblemMarker {
                     case NOTE:
                     case WARNING:
                     case MANDATORY_WARNING:
-                        if (wrapper.getCode().startsWith("compiler.note.deprecated")) {
+                        if (wrapper.getCode().contains("deprecated")) {
                             flag = Span.FLAG_DEPRECATED;
                         } else {
                             flag = Span.FLAG_WARNING;
                         }
+                        break;
+                    case ERROR:
+                        flag = Span.FLAG_ERROR;
                         break;
                     default:
                         flag = Span.FLAG_ERROR;
@@ -61,24 +65,15 @@ public class ProblemMarker {
 
     private void setLineAndColumn(DiagnosticWrapper diagnostic) {
         try {
-            if (diagnostic.getStartLine() <= -1 && diagnostic.getStartPosition() > 0) {
-                var start =
-                        editor.getCursor()
-                                .getIndexer()
-                                .getCharPosition(((int) diagnostic.getStartPosition()));
-                diagnostic.setStartLine(start.getLine() + 1);
-                diagnostic.setStartColumn(start.getColumn());
-                diagnostic.setLineNumber(start.getLine() + 1);
-                diagnostic.setColumnNumber(start.getColumn());
-            }
-            if (diagnostic.getEndLine() <= -1 && diagnostic.getEndPosition() > 0) {
-                var end =
-                        editor.getCursor()
-                                .getIndexer()
-                                .getCharPosition(((int) diagnostic.getEndPosition()));
-                diagnostic.setEndLine(end.getLine() + 1);
-                diagnostic.setEndColumn(end.getColumn());
-            }
+            // Calculate and update the start and end line number and columns
+            var lineCalculator = new LineNumberCalculator(editor.getText().toString());
+            startCalculator.update(diagnostic.getStartLine());
+            diagnostic.setStartLine(startCalculator.getLine());
+            diagnostic.setStartColumn(startCalculator.getColumn())
+            var endCalculator = new LineNumberCalculator(editor.getText().toString());
+            endCalculator.update(diagnostic.getEndLine());
+            diagnostic.setEndLine(endCalculator.getLine());
+            diagnostic.setEndColumn(endCalculator.getColumn());
         } catch (IndexOutOfBoundsException ignored) {
             // unknown index, dont display line number
         }

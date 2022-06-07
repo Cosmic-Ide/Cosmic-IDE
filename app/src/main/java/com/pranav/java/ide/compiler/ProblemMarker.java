@@ -69,7 +69,7 @@ public class ProblemMarker {
             var lineCalculator = new LineNumberCalculator(editor.getText().toString());
             startCalculator.update(diagnostic.getStartLine());
             diagnostic.setStartLine(startCalculator.getLine());
-            diagnostic.setStartColumn(startCalculator.getColumn())
+            diagnostic.setStartColumn(startCalculator.getColumn());
             var endCalculator = new LineNumberCalculator(editor.getText().toString());
             endCalculator.update(diagnostic.getEndLine());
             diagnostic.setEndLine(endCalculator.getLine());

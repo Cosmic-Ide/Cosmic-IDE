@@ -75,7 +75,7 @@ public class ProblemMarker {
             diagnostic.setEndLine(endCalculator.getLine());
             diagnostic.setEndColumn(endCalculator.getColumn());
         } catch (IndexOutOfBoundsException ignored) {
-            // unknown index, dont display line number
+            // unknown index, dont update line numbers
         }
     }
 }

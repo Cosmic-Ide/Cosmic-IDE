@@ -9,6 +9,8 @@ import javax.tools.JavaFileObject;
 
 public class DiagnosticWrapper implements Diagnostic<File> {
 
+    public static final int USE_LINE_POS = -31;
+
     private String code;
     private File source;
     private Kind kind;

@@ -136,9 +136,9 @@ public class HighlightUtil {
                         endColumn = it.getEndColumn();
 
                         int flag =
-                                Color.parse(it.getKind() == Diagnostic.Kind.ERROR
-                                        ? "#f44747"
-                                        : "#cd9731");
+                                it.getKind() == Diagnostic.Kind.ERROR
+                                        ? Color.parse("#f44747")
+                                        : Color.parse("#cd9731");
                         markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
                     } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
                         Log.d("HighlightUtil", "Failed to mark diagnostics", e);

@@ -3,7 +3,7 @@ package com.pranav.java.ide;
 
 import android.util.Log;
 
-import com.pranav.java.ide.compiler.DiagnosticWrapper;
+import com.pranav.common.util.DiagnosticWrapper;
 
 import javax.tools.Diagnostic;
 
@@ -152,14 +152,14 @@ public class HighlightUtil {
                         it.setEndPosition(it.getPosition());
                     }
 
-                    if (it.getStartPosition() > editor.getContent().length()) {
+                    if (it.getStartPosition() > editor.getText().length()) {
                         return;
                     }
-                    if (it.getEndPosition() > editor.getContent().length()) {
+                    if (it.getEndPosition() > editor.getText().length()) {
                         return;
                     }
-                    var start = editor.getCharPosition((int) it.getStartPosition());
-                    var end = editor.getCharPosition((int) it.getEndPosition());
+                    var start = editor.getCursor().getIndexer().getCharPosition((int) it.getStartPosition());
+                    var end = editor.getCursor().getIndexer().getCharPosition((int) it.getEndPosition());
 
                     int sLine = start.getLine();
                     int sColumn = start.getColumn();

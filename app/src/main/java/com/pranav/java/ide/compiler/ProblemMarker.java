@@ -2,6 +2,7 @@ package com.pranav.java.ide.compiler;
 
 import com.pranav.android.analyzer.JavacAnalyzer;
 import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.java.ide.HighlightUtil;
 import com.pranav.common.util.DiagnosticWrapper;
 
 import io.github.rosemoe.sora.lang.styling.Span;

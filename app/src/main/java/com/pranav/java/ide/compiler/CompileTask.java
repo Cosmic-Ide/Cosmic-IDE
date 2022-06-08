@@ -18,18 +18,18 @@ public class CompileTask extends Thread {
     private long d8Time = 0;
     private long ecjTime = 0;
 
-    private final boolean showExecuteDialog = false;
+    private boolean showExecuteDialog = false;
 
     private final MainActivity activity;
 
     private final CompilerListeners listener;
     private final JavaBuilder builder;
 
-    public static final String STAGE_CLEAN;
-    public static final String STAGE_JAVAC;
-    public static final String STAGE_ECJ;
-    public static final String STAGE_D8;
-    public static final String STAGE_LOADING_DEX;
+    private final String STAGE_CLEAN;
+    private final String STAGE_JAVAC;
+    private final String STAGE_ECJ;
+    private final String STAGE_D8;
+    private final String STAGE_LOADING_DEX;
 
     public CompileTask(MainActivity context, boolean isExecuteMethod, CompilerListeners listener) {
         this.activity = context;
@@ -68,7 +68,7 @@ public class CompileTask extends Thread {
 
         var errorsArePresent = false;
 
-        // code that runs Javac
+        // code that runs Javac or ECJ
         var time = System.currentTimeMillis();
         errorsArePresent = true;
         try {

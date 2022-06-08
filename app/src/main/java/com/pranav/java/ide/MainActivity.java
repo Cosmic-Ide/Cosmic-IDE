@@ -64,10 +64,12 @@ public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
     public SharedPreferences prefs;
+    public DrawerLayout drawer;
 
     private AlertDialog loadingDialog;
     private Thread runThread;
     private ProblemMarker marker;
+
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
     private String temp;
@@ -93,7 +95,7 @@ public final class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
-        DrawerLayout drawer = findViewById(R.id.mDrawerLayout);
+        drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
                 new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);

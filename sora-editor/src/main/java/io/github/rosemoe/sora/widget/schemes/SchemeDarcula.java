@@ -31,15 +31,15 @@ public class SchemeDarcula extends EditorColorScheme {
     @Override
     public void applyDefault() {
         super.applyDefault();
-        setColor(ANNOTATION, 0xffbbb529);
-        setColor(FUNCTION_NAME, 0xffffffff);
+        setColor(ANNOTATION, 0xffcccccc);
+        setColor(FUNCTION_NAME, 0xffffc66d);
         setColor(IDENTIFIER_NAME, 0xffffffff);
         setColor(IDENTIFIER_VAR, 0xff9876aa);
         setColor(LITERAL, 0xff6a8759);
         setColor(OPERATOR, 0xffffffff);
         setColor(COMMENT, 0xff808080);
-        setColor(KEYWORD, 0xffcc7832);
-        setColor(WHOLE_BACKGROUND, 0xff2b2b2b);
+        setColor(KEYWORD, 0xffcc8242);
+        setColor(WHOLE_BACKGROUND, 0xff242424);
         setColor(TEXT_NORMAL, 0xffffffff);
         setColor(LINE_NUMBER_BACKGROUND, 0xff313335);
         setColor(LINE_NUMBER, 0xff606366);
@@ -54,6 +54,6 @@ public class SchemeDarcula extends EditorColorScheme {
         setColor(BLOCK_LINE, 0xff575757);
         setColor(BLOCK_LINE_CURRENT, 0xdd575757);
         setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
-        setColor(TEXT_SELECTED, 0xffffffff);
+        setColor(TEXT_SELECTED, 0xff214283);
     }
 }

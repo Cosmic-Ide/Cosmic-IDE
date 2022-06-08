@@ -21,18 +21,26 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.textmate.core;
+package io.github.rosemoe.sora.langs.java;
 
-/** TextMate exception. */
-public class TMException extends RuntimeException {
+import java.util.Objects;
 
-    private static final long serialVersionUID = 1L;
+public class State {
 
-    public TMException(String message) {
-        super(message);
+    public int state = 0;
+
+    public boolean hasBraces = false;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state1 = (State) o;
+        return state == state1.state && hasBraces == state1.hasBraces;
     }
 
-    public TMException(String message, Throwable cause) {
-        super(message, cause);
+    @Override
+    public int hashCode() {
+        return Objects.hash(state, hasBraces);
     }
 }

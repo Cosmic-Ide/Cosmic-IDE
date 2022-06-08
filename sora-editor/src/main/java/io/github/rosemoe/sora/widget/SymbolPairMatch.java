@@ -84,24 +84,24 @@ public class SymbolPairMatch {
              * The method will be called to decide whether to perform the replacement or not. It may
              * be same as vscode language-configuration Auto-closing 'notIn' also see <a
              * href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autoclosing">this</a>
-             * If not implemented,always return true
+             * If not implemented, always return true
              *
-             * @param currentLine The current line edit in the editor,quick analysis it to decide
+             * @param currentLine The current line edit in the editor, quick analysis it to decide
              *     whether to replaced
              * @param leftColumn return current cursor column
              */
             default boolean shouldDoReplace(ContentLine currentLine, int leftColumn) {
-                return true;
+                return currentLine.charAt(leftColumn + 1) != getAutoSurroundPair()[1];
             }
 
             /**
              * when before the replaced and select a range,surrounds the selected content with
-             * return pair if return pair not null. If not implemented,always return null also see
+             * return pair if return pair not null. If not implemented, always return null also see
              * <a
              * href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autosurrounding">this</a>
              */
             default String[] getAutoSurroundPair() {
-                return null;
+                return autoSurroundPair;
             }
         }
 

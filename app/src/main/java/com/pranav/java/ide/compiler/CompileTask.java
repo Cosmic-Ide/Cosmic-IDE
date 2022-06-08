@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Looper;
 
 import com.pranav.android.task.java.*;
+import com.pranav.android.task.JavaBuilder;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
@@ -17,22 +18,24 @@ public class CompileTask extends Thread {
     private long d8Time = 0;
     private long ecjTime = 0;
 
-    private boolean showExecuteDialog = false;
+    private final boolean showExecuteDialog = false;
 
-    private MainActivity activity;
+    private final MainActivity activity;
 
-    private CompilerListeners listener;
+    private final CompilerListeners listener;
+    private final JavaBuilder builder;
 
-    public static String STAGE_CLEAN;
-    public static String STAGE_JAVAC;
-    public static String STAGE_ECJ;
-    public static String STAGE_D8;
-    public static String STAGE_LOADING_DEX;
+    public static final String STAGE_CLEAN;
+    public static final String STAGE_JAVAC;
+    public static final String STAGE_ECJ;
+    public static final String STAGE_D8;
+    public static final String STAGE_LOADING_DEX;
 
-    public CompileTask(Context context, boolean isExecuteMethod, CompilerListeners listener) {
-        this.activity = (MainActivity) context;
+    public CompileTask(MainActivity context, boolean isExecuteMethod, CompilerListeners listener) {
+        this.activity = context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
+        this.builder = new JavaBuilder(activity, activity.getClassLoader());
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_JAVAC = context.getString(R.string.stage_javac);
@@ -71,11 +74,11 @@ public class CompileTask extends Thread {
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-                var javaTask = new JavacCompilationTask(activity.builder);
+                var javaTask = new JavacCompilationTask(builder);
                 javaTask.doFullTask();
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
-                var javaTask = new ECJCompilationTask(activity.builder);
+                var javaTask = new ECJCompilationTask(builder);
                 javaTask.doFullTask();
             }
             errorsArePresent = false;
@@ -113,7 +116,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task = new ExecuteJavaTask(activity.builder, classes[item]);
+                            var task = new ExecuteJavaTask(builder, classes[item]);
                             try {
                                 task.doFullTask();
                             } catch (InvocationTargetException e) {

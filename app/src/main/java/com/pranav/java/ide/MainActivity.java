@@ -63,8 +63,6 @@ import java.util.Arrays;
 public final class MainActivity extends AppCompatActivity {
 
     public CodeEditor editor;
-    public DrawerLayout drawer;
-    public JavaBuilder builder;
     public SharedPreferences prefs;
 
     private AlertDialog loadingDialog;
@@ -86,7 +84,6 @@ public final class MainActivity extends AppCompatActivity {
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         editor = findViewById(R.id.editor);
-        drawer = findViewById(R.id.mDrawerLayout);
         marker = new ProblemMarker(editor);
 
         ContentChangeEvent.setAfterContentChangedListener(() -> marker.run());
@@ -96,6 +93,7 @@ public final class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
+        DrawerLayout drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
                 new ActionBarDrawerToggle(
                         this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
@@ -139,8 +137,6 @@ public final class MainActivity extends AppCompatActivity {
                 dialog("Cannot create file", getString(e), true);
             }
         }
-
-        builder = new JavaBuilder(getApplicationContext(), getClassLoader());
 
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
             ZipUtil.unzipFromAssets(
@@ -268,13 +264,13 @@ public final class MainActivity extends AppCompatActivity {
 
     public void compile(boolean execute) {
         final int id = 1;
-        var intent = new Intent(MainActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        var pendingIntent =
+        final var intent = new Intent(MainActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        final var pendingIntent =
                 PendingIntent.getActivity(
                         MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        var channel =
+        final var channel =
                 new NotificationChannel(
                         BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription("Shows the current build status.");
@@ -288,7 +284,7 @@ public final class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(
                                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setAutoCancel(true)
+                        .setAutoCancel(false)
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog

@@ -17,7 +17,7 @@ import javax.tools.Diagnostic;
 
 public class HighlightUtil {
 
-    public static Styles markProblemRegion(
+    public static void markProblemRegion(
             Styles styles,
             int newFlag,
             int startLine,
@@ -72,7 +72,6 @@ public class HighlightUtil {
 
             var modify = styles.getSpans().modify();
             modify.setSpansOnLine(line, spans);
-            return styles;
         }
     }
 
@@ -140,11 +139,12 @@ public class HighlightUtil {
                                 it.getKind() == Diagnostic.Kind.ERROR
                                         ? Color.parseColor("#f44747")
                                         : Color.parseColor("#cd9731");
-                        editor.setStyles(editor.getEditorLanguage().getAnalyzerManager(), markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
+                        markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
                     } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
                         Log.d("HighlightUtil", "Failed to mark diagnostics", e);
                     }
                 });
+        editor.setStyles(editor.getEditorLanguage().getAnalyzeManager(), styles);
     }
 
     public static void clearDiagnostics(Styles styles) {

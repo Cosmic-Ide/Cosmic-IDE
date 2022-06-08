@@ -4210,22 +4210,4 @@ public class CodeEditor extends View
             }
         }
     }
-    
-    public void setStyles(Styles styles) {
-      Runnable operation =
-            () -> {
-                mStyles = styles;
-                if (mHighlightCurrentBlock) {
-                    mCursorPosition = findCursorBlock();
-                }
-                mPainter.invalidateHwRenderer();
-                mPainter.updateTimestamp();
-                invalidate();
-            };
-      if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-          operation.run();
-      } else {
-          post(operation);
-      }
-    }
 }

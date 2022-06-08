@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#2B2B2B"
+            android:background="#242424"
             android:orientation="horizontal"
             android:padding="8dp" />
 
@@ -43,7 +43,7 @@
             android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#2B2B2B"
+            android:background="#242424"
             android:orientation="horizontal">
 
             <LinearLayout

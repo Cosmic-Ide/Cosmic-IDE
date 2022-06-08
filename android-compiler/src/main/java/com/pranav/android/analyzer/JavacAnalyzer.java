@@ -3,8 +3,8 @@ package com.pranav.android.analyzer;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.DiagnosticWrapper;
+import com.pranav.common.util.FileUtil;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -98,7 +97,7 @@ public class JavacAnalyzer {
     public List<DiagnosticWrapper> getDiagnostics() {
         var problems = new ArrayList<DiagnosticWrapper>();
         for (var diagnostic : diagnostics.getDiagnostics()) {
-          problems.add(new DiagnosticWrapper(diagnostic));
+            problems.add(new DiagnosticWrapper(diagnostic));
         }
         return problems;
     }

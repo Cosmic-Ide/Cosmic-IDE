@@ -148,11 +148,8 @@ public class StackElement {
         if (this.parent != null) {
             this.parent.appendString(res);
         }
-        res.add(
-                '('
-                        + Integer.toString(this.ruleId)
-                        + ')'); // , TODO-${this.nameScopesList},
-                                // TODO-${this.contentNameScopesList})`;
+        res.add('(' + Integer.toString(this.ruleId) + ')'); // , TODO-${this.nameScopesList},
+        // TODO-${this.contentNameScopesList})`;
     }
 
     @Override

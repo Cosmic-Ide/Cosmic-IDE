@@ -1,11 +1,8 @@
 package com.pranav.java.ide;
 
-import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Process;
 import android.util.Log;
 
 import com.pranav.common.util.FileUtil;

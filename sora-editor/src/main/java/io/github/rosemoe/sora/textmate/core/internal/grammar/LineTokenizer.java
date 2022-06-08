@@ -144,7 +144,7 @@ class LineTokenizer {
                 // Grammar pushed & popped a rule without advancing
                 LOGGER.info(
                         "[1] - Grammar is in an endless loop - Grammar pushed & popped a rule"
-                            + " without advancing");
+                                + " without advancing");
                 // See https://github.com/Microsoft/vscode-textmate/issues/12
                 // Let's assume this was a mistake by the grammar author and the
                 // intent was to continue in this state
@@ -200,7 +200,7 @@ class LineTokenizer {
                     // Grammar pushed the same rule without advancing
                     LOGGER.info(
                             "[2] - Grammar is in an endless loop - Grammar pushed the same rule"
-                                + " without advancing");
+                                    + " without advancing");
                     stack = stack.pop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;
@@ -238,7 +238,7 @@ class LineTokenizer {
                     // Grammar pushed the same rule without advancing
                     LOGGER.info(
                             "[3] - Grammar is in an endless loop - Grammar pushed the same rule"
-                                + " without advancing");
+                                    + " without advancing");
                     stack = stack.pop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;
@@ -268,7 +268,7 @@ class LineTokenizer {
                     // Grammar is not advancing, nor is it pushing/popping
                     LOGGER.info(
                             "[4] - Grammar is in an endless loop - Grammar is not advancing, nor is"
-                                + " it pushing/popping");
+                                    + " it pushing/popping");
                     stack = stack.safePop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;

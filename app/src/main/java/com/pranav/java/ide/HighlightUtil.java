@@ -5,19 +5,24 @@ import android.util.Log;
 
 import com.pranav.common.util.DiagnosticWrapper;
 
-import javax.tools.Diagnostic;
+import io.github.rosemoe.sora.lang.styling.Span;
+import io.github.rosemoe.sora.lang.styling.Styles;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 import java.util.ArrayList;
 import java.util.List;
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.lang.styling.Span;
-import io.github.rosemoe.sora.lang.styling.Spans;
-import io.github.rosemoe.sora.lang.styling.Styles;
+
+import javax.tools.Diagnostic;
 
 public class HighlightUtil {
 
-    public static void replaceSpan(Styles styles, Span newSpan, int startLine, int startColumn, int endLine, int endColumn) {
+    public static void replaceSpan(
+            Styles styles,
+            Span newSpan,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn) {
         for (int line = startLine; line <= endLine; line++) {
             int start = (line == startLine ? startColumn : 0);
             int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
@@ -46,7 +51,7 @@ public class HighlightUtil {
                         span.style = newSpan.style;
                         span.renderer = newSpan.renderer;
                     } else {
-                        //regionStartInSpan > span.column
+                        // regionStartInSpan > span.column
                         if (regionEndInSpan == spanEnd - 1) {
                             increment = 2;
                             var nSpan = span.copy();
@@ -78,7 +83,13 @@ public class HighlightUtil {
         }
     }
 
-    public static void markProblemRegion(Styles styles, int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
+    public static void markProblemRegion(
+            Styles styles,
+            int newFlag,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn) {
         for (int line = startLine; line <= endLine; line++) {
             int start = (line == startLine ? startColumn : 0);
             int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
@@ -104,7 +115,7 @@ public class HighlightUtil {
                         }
                         span.problemFlags |= newFlag;
                     } else {
-                        //regionStartInSpan > span.column
+                        // regionStartInSpan > span.column
                         if (regionEndInSpan == spanEnd) {
                             increment = 2;
                             var nSpan = span.copy();
@@ -130,72 +141,78 @@ public class HighlightUtil {
         }
     }
 
-
     /**
      * Highlights the list of given diagnostics, taking care of conversion between 1-based offsets
-     * to 0-based offsets.
-     * It also makes the Diagnostic eligible for shifting as the user types.
+     * to 0-based offsets. It also makes the Diagnostic eligible for shifting as the user types.
      */
-    public static void markDiagnostics(CodeEditor editor, List<DiagnosticWrapper> diagnostics,
-                                       Styles styles) {
-        diagnostics.forEach(it -> {
-            try {
-                int startLine;
-                int startColumn;
-                int endLine;
-                int endColumn;
-                if (it.getPosition() != DiagnosticWrapper.USE_LINE_POS) {
-                    if (it.getStartPosition() == -1) {
-                        it.setStartPosition(it.getPosition());
-                    }
-                    if (it.getEndPosition() == -1) {
-                        it.setEndPosition(it.getPosition());
-                    }
+    public static void markDiagnostics(
+            CodeEditor editor, List<DiagnosticWrapper> diagnostics, Styles styles) {
+        diagnostics.forEach(
+                it -> {
+                    try {
+                        int startLine;
+                        int startColumn;
+                        int endLine;
+                        int endColumn;
+                        if (it.getPosition() != DiagnosticWrapper.USE_LINE_POS) {
+                            if (it.getStartPosition() == -1) {
+                                it.setStartPosition(it.getPosition());
+                            }
+                            if (it.getEndPosition() == -1) {
+                                it.setEndPosition(it.getPosition());
+                            }
 
-                    if (it.getStartPosition() > editor.getText().length()) {
-                        return;
+                            if (it.getStartPosition() > editor.getText().length()) {
+                                return;
+                            }
+                            if (it.getEndPosition() > editor.getText().length()) {
+                                return;
+                            }
+                            var start =
+                                    editor.getCursor()
+                                            .getIndexer()
+                                            .getCharPosition((int) it.getStartPosition());
+                            var end =
+                                    editor.getCursor()
+                                            .getIndexer()
+                                            .getCharPosition((int) it.getEndPosition());
+
+                            int sLine = start.getLine();
+                            int sColumn = start.getColumn();
+                            int eLine = end.getLine();
+                            int eColumn = end.getColumn();
+
+                            // the editor does not support marking underline spans for the same
+                            // start and end
+                            // index
+                            // to work around this, we just subtract one to the start index
+                            if (sLine == eLine && eColumn == sColumn) {
+                                sColumn--;
+                                eColumn++;
+                            }
+
+                            it.setStartLine(sLine);
+                            it.setEndLine(eLine);
+                            it.setStartColumn(sColumn);
+                            it.setEndColumn(eColumn);
+                        }
+                        startLine = it.getStartLine();
+                        startColumn = it.getStartColumn();
+                        endLine = it.getEndLine();
+                        endColumn = it.getEndColumn();
+
+                        int flag =
+                                it.getKind() == Diagnostic.Kind.ERROR
+                                        ? Span.FLAG_ERROR
+                                        : Span.FLAG_WARNING;
+                        markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
+                    } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+                        Log.d("HighlightUtil", "Failed to mark diagnostics", e);
                     }
-                    if (it.getEndPosition() > editor.getText().length()) {
-                        return;
-                    }
-                    var start = editor.getCursor().getIndexer().getCharPosition((int) it.getStartPosition());
-                    var end = editor.getCursor().getIndexer().getCharPosition((int) it.getEndPosition());
-
-                    int sLine = start.getLine();
-                    int sColumn = start.getColumn();
-                    int eLine = end.getLine();
-                    int eColumn = end.getColumn();
-
-                    // the editor does not support marking underline spans for the same start and end
-                    // index
-                    // to work around this, we just subtract one to the start index
-                    if (sLine == eLine && eColumn == sColumn) {
-                        sColumn--;
-                        eColumn++;
-                    }
-
-                    it.setStartLine(sLine);
-                    it.setEndLine(eLine);
-                    it.setStartColumn(sColumn);
-                    it.setEndColumn(eColumn);
-                }
-                startLine = it.getStartLine();
-                startColumn = it.getStartColumn();
-                endLine = it.getEndLine();
-                endColumn = it.getEndColumn();
-
-                int flag = it.getKind() == Diagnostic.Kind.ERROR ? Span.FLAG_ERROR :
-                        Span.FLAG_WARNING;
-                markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
-            } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-                Log.d("HighlightUtil", "Failed to mark diagnostics", e);
-            }
-        });
+                });
     }
 
-    /**
-     * Used in xml diagnostics where line is only given
-     */
+    /** Used in xml diagnostics where line is only given */
     public static void setErrorSpan(Styles colors, int line) {
         try {
             var reader = colors.getSpans().read();
@@ -216,7 +233,7 @@ public class HighlightUtil {
         for (int i = 0; i < spans.getLineCount(); i++) {
             List<Span> original;
             try {
-                original  = read.getSpansOnLine(i);
+                original = read.getSpansOnLine(i);
             } catch (NullPointerException e) {
                 continue;
             }

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
-import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
 
 import org.eclipse.jdt.internal.compiler.batch.Main;
@@ -48,33 +47,33 @@ public class ECJCompilationTask extends Task {
 
         var output = new File(FileUtil.getBinDir(), "classes");
 
-                    final var args = new ArrayList<String>();
+        final var args = new ArrayList<String>();
 
-                    args.add("-log");
-                    args.add(FileUtil.getBinDir().concat("debug.xml"));
-                    args.add("-g");
-                    args.add("-" + prefs.getString("version", "7"));
-                    args.add("-d");
-                    args.add(output.getAbsolutePath());
-                    args.add("-classpath");
-                    args.add(FileUtil.getClasspathDir() + "android.jar");
-                    var classpath = new StringBuilder();
-                    classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
-                    var clspath = prefs.getString("classpath", "");
-                    if (!clspath.isEmpty() && classpath.length() > 0) {
-                        classpath.append(":");
-                        classpath.append(clspath);
-                    }
-                    if (classpath.length() > 0) {
-                        args.add("-cp");
-                        args.add(classpath.toString());
-                    }
-                    args.add("-proc:none");
-                    args.add("-sourcepath");
-                    args.add(" ");
-                    args.add(FileUtil.getJavaDir());
+        args.add("-log");
+        args.add(FileUtil.getBinDir().concat("debug.xml"));
+        args.add("-g");
+        args.add("-" + prefs.getString("version", "7"));
+        args.add("-d");
+        args.add(output.getAbsolutePath());
+        args.add("-classpath");
+        args.add(FileUtil.getClasspathDir() + "android.jar");
+        var classpath = new StringBuilder();
+        classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
+        var clspath = prefs.getString("classpath", "");
+        if (!clspath.isEmpty() && classpath.length() > 0) {
+            classpath.append(":");
+            classpath.append(clspath);
+        }
+        if (classpath.length() > 0) {
+            args.add("-cp");
+            args.add(classpath.toString());
+        }
+        args.add("-proc:none");
+        args.add("-sourcepath");
+        args.add(" ");
+        args.add(FileUtil.getJavaDir());
 
-                    main.compile(args.toArray(new String[0]));
+        main.compile(args.toArray(new String[0]));
 
         if (main.globalErrorsCount > 0 | !output.exists()) {
             throw new CompilationFailedException(errs.toString());

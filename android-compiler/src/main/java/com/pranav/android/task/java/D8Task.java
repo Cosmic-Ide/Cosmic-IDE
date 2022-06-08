@@ -5,7 +5,6 @@ import com.android.tools.r8.D8Command;
 import com.android.tools.r8.OutputMode;
 
 import com.pranav.android.interfaces.*;
-import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
 
 import java.io.File;
@@ -19,23 +18,18 @@ public class D8Task extends Task {
 
     @Override
     public void doFullTask() throws Exception {
-                    try {
-                        D8.run(
-                                D8Command.builder()
-                                        .setOutput(
-                                                Paths.get(FileUtil.getBinDir()),
-                                                OutputMode.DexIndexed)
-                                        .addLibraryFiles(
-                                                Paths.get(
-                                                        FileUtil.getClasspathDir(), "android.jar"))
-                                        .addProgramFiles(
-                                                getClassFiles(
-                                                        new File(FileUtil.getBinDir(), "classes")))
-                                        .build());
+        try {
+            D8.run(
+                    D8Command.builder()
+                            .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
+                            .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                            .addProgramFiles(
+                                    getClassFiles(new File(FileUtil.getBinDir(), "classes")))
+                            .build());
 
-                    } catch (Exception e) {
-                        ex = e;
-                    }
+        } catch (Exception e) {
+            ex = e;
+        }
         if (ex != null) {
             throw ex;
         }

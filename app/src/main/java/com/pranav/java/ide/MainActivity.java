@@ -429,7 +429,7 @@ public final class MainActivity extends AppCompatActivity {
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(new SchemeDarcula());
-                    edi.setEditorLanguage(newLanguage());
+                    edi.setEditorLanguage(new JavaLanguage());
                     edi.setTextSize(12);
 
                     try {

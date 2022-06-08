@@ -1,6 +1,7 @@
 // original source from CodeAssist
 package com.pranav.java.ide;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.pranav.common.util.DiagnosticWrapper;
@@ -15,73 +16,6 @@ import java.util.List;
 import javax.tools.Diagnostic;
 
 public class HighlightUtil {
-
-    public static void replaceSpan(
-            Styles styles,
-            Span newSpan,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn) {
-        for (int line = startLine; line <= endLine; line++) {
-            int start = (line == startLine ? startColumn : 0);
-            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
-            var read = styles.getSpans().read();
-            var spans = new ArrayList<Span>(read.getSpansOnLine(line));
-            int increment;
-            for (int i = 0; i < spans.size(); i += increment) {
-                Span span = spans.get(i);
-                increment = 1;
-                if (span.column >= end) {
-                    break;
-                }
-                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
-                if (spanEnd >= start) {
-                    int regionStartInSpan = Math.max(span.column, start);
-                    int regionEndInSpan = Math.min(end, spanEnd);
-                    if (regionStartInSpan == span.column) {
-                        if (regionEndInSpan != spanEnd) {
-                            increment = 2;
-                            var nSpan = span.copy();
-                            nSpan.column = regionEndInSpan;
-                            spans.add(i + 1, nSpan);
-                        }
-                        span.problemFlags = newSpan.problemFlags;
-                        span.underlineColor = newSpan.underlineColor;
-                        span.style = newSpan.style;
-                        span.renderer = newSpan.renderer;
-                    } else {
-                        // regionStartInSpan > span.column
-                        if (regionEndInSpan == spanEnd - 1) {
-                            increment = 2;
-                            var nSpan = span.copy();
-                            nSpan.column = regionStartInSpan;
-                            spans.add(i + 1, nSpan);
-                            span.problemFlags = newSpan.problemFlags;
-                            span.underlineColor = newSpan.underlineColor;
-                            span.style = newSpan.style;
-                            span.renderer = newSpan.renderer;
-                        } else {
-                            increment = 3;
-                            var span1 = span.copy();
-                            span1.column = regionStartInSpan;
-                            span1.problemFlags = newSpan.problemFlags;
-                            span1.underlineColor = newSpan.underlineColor;
-                            span1.style = newSpan.style;
-                            span1.renderer = newSpan.renderer;
-                            var span2 = span.copy();
-                            span2.column = regionEndInSpan;
-                            spans.add(i + 1, span1);
-                            spans.add(i + 2, span2);
-                        }
-                    }
-                }
-            }
-
-            var modify = styles.getSpans().modify();
-            modify.setSpansOnLine(line, spans);
-        }
-    }
 
     public static void markProblemRegion(
             Styles styles,
@@ -113,7 +47,7 @@ public class HighlightUtil {
                             nSpan.column = regionEndInSpan;
                             spans.add(i + 1, nSpan);
                         }
-                        span.problemFlags |= newFlag;
+                        span.underlineColor |= newFlag;
                     } else {
                         // regionStartInSpan > span.column
                         if (regionEndInSpan == spanEnd) {
@@ -121,12 +55,12 @@ public class HighlightUtil {
                             var nSpan = span.copy();
                             nSpan.column = regionStartInSpan;
                             spans.add(i + 1, nSpan);
-                            nSpan.problemFlags |= newFlag;
+                            nSpan.underlineColor |= newFlag;
                         } else {
                             increment = 3;
                             var span1 = span.copy();
                             span1.column = regionStartInSpan;
-                            span1.problemFlags |= newFlag;
+                            span1.underlineColor |= newFlag;
                             var span2 = span.copy();
                             span2.column = regionEndInSpan;
                             spans.add(i + 1, span1);
@@ -202,29 +136,14 @@ public class HighlightUtil {
                         endColumn = it.getEndColumn();
 
                         int flag =
-                                it.getKind() == Diagnostic.Kind.ERROR
-                                        ? Span.FLAG_ERROR
-                                        : Span.FLAG_WARNING;
+                                Color.parse(it.getKind() == Diagnostic.Kind.ERROR
+                                        ? "#f44747"
+                                        : "#cd9731");
                         markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
                     } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
                         Log.d("HighlightUtil", "Failed to mark diagnostics", e);
                     }
                 });
-    }
-
-    /** Used in xml diagnostics where line is only given */
-    public static void setErrorSpan(Styles colors, int line) {
-        try {
-            var reader = colors.getSpans().read();
-            int realLine = line - 1;
-            var spans = reader.getSpansOnLine(realLine);
-
-            for (var span : spans) {
-                span.problemFlags = Span.FLAG_ERROR;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            // ignored
-        }
     }
 
     public static void clearDiagnostics(Styles styles) {
@@ -239,7 +158,7 @@ public class HighlightUtil {
             }
             var spansOnLine = new ArrayList<Span>(original);
             for (var span : spansOnLine) {
-                span.problemFlags = 0;
+                span.underlineColor = 0;
             }
             spans.modify().setSpansOnLine(i, spansOnLine);
         }

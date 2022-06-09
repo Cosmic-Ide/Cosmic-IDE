@@ -1,6 +1,6 @@
 # Java IDE
 
-[![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yml)
+[![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yaml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yaml)
 [![Discord Server](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
 
 <p align="center">

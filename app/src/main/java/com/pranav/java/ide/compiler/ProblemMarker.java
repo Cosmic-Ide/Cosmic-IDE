@@ -8,6 +8,8 @@ import com.pranav.java.ide.HighlightUtil;
 import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
+import android.widget.Toast;
+
 public class ProblemMarker {
 
     private CodeEditor editor;
@@ -29,6 +31,7 @@ public class ProblemMarker {
                         HighlightUtil.clearSpans(editor.getSpans());
                         HighlightUtil.markDiagnostics(
                                 editor, analyzer.getDiagnostics(), editor.getStyles());
+                        Toast.makeText(editor.getContext(), "markDiagnostics call completed", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

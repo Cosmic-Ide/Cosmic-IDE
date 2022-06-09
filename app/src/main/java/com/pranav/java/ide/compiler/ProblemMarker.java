@@ -28,7 +28,7 @@ public class ProblemMarker {
                     }
                     try {
                         analyzer.analyze();
-                        HighlightUtil.clearSpans(editor.getSpans());
+                        HighlightUtil.clearSpans(editor.getStyles());
                         HighlightUtil.markDiagnostics(
                                 editor, analyzer.getDiagnostics(), editor.getStyles());
                         Toast.makeText(editor.getContext(), "markDiagnostics call completed", Toast.LENGTH_SHORT).show();

@@ -3,12 +3,12 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     namespace 'com.pranav.java.ide'
-    compileSdkPreview 'Tiramisu'
+    compileSdk 32
 
     defaultConfig {
         applicationId 'com.pranav.java.ide'
         minSdk 26
-        targetSdk 33
+        targetSdk 32
         versionCode 4
         versionName '0.0.4'
     }

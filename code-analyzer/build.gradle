@@ -1,0 +1,13 @@
+apply plugin: 'java-library'
+apply plugin: 'com.android.lint'
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
+}
+
+dependencies {
+	implementation project(path: ':nb-javac')
+	implementation project(path: ':common')
+	compileOnly files('libs/android-stubs.jar')
+}

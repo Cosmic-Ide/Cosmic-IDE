@@ -37,14 +37,15 @@ import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
-import com.pranav.java.ide.compiler.ProblemMarker;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 
 import io.github.rosemoe.sora.event.ContentChangeEvent;
-import io.github.rosemoe.sora.langs.java.JavaLanguage;
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
+import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
+import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.schemes.SchemeDarcula;
 
 import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
@@ -66,7 +67,6 @@ public final class MainActivity extends AppCompatActivity {
 
     private AlertDialog loadingDialog;
     private Thread runThread;
-    private ProblemMarker marker;
 
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
@@ -84,9 +84,6 @@ public final class MainActivity extends AppCompatActivity {
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         editor = findViewById(R.id.editor);
-        marker = new ProblemMarker(editor);
-
-        ContentChangeEvent.setAfterContentChangedListener(() -> marker.run());
 
         var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -101,8 +98,8 @@ public final class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         editor.setTypefaceText(Typeface.MONOSPACE);
-        editor.setColorScheme(new SchemeDarcula());
-        editor.setEditorLanguage(new JavaLanguage());
+        editor.setColorScheme(getColorScheme());
+        editor.setEditorLanguage(getTextMateLanguage());
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
 
@@ -320,6 +317,36 @@ public final class MainActivity extends AppCompatActivity {
         runThread.start();
     }
 
+    private TextMateColorScheme getColorScheme() {
+        return new TextMateColorScheme(getDarculaTheme());
+    }
+
+    private IRawTheme getDarculaTheme() {
+        try {
+            var rawTheme =
+                    ThemeReader.readThemeSync(
+                            "darcula.json", getAssets().open("textmate/darcula.json"));
+            return rawTheme;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private TextMateLanguage getTextMateLanguage() {
+        try {
+            var language =
+                    TextMateLanguage.create(
+                            "java.tmLanguage.json",
+                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            new InputStreamReader(
+                                    getAssets().open("textmate/java/language-configuration.json")),
+                            getDarculaTheme());
+            return language;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void smali() {
         try {
             var classes = getClassesFromDex();
@@ -340,8 +367,8 @@ public final class MainActivity extends AppCompatActivity {
 
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
-                        edi.setColorScheme(new SchemeDarcula());
-                        edi.setEditorLanguage(new JavaLanguage());
+                        edi.setColorScheme(getColorScheme());
+                        edi.setEditorLanguage(getTextMateLanguage());
                         edi.setTextSize(13);
 
                         var smaliFile =
@@ -399,8 +426,8 @@ public final class MainActivity extends AppCompatActivity {
 
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
-                    edi.setColorScheme(new SchemeDarcula());
-                    edi.setEditorLanguage(new JavaLanguage());
+                    edi.setColorScheme(getColorScheme());
+                    edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
                     var decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
@@ -428,8 +455,8 @@ public final class MainActivity extends AppCompatActivity {
 
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
-                    edi.setColorScheme(new SchemeDarcula());
-                    edi.setEditorLanguage(new JavaLanguage());
+                    edi.setColorScheme(getColorScheme());
+                    edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
                     try {

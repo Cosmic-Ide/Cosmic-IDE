@@ -49,7 +49,6 @@ public class ContentChangeEvent extends Event {
     private final CharPosition mStart;
     private final CharPosition mEnd;
     private final CharSequence mTextChanged;
-    private static Runnable runnable = null;
 
     public ContentChangeEvent(
             CodeEditor editor,
@@ -62,11 +61,6 @@ public class ContentChangeEvent extends Event {
         mStart = changeStart;
         mEnd = changeEnd;
         mTextChanged = textChanged;
-        if (runnable != null) runnable.run();
-    }
-
-    public static void setAfterContentChangedListener(Runnable runner) {
-        runnable = runner;
     }
 
     /**

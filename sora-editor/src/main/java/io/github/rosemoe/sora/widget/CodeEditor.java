@@ -104,6 +104,7 @@ import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
 import io.github.rosemoe.sora.util.TemporaryFloatBuffer;
 import io.github.rosemoe.sora.util.ThemeUtils;
+import io.github.rosemoe.sora.util.ProblemMarker;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent;
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
@@ -274,6 +275,7 @@ public class CodeEditor extends View
     private EditorTouchEventHandler mEventHandler;
     private Paint.Align mLineNumberAlign;
     private GestureDetector mBasicDetector;
+    private ProblemMarker mProblemMarker;
     protected EditorTextActionWindow mTextActionWindow;
     private ScaleGestureDetector mScaleDetector;
     EditorInputConnection mConnection;
@@ -512,6 +514,7 @@ public class CodeEditor extends View
         mVerticalGlow = new MaterialEdgeEffect();
         mHorizontalGlow = new MaterialEdgeEffect();
         mTextActionWindow = new EditorTextActionWindow(this);
+        mProblemMarker = new ProblemMarker(this);
         setEditorLanguage(null);
         setText(null);
         setTabWidth(4);
@@ -1529,6 +1532,7 @@ public class CodeEditor extends View
         if (mConnection != null && isEditable()) {
             mConnection.commitTextInternal("\t", true);
         }
+        mProblemMarker.run();
     }
 
     protected void updateCompletionWindowPosition() {
@@ -1694,6 +1698,7 @@ public class CodeEditor extends View
                 mText.delete(cur.getLeftLine(), begin, cur.getLeftLine(), end);
             }
         }
+        mProblemMarker.run();
     }
 
     /** Commit text to the content from IME */
@@ -1749,6 +1754,7 @@ public class CodeEditor extends View
             }
             mText.insert(cur.getLeftLine(), cur.getLeftColumn(), text);
         }
+        mProblemMarker.run();
     }
 
     /**
@@ -4142,6 +4148,7 @@ public class CodeEditor extends View
         dispatchEvent(
                 new ContentChangeEvent(
                         this, ContentChangeEvent.ACTION_DELETE, start, end, deletedContent));
+        mProblemMarker.run();
     }
 
     @Override

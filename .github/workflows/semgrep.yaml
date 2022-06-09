@@ -1,5 +1,6 @@
 on:
   push:
+    branch: [ main ]
 
 name: Semgrep
 

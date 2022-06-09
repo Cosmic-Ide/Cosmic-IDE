@@ -1487,7 +1487,7 @@ public class CodeEditor extends View
      *
      * @return width of line number region
      */
-    protected float measureLineNumber() {
+    public float measureLineNumber() {
         if (!isLineNumberEnabled()) {
             return 0f;
         }
@@ -3194,6 +3194,14 @@ public class CodeEditor extends View
         return mPainter.getPaint();
     }
 
+    public Paint getOtherPaint() {
+         return mPainter.getPaintOther();
+     }
+
+     public Paint getGraphPaint() {
+         return mPainter.getPaintGraph();
+     }
+
     /**
      * Get the ColorScheme object of this editor You can config colors of some regions, texts and
      * highlight text
@@ -3302,7 +3310,6 @@ public class CodeEditor extends View
         }
         mInputMethodManager.updateSelection(
                 this, mCursor.getLeft(), mCursor.getRight(), candidatesStart, candidatesEnd);
-        Thread.dumpStack();
     }
 
     /** Update request result for monitoring request */
@@ -3324,11 +3331,15 @@ public class CodeEditor extends View
         ExtractedText text = new ExtractedText();
         int selBegin = cur.getLeft();
         int selEnd = cur.getRight();
-        int startOffset;
+        int startOffset = 0;
         if (request.hintMaxChars == 0) {
             request.hintMaxChars = mProps.maxIPCTextLength;
         }
-        startOffset = 0;
+        if (request.hintMaxChars < mProps.maxIPCTextLength) {
+            if (startOffset + request.hintMaxChars < selBegin) {
+                startOffset = selBegin - request.hintMaxChars / 2;
+            }
+        }
         text.text =
                 mConnection.getTextRegion(
                         startOffset, startOffset + request.hintMaxChars, request.flags);

@@ -27,7 +27,7 @@ import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.util.TrieTree;
 
 /**
- * @author Rose
+ * @author Rosemoe
  */
 public class JavaTextTokenizer {
 
@@ -415,12 +415,10 @@ public class JavaTextTokenizer {
         }
     }
 
-    @SuppressWarnings("SameReturnValue")
     protected Tokens scanLT() {
         return Tokens.LT;
     }
 
-    @SuppressWarnings("SameReturnValue")
     protected Tokens scanGT() {
         return Tokens.GT;
     }
@@ -470,6 +468,7 @@ public class JavaTextTokenizer {
         for (int i = 0; i < sKeywords.length; i++) {
             keywords.put(sKeywords[i], sTokens[i]);
         }
+
     }
 
     protected static boolean isDigit(char c) {

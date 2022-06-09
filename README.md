@@ -1,13 +1,22 @@
 # Java IDE
 
-[![Android CI](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yaml/badge.svg)](https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yaml)
-[![Discord Server](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/master/ic_logo.webp" />
-</p>
+<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/ic_logo.webp">
 
-Compile and test your java code anytime anywhere from your mobile phone
+<br>
+
+<a href="https://github.com/PranavPurwar/Java-Ide/actions/workflow/android.yaml">
+    <img src="https://github.com/PranavPurwar/Java-Ide/actions/workflows/android.yaml/badge.svg">
+</a>
+
+<img src="https://img.shields.io/badge/License-GPLv3-blu.svg">
+
+<a href="https://discord.gg/8Gu6YCq2eS">
+    <img src="https://img.shields.io/badge/chat-on%20discord-7289da">
+</a>
+<p>
+
+Compile and run your java code anytime anywhere from your mobile phone
 
 ## How to get
 
@@ -31,13 +40,14 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[x] Basic Java auto-completion
 - \[x] D8
 - \[x] File Tree Viewer
+- \[x] Completely offline
 
 ## TO-DO
 
 - \[ ] Dependency Injection
 - \[ ] Incremental Compilation
 - \[ ] JGit support
-- \[ ] Improved Code Editor
+- \[ ] Error/Warning marker
 - \[ ] Java auto-complete server or auto-completion service
 
 ## Building

@@ -101,7 +101,9 @@ public class JavaLanguage implements Language {
         return advance * 4;
     }
 
-    private final NewlineHandler[] newlineHandlers = new NewlineHandler[]{new BraceHandler()};
+    private final NewlineHandler[] newlineHandlers = new NewlineHandler[] {
+        new BraceHandler()
+    };
 
     @Override
     public boolean useTab() {
@@ -127,16 +129,7 @@ public class JavaLanguage implements Language {
 
         @Override
         public boolean matchesRequirement(String beforeText, String afterText) {
-            if (beforeText.endsWith("{") && afterText.startsWith("}")) {
-              return true;
-            }
-            if (beforeText.endsWith("(") && afterText.startsWith(")")) {
-                return true;
-            }
-            if (beforeText.endsWith("[") && afterText.startsWith("]")) {
-              return true;
-            }
-            return false;
+            return beforeText.endsWith("{") && afterText.startsWith("}");
         }
 
         @Override

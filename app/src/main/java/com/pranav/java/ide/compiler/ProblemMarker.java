@@ -26,6 +26,7 @@ public class ProblemMarker {
                     }
                     try {
                         analyzer.analyze();
+                        HighlightUtil.clearSpans(editor.getSpans());
                         HighlightUtil.markDiagnostics(
                                 editor, analyzer.getDiagnostics(), editor.getStyles());
                     } catch (Exception e) {
@@ -38,12 +39,12 @@ public class ProblemMarker {
         try {
             // Calculate and update the start and end line number and columns
             var startCalculator = new LineNumberCalculator(editor.getText().toString());
-            startCalculator.update(diagnostic.getStartLine());
-            diagnostic.setStartLine(startCalculator.getLine());
+            startCalculator.update((int) diagnostic.getLineNumber());
+            diagnostic.setStartLine((int) diagnostic.getLineNumber());
             diagnostic.setStartColumn(startCalculator.getColumn());
             var endCalculator = new LineNumberCalculator(editor.getText().toString());
-            endCalculator.update(diagnostic.getEndLine());
-            diagnostic.setEndLine(endCalculator.getLine());
+            endCalculator.update((int) diagnostic.getLineNumber());
+            diagnostic.setEndLine((int) diagnostic.getLineNumber());
             diagnostic.setEndColumn(endCalculator.getColumn());
         } catch (IndexOutOfBoundsException ignored) {
             // unknown index, dont update line numbers

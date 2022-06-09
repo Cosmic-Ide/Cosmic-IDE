@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 
 android {
     namespace 'io.github.rosemoe.sora'
-    compileSdkPreview 'Tiramisu'
+    compileSdk 32
 
     defaultConfig {
         minSdk 26

@@ -31,9 +31,18 @@ public class XMLPListParser<T> {
     }
 
     public T parse(InputStream contents) throws Exception {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setNamespaceAware(true);
-        SAXParser saxParser = spf.newSAXParser();
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setNamespaceAware(true);
+        // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+        final var saxParser = spf.newSAXParser();
+        
+        // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
+        saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        
         XMLReader xmlReader = saxParser.getXMLReader();
         xmlReader.setEntityResolver(
                 (arg0, arg1) ->

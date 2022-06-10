@@ -8,6 +8,8 @@ import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.util.HighlightUtil;
 
+import java.io.IOException;
+
 public class ProblemMarker implements ContentListener {
 
     private CodeEditor editor;

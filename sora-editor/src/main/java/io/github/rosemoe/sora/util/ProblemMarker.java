@@ -2,6 +2,7 @@ package io.github.rosemoe.sora.util;
 
 import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.DiagnosticWrapper;
 
 import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;

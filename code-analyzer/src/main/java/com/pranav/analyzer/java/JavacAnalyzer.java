@@ -30,7 +30,7 @@ public class JavacAnalyzer {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
-    public void analyze() throws Exception {
+    public void analyze() {
 
         var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();

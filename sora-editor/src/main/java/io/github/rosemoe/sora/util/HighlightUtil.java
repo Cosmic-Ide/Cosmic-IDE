@@ -80,7 +80,7 @@ public class HighlightUtil {
                                 it.getKind() == Diagnostic.Kind.ERROR
                                         ? Span.FLAG_ERROR
                                         : Span.FLAG_WARNING;
-                        SpansUtils.markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
+                        SpansUtils.markProblemRegion(styles.getSpans(), flag, startLine, startColumn, endLine, endColumn);
                 });
         editor.setStyles(editor.getEditorLanguage().getAnalyzeManager(), styles);
     }

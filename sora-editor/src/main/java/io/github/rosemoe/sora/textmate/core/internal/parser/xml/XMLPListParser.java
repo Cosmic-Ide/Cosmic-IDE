@@ -17,8 +17,12 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.sax2.Driver;
 
+import org.xml.sax.InputSource;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
+import javax.xml.XMLConstants;
 
 public class XMLPListParser<T> {
 
@@ -29,7 +33,7 @@ public class XMLPListParser<T> {
     }
 
     public T parse(InputStream contents) throws Exception {
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        XmlPullParserFactory parserFactory = XmlPullParserFactory.newInstance();
         parserFactory.setNamespaceAware(true);
         // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
         parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);

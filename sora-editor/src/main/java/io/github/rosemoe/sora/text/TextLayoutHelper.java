@@ -28,6 +28,7 @@ import android.text.Editable;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.TextPaint;
+import android.os.Build.VERSION;
 
 /**
  * Helper class for indirectly calling Paint#getTextRunCursor(), which is responsible for cursor
@@ -56,15 +57,29 @@ public class TextLayoutHelper {
     private final DynamicLayout layout;
 
     private TextLayoutHelper() {
-        layout =
-                new DynamicLayout(
-                        text,
-                        new TextPaint(),
-                        Integer.MAX_VALUE / 2,
-                        Layout.Alignment.ALIGN_NORMAL,
-                        0,
-                        0,
-                        true);
+        if (VERSION.SDK_INT >= 28) {
+            layout =
+                    new DynamicLayout.Builder
+                            .obtain(
+                                    text,
+                                    new TextPaint(),
+                                    Integer.MAX_VALUE / 2
+                            )
+                            .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                            .setLineSpacing(0, 0)
+                            .setIncludePad(true)
+                            .build();
+        } else {
+            layout =
+                    new DynamicLayout(
+                            text,
+                            new TextPaint(),
+                            Integer.MAX_VALUE / 2,
+                            Layout.Alignment.ALIGN_NORMAL,
+                            0,
+                            0,
+                            true);
+        }
     }
 
     public int getCurPosLeft(int offset, CharSequence s) {

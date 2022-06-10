@@ -3081,7 +3081,7 @@ public class CodeEditor extends View
             mText = (Content) text;
             mPainter.updateTimestamp();
         } else {
-            mText = new Content(text, this);
+            mText = new Content(text);
         }
         mCursor = mText.getCursor();
         mEventHandler.reset();

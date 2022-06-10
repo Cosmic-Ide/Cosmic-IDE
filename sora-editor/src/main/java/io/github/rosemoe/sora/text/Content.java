@@ -31,9 +31,6 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.util.ProblemMarker;
-
 /**
  * This class saves the text content for editor and maintains line widths. It is thread-safe by
  * default. Use {@link #Content(CharSequence, boolean)} constructor to create a non thread-safe one.
@@ -60,8 +57,6 @@ public class Content implements CharSequence {
     private Cursor cursor;
     private LineRemoveListener lineListener;
     private final ReadWriteLock lock;
-    private final ProblemMarker mProblemMarker;
-    private final CodeEditor mEditor;
 
     /** This constructor will create a Content object with no text */
     public Content() {
@@ -74,14 +69,14 @@ public class Content implements CharSequence {
      *
      * @param src The source of Content
      */
-    public Content(CharSequence src, CodeEditor editor) {
-        this(src, true, editor);
+    public Content(CharSequence src) {
+        this(src, true);
     }
 
     /**
      * Create a Content object with the given content text. Specify whether thread-safe is enabled.
      */
-    public Content(CharSequence src, boolean threadSafe, final CodeEditor editor) {
+    public Content(CharSequence src, boolean threadSafe) {
         if (src == null) {
             src = "";
         }
@@ -90,8 +85,6 @@ public class Content implements CharSequence {
         } else {
             lock = null;
         }
-        mEditor = editor;
-        mProblemMarker = new ProblemMarker(mEditor);
         textLength = 0;
         nestedBatchEdit = 0;
         lines = new ArrayList<>(getInitialLineCapacity());
@@ -845,9 +838,6 @@ public class Content implements CharSequence {
         for (ContentListener lis : contentListeners) {
             lis.afterDelete(this, a, b, c, d, e);
         }
-        if (mEditor != null) {
-          mProblemMarker.run();
-        }
     }
 
     /**
@@ -867,9 +857,6 @@ public class Content implements CharSequence {
         }
         for (ContentListener lis : contentListeners) {
             lis.afterInsert(this, a, b, c, d, e);
-        }
-        if (mEditor != null) {
-          mProblemMarker.run();
         }
     }
 
@@ -926,7 +913,7 @@ public class Content implements CharSequence {
      * object.
      */
     public Content copyText(boolean newContentThreadSafe) {
-        var n = new Content(null, newContentThreadSafe, mEditor);
+        var n = new Content(null, newContentThreadSafe);
         n.lines.remove(0);
         for (int i = 0; i < getLineCount(); i++) {
             var line = lines.get(i);

@@ -47,7 +47,7 @@ public class HighlightUtil {
                             nSpan.column = regionEndInSpan;
                             spans.add(i + 1, nSpan);
                         }
-                        span.underlineColor |= newFlag;
+                        span.problemFlags |= newFlag;
                     } else {
                         // regionStartInSpan > span.column
                         if (regionEndInSpan == spanEnd) {
@@ -55,12 +55,12 @@ public class HighlightUtil {
                             var nSpan = span.copy();
                             nSpan.column = regionStartInSpan;
                             spans.add(i + 1, nSpan);
-                            nSpan.underlineColor |= newFlag;
+                            nSpan.problemFlags |= newFlag;
                         } else {
                             increment = 3;
                             var span1 = span.copy();
                             span1.column = regionStartInSpan;
-                            span1.underlineColor |= newFlag;
+                            span1.problemFlags |= newFlag;
                             var span2 = span.copy();
                             span2.column = regionEndInSpan;
                             spans.add(i + 1, span1);
@@ -137,8 +137,8 @@ public class HighlightUtil {
 
                         int flag =
                                 it.getKind() == Diagnostic.Kind.ERROR
-                                        ? Color.parseColor("#f44747")
-                                        : Color.parseColor("#cd9731");
+                                        ? Span.FLAG_ERROR
+                                        : Span.FLAG_WARNING;
                         markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
                     } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
                         Log.d("HighlightUtil", "Failed to mark diagnostics", e);
@@ -159,7 +159,7 @@ public class HighlightUtil {
             }
             var spansOnLine = new ArrayList<Span>(original);
             for (var span : spansOnLine) {
-                span.underlineColor = 0;
+                span.problemFlags = 0;
             }
             spans.modify().setSpansOnLine(i, spansOnLine);
         }

@@ -104,7 +104,6 @@ import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
 import io.github.rosemoe.sora.util.TemporaryFloatBuffer;
 import io.github.rosemoe.sora.util.ThemeUtils;
-import io.github.rosemoe.sora.util.ProblemMarker;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.component.EditorBuiltinComponent;
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter;
@@ -133,7 +132,6 @@ import java.util.Objects;
  *
  * @author Rosemoe
  */
-@SuppressWarnings("unused")
 public class CodeEditor extends View
         implements ContentListener,
                 StyleReceiver,
@@ -275,7 +273,6 @@ public class CodeEditor extends View
     private EditorTouchEventHandler mEventHandler;
     private Paint.Align mLineNumberAlign;
     private GestureDetector mBasicDetector;
-    private ProblemMarker mProblemMarker;
     protected EditorTextActionWindow mTextActionWindow;
     private ScaleGestureDetector mScaleDetector;
     EditorInputConnection mConnection;
@@ -514,7 +511,6 @@ public class CodeEditor extends View
         mVerticalGlow = new MaterialEdgeEffect();
         mHorizontalGlow = new MaterialEdgeEffect();
         mTextActionWindow = new EditorTextActionWindow(this);
-        mProblemMarker = new ProblemMarker(this);
         setEditorLanguage(null);
         setText(null);
         setTabWidth(4);
@@ -808,7 +804,7 @@ public class CodeEditor extends View
     }
 
     /**
-     * Set the editor's language. A language is a tool for auto-completion,highlight and auto indent
+     * Set the editor's language. A language is a tool for auto-completion, highlight and auto indent
      * analysis.
      *
      * @param lang New EditorLanguage for editor
@@ -1280,7 +1276,7 @@ public class CodeEditor extends View
     /**
      * Find the smallest code block that cursor is in
      *
-     * @return The smallest code block index. If cursor is not in any code block,just -1.
+     * @return The smallest code block index. If cursor is not in any code block, just -1.
      */
     private int findCursorBlock() {
         List<CodeBlock> blocks = mStyles == null ? null : mStyles.blocks;
@@ -1294,7 +1290,7 @@ public class CodeEditor extends View
      * Find the cursor code block internal
      *
      * @param blocks Current code blocks
-     * @return The smallest code block index. If cursor is not in any code block,just -1.
+     * @return The smallest code block index. If cursor is not in any code block, just -1.
      */
     private int findCursorBlock(List<CodeBlock> blocks) {
         int line = mCursor.getLeftLine();
@@ -1532,7 +1528,6 @@ public class CodeEditor extends View
         if (mConnection != null && isEditable()) {
             mConnection.commitTextInternal("\t", true);
         }
-        mProblemMarker.run();
     }
 
     protected void updateCompletionWindowPosition() {
@@ -1698,7 +1693,6 @@ public class CodeEditor extends View
                 mText.delete(cur.getLeftLine(), begin, cur.getLeftLine(), end);
             }
         }
-        mProblemMarker.run();
     }
 
     /** Commit text to the content from IME */
@@ -1754,7 +1748,6 @@ public class CodeEditor extends View
             }
             mText.insert(cur.getLeftLine(), cur.getLeftColumn(), text);
         }
-        mProblemMarker.run();
     }
 
     /**
@@ -2620,7 +2613,7 @@ public class CodeEditor extends View
     }
 
     /**
-     * Move the selection down If the auto complete panel is shown,move the selection in panel to
+     * Move the selection down If the auto complete panel is shown, move the selection in panel to
      * next
      */
     public void moveSelectionDown() {
@@ -2646,7 +2639,7 @@ public class CodeEditor extends View
         }
     }
 
-    /** Move the selection up If Auto complete panel is shown,move the selection in panel to last */
+    /** Move the selection up If Auto complete panel is shown, move the selection in panel to last */
     public void moveSelectionUp() {
         if (mSelectionAnchor == null) {
             if (mCompletionWindow.isShowing()) {
@@ -3087,7 +3080,7 @@ public class CodeEditor extends View
             mText = (Content) text;
             mPainter.updateTimestamp();
         } else {
-            mText = new Content(text);
+            mText = new Content(text, this);
         }
         mCursor = mText.getCursor();
         mEventHandler.reset();
@@ -4148,7 +4141,6 @@ public class CodeEditor extends View
         dispatchEvent(
                 new ContentChangeEvent(
                         this, ContentChangeEvent.ACTION_DELETE, start, end, deletedContent));
-        mProblemMarker.run();
     }
 
     @Override

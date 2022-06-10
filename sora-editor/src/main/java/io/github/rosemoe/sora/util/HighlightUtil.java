@@ -8,6 +8,7 @@ import com.pranav.common.util.DiagnosticWrapper;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.lang.styling.SpansUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,65 +16,6 @@ import java.util.List;
 import javax.tools.Diagnostic;
 
 public class HighlightUtil {
-
-    public static void markProblemRegion(
-            Styles styles,
-            int newFlag,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn
-    ) {
-        for (int line = startLine; line <= endLine; line++) {
-            int start = (line == startLine ? startColumn : 0);
-            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
-            var read = styles.getSpans().read();
-            var spans = new ArrayList<Span>(read.getSpansOnLine(line));
-            int increment;
-            for (int i = 0; i < spans.size(); i += increment) {
-                var span = spans.get(i);
-                increment = 1;
-                if (span.column >= end) {
-                    break;
-                }
-                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
-                if (spanEnd >= start) {
-                    int regionStartInSpan = Math.max(span.column, start);
-                    int regionEndInSpan = Math.min(end, spanEnd);
-                    if (regionStartInSpan == span.column) {
-                        if (regionEndInSpan != spanEnd) {
-                            increment = 2;
-                            var nSpan = span.copy();
-                            nSpan.column = regionEndInSpan;
-                            spans.add(i + 1, nSpan);
-                        }
-                        span.problemFlags |= newFlag;
-                    } else {
-                        // regionStartInSpan > span.column
-                        if (regionEndInSpan == spanEnd) {
-                            increment = 2;
-                            var nSpan = span.copy();
-                            nSpan.column = regionStartInSpan;
-                            spans.add(i + 1, nSpan);
-                            nSpan.problemFlags |= newFlag;
-                        } else {
-                            increment = 3;
-                            var span1 = span.copy();
-                            span1.column = regionStartInSpan;
-                            span1.problemFlags |= newFlag;
-                            var span2 = span.copy();
-                            span2.column = regionEndInSpan;
-                            spans.add(i + 1, span1);
-                            spans.add(i + 2, span2);
-                        }
-                    }
-                }
-            }
-
-            var modify = styles.getSpans().modify();
-            modify.setSpansOnLine(line, spans);
-        }
-    }
 
     /**
      * Highlights the list of given diagnostics, taking care of conversion between 1-based offsets
@@ -83,7 +25,6 @@ public class HighlightUtil {
             CodeEditor editor, List<DiagnosticWrapper> diagnostics, Styles styles) {
         diagnostics.forEach(
                 it -> {
-                    try {
                         int startLine;
                         int startColumn;
                         int endLine;
@@ -139,10 +80,7 @@ public class HighlightUtil {
                                 it.getKind() == Diagnostic.Kind.ERROR
                                         ? Span.FLAG_ERROR
                                         : Span.FLAG_WARNING;
-                        markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
-                    } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-                        Log.d("HighlightUtil", "Failed to mark diagnostics", e);
-                    }
+                        SpansUtils.markProblemRegion(styles, flag, startLine, startColumn, endLine, endColumn);
                 });
         editor.setStyles(editor.getEditorLanguage().getAnalyzeManager(), styles);
     }

@@ -15,6 +15,5 @@ compileKotlin {
 
 dependencies {
 	api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2'
-	implementation project(path: ':android-compiler')
 	compileOnly files('libs/android-stubs.jar')
 }

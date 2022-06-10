@@ -52,7 +52,9 @@ public class ProblemMarker implements ContentListener {
                     if (!analyzer.isFirstRun()) {
                         analyzer.reset();
                     }
+                    try {
                         analyzer.analyze();
+                    } catch (IOException ignored) {}
                         HighlightUtil.clearDiagnostics(editor.getStyles());
                         HighlightUtil.markDiagnostics(
                                 editor, analyzer.getDiagnostics(), editor.getStyles());

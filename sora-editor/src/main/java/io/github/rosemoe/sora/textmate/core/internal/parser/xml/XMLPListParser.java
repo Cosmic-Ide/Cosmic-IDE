@@ -13,14 +13,12 @@ package io.github.rosemoe.sora.textmate.core.internal.parser.xml;
 
 import io.github.rosemoe.sora.textmate.core.internal.parser.PList;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.sax2.Driver;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 public class XMLPListParser<T> {
 
@@ -31,27 +29,27 @@ public class XMLPListParser<T> {
     }
 
     public T parse(InputStream contents) throws Exception {
-        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         parserFactory.setNamespaceAware(true);
         // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
-        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        parserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        parserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
-        final var saxParser = spf.newSAXParser();
+        XmlPullParser pullParser = parserFactory.newPullParser();
         
         // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
-        saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-        saxParser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        pullParser.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
+        pullParser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         
-        XMLReader xmlReader = saxParser.getXMLReader();
-        xmlReader.setEntityResolver(
+        Driver driver = new Driver(pullParser);
+        driver.setEntityResolver(
                 (arg0, arg1) ->
                         new InputSource(
                                 new ByteArrayInputStream(
                                         "<?xml version='1.0' encoding='UTF-8'?>".getBytes())));
         PList<T> result = new PList<>(theme);
-        xmlReader.setContentHandler(result);
-        xmlReader.parse(new InputSource(contents));
+        driver.setContentHandler(result);
+        driver.parse(new InputSource(contents));
         return result.getResult();
     }
 }

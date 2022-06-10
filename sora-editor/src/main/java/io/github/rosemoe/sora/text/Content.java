@@ -926,7 +926,7 @@ public class Content implements CharSequence {
      * object.
      */
     public Content copyText(boolean newContentThreadSafe) {
-        var n = new Content(null, newContentThreadSafe);
+        var n = new Content(null, newContentThreadSafe, mEditor);
         n.lines.remove(0);
         for (int i = 0; i < getLineCount(); i++) {
             var line = lines.get(i);

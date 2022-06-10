@@ -3074,7 +3074,6 @@ public class CodeEditor extends View
 
         if (mText != null) {
             mText.removeContentListener(this);
-            mText.removeContentListener()
             mText.setLineListener(null);
         }
         mExtraArguments = extraArguments == null ? new Bundle() : extraArguments;

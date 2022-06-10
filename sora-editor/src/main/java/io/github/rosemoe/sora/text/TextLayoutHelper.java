@@ -59,7 +59,7 @@ public class TextLayoutHelper {
     private TextLayoutHelper() {
         if (VERSION.SDK_INT >= 28) {
             layout =
-                    new DynamicLayout.Builder
+                    DynamicLayout.Builder
                             .obtain(
                                     text,
                                     new TextPaint(),

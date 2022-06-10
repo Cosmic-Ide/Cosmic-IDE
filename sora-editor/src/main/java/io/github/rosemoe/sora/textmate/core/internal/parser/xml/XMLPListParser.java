@@ -43,7 +43,7 @@ public class XMLPListParser<T> {
         
         // make parser invulnerable to XXE attacks, see https://rules.sonarsource.com/java/RSPEC-2755
         pullParser.setProperty("http://javax.xml.XMLConstants/property/accessExternalDTD", "");
-        pullParser.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        pullParser.setProperty("http://javax.xml.XMLConstants/property/accessExternalSchema", "");
         
         Driver driver = new Driver(pullParser);
         driver.setEntityResolver(

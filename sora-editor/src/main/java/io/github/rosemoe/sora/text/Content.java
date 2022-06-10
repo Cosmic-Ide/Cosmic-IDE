@@ -60,7 +60,7 @@ public class Content implements CharSequence {
 
     /** This constructor will create a Content object with no text */
     public Content() {
-        this(null, null);
+        this(null);
     }
 
     /**

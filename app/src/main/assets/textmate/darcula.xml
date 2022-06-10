@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+	<name>darcula</name>
+	<settings>
+		<settings>
+			<background>#242424</background>
+			<foreground>#cccccc</foreground>
+			<lineHighlight>#2B2B2B</lineHighlight>
+			<selection>#214283</selection>
+		</settings>
+	</settings>
+	<settings>
+		<name>Comment</name>
+		<scope>comment</scope>
+		<settings>
+			<foreground>#707070</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Operator Keywords</name>
+		<scope>keyword.operator,keyword.operator.logical,keyword.operator.relational,keyword.operator.assignment,keyword.operator.comparison,keyword.operator.ternary,keyword.operator.arithmetic,keyword.operator.spread</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Strings</name>
+		<scope>string,string.character.escape,string.template.quoted,string.template.quoted.punctuation,string.template.quoted.punctuation.single,string.template.quoted.punctuation.double,string.type.declaration.annotation,string.template.quoted.punctuation.tag</scope>
+		<settings>
+			<foreground>#6A8759</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>String Interpolation Begin and End</name>
+		<scope>punctuation.definition.template-expression.begin,punctuation.definition.template-expression.end</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>String Interpolation Body</name>
+		<scope>expression.string,meta.template.expression</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Number</name>
+		<scope>constant.numeric</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Built-in constant</name>
+		<scope>constant.language,variable.language</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>User-defined constant</name>
+		<scope>constant.character, constant.other</scope>
+		<settings>
+			<foreground>#9E7BB0</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Keyword</name>
+		<scope>keyword,keyword.operator.new,keyword.operator.delete,keyword.operator.static,keyword.operator.this,keyword.operator.expression</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Types, Class Types</name>
+		<scope>entity.name.type,meta.return.type,meta.type.annotation,meta.type.parameters,support.type.primitive</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Storage type</name>
+		<scope>storage,storage.type,storage.modifier,storage.arrow</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Class constructor</name>
+		<scope>class.instance.constructor,new.expr entity.name.type</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Function</name>
+		<scope>support.function, entity.name.function</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Function Types</name>
+		<scope>annotation.meta.ts, annotation.meta.tsx</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Function Argument</name>
+		<scope>variable.parameter, operator.rest.parameters</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Variable, Property</name>
+		<scope>variable.property,variable.other.property,variable.other.object.property,variable.object.property,support.variable.property</scope>
+		<settings>
+			<foreground>#9E7BB0</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Module Name</name>
+		<scope>quote.module</scope>
+		<settings>
+			<foreground>#6A8759</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Markup Headings</name>
+		<scope>markup.heading</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Tag name</name>
+		<scope>punctuation.definition.tag.html, punctuation.definition.tag.begin, punctuation.definition.tag.end, entity.name.tag</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Tag attribute</name>
+		<scope>entity.other.attribute-name</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Object Keys</name>
+		<scope>meta.object-literal.key</scope>
+		<settings>
+			<foreground>#9E7BB0</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>TypeScript Class Modifiers</name>
+		<scope>storage.modifier.ts</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>TypeScript Type Casting</name>
+		<scope>ts.cast.expr,ts.meta.entity.class.method.new.expr.cast,ts.meta.entity.type.name.new.expr.cast,ts.meta.entity.type.name.var-single-variable.annotation,tsx.cast.expr,tsx.meta.entity.class.method.new.expr.cast,tsx.meta.entity.type.name.new.expr.cast,tsx.meta.entity.type.name.var-single-variable.annotation</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>TypeScript Type Declaration</name>
+		<scope>ts.meta.type.support,ts.meta.type.entity.name,ts.meta.class.inherited-class,tsx.meta.type.support,tsx.meta.type.entity.name,tsx.meta.class.inherited-class,type-declaration,enum-declaration</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>TypeScript Method Declaration</name>
+		<scope>function-declaration,method-declaration,method-overload-declaration,type-fn-type-parameters</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Documentation Block</name>
+		<scope>comment.block.documentation</scope>
+		<settings>
+			<foreground>#6A8759</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Documentation Highlight (JSDoc)</name>
+		<scope>storage.type.class.jsdoc</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Import-Export-All (*) Keyword</name>
+		<scope>constant.language.import-export-all</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Object Key Seperator</name>
+		<scope>objectliteral.key.separator, punctuation.separator.key-value</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex</name>
+		<scope>regex</scope>
+		<settings>
+			<fontStyle> italic</fontStyle>
+		</settings>
+	</settings>
+	<settings>
+		<name>Typescript Namespace</name>
+		<scope>ts.meta.entity.name.namespace,tsx.meta.entity.name.namespace</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex Character-class</name>
+		<scope>regex.character-class</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Class Name</name>
+		<scope>entity.name.type.class</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Class Inheritances</name>
+		<scope>entity.other.inherited-class</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Documentation Entity</name>
+		<scope>entity.name.type.instance.jsdoc</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>YAML entity</name>
+		<scope>yaml.entity.name,yaml.string.entity.name</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>YAML string value</name>
+		<scope>yaml.string.out</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Ignored (Exceptions Rules)</name>
+		<scope>meta.brace.square.ts,block.support.module,block.support.type.module,block.support.function.variable,punctuation.definition.typeparameters.begin,punctuation.definition.typeparameters.end</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex</name>
+		<scope>string.regexp</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex Group/Set</name>
+		<scope>punctuation.definition.group.regexp,punctuation.definition.character-class.regexp</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex Character Class</name>
+		<scope>constant.other.character-class.regexp, constant.character.escape.ts</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Regex Or Operator</name>
+		<scope>expr.regex.or.operator</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Tag string</name>
+		<scope>string.template.tag,string.template.punctuation.tag,string.quoted.punctuation.tag,string.quoted.embedded.tag, string.quoted.double.tag</scope>
+		<settings>
+			<foreground>#6A8759</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Tag function parenthesis</name>
+		<scope>tag.punctuation.begin.arrow.parameters.embedded,tag.punctuation.end.arrow.parameters.embedded</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Object-literal key class</name>
+		<scope>object-literal.object.member.key.field.other,object-literal.object.member.key.accessor,object-literal.object.member.key.array.brace.square</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Property-value</name>
+		<scope>property-list.property-value,property-list.constant</scope>
+		<settings>
+			<foreground>#A5C261</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Property variable</name>
+		<scope>support.type.property-name.variable.css,support.type.property-name.variable.scss,variable.scss</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Property entity</name>
+		<scope>entity.other.attribute-name.class.css,entity.other.attribute-name.class.scss,entity.other.attribute-name.parent-selector-suffix.css,entity.other.attribute-name.parent-selector-suffix.scss</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Property-value</name>
+		<scope>property-list.property-value.rgb-value, keyword.other.unit.css,keyword.other.unit.scss</scope>
+		<settings>
+			<foreground>#7A9EC2</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Property-value function</name>
+		<scope>property-list.property-value.function</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS constant variables</name>
+		<scope>support.constant.property-value.css,support.constant.property-value.scss</scope>
+		<settings>
+			<foreground>#A5C261</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Tag</name>
+		<scope>css.entity.name.tag,scss.entity.name.tag</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS ID, Selector</name>
+		<scope>meta.selector.css, entity.attribute-name.id, entity.other.attribute-name.pseudo-class.css,entity.other.attribute-name.pseudo-element.css</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>CSS Keyword</name>
+		<scope>keyword.scss,keyword.css</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Triple-slash Directive Tag</name>
+		<scope>triple-slash.tag</scope>
+		<settings>
+			<foreground>#CCCCCC</foreground>
+			<fontStyle>italic</fontStyle>
+		</settings>
+	</settings>
+	<settings>
+		<scope>token.info-token</scope>
+		<settings>
+			<foreground>#6796e6</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<scope>token.warn-token</scope>
+		<settings>
+			<foreground>#cd9731</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<scope>token.error-token</scope>
+		<settings>
+			<foreground>#f44747</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<scope>token.debug-token</scope>
+		<settings>
+			<foreground>#b267e6</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Python operators</name>
+		<scope>keyword.operator.logical.python</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Dart class type</name>
+		<scope>support.class.dart</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>PHP variables</name>
+		<scope>variable.language.php</scope>
+		<scope>variable.other.php</scope>
+		<settings>
+			<foreground>#9E7BB0</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>Perl specific</name>
+		<scope>variable.other.readwrite.perl</scope>
+		<settings>
+			<foreground>#9E7BB0</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>PHP variables</name>
+		<scope>variable.other.property.php</scope>
+		<settings>
+			<foreground>#CC8242</foreground>
+		</settings>
+	</settings>
+	<settings>
+		<name>PHP variables</name>
+		<scope>support.variable.property.php</scope>
+		<settings>
+			<foreground>#FFC66D</foreground>
+		</settings>
+	</settings>
+</root>

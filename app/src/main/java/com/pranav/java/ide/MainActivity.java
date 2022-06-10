@@ -324,7 +324,7 @@ public final class MainActivity extends AppCompatActivity {
         try {
             var rawTheme =
                     ThemeReader.readThemeSync(
-                            "darcula.json", getAssets().open("textmate/darcula.json"));
+                            "darcula.xml", getAssets().open("textmate/darcula.xml"));
             return rawTheme;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -335,10 +335,10 @@ public final class MainActivity extends AppCompatActivity {
         try {
             var language =
                     TextMateLanguage.create(
-                            "java.tmLanguage.json",
-                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            "java.tmLanguage.xml",
+                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.xml"),
                             new InputStreamReader(
-                                    getAssets().open("textmate/java/language-configuration.json")),
+                                    getAssets().open("textmate/java/language-configuration.xml")),
                             getDarculaTheme());
             return language;
         } catch (Exception e) {

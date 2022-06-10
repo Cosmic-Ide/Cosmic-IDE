@@ -26,6 +26,7 @@ import io.github.rosemoe.sora.textmate.core.internal.oniguruma.IOnigCaptureIndex
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 public class RegexSource {
 
@@ -77,10 +78,10 @@ public class RegexSource {
             while (result.length() > 0 && result.charAt(0) == '.') {
                 result = result.substring(1);
             }
-            if ("downcase".equals(command)) {
-                return result.toLowerCase();
-            } else if ("upcase".equals(command)) {
-                return result.toUpperCase();
+            if (command.equals("downcase")) {
+                return result.toLowerCase(Locale.ROOT);
+            } else if (command.equals("upcase")) {
+                return result.toUpperCase(Locale.ROOT);
             } else {
                 return result;
             }

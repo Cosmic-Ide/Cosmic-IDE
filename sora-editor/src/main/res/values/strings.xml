@@ -34,5 +34,6 @@
   <string name="editor_search_busy">Editor is still preparing…</string>
   <string name="editor_line_number_tip_prefix" translatable="false">Line:</string>
   <string name="editor_formatting">Formatting your code…</string>
-  <string name="more">More</string>
+  <string name="completion_type">Completion Type</string>
+  <string name="selected_text">Selected Text</string>
 </resources>

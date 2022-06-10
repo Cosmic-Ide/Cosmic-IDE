@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Locale;
 
 public class ColorMap {
 
@@ -31,7 +32,7 @@ public class ColorMap {
         if (color == null) {
             return 0;
         }
-        color = color.toUpperCase();
+        color = color.toUpperCase(Locale.ROOT);
         Integer value = this.color2id.get(color);
         if (value != null) {
             return value;

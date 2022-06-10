@@ -99,6 +99,7 @@ import io.github.rosemoe.sora.text.FormatThread;
 import io.github.rosemoe.sora.text.LineRemoveListener;
 import io.github.rosemoe.sora.text.TextLayoutHelper;
 import io.github.rosemoe.sora.text.TextUtils;
+import io.github.rosemoe.sora.text.ProblemMarker;
 import io.github.rosemoe.sora.util.Floats;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
@@ -3073,6 +3074,7 @@ public class CodeEditor extends View
 
         if (mText != null) {
             mText.removeContentListener(this);
+            mText.removeContentListener()
             mText.setLineListener(null);
         }
         mExtraArguments = extraArguments == null ? new Bundle() : extraArguments;
@@ -3085,6 +3087,7 @@ public class CodeEditor extends View
         mCursor = mText.getCursor();
         mEventHandler.reset();
         mText.addContentListener(this);
+        mText.addContentListener(new ProblemMarker(this));
         mText.setUndoEnabled(mUndoEnabled);
         mText.setLineListener(this);
         mPainter.notifyFullTextUpdate();

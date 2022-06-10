@@ -1,4 +1,4 @@
-package io.github.rosemoe.sora.util;
+package io.github.rosemoe.sora.text;
 
 import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.util.ConcurrentUtil;
@@ -6,8 +6,9 @@ import com.pranav.common.util.DiagnosticWrapper;
 
 import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.util.HighlightUtil;
 
-public class ProblemMarker {
+public class ProblemMarker implements ContentListener {
 
     private CodeEditor editor;
     private JavacAnalyzer analyzer;
@@ -17,7 +18,35 @@ public class ProblemMarker {
         this.analyzer = new JavacAnalyzer(editor.getContext());
     }
 
-    public void run() {
+    @Override
+    public void beforeReplace(Content content) {}
+    
+    @Override
+    public void afterInsert(
+                Content content,
+                int startLine,
+                int startColumn,
+                int endLine,
+                int endColumn,
+                CharSequence insertedContent
+    ) {
+      run();
+    }
+    
+    @Override
+    public void afterDelete(
+                Content content,
+                int startLine,
+                int startColumn,
+                int endLine,
+                int endColumn,
+                CharSequence deletedContent
+    ) {
+      run();
+    }
+    
+    
+    private void run() {
         ConcurrentUtil.inParallel(
                 () -> {
                     if (!analyzer.isFirstRun()) {

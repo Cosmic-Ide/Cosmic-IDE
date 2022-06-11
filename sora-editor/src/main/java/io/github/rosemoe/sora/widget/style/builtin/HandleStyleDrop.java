@@ -30,6 +30,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.annotation.NonNull;
 
 import io.github.rosemoe.sora.R;
@@ -46,7 +47,7 @@ public class HandleStyleDrop implements SelectionHandleStyle {
     private float scaleFactor = 1.0f;
 
     public HandleStyleDrop(Context context) {
-        drawable = context.getDrawable(R.drawable.ic_sora_handle_drop).mutate();
+        drawable = AppCompatResources.getDrawable(context, R.drawable.ic_sora_handle_drop).mutate();
         width =
                 (int)
                         TypedValue.applyDimension(

@@ -7,7 +7,7 @@ import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.SpansUtils;
 import io.github.rosemoe.sora.lang.styling.Styles;
 import io.github.rosemoe.sora.widget.CodeEditor;
-import io.gothub.rosemoe.sora.text.LineNumberCalculator;
+import io.github.rosemoe.sora.text.LineNumberCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,59 +22,14 @@ public class HighlightUtil {
      */
     public static void markDiagnostics(
             CodeEditor editor, List<DiagnosticWrapper> diagnostics, Styles styles) {
+        final var content = editor.getText().toString();
         diagnostics.forEach(
                 it -> {
-                    setLineAndColumn(it);
-                    int startLine;
-                    int startColumn;
-                    int endLine;
-                    int endColumn;
-                    if (it.getPosition() != DiagnosticWrapper.USE_LINE_POS) {
-                        if (it.getStartPosition() == -1) {
-                            it.setStartPosition(it.getPosition());
-                        }
-                        if (it.getEndPosition() == -1) {
-                            it.setEndPosition(it.getPosition());
-                        }
-
-                        if (it.getStartPosition() > editor.getText().length()) {
-                            return;
-                        }
-                        if (it.getEndPosition() > editor.getText().length()) {
-                            return;
-                        }
-                        var start =
-                                editor.getCursor()
-                                        .getIndexer()
-                                        .getCharPosition((int) it.getStartPosition());
-                        var end =
-                                editor.getCursor()
-                                        .getIndexer()
-                                        .getCharPosition((int) it.getEndPosition());
-
-                        int sLine = start.getLine();
-                        int sColumn = start.getColumn();
-                        int eLine = end.getLine();
-                        int eColumn = end.getColumn();
-
-                        // the editor does not support marking underline spans for the same
-                        // start and end
-                        // index
-                        // to work around this, we just subtract one to the start index
-                        if (sLine == eLine && eColumn == sColumn) {
-                            sColumn--;
-                            eColumn++;
-                        }
-
-                        it.setStartLine(sLine);
-                        it.setEndLine(eLine);
-                        it.setStartColumn(sColumn);
-                        it.setEndColumn(eColumn);
-                    }
-                    startLine = it.getStartLine();
-                    startColumn = it.getStartColumn();
-                    endLine = it.getEndLine();
-                    endColumn = it.getEndColumn();
+                    setLineAndColumn(it, content);
+                    int startLine = it.getStartLine();
+                    int startColumn = it.getStartColumn();
+                    int endLine = it.getEndLine();
+                    int endColumn = it.getEndColumn();
 
                     int flag =
                             it.getKind() == Diagnostic.Kind.ERROR
@@ -104,20 +59,19 @@ public class HighlightUtil {
         }
     }
 
-        private void setLineAndColumn(DiagnosticWrapper diagnostic) {
-            try {
-                // Calculate and update the start and end line number and columns
-                var startCalculator = new LineNumberCalculator(editor.getText().toString());
-                startCalculator.update((int) diagnostic.getLineNumber());
-                diagnostic.setStartLine((int) diagnostic.getLineNumber());
-                diagnostic.setStartColumn(startCalculator.getColumn());
-                var endCalculator = new LineNumberCalculator(editor.getText().toString());
-                endCalculator.update((int) diagnostic.getLineNumber());
-                diagnostic.setEndLine((int) diagnostic.getLineNumber());
-                diagnostic.setEndColumn(endCalculator.getColumn());
-            } catch (IndexOutOfBoundsException ignored) {
-                // unknown index, dont update line numbers
-            }
+    private void setLineAndColumn(DiagnosticWrapper diagnostic, String content) {
+        try {
+            // Calculate and update the start and end line number and columns
+            var startCalculator = new LineNumberCalculator(content);
+            startCalculator.update((int) diagnostic.getLineNumber());
+            diagnostic.setStartLine((int) diagnostic.getLineNumber());
+            diagnostic.setStartColumn(startCalculator.getColumn());
+            var endCalculator = new LineNumberCalculator(content);
+            endCalculator.update((int) diagnostic.getLineNumber());
+            diagnostic.setEndLine((int) diagnostic.getLineNumber());
+            diagnostic.setEndColumn(endCalculator.getColumn());
+        } catch (IndexOutOfBoundsException ignored) {
+            // unknown index, dont update line numbers
         }
-    
+    }
 }

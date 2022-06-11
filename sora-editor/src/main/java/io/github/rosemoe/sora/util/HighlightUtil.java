@@ -59,7 +59,7 @@ public class HighlightUtil {
         }
     }
 
-    private void setLineAndColumn(DiagnosticWrapper diagnostic, String content) {
+    private static void setLineAndColumn(DiagnosticWrapper diagnostic, String content) {
         try {
             // Calculate and update the start and end line number and columns
             var startCalculator = new LineNumberCalculator(content);

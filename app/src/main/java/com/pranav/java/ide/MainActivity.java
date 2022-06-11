@@ -114,7 +114,7 @@ public final class MainActivity extends AppCompatActivity {
             dialog("JsonException", e.getMessage(), true);
         }
 
-        final var file = file(currentWorkingFilePath);
+        final var file = new File(currentWorkingFilePath);
 
         if (file.exists()) {
             try {
@@ -177,7 +177,7 @@ public final class MainActivity extends AppCompatActivity {
         loadingDialog.setCanceledOnTouchOutside(false);
     }
 
-    /* To Change visible to user Stage TextView Text to actually compiling stage in Compile.java */
+    /* To change user Stage TextView Text to compiling stage in CompileTask.java */
     void changeLoadingDialogBuildStage(String stage) {
         if (loadingDialog.isShowing()) {
             /* So, this method is also triggered from another thread (Compile.java)
@@ -371,7 +371,7 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setTextSize(13);
 
                         var smaliFile =
-                                file(
+                                new File(
                                         FileUtil.getBinDir()
                                                 + "smali/"
                                                 + claz.replace(".", "/")
@@ -429,7 +429,7 @@ public final class MainActivity extends AppCompatActivity {
                     edi.setEditorLanguage(getTextMateLanguage());
                     edi.setTextSize(12);
 
-                    var decompiledFile = file(FileUtil.getBinDir() + "cfr/" + claz + ".java");
+                    var decompiledFile = new File(FileUtil.getBinDir() + "cfr/" + claz + ".java");
 
                     try {
                         edi.setText(FileUtil.readFile(decompiledFile));
@@ -575,10 +575,6 @@ public final class MainActivity extends AppCompatActivity {
             dialog("Failed to get available classes in dex...", getString(e), true);
             return null;
         }
-    }
-
-    public File file(final String path) {
-        return new File(path);
     }
 
     private String getString(final Throwable e) {

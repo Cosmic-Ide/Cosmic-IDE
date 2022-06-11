@@ -165,7 +165,7 @@ public class Content implements CharSequence {
     /**
      * Set a line listener
      *
-     * @param lis the listener,maybe null
+     * @param lis the listener, maybe null
      * @see LineRemoveListener
      */
     public void setLineListener(LineRemoveListener lis) {
@@ -277,7 +277,7 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Transform the (line,column) position to index This task will usually be completed by {@link
+     * Transform the (line, column) position to index This task will usually be completed by {@link
      * Indexer}
      *
      * @param line Line of index

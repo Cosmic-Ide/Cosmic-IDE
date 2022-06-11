@@ -3,6 +3,8 @@ package io.github.rosemoe.sora.text;
 import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.DiagnosticWrapper;
+import com.pranav.common.Indexer;
+import com.pranav.common.util.FileUtil;
 
 import io.github.rosemoe.sora.text.LineNumberCalculator;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -32,7 +34,7 @@ public class ProblemMarker implements ContentListener {
                 int endColumn,
                 CharSequence insertedContent
     ) {
-      run();
+      run(content);
     }
     
     @Override
@@ -44,22 +46,23 @@ public class ProblemMarker implements ContentListener {
                 int endColumn,
                 CharSequence deletedContent
     ) {
-      run();
+      run(content);
     }
     
     
-    private void run() {
+    private void run(Content content) {
         ConcurrentUtil.inParallel(
                 () -> {
                     if (!analyzer.isFirstRun()) {
                         analyzer.reset();
                     }
                     try {
+                        FileUtil.writeFile(new Indexer("editor").getString("currentFile"), content.toString());
                         analyzer.analyze();
                     } catch (IOException ignored) {}
-                        HighlightUtil.clearDiagnostics(editor.getStyles());
-                        HighlightUtil.markDiagnostics(
-                                editor, analyzer.getDiagnostics(), editor.getStyles());
+                    HighlightUtil.clearDiagnostics(editor.getStyles());
+                    HighlightUtil.markDiagnostics(
+                            editor, analyzer.getDiagnostics(), editor.getStyles());
                 });
     }
 

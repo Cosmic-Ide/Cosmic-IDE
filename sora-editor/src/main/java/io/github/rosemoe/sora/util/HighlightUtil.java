@@ -7,6 +7,7 @@ import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.SpansUtils;
 import io.github.rosemoe.sora.lang.styling.Styles;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.gothub.rosemoe.sora.text.LineNumberCalculator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class HighlightUtil {
             CodeEditor editor, List<DiagnosticWrapper> diagnostics, Styles styles) {
         diagnostics.forEach(
                 it -> {
+                    setLineAndColumn(it);
                     int startLine;
                     int startColumn;
                     int endLine;
@@ -101,4 +103,21 @@ public class HighlightUtil {
             spans.modify().setSpansOnLine(i, spansOnLine);
         }
     }
+
+        private void setLineAndColumn(DiagnosticWrapper diagnostic) {
+            try {
+                // Calculate and update the start and end line number and columns
+                var startCalculator = new LineNumberCalculator(editor.getText().toString());
+                startCalculator.update((int) diagnostic.getLineNumber());
+                diagnostic.setStartLine((int) diagnostic.getLineNumber());
+                diagnostic.setStartColumn(startCalculator.getColumn());
+                var endCalculator = new LineNumberCalculator(editor.getText().toString());
+                endCalculator.update((int) diagnostic.getLineNumber());
+                diagnostic.setEndLine((int) diagnostic.getLineNumber());
+                diagnostic.setEndColumn(endCalculator.getColumn());
+            } catch (IndexOutOfBoundsException ignored) {
+                // unknown index, dont update line numbers
+            }
+        }
+    
 }

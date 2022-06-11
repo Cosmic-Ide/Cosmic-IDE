@@ -62,20 +62,4 @@ public class ProblemMarker implements ContentListener {
                             editor, analyzer.getDiagnostics(), editor.getStyles());
                 });
     }
-
-    private void setLineAndColumn(DiagnosticWrapper diagnostic) {
-        try {
-            // Calculate and update the start and end line number and columns
-            var startCalculator = new LineNumberCalculator(editor.getText().toString());
-            startCalculator.update((int) diagnostic.getLineNumber());
-            diagnostic.setStartLine((int) diagnostic.getLineNumber());
-            diagnostic.setStartColumn(startCalculator.getColumn());
-            var endCalculator = new LineNumberCalculator(editor.getText().toString());
-            endCalculator.update((int) diagnostic.getLineNumber());
-            diagnostic.setEndLine((int) diagnostic.getLineNumber());
-            diagnostic.setEndColumn(endCalculator.getColumn());
-        } catch (IndexOutOfBoundsException ignored) {
-            // unknown index, dont update line numbers
-        }
-    }
 }

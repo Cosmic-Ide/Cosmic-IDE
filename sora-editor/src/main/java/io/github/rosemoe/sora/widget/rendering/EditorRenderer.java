@@ -29,12 +29,12 @@ import android.graphics.Canvas;
 
 import androidx.annotation.NonNull;
 
-import java.util.Objects;
-
 import io.github.rosemoe.sora.util.Numbers;
 import io.github.rosemoe.sora.util.TemporaryCharBuffer;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+import java.util.Objects;
 
 public class EditorRenderer {
 
@@ -63,16 +63,19 @@ public class EditorRenderer {
                 contextCache[i] = context;
                 context.canvas = null;
                 context.textPaint = context.otherPaint = context.graphPaint = null;
-                context.height = context.width = context.scrollX = context.scrollY = context.firstVisibleRow = context.lastVisibleRow = 0;
+                context.height =
+                        context.width =
+                                context.scrollX =
+                                        context.scrollY =
+                                                context.firstVisibleRow =
+                                                        context.lastVisibleRow = 0;
                 context.paintingOffset = 0;
                 context.lineNumberMetrics = null;
             }
         }
     }
 
-    /**
-     * Render the editor on the given canvas
-     */
+    /** Render the editor on the given canvas */
     public void render(@NonNull Canvas canvas) {
         var context = createRenderContext(canvas);
         renderProcedures(context);
@@ -106,7 +109,7 @@ public class EditorRenderer {
         renderLineNumbers(context);
 
         renderTextBackground(context);
-        //renderText(context);
+        // renderText(context);
     }
 
     protected int getColor(int type) {
@@ -120,16 +123,18 @@ public class EditorRenderer {
         context.canvas.drawRect(l, t, r, b, context.otherPaint);
     }
 
-    /**
-     * Render the background color of view
-     */
+    /** Render the background color of view */
     protected void renderBackground(RenderContext context) {
-        drawRect(context, 0, 0, context.width, context.height, getColor(EditorColorScheme.WHOLE_BACKGROUND));
+        drawRect(
+                context,
+                0,
+                0,
+                context.width,
+                context.height,
+                getColor(EditorColorScheme.WHOLE_BACKGROUND));
     }
 
-    /**
-     * Render line number background and divider
-     */
+    /** Render line number background and divider */
     protected void renderGutterFrame(RenderContext context) {
         var lineNumberWidth = editor.measureLineNumber();
         var margin = editor.getDividerMargin();
@@ -139,11 +144,20 @@ public class EditorRenderer {
         if (enabled) {
             context.paintingOffset = -context.scrollX + lineNumberWidth + margin * 2 + dividerWidth;
 
-            drawRect(context, offset, 0, offset + lineNumberWidth + margin, context.height,
+            drawRect(
+                    context,
+                    offset,
+                    0,
+                    offset + lineNumberWidth + margin,
+                    context.height,
                     getColor(EditorColorScheme.LINE_NUMBER_BACKGROUND));
 
-            drawRect(context, offset + lineNumberWidth + margin, 0,
-                    offset + margin + lineNumberWidth + dividerWidth, context.height,
+            drawRect(
+                    context,
+                    offset + lineNumberWidth + margin,
+                    0,
+                    offset + margin + lineNumberWidth + dividerWidth,
+                    context.height,
                     getColor(EditorColorScheme.LINE_DIVIDER));
         } else {
             context.paintingOffset = -context.scrollX;
@@ -171,7 +185,13 @@ public class EditorRenderer {
         }
 
         if (draw) {
-            drawRect(context, 0, -context.scrollY + bottom - height, context.width, -context.scrollY + bottom, getColor(EditorColorScheme.CURRENT_LINE));
+            drawRect(
+                    context,
+                    0,
+                    -context.scrollY + bottom - height,
+                    context.width,
+                    -context.scrollY + bottom,
+                    getColor(EditorColorScheme.CURRENT_LINE));
         }
     }
 
@@ -187,17 +207,17 @@ public class EditorRenderer {
             while (itr.hasNext() && row <= context.lastVisibleRow) {
                 var rowInfo = itr.next();
                 if (rowInfo.isLeadingRow
-                        || (row == context.firstVisibleRow && editor.isFirstLineNumberAlwaysVisible())) {
+                        || (row == context.firstVisibleRow
+                                && editor.isFirstLineNumberAlwaysVisible())) {
                     drawLineNumber(context, rowInfo.lineIndex, row, offset, lineNumberWidth, color);
                 }
             }
         }
     }
 
-    /**
-     * Draw single line number
-     */
-    protected void drawLineNumber(RenderContext context, int line, int row, float offsetX, float width, int color) {
+    /** Draw single line number */
+    protected void drawLineNumber(
+            RenderContext context, int line, int row, float offsetX, float width, int color) {
         if (width + offsetX <= 0) {
             return;
         }
@@ -208,7 +228,12 @@ public class EditorRenderer {
         }
         paint.setColor(color);
         // Line number center align to text center
-        float y = (editor.getRowBottom(row) + editor.getRowTop(row)) / 2f - (context.lineNumberMetrics.descent - context.lineNumberMetrics.ascent) / 2f - context.lineNumberMetrics.ascent - editor.getOffsetY();
+        float y =
+                (editor.getRowBottom(row) + editor.getRowTop(row)) / 2f
+                        - (context.lineNumberMetrics.descent - context.lineNumberMetrics.ascent)
+                                / 2f
+                        - context.lineNumberMetrics.ascent
+                        - editor.getOffsetY();
 
         var buffer = TemporaryCharBuffer.obtain(20);
         line++;
@@ -223,13 +248,13 @@ public class EditorRenderer {
                 canvas.drawText(buffer, 0, i, offsetX + width, y, paint);
                 break;
             case CENTER:
-                canvas.drawText(buffer, 0, i, offsetX + (width + editor.getDividerMargin()) / 2f, y, paint);
+                canvas.drawText(
+                        buffer, 0, i, offsetX + (width + editor.getDividerMargin()) / 2f, y, paint);
         }
         TemporaryCharBuffer.recycle(buffer);
     }
 
     protected void renderTextBackground(RenderContext context) {
-        //TODO
+        // TODO
     }
-
 }

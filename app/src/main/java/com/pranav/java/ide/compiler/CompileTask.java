@@ -3,8 +3,8 @@ package com.pranav.java.ide.compiler;
 import android.content.Context;
 import android.os.Looper;
 
-import com.pranav.android.task.java.*;
 import com.pranav.android.task.JavaBuilder;
+import com.pranav.android.task.java.*;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;

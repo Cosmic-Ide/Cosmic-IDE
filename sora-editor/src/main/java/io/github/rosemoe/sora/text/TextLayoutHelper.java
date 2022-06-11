@@ -23,12 +23,12 @@
  */
 package io.github.rosemoe.sora.text;
 
+import android.os.Build.VERSION;
 import android.text.DynamicLayout;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.TextPaint;
-import android.os.Build.VERSION;
 
 /**
  * Helper class for indirectly calling Paint#getTextRunCursor(), which is responsible for cursor
@@ -59,12 +59,7 @@ public class TextLayoutHelper {
     private TextLayoutHelper() {
         if (VERSION.SDK_INT >= 28) {
             layout =
-                    DynamicLayout.Builder
-                            .obtain(
-                                    text,
-                                    new TextPaint(),
-                                    Integer.MAX_VALUE / 2
-                            )
+                    DynamicLayout.Builder.obtain(text, new TextPaint(), Integer.MAX_VALUE / 2)
                             .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                             .setLineSpacing(0, 0)
                             .setIncludePad(true)

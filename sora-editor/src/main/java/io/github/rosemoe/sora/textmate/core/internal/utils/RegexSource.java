@@ -24,9 +24,9 @@ package io.github.rosemoe.sora.textmate.core.internal.utils;
 
 import io.github.rosemoe.sora.textmate.core.internal.oniguruma.IOnigCaptureIndex;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Locale;
 
 public class RegexSource {
 

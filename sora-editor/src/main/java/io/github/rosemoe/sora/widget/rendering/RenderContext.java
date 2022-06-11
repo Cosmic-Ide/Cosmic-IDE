@@ -50,5 +50,4 @@ public class RenderContext {
     public int firstVisibleRow;
     public int lastVisibleRow;
     public android.graphics.Paint.FontMetricsInt lineNumberMetrics;
-
 }

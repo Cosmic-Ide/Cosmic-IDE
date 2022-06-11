@@ -91,7 +91,8 @@ public class SymbolPairMatch {
              * @param leftColumn return current cursor column
              */
             default boolean shouldDoReplace(ContentLine currentLine, int leftColumn) {
-                return currentLine.charAt(leftColumn + 1) != getAutoSurroundPair()[1].toCharArray()[0];
+                return currentLine.charAt(leftColumn + 1)
+                        != getAutoSurroundPair()[1].toCharArray()[0];
             }
 
             /**

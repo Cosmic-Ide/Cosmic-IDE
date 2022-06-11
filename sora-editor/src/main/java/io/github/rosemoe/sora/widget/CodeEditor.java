@@ -97,9 +97,9 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.text.FormatThread;
 import io.github.rosemoe.sora.text.LineRemoveListener;
+import io.github.rosemoe.sora.text.ProblemMarker;
 import io.github.rosemoe.sora.text.TextLayoutHelper;
 import io.github.rosemoe.sora.text.TextUtils;
-import io.github.rosemoe.sora.text.ProblemMarker;
 import io.github.rosemoe.sora.util.Floats;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
@@ -805,8 +805,8 @@ public class CodeEditor extends View
     }
 
     /**
-     * Set the editor's language. A language is a tool for auto-completion, highlight and auto indent
-     * analysis.
+     * Set the editor's language. A language is a tool for auto-completion, highlight and auto
+     * indent analysis.
      *
      * @param lang New EditorLanguage for editor
      */
@@ -2640,7 +2640,9 @@ public class CodeEditor extends View
         }
     }
 
-    /** Move the selection up If Auto complete panel is shown, move the selection in panel to last */
+    /**
+     * Move the selection up If Auto complete panel is shown, move the selection in panel to last
+     */
     public void moveSelectionUp() {
         if (mSelectionAnchor == null) {
             if (mCompletionWindow.isShowing()) {
@@ -3196,12 +3198,12 @@ public class CodeEditor extends View
     }
 
     public Paint getOtherPaint() {
-         return mPainter.getPaintOther();
-     }
+        return mPainter.getPaintOther();
+    }
 
-     public Paint getGraphPaint() {
-         return mPainter.getPaintGraph();
-     }
+    public Paint getGraphPaint() {
+        return mPainter.getPaintGraph();
+    }
 
     /**
      * Get the ColorScheme object of this editor You can config colors of some regions, texts and

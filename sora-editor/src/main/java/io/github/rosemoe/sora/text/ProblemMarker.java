@@ -1,16 +1,13 @@
 package io.github.rosemoe.sora.text;
 
 import com.pranav.analyzer.java.JavacAnalyzer;
+import com.pranav.common.Indexer;
 import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.DiagnosticWrapper;
-import com.pranav.common.Indexer;
 import com.pranav.common.util.FileUtil;
 
-import io.github.rosemoe.sora.text.LineNumberCalculator;
-import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.util.HighlightUtil;
-
-import java.io.IOException;
+import io.github.rosemoe.sora.widget.CodeEditor;
 
 public class ProblemMarker implements ContentListener {
 
@@ -24,32 +21,29 @@ public class ProblemMarker implements ContentListener {
 
     @Override
     public void beforeReplace(Content content) {}
-    
+
     @Override
     public void afterInsert(
-                Content content,
-                int startLine,
-                int startColumn,
-                int endLine,
-                int endColumn,
-                CharSequence insertedContent
-    ) {
-      run(content);
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
+        run(content);
     }
-    
+
     @Override
     public void afterDelete(
-                Content content,
-                int startLine,
-                int startColumn,
-                int endLine,
-                int endColumn,
-                CharSequence deletedContent
-    ) {
-      run(content);
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
+        run(content);
     }
-    
-    
+
     private void run(Content content) {
         ConcurrentUtil.inParallel(
                 () -> {
@@ -57,7 +51,8 @@ public class ProblemMarker implements ContentListener {
                         analyzer.reset();
                     }
                     try {
-                        FileUtil.writeFile(new Indexer("editor").getString("currentFile"), content.toString());
+                        FileUtil.writeFile(
+                                new Indexer("editor").getString("currentFile"), content.toString());
                         analyzer.analyze();
                     } catch (Exception ignored) {
                         // we shouldn't disturb the user for some issues

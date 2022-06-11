@@ -896,7 +896,12 @@ public class Content implements CharSequence {
         int len = lines.get(line).length();
         if (column > len || (!allowEqual && column == len)) {
             throw new StringIndexOutOfBoundsException(
-                    "Column " + column + " out of bounds. Line: " + line + " , column count: " + len);
+                    "Column "
+                            + column
+                            + " out of bounds. Line: "
+                            + line
+                            + " , column count: "
+                            + len);
         }
     }
 

@@ -59,7 +59,9 @@ public class ProblemMarker implements ContentListener {
                     try {
                         FileUtil.writeFile(new Indexer("editor").getString("currentFile"), content.toString());
                         analyzer.analyze();
-                    } catch (IOException ignored) {}
+                    } catch (Exception ignored) {
+                        // we shouldn't disturb the user for some issues
+                    }
                     HighlightUtil.clearDiagnostics(editor.getStyles());
                     HighlightUtil.markDiagnostics(
                             editor, analyzer.getDiagnostics(), editor.getStyles());

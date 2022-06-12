@@ -28,7 +28,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.googlecode.d2j.smali.BaksmaliCmd;
 import com.pranav.android.code.disassembler.*;
 import com.pranav.android.code.formatter.*;
 import com.pranav.common.Indexer;
@@ -49,6 +48,8 @@ import org.benf.cfr.reader.Main;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
+import org.jf.baksmali.Baksmali;
+import org.jf.baksmali.BaksmaliOptions;
 import org.json.JSONException;
 
 import java.io.File;
@@ -354,27 +355,24 @@ public final class MainActivity extends AppCompatActivity {
                     classes,
                     (d, pos) -> {
                         var claz = classes[pos];
-                        var args =
-                                new String[] {
-                                    "-f",
-                                    "-o",
-                                    FileUtil.getBinDir().concat("smali/"),
-                                    FileUtil.getBinDir().concat("classes.dex")
-                                };
-                        ConcurrentUtil.execute(() -> BaksmaliCmd.main(args));
+                        var opcodes = Opcodes.getDefault();
+                        var dexFile = DexFileFactory.loadDexFile(FileUtil.getBinDir() + "classes.dex");
+                        var options = new BaksmaliOptions();
+                        var smaliFile =
+                                                        new File(
+                                                                FileUtil.getBinDir()
+                                                                        + "smali/"
+                                                                        + claz.replace(".", "/")
+                                                                        + ".smali");
+                        
+                        options.apiLevel = 26;
+                        ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
 
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
                         edi.setEditorLanguage(getTextMateLanguage());
                         edi.setTextSize(13);
-
-                        var smaliFile =
-                                new File(
-                                        FileUtil.getBinDir()
-                                                + "smali/"
-                                                + claz.replace(".", "/")
-                                                + ".smali");
 
                         try {
                             edi.setText(formatSmali(FileUtil.readFile(smaliFile)));

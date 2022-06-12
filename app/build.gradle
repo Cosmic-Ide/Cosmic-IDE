@@ -66,13 +66,9 @@ android {
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 
-    // contains d2j v51 from ThexXTURBOXx's fork
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    // antlr runtime required by d2j
-    implementation 'org.antlr:antlr4-runtime:4.10.1'
     implementation 'org.benf:cfr:0.152'
     implementation 'org.smali:dexlib2:2.5.2'
+    implementation 'org.smali:baksmali:2.5.2'
     implementation 'org.json:json:20220320'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'androidx.appcompat:appcompat:1.6.0-alpha01'

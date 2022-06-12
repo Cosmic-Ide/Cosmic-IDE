@@ -30,7 +30,7 @@ public class JavacAnalyzer {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
-    public void analyze() throws IOException {
+    public void analyze(String name, String code) throws IOException {
         final var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
         final var version = prefs.getString("version", "7");

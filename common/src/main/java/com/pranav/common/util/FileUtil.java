@@ -102,7 +102,7 @@ public class FileUtil {
 
     public static String getFileName(String path) {
         var splited = path.split("/");
-        return splited[splited.length - 1];
+        return splited[splited.length - 1].replace(".java", "");
     }
 
     public static String getDataDir() {

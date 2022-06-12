@@ -16,54 +16,40 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.tools.DiagnosticCollector;
+import com.pranav.analyzer.JavaSourceFromString;
 import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 
 public class JavacAnalyzer {
 
     private final SharedPreferences prefs;
     private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-    private boolean isFirstTime = true;
+    private boolean isFirstUse = true;
 
     public JavacAnalyzer(Context context) {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
     public void analyze() throws IOException {
-
-        var output = new File(FileUtil.getBinDir(), "classes");
+        final var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
-        var version = prefs.getString("version", "7");
+        final var version = prefs.getString("version", "7");
 
-        var javaFileObjects = new ArrayList<JavaFileObject>();
-        var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
-        for (var file : javaFiles) {
-            javaFileObjects.add(
-                    new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                        @Override
-                        public CharSequence getCharContent(boolean ignoreEncodingErrors)
-                                throws IOException {
-                            return FileUtil.readFile(file);
-                        }
-                    });
-        }
+        final var javaFileObjects = new ArrayList<JavaFileObject>();
+        javaFileObjects.add(
+                new JavaSourceFromString(name, code)
+        );
 
-        var tool = JavacTool.create();
+        final var tool = JavacTool.create();
 
-        var standardJavaFileManager =
+        final var standardJavaFileManager =
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
-        try {
-            standardJavaFileManager.setLocation(
-                    StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
-        } catch (IOException e) {
-            // ignored
-        }
+        standardJavaFileManager.setLocation(
+                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
+        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
 
-        var args = new ArrayList<String>();
+        final var args = new ArrayList<String>();
 
         args.add("-proc:none");
         args.add("-source");
@@ -71,7 +57,7 @@ public class JavacAnalyzer {
         args.add("-target");
         args.add(version);
 
-        var task =
+        final var task =
                 (JavacTask)
                         tool.getTask(
                                 null,
@@ -83,41 +69,28 @@ public class JavacAnalyzer {
 
         task.parse();
         task.analyze();
-        isFirstTime = false;
+        standardJavaFileManager.close();
+        isFirstUse = false;
     }
 
     public boolean isFirstRun() {
-        return this.isFirstTime;
+        return isFirstUse;
     }
 
     public void reset() {
-        diagnostics = new DiagnosticCollector<>();
+        diagnostics = new DiagnosticCollector<JavaFileObject>();
     }
 
-    public List<DiagnosticWrapper> getDiagnostics() {
-        var problems = new ArrayList<DiagnosticWrapper>();
+    public ArrayList<DiagnosticWrapper> getDiagnostics() {
+        final var problems = new ArrayList<DiagnosticWrapper>();
         for (var diagnostic : diagnostics.getDiagnostics()) {
-            problems.add(new DiagnosticWrapper(diagnostic));
-        }
-        return problems;
-    }
-
-    private ArrayList<File> getSourceFiles(File path) {
-        var sourceFiles = new ArrayList<File>();
-        var files = path.listFiles();
-        if (files == null) {
-            return new ArrayList<File>();
-        }
-        for (var file : files) {
-            if (file.isFile()) {
-                if (file.getName().endsWith(".java")) {
-                    sourceFiles.add(file);
-                }
-            } else {
-                sourceFiles.addAll(getSourceFiles(file));
+            // since we're not compiling the whole project, there might be some errors
+            // from files that we skipped, so it should mostly be safe to ignore these
+            if (!diagnostic.getCode().startsWith("compiler.err.cant.resolve")) {
+                problems.add(new DiagnosticWrapper(diagnostic));
             }
         }
-        return sourceFiles;
+        return problems;
     }
 
     private ArrayList<File> getClasspath() {

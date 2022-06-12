@@ -51,9 +51,9 @@ public class ProblemMarker implements ContentListener {
                         analyzer.reset();
                     }
                     try {
-                        FileUtil.writeFile(
-                                new Indexer("editor").getString("currentFile"), content.toString());
-                        analyzer.analyze();
+                        var path = new Indexer("editor").getString("currentFile");
+                        var name = FileUtil.getFileName(path);
+                        analyzer.analyze(name, content.toString());
                     } catch (Exception ignored) {
                         // we shouldn't disturb the user for some issues
                     }

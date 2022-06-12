@@ -1,5 +1,7 @@
-apply plugin: 'java-library'
-apply plugin: 'com.android.lint'
+plugins {
+    id 'java-library'
+    id 'com.android.lint'
+}
 
 java {
 	sourceCompatibility = JavaVersion.VERSION_1_8

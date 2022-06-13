@@ -357,17 +357,17 @@ public final class MainActivity extends AppCompatActivity {
                         var claz = classes[pos];
                         var smaliFile =
                                     new File(
-                                            FileUtil.getBinDir()
-                                                            + "smali/"
+                                            FileUtil.getBinDir(),
+                                                    "smali/"
                                                             + claz.replace(".", "/")
                                                             + ".smali");
                         try {
                             var opcodes = Opcodes.forApi(32);
                             var options = new BaksmaliOptions();
                             
-                            var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
+                            var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir(), "classes.dex"), opcodes);
                             options.apiLevel = 26;
-                            ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
+                            ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, new File(FileUtil.getBinDir(), "smali"), 1, options));
                         } catch (IOException e) {
                             dialog("Unable to load dex file", getString(e), true);
                             return;

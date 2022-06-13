@@ -98,7 +98,7 @@ public final class MainActivity extends AppCompatActivity {
 
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setColorScheme(getColorScheme());
-        editor.setEditorLanguage(getTextMateLanguage());
+        editor.setEditorLanguage(getTextMateLanguageForJava());
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
 
@@ -331,7 +331,7 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    private TextMateLanguage getTextMateLanguage() {
+    private TextMateLanguage getTextMateLanguageForJava() {
         try {
             var language =
                     TextMateLanguage.create(
@@ -339,6 +339,21 @@ public final class MainActivity extends AppCompatActivity {
                             getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
                             new InputStreamReader(
                                     getAssets().open("textmate/java/language-configuration.json")),
+                            getDarculaTheme());
+            return language;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private TextMateLanguage getTextMateLanguageForSmali() {
+        try {
+            var language =
+                    TextMateLanguage.create(
+                            "smali.tmLanguage.json",
+                            getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                            new InputStreamReader(
+                                    getAssets().open("textmate/smali/language-configuration.json")),
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
@@ -376,11 +391,11 @@ public final class MainActivity extends AppCompatActivity {
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
-                        edi.setEditorLanguage(getTextMateLanguage());
+                        edi.setEditorLanguage(getTextMateLanguageForSmali());
                         edi.setTextSize(13);
 
                         try {
-                            edi.setText(formatSmali(FileUtil.readFile(smaliFile)));
+                            edi.setText(FileUtil.readFile(smaliFile));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
                             return;
@@ -429,7 +444,7 @@ public final class MainActivity extends AppCompatActivity {
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
-                    edi.setEditorLanguage(getTextMateLanguage());
+                    edi.setEditorLanguage(getTextMateLanguageForJava());
                     edi.setTextSize(12);
 
                     var decompiledFile = new File(FileUtil.getBinDir() + "cfr/" + claz + ".java");
@@ -458,7 +473,7 @@ public final class MainActivity extends AppCompatActivity {
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
-                    edi.setEditorLanguage(getTextMateLanguage());
+                    edi.setEditorLanguage(getTextMateLanguageForJava());
                     edi.setTextSize(12);
 
                     try {
@@ -489,45 +504,6 @@ public final class MainActivity extends AppCompatActivity {
                     d.setCanceledOnTouchOutside(true);
                     d.show();
                 });
-    }
-
-    /* Formats a given smali code */
-    private String formatSmali(String in) {
-
-        var lines = new ArrayList<String>(Arrays.asList(in.split("\n")));
-
-        var insideMethod = false;
-
-        for (var i = 0; i < lines.size(); i++) {
-
-            var line = lines.get(i);
-
-            if (line.startsWith(".method")) insideMethod = true;
-
-            if (line.startsWith(".end method")) insideMethod = false;
-
-            if (insideMethod && !shouldSkip(line)) lines.set(i, line + "\n");
-        }
-
-        var result = new StringBuilder();
-
-        for (var i = 0; i < lines.size(); i++) {
-            if (i != 0) result.append("\n");
-
-            result.append(lines.get(i));
-        }
-
-        return result.toString();
-    }
-
-    private boolean shouldSkip(String smaliLine) {
-
-        var ops = new String[] {".line", ":", ".prologue"};
-
-        for (var op : ops) {
-            if (smaliLine.trim().startsWith(op)) return true;
-        }
-        return false;
     }
 
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {

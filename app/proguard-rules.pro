@@ -1,6 +1,5 @@
 -ignorewarnings
 
--dontwarn
 -dontnote
 
 -keep class com.google.googlejavaformat.** { *; }

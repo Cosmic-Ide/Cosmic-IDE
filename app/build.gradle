@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.pranav.java.ide'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId 'com.pranav.java.ide'
         minSdk 26
-        targetSdk 32
+        targetSdk 33
         versionCode 4
         versionName '0.0.4'
     }
@@ -20,6 +20,16 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    
+    signingConfigs {
+        debug {
+            storeFile file('testkey.keystore')
+            storePassword 'testkey'
+            keyAlias 'testkey'
+            keyPassword 'testkey'
         }
     }
     
@@ -71,7 +81,7 @@ dependencies {
     implementation 'org.smali:baksmali:2.5.2'
     implementation 'org.json:json:20220320'
     implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'androidx.appcompat:appcompat:1.6.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.6.0-alpha04'
 
     implementation 'com.google.android.material:material:1.7.0-alpha02'
     implementation project(path: ':common')

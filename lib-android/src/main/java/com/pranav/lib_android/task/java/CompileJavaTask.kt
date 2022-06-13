@@ -39,7 +39,7 @@ class CompileJavaTask(
     )
 	  
 	  val main = Main(writer, writer, false, null, null)
-	  
+
 	  val output = File(FileUtil.getBinDir(), "classes")
 
     ConcurrentUtil.execute {

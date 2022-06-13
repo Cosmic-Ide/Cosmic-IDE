@@ -11,7 +11,7 @@ class JavaBuilder constructor(
   override fun getContext(): Context {
     return mContext
   }
-  
+
   override fun getClassloader(): ClassLoader {
     return classLoader
   }

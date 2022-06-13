@@ -354,6 +354,7 @@ public final class MainActivity extends AppCompatActivity {
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
+                        var claz = classes[pos];
                         var smaliFile =
                                     new File(
                                             FileUtil.getBinDir()
@@ -361,8 +362,7 @@ public final class MainActivity extends AppCompatActivity {
                                                             + claz.replace(".", "/")
                                                             + ".smali");
                         try {
-                            var claz = classes[pos];
-                            var opcodes = Opcodes.getDefault();
+                            var opcodes = Opcodes.forApi(32);
                             var options = new BaksmaliOptions();
                             
                             var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
@@ -568,7 +568,7 @@ public final class MainActivity extends AppCompatActivity {
                 compile(false);
             }
             var classes = new ArrayList<String>();
-            var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.getDefault());
+            var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(32));
             for (var f : dexfile.getClasses().toArray(new ClassDef[0])) {
                 var name = f.getType().replace("/", "."); // convert class name to standard form
                 classes.add(name.substring(1, name.length() - 1));

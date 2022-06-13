@@ -356,7 +356,7 @@ public final class MainActivity extends AppCompatActivity {
                     (d, pos) -> {
                         var claz = classes[pos];
                         var opcodes = Opcodes.getDefault();
-                        var dexFile = DexFileFactory.loadDexFile(FileUtil.getBinDir() + "classes.dex");
+                        var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
                         var options = new BaksmaliOptions();
                         var smaliFile =
                                                         new File(

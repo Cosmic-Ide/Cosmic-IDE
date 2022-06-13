@@ -20,7 +20,7 @@ class ApplicationLoader : Application() {
 		val uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
 		Thread.setDefaultUncaughtExceptionHandler {
-				thread, throwable -> 
+				thread, throwable ->
 					val intent = Intent(mContext, DebugActivity::class.java)
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
 					intent.putExtra("error", Log.getStackTraceString(throwable))

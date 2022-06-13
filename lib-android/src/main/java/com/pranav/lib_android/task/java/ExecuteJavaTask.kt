@@ -31,7 +31,7 @@ class ExecuteJavaTask constructor(
 			  override fun write(b: Int) {
 			    log.append(b.toChar())
 			  }
-			  
+
 			  override fun toString(): String {
 			    return log.toString()
 			  }

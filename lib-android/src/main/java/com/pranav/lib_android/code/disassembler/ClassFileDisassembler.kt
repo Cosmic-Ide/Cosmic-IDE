@@ -7,7 +7,7 @@ import org.eclipse.jdt.internal.core.util.Disassembler
 class ClassFileDisassembler(classFile: String) {
 
   val classFileBytes: ByteArray
-    
+
   init {
     classFileBytes = File(classFile).readBytes()
   }

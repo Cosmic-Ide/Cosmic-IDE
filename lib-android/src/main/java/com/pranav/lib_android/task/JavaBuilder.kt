@@ -7,11 +7,11 @@ class JavaBuilder constructor(
     val mContext: Context,
     val classLoader: ClassLoader
   ): Builder() {
-  
+
   override fun getContext(): Context {
     return mContext
   }
-  
+
   override fun getClassloader(): ClassLoader {
     return classLoader
   }

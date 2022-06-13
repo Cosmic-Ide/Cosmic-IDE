@@ -100,7 +100,7 @@ class MainActivity: AppCompatActivity() {
 					"android.jar.zip", FileUtil.getClasspathDir())
 			}
 			val output = File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar")
-			if (!output.exists() && 
+			if (!output.exists() &&
 					 getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
 					.getFloat("javaVersion", 7.0f) >= 8.0f) {
 				try {

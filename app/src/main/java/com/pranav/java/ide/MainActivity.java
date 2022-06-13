@@ -354,20 +354,26 @@ public final class MainActivity extends AppCompatActivity {
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
-                        var claz = classes[pos];
-                        var opcodes = Opcodes.getDefault();
-                        var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
-                        var options = new BaksmaliOptions();
-                        var smaliFile =
-                                                        new File(
-                                                                FileUtil.getBinDir()
-                                                                        + "smali/"
-                                                                        + claz.replace(".", "/")
-                                                                        + ".smali");
-                        
-                        options.apiLevel = 26;
-                        ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
+                        try {
+                            var claz = classes[pos];
+                            var opcodes = Opcodes.getDefault();
+                            var options = new BaksmaliOptions();
+                            var smaliFile =
+                                            new File(
+                                                        FileUtil.getBinDir()
+                                                                    + "smali/"
+                                                                    + claz.replace(".", "/")
+                                                                    + ".smali");
 
+                            options.apiLevel = 26;
+                           ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
+                            
+                            var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
+                        } catch (IOException e) {
+                            dialog("Unable to load dex file", getString(e), true);
+                            return;
+                        }
+                        
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
@@ -378,6 +384,7 @@ public final class MainActivity extends AppCompatActivity {
                             edi.setText(formatSmali(FileUtil.readFile(smaliFile)));
                         } catch (IOException e) {
                             dialog("Cannot read file", getString(e), true);
+                            return;
                         }
 
                         var dialog =

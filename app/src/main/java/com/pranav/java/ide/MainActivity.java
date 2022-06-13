@@ -354,21 +354,20 @@ public final class MainActivity extends AppCompatActivity {
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
+                        var smaliFile =
+                                    new File(
+                                            FileUtil.getBinDir()
+                                                            + "smali/"
+                                                            + claz.replace(".", "/")
+                                                            + ".smali");
                         try {
                             var claz = classes[pos];
                             var opcodes = Opcodes.getDefault();
                             var options = new BaksmaliOptions();
-                            var smaliFile =
-                                            new File(
-                                                        FileUtil.getBinDir()
-                                                                    + "smali/"
-                                                                    + claz.replace(".", "/")
-                                                                    + ".smali");
-
-                            options.apiLevel = 26;
-                           ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
                             
                             var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir() + "classes.dex"), opcodes);
+                            options.apiLevel = 26;
+                            ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, smaliFile, 1, options));
                         } catch (IOException e) {
                             dialog("Unable to load dex file", getString(e), true);
                             return;
@@ -569,7 +568,7 @@ public final class MainActivity extends AppCompatActivity {
                 compile(false);
             }
             var classes = new ArrayList<String>();
-            var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(26));
+            var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.getDefault());
             for (var f : dexfile.getClasses().toArray(new ClassDef[0])) {
                 var name = f.getType().replace("/", "."); // convert class name to standard form
                 classes.add(name.substring(1, name.length() - 1));

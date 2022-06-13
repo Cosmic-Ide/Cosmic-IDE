@@ -32,4 +32,4 @@ jobs:
         if: ${{ !github.head_ref }}
         with:
           name: apk-release
-          path: app/build/outputs/apk/release
+          path: app/build/outputs/apk/release/app-release.apk

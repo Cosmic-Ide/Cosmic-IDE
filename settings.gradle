@@ -14,7 +14,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
-        maven { url 'https://maven.scijava.org/content/groups/public' }
     }
 }
 
@@ -28,3 +27,5 @@ include ':google-java-format'
 include ':common'
 include ':sora-editor'
 include ':code-analyzer'
+include ':kotlinc'
+include ':jaxp-xml'

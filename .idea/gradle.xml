@@ -18,6 +18,8 @@
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/java-completions" />
             <option value="$PROJECT_DIR$/code-analyzer" />
+            <option value="$PROJECT_DIR$/kotlinc" />
+            <option value="$PROJECT_DIR$/jaxp-xml" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -49,6 +49,7 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[ ] JGit support
 - \[ ] Error/Warning marker
 - \[ ] Java auto-complete server or auto-completion service
+- \[ ] Kotlin Language Support
 
 ## Building
 
@@ -64,13 +65,15 @@ I would really appreciate all kinds of contributions.
 If you have any questions, ideas, need help or want to propose a change just open an issue.
 
 - Contributions are highly appreciated.
-- Create a pull request and we'll merge it after thorough review.
+- Create a pull request and I would merge it after thorough review.
 
 ## Special thanks
 
 - [TheWolf](https://github.com/thewolfprod)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
+
+- [Tyron Lucena Scott](https://github.com/tyron12233) for [Kotlinc Android Port](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
 
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 

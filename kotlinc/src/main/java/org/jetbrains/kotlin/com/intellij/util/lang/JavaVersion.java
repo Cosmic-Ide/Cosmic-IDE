@@ -1,7 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.intellij.util.lang;
 
-import androidx.annotation.NotNull;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
   }
 
   @Override
-  public int compareTo(@NotNull JavaVersion o) {
+  public int compareTo(@NonNull JavaVersion o) {
     int diff = feature - o.feature;
     if (diff != 0) return diff;
     diff = minor - o.minor;
@@ -130,7 +130,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
    *
    * @throws IllegalArgumentException when any of numbers is negative
    */
-  public static @NotNull JavaVersion compose(int feature, int minor, int update, int build, boolean ea) throws IllegalArgumentException {
+  public static @NonNull JavaVersion compose(int feature, int minor, int update, int build, boolean ea) throws IllegalArgumentException {
     if (feature < 0) throw new IllegalArgumentException();
     if (minor < 0) throw new IllegalArgumentException();
     if (update < 0) throw new IllegalArgumentException();
@@ -138,7 +138,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
     return new JavaVersion(feature, minor, update, build, ea);
   }
 
-  public static @NotNull JavaVersion compose(int feature) {
+  public static @NonNull JavaVersion compose(int feature) {
     return compose(feature, 0, 0, 0, false);
   }
 
@@ -149,7 +149,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
    * The method attempts to parse {@code "java.runtime.version"} system property first (usually, it is more complete),
    * and falls back to {@code "java.version"} if the former is invalid or differs in {@link #feature} or {@link #minor} numbers.
    */
-  public static @NotNull JavaVersion current() {
+  public static @NonNull JavaVersion current() {
     if (current == null) {
       JavaVersion fallback = parse(System.getProperty("java.version"));
       JavaVersion rt = rtVersion();
@@ -199,7 +199,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
    *
    * @throws IllegalArgumentException if failed to recognize the number.
    */
-  public static @NotNull JavaVersion parse(@NotNull String versionString) throws IllegalArgumentException {
+  public static @NonNull JavaVersion parse(@NonNull String versionString) throws IllegalArgumentException {
     // trimming
     String str = versionString.trim();
     Map<String, String> trimmingMap = new HashMap<>(); // "substring to detect" to "substring from which to trim"

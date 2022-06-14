@@ -1,6 +1,11 @@
 plugins {
     id 'java-library'
-    id 'kotlin'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 configurations.implementation {
@@ -20,12 +25,4 @@ dependencies {
 
     compileOnly files('libs/the-unsafe.jar')
     compileOnly files('libs/android-stubs.jar')
-
-}
-repositories {
-    mavenCentral()
-}
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }

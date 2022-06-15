@@ -16,6 +16,9 @@ dependencies {
 	api ('org.eclipse.platform:org.eclipse.core.runtime:3.25.0') {
 	    exclude group: 'org.osgi', module: 'org.osgi.service.prefs'
 	}
+	api ('org.eclipse.platform:org.eclipse.equinox.preferences:3.10.0') {
+	    exclude group: 'org.osgi', module: 'org.osgi.service.prefs'
+	}
 	api 'org.eclipse.platform:org.eclipse.core.filesystem:1.9.400'
 	api 'org.eclipse.platform:org.eclipse.text:3.12.100'
 

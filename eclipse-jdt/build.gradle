@@ -10,7 +10,9 @@ java {
 
 dependencies {
 
-	api 'org.eclipse.platform:org.eclipse.core.resources:3.17.0'
+	api ('org.eclipse.platform:org.eclipse.core.resources:3.17.0') {
+	    exclude group: 'org.osgi', module: 'org.osgi.service.prefs'
+	}
 	api 'org.eclipse.platform:org.eclipse.core.runtime:3.24.100'
 	api 'org.eclipse.platform:org.eclipse.core.filesystem:1.9.400'
 	api 'org.eclipse.platform:org.eclipse.text:3.12.100'

@@ -1,6 +1,6 @@
 on:
-  push:
-    branch: [ main ]
+  schedule:
+    - cron: '34 8 * * 4'
 
 name: Semgrep
 

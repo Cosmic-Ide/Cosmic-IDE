@@ -14,6 +14,7 @@ dependencies {
 	implementation project(path: ':google-java-format')
 	implementation project(path: ':eclipse-jdt')
 	implementation project(path: ':nb-javac')
+        implementation project(path: ':kotlinc')
 	implementation project(path: ':common')
 	compileOnly files('libs/android-stubs.jar')
 }

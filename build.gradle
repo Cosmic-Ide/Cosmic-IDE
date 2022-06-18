@@ -3,6 +3,11 @@ plugins {
     id 'com.android.application' version '7.4.0-alpha04' apply false
     id 'com.android.library' version '7.4.0-alpha04' apply false
     id 'org.jetbrains.kotlin.android' version '1.7.0' apply false
+    id 'net.ltgt.errorprone' version '2.0.2' apply true
+}
+
+dependencies {
+    errorprone('com.google.errorprone:error_prone_core:2.14.0')
 }
 
 task clean(type: Delete) {

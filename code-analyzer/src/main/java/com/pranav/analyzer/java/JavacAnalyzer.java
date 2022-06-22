@@ -92,7 +92,7 @@ public class JavacAnalyzer {
             // from files that we skipped, so it should mostly be safe to ignore these
             short severity = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
             if (!it.getCode().startsWith("compiler.err.cant.resolve")) {
-                problems.add(new DiagnosticRegion(it.getStartPosition(), it.getEndPosition(), severity));
+                problems.add(new DiagnosticRegion((int) it.getStartPosition(), (int) it.getEndPosition(), severity));
             }
         }
         return problems;

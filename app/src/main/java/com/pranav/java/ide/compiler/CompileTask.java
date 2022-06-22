@@ -2,9 +2,11 @@ package com.pranav.java.ide.compiler;
 
 import android.content.Context;
 import android.os.Looper;
+import android.util.Log;
 
 import com.pranav.android.task.JavaBuilder;
 import com.pranav.android.task.java.*;
+import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
@@ -82,8 +84,10 @@ public class CompileTask extends Thread {
                 javaTask.doFullTask();
             }
             errorsArePresent = false;
-        } catch (Throwable e) {
+        } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
+        } catch (Throwable e) {
+            listener.onFailed(Log.getStackTraceString(e));
         }
         if (errorsArePresent) {
             return;

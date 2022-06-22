@@ -14,7 +14,7 @@ public class ProblemMarker implements ContentListener {
 
     private CodeEditor editor;
     private JavacAnalyzer analyzer;
-    private DiagnosticContainer diagnostics = new DiagnosticContainer();
+    private DiagnosticsContainer diagnostics = new DiagnosticsContainer();
 
     public ProblemMarker(CodeEditor editor) {
         this.editor = editor;
@@ -60,7 +60,7 @@ public class ProblemMarker implements ContentListener {
                         // we shouldn't disturb the user for some issues
                     }
                     diagnostics.reset();
-                    diagnostics.addDiagnostics(qnalyzer.getDiagnostics());
+                    diagnostics.addDiagnostics(analyzer.getDiagnostics());
                     editor.setDiagnostics(diagnostics);
                 });
     }

@@ -81,7 +81,7 @@ public class JavacAnalyzer {
     }
 
     public void reset() {
-        diagnostics.clear();
+        diagnostics = new DiagnosticCollector<>();
     }
 
     public ArrayList<DiagnosticRegion> getDiagnostics() {
@@ -90,7 +90,7 @@ public class JavacAnalyzer {
             if (it.getSource() == null) continue;
             // since we're not compiling the whole project, there might be some errors
             // from files that we skipped, so it should mostly be safe to ignore these
-            short flag = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
+            short severity = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
             if (!it.getCode().startsWith("compiler.err.cant.resolve")) {
                 problems.add(new DiagnosticRegion(it.getStartPosition(), it.getEndPosition(), severity));
             }

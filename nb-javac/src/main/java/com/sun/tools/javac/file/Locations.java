@@ -138,6 +138,10 @@ public class Locations {
         initHandlers();
     }
 
+    public static void setJavaHome(Path home) {
+        javaHome = home;
+    }
+
     Path getPath(String first, String... more) {
         try {
             return pathFactory.getPath(first, more);

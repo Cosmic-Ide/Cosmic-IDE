@@ -139,6 +139,9 @@ public final class MainActivity extends AppCompatActivity {
             ZipUtil.unzipFromAssets(
                     MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
         }
+        if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
+            ZipUtil.unzipFromAssets(MainActivity.this, "compiler-modules.zip", FileUtil.getDataDir());
+        }
         var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
         if (!output.exists()) {
             try {

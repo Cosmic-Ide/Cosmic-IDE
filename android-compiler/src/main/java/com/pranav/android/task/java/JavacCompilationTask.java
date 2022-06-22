@@ -81,6 +81,10 @@ public class JavacCompilationTask extends Task {
         args.add(version);
         args.add("-target");
         args.add(version);
+        if (Integer.valueOf(version) >= 9) {
+            args.add("-system");
+            args.add(FileUtil.getDataDir() + "compiler-modules");
+        }
 
         JavacTask task =
                 (JavacTask)

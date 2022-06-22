@@ -3,7 +3,22 @@ name: 'Android CI'
 
 on:
   push:
+    paths-ignore:
+      - .idea/*
+      - LICENSE
+      - README.md
+      - SECURITY.md
+      - CODE_OF_CONDUCT.md
+      - ic_logo.webp
+      - .github/ISSUE_TEMPLATE/*
   pull_request:
+    path-ignore:
+      - LICENSE
+      - README.md
+      - SECURITY.md
+      - ic_logo.webp
+      - CODE_OF_CONDUCT.md
+      - .github/ISSUE_TEMPLATE/*
   workflow_dispatch:
 
 jobs:

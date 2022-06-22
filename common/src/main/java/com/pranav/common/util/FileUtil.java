@@ -17,7 +17,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileUtil {
 
-    private static final String privateDataDirectory;
+    private static String privateDataDirectory;
     private static String javaDir;
 
     public static void setDataDirectory(String directory) {

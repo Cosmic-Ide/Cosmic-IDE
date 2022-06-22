@@ -23,15 +23,14 @@
  */
 package io.github.rosemoe.sora.langs.textmate;
 
+import java.io.InputStream;
+import java.io.Reader;
+
 import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
-import io.github.rosemoe.sora.langs.textmate.analyzer.TextMateAnalyzer;
-import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 
-import java.io.InputStream;
-import java.io.Reader;
+import org.eclipse.tm4e.core.theme.IRawTheme;
 
 @Experimental
 public class TextMateLanguage extends EmptyLanguage {
@@ -39,38 +38,27 @@ public class TextMateLanguage extends EmptyLanguage {
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
 
-    private TextMateLanguage(
-            String grammarName,
-            InputStream grammarIns,
-            Reader languageConfiguration,
-            IRawTheme theme) {
+    private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
         try {
-            textMateAnalyzer =
-                    new TextMateAnalyzer(
-                            this, grammarName, grammarIns, languageConfiguration, theme);
+            textMateAnalyzer = new TextMateAnalyzer(this,grammarName, grammarIns,languageConfiguration, theme);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static TextMateLanguage create(
-            String grammarName,
-            InputStream grammarIns,
-            Reader languageConfiguration,
-            IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme);
+    public static TextMateLanguage create(String grammarName, InputStream grammarIns,Reader languageConfiguration, IRawTheme theme) {
+        return new TextMateLanguage(grammarName, grammarIns,languageConfiguration, theme);
     }
 
-    public static TextMateLanguage create(
-            String grammarName, InputStream grammarIns, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, null, theme);
+    public static TextMateLanguage create(String grammarName, InputStream grammarIns, IRawTheme theme) {
+        return new TextMateLanguage(grammarName, grammarIns,null, theme);
     }
     /**
-     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the
-     * updates here
+     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the updates here
      *
      * @param theme IRawTheme creates from file
      */
+
     public void updateTheme(IRawTheme theme) {
         if (textMateAnalyzer != null) {
             textMateAnalyzer.updateTheme(theme);
@@ -90,7 +78,9 @@ public class TextMateLanguage extends EmptyLanguage {
         super.destroy();
     }
 
-    /** Set tab size. The tab size is used to compute code blocks. */
+    /**
+     * Set tab size. The tab size is used to compute code blocks.
+     */
     public void setTabSize(int tabSize) {
         this.tabSize = tabSize;
     }

@@ -28,15 +28,17 @@ import static io.github.rosemoe.sora.lang.styling.TextStyle.isItalics;
 
 import android.annotation.SuppressLint;
 
+import java.util.List;
+
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.text.ContentLine;
 
-import java.util.List;
-
-/** Manages graphical(actually measuring) operations of a text row */
+/**
+ * Manages graphical(actually measuring) operations of a text row
+ */
 public class GraphicTextRow {
 
-    private static final float SKEW_X = -0.2f;
+    private final static float SKEW_X = -0.2f;
     private Paint mPaint;
     private ContentLine mText;
     private int mStart;
@@ -45,7 +47,7 @@ public class GraphicTextRow {
     private List<Span> mSpans;
     private final float[] mBuffer;
 
-    private static final GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
 
     private GraphicTextRow() {
         mBuffer = new float[2];
@@ -81,9 +83,10 @@ public class GraphicTextRow {
         }
     }
 
-    /** Reset */
-    public void set(
-            ContentLine line, int start, int end, int tabWidth, List<Span> spans, Paint paint) {
+    /**
+     * Reset
+     */
+    public void set(ContentLine line, int start, int end, int tabWidth, List<Span> spans, Paint paint) {
         mPaint = paint;
         mText = line;
         mTabWidth = tabWidth;
@@ -92,7 +95,9 @@ public class GraphicTextRow {
         mSpans = spans;
     }
 
-    /** Build measure cache for the text */
+    /**
+     * Build measure cache for the text
+     */
     public void buildMeasureCache() {
         if (mText.widthCache == null || mText.widthCache.length < mEnd + 4) {
             mText.widthCache = new float[Math.max(128, mText.length() + 16)];
@@ -102,7 +107,7 @@ public class GraphicTextRow {
         var cache = mText.widthCache;
         var pending = cache[0];
         cache[0] = 0f;
-        for (int i = 1; i <= mEnd; i++) {
+        for (int i = 1; i <= mEnd;i++) {
             var tmp = cache[i];
             cache[i] = cache[i - 1] + pending;
             pending = tmp;
@@ -110,10 +115,10 @@ public class GraphicTextRow {
     }
 
     /**
-     * From {@code start} to measure characters, until measured width add next char's width is
-     * bigger than {@code advance}.
+     * From {@code start} to measure characters, until measured width add next char's width is bigger
+     * than {@code advance}.
      *
-     * <p>Note that the result array should not be stored.
+     * Note that the result array should not be stored.
      *
      * @return Element 0 is offset, Element 1 is measured width
      */
@@ -121,10 +126,9 @@ public class GraphicTextRow {
         if (mText.widthCache != null) {
             var cache = mText.widthCache;
             var end = mEnd;
-            int left = start;
-            int right = end;
+            int left = start, right = end;
             var base = cache[start];
-            while (left <= right) {
+            while(left <= right) {
                 var mid = (left + right) / 2;
                 if (mid < start || mid >= end) {
                     left = mid;
@@ -139,6 +143,9 @@ public class GraphicTextRow {
                     left = mid;
                     break;
                 }
+            }
+            if (cache[left] - base > advance) {
+                left--;
             }
             left = Math.max(start, Math.min(end, left));
             mBuffer[0] = left;
@@ -181,12 +188,8 @@ public class GraphicTextRow {
                         // Here is a tab
                         // Try to find advance
                         if (lastStart != i) {
-                            int idx =
-                                    mPaint.findOffsetByRunAdvance(
-                                            mText, lastStart, i, advance - currentPosition);
-                            currentPosition +=
-                                    mPaint.measureTextRunAdvance(
-                                            chars, lastStart, idx, regionStart, regionEnd);
+                            int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, i, advance - currentPosition);
+                            currentPosition += mPaint.measureTextRunAdvance(chars, lastStart, idx, regionStart, regionEnd);
                             if (idx < i) {
                                 res = idx;
                                 break;
@@ -210,9 +213,7 @@ public class GraphicTextRow {
                     }
                 }
                 if (res == -1) {
-                    int idx =
-                            mPaint.findOffsetByRunAdvance(
-                                    mText, lastStart, regionEnd, advance - currentPosition);
+                    int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, regionEnd, advance - currentPosition);
                     currentPosition += measureText(lastStart, idx);
                     res = idx;
                 }
@@ -223,7 +224,7 @@ public class GraphicTextRow {
                 break;
             }
 
-            index++;
+            index ++;
             regionStart = regionEnd;
             if (regionEnd == mEnd) {
                 break;
@@ -304,16 +305,7 @@ public class GraphicTextRow {
             return 0f;
         }
         // Can be called directly
-        float width =
-                mPaint.getTextRunAdvances(
-                        mText.value,
-                        start,
-                        end - start,
-                        start,
-                        end - start,
-                        false,
-                        widths,
-                        widths == null ? 0 : start);
+        float width = mPaint.getTextRunAdvances(mText.value, start, end - start, start, end - start, false, widths, widths == null ? 0 : start);
         float tabWidth = mPaint.getSpaceWidth() * mTabWidth;
         int tabCount = 0;
         for (int i = start; i < end; i++) {
@@ -327,4 +319,6 @@ public class GraphicTextRow {
         float extraWidth = tabCount == 0 ? 0 : tabWidth - mPaint.measureText("\t");
         return width + extraWidth * tabCount;
     }
+
+
 }

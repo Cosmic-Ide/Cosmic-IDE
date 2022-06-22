@@ -23,7 +23,9 @@
  */
 package io.github.rosemoe.sora.util;
 
-/** ArrayList for primitive type long */
+/**
+ * ArrayList for primitive type long
+ */
 public class LongArrayList {
 
     private long[] data;
@@ -56,4 +58,5 @@ public class LongArrayList {
     public void clear() {
         length = 0;
     }
+
 }

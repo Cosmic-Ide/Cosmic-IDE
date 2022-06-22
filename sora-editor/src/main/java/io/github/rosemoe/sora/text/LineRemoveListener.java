@@ -34,7 +34,8 @@ public interface LineRemoveListener {
      * When a ContentLine is removed from Content, this method is called
      *
      * @param content Caller Content
-     * @param line ContentLine object removed
+     * @param line    ContentLine object removed
      */
     void onRemove(Content content, ContentLine line);
+
 }

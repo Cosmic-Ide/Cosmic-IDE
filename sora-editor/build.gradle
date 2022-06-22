@@ -27,7 +27,6 @@ dependencies {
     // We're currently using sora-editor from this commit 962e3c00f6ae3ff915e49a5f8c1b72b36b37586d
     implementation project(path: ':common')
     implementation project(path: ':nb-javac')
-    implementation project(path: ':code-analyzer')
     implementation 'androidx.annotation:annotation:1.4.0-rc01'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.jruby.jcodings:jcodings:1.0.57'

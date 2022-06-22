@@ -30,7 +30,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.annotation.NonNull;
 
 import io.github.rosemoe.sora.R;
@@ -47,30 +46,13 @@ public class HandleStyleDrop implements SelectionHandleStyle {
     private float scaleFactor = 1.0f;
 
     public HandleStyleDrop(Context context) {
-        drawable = AppCompatResources.getDrawable(context, R.drawable.ic_sora_handle_drop).mutate();
-        width =
-                (int)
-                        TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP,
-                                20f,
-                                context.getResources().getDisplayMetrics());
-        height =
-                (int)
-                        TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP,
-                                30f,
-                                context.getResources().getDisplayMetrics());
+        drawable = context.getDrawable(R.drawable.ic_sora_handle_drop).mutate();
+        width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, context.getResources().getDisplayMetrics());
+        height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30f, context.getResources().getDisplayMetrics());
     }
 
     @Override
-    public void draw(
-            @NonNull Canvas canvas,
-            int handleType,
-            float x,
-            float y,
-            int rowHeight,
-            int color,
-            @NonNull HandleDescriptor descriptor) {
+    public void draw(@NonNull Canvas canvas, int handleType, float x, float y, int rowHeight, int color, @NonNull HandleDescriptor descriptor) {
         if (lastColor != color) {
             lastColor = color;
             drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));

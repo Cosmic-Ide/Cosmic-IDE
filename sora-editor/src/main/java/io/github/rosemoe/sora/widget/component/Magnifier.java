@@ -31,6 +31,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -41,12 +42,13 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import java.util.Objects;
 
 import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.EditorPainter;
-
-import java.util.Objects;
 
 /**
  * Magnifier specially designed for CodeEditor
@@ -63,32 +65,32 @@ public class Magnifier implements EditorBuiltinComponent {
     private final float maxTextSize;
     private long expectedRequestTime;
     private boolean enabled = true;
+    private boolean withinEditorForcibly = false;
     private View parentView;
 
-    /** Scale factor for regions */
+    /**
+     * Scale factor for regions
+     */
     private float scaleFactor;
 
     public Magnifier(CodeEditor editor) {
         view = editor;
         parentView = editor;
         popup = new PopupWindow();
-        popup.setElevation(view.getDpUnit() * 8);
+        popup.setElevation(view.getDpUnit() * 4);
         @SuppressLint("InflateParams")
         var view = LayoutInflater.from(editor.getContext()).inflate(R.layout.magnifier_popup, null);
         image = view.findViewById(R.id.magnifier_image_view);
         popup.setHeight((int) (editor.getDpUnit() * 70));
         popup.setWidth((int) (editor.getDpUnit() * 100));
         popup.setContentView(view);
-        maxTextSize =
-                TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_SP, 28, view.getResources().getDisplayMetrics());
-        scaleFactor = 1.35f;
+        maxTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 28, view.getResources().getDisplayMetrics());
+        scaleFactor = 1.25f;
         paint = new Paint();
     }
 
     /**
-     * Set parent view for popup.
-     *
+     * Set parent view for popup
      * @see io.github.rosemoe.sora.widget.base.EditorPopupWindow#setParentView(View)
      */
     public void setParentView(@NonNull View parentView) {
@@ -105,7 +107,6 @@ public class Magnifier implements EditorBuiltinComponent {
 
     /**
      * Set the scale factor of the image to be displayed in magnifier
-     *
      * @param scaleFactor Scale factor. Must not be under 1.0
      */
     public void setScaleFactor(float scaleFactor) {
@@ -117,7 +118,6 @@ public class Magnifier implements EditorBuiltinComponent {
 
     /**
      * Get the scale factor of the image to be displayed in magnifier
-     *
      * @see #setScaleFactor(float)
      */
     public float getScaleFactor() {
@@ -137,9 +137,26 @@ public class Magnifier implements EditorBuiltinComponent {
         }
     }
 
+    /***
+     * @see #setWithinEditorForcibly(boolean)
+     */
+    public boolean isWithinEditorForcibly() {
+        return withinEditorForcibly;
+    }
+
     /**
-     * Show the magnifier according to the given position. X and Y are relative to the code editor
-     * view
+     * If true, the magnifier will never try to copy pixels by system and create the image by
+     * editor.
+     * If you are trying to add the view into an activity by WindowManager, this should be enabled.
+     * Otherwise, the generated image may be wrong.
+     */
+    public void setWithinEditorForcibly(boolean withinEditorForcibly) {
+        this.withinEditorForcibly = withinEditorForcibly;
+    }
+
+    /**
+     * Show the magnifier according to the given position.
+     * X and Y are relative to the code editor view
      */
     public void show(int x, int y) {
         if (!enabled) {
@@ -154,7 +171,7 @@ public class Magnifier implements EditorBuiltinComponent {
             }
             return;
         }
-        popup.setWidth(Math.min(view.getWidth() * 3 / 5, (int) view.getDpUnit()) * 250);
+        popup.setWidth(Math.min(view.getWidth() * 3 / 5, (int)view.getDpUnit()) * 250);
         this.x = x;
         this.y = y;
         int[] pos = new int[2];
@@ -165,7 +182,7 @@ public class Magnifier implements EditorBuiltinComponent {
             right = view.getWidth() + pos[0];
             left = Math.max(0, right - popup.getWidth());
         }
-        var top = Math.max(pos[1] + y - popup.getHeight() - (int) (view.getRowHeight()), 0);
+        var top = Math.max(pos[1] + y - popup.getHeight() - view.getRowHeight(), 0);
         if (popup.isShowing()) {
             popup.update(left, top, popup.getWidth(), popup.getHeight());
         } else {
@@ -174,30 +191,35 @@ public class Magnifier implements EditorBuiltinComponent {
         updateDisplay();
     }
 
-    /** Whether the magnifier is showing */
+    /**
+     * Whether the magnifier is showing
+     */
     public boolean isShowing() {
         return popup.isShowing();
     }
 
-    /** Hide the magnifier */
+    /**
+     * Hide the magnifier
+     */
     public void dismiss() {
         popup.dismiss();
     }
 
     /**
-     * Update the display of the magnifier without updating the window's location on screen.
+     * Update the display of the magnifier without updating the window's
+     * location on screen.
      *
-     * <p>This should be called when new content has been drawn on the target view so that the
-     * content in magnifier will not be invalid.
+     * This should be called when new content has been drawn on the target view so
+     * that the content in magnifier will not be invalid.
      *
-     * <p>This method does not take effect if the magnifier is not currently shown
+     * This method does not take effect if the magnifier is not currently shown
      */
     public void updateDisplay() {
         if (!isShowing()) {
             return;
         }
-        if (view.getContext() instanceof Activity) {
-            updateDisplayOreo((Activity) view.getContext());
+        if (!withinEditorForcibly && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && view.getContext() instanceof Activity) {
+            updateDisplayOreo((Activity)view.getContext());
         } else {
             updateDisplayWithinEditor();
         }
@@ -206,9 +228,10 @@ public class Magnifier implements EditorBuiltinComponent {
     /**
      * Update display on API 26 or later.
      *
-     * <p>This will include other view in the window as {@link PixelCopy} is used to capture the
+     * This will include other view in the window as {@link PixelCopy} is used to capture the
      * screen.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateDisplayOreo(Activity activity) {
         var requiredWidth = (int) (popup.getWidth() / scaleFactor);
         var requiredHeight = (int) (popup.getHeight() / scaleFactor);
@@ -233,48 +256,30 @@ public class Magnifier implements EditorBuiltinComponent {
         expectedRequestTime = requestTime;
         var clip = Bitmap.createBitmap(right - left, bottom - top, Bitmap.Config.ARGB_8888);
         try {
-            PixelCopy.request(
-                    activity.getWindow(),
-                    new Rect(pos[0] + left, pos[1] + top, pos[0] + right, pos[1] + bottom),
-                    clip,
-                    (var statusCode) -> {
-                        if (requestTime != expectedRequestTime) {
-                            return;
-                        }
-                        if (statusCode == PixelCopy.SUCCESS) {
-                            var dest =
-                                    Bitmap.createBitmap(
-                                            popup.getWidth(),
-                                            popup.getHeight(),
-                                            Bitmap.Config.ARGB_8888);
-                            var scaled =
-                                    Bitmap.createScaledBitmap(
-                                            clip, popup.getWidth(), popup.getHeight(), false);
-                            clip.recycle();
+            PixelCopy.request(activity.getWindow(), new Rect(pos[0] + left, pos[1] + top, pos[0] + right, pos[1] + bottom), clip, (var statusCode) -> {
+                if (requestTime != expectedRequestTime) {
+                    return;
+                }
+                if (statusCode == PixelCopy.SUCCESS) {
+                    var dest = Bitmap.createBitmap(popup.getWidth(), popup.getHeight(), Bitmap.Config.ARGB_8888);
+                    var scaled = Bitmap.createScaledBitmap(clip, popup.getWidth(), popup.getHeight(), true);
+                    clip.recycle();
 
-                            Canvas canvas = new Canvas(dest);
-                            paint.reset();
-                            paint.setAntiAlias(true);
-                            canvas.drawARGB(0, 0, 0, 0);
-                            final int roundFactor = 6;
-                            canvas.drawRoundRect(
-                                    0,
-                                    0,
-                                    popup.getWidth(),
-                                    popup.getHeight(),
-                                    view.getDpUnit() * roundFactor,
-                                    view.getDpUnit() * roundFactor,
-                                    paint);
-                            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-                            canvas.drawBitmap(scaled, 0, 0, paint);
-                            scaled.recycle();
+                    Canvas canvas = new Canvas(dest);
+                    paint.reset();
+                    paint.setAntiAlias(true);
+                    canvas.drawARGB(0, 0, 0, 0);
+                    final int roundFactor = 6;
+                    canvas.drawRoundRect(0, 0, popup.getWidth(), popup.getHeight(), view.getDpUnit() * roundFactor, view.getDpUnit() * roundFactor, paint);
+                    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+                    canvas.drawBitmap(scaled, 0, 0, paint);
+                    scaled.recycle();
 
-                            image.setImageBitmap(dest);
-                        } else {
-                            Log.w("Magnifier", "Failed to copy pixels, error = " + statusCode);
-                        }
-                    },
-                    view.getHandler());
+                    image.setImageBitmap(dest);
+                } else {
+                    Log.w("Magnifier", "Failed to copy pixels, error = " + statusCode);
+                }
+            }, view.getHandler());
         } catch (IllegalArgumentException e) {
             // Happens when the view has not been drawn yet
             dismiss();
@@ -287,12 +292,11 @@ public class Magnifier implements EditorBuiltinComponent {
     /**
      * Update display on low API devices
      *
-     * <p>This method does not include other views as it obtain editor's display by directly calling
-     * {@link EditorPainter#drawView(Canvas)}
+     * This method does not include other views as it obtain editor's display by
+     * directly calling {@link EditorPainter#drawView(Canvas)}
      */
     private void updateDisplayWithinEditor() {
-        var dest =
-                Bitmap.createBitmap(popup.getWidth(), popup.getHeight(), Bitmap.Config.ARGB_8888);
+        var dest = Bitmap.createBitmap(popup.getWidth(), popup.getHeight(), Bitmap.Config.ARGB_8888);
         var requiredWidth = (int) (popup.getWidth() / scaleFactor);
         var requiredHeight = (int) (popup.getHeight() / scaleFactor);
 
@@ -315,7 +319,7 @@ public class Magnifier implements EditorBuiltinComponent {
         var viewCanvas = new Canvas(clip);
         viewCanvas.translate(-left, -top);
         view.draw(viewCanvas);
-        var scaled = Bitmap.createScaledBitmap(clip, popup.getWidth(), popup.getHeight(), false);
+        var scaled = Bitmap.createScaledBitmap(clip, popup.getWidth(), popup.getHeight(), true);
         clip.recycle();
 
         Canvas canvas = new Canvas(dest);
@@ -323,18 +327,12 @@ public class Magnifier implements EditorBuiltinComponent {
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         final int roundFactor = 6;
-        canvas.drawRoundRect(
-                0,
-                0,
-                popup.getWidth(),
-                popup.getHeight(),
-                view.getDpUnit() * roundFactor,
-                view.getDpUnit() * roundFactor,
-                paint);
+        canvas.drawRoundRect(0, 0, popup.getWidth(), popup.getHeight(), view.getDpUnit() * roundFactor, view.getDpUnit() * roundFactor, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(scaled, 0, 0, paint);
         scaled.recycle();
 
         image.setImageBitmap(dest);
     }
+
 }

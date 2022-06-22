@@ -28,28 +28,29 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.rosemoe.sora.lang.styling.MappedSpans;
 import io.github.rosemoe.sora.lang.styling.Styles;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Simple implementation of incremental analyze manager. This class saves states at line endings. It
- * is for simple token-based highlighting, and it can also save tokens on lines so that they can be
- * reused. However, no code blocks support is provided.
+ * Simple implementation of incremental analyze manager.
+ * This class saves states at line endings. It is for simple token-based highlighting, and it can also
+ * save tokens on lines so that they can be reused. However, no code blocks support is provided.
  *
- * <p>Note that the analysis is done on UI thread.
+ * Note that the analysis is done on UI thread.
+ *
  */
-public abstract class UIThreadIncrementalAnalyzeManager<S, T>
-        implements IncrementalAnalyzeManager<S, T> {
+public abstract class UIThreadIncrementalAnalyzeManager<S, T> implements IncrementalAnalyzeManager<S, T> {
 
     private StyleReceiver receiver;
-    /** This class run actions in main thread. The reference can be safely accessed. */
+    /**
+     * This class run actions in main thread. The reference can be safely accessed.
+     */
     private ContentReference ref;
-
     private List<LineTokenizeResult<S, T>> states = new ArrayList<>();
     private Styles sentStyles;
 
@@ -82,11 +83,10 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
             if (stateEquals(res.state, states.get(line).state)) {
                 break;
             } else {
-                spans.setSpansOnLine(
-                        line, res.spans != null ? res.spans : generateSpansForLine(res));
+                spans.setSpansOnLine(line, res.spans != null ? res.spans : generateSpansForLine(res));
                 states.set(line, res.clearSpans());
             }
-            line++;
+            line ++;
         }
         receiver.setStyles(this, sentStyles);
     }
@@ -99,7 +99,7 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
             states.subList(start.line + 1, end.line + 1).clear();
         }
         int line = start.line;
-        while (line < ref.getLineCount()) {
+        while (line < ref.getLineCount()){
             var res = tokenizeLine(ref.getLine(line), state);
             var old = states.set(line, res);
             var spans = sentStyles.spans.modify();
@@ -108,7 +108,7 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
                 break;
             }
             state = res.state;
-            line++;
+            line ++;
         }
         receiver.setStyles(this, sentStyles);
     }
@@ -123,7 +123,7 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
         states.clear();
         S state = getInitialState();
         var builder = new MappedSpans.Builder(ref.getLineCount());
-        for (int i = 0; i < ref.getLineCount(); i++) {
+        for (int i = 0;i < ref.getLineCount();i++) {
             var res = tokenizeLine(ref.getLine(i), state);
             state = res.state;
             var spans = res.spans != null ? res.spans : generateSpansForLine(res);
@@ -139,9 +139,9 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
     /**
      * Send the update.
      *
-     * <p>We always use the same object, but the editor can use a HwAcceleratedRenderer so that some
-     * displaying content may not be updated in the renderer. So we must call this to notify editor
-     * to invalidate its drawing cache.
+     * We always use the same object, but the editor can use a HwAcceleratedRenderer
+     * so that some displaying content may not be updated in the renderer.
+     * So we must call this to notify editor to invalidate its drawing cache.
      */
     private void sendUpdate() {
         final var r = receiver;
@@ -157,4 +157,5 @@ public abstract class UIThreadIncrementalAnalyzeManager<S, T>
         sentStyles = null;
         ref = null;
     }
+
 }

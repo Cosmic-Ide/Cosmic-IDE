@@ -28,14 +28,15 @@ import android.view.KeyEvent;
 
 /**
  * Handles key events such as SHIFT
- *
  * @author Rosemoe
  */
 public class KeyMetaStates extends android.text.method.MetaKeyKeyListener {
 
     private final CodeEditor editor;
 
-    /** Dummy text used for Android original APIs */
+    /**
+     * Dummy text used for Android original APIs
+     */
     private final Editable dest = Editable.Factory.getInstance().newEditable("");
 
     public KeyMetaStates(CodeEditor editor) {
@@ -65,4 +66,5 @@ public class KeyMetaStates extends android.text.method.MetaKeyKeyListener {
     public void clearMetaStates(int states) {
         clearMetaKeyState(editor, dest, states);
     }
+
 }

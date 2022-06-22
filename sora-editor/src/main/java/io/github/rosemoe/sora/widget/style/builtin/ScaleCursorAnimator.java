@@ -23,7 +23,6 @@
  */
 package io.github.rosemoe.sora.widget.style.builtin;
 
-import android.animation.Animator;
 import android.animation.ValueAnimator;
 
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -39,47 +38,39 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
     private final CodeEditor editor;
     private final long duration;
 
-    private ValueAnimator scaleUpAnimator;
-    private ValueAnimator scaleDownAnimator;
-
-    private boolean phaseEnded;
+    private ValueAnimator scaleAnimator;
     private long lastAnimateTime;
     private float lineHeight, lineBottom;
     private float startX, startY, endX, endY;
 
     public ScaleCursorAnimator(CodeEditor editor) {
         this.editor = editor;
-        this.scaleUpAnimator = new ValueAnimator();
-        this.scaleDownAnimator = new ValueAnimator();
-        this.duration = 100;
+        this.scaleAnimator = new ValueAnimator();
+        this.duration = 180;
     }
 
     @Override
     public void markStartPos() {
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom =
-                editor.getLayout()
-                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos =
-                editor.getLayout()
-                        .getCharLayoutOffset(
-                                editor.getCursor().getLeftLine(),
-                                editor.getCursor().getLeftColumn());
+        float[] pos = editor.getLayout().getCharLayoutOffset(
+                editor.getCursor().getLeftLine(),
+                editor.getCursor().getLeftColumn()
+        );
         startX = pos[1] + editor.measureTextRegionOffset();
         startY = pos[0];
     }
 
     @Override
     public boolean isRunning() {
-        return scaleUpAnimator.isRunning() || scaleDownAnimator.isRunning();
+        return scaleAnimator.isRunning();
     }
 
     @Override
     public void cancel() {
-        scaleDownAnimator.cancel();
-        scaleUpAnimator.cancel();
+        scaleAnimator.cancel();
     }
 
     @Override
@@ -93,64 +84,56 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
         if (System.currentTimeMillis() - lastAnimateTime < 100) {
             return;
         }
-        scaleDownAnimator.removeAllUpdateListeners();
-        scaleUpAnimator.removeAllUpdateListeners();
+        scaleAnimator.removeAllUpdateListeners();
 
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom =
-                editor.getLayout()
-                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos =
-                editor.getLayout()
-                        .getCharLayoutOffset(
-                                editor.getCursor().getLeftLine(),
-                                editor.getCursor().getLeftColumn());
+        float[] pos = editor.getLayout().getCharLayoutOffset(
+                editor.getCursor().getLeftLine(),
+                editor.getCursor().getLeftColumn()
+        );
         endX = pos[1] + editor.measureTextRegionOffset();
         endY = pos[0];
 
-        scaleDownAnimator = ValueAnimator.ofFloat(1.0f, 0f);
-        scaleDownAnimator.addListener(
-                new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationCancel(Animator animator) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {}
-
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        phaseEnded = false;
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        phaseEnded = true;
-                    }
-                });
-        scaleDownAnimator.addUpdateListener(this);
-        scaleDownAnimator.setDuration(duration);
-
-        scaleUpAnimator = ValueAnimator.ofFloat(0f, 1.0f);
-        scaleUpAnimator.addUpdateListener(this);
-        scaleUpAnimator.setStartDelay(duration);
-        scaleUpAnimator.setDuration(duration);
+        if (editor.getInsertHandleDescriptor().position.isEmpty()) {
+            scaleAnimator = ValueAnimator.ofFloat(0f, 1.0f);
+            scaleAnimator.setDuration(duration);
+        } else {
+            scaleAnimator = ValueAnimator.ofFloat(1.0f, 0f, 1.0f);
+            scaleAnimator.setDuration(duration * 2);
+        }
+        scaleAnimator.addUpdateListener(this);
     }
 
     @Override
     public void start() {
-        if (!editor.isCursorAnimationEnabled()) {
+        if (!editor.isCursorAnimationEnabled() || System.currentTimeMillis() - lastAnimateTime < 100) {
+            lastAnimateTime = System.currentTimeMillis();
             return;
         }
-        scaleDownAnimator.start();
-        scaleUpAnimator.start();
+        if (startX == endX && startY == endY && !editor.getInsertHandleDescriptor().position.isEmpty()) {
+            return;
+        }
+        scaleAnimator.start();
         lastAnimateTime = System.currentTimeMillis();
+    }
+
+    private boolean shouldReturnEndValue() {
+        if (!scaleAnimator.isRunning() || editor.getInsertHandleDescriptor().position.isEmpty()) {
+            return true;
+        }
+        if (scaleAnimator.getDuration() == duration) {
+            return true;
+        } else {
+            return scaleAnimator.getCurrentPlayTime() > duration;
+        }
     }
 
     @Override
     public float animatedX() {
-        if (phaseEnded) {
+        if (shouldReturnEndValue()) {
             return endX;
         }
         return startX;
@@ -158,7 +141,7 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
 
     @Override
     public float animatedY() {
-        if (phaseEnded) {
+        if (shouldReturnEndValue()) {
             return endY;
         }
         return startY;

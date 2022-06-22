@@ -23,6 +23,7 @@
  */
 package io.github.rosemoe.sora.graphics;
 
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -54,4 +55,5 @@ public class BufferedDrawPoints {
         canvas.drawPoints(points, 0, pointCount * 2, paint);
         pointCount = 0;
     }
+
 }

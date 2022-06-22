@@ -28,9 +28,6 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
-import io.github.rosemoe.sora.lang.Language;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,27 +36,32 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+import io.github.rosemoe.sora.lang.Language;
+
 /**
  * CompletionPublisher manages completion items to be added in one completion analyzing process.
  *
- * <p>You can only add items to the publisher, but no deletion is allowed. As you add more items,
- * the publisher will update the list in UI from time to time, which is related to your threshold
- * settings.({@link CompletionPublisher#setUpdateThreshold(int)}). There will usually be some items
- * not displayed in screen when the thread is still running. Even when the actual pending item count
- * exceeds the threshold you set, there may still be some items not committed because of lock
- * failures. You can use {@link CompletionPublisher#updateList(boolean)} with forced flag to command
- * the UI thread update the completion list, by waiting for the lock from your side to release. If
- * you want to disable this feature, you may want to set it to {@link Integer#MAX_VALUE}
+ * You can only add items to the publisher, but no deletion is allowed. As you add more items, the
+ * publisher will update the list in UI from time to time, which is related to your threshold
+ * settings.({@link CompletionPublisher#setUpdateThreshold(int)}).
+ * There will usually be some items not displayed in screen when the thread is still running. Even
+ * when the actual pending item count exceeds the threshold you set, there may still be some items
+ * not committed because of lock failures. You can use {@link CompletionPublisher#updateList(boolean)}
+ * with forced flag to command the UI thread update the completion list, by waiting for the lock from
+ * your side to release.
+ * If you want to disable this feature, you may want to set it to {@link Integer#MAX_VALUE}
  *
- * <p>You can set a comparator by {@link CompletionPublisher#setComparator(Comparator)} to sort your
+ * You can set a comparator by {@link CompletionPublisher#setComparator(Comparator)} to sort your
  * result items, but you should not make it too complex, which will cause laggy in UI thread. It is
- * recommended that you set the comparator before all your actions. Leaving the comparator null
- * results the completion to be unsorted. They will be ordered by the order you add them.
+ * recommended that you set the comparator before all your actions.
+ * Leaving the comparator null results the completion to be unsorted. They will be ordered by the order
+ * you add them.
  *
- * <p>After all you additions, you do not need to explicitly invoke {@link
- * CompletionPublisher#updateList(boolean)}. This will automatically be called by editor framework.
+ * After all you additions, you do not need to explicitly invoke {@link CompletionPublisher#updateList(boolean)}.
+ * This will automatically be called by editor framework.
  *
- * <p>Note that your actions may be interrupted because of {@link Thread#interrupted()}.
+ * Note that your actions may be interrupted because of {@link Thread#interrupted()}.
  */
 public class CompletionPublisher {
 
@@ -73,11 +75,12 @@ public class CompletionPublisher {
     private final Runnable callback;
     private final int languageInterruptionLevel;
 
-    /** Default value for {@link CompletionPublisher#setUpdateThreshold(int)} */
-    public static final int DEFAULT_UPDATE_THRESHOLD = 5;
+    /**
+     * Default value for {@link CompletionPublisher#setUpdateThreshold(int)}
+     */
+    public final static int DEFAULT_UPDATE_THRESHOLD = 5;
 
-    public CompletionPublisher(
-            @NonNull Handler handler, @NonNull Runnable callback, int languageInterruptionLevel) {
+    public CompletionPublisher(@NonNull Handler handler, @NonNull Runnable callback, int languageInterruptionLevel) {
         this.handler = handler;
         this.items = new ArrayList<>();
         this.candidates = new ArrayList<>();
@@ -87,18 +90,25 @@ public class CompletionPublisher {
         this.languageInterruptionLevel = languageInterruptionLevel;
     }
 
-    /** Checks whether there is data */
+    /**
+     * Checks whether there is data
+     */
     public boolean hasData() {
         return items.size() + candidates.size() > 0;
     }
 
-    /** Get items currently in display */
+    /**
+     * Get items currently in display
+     */
     @UnsupportedUserUsage
     public List<CompletionItem> getItems() {
         return items;
     }
 
-    /** Set the max pending items in analyzing thread. See class javadoc for more information. */
+    /**
+     * Set the max pending items in analyzing thread.
+     * See class javadoc for more information.
+     */
     public void setUpdateThreshold(int updateThreshold) {
         this.updateThreshold = updateThreshold;
     }
@@ -106,7 +116,7 @@ public class CompletionPublisher {
     /**
      * Set the result's comparator.
      *
-     * <p>The comparator is used when publishing the completion to user.
+     * The comparator is used when publishing the completion to user.
      */
     public void setComparator(@Nullable Comparator<CompletionItem> comparator) {
         checkCancelled();
@@ -115,24 +125,23 @@ public class CompletionPublisher {
         }
         this.comparator = comparator;
         if (items.size() != 0) {
-            handler.post(
-                    () -> {
-                        if (invalid) {
-                            return;
-                        }
-                        if (comparator != null) {
-                            Collections.sort(items, comparator);
-                        }
-                        callback.run();
-                    });
+            handler.post(() -> {
+                if (invalid) {
+                    return;
+                }
+                if (comparator != null) {
+                    Collections.sort(items, comparator);
+                }
+                callback.run();
+            });
         }
     }
 
     /**
      * Add items in the completion list.
      *
-     * <p>According to your settings and the lock's state, these items may not immediately be
-     * displayed to the user.
+     * According to your settings and the lock's state, these items may not immediately
+     * be displayed to the user.
      *
      * @see CompletionPublisher#setUpdateThreshold(int)
      */
@@ -155,8 +164,8 @@ public class CompletionPublisher {
     /**
      * Add a single item in completion list.
      *
-     * <p>According to your settings and the lock's state, this item may not immediately be
-     * displayed to the user.
+     * According to your settings and the lock's state, this item may not immediately
+     * be displayed to the user.
      *
      * @see CompletionPublisher#setUpdateThreshold(int)
      */
@@ -179,7 +188,7 @@ public class CompletionPublisher {
     /**
      * Try to update completion in main thread.
      *
-     * <p>If {@link Lock#tryLock()} failed, nothing will happen.
+     * If {@link Lock#tryLock()} failed, nothing will happen.
      */
     public void updateList() {
         updateList(false);
@@ -189,69 +198,68 @@ public class CompletionPublisher {
      * Update completion items on main thread
      *
      * @param forced If true, the main thread will wait for the lock. Otherwise, when the lock is
-     *     currently available for the thread, the update will be executed.
+     *               currently available for the thread, the update will be executed.
      */
     public void updateList(boolean forced) {
         if (invalid) {
             return;
         }
-        handler.post(
-                () -> {
-                    // Lock the candidate list accordingly
-                    if (invalid) {
+        handler.post(() -> {
+            // Lock the candidate list accordingly
+            if (invalid) {
+                callback.run();
+                return;
+            }
+            var locked = false;
+            if (forced) {
+                lock.lock();
+                locked = true;
+            } else {
+                locked = lock.tryLock();
+            }
+
+            if (locked) {
+                try {
+                    if (candidates.size() == 0) {
                         callback.run();
                         return;
                     }
-                    var locked = false;
-                    if (forced) {
-                        lock.lock();
-                        locked = true;
-                    } else {
-                        locked = lock.tryLock();
-                    }
-
-                    if (locked) {
-                        try {
-                            if (candidates.size() == 0) {
-                                callback.run();
-                                return;
-                            }
-                            final var comparator = this.comparator;
-                            if (comparator != null) {
-                                while (!candidates.isEmpty()) {
-                                    var candidate = candidates.remove(0);
-                                    // Insert the value by binary search
-                                    int left = 0, right = items.size();
-                                    var size = right;
-                                    while (left <= right) {
-                                        var mid = (left + right) / 2;
-                                        if (mid < 0 || mid >= size) {
-                                            left = mid;
-                                            break;
-                                        }
-                                        var cmp = comparator.compare(items.get(mid), candidate);
-                                        if (cmp < 0) {
-                                            left = mid + 1;
-                                        } else if (cmp > 0) {
-                                            right = mid - 1;
-                                        } else {
-                                            left = mid;
-                                            break;
-                                        }
-                                    }
-                                    left = Math.max(0, Math.min(size, left));
-                                    items.add(left, candidate);
+                    final var comparator = this.comparator;
+                    if (comparator != null) {
+                        while (!candidates.isEmpty()) {
+                            var candidate = candidates.remove(0);
+                            // Insert the value by binary search
+                            int left = 0, right = items.size();
+                            var size = right;
+                            while (left <= right) {
+                                var mid = (left + right) / 2;
+                                if (mid < 0 || mid >= size) {
+                                    left = mid;
+                                    break;
                                 }
-                            } else {
-                                items.addAll(candidates);
-                                candidates.clear();
+                                var cmp = comparator.compare(items.get(mid), candidate);
+                                if (cmp < 0) {
+                                    left = mid + 1;
+                                } else if (cmp > 0) {
+                                    right = mid - 1;
+                                } else {
+                                    left = mid;
+                                    break;
+                                }
                             }
-                            callback.run();
-                        } finally {
-                            lock.unlock();
+                            left = Math.max(0, Math.min(size, left));
+                            items.add(left, candidate);
                         }
+                    } else {
+                        items.addAll(candidates);
+                        candidates.clear();
                     }
-                });
+                    callback.run();
+                } finally {
+                    lock.unlock();
+                }
+            }
+        });
     }
 
     public void cancel() {
@@ -266,4 +274,5 @@ public class CompletionPublisher {
             }
         }
     }
+
 }

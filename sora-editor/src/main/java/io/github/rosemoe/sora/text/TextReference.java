@@ -28,10 +28,12 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 /**
- * Reference of a {@link CharSequence} object, which allows to access the original sequence in
- * read-only mode, and attach a {@link Validator} to validate access to check whether reject the
- * read access. This can be useful when reading text in multiple threads, with the ability to
- * interrupt that thread when the actual text changes.
+ * Reference of a {@link CharSequence} object, which allows
+ * to access the original sequence in read-only mode, and attach a
+ * {@link Validator} to validate access to check whether reject the
+ * read access.
+ * This can be useful when reading text in multiple threads, with the ability
+ * to interrupt that thread when the actual text changes.
  *
  * @author Rosemoe
  */
@@ -60,7 +62,9 @@ public class TextReference implements CharSequence {
         }
     }
 
-    /** Get original text of the reference */
+    /**
+     * Get original text of the reference
+     */
     @NonNull
     public CharSequence getReference() {
         return ref;
@@ -100,7 +104,8 @@ public class TextReference implements CharSequence {
     }
 
     public void validateAccess() {
-        if (validator != null) validator.validate();
+        if (validator != null)
+            validator.validate();
     }
 
     public interface Validator {
@@ -109,10 +114,12 @@ public class TextReference implements CharSequence {
 
     public static class ValidateFailedException extends RuntimeException {
 
-        public ValidateFailedException() {}
+        public ValidateFailedException() {
+        }
 
         public ValidateFailedException(String message) {
             super(message);
         }
+
     }
 }

@@ -28,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
 import com.pranav.android.code.formatter.*;
 import com.pranav.common.Indexer;
@@ -39,9 +40,9 @@ import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
-import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
-import io.github.rosemoe.sora.textmate.core.internal.theme.reader.ThemeReader;
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
+import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
+import org.eclipse.tm4e.core.theme.IRawTheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
@@ -157,6 +158,8 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
+        
+        editor.getText().addContentListener(new ProblemMarker(editor));
     }
 
     void reloadTreeView() {

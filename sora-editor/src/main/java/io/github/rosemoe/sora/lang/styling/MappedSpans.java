@@ -25,15 +25,15 @@ package io.github.rosemoe.sora.lang.styling;
 
 import androidx.annotation.NonNull;
 
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 /**
- * Store spans by map.
+ * Store spans by mapping.
  *
  * @see Builder
  */
@@ -52,11 +52,9 @@ public class MappedSpans implements Spans {
         var startColumn = start.column;
         var endColumn = end.column;
         if (startLine == endLine) {
-            MappedSpanUpdater.shiftSpansOnSingleLineInsert(
-                    spanMap, startLine, startColumn, endColumn);
+            MappedSpanUpdater.shiftSpansOnSingleLineInsert(spanMap, startLine, startColumn, endColumn);
         } else {
-            MappedSpanUpdater.shiftSpansOnMultiLineInsert(
-                    spanMap, startLine, startColumn, endLine, endColumn);
+            MappedSpanUpdater.shiftSpansOnMultiLineInsert(spanMap, startLine, startColumn, endLine, endColumn);
         }
     }
 
@@ -67,11 +65,9 @@ public class MappedSpans implements Spans {
         var startColumn = start.column;
         var endColumn = end.column;
         if (startLine == endLine) {
-            MappedSpanUpdater.shiftSpansOnSingleLineDelete(
-                    spanMap, startLine, startColumn, endColumn);
+            MappedSpanUpdater.shiftSpansOnSingleLineDelete(spanMap, startLine, startColumn, endColumn);
         } else {
-            MappedSpanUpdater.shiftSpansOnMultiLineDelete(
-                    spanMap, startLine, startColumn, endLine, endColumn);
+            MappedSpanUpdater.shiftSpansOnMultiLineDelete(spanMap, startLine, startColumn, endLine, endColumn);
         }
     }
 
@@ -95,62 +91,13 @@ public class MappedSpans implements Spans {
         return spanMap.size();
     }
 
-    /** A mirror method of {@link Builder#markProblemRegion(int, int, int, int, int)} */
-    public void markProblemRegion(
-            int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
-        for (int line = startLine; line <= endLine; line++) {
-            int start = (line == startLine ? startColumn : 0);
-            int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
-            List<Span> spans = spanMap.get(line);
-            int increment;
-            for (int i = 0; i < spans.size(); i += increment) {
-                Span span = spans.get(i);
-                increment = 1;
-                if (span.column >= end) {
-                    break;
-                }
-                int spanEnd = (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
-                if (spanEnd >= start) {
-                    int regionStartInSpan = Math.max(span.column, start);
-                    int regionEndInSpan = Math.min(end, spanEnd);
-                    if (regionStartInSpan == span.column) {
-                        if (regionEndInSpan != spanEnd) {
-                            increment = 2;
-                            Span nSpan = span.copy();
-                            nSpan.column = regionEndInSpan;
-                            spans.add(i + 1, nSpan);
-                        }
-                        span.problemFlags |= newFlag;
-                    } else {
-                        // regionStartInSpan > span.column
-                        if (regionEndInSpan == spanEnd) {
-                            increment = 2;
-                            Span nSpan = span.copy();
-                            nSpan.column = regionStartInSpan;
-                            spans.add(i + 1, nSpan);
-                            nSpan.problemFlags |= newFlag;
-                        } else {
-                            increment = 3;
-                            Span span1 = span.copy();
-                            span1.column = regionStartInSpan;
-                            span1.problemFlags |= newFlag;
-                            Span span2 = span.copy();
-                            span2.column = regionEndInSpan;
-                            spans.add(i + 1, span1);
-                            spans.add(i + 2, span2);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /** Allow you to build a span map linearly. */
+    /**
+     * Allow you to build a span map linearly.
+     */
     public static class Builder {
 
         private final List<List<Span>> spans;
         private Span last;
-        private boolean determined = false;
 
         public Builder() {
             this(128);
@@ -162,12 +109,12 @@ public class MappedSpans implements Spans {
 
         /**
          * Add a new span if required.
-         *
-         * <p>If no special style is specified, you can use colorId as style long integer
+         * <p>
+         * If no special style is specified, you can use colorId as style long integer
          *
          * @param spanLine Line
-         * @param column Column
-         * @param style Style of text
+         * @param column   Column
+         * @param style    Style of text
          */
         public void addIfNeeded(int spanLine, int column, long style) {
             if (last != null && last.style == style) {
@@ -178,13 +125,13 @@ public class MappedSpans implements Spans {
 
         /**
          * Add a span directly
-         *
-         * <p>Note: the line should always >= the line of span last committed
-         *
-         * <p>If two spans are on the same line, you must add them in order by their column
+         * <p>
+         * Note: the line should always >= the line of span last committed
+         * <p>
+         * If two spans are on the same line, you must add them in order by their column
          *
          * @param spanLine The line position of span
-         * @param span The span
+         * @param span     The span
          */
         public void add(int spanLine, Span span) {
             int mapLine = spans.size() - 1;
@@ -213,8 +160,8 @@ public class MappedSpans implements Spans {
         }
 
         /**
-         * This method must be called when whole text is analyzed. <strong>Note that it is not the
-         * line count but line index!</strong>
+         * This method must be called when whole text is analyzed.
+         * <strong>Note that it is not the line count but line index!</strong>
          *
          * @param line The line is the line last of text
          */
@@ -230,72 +177,16 @@ public class MappedSpans implements Spans {
                 spans.add(lineSpans);
                 mapLine++;
             }
-            determined = true;
         }
 
-        /** Ensure the list not empty */
+        /**
+         * Ensure the list not empty
+         */
         public void addNormalIfNull() {
             if (spans.isEmpty()) {
                 List<Span> spanList = new ArrayList<>();
                 spanList.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
                 spans.add(spanList);
-            }
-        }
-
-        /**
-         * Marks a region with the given flag. This can only be called after {@link
-         * Builder#determine(int)} is called.
-         */
-        public void markProblemRegion(
-                int newFlag, int startLine, int startColumn, int endLine, int endColumn) {
-            if (!determined) {
-                throw new IllegalStateException("determine() has not been successfully called");
-            }
-            for (int line = startLine; line <= endLine; line++) {
-                int start = (line == startLine ? startColumn : 0);
-                int end = (line == endLine ? endColumn : Integer.MAX_VALUE);
-                List<Span> spans = this.spans.get(line);
-                int increment;
-                for (int i = 0; i < spans.size(); i += increment) {
-                    Span span = spans.get(i);
-                    increment = 1;
-                    if (span.column >= end) {
-                        break;
-                    }
-                    int spanEnd =
-                            (i + 1 >= spans.size() ? Integer.MAX_VALUE : spans.get(i + 1).column);
-                    if (spanEnd >= start) {
-                        int regionStartInSpan = Math.max(span.column, start);
-                        int regionEndInSpan = Math.min(end, spanEnd);
-                        if (regionStartInSpan == span.column) {
-                            if (regionEndInSpan != spanEnd) {
-                                increment = 2;
-                                Span nSpan = span.copy();
-                                nSpan.column = regionEndInSpan;
-                                spans.add(i + 1, nSpan);
-                            }
-                            span.problemFlags |= newFlag;
-                        } else {
-                            // regionStartInSpan > span.column
-                            if (regionEndInSpan == spanEnd) {
-                                increment = 2;
-                                Span nSpan = span.copy();
-                                nSpan.column = regionStartInSpan;
-                                spans.add(i + 1, nSpan);
-                                nSpan.problemFlags |= newFlag;
-                            } else {
-                                increment = 3;
-                                Span span1 = span.copy();
-                                span1.column = regionStartInSpan;
-                                span1.problemFlags |= newFlag;
-                                Span span2 = span.copy();
-                                span2.column = regionEndInSpan;
-                                spans.add(i + 1, span1);
-                                spans.add(i + 2, span2);
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -362,4 +253,5 @@ public class MappedSpans implements Spans {
             spanMap.remove(line);
         }
     }
+
 }

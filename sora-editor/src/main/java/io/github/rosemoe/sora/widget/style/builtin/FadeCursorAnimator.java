@@ -51,22 +51,19 @@ public class FadeCursorAnimator implements CursorAnimator, ValueAnimator.Animato
         this.editor = editor;
         this.fadeInAnimator = new ValueAnimator();
         this.fadeOutAnimator = new ValueAnimator();
-        this.duration = 100;
+        this.duration = 200;
     }
 
     @Override
     public void markStartPos() {
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom =
-                editor.getLayout()
-                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos =
-                editor.getLayout()
-                        .getCharLayoutOffset(
-                                editor.getCursor().getLeftLine(),
-                                editor.getCursor().getLeftColumn());
+        float[] pos = editor.getLayout().getCharLayoutOffset(
+                editor.getCursor().getLeftLine(),
+                editor.getCursor().getLeftColumn()
+        );
         startX = pos[1] + editor.measureTextRegionOffset();
         startY = pos[0];
     }
@@ -98,37 +95,30 @@ public class FadeCursorAnimator implements CursorAnimator, ValueAnimator.Animato
 
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom =
-                editor.getLayout()
-                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos =
-                editor.getLayout()
-                        .getCharLayoutOffset(
-                                editor.getCursor().getLeftLine(),
-                                editor.getCursor().getLeftColumn());
+        float[] pos = editor.getLayout().getCharLayoutOffset(
+                editor.getCursor().getLeftLine(),
+                editor.getCursor().getLeftColumn()
+        );
         endX = pos[1] + editor.measureTextRegionOffset();
         endY = pos[0];
 
         fadeOutAnimator = ValueAnimator.ofInt(255, 0);
-        fadeOutAnimator.addListener(
-                new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationCancel(Animator animator) {}
-
-                    @Override
-                    public void onAnimationRepeat(Animator animator) {}
-
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        phaseEnded = false;
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        phaseEnded = true;
-                    }
-                });
+        fadeOutAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationCancel(Animator animator) {}
+            @Override
+            public void onAnimationRepeat(Animator animator) {}
+            @Override
+            public void onAnimationStart(Animator animator) {
+                phaseEnded = false;
+            }
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                phaseEnded = true;
+            }
+        });
         fadeOutAnimator.addUpdateListener(this);
         fadeOutAnimator.setDuration(duration);
 
@@ -140,7 +130,8 @@ public class FadeCursorAnimator implements CursorAnimator, ValueAnimator.Animato
 
     @Override
     public void start() {
-        if (!editor.isCursorAnimationEnabled()) {
+        if (!editor.isCursorAnimationEnabled() || System.currentTimeMillis() - lastAnimateTime < 100) {
+            lastAnimateTime = System.currentTimeMillis();
             return;
         }
         fadeOutAnimator.start();
@@ -150,7 +141,7 @@ public class FadeCursorAnimator implements CursorAnimator, ValueAnimator.Animato
 
     @Override
     public float animatedX() {
-        if (phaseEnded) {
+        if (phaseEnded || editor.getInsertHandleDescriptor().position.isEmpty()) {
             return endX;
         }
         return startX;
@@ -158,7 +149,7 @@ public class FadeCursorAnimator implements CursorAnimator, ValueAnimator.Animato
 
     @Override
     public float animatedY() {
-        if (phaseEnded) {
+        if (phaseEnded || editor.getInsertHandleDescriptor().position.isEmpty()) {
             return endY;
         }
         return startY;

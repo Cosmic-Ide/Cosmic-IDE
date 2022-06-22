@@ -29,22 +29,29 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
  * Receives key related events in editor.
+ * <p>
+ * You may set a boolean for editor to return to the Android KeyEvent framework.
  *
- * <p>You may set a boolean for editor to return to the Android KeyEvent framework.
- *
+ * @author Rosemoe
  * @see ResultedEvent#setResult(Object)
- *     <p>This class mirrors methods of {@link KeyEvent}, but some methods are changed:
+ * <p>
+ * This class mirrors methods of {@link KeyEvent}, but some methods are changed:
  * @see #isAltPressed()
  * @see #isShiftPressed()
- * @author Rosemoe
  */
 public class EditorKeyEvent extends ResultedEvent<Boolean> {
 
     private final KeyEvent src;
+    private final Type type;
+    private final boolean shiftPressed;
+    private final boolean altPressed;
 
-    public EditorKeyEvent(CodeEditor editor, KeyEvent src) {
+    public EditorKeyEvent(CodeEditor editor, KeyEvent src, Type type) {
         super(editor);
         this.src = src;
+        this.type = type;
+        shiftPressed = getEditor().getKeyMetaStates().isShiftPressed();
+        altPressed = getEditor().getKeyMetaStates().isAltPressed();
     }
 
     public int getAction() {
@@ -71,19 +78,32 @@ public class EditorKeyEvent extends ResultedEvent<Boolean> {
         return src.getDownTime();
     }
 
+    /**
+     * Get the key event type.
+     *
+     * @return The key event type.
+     */
+    public Type getEventType() {
+        return this.type;
+    }
+
     @Override
     public long getEventTime() {
         return src.getEventTime();
     }
 
-    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
+    /**
+     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
+     */
     public boolean isShiftPressed() {
-        return getEditor().getKeyMetaStates().isShiftPressed();
+        return shiftPressed;
     }
 
-    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
+    /**
+     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
+     */
     public boolean isAltPressed() {
-        return getEditor().getKeyMetaStates().isAltPressed();
+        return altPressed;
     }
 
     public boolean isCtrlPressed() {
@@ -97,5 +117,26 @@ public class EditorKeyEvent extends ResultedEvent<Boolean> {
         } else {
             return userResult || editorResult;
         }
+    }
+
+    /**
+     * The type of {@link EditorKeyEvent}.
+     */
+    public enum Type {
+
+        /**
+         * Used for {@link CodeEditor#onKeyUp(int, KeyEvent)}.
+         */
+        UP,
+
+        /**
+         * Used for {@link CodeEditor#onKeyDown(int, KeyEvent)}.
+         */
+        DOWN,
+
+        /**
+         * Used for {@link CodeEditor#onKeyMultiple(int, int, KeyEvent)}.
+         */
+        MULTIPLE
     }
 }

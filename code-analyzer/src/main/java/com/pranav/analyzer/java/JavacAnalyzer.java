@@ -15,7 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion;
+
 import javax.tools.DiagnosticCollector;
+import javax.tools.Diagnostic;
 import com.pranav.analyzer.JavaSourceFromString;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -78,16 +81,18 @@ public class JavacAnalyzer {
     }
 
     public void reset() {
-        diagnostics = new DiagnosticCollector<JavaFileObject>();
+        diagnostics.clear();
     }
 
-    public ArrayList<DiagnosticWrapper> getDiagnostics() {
-        final var problems = new ArrayList<DiagnosticWrapper>();
-        for (var diagnostic : diagnostics.getDiagnostics()) {
+    public ArrayList<DiagnosticRegion> getDiagnostics() {
+        final var problems = new ArrayList<DiagnosticRegion>();
+        for (var it : diagnostics.getDiagnostics()) {
+            if (it.getSource() == null) continue;
             // since we're not compiling the whole project, there might be some errors
             // from files that we skipped, so it should mostly be safe to ignore these
-            if (!diagnostic.getCode().startsWith("compiler.err.cant.resolve")) {
-                problems.add(new DiagnosticWrapper(diagnostic));
+            short flag = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
+            if (!it.getCode().startsWith("compiler.err.cant.resolve")) {
+                problems.add(new DiagnosticRegion(it.getStartPosition(), it.getEndPosition(), severity));
             }
         }
         return problems;

@@ -127,7 +127,7 @@ public class Locations {
 
     private PathFactory pathFactory = Paths::get;
 
-    static final Path javaHome = FileSystems.getDefault().getPath(System.getProperty("java.home"));
+    static Path javaHome = FileSystems.getDefault().getPath(System.getProperty("java.home"));
     static final Path thisSystemModules = javaHome.resolve("lib").resolve("modules");
 
     Map<Path, FileSystem> fileSystems = new LinkedHashMap<>();

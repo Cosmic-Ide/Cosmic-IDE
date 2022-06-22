@@ -30,8 +30,9 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[x] Javap
 - \[x] Eclipse Compiler for Java (ecj)
 - \[x] Eclipse class disassembler
-- \[x] Java Highlighter
-- \[x] Run Java File
+- \[x] Execute Java Code
+- \[x] Error/Warning marker in editor
+- \[x] Code highlighting
 - \[x] Add Classpath
 - \[x] Decompile Class File
 - \[x] Google Java Formatter
@@ -47,7 +48,6 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[ ] Dependency Injection
 - \[ ] Incremental Compilation
 - \[ ] JGit support
-- \[ ] Error/Warning marker
 - \[ ] Java auto-complete server or auto-completion service
 - \[ ] Kotlin Language Support
 

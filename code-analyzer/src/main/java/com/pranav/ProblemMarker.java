@@ -10,7 +10,7 @@ import io.github.rosemoe.sora.util.HighlightUtil;
 import io.github.rosemoe.sora.lang.diagnostic.*;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-public class DiagnosticUtil implements ContentListener {
+public class ProblemMarker implements ContentListener {
 
     private CodeEditor editor;
     private JavacAnalyzer analyzer;

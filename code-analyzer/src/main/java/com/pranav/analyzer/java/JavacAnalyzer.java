@@ -3,25 +3,23 @@ package com.pranav.analyzer.java;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.pranav.common.util.DiagnosticWrapper;
 import com.pranav.common.util.FileUtil;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
+
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion;
-
-import javax.tools.DiagnosticCollector;
 import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardLocation;
 import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardLocation;
 
 public class JavacAnalyzer {
 
@@ -102,8 +100,13 @@ public class JavacAnalyzer {
         final var problems = new ArrayList<DiagnosticRegion>();
         for (var it : diagnostics.getDiagnostics()) {
             if (it.getSource() == null) continue;
-            short severity = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
-            problems.add(new DiagnosticRegion((int) it.getStartPosition(), (int) it.getEndPosition(), severity));
+            short severity =
+                    it.getKind() == Diagnostic.Kind.ERROR
+                            ? DiagnosticRegion.SEVERITY_ERROR
+                            : DiagnosticRegion.SEVERITY_WARNING;
+            problems.add(
+                    new DiagnosticRegion(
+                            (int) it.getStartPosition(), (int) it.getEndPosition(), severity));
         }
         return problems;
     }

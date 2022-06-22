@@ -25,13 +25,12 @@ package io.github.rosemoe.sora.text;
 
 import androidx.annotation.NonNull;
 
-/**
- * Utility class for texts
- */
+/** Utility class for texts */
 public class TextUtils {
 
     /**
      * Compute leading space count
+     *
      * @param tabWidth Tab is considered in {@code tabWidth} spaces
      */
     public static int countLeadingSpaceCount(@NonNull CharSequence text, int tabWidth) {
@@ -76,7 +75,11 @@ public class TextUtils {
         return s.toString();
     }
 
-    public static int indexOf(@NonNull CharSequence text, @NonNull CharSequence pattern, boolean ignoreCase, int fromIndex) {
+    public static int indexOf(
+            @NonNull CharSequence text,
+            @NonNull CharSequence pattern,
+            boolean ignoreCase,
+            int fromIndex) {
         var max = text.length() - pattern.length();
         var len = pattern.length();
         label:
@@ -85,7 +88,8 @@ public class TextUtils {
             for (int j = 0; j < len; j++) {
                 char s = text.charAt(i + j);
                 char p = pattern.charAt(j);
-                if (!(s == p || (ignoreCase && Character.toLowerCase(s) == Character.toLowerCase(p)))) {
+                if (!(s == p
+                        || (ignoreCase && Character.toLowerCase(s) == Character.toLowerCase(p)))) {
                     continue label;
                 }
             }
@@ -94,7 +98,11 @@ public class TextUtils {
         return -1;
     }
 
-    public static int lastIndexOf(@NonNull CharSequence text, @NonNull CharSequence pattern, boolean ignoreCase, int fromIndex) {
+    public static int lastIndexOf(
+            @NonNull CharSequence text,
+            @NonNull CharSequence pattern,
+            boolean ignoreCase,
+            int fromIndex) {
         var len = pattern.length();
         fromIndex = Math.min(fromIndex, text.length() - len);
         label:
@@ -103,7 +111,8 @@ public class TextUtils {
             for (int j = 0; j < len; j++) {
                 char s = text.charAt(i + j);
                 char p = pattern.charAt(j);
-                if (!(s == p || (ignoreCase && Character.toLowerCase(s) == Character.toLowerCase(p)))) {
+                if (!(s == p
+                        || (ignoreCase && Character.toLowerCase(s) == Character.toLowerCase(p)))) {
                     continue label;
                 }
             }
@@ -115,5 +124,4 @@ public class TextUtils {
     private static boolean isWhitespace(char ch) {
         return ch == '\t' || ch == ' ';
     }
-
 }

@@ -25,30 +25,27 @@ package org.eclipse.tm4e.languageconfiguration.internal.utils;
 
 import java.util.regex.Pattern;
 
-/**
- * Regex utilities.
- *
- */
+/** Regex utilities. */
 public class RegExpUtils {
 
-	/**
-	 * Escapes regular expression characters in a given string
-	 */
-	public static String escapeRegExpCharacters(String value) {
-		return value.replaceAll("[\\-\\\\\\{\\}\\*\\+\\?\\|\\^\\$\\.\\[\\]\\(\\)\\#]", "\\\\$0"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+    /** Escapes regular expression characters in a given string */
+    public static String escapeRegExpCharacters(String value) {
+        return value.replaceAll(
+                "[\\-\\\\\\{\\}\\*\\+\\?\\|\\^\\$\\.\\[\\]\\(\\)\\#]",
+                "\\\\$0"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
-	/**
-	 * Create Java Regexp and null otherwise.
-	 *
-	 * @param regex
-	 * @return Java Regexp and null otherwise.
-	 */
-	public static Pattern create(String regex) {
-		try {
-			return Pattern.compile(regex);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    /**
+     * Create Java Regexp and null otherwise.
+     *
+     * @param regex
+     * @return Java Regexp and null otherwise.
+     */
+    public static Pattern create(String regex) {
+        try {
+            return Pattern.compile(regex);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

@@ -9,14 +9,17 @@ import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Maintains an atomic immutable array of listeners of type {@code T} in sorted order according to {@link #comparator}
- * N.B. internal array is exposed for faster iterating listeners in to- and reverse order, so care should be taken for not mutating it by clients
+ * Maintains an atomic immutable array of listeners of type {@code T} in sorted order according to
+ * {@link #comparator} N.B. internal array is exposed for faster iterating listeners in to- and
+ * reverse order, so care should be taken for not mutating it by clients
  */
 class LockFreeCOWSortedArray<T> extends AtomicReference<T[]> {
     @NonNull private final Comparator<? super T> comparator;
     private final @NonNull ArrayFactory<? extends T> arrayFactory;
 
-    LockFreeCOWSortedArray(@NonNull Comparator<? super T> comparator, @NonNull ArrayFactory<? extends T> arrayFactory) {
+    LockFreeCOWSortedArray(
+            @NonNull Comparator<? super T> comparator,
+            @NonNull ArrayFactory<? extends T> arrayFactory) {
         this.comparator = comparator;
         this.arrayFactory = arrayFactory;
         set(arrayFactory.create(0));
@@ -44,7 +47,7 @@ class LockFreeCOWSortedArray<T> extends AtomicReference<T[]> {
     }
 
     private int insertionIndex(T[] elements, @NonNull T e) {
-        for (int i=0; i<elements.length; i++) {
+        for (int i = 0; i < elements.length; i++) {
             T element = elements[i];
             if (comparator.compare(e, element) < 0) {
                 return i;

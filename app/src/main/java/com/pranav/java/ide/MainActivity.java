@@ -39,25 +39,24 @@ import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
-import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
-import org.eclipse.tm4e.core.theme.IRawTheme;
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
+import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
+import org.eclipse.tm4e.core.theme.IRawTheme;
+import org.jf.baksmali.Baksmali;
+import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
-import org.jf.baksmali.Baksmali;
-import org.jf.baksmali.BaksmaliOptions;
 import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public final class MainActivity extends AppCompatActivity {
 
@@ -140,7 +139,8 @@ public final class MainActivity extends AppCompatActivity {
                     MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
         }
         if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
-            ZipUtil.unzipFromAssets(MainActivity.this, "compiler-modules.zip", FileUtil.getDataDir());
+            ZipUtil.unzipFromAssets(
+                    MainActivity.this, "compiler-modules.zip", FileUtil.getDataDir());
         }
         var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
         if (!output.exists()) {
@@ -161,7 +161,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
-        
+
         editor.getText().addContentListener(new ProblemMarker(editor));
     }
 
@@ -377,23 +377,29 @@ public final class MainActivity extends AppCompatActivity {
                     (d, pos) -> {
                         var claz = classes[pos];
                         var smaliFile =
-                                    new File(
-                                            FileUtil.getBinDir(),
-                                                    "smali/"
-                                                            + claz.replace(".", "/")
-                                                            + ".smali");
+                                new File(
+                                        FileUtil.getBinDir(),
+                                        "smali/" + claz.replace(".", "/") + ".smali");
                         try {
                             var opcodes = Opcodes.forApi(32);
                             var options = new BaksmaliOptions();
-                            
-                            var dexFile = DexFileFactory.loadDexFile(new File(FileUtil.getBinDir(), "classes.dex"), opcodes);
+
+                            var dexFile =
+                                    DexFileFactory.loadDexFile(
+                                            new File(FileUtil.getBinDir(), "classes.dex"), opcodes);
                             options.apiLevel = 26;
-                            ConcurrentUtil.execute(() -> Baksmali.disassembleDexFile(dexFile, new File(FileUtil.getBinDir(), "smali"), 1, options));
+                            ConcurrentUtil.execute(
+                                    () ->
+                                            Baksmali.disassembleDexFile(
+                                                    dexFile,
+                                                    new File(FileUtil.getBinDir(), "smali"),
+                                                    1,
+                                                    options));
                         } catch (IOException e) {
                             dialog("Unable to load dex file", getString(e), true);
                             return;
                         }
-                        
+
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());

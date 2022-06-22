@@ -3,7 +3,8 @@ package org.jetbrains.kotlin.com.intellij.codeInsight;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.jetbrains.kotlin.com.intellij.openapi.application.ApplicationManager;
+import gnu.trove.THashSet;
+
 import org.jetbrains.kotlin.com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project;
 import org.jetbrains.kotlin.com.intellij.openapi.vfs.VfsUtilCore;
@@ -14,12 +15,9 @@ import org.jetbrains.kotlin.com.intellij.psi.PsiFile;
 import java.util.Collection;
 import java.util.Set;
 
-import gnu.trove.THashSet;
-
 public class CodeInsightUtilCore2 extends FileModificationService2 {
 
     private static final Logger LOG = Logger.getInstance(CodeInsightUtilCore.class);
-
 
     @Override
     public boolean preparePsiElementsForWrite(@NonNull Collection<? extends PsiElement> elements) {
@@ -36,8 +34,9 @@ public class CodeInsightUtilCore2 extends FileModificationService2 {
         }
         if (!files.isEmpty()) {
             VirtualFile[] virtualFiles = VfsUtilCore.toVirtualFileArray(files);
-//            ReadonlyStatusHandler.OperationStatus status = ReadonlyStatusHandler.getInstance(project).ensureFilesWritable(virtualFiles);
-//            return !status.hasReadonlyFiles();
+            //            ReadonlyStatusHandler.OperationStatus status =
+            // ReadonlyStatusHandler.getInstance(project).ensureFilesWritable(virtualFiles);
+            //            return !status.hasReadonlyFiles();
         }
         return true;
     }
@@ -48,27 +47,31 @@ public class CodeInsightUtilCore2 extends FileModificationService2 {
         final VirtualFile file = psiFile.getVirtualFile();
         final Project project = psiFile.getProject();
 
-//        final Editor editor =
-//                psiFile.isWritable() ? null : FileEditorManager.getInstance(project).openTextEditor(new OpenFileDescriptor(project, file), true);
-//        if (!ReadonlyStatusHandler.ensureFilesWritable(project, file)) {
-//            ApplicationManager.getApplication().invokeLater(new Runnable() {
-//                @Override
-//                public void run() {
-//                    if (editor != null && editor.getComponent().isDisplayable()) {
-//                        HintManager.getInstance()
-//                                .showErrorHint(editor, CodeInsightBundle.message("error.hint.file.is.readonly", file.getPresentableUrl()));
-//                    }
-//                }
-//            });
-//
-//            return false;
-//        }
+        //        final Editor editor =
+        //                psiFile.isWritable() ? null :
+        // FileEditorManager.getInstance(project).openTextEditor(new OpenFileDescriptor(project,
+        // file), true);
+        //        if (!ReadonlyStatusHandler.ensureFilesWritable(project, file)) {
+        //            ApplicationManager.getApplication().invokeLater(new Runnable() {
+        //                @Override
+        //                public void run() {
+        //                    if (editor != null && editor.getComponent().isDisplayable()) {
+        //                        HintManager.getInstance()
+        //                                .showErrorHint(editor,
+        // CodeInsightBundle.message("error.hint.file.is.readonly", file.getPresentableUrl()));
+        //                    }
+        //                }
+        //            });
+        //
+        //            return false;
+        //        }
 
         return true;
     }
 
     @Override
-    public boolean prepareVirtualFilesForWrite(@NonNull Project project, @NonNull Collection<? extends VirtualFile> files) {
+    public boolean prepareVirtualFilesForWrite(
+            @NonNull Project project, @NonNull Collection<? extends VirtualFile> files) {
         return true;
     }
 }

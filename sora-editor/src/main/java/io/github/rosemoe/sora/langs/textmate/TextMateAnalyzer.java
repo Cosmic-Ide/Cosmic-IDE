@@ -25,18 +25,15 @@ package io.github.rosemoe.sora.langs.textmate;
 
 import android.graphics.Color;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Collections;
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.langs.textmate.folding.IndentRange;
 import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.util.ArrayList;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.ITokenizeLineResult2;
 import org.eclipse.tm4e.core.grammar.StackElement;
@@ -47,14 +44,15 @@ import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.eclipse.tm4e.core.theme.Theme;
 import org.eclipse.tm4e.languageconfiguration.ILanguageConfiguration;
 import org.eclipse.tm4e.languageconfiguration.internal.LanguageConfigurator;
-import io.github.rosemoe.sora.util.ArrayList;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Collections;
+import java.util.List;
 
 public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElement, Span> {
 
-    /**
-     * Maximum for code block count
-     */
+    /** Maximum for code block count */
     public static int MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT = 5000;
 
     private final Registry registry = new Registry();
@@ -63,13 +61,20 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElemen
     private final TextMateLanguage language;
     private final ILanguageConfiguration configuration;
 
-    public TextMateAnalyzer(TextMateLanguage language, String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) throws Exception {
+    public TextMateAnalyzer(
+            TextMateLanguage language,
+            String grammarName,
+            InputStream grammarIns,
+            Reader languageConfiguration,
+            IRawTheme theme)
+            throws Exception {
         registry.setTheme(theme);
         this.language = language;
         this.theme = Theme.createFromRawTheme(theme);
         this.grammar = registry.loadGrammarFromPathSync(grammarName, grammarIns);
         if (languageConfiguration != null) {
-            LanguageConfigurator languageConfigurator = new LanguageConfigurator(languageConfiguration);
+            LanguageConfigurator languageConfigurator =
+                    new LanguageConfigurator(languageConfiguration);
             configuration = languageConfigurator.getLanguageConfiguration();
         } else {
             configuration = null;
@@ -99,14 +104,22 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElemen
         return list;
     }
 
-    public void analyzeCodeBlocks( Content model, List<CodeBlock> blocks, CodeBlockAnalyzeDelegate delegate) {
+    public void analyzeCodeBlocks(
+            Content model, List<CodeBlock> blocks, CodeBlockAnalyzeDelegate delegate) {
         if (configuration == null) {
             return;
         }
         var folding = configuration.getFolding();
         if (folding == null) return;
         try {
-            var foldingRegions = IndentRange.computeRanges(model, language.getTabSize(), folding.getOffSide(), folding, MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT, delegate);
+            var foldingRegions =
+                    IndentRange.computeRanges(
+                            model,
+                            language.getTabSize(),
+                            folding.getOffSide(),
+                            folding,
+                            MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT,
+                            delegate);
             for (int i = 0; i < foldingRegions.length() && delegate.isNotCancelled(); i++) {
                 int startLine = foldingRegions.getStartLineNumber(i);
                 int endLine = foldingRegions.getEndLineNumber(i);
@@ -116,11 +129,13 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElemen
                     codeBlock.startLine = startLine;
                     codeBlock.endLine = endLine;
 
-                    // It's safe here to use raw data because the Content is only held by this thread
+                    // It's safe here to use raw data because the Content is only held by this
+                    // thread
                     var length = model.getColumnCount(startLine);
                     var chars = model.getLine(startLine).getRawData();
 
-                    codeBlock.startColumn = IndentRange.computeStartColumn(chars, length, language.getTabSize());
+                    codeBlock.startColumn =
+                            IndentRange.computeStartColumn(chars, length, language.getTabSize());
                     codeBlock.endColumn = codeBlock.startColumn;
                     blocks.add(codeBlock);
                 }
@@ -132,7 +147,8 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElemen
     }
 
     @Override
-    public synchronized LineTokenizeResult<StackElement, Span> tokenizeLine(CharSequence lineC, StackElement state) {
+    public synchronized LineTokenizeResult<StackElement, Span> tokenizeLine(
+            CharSequence lineC, StackElement state) {
         String line = lineC.toString();
         var tokens = new ArrayList<Span>();
         ITokenizeLineResult2 lineTokens = grammar.tokenizeLine2(line, state);
@@ -145,7 +161,15 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElemen
             int metadata = lineTokens.getTokens()[2 * i + 1];
             int foreground = StackElementMetadata.getForeground(metadata);
             int fontStyle = StackElementMetadata.getFontStyle(metadata);
-            Span span = Span.obtain(startIndex, TextStyle.makeStyle(foreground + 255, 0, (fontStyle & FontStyle.Bold) != 0, (fontStyle & FontStyle.Italic) != 0, false));
+            Span span =
+                    Span.obtain(
+                            startIndex,
+                            TextStyle.makeStyle(
+                                    foreground + 255,
+                                    0,
+                                    (fontStyle & FontStyle.Bold) != 0,
+                                    (fontStyle & FontStyle.Italic) != 0,
+                                    false));
 
             if ((fontStyle & FontStyle.Underline) != 0) {
                 String color = theme.getColor(foreground);

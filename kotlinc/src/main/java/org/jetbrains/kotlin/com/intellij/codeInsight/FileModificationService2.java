@@ -17,7 +17,9 @@ public abstract class FileModificationService2 {
         return ApplicationManager.getApplication().getService(FileModificationService2.class);
     }
 
-    public abstract boolean preparePsiElementsForWrite(@NonNull Collection<? extends PsiElement> elements);
+    public abstract boolean preparePsiElementsForWrite(
+            @NonNull Collection<? extends PsiElement> elements);
+
     public abstract boolean prepareFileForWrite(@Nullable final PsiFile psiFile);
 
     public boolean preparePsiElementForWrite(@Nullable PsiElement element) {
@@ -29,5 +31,6 @@ public abstract class FileModificationService2 {
         return preparePsiElementsForWrite(Arrays.asList(elements));
     }
 
-    public abstract boolean prepareVirtualFilesForWrite(@NonNull Project project, @NonNull Collection<? extends VirtualFile> files);
+    public abstract boolean prepareVirtualFilesForWrite(
+            @NonNull Project project, @NonNull Collection<? extends VirtualFile> files);
 }

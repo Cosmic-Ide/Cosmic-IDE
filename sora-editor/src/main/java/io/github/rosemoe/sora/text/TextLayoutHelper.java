@@ -30,8 +30,8 @@ import android.text.Selection;
 import android.text.TextPaint;
 
 /**
- * Helper class for indirectly calling Paint#getTextRunCursor(), which is
- * responsible for cursor controlling.
+ * Helper class for indirectly calling Paint#getTextRunCursor(), which is responsible for cursor
+ * controlling.
  *
  * @author Rosemoe
  */
@@ -56,7 +56,15 @@ public class TextLayoutHelper {
     private final DynamicLayout layout;
 
     private TextLayoutHelper() {
-        layout = new DynamicLayout(text, new TextPaint(), Integer.MAX_VALUE / 2, Layout.Alignment.ALIGN_NORMAL, 0, 0 , true);
+        layout =
+                new DynamicLayout(
+                        text,
+                        new TextPaint(),
+                        Integer.MAX_VALUE / 2,
+                        Layout.Alignment.ALIGN_NORMAL,
+                        0,
+                        0,
+                        true);
     }
 
     public int getCurPosLeft(int offset, CharSequence s) {
@@ -82,5 +90,4 @@ public class TextLayoutHelper {
         Selection.removeSelection(text);
         return left + index;
     }
-
 }

@@ -37,9 +37,6 @@ package org.openjdk.javax.xml.stream.events;
  */
 public interface Comment extends XMLEvent {
 
-  /**
-   * Return the string data of the comment, returns empty string if it
-   * does not exist
-   */
-  public String getText();
+    /** Return the string data of the comment, returns empty string if it does not exist */
+    public String getText();
 }

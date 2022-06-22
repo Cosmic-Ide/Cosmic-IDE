@@ -36,7 +36,5 @@ package org.openjdk.javax.xml.stream.events;
  * @since 1.6
  */
 public interface EndDocument extends XMLEvent {
-  /**
-   * No methods are defined in this interface.
-   */
+    /** No methods are defined in this interface. */
 }

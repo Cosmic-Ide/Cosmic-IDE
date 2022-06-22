@@ -53,12 +53,15 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
     public void markStartPos() {
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom =
+                editor.getLayout()
+                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos = editor.getLayout().getCharLayoutOffset(
-                editor.getCursor().getLeftLine(),
-                editor.getCursor().getLeftColumn()
-        );
+        float[] pos =
+                editor.getLayout()
+                        .getCharLayoutOffset(
+                                editor.getCursor().getLeftLine(),
+                                editor.getCursor().getLeftColumn());
         startX = pos[1] + editor.measureTextRegionOffset();
         startY = pos[0];
     }
@@ -88,12 +91,15 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
 
         int line = editor.getCursor().getLeftLine();
         lineHeight = editor.getLayout().getRowCountForLine(line) * editor.getRowHeight();
-        lineBottom = editor.getLayout().getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
+        lineBottom =
+                editor.getLayout()
+                        .getCharLayoutOffset(line, editor.getText().getColumnCount(line))[0];
 
-        float[] pos = editor.getLayout().getCharLayoutOffset(
-                editor.getCursor().getLeftLine(),
-                editor.getCursor().getLeftColumn()
-        );
+        float[] pos =
+                editor.getLayout()
+                        .getCharLayoutOffset(
+                                editor.getCursor().getLeftLine(),
+                                editor.getCursor().getLeftColumn());
         endX = pos[1] + editor.measureTextRegionOffset();
         endY = pos[0];
 
@@ -109,11 +115,14 @@ public class ScaleCursorAnimator implements CursorAnimator, ValueAnimator.Animat
 
     @Override
     public void start() {
-        if (!editor.isCursorAnimationEnabled() || System.currentTimeMillis() - lastAnimateTime < 100) {
+        if (!editor.isCursorAnimationEnabled()
+                || System.currentTimeMillis() - lastAnimateTime < 100) {
             lastAnimateTime = System.currentTimeMillis();
             return;
         }
-        if (startX == endX && startY == endY && !editor.getInsertHandleDescriptor().position.isEmpty()) {
+        if (startX == endX
+                && startY == endY
+                && !editor.getInsertHandleDescriptor().position.isEmpty()) {
             return;
         }
         scaleAnimator.start();

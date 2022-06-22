@@ -69,8 +69,11 @@ final class CursorBlink implements Runnable, EventReceiver<SelectionChangeEvent>
     }
 
     public boolean isSelectionVisible() {
-        return (buffer[0] >= editor.getOffsetY() && buffer[0] - editor.getRowHeight() <= editor.getOffsetY() + editor.getHeight()
-                && buffer[1] >= editor.getOffsetX() && buffer[1] - 100f/* larger than a single character */ <= editor.getOffsetX() + editor.getWidth());
+        return (buffer[0] >= editor.getOffsetY()
+                && buffer[0] - editor.getRowHeight() <= editor.getOffsetY() + editor.getHeight()
+                && buffer[1] >= editor.getOffsetX()
+                && buffer[1] - 100f /* larger than a single character */
+                        <= editor.getOffsetX() + editor.getWidth());
     }
 
     @Override
@@ -78,13 +81,17 @@ final class CursorBlink implements Runnable, EventReceiver<SelectionChangeEvent>
         if (valid && period > 0) {
             if (System.currentTimeMillis() - lastSelectionModificationTime >= period * 2L) {
                 visibility = !visibility;
-                buffer = editor.mLayout.getCharLayoutOffset(editor.getCursor().getLeftLine(), editor.getCursor().getLeftColumn(), buffer);
+                buffer =
+                        editor.mLayout.getCharLayoutOffset(
+                                editor.getCursor().getLeftLine(),
+                                editor.getCursor().getLeftColumn(),
+                                buffer);
                 if (!editor.getCursor().isSelected() && isSelectionVisible()) {
                     // Invalidate dirty region
-                    var delta = (int)(editor.getDpUnit() * 10);
-                    var l = (int)buffer[1] - delta;
+                    var delta = (int) (editor.getDpUnit() * 10);
+                    var l = (int) buffer[1] - delta;
                     var r = l + delta * 2;
-                    var b = (int)buffer[0] + delta;
+                    var b = (int) buffer[0] + delta;
                     var t = b - delta * 2;
                     editor.postInvalidate(l, t, r, b);
                 }
@@ -96,5 +103,4 @@ final class CursorBlink implements Runnable, EventReceiver<SelectionChangeEvent>
             visibility = true;
         }
     }
-
 }

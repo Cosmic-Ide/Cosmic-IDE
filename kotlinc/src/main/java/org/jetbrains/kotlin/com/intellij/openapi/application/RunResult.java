@@ -1,6 +1,5 @@
 package org.jetbrains.kotlin.com.intellij.openapi.application;
 
-
 import org.jetbrains.kotlin.com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.kotlin.com.intellij.openapi.progress.ProcessCanceledException;
 
@@ -10,8 +9,7 @@ public class RunResult<T> extends Result<T> {
 
     private Throwable myThrowable;
 
-    protected RunResult() {
-    }
+    protected RunResult() {}
 
     public RunResult(BaseActionRunnable2<T> action) {
         myActionRunnable = action;
@@ -20,23 +18,19 @@ public class RunResult<T> extends Result<T> {
     public RunResult<T> run() {
         try {
             myActionRunnable.run(this);
-        }
-        catch (ProcessCanceledException e) {
+        } catch (ProcessCanceledException e) {
             throw e; // this exception may occur from time to time and it shouldn't be catched
-        }
-        catch (Throwable throwable) {
+        } catch (Throwable throwable) {
             myThrowable = throwable;
             if (!myActionRunnable.isSilentExecution()) {
-                if (throwable instanceof RuntimeException) throw (RuntimeException)throwable;
+                if (throwable instanceof RuntimeException) throw (RuntimeException) throwable;
                 if (throwable instanceof Error) {
-                    throw (Error)throwable;
-                }
-                else {
+                    throw (Error) throwable;
+                } else {
                     throw new RuntimeException(myThrowable);
                 }
             }
-        }
-        finally {
+        } finally {
             myActionRunnable = null;
         }
 
@@ -58,10 +52,10 @@ public class RunResult<T> extends Result<T> {
     public RunResult<T> throwException() throws RuntimeException, Error {
         if (hasException()) {
             if (myThrowable instanceof RuntimeException) {
-                throw (RuntimeException)myThrowable;
+                throw (RuntimeException) myThrowable;
             }
             if (myThrowable instanceof Error) {
-                throw (Error)myThrowable;
+                throw (Error) myThrowable;
             }
 
             throw new RuntimeException(myThrowable);

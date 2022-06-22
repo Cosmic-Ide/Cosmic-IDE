@@ -23,14 +23,11 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.reader;
 
-import java.io.InputStream;
-
 import org.eclipse.tm4e.core.internal.types.IRawGrammar;
 
-/**
- * TextMate Grammar parser.
- *
- */
+import java.io.InputStream;
+
+/** TextMate Grammar parser. */
 @FunctionalInterface
 public interface IGrammarParser {
 

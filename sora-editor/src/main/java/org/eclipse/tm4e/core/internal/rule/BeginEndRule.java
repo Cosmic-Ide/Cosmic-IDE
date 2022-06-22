@@ -39,8 +39,16 @@ public class BeginEndRule extends Rule {
     private RegExpSource end;
     private RegExpSourceList cachedCompiledPatterns;
 
-    public BeginEndRule(int id, String name, String contentName, String begin, List<CaptureRule> beginCaptures,
-                        String end, List<CaptureRule> endCaptures, boolean applyEndPatternLast, ICompilePatternsResult patterns) {
+    public BeginEndRule(
+            int id,
+            String name,
+            String contentName,
+            String begin,
+            List<CaptureRule> beginCaptures,
+            String end,
+            List<CaptureRule> endCaptures,
+            boolean applyEndPatternLast,
+            ICompilePatternsResult patterns) {
         super(id, name, contentName);
         this.begin = new RegExpSource(begin, this.id);
         this.beginCaptures = beginCaptures;
@@ -53,12 +61,14 @@ public class BeginEndRule extends Rule {
         this.cachedCompiledPatterns = null;
     }
 
-    public String getEndWithResolvedBackReferences(String lineText, IOnigCaptureIndex[] captureIndices) {
+    public String getEndWithResolvedBackReferences(
+            String lineText, IOnigCaptureIndex[] captureIndices) {
         return this.end.resolveBackReferences(lineText, captureIndices);
     }
 
     @Override
-    public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
+    public void collectPatternsRecursive(
+            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
         if (isFirst) {
             for (Integer pattern : this.patterns) {
                 Rule rule = grammar.getRule(pattern);
@@ -70,7 +80,8 @@ public class BeginEndRule extends Rule {
     }
 
     @Override
-    public ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compile(
+            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         RegExpSourceList precompiled = this.precompile(grammar);
         if (this.end.hasBackReferences()) {
             if (this.applyEndPatternLast) {
@@ -89,12 +100,13 @@ public class BeginEndRule extends Rule {
             this.collectPatternsRecursive(grammar, this.cachedCompiledPatterns, true);
 
             if (this.applyEndPatternLast) {
-                this.cachedCompiledPatterns.push(this.end.hasBackReferences() ? this.end.clone() : this.end);
+                this.cachedCompiledPatterns.push(
+                        this.end.hasBackReferences() ? this.end.clone() : this.end);
             } else {
-                this.cachedCompiledPatterns.unshift(this.end.hasBackReferences() ? this.end.clone() : this.end);
+                this.cachedCompiledPatterns.unshift(
+                        this.end.hasBackReferences() ? this.end.clone() : this.end);
             }
         }
         return this.cachedCompiledPatterns;
     }
-
 }

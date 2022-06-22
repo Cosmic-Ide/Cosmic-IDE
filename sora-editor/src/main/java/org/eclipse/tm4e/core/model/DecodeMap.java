@@ -40,7 +40,9 @@ class DecodeMap {
         this.scopeToTokenIds = new LinkedHashMap<>();
         this.tokenToTokenId = new LinkedHashMap<>();
         this.tokenIdToToken = new LinkedHashMap<>();
-        this.prevToken = new TMTokenDecodeData(new String[0], new LinkedHashMap<Integer, Map<Integer, Boolean>>());
+        this.prevToken =
+                new TMTokenDecodeData(
+                        new String[0], new LinkedHashMap<Integer, Map<Integer, Boolean>>());
     }
 
     public int[] getTokenIds(String scope) {

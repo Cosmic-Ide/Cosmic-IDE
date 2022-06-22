@@ -23,14 +23,14 @@
  */
 package org.eclipse.tm4e.core.model;
 
+import org.eclipse.tm4e.core.grammar.IGrammar;
+import org.eclipse.tm4e.core.grammar.IToken;
+import org.eclipse.tm4e.core.grammar.ITokenizeLineResult;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.tm4e.core.grammar.IGrammar;
-import org.eclipse.tm4e.core.grammar.IToken;
-import org.eclipse.tm4e.core.grammar.ITokenizeLineResult;
 
 public class Tokenizer implements ITokenizationSupport {
 
@@ -53,7 +53,8 @@ public class Tokenizer implements ITokenizationSupport {
     }
 
     @Override
-    public LineTokens tokenize(String line, TMState state, Integer offsetDelta, Integer stopAtOffset) {
+    public LineTokens tokenize(
+            String line, TMState state, Integer offsetDelta, Integer stopAtOffset) {
         if (offsetDelta == null) {
             offsetDelta = 0;
         }
@@ -75,10 +76,13 @@ public class Tokenizer implements ITokenizationSupport {
         // Create the result early and fill in the tokens later
         List<TMToken> tokens = new ArrayList<>();
         String lastTokenType = null;
-        for (int tokenIndex = 0, len = textMateResult.getTokens().length; tokenIndex < len; tokenIndex++) {
+        for (int tokenIndex = 0, len = textMateResult.getTokens().length;
+                tokenIndex < len;
+                tokenIndex++) {
             IToken token = textMateResult.getTokens()[tokenIndex];
             int tokenStartIndex = token.getStartIndex();
-            String tokenType = decodeTextMateToken(this.decodeMap, token.getScopes().toArray(new String[0]));
+            String tokenType =
+                    decodeTextMateToken(this.decodeMap, token.getScopes().toArray(new String[0]));
 
             // do not push a new token if the type is exactly the same (also
             // helps with ligatures)
@@ -88,18 +92,18 @@ public class Tokenizer implements ITokenizationSupport {
             }
         }
         return new LineTokens(tokens, offsetDelta + line.length(), freshState);
-
     }
 
     private String decodeTextMateToken(DecodeMap decodeMap, String[] scopes) {
         String[] prevTokenScopes = decodeMap.prevToken.scopes;
         int prevTokenScopesLength = prevTokenScopes.length;
-        Map<Integer, Map<Integer, Boolean>> prevTokenScopeTokensMaps = decodeMap.prevToken.scopeTokensMaps;
+        Map<Integer, Map<Integer, Boolean>> prevTokenScopeTokensMaps =
+                decodeMap.prevToken.scopeTokensMaps;
 
         Map<Integer, Map<Integer, Boolean>> scopeTokensMaps = new LinkedHashMap<>();
         Map<Integer, Boolean> prevScopeTokensMaps = new LinkedHashMap<>();
         boolean sameAsPrev = true;
-        for (int level = 1/* deliberately skip scope 0 */; level < scopes.length; level++) {
+        for (int level = 1 /* deliberately skip scope 0 */; level < scopes.length; level++) {
             String scope = scopes[level];
 
             if (sameAsPrev) {

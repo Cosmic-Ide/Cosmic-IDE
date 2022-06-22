@@ -3,11 +3,10 @@ package com.pranav;
 import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.Indexer;
 import com.pranav.common.util.ConcurrentUtil;
-import com.pranav.common.util.DiagnosticWrapper;
 import com.pranav.common.util.FileUtil;
 
-import io.github.rosemoe.sora.text.*;
 import io.github.rosemoe.sora.lang.diagnostic.*;
+import io.github.rosemoe.sora.text.*;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 public class ProblemMarker implements ContentListener {

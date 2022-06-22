@@ -26,10 +26,7 @@ package org.eclipse.tm4e.core.model;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Model tokens changed event.
- *
- */
+/** Model tokens changed event. */
 public class ModelTokensChangedEvent {
 
     public final List<Range> ranges;
@@ -43,5 +40,4 @@ public class ModelTokensChangedEvent {
         this.ranges = ranges;
         this.model = model;
     }
-
 }

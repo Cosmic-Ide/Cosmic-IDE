@@ -40,5 +40,4 @@ class LocalStackElement {
     public int getEndPos() {
         return endPos;
     }
-
 }

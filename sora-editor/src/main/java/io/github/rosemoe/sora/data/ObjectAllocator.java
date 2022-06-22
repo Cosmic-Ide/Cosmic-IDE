@@ -23,14 +23,13 @@
  */
 package io.github.rosemoe.sora.data;
 
+import io.github.rosemoe.sora.lang.styling.CodeBlock;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.rosemoe.sora.lang.styling.CodeBlock;
-
 /**
- * An object provider for speed improvement
- * Now meaningless because it is not as well as it expected
+ * An object provider for speed improvement Now meaningless because it is not as well as it expected
  *
  * @author Rose
  */
@@ -76,7 +75,8 @@ public class ObjectAllocator {
     }
 
     public static CodeBlock obtainBlockLine() {
-        return (codeBlocks == null || codeBlocks.isEmpty()) ? new CodeBlock() : codeBlocks.remove(codeBlocks.size() - 1);
+        return (codeBlocks == null || codeBlocks.isEmpty())
+                ? new CodeBlock()
+                : codeBlocks.remove(codeBlocks.size() - 1);
     }
-
 }

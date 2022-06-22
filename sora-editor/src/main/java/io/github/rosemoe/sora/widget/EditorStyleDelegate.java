@@ -28,12 +28,12 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
-
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.analysis.StyleReceiver;
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
 import io.github.rosemoe.sora.lang.styling.Styles;
+
+import java.lang.ref.WeakReference;
 
 public class EditorStyleDelegate implements StyleReceiver {
 
@@ -64,7 +64,8 @@ public class EditorStyleDelegate implements StyleReceiver {
     }
 
     @Override
-    public void setDiagnostics(@NonNull AnalyzeManager sourceManager, @Nullable DiagnosticsContainer diagnostics) {
+    public void setDiagnostics(
+            @NonNull AnalyzeManager sourceManager, @Nullable DiagnosticsContainer diagnostics) {
         var editor = editorRef.get();
         if (editor != null && sourceManager == editor.getEditorLanguage().getAnalyzeManager()) {
             runOnUiThread(() -> editor.setDiagnostics(diagnostics));

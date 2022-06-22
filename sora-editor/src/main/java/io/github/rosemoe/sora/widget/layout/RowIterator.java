@@ -26,9 +26,8 @@ package io.github.rosemoe.sora.widget.layout;
 import java.util.NoSuchElementException;
 
 /**
- * Row iterator.
- * This iterator is able to return a series of Row objects linearly
- * Editor uses this to get information of rows and paint them accordingly
+ * Row iterator. This iterator is able to return a series of Row objects linearly Editor uses this
+ * to get information of rows and paint them accordingly
  *
  * @author Rose
  */
@@ -36,8 +35,8 @@ public interface RowIterator {
 
     /**
      * Return next Row object
-     * <p>
-     * The result should not be stored, because implementing classes will always return the same
+     *
+     * <p>The result should not be stored, because implementing classes will always return the same
      * object due to performance
      *
      * @return Row object contains the information about a row
@@ -55,9 +54,7 @@ public interface RowIterator {
     /**
      * Reset the position to its original position.
      *
-     * This can be useful when the elements should be iterated for
-     * several times.
+     * <p>This can be useful when the elements should be iterated for several times.
      */
     void reset();
-
 }

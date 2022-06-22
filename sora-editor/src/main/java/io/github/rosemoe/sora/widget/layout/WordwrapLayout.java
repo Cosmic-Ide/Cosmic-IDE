@@ -27,23 +27,24 @@ import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import io.github.rosemoe.sora.graphics.GraphicTextRow;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 /**
  * Wordwrap layout for editor
- * <p>
- * This layout will not let character displayed outside the editor's width
- * <p>
- * However, using this can be power-costing because we will have to recreate this layout in various
- * conditions, such as when the line number increases and its width grows or when the text size has changed
+ *
+ * <p>This layout will not let character displayed outside the editor's width
+ *
+ * <p>However, using this can be power-costing because we will have to recreate this layout in
+ * various conditions, such as when the line number increases and its width grows or when the text
+ * size has changed
  *
  * @author Rose
  */
@@ -55,7 +56,14 @@ public class WordwrapLayout extends AbstractLayout {
     public WordwrapLayout(CodeEditor editor, Content text) {
         super(editor, text);
         rowTable = new ArrayList<>();
-        width = editor.getWidth() - (int) (editor.measureTextRegionOffset() + TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.0f, editor.getResources().getDisplayMetrics()));
+        width =
+                editor.getWidth()
+                        - (int)
+                                (editor.measureTextRegionOffset()
+                                        + TypedValue.applyDimension(
+                                                TypedValue.COMPLEX_UNIT_DIP,
+                                                5.0f,
+                                                editor.getResources().getDisplayMetrics()));
         breakAllLines();
     }
 
@@ -65,7 +73,10 @@ public class WordwrapLayout extends AbstractLayout {
             breakLine(i, breakpoints);
             for (int j = -1; j < breakpoints.size(); j++) {
                 int start = j == -1 ? 0 : breakpoints.get(j);
-                int end = j + 1 < breakpoints.size() ? breakpoints.get(j + 1) : text.getColumnCount(i);
+                int end =
+                        j + 1 < breakpoints.size()
+                                ? breakpoints.get(j + 1)
+                                : text.getColumnCount(i);
                 rowTable.add(new RowRegion(i, start, end));
             }
             breakpoints.clear();
@@ -94,7 +105,7 @@ public class WordwrapLayout extends AbstractLayout {
         }
         index = left;
         while (index > 0 && rowTable.get(index).startColumn > 0) {
-            index --;
+            index--;
         }
         return index;
     }
@@ -121,7 +132,10 @@ public class WordwrapLayout extends AbstractLayout {
             breakLine(i, breakpoints);
             for (int j = -1; j < breakpoints.size(); j++) {
                 int start = j == -1 ? 0 : breakpoints.get(j);
-                int end = j + 1 < breakpoints.size() ? breakpoints.get(j + 1) : text.getColumnCount(i);
+                int end =
+                        j + 1 < breakpoints.size()
+                                ? breakpoints.get(j + 1)
+                                : text.getColumnCount(i);
                 rowTable.add(insertPosition++, new RowRegion(i, start, end));
             }
             breakpoints.clear();
@@ -142,7 +156,8 @@ public class WordwrapLayout extends AbstractLayout {
             breakpoints.add(next);
             start = next;
         }
-        if (breakpoints.size() != 0 && breakpoints.get(breakpoints.size() - 1) == sequence.length()) {
+        if (breakpoints.size() != 0
+                && breakpoints.get(breakpoints.size() - 1) == sequence.length()) {
             breakpoints.remove(breakpoints.size() - 1);
         }
     }
@@ -153,7 +168,13 @@ public class WordwrapLayout extends AbstractLayout {
     }
 
     @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         super.afterInsert(content, startLine, startColumn, endLine, endColumn, insertedContent);
         // Update line numbers
         int delta = endLine - startLine;
@@ -167,7 +188,13 @@ public class WordwrapLayout extends AbstractLayout {
     }
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         super.afterDelete(content, startLine, startColumn, endLine, endColumn, deletedContent);
         int delta = endLine - startLine;
         if (delta != 0) {
@@ -182,17 +209,14 @@ public class WordwrapLayout extends AbstractLayout {
             }
             for (int row = findRow(endLine + 1); row < rowTable.size(); row++) {
                 var region = rowTable.get(row);
-                if (region.line >= endLine)
-                    region.line -= delta;
+                if (region.line >= endLine) region.line -= delta;
             }
         }
         breakLines(startLine, startLine);
     }
 
     @Override
-    public void onRemove(Content content, ContentLine line) {
-
-    }
+    public void onRemove(Content content, ContentLine line) {}
 
     @Override
     public void destroyLayout() {
@@ -207,7 +231,9 @@ public class WordwrapLayout extends AbstractLayout {
 
     @Override
     public int getLineNumberForRow(int row) {
-        return row >= rowTable.size() ? rowTable.get(rowTable.size() - 1).line : rowTable.get(row).line;
+        return row >= rowTable.size()
+                ? rowTable.get(rowTable.size() - 1).line
+                : rowTable.get(row).line;
     }
 
     @Override
@@ -217,8 +243,10 @@ public class WordwrapLayout extends AbstractLayout {
 
     private int findRow(int line, int column) {
         int row = findRow(line);
-        while (rowTable.get(row).endColumn <= column && row + 1 < rowTable.size() && rowTable.get(row + 1).line == line) {
-            row ++;
+        while (rowTable.get(row).endColumn <= column
+                && row + 1 < rowTable.size()
+                && rowTable.get(row + 1).line == line) {
+            row++;
         }
         return row;
     }
@@ -265,7 +293,14 @@ public class WordwrapLayout extends AbstractLayout {
         int row = (int) (yOffset / editor.getRowHeight());
         row = Math.max(0, Math.min(row, rowTable.size() - 1));
         RowRegion region = rowTable.get(row);
-        int column = (int) orderedFindCharIndex(xOffset, text.getLine(region.line), region.line, region.startColumn, region.endColumn)[0];
+        int column =
+                (int)
+                        orderedFindCharIndex(
+                                xOffset,
+                                text.getLine(region.line),
+                                region.line,
+                                region.startColumn,
+                                region.endColumn)[0];
         return IntPair.pack(region.line, column);
     }
 
@@ -293,7 +328,13 @@ public class WordwrapLayout extends AbstractLayout {
             dest[0] = editor.getRowHeight() * (row + 1);
             var sequence = text.getLine(region.line);
             var gtr = GraphicTextRow.obtain();
-            gtr.set(sequence, region.startColumn, region.endColumn, editor.getTabWidth(), getSpans(line), editor.getTextPaint());
+            gtr.set(
+                    sequence,
+                    region.startColumn,
+                    region.endColumn,
+                    editor.getTabWidth(),
+                    getSpans(line),
+                    editor.getTextPaint());
             dest[1] = gtr.measureText(region.startColumn, column);
             GraphicTextRow.recycle(gtr);
         } else {
@@ -337,11 +378,14 @@ public class WordwrapLayout extends AbstractLayout {
         @NonNull
         @Override
         public String toString() {
-            return "RowRegion{" +
-                    "startColumn=" + startColumn +
-                    ", endColumn=" + endColumn +
-                    ", line=" + line +
-                    '}';
+            return "RowRegion{"
+                    + "startColumn="
+                    + startColumn
+                    + ", endColumn="
+                    + endColumn
+                    + ", line="
+                    + line
+                    + '}';
         }
     }
 
@@ -365,7 +409,8 @@ public class WordwrapLayout extends AbstractLayout {
             result.lineIndex = region.line;
             result.startColumn = region.startColumn;
             result.endColumn = region.endColumn;
-            result.isLeadingRow = currentRow <= 0 || rowTable.get(currentRow - 1).line != region.line;
+            result.isLeadingRow =
+                    currentRow <= 0 || rowTable.get(currentRow - 1).line != region.line;
             currentRow++;
             return result;
         }
@@ -380,5 +425,4 @@ public class WordwrapLayout extends AbstractLayout {
             currentRow = initRow;
         }
     }
-
 }

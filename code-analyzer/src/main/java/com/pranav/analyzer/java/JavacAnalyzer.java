@@ -21,6 +21,7 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import javax.tools.SimpleJavaFileObject;
 
 public class JavacAnalyzer {
 

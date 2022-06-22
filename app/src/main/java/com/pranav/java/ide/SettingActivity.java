@@ -245,7 +245,7 @@ public final class SettingActivity extends AppCompatActivity {
                             view -> {
                                 var enteredPath = path_edt.getText().toString();
                                 if (enteredPath.isEmpty()) {
-                                    FileUtil.setJavaDirectory(FileUtil.getDataDir() + "/java/");
+                                    FileUtil.setJavaDirectory(FileUtil.getDataDir() + "java/");
                                 } else {
                                     FileUtil.setJavaDirectory(enteredPath);
                                 }

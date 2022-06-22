@@ -17,12 +17,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileUtil {
 
-    private static String privateDataDirectory;
+    private static final String privateDataDirectory;
     private static String javaDir;
 
     public static void setDataDirectory(String directory) {
-        privateDataDirectory = directory;
-        javaDir = directory + "/java/";
+        privateDataDirectory = directory + "/";
+        javaDir = privateDataDirectory + "java/";
     }
 
     public static void setJavaDirectory(String dir) {
@@ -114,16 +114,16 @@ public class FileUtil {
     }
 
     public static String getBinDir() {
-        return getDataDir() + "/bin/";
+        return getDataDir() + "bin/";
     }
 
     public static String getCacheDir() {
         // write caches to external storage because we don't want android system
         // to delete index files
-        return getDataDir() + "/cache/";
+        return getDataDir() + "cache/";
     }
 
     public static String getClasspathDir() {
-        return getDataDir() + "/classpath/";
+        return getDataDir() + "classpath/";
     }
 }

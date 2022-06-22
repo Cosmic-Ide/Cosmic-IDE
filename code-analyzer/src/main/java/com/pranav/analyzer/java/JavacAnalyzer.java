@@ -19,7 +19,6 @@ import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.Diagnostic;
-import com.pranav.analyzer.JavaSourceFromString;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 
@@ -33,15 +32,24 @@ public class JavacAnalyzer {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
     }
 
-    public void analyze(String name, String code) throws IOException {
+    // TODO: check and return diagnostics from only the current file being edited
+    public void analyze() throws IOException {
         final var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
         final var version = prefs.getString("version", "7");
 
         final var javaFileObjects = new ArrayList<JavaFileObject>();
-        javaFileObjects.add(
-                new JavaSourceFromString(name, code)
-        );
+        final var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
+        for (var file : javaFiles) {
+            javaFileObjects.add(
+                    new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                        @Override
+                        public CharSequence getCharContent(boolean ignoreEncodingErrors)
+                                throws IOException {
+                            return FileUtil.readFile(file);
+                        }
+                    });
+        }
 
         final var tool = JavacTool.create();
 
@@ -51,6 +59,7 @@ public class JavacAnalyzer {
         standardJavaFileManager.setLocation(
                 StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
+        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
         final var args = new ArrayList<String>();
 
@@ -88,19 +97,15 @@ public class JavacAnalyzer {
         final var problems = new ArrayList<DiagnosticRegion>();
         for (var it : diagnostics.getDiagnostics()) {
             if (it.getSource() == null) continue;
-            // since we're not compiling the whole project, there might be some errors
-            // from files that we skipped, so it should mostly be safe to ignore these
             short severity = it.getKind() == Diagnostic.Kind.ERROR ? DiagnosticRegion.SEVERITY_ERROR : DiagnosticRegion.SEVERITY_WARNING;
-            if (!it.getCode().startsWith("compiler.err.cant.resolve")) {
-                problems.add(new DiagnosticRegion((int) it.getStartPosition(), (int) it.getEndPosition(), severity));
-            }
+            problems.add(new DiagnosticRegion((int) it.getStartPosition(), (int) it.getEndPosition(), severity));
         }
         return problems;
     }
 
     private ArrayList<File> getClasspath() {
-        var classpath = new ArrayList<File>();
-        var clspath = prefs.getString("classpath", "");
+        final var classpath = new ArrayList<File>();
+        final var clspath = prefs.getString("classpath", "");
 
         if (!clspath.isEmpty()) {
             for (var clas : clspath.split(":")) {
@@ -111,9 +116,27 @@ public class JavacAnalyzer {
     }
 
     private ArrayList<File> getPlatformClasspath() {
-        var classpath = new ArrayList<File>();
+        final var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
         return classpath;
+    }
+
+    private ArrayList<File> getSourceFiles(File path) {
+        final var sourceFiles = new ArrayList<File>();
+        final var files = path.listFiles();
+        if (files == null) {
+            return new ArrayList<File>();
+        }
+        for (var file : files) {
+            if (file.isFile()) {
+                if (file.getName().endsWith(".java")) {
+                    sourceFiles.add(file);
+                }
+            } else {
+                sourceFiles.addAll(getSourceFiles(file));
+            }
+        }
+        return sourceFiles;
     }
 }

@@ -6,7 +6,7 @@ import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.DiagnosticWrapper;
 import com.pranav.common.util.FileUtil;
 
-import io.github.rosemoe.sora.util.HighlightUtil;
+import io.github.rosemoe.sora.text.*;
 import io.github.rosemoe.sora.lang.diagnostic.*;
 import io.github.rosemoe.sora.widget.CodeEditor;
 

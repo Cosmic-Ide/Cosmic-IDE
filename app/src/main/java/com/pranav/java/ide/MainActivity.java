@@ -38,6 +38,7 @@ import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
+import com.sun.tools.javac.file.Locations;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
@@ -56,6 +57,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public final class MainActivity extends AppCompatActivity {
@@ -79,6 +81,7 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Locations.setJavaHome(Paths.get(FileUtil.getDataDir(), "compiler-modules"));
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 

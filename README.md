@@ -73,7 +73,7 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
-- [Tyron Lucena Scott](https://github.com/tyron12233) for [Kotlinc Android Port](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
+- [Akash Yadav](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
 
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
 

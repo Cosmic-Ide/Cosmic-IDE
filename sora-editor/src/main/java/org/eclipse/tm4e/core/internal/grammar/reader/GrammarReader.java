@@ -26,7 +26,7 @@ package org.eclipse.tm4e.core.internal.grammar.reader;
 import java.io.InputStream;
 
 import org.eclipse.tm4e.core.internal.parser.json.JSONPListParser;
-import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
+// import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
 import org.eclipse.tm4e.core.internal.types.IRawGrammar;
 
 /**
@@ -72,5 +72,5 @@ public class GrammarReader {
             return JSON_PARSER;
 //        }
 //        return XML_PARSER;
-//    }
+    }
 }

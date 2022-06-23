@@ -24,7 +24,7 @@
 package org.eclipse.tm4e.core.internal.theme.reader;
 
 import org.eclipse.tm4e.core.internal.parser.json.JSONPListParser;
-import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
+// import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 import java.io.InputStream;
@@ -71,5 +71,5 @@ public class ThemeReader {
             return JSON_PARSER;
 //        }
 //      return XML_PARSER;
-//    }
+    }
 }

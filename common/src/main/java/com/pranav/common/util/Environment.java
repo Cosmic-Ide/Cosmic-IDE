@@ -1,5 +1,6 @@
 package com.itsaky.androidide.utils;
 
+import java.io.File;
 /*
  * Required by nb-javac-android
  */

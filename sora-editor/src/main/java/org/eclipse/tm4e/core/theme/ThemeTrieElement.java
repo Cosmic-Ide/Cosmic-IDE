@@ -23,13 +23,13 @@
  */
 package org.eclipse.tm4e.core.theme;
 
+import org.eclipse.tm4e.core.internal.utils.CompareUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.eclipse.tm4e.core.internal.utils.CompareUtils;
 
 public class ThemeTrieElement {
 
@@ -43,12 +43,15 @@ public class ThemeTrieElement {
         this(mainRule, new ArrayList<>(), new HashMap<>());
     }
 
-    public ThemeTrieElement(ThemeTrieElementRule mainRule, List<ThemeTrieElementRule> rulesWithParentScopes) {
+    public ThemeTrieElement(
+            ThemeTrieElementRule mainRule, List<ThemeTrieElementRule> rulesWithParentScopes) {
         this(mainRule, rulesWithParentScopes, new HashMap<>());
     }
 
-    public ThemeTrieElement(ThemeTrieElementRule mainRule, List<ThemeTrieElementRule> rulesWithParentScopes,
-                            Map<String /* segment */, ThemeTrieElement> children) {
+    public ThemeTrieElement(
+            ThemeTrieElementRule mainRule,
+            List<ThemeTrieElementRule> rulesWithParentScopes,
+            Map<String /* segment */, ThemeTrieElement> children) {
         this.mainRule = mainRule;
         this.rulesWithParentScopes = rulesWithParentScopes;
         this.children = children;
@@ -111,8 +114,13 @@ public class ThemeTrieElement {
         return ThemeTrieElement.sortBySpecificity(arr);
     }
 
-    public void insert(int scopeDepth, String scope, List<String> parentScopes, int fontStyle, int foreground,
-                       int background) {
+    public void insert(
+            int scopeDepth,
+            String scope,
+            List<String> parentScopes,
+            int fontStyle,
+            int foreground,
+            int background) {
         if ("".equals(scope)) {
             this.doInsertHere(scopeDepth, parentScopes, fontStyle, foreground, background);
             return;
@@ -133,16 +141,22 @@ public class ThemeTrieElement {
         if (this.children.containsKey(head)) {
             child = this.children.get(head);
         } else {
-            child = new ThemeTrieElement(this.mainRule.clone(),
-                    ThemeTrieElementRule.cloneArr(this.rulesWithParentScopes));
+            child =
+                    new ThemeTrieElement(
+                            this.mainRule.clone(),
+                            ThemeTrieElementRule.cloneArr(this.rulesWithParentScopes));
             this.children.put(head, child);
         }
 
         child.insert(scopeDepth + 1, tail, parentScopes, fontStyle, foreground, background);
     }
 
-    private void doInsertHere(int scopeDepth, List<String> parentScopes, int fontStyle, int foreground,
-                              int background) {
+    private void doInsertHere(
+            int scopeDepth,
+            List<String> parentScopes,
+            int fontStyle,
+            int foreground,
+            int background) {
 
         if (parentScopes == null) {
             // Merge into the main rule
@@ -172,8 +186,9 @@ public class ThemeTrieElement {
             background = this.mainRule.background;
         }
 
-        this.rulesWithParentScopes
-                .add(new ThemeTrieElementRule(scopeDepth, parentScopes, fontStyle, foreground, background));
+        this.rulesWithParentScopes.add(
+                new ThemeTrieElementRule(
+                        scopeDepth, parentScopes, fontStyle, foreground, background));
     }
 
     @Override
@@ -193,7 +208,8 @@ public class ThemeTrieElement {
             return false;
         }
         ThemeTrieElement other = (ThemeTrieElement) obj;
-        return Objects.equals(children, other.children) && Objects.equals(mainRule, other.mainRule) && Objects.equals(rulesWithParentScopes, other.rulesWithParentScopes);
+        return Objects.equals(children, other.children)
+                && Objects.equals(mainRule, other.mainRule)
+                && Objects.equals(rulesWithParentScopes, other.rulesWithParentScopes);
     }
-
 }

@@ -30,5 +30,4 @@ public interface IThemeProvider {
     List<ThemeTrieElementRule> themeMatch(String scopeName);
 
     ThemeTrieElementRule getDefaults();
-
 }

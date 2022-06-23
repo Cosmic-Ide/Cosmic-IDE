@@ -85,6 +85,4 @@ public class ColorMap {
         ColorMap other = (ColorMap) obj;
         return Objects.equals(color2id, other.color2id) && lastColorId == other.lastColorId;
     }
-
-
 }

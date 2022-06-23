@@ -25,14 +25,13 @@ package io.github.rosemoe.sora.lang.styling;
 
 import java.util.List;
 
-/**
- * Update block line positions on edit
- */
+/** Update block line positions on edit */
 public class BlocksUpdater {
 
     /**
      * Update blocks
-     * @param blocks   Block lines to update
+     *
+     * @param blocks Block lines to update
      * @param restrict Min line to update
      * @param delta Delta for line index
      */
@@ -41,7 +40,7 @@ public class BlocksUpdater {
             return;
         }
         var itr = blocks.iterator();
-        while(itr.hasNext()) {
+        while (itr.hasNext()) {
             var block = itr.next();
             if (block.startLine >= restrict) {
                 block.startLine += delta;
@@ -54,5 +53,4 @@ public class BlocksUpdater {
             }
         }
     }
-
 }

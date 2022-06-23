@@ -27,15 +27,14 @@ package io.github.rosemoe.sora.lang.completion;
  * Thrown when the thread is abandoned by the editor framework because the editor do not need its
  * new items anymore.
  *
- * This can be thrown by {@link io.github.rosemoe.sora.text.ContentReference} and
- * {@link CompletionPublisher}.
+ * <p>This can be thrown by {@link io.github.rosemoe.sora.text.ContentReference} and {@link
+ * CompletionPublisher}.
  *
  * @author Rosemoe
  */
 public class CompletionCancelledException extends RuntimeException {
 
-    public CompletionCancelledException() {
-    }
+    public CompletionCancelledException() {}
 
     public CompletionCancelledException(String message) {
         super(message);

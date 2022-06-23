@@ -25,31 +25,23 @@ package io.github.rosemoe.sora.lang.completion;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import io.github.rosemoe.sora.lang.Language;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.text.TextUtils;
-import io.github.rosemoe.sora.util.MutableInt;
 
 /**
  * Identifier auto-completion.
  *
- * You can use it to provide identifiers, but you can't update the given {@link CompletionPublisher}
- * if it is used. If you have to mix the result, then you should call {@link CompletionPublisher#setComparator(Comparator)}
- * with null first. Otherwise, your completion list may be corrupted. And in that case, you must do the sorting
- * work by yourself and then add your items.
+ * <p>You can use it to provide identifiers, but you can't update the given {@link
+ * CompletionPublisher} if it is used. If you have to mix the result, then you should call {@link
+ * CompletionPublisher#setComparator(Comparator)} with null first. Otherwise, your completion list
+ * may be corrupted. And in that case, you must do the sorting work by yourself and then add your
+ * items.
  *
  * @author Rosemoe
  */
@@ -58,8 +50,7 @@ public class IdentifierAutoComplete {
     private String[] mKeywords;
     private boolean mKeywordsAreLowCase;
 
-    public IdentifierAutoComplete() {
-    }
+    public IdentifierAutoComplete() {}
 
     public IdentifierAutoComplete(String[] keywords) {
         this();
@@ -75,12 +66,45 @@ public class IdentifierAutoComplete {
         return mKeywords;
     }
 
+    public static class Identifiers {
+
+        private final List<String> identifiers = new ArrayList<>(128);
+        private HashMap<String, Object> cache;
+        private static final Object SIGN = new Object();
+
+        public void addIdentifier(String identifier) {
+            if (cache == null) {
+                throw new IllegalStateException("begin() has not been called");
+            }
+            if (cache.put(identifier, SIGN) == SIGN) {
+                return;
+            }
+            identifiers.add(identifier);
+        }
+
+        public void begin() {
+            cache = new HashMap<>();
+        }
+
+        public void finish() {
+            cache.clear();
+            cache = null;
+        }
+
+        public List<String> getIdentifiers() {
+            return identifiers;
+        }
+    }
+
     /**
-     * Make completion items for the given arguments.
-     * Provide the required arguments passed by {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher,  Bundle)}
+     * Make completion items for the given arguments. Provide the required arguments passed by
+     * {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher,
+     * Bundle)}
+     *
      * @param prefix The prefix to make completions for.
      */
-    public void requireAutoComplete(@NonNull String prefix, @NonNull CompletionPublisher publisher, @Nullable Identifiers userIdentifiers) {
+    public void requireAutoComplete(
+            String prefix, CompletionPublisher publisher, Identifiers userIdentifiers) {
         publisher.setComparator(COMPARATOR);
         publisher.setUpdateThreshold(0);
         int prefixLength = prefix.length();
@@ -94,23 +118,26 @@ public class IdentifierAutoComplete {
             if (lowCase) {
                 for (String kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(
+                                new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             } else {
                 for (String kw : keywordArray) {
                     if (kw.toLowerCase().startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(
+                                new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             }
         }
         if (userIdentifiers != null) {
             List<CompletionItem> words = new ArrayList<>();
-            List<String> dest = new ArrayList<>();
-            userIdentifiers.filterIdentifiers(prefix, dest);
-            for (String word : dest) {
-                publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
+            for (String word : userIdentifiers.getIdentifiers()) {
+                if (word.toLowerCase().startsWith(match)) {
+                    publisher.addItem(
+                            new SimpleCompletionItem(word, "Identifier", prefixLength, word));
+                }
             }
         }
     }
@@ -119,144 +146,14 @@ public class IdentifierAutoComplete {
         return (str instanceof String ? (String) str : str.toString());
     }
 
-    private final static Comparator<CompletionItem> COMPARATOR = (p1, p2) -> {
-        var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
-        if (cmp1 < 0) {
-            return 1;
-        } else if (cmp1 > 0) {
-            return -1;
-        }
-        return asString(p1.label).compareTo(asString(p2.label));
-    };
-
-    /**
-     * Interface for saving identifiers
-     *
-     * @see IdentifierAutoComplete.DisposableIdentifiers
-     * @author Rosemoe
-     */
-    public interface  Identifiers {
-
-        /**
-         * Filter identifiers with the given prefix
-         *
-         * @param prefix The prefix to filter
-         * @param dest Result list
-         */
-        void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest);
-
-    }
-
-    /**
-     * This object is used only once. In other words, the object is generated every time the
-     * text changes, and is abandoned when next time the text change.
-     *
-     * In this case, the frequent allocation of memory is unavoidable.
-     * And also, this class is not thread-safe.
-     *
-     * @author Rosemoe
-     */
-    public static class DisposableIdentifiers implements Identifiers {
-
-        private final List<String> identifiers = new ArrayList<>(128);
-        private HashMap<String, Object> cache;
-        private final static Object SIGN = new Object();
-
-        public void addIdentifier(String identifier) {
-            if (cache == null) {
-                throw new IllegalStateException("begin() has not been called");
-            }
-            if (cache.put(identifier, SIGN) == SIGN) {
-                return;
-            }
-            identifiers.add(identifier);
-        }
-
-        /**
-         * Start building the identifiers
-         */
-        public void beginBuilding() {
-            cache = new HashMap<>();
-        }
-
-        /**
-         * Free memory and finish building
-         */
-        public void finishBuilding() {
-            cache.clear();
-            cache = null;
-        }
-
-        @Override
-        public void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest) {
-            for (String identifier : identifiers) {
-                if (TextUtils.startsWith(identifier, prefix, true)) {
-                    dest.add(identifier);
+    private static final Comparator<CompletionItem> COMPARATOR =
+            (p1, p2) -> {
+                var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
+                if (cmp1 < 0) {
+                    return 1;
+                } else if (cmp1 > 0) {
+                    return -1;
                 }
-            }
-        }
-    }
-
-    public static class SyncIdentifiers implements Identifiers {
-
-        private final Lock lock = new ReentrantLock(true);
-        private final Map<String, MutableInt> identifierMap = new HashMap<>();
-
-
-        public void identifierIncrease(@NonNull String identifier) {
-            lock.lock();
-            try {
-                identifierMap.computeIfAbsent(identifier, (x) -> new MutableInt(0)).increase();
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        public void identifierDecrease(@NonNull String identifier) {
-            lock.lock();
-            try {
-                var count = identifierMap.get(identifier);
-                if (count != null) {
-                    if (count.decreaseAndGet() <= 0) {
-                        identifierMap.remove(identifier);
-                    }
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        @Override
-        public void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest) {
-            filterIdentifiers(prefix, dest, false);
-        }
-
-        public void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest, boolean waitForLock) {
-            boolean acquired;
-            if (waitForLock) {
-                lock.lock();
-                acquired = true;
-            } else {
-                try {
-                    acquired = lock.tryLock(3, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    acquired = false;
-                }
-            }
-            if (acquired) {
-                try {
-                    for (String s : identifierMap.keySet()) {
-                        if (TextUtils.startsWith(s, prefix, true)) {
-                            dest.add(s);
-                        }
-                    }
-                } finally {
-                    lock.unlock();
-                }
-            }
-        }
-
-    }
-
-
+                return asString(p1.label).compareTo(asString(p2.label));
+            };
 }

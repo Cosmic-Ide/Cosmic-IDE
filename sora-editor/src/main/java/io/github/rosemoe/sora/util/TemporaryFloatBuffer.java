@@ -49,5 +49,4 @@ public class TemporaryFloatBuffer {
     }
 
     private static float[] sTemp = null;
-    
 }

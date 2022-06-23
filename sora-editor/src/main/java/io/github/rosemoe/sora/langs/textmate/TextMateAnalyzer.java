@@ -25,26 +25,19 @@ package io.github.rosemoe.sora.langs.textmate;
 
 import android.graphics.Color;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
-import io.github.rosemoe.sora.langs.textmate.folding.FoldingHelper;
 import io.github.rosemoe.sora.langs.textmate.folding.IndentRange;
 import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.util.ArrayList;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.ITokenizeLineResult2;
 import org.eclipse.tm4e.core.grammar.StackElement;
 import org.eclipse.tm4e.core.internal.grammar.StackElementMetadata;
-import org.eclipse.tm4e.core.internal.oniguruma.OnigRegExp;
-import org.eclipse.tm4e.core.internal.oniguruma.OnigResult;
-import org.eclipse.tm4e.core.internal.oniguruma.OnigString;
 import org.eclipse.tm4e.core.registry.Registry;
 import org.eclipse.tm4e.core.theme.FontStyle;
 import org.eclipse.tm4e.core.theme.IRawTheme;
@@ -52,84 +45,81 @@ import org.eclipse.tm4e.core.theme.Theme;
 import org.eclipse.tm4e.languageconfiguration.ILanguageConfiguration;
 import org.eclipse.tm4e.languageconfiguration.internal.LanguageConfigurator;
 
-import io.github.rosemoe.sora.text.ContentLine;
-import io.github.rosemoe.sora.util.ArrayList;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.Collections;
+import java.util.List;
 
-public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Span> implements FoldingHelper {
+public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<StackElement, Span> {
+
+    /** Maximum for code block count */
+    public static int MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT = 5000;
 
     private final Registry registry = new Registry();
     private final IGrammar grammar;
     private Theme theme;
     private final TextMateLanguage language;
     private final ILanguageConfiguration configuration;
-    private OnigRegExp cachedRegExp;
-    private boolean foldingOffside;
 
-    public TextMateAnalyzer(TextMateLanguage language, String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) throws Exception {
+    public TextMateAnalyzer(
+            TextMateLanguage language,
+            String grammarName,
+            InputStream grammarIns,
+            Reader languageConfiguration,
+            IRawTheme theme)
+            throws Exception {
         registry.setTheme(theme);
         this.language = language;
         this.theme = Theme.createFromRawTheme(theme);
         this.grammar = registry.loadGrammarFromPathSync(grammarName, grammarIns);
         if (languageConfiguration != null) {
-            LanguageConfigurator languageConfigurator = new LanguageConfigurator(languageConfiguration);
+            LanguageConfigurator languageConfigurator =
+                    new LanguageConfigurator(languageConfiguration);
             configuration = languageConfigurator.getLanguageConfiguration();
         } else {
             configuration = null;
         }
-        createFoldingExp();
-    }
-
-    private void createFoldingExp() {
-        if (configuration == null) {
-            return;
-        }
-        var markers = configuration.getFolding();
-        if (markers == null) return;
-        foldingOffside = markers.getOffSide();
-        cachedRegExp = new OnigRegExp("(" + markers.getMarkersStart() + ")|(?:" + markers.getMarkersEnd() + ")");
     }
 
     @Override
-    public MyState getInitialState() {
+    public StackElement getInitialState() {
         return null;
     }
 
     @Override
-    public boolean stateEquals(MyState state, MyState another) {
+    public boolean stateEquals(StackElement state, StackElement another) {
         if (state == null && another == null) {
             return true;
         }
         if (state != null && another != null) {
-            return Objects.equals(state.tokenizeState, another.tokenizeState);
+            return state.equals(another);
         }
         return false;
     }
 
     @Override
-    public int getIndentFor(int line) {
-        return getState(line).state.indent;
-    }
-
-    @Override
-    public OnigResult getResultFor(int line) {
-        return getState(line).state.foldingCache;
-    }
-
-    @Override
     public List<CodeBlock> computeBlocks(Content text, CodeBlockAnalyzeDelegate delegate) {
-        var list = new ArrayList<CodeBlock>();
+        var list = new java.util.ArrayList<CodeBlock>();
         analyzeCodeBlocks(text, list, delegate);
         return list;
     }
 
-    public void analyzeCodeBlocks(Content model, ArrayList<CodeBlock> blocks, CodeBlockAnalyzeDelegate delegate) {
-        if (cachedRegExp == null) {
+    public void analyzeCodeBlocks(
+            Content model, List<CodeBlock> blocks, CodeBlockAnalyzeDelegate delegate) {
+        if (configuration == null) {
             return;
         }
+        var folding = configuration.getFolding();
+        if (folding == null) return;
         try {
-            var foldingRegions = IndentRange.computeRanges(model, language.getTabSize(), foldingOffside, this, cachedRegExp, delegate);
-            blocks.ensureCapacity(foldingRegions.length());
+            var foldingRegions =
+                    IndentRange.computeRanges(
+                            model,
+                            language.getTabSize(),
+                            folding.getOffSide(),
+                            folding,
+                            MAX_FOLDING_REGIONS_FOR_INDENT_LIMIT,
+                            delegate);
             for (int i = 0; i < foldingRegions.length() && delegate.isNotCancelled(); i++) {
                 int startLine = foldingRegions.getStartLineNumber(i);
                 int endLine = foldingRegions.getEndLineNumber(i);
@@ -139,11 +129,13 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
                     codeBlock.startLine = startLine;
                     codeBlock.endLine = endLine;
 
-                    // It's safe here to use raw data because the Content is only held by this thread
+                    // It's safe here to use raw data because the Content is only held by this
+                    // thread
                     var length = model.getColumnCount(startLine);
                     var chars = model.getLine(startLine).getRawData();
 
-                    codeBlock.startColumn = IndentRange.computeStartColumn(chars, length, language.getTabSize());
+                    codeBlock.startColumn =
+                            IndentRange.computeStartColumn(chars, length, language.getTabSize());
                     codeBlock.endColumn = codeBlock.startColumn;
                     blocks.add(codeBlock);
                 }
@@ -155,10 +147,11 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
     }
 
     @Override
-    public synchronized LineTokenizeResult<MyState, Span> tokenizeLine(CharSequence lineC, MyState state, int lineIndex) {
-        String line = (lineC instanceof ContentLine) ? ((ContentLine)lineC).toStringWithNewline() : lineC.toString();
+    public synchronized LineTokenizeResult<StackElement, Span> tokenizeLine(
+            CharSequence lineC, StackElement state) {
+        String line = lineC.toString();
         var tokens = new ArrayList<Span>();
-        ITokenizeLineResult2 lineTokens = grammar.tokenizeLine2(line, state == null ? null : state.tokenizeState);
+        ITokenizeLineResult2 lineTokens = grammar.tokenizeLine2(line, state);
         int tokensLength = lineTokens.getTokens().length / 2;
         for (int i = 0; i < tokensLength; i++) {
             int startIndex = lineTokens.getTokens()[2 * i];
@@ -168,7 +161,15 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
             int metadata = lineTokens.getTokens()[2 * i + 1];
             int foreground = StackElementMetadata.getForeground(metadata);
             int fontStyle = StackElementMetadata.getFontStyle(metadata);
-            Span span = Span.obtain(startIndex, TextStyle.makeStyle(foreground + 255, 0, (fontStyle & FontStyle.Bold) != 0, (fontStyle & FontStyle.Italic) != 0, false));
+            Span span =
+                    Span.obtain(
+                            startIndex,
+                            TextStyle.makeStyle(
+                                    foreground + 255,
+                                    0,
+                                    (fontStyle & FontStyle.Bold) != 0,
+                                    (fontStyle & FontStyle.Italic) != 0,
+                                    false));
 
             if ((fontStyle & FontStyle.Underline) != 0) {
                 String color = theme.getColor(foreground);
@@ -179,11 +180,11 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
 
             tokens.add(span);
         }
-        return new LineTokenizeResult<>(new MyState(lineTokens.getRuleStack(), cachedRegExp == null ? null : cachedRegExp.search(new OnigString(line), 0), IndentRange.computeIndentLevel(((ContentLine) lineC).getRawData(), line.length() - 1, language.getTabSize())), null, tokens);
+        return new LineTokenizeResult<>(lineTokens.getRuleStack(), null, tokens);
     }
 
     @Override
-    public List<Span> generateSpansForLine(LineTokenizeResult<MyState, Span> tokens) {
+    public List<Span> generateSpansForLine(LineTokenizeResult<StackElement, Span> tokens) {
         return null;
     }
 

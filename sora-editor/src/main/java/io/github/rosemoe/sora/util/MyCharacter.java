@@ -26,8 +26,7 @@ package io.github.rosemoe.sora.util;
 import java.util.Arrays;
 
 /**
- * @author Rose
- * Get whether Identifier part/start quickly
+ * @author Rose Get whether Identifier part/start quickly
  */
 public class MyCharacter {
 
@@ -35,20 +34,16 @@ public class MyCharacter {
         initMapInternal();
     }
 
-    /**
-     * Compressed bit set for isJavaIdentifierStart()
-     */
+    /** Compressed bit set for isJavaIdentifierStart() */
     private static int[] bitsIsStart;
 
-    /**
-     * Compressed bit set for isJavaIdentifierPart()
-     */
+    /** Compressed bit set for isJavaIdentifierPart() */
     private static int[] bitsIsPart;
 
     /**
      * Get bit in compressed bit set
      *
-     * @param values   Compressed bit set
+     * @param values Compressed bit set
      * @param bitIndex Target index
      * @return Boolean value at the index
      */
@@ -59,7 +54,7 @@ public class MyCharacter {
     /**
      * Make the given position's bit true
      *
-     * @param values   Compressed bit set
+     * @param values Compressed bit set
      * @param bitIndex Index of bit
      */
     private static void set(int[] values, int bitIndex) {
@@ -76,9 +71,7 @@ public class MyCharacter {
         // Empty
     }
 
-    /**
-     * Init maps
-     */
+    /** Init maps */
     private static void initMapInternal() {
         if (bitsIsStart != null) {
             return;
@@ -114,6 +107,4 @@ public class MyCharacter {
     public static boolean isJavaIdentifierStart(int key) {
         return get(bitsIsStart, key);
     }
-
 }
-

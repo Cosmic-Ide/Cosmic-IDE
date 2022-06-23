@@ -32,7 +32,7 @@ public class Logger {
 
     private static Map<String, Logger> map = new WeakHashMap<>();
 
-    public synchronized static Logger instance(String name) {
+    public static synchronized Logger instance(String name) {
         var logger = map.get(name);
         if (logger == null) {
             logger = new Logger(name);
@@ -74,5 +74,4 @@ public class Logger {
     public void e(String msg, Throwable e) {
         Log.e(name, msg, e);
     }
-
 }

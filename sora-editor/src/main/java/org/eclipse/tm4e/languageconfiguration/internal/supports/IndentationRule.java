@@ -44,6 +44,7 @@ public class IndentationRule {
 
     private String decreaseIndentPattern;
 
+
     public IndentationRule(String increaseIndentPattern, String decreaseIndentPattern) {
         this.increaseIndentPattern = increaseIndentPattern;
         this.decreaseIndentPattern = decreaseIndentPattern;

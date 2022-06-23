@@ -30,7 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ *
  * @see https://github.com/Microsoft/vscode-textmate/blob/master/src/rule.ts
+ *
  */
 public class RegExpSourceList {
 
@@ -38,7 +40,6 @@ public class RegExpSourceList {
     private List<RegExpSource> _items;
     private boolean _hasAnchors;
     private ICompiledRule _cached;
-
     public RegExpSourceList() {
         this._items = new io.github.rosemoe.sora.util.ArrayList<RegExpSource>();
         this._hasAnchors = false;
@@ -80,35 +81,25 @@ public class RegExpSourceList {
                 for (RegExpSource regExpSource : _items) {
                     regexps.add(regExpSource.getSource());
                 }
-                this._cached =
-                        new ICompiledRule(
-                                createOnigScanner(regexps.toArray(new String[0])), getRules());
+                this._cached = new ICompiledRule(createOnigScanner(regexps.toArray(new String[0])), getRules());
             }
             return this._cached;
         } else {
             if (this._anchorCache.A0_G0 == null) {
-                this._anchorCache.A0_G0 =
-                        (allowA == false && allowG == false)
-                                ? this._resolveAnchors(allowA, allowG)
-                                : null;
+                this._anchorCache.A0_G0 = (allowA == false && allowG == false) ? this._resolveAnchors(allowA, allowG)
+                        : null;
             }
             if (this._anchorCache.A0_G1 == null) {
-                this._anchorCache.A0_G1 =
-                        (allowA == false && allowG == true)
-                                ? this._resolveAnchors(allowA, allowG)
-                                : null;
+                this._anchorCache.A0_G1 = (allowA == false && allowG == true) ? this._resolveAnchors(allowA, allowG)
+                        : null;
             }
             if (this._anchorCache.A1_G0 == null) {
-                this._anchorCache.A1_G0 =
-                        (allowA == true && allowG == false)
-                                ? this._resolveAnchors(allowA, allowG)
-                                : null;
+                this._anchorCache.A1_G0 = (allowA == true && allowG == false) ? this._resolveAnchors(allowA, allowG)
+                        : null;
             }
             if (this._anchorCache.A1_G1 == null) {
-                this._anchorCache.A1_G1 =
-                        (allowA == true && allowG == true)
-                                ? this._resolveAnchors(allowA, allowG)
-                                : null;
+                this._anchorCache.A1_G1 = (allowA == true && allowG == true) ? this._resolveAnchors(allowA, allowG)
+                        : null;
             }
             if (allowA) {
                 if (allowG) {
@@ -124,6 +115,7 @@ public class RegExpSourceList {
                 }
             }
         }
+
     }
 
     private ICompiledRule _resolveAnchors(boolean allowA, boolean allowG) {
@@ -152,5 +144,7 @@ public class RegExpSourceList {
         public ICompiledRule A0_G1;
         public ICompiledRule A1_G0;
         public ICompiledRule A1_G1;
+
     }
+
 }

@@ -24,26 +24,41 @@
 package org.eclipse.tm4e.core.internal.theme.reader;
 
 import org.eclipse.tm4e.core.internal.parser.json.JSONPListParser;
+import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 import java.io.InputStream;
 
-/** TextMate Theme reader utilities. */
+/**
+ * TextMate Theme reader utilities.
+ *
+ */
 public class ThemeReader {
 
-    public static final IThemeParser JSON_PARSER =
-            new IThemeParser() {
+    public static final IThemeParser XML_PARSER = new IThemeParser() {
 
-                private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
+        private final XMLPListParser<IRawTheme> parser = new XMLPListParser<>(true);
 
-                @Override
-                public IRawTheme parse(InputStream contents) throws Exception {
-                    return parser.parse(contents);
-                }
-            };
+        @Override
+        public IRawTheme parse(InputStream contents) throws Exception {
+            return parser.parse(contents);
+        }
+    };
+    public static final IThemeParser JSON_PARSER = new IThemeParser() {
 
-    /** Helper class, use methods statically */
-    private ThemeReader() {}
+        private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
+
+        @Override
+        public IRawTheme parse(InputStream contents) throws Exception {
+            return parser.parse(contents);
+        }
+    };
+
+    /**
+     * Helper class, use methods statically
+     */
+    private ThemeReader() {
+    }
 
     public static IRawTheme readThemeSync(String filePath, InputStream in) throws Exception {
         SyncThemeReader reader = new SyncThemeReader(in, getThemeParser(filePath));
@@ -51,6 +66,9 @@ public class ThemeReader {
     }
 
     private static IThemeParser getThemeParser(String filePath) {
-        return JSON_PARSER;
+        if (filePath.endsWith(".json")) {
+            return JSON_PARSER;
+        }
+        return XML_PARSER;
     }
 }

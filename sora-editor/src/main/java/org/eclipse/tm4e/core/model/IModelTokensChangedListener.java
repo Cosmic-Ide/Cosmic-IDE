@@ -27,4 +27,5 @@ package org.eclipse.tm4e.core.model;
 public interface IModelTokensChangedListener {
 
     void modelTokensChanged(ModelTokensChangedEvent e);
+
 }

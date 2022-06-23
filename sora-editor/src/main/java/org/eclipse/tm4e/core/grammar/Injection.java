@@ -35,8 +35,7 @@ public class Injection {
     public final IRawGrammar grammar;
     private final Predicate<List<String>> matcher;
 
-    public Injection(
-            Predicate<List<String>> matcher, int ruleId, IRawGrammar grammar, int priority) {
+    public Injection(Predicate<List<String>> matcher, int ruleId, IRawGrammar grammar, int priority) {
         this.matcher = matcher;
         this.ruleId = ruleId;
         this.grammar = grammar;

@@ -30,15 +30,19 @@ import java.util.regex.Pattern;
 
 public class RegexSource {
 
-    // fix for android
-    private static final Pattern CAPTURING_REGEX_SOURCE =
-            Pattern.compile("\\$(\\d+)|\\$\\{(\\d+):/(downcase|upcase)\\}");
+    //fix for android
+    private static final Pattern CAPTURING_REGEX_SOURCE = Pattern
+            .compile("\\$(\\d+)|\\$\\{(\\d+):/(downcase|upcase)\\}");
 
-    //	private static final Pattern CAPTURING_REGEX_SOURCE = Pattern
-    //			.compile("\\$(\\d+)|\\$\\{(\\d+):\\/(downcase|upcase)}");
+//	private static final Pattern CAPTURING_REGEX_SOURCE = Pattern
+//			.compile("\\$(\\d+)|\\$\\{(\\d+):\\/(downcase|upcase)}");
 
-    /** Helper class, access members statically */
-    private RegexSource() {}
+
+    /**
+     * Helper class, access members statically
+     */
+    private RegexSource() {
+    }
 
     public static boolean hasCaptures(String regexSource) {
         if (regexSource == null) {
@@ -47,8 +51,7 @@ public class RegexSource {
         return CAPTURING_REGEX_SOURCE.matcher(regexSource).find();
     }
 
-    public static String replaceCaptures(
-            String regexSource, String captureSource, IOnigCaptureIndex[] captureIndices) {
+    public static String replaceCaptures(String regexSource, String captureSource, IOnigCaptureIndex[] captureIndices) {
         Matcher m = CAPTURING_REGEX_SOURCE.matcher(regexSource);
         StringBuffer result = new StringBuffer();
         while (m.find()) {
@@ -60,8 +63,7 @@ public class RegexSource {
         return result.toString();
     }
 
-    private static String getReplacement(
-            String match, String captureSource, IOnigCaptureIndex[] captureIndices) {
+    private static String getReplacement(String match, String captureSource, IOnigCaptureIndex[] captureIndices) {
         int index = -1;
         String command = null;
         int doublePointIndex = match.indexOf(':');

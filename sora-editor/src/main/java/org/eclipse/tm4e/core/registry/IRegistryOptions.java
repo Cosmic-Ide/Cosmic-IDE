@@ -31,24 +31,24 @@ import java.util.Collection;
 
 public interface IRegistryOptions {
 
-    public static final IRegistryOptions DEFAULT_LOCATOR =
-            new IRegistryOptions() {
+    public static final IRegistryOptions DEFAULT_LOCATOR = new IRegistryOptions() {
 
-                @Override
-                public String getFilePath(String scopeName) {
-                    return null;
-                }
+        @Override
+        public String getFilePath(String scopeName) {
+            return null;
+        }
 
-                @Override
-                public InputStream getInputStream(String scopeName) {
-                    return null;
-                }
+        @Override
+        public InputStream getInputStream(String scopeName) {
+            return null;
+        }
 
-                @Override
-                public Collection<String> getInjections(String scopeName) {
-                    return null;
-                }
-            };
+        @Override
+        public Collection<String> getInjections(String scopeName) {
+            return null;
+        }
+
+    };
 
     default IRawTheme getTheme() {
         return null;
@@ -59,4 +59,5 @@ public interface IRegistryOptions {
     InputStream getInputStream(String scopeName) throws IOException;
 
     Collection<String> getInjections(String scopeName);
+
 }

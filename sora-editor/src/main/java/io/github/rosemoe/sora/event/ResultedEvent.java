@@ -29,7 +29,6 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
  * Event with a result
- *
  * @param <T> Result type
  */
 public abstract class ResultedEvent<T> extends Event {
@@ -51,4 +50,5 @@ public abstract class ResultedEvent<T> extends Event {
     public boolean isResultSet() {
         return result != null;
     }
+
 }

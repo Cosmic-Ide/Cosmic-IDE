@@ -48,39 +48,32 @@ public interface SelectionHandleStyle {
 
     /**
      * Draw a handle to the given canvas and return descriptor of handle.
-     *
      * @param canvas Canvas to draw
-     * @param handleType Type of handle being drawn at this position. Value can be {@link
-     *     #HANDLE_TYPE_INSERT}, {@link #HANDLE_TYPE_LEFT}, {@link #HANDLE_TYPE_RIGHT} or {@link
-     *     #HANDLE_TYPE_UNDEFINED}
+     * @param handleType Type of handle being drawn at this position. Value can be {@link #HANDLE_TYPE_INSERT}, {@link #HANDLE_TYPE_LEFT}, {@link #HANDLE_TYPE_RIGHT} or {@link #HANDLE_TYPE_UNDEFINED}
      * @param x The x of text position on canvas
      * @param y The y of row bottom position on canvas
      * @param rowHeight The height of a single row
      * @param color The color of handle configured in {@link EditorColorScheme}
      * @param descriptor The descriptor that should be adjusted
      */
-    void draw(
-            @NonNull Canvas canvas,
-            int handleType,
-            float x,
-            float y,
-            int rowHeight,
-            int color,
-            @NonNull HandleDescriptor descriptor);
+    void draw(@NonNull Canvas canvas, int handleType, float x, float y, int rowHeight, int color, @NonNull HandleDescriptor descriptor);
 
     void setAlpha(int alpha);
 
     void setScale(float factor);
 
-    /** The descriptor of a drawn handle on canvas */
+    /**
+     * The descriptor of a drawn handle on canvas
+     */
     class HandleDescriptor {
 
-        /** The position of handle */
+        /**
+         * The position of handle
+         */
         public final RectF position = new RectF();
         /**
-         * The alignment of the handle (of the x coordinate) For example, you can draw handle with
-         * align right of the x when you draw the left handle
-         *
+         * The alignment of the handle (of the x coordinate)
+         * For example, you can draw handle with align right of the x when you draw the left handle
          * @see #ALIGN_CENTER
          * @see #ALIGN_LEFT
          * @see #ALIGN_RIGHT
@@ -96,5 +89,7 @@ public interface SelectionHandleStyle {
             position.setEmpty();
             this.alignment = ALIGN_CENTER;
         }
+
     }
+
 }

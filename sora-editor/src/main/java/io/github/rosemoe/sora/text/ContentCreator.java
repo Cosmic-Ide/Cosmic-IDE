@@ -35,12 +35,16 @@ import java.io.Reader;
  */
 public class ContentCreator {
 
-    /** Create a {@link Content} from stream */
+    /**
+     * Create a {@link Content} from stream
+     */
     public static Content fromStream(InputStream stream) throws IOException {
         return fromReader(new InputStreamReader(stream));
     }
 
-    /** Create a {@link Content} from reader */
+    /**
+     * Create a {@link Content} from reader
+     */
     public static Content fromReader(Reader reader) throws IOException {
         var content = new Content();
         content.setUndoEnabled(false);
@@ -56,4 +60,5 @@ public class ContentCreator {
         content.setUndoEnabled(true);
         return content;
     }
+
 }

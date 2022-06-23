@@ -25,13 +25,14 @@ package io.github.rosemoe.sora.event;
 
 import androidx.annotation.NonNull;
 
-import io.github.rosemoe.sora.widget.CodeEditor;
-
 import java.util.Objects;
 
+import io.github.rosemoe.sora.widget.CodeEditor;
+
 /**
- * An Event object describes an event of editor. It includes several attributes such as time and the
- * editor object. Subclasses of Event will define their own fields or methods.
+ * An Event object describes an event of editor.
+ * It includes several attributes such as time and the editor object.
+ * Subclasses of Event will define their own fields or methods.
  *
  * @author Rosemoe
  */
@@ -51,21 +52,25 @@ public abstract class Event {
         mInterceptTargets = 0;
     }
 
-    /** Get event time */
+    /**
+     * Get event time
+     */
     public long getEventTime() {
         return mEventTime;
     }
 
-    /** Get the editor */
+    /**
+     * Get the editor
+     */
     @NonNull
     public CodeEditor getEditor() {
         return mEditor;
     }
 
     /**
-     * Check whether this event can be intercepted (so that the event is not sent to other receivers
-     * after being intercepted) Intercept-able events:
-     *
+     * Check whether this event can be intercepted (so that the event is not sent to other
+     * receivers after being intercepted)
+     * Intercept-able events:
      * @see LongPressEvent
      * @see ClickEvent
      * @see DoubleClickEvent
@@ -78,8 +83,8 @@ public abstract class Event {
     /**
      * Intercept the event for all targets.
      *
-     * <p>Make sure {@link #canIntercept()} returns true. Otherwise, an {@link
-     * UnsupportedOperationException} will be thrown.
+     * Make sure {@link #canIntercept()} returns true. Otherwise, an {@link UnsupportedOperationException}
+     * will be thrown.
      *
      * @see InterceptTarget
      */
@@ -92,7 +97,6 @@ public abstract class Event {
 
     /**
      * Intercept the event for some targets
-     *
      * @param targets Masks for target types
      * @see InterceptTarget
      */
@@ -105,7 +109,6 @@ public abstract class Event {
 
     /**
      * Get intercepted dispatch targets
-     *
      * @see #intercept(int)
      * @see InterceptTarget
      */
@@ -115,10 +118,10 @@ public abstract class Event {
 
     /**
      * Check whether this event is intercepted for some types of targets
-     *
      * @see #getInterceptTargets()
      */
     public boolean isIntercepted() {
         return mInterceptTargets != 0;
     }
+
 }

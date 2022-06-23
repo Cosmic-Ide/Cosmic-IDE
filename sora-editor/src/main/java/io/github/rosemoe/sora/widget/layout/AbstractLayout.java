@@ -23,17 +23,17 @@
  */
 package io.github.rosemoe.sora.widget.layout;
 
+import java.util.List;
+
 import io.github.rosemoe.sora.graphics.GraphicTextRow;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import java.util.List;
-
 /**
- * Base layout implementation of {@link Layout}. It provides some convenient methods to editor
- * instance and text measuring.
+ * Base layout implementation of {@link Layout}.
+ * It provides some convenient methods to editor instance and text measuring.
  *
  * @author Rose
  */
@@ -51,8 +51,7 @@ public abstract class AbstractLayout implements Layout {
         return editor.getSpansForLine(line);
     }
 
-    protected float[] orderedFindCharIndex(
-            float targetOffset, ContentLine str, int line, int index, int end) {
+    protected float[] orderedFindCharIndex(float targetOffset, ContentLine str, int line, int index, int end) {
         var gtr = GraphicTextRow.obtain();
         gtr.set(str, index, end, editor.getTabWidth(), getSpans(line), editor.getTextPaint());
         var res = gtr.findOffsetByAdvance(index, targetOffset);
@@ -61,30 +60,24 @@ public abstract class AbstractLayout implements Layout {
     }
 
     protected float[] orderedFindCharIndex(float targetOffset, ContentLine str, int line) {
-        return orderedFindCharIndex(targetOffset, str, line, 0, str.length());
+       return orderedFindCharIndex(targetOffset, str, line, 0, str.length());
+    }
+
+
+    @Override
+    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+
     }
 
     @Override
-    public void afterDelete(
-            Content content,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn,
-            CharSequence deletedContent) {}
+    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
 
-    @Override
-    public void afterInsert(
-            Content content,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn,
-            CharSequence insertedContent) {}
+    }
 
     @Override
     public void destroyLayout() {
         editor = null;
         text = null;
     }
+
 }

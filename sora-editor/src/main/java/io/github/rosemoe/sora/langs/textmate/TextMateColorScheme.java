@@ -25,13 +25,12 @@ package io.github.rosemoe.sora.langs.textmate;
 
 import android.graphics.Color;
 
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+import java.util.List;
 
 import org.eclipse.tm4e.core.internal.theme.ThemeRaw;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.eclipse.tm4e.core.theme.Theme;
-
-import java.util.List;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class TextMateColorScheme extends EditorColorScheme {
 
@@ -42,6 +41,7 @@ public class TextMateColorScheme extends EditorColorScheme {
         this.iRawTheme = iRawTheme;
         this.theme = Theme.createFromRawTheme(iRawTheme);
         applyDefault();
+
     }
 
     public static TextMateColorScheme create(IRawTheme iRawTheme) {
@@ -61,6 +61,7 @@ public class TextMateColorScheme extends EditorColorScheme {
             if (caret != null) {
                 setColor(SELECTION_INSERT, Color.parseColor(caret));
             }
+
 
             String selection = (String) themeRaw.get("selection");
             if (selection != null) {
@@ -88,31 +89,37 @@ public class TextMateColorScheme extends EditorColorScheme {
                 setColor(TEXT_NORMAL, Color.parseColor(foreground));
             }
 
-            // TMTheme seems to have no fields to control BLOCK_LINE colors
-            int blockLineColor =
-                    ((getColor(WHOLE_BACKGROUND) + getColor(TEXT_NORMAL)) / 2) & 0x00FFFFFF
-                            | 0x88000000;
+            //TMTheme seems to have no fields to control BLOCK_LINE colors
+            int blockLineColor=((getColor(WHOLE_BACKGROUND)+getColor(TEXT_NORMAL))/2)&0x00FFFFFF|0x88000000;
             setColor(BLOCK_LINE, blockLineColor);
-            int blockLineColorCur = (blockLineColor) | 0xFF000000;
+            int blockLineColorCur=(blockLineColor)|0xFF000000;
             setColor(BLOCK_LINE_CURRENT, blockLineColorCur);
         }
+
     }
 
     @Override
     public int getColor(int type) {
         if (type >= 255) {
-            type = type - 255;
-            if (theme != null) {
-                String color = theme.getColor(type);
-                if (color != null) return Color.parseColor(color);
-                else return super.getColor(TEXT_NORMAL);
+            // Cache colors in super class
+            var superColor = super.getColor(type);
+            if (superColor == 0) {
+                if (theme != null) {
+                    String color = theme.getColor(type - 255);
+                    var newColor = color != null ? Color.parseColor(color) : super.getColor(TEXT_NORMAL);
+                    super.mColors.put(type, newColor);
+                    return newColor;
+                }
+                return super.getColor(TEXT_NORMAL);
+            } else {
+                return superColor;
             }
         }
-
         return super.getColor(type);
     }
 
     public IRawTheme getRawTheme() {
         return iRawTheme;
     }
+
 }

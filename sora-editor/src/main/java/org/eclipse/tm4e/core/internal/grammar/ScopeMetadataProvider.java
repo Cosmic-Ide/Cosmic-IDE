@@ -39,11 +39,9 @@ import java.util.stream.Collectors;
 
 public class ScopeMetadataProvider {
 
-    private static final ScopeMetadata _NULL_SCOPE_METADATA =
-            new ScopeMetadata("", 0, StandardTokenType.Other, null);
+    private static final ScopeMetadata _NULL_SCOPE_METADATA = new ScopeMetadata("", 0, StandardTokenType.Other, null);
 
-    private static final Pattern STANDARD_TOKEN_TYPE_REGEXP =
-            Pattern.compile("\\b(comment|string|regex)\\b");
+    private static final Pattern STANDARD_TOKEN_TYPE_REGEXP = Pattern.compile("\\b(comment|string|regex)\\b");
     private static final String COMMENT_TOKEN_TYPE = "comment";
     private static final String STRING_TOKEN_TYPE = "string";
     private static final String REGEX_TOKEN_TYPE = "regex";
@@ -55,10 +53,8 @@ public class ScopeMetadataProvider {
     private ScopeMetadata defaultMetaData;
     private Pattern embeddedLanguagesRegex;
 
-    public ScopeMetadataProvider(
-            int initialLanguage,
-            IThemeProvider themeProvider,
-            Map<String, Integer> embeddedLanguages) {
+    public ScopeMetadataProvider(int initialLanguage, IThemeProvider themeProvider,
+                                 Map<String, Integer> embeddedLanguages) {
         this.initialLanguage = initialLanguage;
         this.themeProvider = themeProvider;
         this.cache = new HashMap<>();
@@ -84,10 +80,9 @@ public class ScopeMetadataProvider {
         }
 
         // create the regex
-        Set<String> escapedScopes =
-                this.embeddedLanguages.keySet().stream()
-                        .map(ScopeMetadataProvider::escapeRegExpCharacters)
-                        .collect(Collectors.toSet());
+        Set<String> escapedScopes = this.embeddedLanguages.keySet().stream()
+                .map(ScopeMetadataProvider::escapeRegExpCharacters)
+                .collect(Collectors.toSet());
         if (escapedScopes.isEmpty()) {
             // no scopes registered
             this.embeddedLanguagesRegex = null;
@@ -101,16 +96,16 @@ public class ScopeMetadataProvider {
         }
     }
 
-    /** Escapes regular expression characters in a given string */
+    /**
+     * Escapes regular expression characters in a given string
+     */
     private static String escapeRegExpCharacters(String value) {
         // TODO!!!
-        return value; // value.replace(/[\-\\\{\}\*\+\?\|\^\$\.\,\[\]\(\)\#\s]/g, '\\$&');
+        return value; //value.replace(/[\-\\\{\}\*\+\?\|\^\$\.\,\[\]\(\)\#\s]/g, '\\$&');
     }
 
     private static int toStandardTokenType(String tokenType) {
-        Matcher m =
-                STANDARD_TOKEN_TYPE_REGEXP.matcher(
-                        tokenType); // tokenType.match(ScopeMetadataProvider.STANDARD_TOKEN_TYPE_REGEXP);
+        Matcher m = STANDARD_TOKEN_TYPE_REGEXP.matcher(tokenType); // tokenType.match(ScopeMetadataProvider.STANDARD_TOKEN_TYPE_REGEXP);
         if (!m.find()) {
             return StandardTokenType.Other;
         }
@@ -128,12 +123,12 @@ public class ScopeMetadataProvider {
 
     public void onDidChangeTheme() {
         this.cache.clear();
-        this.defaultMetaData =
-                new ScopeMetadata(
-                        "",
-                        this.initialLanguage,
-                        StandardTokenType.Other,
-                        Arrays.asList(this.themeProvider.getDefaults()));
+        this.defaultMetaData = new ScopeMetadata(
+                "",
+                this.initialLanguage,
+                StandardTokenType.Other,
+                Arrays.asList(this.themeProvider.getDefaults())
+        );
     }
 
     public ScopeMetadata getDefaultMetadata() {
@@ -162,8 +157,9 @@ public class ScopeMetadataProvider {
     }
 
     /**
-     * Given a produced TM scope, return the language that token describes or null if unknown. e.g.
-     * source.html => html, source.css.embedded.html => css, punctuation.definition.tag.html => null
+     * Given a produced TM scope, return the language that token describes or
+     * null if unknown. e.g. source.html => html, source.css.embedded.html =>
+     * css, punctuation.definition.tag.html => null
      */
     private int scopeToLanguage(String scope) {
         if (scope == null) {
@@ -176,18 +172,18 @@ public class ScopeMetadataProvider {
 
         // TODO!!!!
 
-        /*let m = scope.match(this._embeddedLanguagesRegex);
-        if (!m) {
-        	// no scopes matched
-        	return 0;
-        }
+		/*let m = scope.match(this._embeddedLanguagesRegex);
+		if (!m) {
+			// no scopes matched
+			return 0;
+		}
 
-        let language = this._embeddedLanguages[m[1]] || 0;
-        if (!language) {
-        	return 0;
-        }
+		let language = this._embeddedLanguages[m[1]] || 0;
+		if (!language) {
+			return 0;
+		}
 
-        return language;*/
+		return language;*/
         return 0;
     }
 }

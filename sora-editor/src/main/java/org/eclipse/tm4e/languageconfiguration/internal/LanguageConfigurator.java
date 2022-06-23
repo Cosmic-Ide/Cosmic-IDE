@@ -30,73 +30,78 @@ import org.eclipse.tm4e.languageconfiguration.internal.supports.OnEnterSupport;
 
 import java.io.Reader;
 
-/** Language configuration definition. */
+/**
+ * Language configuration definition.
+ *
+ */
 public class LanguageConfigurator {
 
-    private CharacterPairSupport characterPair;
-    private OnEnterSupport onEnter;
-    private CommentSupport comment;
-    private LanguageConfiguration languageConfiguration;
+	private CharacterPairSupport characterPair;
+	private OnEnterSupport onEnter;
+	private CommentSupport comment;
+	private LanguageConfiguration languageConfiguration;
 
-    /** Constructor for user preferences (loaded from Json with Gson). */
-    public LanguageConfigurator(Reader reader) {
-        try {
-            languageConfiguration = LanguageConfiguration.load(reader);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	/**
+	 * Constructor for user preferences (loaded from Json with Gson).
+	 */
+	public LanguageConfigurator(Reader reader) {
+		try {
+			 languageConfiguration= LanguageConfiguration.load(reader);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    /**
-     * Returns the "character pair" support and null otherwise.
-     *
-     * @return the "character pair" support and null otherwise.
-     */
-    public CharacterPairSupport getCharacterPair() {
-        if (this.characterPair == null) {
-            ILanguageConfiguration conf = getLanguageConfiguration();
-            if (conf != null) {
-                this.characterPair =
-                        new CharacterPairSupport(
-                                conf.getBrackets(),
-                                conf.getAutoClosingPairs(),
-                                conf.getSurroundingPairs());
-            }
-        }
-        return characterPair;
-    }
 
-    /**
-     * Returns the "on enter" support and null otherwise.
-     *
-     * @return the "on enter" support and null otherwise.
-     */
-    public OnEnterSupport getOnEnter() {
-        if (this.onEnter == null) {
-            ILanguageConfiguration conf = getLanguageConfiguration();
-            if (conf != null && (conf.getBrackets() != null || conf.getOnEnterRules() != null)) {
-                this.onEnter = new OnEnterSupport(conf.getBrackets(), conf.getOnEnterRules());
-            }
-        }
-        return onEnter;
-    }
+	/**
+	 * Returns the "character pair" support and null otherwise.
+	 *
+	 * @return the "character pair" support and null otherwise.
+	 */
+	public CharacterPairSupport getCharacterPair() {
+		if (this.characterPair == null) {
+			ILanguageConfiguration conf = getLanguageConfiguration();
+			if (conf != null) {
+				this.characterPair = new CharacterPairSupport(conf.getBrackets(), conf.getAutoClosingPairs(),
+						conf.getSurroundingPairs());
+			}
+		}
+		return characterPair;
+	}
 
-    /**
-     * Returns the "commment" support and null otherwise.
-     *
-     * @return the "commment" support and null otherwise.
-     */
-    public CommentSupport getCommentSupport() {
-        if (this.comment == null) {
-            ILanguageConfiguration conf = getLanguageConfiguration();
-            if (conf != null) {
-                this.comment = new CommentSupport(conf.getComments());
-            }
-        }
-        return comment;
-    }
+	/**
+	 * Returns the "on enter" support and null otherwise.
+	 *
+	 * @return the "on enter" support and null otherwise.
+	 */
+	public OnEnterSupport getOnEnter() {
+		if (this.onEnter == null) {
+			ILanguageConfiguration conf = getLanguageConfiguration();
+			if (conf != null && (conf.getBrackets() != null || conf.getOnEnterRules() != null)) {
+				this.onEnter = new OnEnterSupport(conf.getBrackets(), conf.getOnEnterRules());
+			}
+		}
+		return onEnter;
+	}
 
-    public ILanguageConfiguration getLanguageConfiguration() {
-        return languageConfiguration;
-    }
+	/**
+	 * Returns the "commment" support and null otherwise.
+	 *
+	 * @return the "commment" support and null otherwise.
+	 */
+	public CommentSupport getCommentSupport() {
+		if (this.comment == null) {
+			ILanguageConfiguration conf = getLanguageConfiguration();
+			if (conf != null) {
+				this.comment = new CommentSupport(conf.getComments());
+			}
+		}
+		return comment;
+	}
+
+	public ILanguageConfiguration getLanguageConfiguration() {
+		return languageConfiguration;
+	}
+
+
 }

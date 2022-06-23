@@ -41,7 +41,6 @@ public interface IRawGrammar {
     // injections?:{ [expression:string]: IRawRule };
 
     Collection<String> getFileTypes();
-
     String getName();
 
     String getFirstLineMatch();

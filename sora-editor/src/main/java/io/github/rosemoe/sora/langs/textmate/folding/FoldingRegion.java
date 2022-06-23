@@ -44,7 +44,6 @@ public class FoldingRegion {
     public int getRegionIndex() {
         return this.index;
     }
-
     public int getParentIndex() throws Exception {
         return this.ranges.getParentIndex(this.index);
     }

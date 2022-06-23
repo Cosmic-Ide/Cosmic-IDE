@@ -54,11 +54,9 @@ public class EmptyLanguage implements Language {
     }
 
     @Override
-    public void requireAutoComplete(
-            @NonNull ContentReference content,
-            @NonNull CharPosition position,
-            @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments) {}
+    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
+
+    }
 
     @Override
     public int getInterruptionLevel() {
@@ -82,33 +80,50 @@ public class EmptyLanguage implements Language {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+
+    }
 
     @Override
     public boolean useTab() {
         return false;
     }
 
+
+
     public static class EmptyAnalyzeManager implements AnalyzeManager {
 
-        public static final EmptyAnalyzeManager INSTANCE = new EmptyAnalyzeManager();
+        public final static EmptyAnalyzeManager INSTANCE = new EmptyAnalyzeManager();
 
         @Override
-        public void setReceiver(@Nullable StyleReceiver receiver) {}
+        public void setReceiver(@Nullable StyleReceiver receiver) {
+
+        }
 
         @Override
-        public void reset(@NonNull ContentReference content, @NonNull Bundle extraArguments) {}
+        public void reset(@NonNull ContentReference content, @NonNull Bundle extraArguments) {
+
+        }
 
         @Override
-        public void insert(CharPosition start, CharPosition end, CharSequence insertedContent) {}
+        public void insert(CharPosition start, CharPosition end, CharSequence insertedContent) {
+
+        }
 
         @Override
-        public void delete(CharPosition start, CharPosition end, CharSequence deletedContent) {}
+        public void delete(CharPosition start, CharPosition end, CharSequence deletedContent) {
+
+        }
 
         @Override
-        public void rerun() {}
+        public void rerun() {
+
+        }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+
+        }
     }
 }
+

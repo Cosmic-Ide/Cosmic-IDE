@@ -29,30 +29,34 @@ import android.widget.PopupWindow;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+
 import io.github.rosemoe.sora.event.EventReceiver;
 import io.github.rosemoe.sora.event.ScrollEvent;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import java.util.Objects;
-
-/** Base class for all editor popup windows. */
+/**
+ * Base class for all editor popup windows.
+ */
 public class EditorPopupWindow {
 
-    /** Update the position of this window when user scrolls the editor */
-    public static final int FEATURE_SCROLL_AS_CONTENT = 1;
+    /**
+     * Update the position of this window when user scrolls the editor
+     */
+    public final static int FEATURE_SCROLL_AS_CONTENT = 1;
 
     /**
-     * Allow the window to be displayed outside the view's rectangle. Otherwise, the window's size
-     * will be adjusted to force it to display in the view. If the space can't display it, it will
-     * get hidden.
+     * Allow the window to be displayed outside the view's rectangle.
+     * Otherwise, the window's size will be adjusted to force it to display in the view.
+     * If the space can't display it, it will get hidden.
      */
-    public static final int FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED = 1 << 1;
+    public final static int FEATURE_SHOW_OUTSIDE_VIEW_ALLOWED = 1 << 1;
 
     /**
-     * Hide this window when the user scrolls fast. Such as the selection handle is currently near
-     * the edge of screen.
+     * Hide this window when the user scrolls fast. Such as the selection handle
+     * is currently near the edge of screen.
      */
-    public static final int FEATURE_HIDE_WHEN_FAST_SCROLL = 1 << 2;
+    public final static int FEATURE_HIDE_WHEN_FAST_SCROLL = 1 << 2;
 
     private final PopupWindow mWindow;
     private final CodeEditor mEditor;
@@ -79,37 +83,37 @@ public class EditorPopupWindow {
         mParentView = editor;
         mWindow = new PopupWindow();
         mWindow.setElevation(editor.getDpUnit() * 8);
-        mScrollListener =
-                ((event, unsubscribe) -> {
-                    if (!mRegisterFlag) {
-                        unsubscribe.unsubscribe();
-                        mRegistered = false;
-                        return;
+        mScrollListener = ((event, unsubscribe) -> {
+            if (!mRegisterFlag) {
+                unsubscribe.unsubscribe();
+                mRegistered = false;
+                return;
+            }
+            switch (event.getCause()) {
+                case ScrollEvent.CAUSE_MAKE_POSITION_VISIBLE:
+                case ScrollEvent.CAUSE_TEXT_SELECTING:
+                case ScrollEvent.CAUSE_USER_FLING:
+                case ScrollEvent.CAUSE_SCALE_TEXT:
+                    if (isFeatureEnabled(FEATURE_HIDE_WHEN_FAST_SCROLL) &&
+                            (Math.abs(event.getEndX() - event.getStartX()) > 80 ||
+                                    Math.abs(event.getEndY() - event.getStartY()) > 80)) {
+                        if (isShowing()) {
+                            dismiss();
+                            return;
+                        }
                     }
-                    switch (event.getCause()) {
-                        case ScrollEvent.CAUSE_MAKE_POSITION_VISIBLE:
-                        case ScrollEvent.CAUSE_TEXT_SELECTING:
-                        case ScrollEvent.CAUSE_USER_FLING:
-                        case ScrollEvent.CAUSE_SCALE_TEXT:
-                            if (isFeatureEnabled(FEATURE_HIDE_WHEN_FAST_SCROLL)
-                                    && (Math.abs(event.getEndX() - event.getStartX()) > 80
-                                            || Math.abs(event.getEndY() - event.getStartY())
-                                                    > 80)) {
-                                if (isShowing()) {
-                                    dismiss();
-                                    return;
-                                }
-                            }
-                            break;
-                    }
-                    if (isFeatureEnabled(FEATURE_SCROLL_AS_CONTENT)) {
-                        applyWindowAttributes(false);
-                    }
-                });
+                    break;
+            }
+            if (isFeatureEnabled(FEATURE_SCROLL_AS_CONTENT)) {
+                applyWindowAttributes(false);
+            }
+        });
         register();
     }
 
-    /** Get editor instance */
+    /**
+     * Get editor instance
+     */
     @NonNull
     public CodeEditor getEditor() {
         return mEditor;
@@ -130,8 +134,9 @@ public class EditorPopupWindow {
     }
 
     /**
-     * Register this window in target editor. After registering, features are available. This
-     * automatically done when you create the window. But if you call {@link #unregister()}, you
+     * Register this window in target editor.
+     * After registering, features are available.
+     * This automatically done when you create the window. But if you call {@link #unregister()}, you
      * should re-invoke this method to make features available.
      */
     public void register() {
@@ -141,7 +146,9 @@ public class EditorPopupWindow {
         mRegisterFlag = true;
     }
 
-    /** Unregister this window in target editor. */
+    /**
+     * Unregister this window in target editor.
+     */
     public void unregister() {
         mRegisterFlag = false;
     }
@@ -153,7 +160,7 @@ public class EditorPopupWindow {
     /**
      * Get the actual {@link PopupWindow} instance.
      *
-     * <p>Note that you should not manage its visibility but update that by invoking methods in this
+     * Note that you should not manage its visibility but update that by invoking methods in this
      * class. Otherwise, there may be some abnormal display.
      */
     public PopupWindow getPopup() {
@@ -213,8 +220,7 @@ public class EditorPopupWindow {
     /**
      * Get width you've set for this window.
      *
-     * <p>Note that, according to you feature switches, this may be different from the actual size
-     * of the window on screen.
+     * Note that, according to you feature switches, this may be different from the actual size of the window on screen.
      */
     public int getWidth() {
         return mWidth;
@@ -223,8 +229,7 @@ public class EditorPopupWindow {
     /**
      * Get height you've set for this window.
      *
-     * <p>Note that, according to you feature switches, this may be different from the actual size
-     * of the window on screen.
+     * Note that, according to you feature switches, this may be different from the actual size of the window on screen.
      */
     public int getHeight() {
         return mHeight;
@@ -233,8 +238,7 @@ public class EditorPopupWindow {
     /**
      * Set the size of this window.
      *
-     * <p>Note that, according to you feature switches, the window can have a different size on
-     * screen.
+     * Note that, according to you feature switches, the window can have a different size on screen.
      */
     public void setSize(int width, int height) {
         mWidth = width;
@@ -242,7 +246,9 @@ public class EditorPopupWindow {
         applyWindowAttributes(false);
     }
 
-    /** Sets the position of the window <strong>in editor's drawing offset</strong> */
+    /**
+     * Sets the position of the window <strong>in editor's drawing offset</strong>
+     */
     public void setLocation(int x, int y) {
         mX = x;
         mY = y;
@@ -251,12 +257,16 @@ public class EditorPopupWindow {
         applyWindowAttributes(false);
     }
 
-    /** Sets the absolute position on view. */
+    /**
+     * Sets the absolute position on view.
+     */
     public void setLocationAbsolutely(int x, int y) {
         setLocation(x + mEditor.getOffsetX(), y + mEditor.getOffsetY());
     }
 
-    /** Show the window if appropriate */
+    /**
+     * Show the window if appropriate
+     */
     public void show() {
         if (mShowState) {
             return;
@@ -265,7 +275,9 @@ public class EditorPopupWindow {
         mShowState = true;
     }
 
-    /** Dismiss the window */
+    /**
+     * Dismiss the window
+     */
     public void dismiss() {
         if (mShowState) {
             mShowState = false;
@@ -275,7 +287,6 @@ public class EditorPopupWindow {
 
     /**
      * Set parent view of popup.
-     *
      * @param view View for {@link PopupWindow#showAtLocation(View, int, int, int)}
      */
     public void setParentView(@NonNull View view) {

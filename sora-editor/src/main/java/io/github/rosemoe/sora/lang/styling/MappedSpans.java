@@ -25,12 +25,12 @@ package io.github.rosemoe.sora.lang.styling;
 
 import androidx.annotation.NonNull;
 
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 /**
  * Store spans by mapping.
@@ -52,11 +52,9 @@ public class MappedSpans implements Spans {
         var startColumn = start.column;
         var endColumn = end.column;
         if (startLine == endLine) {
-            MappedSpanUpdater.shiftSpansOnSingleLineInsert(
-                    spanMap, startLine, startColumn, endColumn);
+            MappedSpanUpdater.shiftSpansOnSingleLineInsert(spanMap, startLine, startColumn, endColumn);
         } else {
-            MappedSpanUpdater.shiftSpansOnMultiLineInsert(
-                    spanMap, startLine, startColumn, endLine, endColumn);
+            MappedSpanUpdater.shiftSpansOnMultiLineInsert(spanMap, startLine, startColumn, endLine, endColumn);
         }
     }
 
@@ -67,11 +65,9 @@ public class MappedSpans implements Spans {
         var startColumn = start.column;
         var endColumn = end.column;
         if (startLine == endLine) {
-            MappedSpanUpdater.shiftSpansOnSingleLineDelete(
-                    spanMap, startLine, startColumn, endColumn);
+            MappedSpanUpdater.shiftSpansOnSingleLineDelete(spanMap, startLine, startColumn, endColumn);
         } else {
-            MappedSpanUpdater.shiftSpansOnMultiLineDelete(
-                    spanMap, startLine, startColumn, endLine, endColumn);
+            MappedSpanUpdater.shiftSpansOnMultiLineDelete(spanMap, startLine, startColumn, endLine, endColumn);
         }
     }
 
@@ -95,7 +91,9 @@ public class MappedSpans implements Spans {
         return spanMap.size();
     }
 
-    /** Allow you to build a span map linearly. */
+    /**
+     * Allow you to build a span map linearly.
+     */
     public static class Builder {
 
         private final List<List<Span>> spans;
@@ -111,12 +109,12 @@ public class MappedSpans implements Spans {
 
         /**
          * Add a new span if required.
-         *
-         * <p>If no special style is specified, you can use colorId as style long integer
+         * <p>
+         * If no special style is specified, you can use colorId as style long integer
          *
          * @param spanLine Line
-         * @param column Column
-         * @param style Style of text
+         * @param column   Column
+         * @param style    Style of text
          */
         public void addIfNeeded(int spanLine, int column, long style) {
             if (last != null && last.style == style) {
@@ -127,13 +125,13 @@ public class MappedSpans implements Spans {
 
         /**
          * Add a span directly
-         *
-         * <p>Note: the line should always >= the line of span last committed
-         *
-         * <p>If two spans are on the same line, you must add them in order by their column
+         * <p>
+         * Note: the line should always >= the line of span last committed
+         * <p>
+         * If two spans are on the same line, you must add them in order by their column
          *
          * @param spanLine The line position of span
-         * @param span The span
+         * @param span     The span
          */
         public void add(int spanLine, Span span) {
             int mapLine = spans.size() - 1;
@@ -162,8 +160,8 @@ public class MappedSpans implements Spans {
         }
 
         /**
-         * This method must be called when whole text is analyzed. <strong>Note that it is not the
-         * line count but line index!</strong>
+         * This method must be called when whole text is analyzed.
+         * <strong>Note that it is not the line count but line index!</strong>
          *
          * @param line The line is the line last of text
          */
@@ -181,7 +179,9 @@ public class MappedSpans implements Spans {
             }
         }
 
-        /** Ensure the list not empty */
+        /**
+         * Ensure the list not empty
+         */
         public void addNormalIfNull() {
             if (spans.isEmpty()) {
                 List<Span> spanList = new ArrayList<>();
@@ -253,4 +253,5 @@ public class MappedSpans implements Spans {
             spanMap.remove(line);
         }
     }
+
 }

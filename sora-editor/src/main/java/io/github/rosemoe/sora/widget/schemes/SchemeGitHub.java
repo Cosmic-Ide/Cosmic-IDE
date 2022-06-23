@@ -24,7 +24,9 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor picked from GitHub site Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
+ * ColorScheme for editor
+ * picked from GitHub site
+ * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeGitHub extends EditorColorScheme {
 
@@ -46,4 +48,5 @@ public class SchemeGitHub extends EditorColorScheme {
         setColor(SELECTION_INSERT, 0xffc7edcc);
         setColor(SELECTION_HANDLE, 0xffc7edcc);
     }
+
 }

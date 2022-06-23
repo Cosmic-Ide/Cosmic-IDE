@@ -30,8 +30,8 @@ import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.MyCharacter;
 
 /**
- * Utility class for invoking ICU library according to Android platform. Provide some default
- * implementation on old platforms without ICU.
+ * Utility class for invoking ICU library according to Android platform.
+ * Provide some default implementation on old platforms without ICU.
  *
  * @author Rosemoe
  */
@@ -39,7 +39,6 @@ public class ICUUtils {
 
     /**
      * Get word edges for the given offset
-     *
      * @param text Text to analyze
      * @param offset Required char offset of word
      * @return Packed value of (start, end) pair. Always contains the position {@code offset}
@@ -60,7 +59,9 @@ public class ICUUtils {
         }
     }
 
-    /** Primitive implementation of {@link #getWordEdges(CharSequence, int)} */
+    /**
+     * Primitive implementation of {@link #getWordEdges(CharSequence, int)}
+     */
     public static long getWordEdgesFallback(CharSequence text, int offset) {
         int start = offset;
         int end = offset;
@@ -72,4 +73,7 @@ public class ICUUtils {
         }
         return IntPair.pack(start, end);
     }
+
+
+
 }

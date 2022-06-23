@@ -29,8 +29,7 @@ public class IncludeOnlyRule extends Rule {
     public final Integer[] patterns;
     private RegExpSourceList cachedCompiledPatterns;
 
-    public IncludeOnlyRule(
-            int id, String name, String contentName, ICompilePatternsResult patterns) {
+    public IncludeOnlyRule(int id, String name, String contentName, ICompilePatternsResult patterns) {
         super(id, name, contentName);
         this.patterns = patterns.patterns;
         this.hasMissingPatterns = patterns.hasMissingPatterns;
@@ -38,8 +37,7 @@ public class IncludeOnlyRule extends Rule {
     }
 
     @Override
-    public void collectPatternsRecursive(
-            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
+    public void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst) {
         for (Integer pattern : this.patterns) {
             Rule rule = grammar.getRule(pattern);
             rule.collectPatternsRecursive(grammar, out, false);
@@ -47,12 +45,12 @@ public class IncludeOnlyRule extends Rule {
     }
 
     @Override
-    public ICompiledRule compile(
-            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
+    public ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG) {
         if (this.cachedCompiledPatterns == null) {
             this.cachedCompiledPatterns = new RegExpSourceList();
             this.collectPatternsRecursive(grammar, this.cachedCompiledPatterns, true);
         }
         return this.cachedCompiledPatterns.compile(grammar, allowA, allowG);
     }
+
 }

@@ -34,4 +34,5 @@ public interface IToken {
     int getEndIndex();
 
     List<String> getScopes();
+
 }

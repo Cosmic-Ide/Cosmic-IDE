@@ -24,7 +24,6 @@
 package org.eclipse.tm4e.core.internal.utils;
 
 import org.eclipse.tm4e.core.internal.grammar.parser.Raw;
-import org.eclipse.tm4e.core.internal.types.IRawRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -32,11 +31,20 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Clone utilities. */
+import org.eclipse.tm4e.core.internal.types.IRawRepository;
+
+/**
+ * Clone utilities.
+ *
+ */
 public class CloneUtils {
 
-    /** Helper class, use methods statically */
-    private CloneUtils() {}
+    /**
+     * Helper class, use methods statically
+     */
+    private CloneUtils() {
+
+    }
 
     public static Object clone(Object value) {
         if (value instanceof Raw) {

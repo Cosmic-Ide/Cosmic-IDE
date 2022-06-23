@@ -23,17 +23,17 @@
  */
 package io.github.rosemoe.sora.lang.styling;
 
-import io.github.rosemoe.sora.data.ObjectAllocator;
-import io.github.rosemoe.sora.text.CharPosition;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.rosemoe.sora.data.ObjectAllocator;
+import io.github.rosemoe.sora.text.CharPosition;
+
 /**
  * This class stores styles of text and other decorations in editor related to code.
- *
- * <p>Note that this does not save any information related to languages. No extra space is provided
+ * <p>
+ * Note that this does not save any information related to languages. No extra space is provided
  * for communication between analyzers and auto-completion. You should manage it by yourself.
  */
 public class Styles {
@@ -59,7 +59,9 @@ public class Styles {
         }
     }
 
-    /** Get analyzed spans */
+    /**
+     * Get analyzed spans
+     */
     public Spans getSpans() {
         return spans;
     }
@@ -93,35 +95,47 @@ public class Styles {
     }
 
     /**
-     * Set suppress switch for editor What is 'suppress switch' ?:
-     *
-     * <p>Suppress switch is a switch size for code block line drawing and for the process to find
-     * out which code block the cursor is in. Because the code blocks are not saved by the order of
-     * both start line and end line,we are unable to know exactly when we should stop the process.
-     * So without a suppressing switch,it will cost a large of time to search code blocks.
-     *
-     * <p>A suppressing switch is the code block count in the first layer code block (as well as its
-     * sub code blocks). If you are unsure,do not set it.
-     *
-     * <p>The default value is Integer.MAX_VALUE
+     * Set suppress switch for editor
+     * What is 'suppress switch' ?:
+     * <p>
+     * Suppress switch is a switch size for code block line drawing
+     * and for the process to find out which code block the cursor is in.
+     * Because the code blocks are not saved by the order of both start line and
+     * end line,we are unable to know exactly when we should stop the process.
+     * So without a suppressing switch,it will cost a large of time to search code
+     * blocks.
+     * <p>
+     * A suppressing switch is the code block count in the first layer code block
+     * (as well as its sub code blocks).
+     * If you are unsure,do not set it.
+     * <p>
+     * The default value is Integer.MAX_VALUE
      */
     public void setSuppressSwitch(int suppressSwitch) {
         this.suppressSwitch = suppressSwitch;
     }
 
-    /** Adjust styles on insert. */
+    /**
+     * Adjust styles on insert.
+     */
     public void adjustOnInsert(CharPosition start, CharPosition end) {
         spans.adjustOnInsert(start, end);
-        if (blocks != null) BlocksUpdater.update(blocks, start.line, end.line - start.line);
+        if (blocks != null)
+            BlocksUpdater.update(blocks, start.line, end.line - start.line);
     }
 
-    /** Adjust styles on delete. */
+    /**
+     * Adjust styles on delete.
+     */
     public void adjustOnDelete(CharPosition start, CharPosition end) {
         spans.adjustOnDelete(start, end);
-        if (blocks != null) BlocksUpdater.update(blocks, start.line, start.line - end.line);
+        if (blocks != null)
+            BlocksUpdater.update(blocks, start.line, start.line - end.line);
     }
 
-    /** Do some extra work before finally send the result to editor. */
+    /**
+     * Do some extra work before finally send the result to editor.
+     */
     public void finishBuilding() {
         int pre = -1;
         var sort = false;
@@ -137,4 +151,5 @@ public class Styles {
             Collections.sort(blocks, CodeBlock.COMPARATOR_END);
         }
     }
+
 }

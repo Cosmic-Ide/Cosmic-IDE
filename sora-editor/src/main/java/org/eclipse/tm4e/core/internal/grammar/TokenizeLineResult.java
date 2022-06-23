@@ -23,11 +23,15 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
+import org.eclipse.tm4e.core.grammar.StackElement;
 import org.eclipse.tm4e.core.grammar.IToken;
 import org.eclipse.tm4e.core.grammar.ITokenizeLineResult;
-import org.eclipse.tm4e.core.grammar.StackElement;
 
-/** Result of the line tokenization implementation. */
+/**
+ *
+ * Result of the line tokenization implementation.
+ *
+ */
 public class TokenizeLineResult implements ITokenizeLineResult {
 
     private final IToken[] tokens;
@@ -47,4 +51,5 @@ public class TokenizeLineResult implements ITokenizeLineResult {
     public StackElement getRuleStack() {
         return ruleStack;
     }
+
 }

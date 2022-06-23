@@ -41,12 +41,7 @@ public class FormatThread extends Thread {
         mReceiver = receiver;
     }
 
-    public FormatThread(
-            CharSequence text,
-            Language language,
-            FormatResultReceiver receiver,
-            CharPosition start,
-            CharPosition end) {
+    public FormatThread(CharSequence text, Language language, FormatResultReceiver receiver, CharPosition start, CharPosition end) {
         mText = text;
         mLanguage = language;
         mReceiver = receiver;
@@ -59,10 +54,7 @@ public class FormatThread extends Thread {
         CharSequence result = null;
         var type = mStart != null;
         try {
-            CharSequence chars =
-                    ((mText instanceof Content)
-                            ? (((Content) mText).toStringBuilder())
-                            : new StringBuilder(mText));
+            CharSequence chars = ((mText instanceof Content) ? (((Content) mText).toStringBuilder()) : new StringBuilder(mText));
             if (type) {
                 result = mLanguage.formatRegion(chars, mStart, mEnd);
             } else {
@@ -90,12 +82,10 @@ public class FormatThread extends Thread {
 
         void onFormatSucceed(CharSequence originalText, CharSequence newText);
 
-        void onFormatSucceed(
-                CharSequence originalText,
-                CharSequence replaceText,
-                CharPosition start,
-                CharPosition end);
+        void onFormatSucceed(CharSequence originalText, CharSequence replaceText, CharPosition start, CharPosition end);
 
         void onFormatFail(Throwable throwable);
+
     }
+
 }

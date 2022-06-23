@@ -108,4 +108,6 @@ public class LineNumberCalculator {
     public int getColumn() {
         return mColumn;
     }
+
 }
+

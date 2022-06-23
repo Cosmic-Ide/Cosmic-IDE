@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    // We're currently using sora-editor from this commit 962e3c00f6ae3ff915e49a5f8c1b72b36b37586d
+    // We're currently using sora-editor from this commit 6f5a1aa3dce06712c5ae0168a9e7936ad41b54b1
     implementation project(path: ':common')
     implementation project(path: ':nb-javac')
     implementation 'androidx.annotation:annotation:1.4.0-rc01'

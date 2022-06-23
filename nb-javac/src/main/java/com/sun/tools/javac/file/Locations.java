@@ -1965,7 +1965,7 @@ public class Locations {
                                             "java.home", systemJavaHome.toString());
                             jrtfs = FileSystems.newFileSystem(jrtURI, attrMap);
                         } catch (ProviderNotFoundException ex) {
-                            URL javaHomeURL = systemJavaHome.resolve("jrt-fs.jar").toUri().toURL();
+                            URL javaHomeURL = systemJavaHome.resolve("lib").resolve("jrt-fs.jar").toUri().toURL();
                             ClassLoader currentLoader = Locations.class.getClassLoader();
                             URLClassLoader fsLoader =
                                     new URLClassLoader(new URL[] {javaHomeURL}, currentLoader);

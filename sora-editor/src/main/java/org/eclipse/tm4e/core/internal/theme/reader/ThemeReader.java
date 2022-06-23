@@ -34,7 +34,7 @@ import java.io.InputStream;
  *
  */
 public class ThemeReader {
-
+/*
     public static final IThemeParser XML_PARSER = new IThemeParser() {
 
         private final XMLPListParser<IRawTheme> parser = new XMLPListParser<>(true);
@@ -44,6 +44,7 @@ public class ThemeReader {
             return parser.parse(contents);
         }
     };
+*/
     public static final IThemeParser JSON_PARSER = new IThemeParser() {
 
         private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
@@ -66,9 +67,9 @@ public class ThemeReader {
     }
 
     private static IThemeParser getThemeParser(String filePath) {
-        if (filePath.endsWith(".json")) {
+//        if (filePath.endsWith(".json")) {
             return JSON_PARSER;
-        }
-        return XML_PARSER;
-    }
+//        }
+//      return XML_PARSER;
+//    }
 }

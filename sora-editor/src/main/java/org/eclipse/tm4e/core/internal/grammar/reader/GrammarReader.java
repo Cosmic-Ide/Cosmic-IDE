@@ -34,7 +34,7 @@ import org.eclipse.tm4e.core.internal.types.IRawGrammar;
  *
  */
 public class GrammarReader {
-
+/*
     public static final IGrammarParser XML_PARSER = new IGrammarParser() {
 
         private XMLPListParser<IRawGrammar> parser = new XMLPListParser<>(false);
@@ -44,6 +44,7 @@ public class GrammarReader {
             return parser.parse(contents);
         }
     };
+*/
     public static final IGrammarParser JSON_PARSER = new IGrammarParser() {
 
         private JSONPListParser<IRawGrammar> parser = new JSONPListParser<>(false);
@@ -67,9 +68,9 @@ public class GrammarReader {
     }
 
     private static IGrammarParser getGrammarParser(String filePath) {
-        if (filePath.endsWith(".json")) {
+//        if (filePath.endsWith(".json")) {
             return JSON_PARSER;
-        }
-        return XML_PARSER;
-    }
+//        }
+//        return XML_PARSER;
+//    }
 }

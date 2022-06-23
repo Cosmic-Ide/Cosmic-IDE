@@ -88,5 +88,4 @@ dependencies {
     implementation project(path: ':sora-editor')
     implementation project(path: ':android-compiler')
     implementation project(path: ':code-analyzer')
-    implementation project(path: ':nb-javac')
 }

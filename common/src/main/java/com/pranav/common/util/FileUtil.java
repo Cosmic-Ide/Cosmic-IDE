@@ -1,6 +1,7 @@
 package com.pranav.common.util;
 
 import com.pranav.common.Indexer;
+import com.itsaky.androidide.utils.Environment;
 
 import org.json.JSONException;
 
@@ -23,6 +24,7 @@ public class FileUtil {
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory + "/";
         javaDir = privateDataDirectory + "java/";
+        Environment.init(new File(privateDataDirectory, "compiler-modules"));
     }
 
     public static void setJavaDirectory(String dir) {

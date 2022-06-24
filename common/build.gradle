@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'com.android.lint'
     id 'org.jetbrains.kotlin.jvm'
 }
 

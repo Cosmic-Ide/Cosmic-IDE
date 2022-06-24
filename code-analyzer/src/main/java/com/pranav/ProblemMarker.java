@@ -18,6 +18,7 @@ public class ProblemMarker implements ContentListener {
     public ProblemMarker(CodeEditor editor, String file) {
         this.editor = editor;
         this.analyzer = new JavacAnalyzer(editor.getContext(), file);
+        run(editor.getText());
     }
 
     @Override

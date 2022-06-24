@@ -13,8 +13,8 @@ class ConcurrentUtil {
     }
     
     @JvmStatic
-    fun inParallel(runnable: Runnable) {
-      Executors.newCachedThreadPool().submit(runnable);
+    fun inParallel(runnable: Runnable) = GlobalScope.launch(Dispatchers.Default) {
+      runnable.run()
     }
   }
 }

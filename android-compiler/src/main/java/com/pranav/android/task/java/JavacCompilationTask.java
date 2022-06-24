@@ -3,16 +3,15 @@ package com.pranav.android.task.java;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.pranav.common.Indexer;
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
+import com.pranav.common.Indexer;
 import com.pranav.common.util.FileUtil;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +56,11 @@ public class JavacCompilationTask extends Task {
         for (var file : javaFiles) {
             if (file.lastModified() > lastBuildTime) {
                 var path = file.getAbsolutePath();
-                new File(output, path.substring(path.indexOf(FileUtil.getJavaDir()), path.indexOf(".java"))).delete();
+                new File(
+                                output,
+                                path.substring(
+                                        path.indexOf(FileUtil.getJavaDir()), path.indexOf(".java")))
+                        .delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
                             @Override

@@ -50,8 +50,12 @@ public class Indexer {
         return json.getString(key);
     }
 
-    public long getLong(String key) throws JSONException {
-        return json.getLong(key);
+    public long getLong(String key) {
+        try {
+            return json.getLong(key);
+        } catch (JSONException e) {
+            return 0;
+        }
     }
 
     public String asString() throws JSONException {

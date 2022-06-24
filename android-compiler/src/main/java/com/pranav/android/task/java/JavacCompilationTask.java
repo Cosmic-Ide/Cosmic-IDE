@@ -3,6 +3,7 @@ package com.pranav.android.task.java;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.pranav.common.Indexer;
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
@@ -11,6 +12,7 @@ import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,24 +45,27 @@ public class JavacCompilationTask extends Task {
         output.mkdirs();
         var version = prefs.getString("version", "7");
 
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var javaFileObjects = new ArrayList<JavaFileObject>();
-        var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
+        final var lastBuildTime = new Indexer("editor").getLong("lastBuildTime");
+        final var javaFileObjects = new ArrayList<JavaFileObject>();
+        final var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
         for (var file : javaFiles) {
-            javaFileObjects.add(
-                    new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                        @Override
-                        public CharSequence getCharContent(boolean ignoreEncodingErrors)
-                                throws IOException {
-                            return FileUtil.readFile(file);
-                        }
-                    });
+            if (file.lastModified() > lastBuildTime) {
+                javaFileObjects.add(
+                        new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                            @Override
+                            public CharSequence getCharContent(boolean ignoreEncodingErrors)
+                                    throws IOException {
+                                return FileUtil.readFile(file);
+                            }
+                        });
+            }
         }
 
-        var tool = JavacTool.create();
+        final var tool = JavacTool.create();
 
-        var standardJavaFileManager =
+        final var standardJavaFileManager =
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
         try {
@@ -74,7 +79,7 @@ public class JavacCompilationTask extends Task {
             throw new CompilationFailedException(e);
         }
 
-        var args = new ArrayList<String>();
+        final var args = new ArrayList<String>();
 
         args.add("-proc:none");
         args.add("-source");
@@ -86,7 +91,7 @@ public class JavacCompilationTask extends Task {
             args.add(FileUtil.getDataDir() + "compiler-modules");
         }
 
-        JavacTask task =
+        final var task =
                 (JavacTask)
                         tool.getTask(
                                 null,
@@ -132,6 +137,7 @@ public class JavacCompilationTask extends Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
+        new Indexer("editor").put("lastBuildTime", System.currentTimeMillis());
     }
 
     public ArrayList<File> getSourceFiles(File path) {

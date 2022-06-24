@@ -1,6 +1,5 @@
 plugins {
-    id 'com.android.library'
-    id 'com.android.lint'
+  id 'com.android.library'
 }
 
 android {
@@ -27,5 +26,4 @@ dependencies {
   implementation 'io.github.itsaky:nb-javac-android:17.0.0.0'
 	implementation project(path: ':common')
 	implementation project(path: ':sora-editor')
-	compileOnly files('libs/android-stubs.jar')
 }

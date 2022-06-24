@@ -41,17 +41,23 @@ public class JavacCompilationTask extends Task {
     @Override
     public void doFullTask() throws Exception {
 
-        var output = new File(FileUtil.getBinDir(), "classes");
-        output.mkdirs();
-        var version = prefs.getString("version", "7");
+        final var output = new File(FileUtil.getBinDir(), "classes");
 
-        var diagnostics = new DiagnosticCollector<JavaFileObject>();
+        final var version = prefs.getString("version", "7");
 
-        final var lastBuildTime = new Indexer("editor").getLong("lastBuildTime");
+        final var diagnostics = new DiagnosticCollector<JavaFileObject>();
+
+        var lastBuildTime = new Indexer("editor").getLong("lastBuildTime");
+        if (!output.exists()) {
+            lastBuildTime = 0;
+            output.mkdirs();
+        }
         final var javaFileObjects = new ArrayList<JavaFileObject>();
         final var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
         for (var file : javaFiles) {
             if (file.lastModified() > lastBuildTime) {
+                var path = file.getAbsolutePath();
+                new File(output, path.substring(path.indexOf(FileUtil.getJavaDir()), path.indexOf(".java"))).delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
                             @Override

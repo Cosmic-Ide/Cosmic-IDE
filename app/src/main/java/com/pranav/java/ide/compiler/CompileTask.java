@@ -54,8 +54,6 @@ public class CompileTask extends Thread {
         try {
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            FileUtil.deleteFile(FileUtil.getBinDir());
-            new File(FileUtil.getBinDir()).mkdirs();
             new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
             FileUtil.writeFile(
@@ -84,8 +82,8 @@ public class CompileTask extends Thread {
                 javaTask.doFullTask();
             }
             errorsArePresent = false;
- //       } catch (CompilationFailedException e) {
- //           listener.onFailed(e.getMessage());
+        } catch (CompilationFailedException e) {
+            listener.onFailed(e.getMessage());
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
         }

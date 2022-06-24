@@ -162,7 +162,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
-        editor.getText().addContentListener(new ProblemMarker(editor));
+        editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
     }
 
     void reloadTreeView() {
@@ -200,6 +200,7 @@ public final class MainActivity extends AppCompatActivity {
     public void loadFileToEditor(String path) throws IOException, JSONException {
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
+        editor.getText().addContentListener(new ProblemMarker(editor, path));
         indexer.put("currentFile", path);
         indexer.flush();
         currentWorkingFilePath = path;

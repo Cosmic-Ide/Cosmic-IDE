@@ -26,29 +26,27 @@ public class JavacAnalyzer {
     private final SharedPreferences prefs;
     private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     private boolean isFirstUse = true;
+    private final String currentFile;
 
-    public JavacAnalyzer(Context context) {
+    public JavacAnalyzer(Context context, String file) {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        currentFile = file;
     }
 
-    // TODO: check and return diagnostics from only the current file being edited
     public void analyze() throws IOException {
         final var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
         final var version = prefs.getString("version", "7");
 
         final var javaFileObjects = new ArrayList<JavaFileObject>();
-        final var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
-        for (var file : javaFiles) {
-            javaFileObjects.add(
-                    new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                        @Override
-                        public CharSequence getCharContent(boolean ignoreEncodingErrors)
-                                throws IOException {
-                            return FileUtil.readFile(file);
-                        }
-                    });
-        }
+        javaFileObjects.add(
+                new SimpleJavaFileObject(new File(currentFile).toURI(), JavaFileObject.Kind.SOURCE) {
+                    @Override
+                    public CharSequence getCharContent(boolean ignoreEncodingErrors)
+                            throws IOException {
+                        return FileUtil.readFile(new File(currentFile));
+                    }
+                });
 
         final var tool = JavacTool.create();
 
@@ -58,7 +56,7 @@ public class JavacAnalyzer {
         standardJavaFileManager.setLocation(
                 StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
-        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
+        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, getSourceFiles(new File(FileUtil.getJavaDir())));
 
         final var args = new ArrayList<String>();
 

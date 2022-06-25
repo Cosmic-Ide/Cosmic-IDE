@@ -270,7 +270,7 @@ class LineTokenizer {
 
         // Look for injected rules
         List<Injection> injections = grammar.getInjections();
-        if (injections.size() == 0) {
+        if (injections.isEmpty()) {
             // No injections whatsoever => early return
             return matchResult;
         }

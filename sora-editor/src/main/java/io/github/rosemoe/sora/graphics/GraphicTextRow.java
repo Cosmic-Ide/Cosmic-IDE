@@ -261,7 +261,7 @@ public class GraphicTextRow {
 
         start = Math.max(start, mStart);
         end = Math.min(end, mEnd);
-        if (mSpans.size() == 0) {
+        if (mSpans.isEmpty()) {
             throw new IllegalArgumentException("At least one span is needed");
         }
         int regionStart = start;

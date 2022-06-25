@@ -1446,7 +1446,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     public List<Span> getSpansForLine(int line) {
         var spanMap = mStyles == null ? null : mStyles.spans;
-        if (defSpans.size() == 0) {
+        if (defSpans.isEmpty()) {
             defSpans.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
         }
         try {

@@ -134,12 +134,12 @@ public final class SettingActivity extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
-                            AdapterView<?> adapterView, View view, int i, long l) {
+                            AdapterView<?> adapter, View view, int i, long l) {
                         if (javaVersions[i] == "18" && settings.getString("compiler", "Javac").equals("Javac")) {
                             new MaterialAlertDialogBuilder(SettingActivity.this)
                                     .setTitle("Notice")
                                     .setMessage("Please note that currently only ECJ supports Java 18. Javac with Java 18 is not currently supported.")
-                                    .setPositiveButton("GOT IT", (dialog, i) -> {})
+                                    .setPositiveButton("GOT IT", (dialog, which) -> {})
                                     .show();
                             return;
                         }
@@ -147,43 +147,43 @@ public final class SettingActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {}
+                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
         javaCompilers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
-                            AdapterView<?> adapterView, View view, int i, long l) {
+                            AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("compiler", javaCompilers[i]).apply();
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {}
+                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
         javaFormatters_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
-                            AdapterView<?> adapterView, View view, int i, long l) {
+                            AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("formatter", javaFormatters[i]).apply();
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {}
+                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
         javaDisassemblers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(
-                            AdapterView<?> adapterView, View view, int i, long l) {
+                            AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("disassembler", javaDisassemblers[i]).apply();
                     }
 
                     @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {}
+                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
         buildClasspathDialog();

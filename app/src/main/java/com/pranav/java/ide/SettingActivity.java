@@ -133,12 +133,14 @@ public final class SettingActivity extends AppCompatActivity {
         javaVersions_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(
-                            AdapterView<?> adapter, View view, int i, long l) {
-                        if (javaVersions[i] == "18" && settings.getString("compiler", "Javac").equals("Javac")) {
+                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
+                        if (javaVersions[i] == "18"
+                                && settings.getString("compiler", "Javac").equals("Javac")) {
                             new MaterialAlertDialogBuilder(SettingActivity.this)
                                     .setTitle("Notice")
-                                    .setMessage("Please note that currently only ECJ supports Java 18. Javac with Java 18 is not currently supported.")
+                                    .setMessage(
+                                            "Please note that currently only ECJ supports Java 18."
+                                                + " Javac with Java 18 is not currently supported.")
                                     .setPositiveButton("GOT IT", (dialog, which) -> {})
                                     .show();
                             return;
@@ -153,8 +155,7 @@ public final class SettingActivity extends AppCompatActivity {
         javaCompilers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(
-                            AdapterView<?> adapter, View view, int i, long l) {
+                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("compiler", javaCompilers[i]).apply();
                     }
 
@@ -165,8 +166,7 @@ public final class SettingActivity extends AppCompatActivity {
         javaFormatters_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(
-                            AdapterView<?> adapter, View view, int i, long l) {
+                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("formatter", javaFormatters[i]).apply();
                     }
 
@@ -177,8 +177,7 @@ public final class SettingActivity extends AppCompatActivity {
         javaDisassemblers_spinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemSelected(
-                            AdapterView<?> adapter, View view, int i, long l) {
+                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
                         settings.edit().putString("disassembler", javaDisassemblers[i]).apply();
                     }
 

@@ -232,8 +232,7 @@ public class TreeViewDrawer extends Fragment {
                     v -> {
                         var fileNameString = fileName.getText().toString();
 
-                        if (!fileNameString.equals("")
-                                && !fileNameString.endsWith(".java")) {
+                        if (!fileNameString.equals("") && !fileNameString.endsWith(".java")) {
                             try {
                                 var filePth =
                                         new File(
@@ -325,7 +324,8 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
-            areUsure_txt.setText(getString(R.string.delete_file, node.getContent().getFile().getName()));
+            areUsure_txt.setText(
+                    getString(R.string.delete_file, node.getContent().getFile().getName()));
 
             confirmBttn.setOnClickListener(
                     v -> {

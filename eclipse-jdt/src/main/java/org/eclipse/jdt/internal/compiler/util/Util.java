@@ -684,7 +684,7 @@ public class Util implements SuffixConstants {
             return false; // it is a ".class" file, it cannot be a zip archive name
         }
         return true; // it is neither a ".java" file nor a ".class" file, so this is a potential
-                     // archive name
+        // archive name
     }
 
     public static final int ZIP_FILE = 0;
@@ -732,7 +732,7 @@ public class Util implements SuffixConstants {
             return JMOD_FILE;
         }
         return ZIP_FILE; // it is neither a ".java" file nor a ".class" file, so this is a potential
-                         // archive name
+        // archive name
     }
 
     /**
@@ -791,7 +791,7 @@ public class Util implements SuffixConstants {
                             && lastSlash
                                     != pattern.length
                                             - 1) { // trailing slash -> adds '**' for free (see
-                                                   // http://ant.apache.org/manual/dirtasks.html)
+                        // http://ant.apache.org/manual/dirtasks.html)
                         int star = CharOperation.indexOf('*', pattern, lastSlash);
                         if ((star == -1
                                 || star >= pattern.length - 1
@@ -1528,7 +1528,7 @@ public class Util implements SuffixConstants {
                 && start
                         >= string.length
                                 - 1) { // unless "-*" we need at least one more char, e.g. after
-                                       // "+[", other variants are even longer
+            // "+[", other variants are even longer
             throw new IllegalArgumentException();
         }
         switch (c) {

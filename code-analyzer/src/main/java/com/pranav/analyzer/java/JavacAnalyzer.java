@@ -40,7 +40,8 @@ public class JavacAnalyzer {
 
         final var javaFileObjects = new ArrayList<JavaFileObject>();
         javaFileObjects.add(
-                new SimpleJavaFileObject(new File(currentFile).toURI(), JavaFileObject.Kind.SOURCE) {
+                new SimpleJavaFileObject(
+                        new File(currentFile).toURI(), JavaFileObject.Kind.SOURCE) {
                     @Override
                     public CharSequence getCharContent(boolean ignoreEncodingErrors)
                             throws IOException {
@@ -56,7 +57,8 @@ public class JavacAnalyzer {
         standardJavaFileManager.setLocation(
                 StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
-        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, getSourceFiles(new File(FileUtil.getJavaDir())));
+        standardJavaFileManager.setLocation(
+                StandardLocation.SOURCE_PATH, getSourceFiles(new File(FileUtil.getJavaDir())));
 
         final var args = new ArrayList<String>();
 

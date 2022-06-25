@@ -76,7 +76,7 @@ public class ECJCompilationTask extends Task {
         args.add(FileUtil.getJavaDir());
 
         
-        var task = compiler.getTask(null, fileManager, diagnostics, args, null, fileManager.getJavaFileObjectsFromFiles(filesToCompile.iterator()));
+        var task = compiler.getTask(null, fileManager, diagnostics, args, null, fileManager.getJavaFileObjectsFromFiles(filesToCompile);
         
         if(!task.call()) {
           var errs = new StringBuilder();

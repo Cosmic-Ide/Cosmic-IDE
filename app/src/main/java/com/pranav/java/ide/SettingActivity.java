@@ -13,12 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.pranav.common.util.FileUtil;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
-        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"
+        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17" "18"
     };
 
     private String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};
@@ -134,6 +135,14 @@ public final class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(
                             AdapterView<?> adapterView, View view, int i, long l) {
+                        if (javaVersions[i] == "18" && settings.getString("compiler", "Javac").equals("Javac")) {
+                            new MaterialAlertDialogBuilder(SettingActivity.this)
+                                    .setTitle("Notice")
+                                    .setMessage("Please note that currently only ECJ supports Java 18. Javac with Java 18 is not currently supported.")
+                                    .setPositiveButton("GOT IT", (dialog, i) -> {})
+                                    .show();
+                            return;
+                        }
                         settings.edit().putString("version", javaVersions[i]).apply();
                     }
 

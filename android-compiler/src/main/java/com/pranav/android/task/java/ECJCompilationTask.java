@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
@@ -75,7 +76,7 @@ public class ECJCompilationTask extends Task {
         args.add(FileUtil.getJavaDir());
 
         
-        var task = compiler.getTask(null, fileManager, diagnostics, args, null, fileManager.getJavaFileObjectsFromFiles(filesToCompile));
+        var task = compiler.getTask(null, fileManager, diagnostics, args, null, fileManager.getJavaFileObjectsFromFiles(filesToCompile.iterator()));
         
         if(!task.call()) {
           var errs = new StringBuilder();
@@ -116,8 +117,8 @@ public class ECJCompilationTask extends Task {
                   new Indexer("editor").put("lastBuildTime", System.currentTimeMillis());
     }
 
-    public ArrayList<JavaFileObject> getSourceFilesToCompile(File path, long lastCompileTime) {
-        var sourceFiles = new ArrayList<JavaFileObject>();
+    public ArrayList<File> getSourceFilesToCompile(File path, long lastCompileTime) {
+        var sourceFiles = new ArrayList<File>();
         var files = path.listFiles();
         if (files == null) {
             return new ArrayList<File>();

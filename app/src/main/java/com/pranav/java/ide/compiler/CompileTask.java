@@ -56,12 +56,11 @@ public class CompileTask extends Thread {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
-            FileUtil.writeFile(
-                    activity.currentWorkingFilePath,
-                    activity.editor
-                            .getText()
-                            .toString()
-                            .replace("System.exit(", "System.err.print(\"Exit code \" + "));
+            final String code = activity.editor.getText().toString().replace("System.exit(", "System.err.println(\"Exit code \" + ");
+            final String currentPath = activity.currentWorkingFilePath;
+            if (code != FileUtil.readFile(new File(currentPath))) {
+                FileUtil.writeFile(currentPath, code);
+            }
         } catch (final IOException e) {
             listener.onFailed(e.getMessage());
         }

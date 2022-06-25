@@ -6,14 +6,21 @@ import android.content.SharedPreferences;
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
+import com.pranav.common.Indexer;
 
 import org.eclipse.jdt.internal.compiler.batch.Main;
+import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
+import org.eclipse.jdt.internal.compiler.tool.EclipseFileManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
 
 public class ECJCompilationTask extends Task {
 
@@ -33,17 +40,11 @@ public class ECJCompilationTask extends Task {
 
     @Override
     public void doFullTask() throws Exception {
+        final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var writer =
-                new PrintWriter(
-                        new OutputStream() {
-                            @Override
-                            public void write(int p1) throws IOException {
-                                errs.append((char) p1);
-                            }
-                        });
-
-        var main = new Main(writer, writer, false, null, null);
+        var compiler = new EclipseCompiler();
+        var fileManager = (EclipseFileManager) compiler.getStandardFileManager(diagnostics, null, null);
+        var filesToCompile = getSourceFilesToCompile(new File(FileUtil.getJavaDir()), new Indexer("editor").getLong("lastBuildTime"));
 
         var output = new File(FileUtil.getBinDir(), "classes");
 
@@ -73,10 +74,63 @@ public class ECJCompilationTask extends Task {
         args.add(" ");
         args.add(FileUtil.getJavaDir());
 
-        main.compile(args.toArray(new String[0]));
+        
+        var task = compiler.getTask(null, fileManager, diagnostics, args, null, fileManager.getJavaFileObjectsFromFiles(filesToCompile));
+        
+        if(!task.call()) {
+          var errs = new StringBuilder();
+                      var warns = new StringBuilder();
+                      for (var diagnostic : diagnostics.getDiagnostics()) {
+                          var message = new StringBuilder();
+                          if (diagnostic.getSource() != null) {
+                              message.append(diagnostic.getSource().getName());
+                              message.append(":");
+                              message.append(diagnostic.getLineNumber());
+                              message.append(": ");
+                          }
+                          message.append(diagnostic.getKind().name());
+                          message.append(": ");
+                          message.append(diagnostic.getMessage(Locale.getDefault()));
+          
+                          switch (diagnostic.getKind()) {
+                              case ERROR:
+                              case OTHER:
+                                  errs.append(message.toString());
+                                  errs.append("\n");
+                                  break;
+                              case NOTE:
+                              case WARNING:
+                              case MANDATORY_WARNING:
+                                  warns.append(message.toString());
+                                  warns.append("\n");
+                                  break;
+                              default:
+                                  warns.append(message.toString());
+                          }
+                      }
+                      var errors = errs.toString();
+                      var warnings = warns.toString();
+          
+                      throw new CompilationFailedException(warnings + "\n" + errors);
+                  }
+                  new Indexer("editor").put("lastBuildTime", System.currentTimeMillis());
+    }
 
-        if (main.globalErrorsCount > 0 | !output.exists()) {
-            throw new CompilationFailedException(errs.toString());
+    public ArrayList<JavaFileObject> getSourceFilesToCompile(File path, long lastCompileTime) {
+        var sourceFiles = new ArrayList<JavaFileObject>();
+        var files = path.listFiles();
+        if (files == null) {
+            return new ArrayList<File>();
         }
+        for (var file : files) {
+            if (file.isFile()) {
+                if (file.getName().endsWith(".java") && file.lastModified() > lastCompileTime) {
+                    sourceFiles.add(file);
+                }
+            } else {
+                sourceFiles.addAll(getSourceFilesToCompile(file, lastCompileTime));
+            }
+        }
+        return sourceFiles;
     }
 }

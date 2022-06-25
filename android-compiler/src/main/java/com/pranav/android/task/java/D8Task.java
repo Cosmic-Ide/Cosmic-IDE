@@ -18,7 +18,6 @@ public class D8Task extends Task {
 
     @Override
     public void doFullTask() throws Exception {
-        try {
             D8.run(
                     D8Command.builder()
                             .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
@@ -26,13 +25,6 @@ public class D8Task extends Task {
                             .addProgramFiles(
                                     getClassFiles(new File(FileUtil.getBinDir(), "classes")))
                             .build());
-
-        } catch (Exception e) {
-            ex = e;
-        }
-        if (ex != null) {
-            throw ex;
-        }
     }
 
     private ArrayList<Path> getClassFiles(File root) {

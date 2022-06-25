@@ -43,4 +43,5 @@ public class OnigScanner {
     public IOnigNextMatchResult findNextMatchSync(String lin, int pos) {
         return findNextMatchSync(new OnigString(lin), pos);
     }
+
 }

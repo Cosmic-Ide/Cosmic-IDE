@@ -24,23 +24,24 @@
 package org.eclipse.tm4e.core.internal.grammar;
 
 import org.eclipse.tm4e.core.grammar.GrammarHelper;
-import org.eclipse.tm4e.core.grammar.Injection;
 import org.eclipse.tm4e.core.grammar.StackElement;
 import org.eclipse.tm4e.core.internal.matcher.IMatchInjectionsResult;
 import org.eclipse.tm4e.core.internal.matcher.IMatchResult;
 import org.eclipse.tm4e.core.internal.oniguruma.IOnigCaptureIndex;
 import org.eclipse.tm4e.core.internal.oniguruma.IOnigNextMatchResult;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.eclipse.tm4e.core.grammar.Injection;
 import org.eclipse.tm4e.core.internal.rule.BeginEndRule;
 import org.eclipse.tm4e.core.internal.rule.BeginWhileRule;
 import org.eclipse.tm4e.core.internal.rule.CaptureRule;
 import org.eclipse.tm4e.core.internal.rule.ICompiledRule;
 import org.eclipse.tm4e.core.internal.rule.MatchRule;
 import org.eclipse.tm4e.core.internal.rule.Rule;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
 
 class LineTokenizer {
 
@@ -54,14 +55,8 @@ class LineTokenizer {
     private StackElement stack;
     private int anchorPosition = -1;
     private boolean stop;
-
-    public LineTokenizer(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            int linePos,
-            StackElement stack,
-            LineTokens lineTokens) {
+    public LineTokenizer(Grammar grammar, OnigString lineText, boolean isFirstLine, int linePos, StackElement stack,
+                         LineTokens lineTokens) {
         this.grammar = grammar;
         this.lineText = lineText;
         this.lineLength = lineText.utf8_value.length;
@@ -71,21 +66,16 @@ class LineTokenizer {
         this.lineTokens = lineTokens;
     }
 
-    public static StackElement tokenizeString(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            int linePos,
-            StackElement stack,
-            LineTokens lineTokens) {
+    public static StackElement tokenizeString(Grammar grammar, OnigString lineText, boolean isFirstLine, int linePos,
+                                              StackElement stack, LineTokens lineTokens) {
         return new LineTokenizer(grammar, lineText, isFirstLine, linePos, stack, lineTokens).scan();
     }
 
     public StackElement scan() {
         stop = false;
 
-        WhileCheckResult whileCheckResult =
-                checkWhileConditions(grammar, lineText, isFirstLine, linePos, stack, lineTokens);
+        WhileCheckResult whileCheckResult = checkWhileConditions(grammar, lineText, isFirstLine, linePos, stack,
+                lineTokens);
         stack = whileCheckResult.stack;
         linePos = whileCheckResult.linePos;
         isFirstLine = whileCheckResult.isFirstLine;
@@ -99,12 +89,9 @@ class LineTokenizer {
     }
 
     private void scanNext() {
-        // LOGGER.finest("@@scanNext: |" + lineText.string.replaceAll("\n",
-        // "\\n").substring(linePos) + '|');
+        //LOGGER.finest("@@scanNext: |" + lineText.string.replaceAll("\n", "\\n").substring(linePos) + '|');
 
-        IMatchResult r =
-                matchRuleOrInjections(
-                        grammar, lineText, isFirstLine, linePos, stack, anchorPosition);
+        IMatchResult r = matchRuleOrInjections(grammar, lineText, isFirstLine, linePos, stack, anchorPosition);
 
         if (r == null) {
             LOGGER.finest(" no more matches.");
@@ -117,10 +104,9 @@ class LineTokenizer {
         IOnigCaptureIndex[] captureIndices = r.getCaptureIndices();
         int matchedRuleId = r.getMatchedRuleId();
 
-        boolean hasAdvanced =
-                (captureIndices != null && captureIndices.length > 0)
-                        ? (captureIndices[0].getEnd() > linePos)
-                        : false;
+        boolean hasAdvanced = (captureIndices != null && captureIndices.length > 0)
+                ? (captureIndices[0].getEnd() > linePos)
+                : false;
 
         if (matchedRuleId == -1) {
             // We matched the `end` for this rule => pop it
@@ -133,14 +119,7 @@ class LineTokenizer {
 
             lineTokens.produce(stack, captureIndices[0].getStart());
             stack = stack.setContentNameScopesList(stack.nameScopesList);
-            handleCaptures(
-                    grammar,
-                    lineText,
-                    isFirstLine,
-                    stack,
-                    lineTokens,
-                    poppedRule.endCaptures,
-                    captureIndices);
+            handleCaptures(grammar, lineText, isFirstLine, stack, lineTokens, poppedRule.endCaptures, captureIndices);
             lineTokens.produce(stack, captureIndices[0].getEnd());
 
             // pop
@@ -149,9 +128,7 @@ class LineTokenizer {
 
             if (!hasAdvanced && popped.getEnterPos() == linePos) {
                 // Grammar pushed & popped a rule without advancing
-                LOGGER.info(
-                        "[1] - Grammar is in an endless loop - Grammar pushed & popped a rule"
-                                + " without advancing");
+                LOGGER.info("[1] - Grammar is in an endless loop - Grammar pushed & popped a rule without advancing");
                 // See https://github.com/Microsoft/vscode-textmate/issues/12
                 // Let's assume this was a mistake by the grammar author and the
                 // intent was to continue in this state
@@ -181,13 +158,7 @@ class LineTokenizer {
                 // pushedRule.debugBeginRegExp);
                 // }
 
-                handleCaptures(
-                        grammar,
-                        lineText,
-                        isFirstLine,
-                        stack,
-                        lineTokens,
-                        pushedRule.beginCaptures,
+                handleCaptures(grammar, lineText, isFirstLine, stack, lineTokens, pushedRule.beginCaptures,
                         captureIndices);
                 lineTokens.produce(stack, captureIndices[0].getEnd());
                 anchorPosition = captureIndices[0].getEnd();
@@ -197,17 +168,13 @@ class LineTokenizer {
                 stack = stack.setContentNameScopesList(contentNameScopesList);
 
                 if (pushedRule.endHasBackReferences) {
-                    stack =
-                            stack.setEndRule(
-                                    pushedRule.getEndWithResolvedBackReferences(
-                                            lineText.string, captureIndices));
+                    stack = stack.setEndRule(
+                            pushedRule.getEndWithResolvedBackReferences(lineText.string, captureIndices));
                 }
 
                 if (!hasAdvanced && beforePush.hasSameRuleAs(stack)) {
                     // Grammar pushed the same rule without advancing
-                    LOGGER.info(
-                            "[2] - Grammar is in an endless loop - Grammar pushed the same rule"
-                                    + " without advancing");
+                    LOGGER.info("[2] - Grammar is in an endless loop - Grammar pushed the same rule without advancing");
                     stack = stack.pop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;
@@ -219,13 +186,7 @@ class LineTokenizer {
                 // console.log(' pushing ' + pushedRule.debugName);
                 // }
 
-                handleCaptures(
-                        grammar,
-                        lineText,
-                        isFirstLine,
-                        stack,
-                        lineTokens,
-                        pushedRule.beginCaptures,
+                handleCaptures(grammar, lineText, isFirstLine, stack, lineTokens, pushedRule.beginCaptures,
                         captureIndices);
                 lineTokens.produce(stack, captureIndices[0].getEnd());
                 anchorPosition = captureIndices[0].getEnd();
@@ -235,17 +196,13 @@ class LineTokenizer {
                 stack = stack.setContentNameScopesList(contentNameScopesList);
 
                 if (pushedRule.whileHasBackReferences) {
-                    stack =
-                            stack.setEndRule(
-                                    pushedRule.getWhileWithResolvedBackReferences(
-                                            lineText.string, captureIndices));
+                    stack = stack.setEndRule(
+                            pushedRule.getWhileWithResolvedBackReferences(lineText.string, captureIndices));
                 }
 
                 if (!hasAdvanced && beforePush.hasSameRuleAs(stack)) {
                     // Grammar pushed the same rule without advancing
-                    LOGGER.info(
-                            "[3] - Grammar is in an endless loop - Grammar pushed the same rule"
-                                    + " without advancing");
+                    LOGGER.info("[3] - Grammar is in an endless loop - Grammar pushed the same rule without advancing");
                     stack = stack.pop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;
@@ -258,13 +215,7 @@ class LineTokenizer {
                 // matchingRule.debugMatchRegExp);
                 // }
 
-                handleCaptures(
-                        grammar,
-                        lineText,
-                        isFirstLine,
-                        stack,
-                        lineTokens,
-                        matchingRule.captures,
+                handleCaptures(grammar, lineText, isFirstLine, stack, lineTokens, matchingRule.captures,
                         captureIndices);
                 lineTokens.produce(stack, captureIndices[0].getEnd());
 
@@ -273,9 +224,7 @@ class LineTokenizer {
 
                 if (!hasAdvanced) {
                     // Grammar is not advancing, nor is it pushing/popping
-                    LOGGER.info(
-                            "[4] - Grammar is in an endless loop - Grammar is not advancing, nor is"
-                                    + " it pushing/popping");
+                    LOGGER.info("[4] - Grammar is in an endless loop - Grammar is not advancing, nor is it pushing/popping");
                     stack = stack.safePop();
                     lineTokens.produce(stack, lineLength);
                     stop = true;
@@ -284,25 +233,17 @@ class LineTokenizer {
             }
         }
 
-        if (captureIndices != null
-                && captureIndices.length > 0
-                && captureIndices[0].getEnd() > linePos) {
+        if (captureIndices != null && captureIndices.length > 0 && captureIndices[0].getEnd() > linePos) {
             // Advance stream
             linePos = captureIndices[0].getEnd();
             isFirstLine = false;
         }
     }
 
-    private IMatchResult matchRule(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            final int linePos,
-            StackElement stack,
-            int anchorPosition) {
+    private IMatchResult matchRule(Grammar grammar, OnigString lineText, boolean isFirstLine, final int linePos,
+                                   StackElement stack, int anchorPosition) {
         Rule rule = stack.getRule(grammar);
-        final ICompiledRule ruleScanner =
-                rule.compile(grammar, stack.endRule, isFirstLine, linePos == anchorPosition);
+        final ICompiledRule ruleScanner = rule.compile(grammar, stack.endRule, isFirstLine, linePos == anchorPosition);
         final IOnigNextMatchResult r = ruleScanner.scanner.findNextMatchSync(lineText, linePos);
 
         if (r != null) {
@@ -322,16 +263,10 @@ class LineTokenizer {
         return null;
     }
 
-    private IMatchResult matchRuleOrInjections(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            final int linePos,
-            StackElement stack,
-            int anchorPosition) {
+    private IMatchResult matchRuleOrInjections(Grammar grammar, OnigString lineText, boolean isFirstLine,
+                                               final int linePos, StackElement stack, int anchorPosition) {
         // Look for normal grammar rule
-        IMatchResult matchResult =
-                matchRule(grammar, lineText, isFirstLine, linePos, stack, anchorPosition);
+        IMatchResult matchResult = matchRule(grammar, lineText, isFirstLine, linePos, stack, anchorPosition);
 
         // Look for injected rules
         List<Injection> injections = grammar.getInjections();
@@ -340,9 +275,8 @@ class LineTokenizer {
             return matchResult;
         }
 
-        IMatchInjectionsResult injectionResult =
-                matchInjections(
-                        injections, grammar, lineText, isFirstLine, linePos, stack, anchorPosition);
+        IMatchInjectionsResult injectionResult = matchInjections(injections, grammar, lineText, isFirstLine, linePos,
+                stack, anchorPosition);
         if (injectionResult == null) {
             // No injections matched => early return
             return matchResult;
@@ -358,8 +292,7 @@ class LineTokenizer {
         int injectionResultScore = injectionResult.getCaptureIndices()[0].getStart();
 
         if (injectionResultScore < matchResultScore
-                || (injectionResult.isPriorityMatch()
-                        && injectionResultScore == matchResultScore)) {
+                || (injectionResult.isPriorityMatch() && injectionResultScore == matchResultScore)) {
             // injection won!
             return injectionResult;
         }
@@ -367,14 +300,8 @@ class LineTokenizer {
         return matchResult;
     }
 
-    private IMatchInjectionsResult matchInjections(
-            List<Injection> injections,
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            int linePos,
-            StackElement stack,
-            int anchorPosition) {
+    private IMatchInjectionsResult matchInjections(List<Injection> injections, Grammar grammar, OnigString lineText,
+                                                   boolean isFirstLine, int linePos, StackElement stack, int anchorPosition) {
         // The lower the better
         int bestMatchRating = Integer.MAX_VALUE;
         IOnigCaptureIndex[] bestMatchCaptureIndices = null;
@@ -389,11 +316,9 @@ class LineTokenizer {
                 continue;
             }
 
-            ICompiledRule ruleScanner =
-                    grammar.getRule(injection.ruleId)
-                            .compile(grammar, null, isFirstLine, linePos == anchorPosition);
-            IOnigNextMatchResult matchResult =
-                    ruleScanner.scanner.findNextMatchSync(lineText, linePos);
+            ICompiledRule ruleScanner = grammar.getRule(injection.ruleId).compile(grammar, null, isFirstLine,
+                    linePos == anchorPosition);
+            IOnigNextMatchResult matchResult = ruleScanner.scanner.findNextMatchSync(lineText, linePos);
 
             if (matchResult == null) {
                 continue;
@@ -444,14 +369,8 @@ class LineTokenizer {
         return null;
     }
 
-    private void handleCaptures(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            StackElement stack,
-            LineTokens lineTokens,
-            List<CaptureRule> captures,
-            IOnigCaptureIndex[] captureIndices) {
+    private void handleCaptures(Grammar grammar, OnigString lineText, boolean isFirstLine, StackElement stack,
+                                LineTokens lineTokens, List<CaptureRule> captures, IOnigCaptureIndex[] captureIndices) {
         if (captures.isEmpty()) {
             return;
         }
@@ -481,19 +400,16 @@ class LineTokenizer {
             }
 
             // pop captures while needed
-            while (!localStack.isEmpty()
-                    && localStack.get(localStack.size() - 1).getEndPos()
-                            <= captureIndex.getStart()) {
+            while (!localStack.isEmpty() && localStack.get(localStack.size() - 1).getEndPos() <= captureIndex.getStart()) {
                 // pop!
-                lineTokens.produceFromScopes(
-                        localStack.get(localStack.size() - 1).getScopes(),
+                lineTokens.produceFromScopes(localStack.get(localStack.size() - 1).getScopes(),
                         localStack.get(localStack.size() - 1).getEndPos());
                 localStack.remove(localStack.size() - 1);
             }
 
             if (!localStack.isEmpty()) {
-                lineTokens.produceFromScopes(
-                        localStack.get(localStack.size() - 1).getScopes(), captureIndex.getStart());
+                lineTokens.produceFromScopes(localStack.get(localStack.size() - 1).getScopes(),
+                        captureIndex.getStart());
             } else {
                 lineTokens.produce(stack, captureIndex.getStart());
             }
@@ -501,27 +417,16 @@ class LineTokenizer {
             if (captureRule.retokenizeCapturedWithRuleId != null) {
                 // the capture requires additional matching
                 String scopeName = captureRule.getName(lineText.string, captureIndices);
-                ScopeListElement nameScopesList =
-                        stack.contentNameScopesList.push(grammar, scopeName);
+                ScopeListElement nameScopesList = stack.contentNameScopesList.push(grammar, scopeName);
                 String contentName = captureRule.getContentName(lineText.string, captureIndices);
                 ScopeListElement contentNameScopesList = nameScopesList.push(grammar, contentName);
 
                 // the capture requires additional matching
-                StackElement stackClone =
-                        stack.push(
-                                captureRule.retokenizeCapturedWithRuleId,
-                                captureIndex.getStart(),
-                                null,
-                                nameScopesList,
-                                contentNameScopesList);
-                tokenizeString(
-                        grammar,
-                        GrammarHelper.createOnigString(
-                                lineText.string.substring(0, captureIndex.getEnd())),
-                        (isFirstLine && captureIndex.getStart() == 0),
-                        captureIndex.getStart(),
-                        stackClone,
-                        lineTokens);
+                StackElement stackClone = stack.push(captureRule.retokenizeCapturedWithRuleId, captureIndex.getStart(),
+                        null, nameScopesList, contentNameScopesList);
+                tokenizeString(grammar,
+                        GrammarHelper.createOnigString(lineText.string.substring(0, captureIndex.getEnd())),
+                        (isFirstLine && captureIndex.getStart() == 0), captureIndex.getStart(), stackClone, lineTokens);
                 continue;
             }
 
@@ -529,10 +434,8 @@ class LineTokenizer {
             String captureRuleScopeName = captureRule.getName(lineText.string, captureIndices);
             if (captureRuleScopeName != null) {
                 // push
-                ScopeListElement base =
-                        localStack.isEmpty()
-                                ? stack.contentNameScopesList
-                                : localStack.get(localStack.size() - 1).getScopes();
+                ScopeListElement base = localStack.isEmpty() ? stack.contentNameScopesList :
+                        localStack.get(localStack.size() - 1).getScopes();
                 ScopeListElement captureRuleScopesList = base.push(grammar, captureRuleScopeName);
                 localStack.add(new LocalStackElement(captureRuleScopesList, captureIndex.getEnd()));
             }
@@ -540,25 +443,19 @@ class LineTokenizer {
 
         while (!localStack.isEmpty()) {
             // pop!
-            lineTokens.produceFromScopes(
-                    localStack.get(localStack.size() - 1).getScopes(),
+            lineTokens.produceFromScopes(localStack.get(localStack.size() - 1).getScopes(),
                     localStack.get(localStack.size() - 1).getEndPos());
             localStack.remove(localStack.size() - 1);
         }
     }
 
     /**
-     * Walk the stack from bottom to top, and check each while condition in this order. If any
-     * fails, cut off the entire stack above the failed while condition. While conditions may also
-     * advance the linePosition.
+     * Walk the stack from bottom to top, and check each while condition in this
+     * order. If any fails, cut off the entire stack above the failed while
+     * condition. While conditions may also advance the linePosition.
      */
-    private WhileCheckResult checkWhileConditions(
-            Grammar grammar,
-            OnigString lineText,
-            boolean isFirstLine,
-            int linePos,
-            StackElement stack,
-            LineTokens lineTokens) {
+    private WhileCheckResult checkWhileConditions(Grammar grammar, OnigString lineText, boolean isFirstLine,
+                                                  int linePos, StackElement stack, LineTokens lineTokens) {
         int currentanchorPosition = -1;
         List<WhileStack> whileRules = new ArrayList<>();
         for (StackElement node = stack; node != null; node = node.pop()) {
@@ -569,12 +466,8 @@ class LineTokenizer {
         }
         for (int i = whileRules.size() - 1; i >= 0; i--) {
             WhileStack whileRule = whileRules.get(i);
-            ICompiledRule ruleScanner =
-                    whileRule.rule.compileWhile(
-                            grammar,
-                            whileRule.stack.endRule,
-                            isFirstLine,
-                            currentanchorPosition == linePos);
+            ICompiledRule ruleScanner = whileRule.rule.compileWhile(grammar, whileRule.stack.endRule, isFirstLine,
+                    currentanchorPosition == linePos);
             IOnigNextMatchResult r = ruleScanner.scanner.findNextMatchSync(lineText, linePos);
             // if (IN_DEBUG_MODE) {
             // console.log(' scanning for while rule');
@@ -590,14 +483,8 @@ class LineTokenizer {
                 }
                 if (r.getCaptureIndices() != null && r.getCaptureIndices().length > 0) {
                     lineTokens.produce(whileRule.stack, r.getCaptureIndices()[0].getStart());
-                    handleCaptures(
-                            grammar,
-                            lineText,
-                            isFirstLine,
-                            whileRule.stack,
-                            lineTokens,
-                            whileRule.rule.whileCaptures,
-                            r.getCaptureIndices());
+                    handleCaptures(grammar, lineText, isFirstLine, whileRule.stack, lineTokens,
+                            whileRule.rule.whileCaptures, r.getCaptureIndices());
                     lineTokens.produce(whileRule.stack, r.getCaptureIndices()[0].getEnd());
                     currentanchorPosition = r.getCaptureIndices()[0].getEnd();
                     if (r.getCaptureIndices()[0].getEnd() > linePos) {
@@ -632,8 +519,7 @@ class LineTokenizer {
         public final int anchorPosition;
         public final boolean isFirstLine;
 
-        public WhileCheckResult(
-                StackElement stack, int linePos, int anchorPosition, boolean isFirstLine) {
+        public WhileCheckResult(StackElement stack, int linePos, int anchorPosition, boolean isFirstLine) {
             this.stack = stack;
             this.linePos = linePos;
             this.anchorPosition = anchorPosition;

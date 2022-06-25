@@ -36,16 +36,15 @@ import io.github.rosemoe.sora.text.ContentReference;
 /**
  * Built-in implementation of {@link AnalyzeManager}.
  *
- * <p>This is a simple version without any incremental actions.
+ * This is a simple version without any incremental actions.
  *
- * <p>The analysis will always re-run when the text changes. Hopefully, it will stop previous
- * outdated runs by provide a {@link Delegate} object.
- *
+ * The analysis will always re-run when the text changes. Hopefully, it will stop previous outdated
+ * runs by provide a {@link Delegate} object.
  * @param <V> The shared object type that we get for auto-completion.
  */
 public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
 
-    private static final String LOG_TAG = "SimpleAnalyzeManager";
+    private final static String LOG_TAG = "SimpleAnalyzeManager";
     private static int sThreadId = 0;
 
     private StyleReceiver receiver;
@@ -80,7 +79,7 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
 
     @Override
     public synchronized void rerun() {
-        newestRequestId++;
+        newestRequestId ++;
         if (thread == null || !thread.isAlive()) {
             // Create new thread
             Log.v(LOG_TAG, "Starting a new thread for analysis");
@@ -107,20 +106,21 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
         receiver = null;
     }
 
-    private static synchronized int nextThreadId() {
+    private synchronized static int nextThreadId() {
         sThreadId++;
         return sThreadId;
     }
 
     /**
-     * Get extra arguments set by {@link
-     * io.github.rosemoe.sora.widget.CodeEditor#setText(CharSequence, Bundle)}
+     * Get extra arguments set by {@link io.github.rosemoe.sora.widget.CodeEditor#setText(CharSequence, Bundle)}
      */
     public Bundle getExtraArguments() {
         return extraArguments;
     }
 
-    /** Get data set by analyze thread */
+    /**
+     * Get data set by analyze thread
+     */
     @Nullable
     public V getData() {
         return data;
@@ -129,10 +129,10 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
     /**
      * Analyze the given input.
      *
-     * @param text A {@link StringBuilder} instance containing the text in editor. DO NOT SAVE THE
-     *     INSTANCE OR UPDATE IT. It is continuously used by this analyzer.
-     * @param delegate A delegate used to check whether this invocation is outdated. You should stop
-     *     your logic if {@link Delegate#isCancelled()} returns true.
+     * @param text A {@link StringBuilder} instance containing the text in editor. DO NOT SAVE THE INSTANCE OR
+     *             UPDATE IT. It is continuously used by this analyzer.
+     * @param delegate A delegate used to check whether this invocation is outdated. You should stop your logic
+     *                 if {@link Delegate#isCancelled()} returns true.
      * @return Styles created according to the text.
      */
     protected abstract Styles analyze(StringBuilder text, Delegate<V> delegate);
@@ -140,12 +140,14 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
     /**
      * Analyze thread.
      *
-     * <p>The thread will keep alive unless there is any exception or {@link
-     * AnalyzeManager#destroy()} is called.
+     * The thread will keep alive unless there is any exception or {@link AnalyzeManager#destroy()}
+     * is called.
      */
     private class AnalyzeThread extends Thread {
 
-        /** Single instance for text storing */
+        /**
+         * Single instance for text storing
+         */
         private final StringBuilder textContainer = new StringBuilder();
 
         @Override
@@ -170,9 +172,7 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
                             // Collect line contents
                             textContainer.setLength(0);
                             textContainer.ensureCapacity(text.length());
-                            for (int i = 0;
-                                    i < text.getLineCount() && requestId == newestRequestId;
-                                    i++) {
+                            for (int i = 0;i < text.getLineCount() && requestId == newestRequestId;i++) {
                                 if (i != 0) {
                                     textContainer.append('\n');
                                 }
@@ -201,9 +201,12 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
                 Log.e(LOG_TAG, "Unexpected exception is thrown in the thread.", e);
             }
         }
+
     }
 
-    /** Delegate between manager and analysis implementation */
+    /**
+     * Delegate between manager and analysis implementation
+     */
     public final class Delegate<T> {
 
         private final long myRequestId;
@@ -213,14 +216,21 @@ public abstract class SimpleAnalyzeManager<V> implements AnalyzeManager {
             myRequestId = requestId;
         }
 
-        /** Set shared data */
+        /**
+         * Set shared data
+         */
         public void setData(T value) {
             data = value;
         }
 
-        /** Check whether the operation is cancelled */
+        /**
+         * Check whether the operation is cancelled
+         */
         public boolean isCancelled() {
             return myRequestId != newestRequestId;
         }
+
     }
+
+
 }

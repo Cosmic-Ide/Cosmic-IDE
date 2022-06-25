@@ -26,7 +26,7 @@ package io.github.rosemoe.sora.util;
 /**
  * Expose {@link java.util.ArrayList#removeRange(int, int)} to public.
  *
- * <p>{@inheritDoc}
+ * {@inheritDoc}
  */
 public class ArrayList<E> extends java.util.ArrayList<E> {
 
@@ -42,4 +42,5 @@ public class ArrayList<E> extends java.util.ArrayList<E> {
     public void removeRange(int fromIndex, int toIndex) {
         super.removeRange(fromIndex, toIndex);
     }
+
 }

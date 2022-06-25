@@ -25,20 +25,20 @@ package org.eclipse.tm4e.languageconfiguration.internal.supports;
 
 public class Comments {
 
-    private final String lineComment;
+	private final String lineComment;
 
-    private final CharacterPair blockComment;
+	private final CharacterPair blockComment;
 
-    public Comments(String lineComment, CharacterPair blockComment) {
-        this.lineComment = lineComment;
-        this.blockComment = blockComment;
-    }
+	public Comments(String lineComment, CharacterPair blockComment) {
+		this.lineComment = lineComment;
+		this.blockComment = blockComment;
+	}
 
-    public String getLineComment() {
-        return lineComment;
-    }
+	public String getLineComment() {
+		return lineComment;
+	}
 
-    public CharacterPair getBlockComment() {
-        return blockComment;
-    }
+	public CharacterPair getBlockComment() {
+		return blockComment;
+	}
 }

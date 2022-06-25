@@ -23,8 +23,6 @@
  */
 package org.eclipse.tm4e.core.model;
 
-import org.eclipse.tm4e.core.grammar.IGrammar;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,20 +31,26 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-/** TextMate model class. */
+import org.eclipse.tm4e.core.grammar.IGrammar;
+
+/**
+ * TextMate model class.
+ *
+ */
 public class TMModel implements ITMModel {
 
     private static final Logger LOGGER = Logger.getLogger(TMModel.class.getName());
-    /** Listener when TextMate model tokens changed * */
+    /** Listener when TextMate model tokens changed **/
     private final List<IModelTokensChangedListener> listeners;
-
     private final IModelLines lines;
     Tokenizer tokenizer;
-    /** The TextMate grammar to use to parse for each lines of the document the TextMate tokens. */
+    /**
+     * The TextMate grammar to use to parse for each lines of the document the
+     * TextMate tokens.
+     **/
     private IGrammar grammar;
     /** The background thread. */
     private TokenizerThread fThread;
-
     private PriorityBlockingQueue<Integer> invalidLines = new PriorityBlockingQueue<>();
 
     public TMModel(IModelLines lines) {
@@ -99,7 +103,9 @@ public class TMModel implements ITMModel {
         getLines().dispose();
     }
 
-    /** Interrupt the thread. */
+    /**
+     * Interrupt the thread.
+     */
     private void stop() {
         if (fThread == null) {
             return;
@@ -127,9 +133,9 @@ public class TMModel implements ITMModel {
 
     @Override
     public void forceTokenization(int lineNumber) {
-        this.buildEventWithCallback(
-                eventBuilder ->
-                        this.fThread.updateTokensInRange(eventBuilder, lineNumber, lineNumber));
+        this.buildEventWithCallback(eventBuilder ->
+                this.fThread.updateTokensInRange(eventBuilder, lineNumber, lineNumber)
+        );
     }
 
     @Override
@@ -151,22 +157,24 @@ public class TMModel implements ITMModel {
     }
 
     /**
-     * The {@link TokenizerThread} takes as input an {@link TMModel} and continuously runs
-     * tokenizing in background on the lines found in {@link TMModel#lines}. The {@link
-     * TMModel#lines} are expected to be accessed through {@link TMModel#getLines()} and manipulated
-     * by the UI part to inform of needs to (re)tokenize area, then the {@link TokenizerThread}
-     * processes them and emits events through the model. UI elements are supposed to subscribe and
-     * react to the events with {@link
-     * TMModel#addModelTokensChangedListener(IModelTokensChangedListener)}.
+     * The {@link TokenizerThread} takes as input an {@link TMModel} and continuously
+     * runs tokenizing in background on the lines found in {@link TMModel#lines}.
+     * The {@link TMModel#lines} are expected to be accessed through {@link TMModel#getLines()}
+     * and manipulated by the UI part to inform of needs to (re)tokenize area, then the {@link TokenizerThread}
+     * processes them and emits events through the model. UI elements are supposed to subscribe and react to the events with
+     * {@link TMModel#addModelTokensChangedListener(IModelTokensChangedListener)}.
+     *
      */
     static class TokenizerThread extends Thread {
         private TMModel model;
         private TMState lastState;
 
         /**
-         * Creates a new background thread. The thread runs with minimal priority.
+         * Creates a new background thread. The thread runs with minimal
+         * priority.
          *
-         * @param name the thread's name
+         * @param name
+         *            the thread's name
          */
         public TokenizerThread(String name, TMModel model) {
             super(name);
@@ -201,76 +209,70 @@ public class TMModel implements ITMModel {
         }
 
         /**
+         *
          * @param startLine 0-based
          * @param toLineIndexOrNull 0-based
          */
         private void revalidateTokensNow(int startLine, Integer toLineIndexOrNull) {
-            model.buildEventWithCallback(
-                    eventBuilder -> {
-                        Integer toLineIndex = toLineIndexOrNull;
-                        if (toLineIndex == null || toLineIndex >= model.lines.getNumberOfLines()) {
-                            toLineIndex = model.lines.getNumberOfLines() - 1;
+            model.buildEventWithCallback(eventBuilder -> {
+                Integer toLineIndex = toLineIndexOrNull;
+                if (toLineIndex == null || toLineIndex >= model.lines.getNumberOfLines()) {
+                    toLineIndex = model.lines.getNumberOfLines() - 1;
+                }
+
+                long tokenizedChars = 0;
+                long currentCharsToTokenize = 0;
+                final long MAX_ALLOWED_TIME = 20;
+                long currentEstimatedTimeToTokenize = 0;
+                long elapsedTime;
+                long startTime = System.currentTimeMillis();
+                // Tokenize at most 1000 lines. Estimate the tokenization speed per
+                // character and stop when:
+                // - MAX_ALLOWED_TIME is reached
+                // - tokenizing the next line would go above MAX_ALLOWED_TIME
+
+                int lineIndex = startLine;
+                while (lineIndex <= toLineIndex && lineIndex < model.getLines().getNumberOfLines()) {
+                    elapsedTime = System.currentTimeMillis() - startTime;
+                    if (elapsedTime > MAX_ALLOWED_TIME) {
+                        // Stop if MAX_ALLOWED_TIME is reached
+                        model.invalidateLine(lineIndex);
+                        return;
+                    }
+
+                    // Compute how many characters will be tokenized for this line
+                    try {
+                        currentCharsToTokenize = model.lines.getLineLength(lineIndex);
+                    } catch (Exception e) {
+                        LOGGER.severe(e.getMessage());
+                    }
+
+                    if (tokenizedChars > 0) {
+                        // If we have enough history, estimate how long tokenizing this line would take
+                        currentEstimatedTimeToTokenize = (long) ((double) elapsedTime / tokenizedChars) * currentCharsToTokenize;
+                        if (elapsedTime + currentEstimatedTimeToTokenize > MAX_ALLOWED_TIME) {
+                            // Tokenizing this line will go above MAX_ALLOWED_TIME
+                            model.invalidateLine(lineIndex);
+                            return;
                         }
+                    }
 
-                        long tokenizedChars = 0;
-                        long currentCharsToTokenize = 0;
-                        final long MAX_ALLOWED_TIME = 20;
-                        long currentEstimatedTimeToTokenize = 0;
-                        long elapsedTime;
-                        long startTime = System.currentTimeMillis();
-                        // Tokenize at most 1000 lines. Estimate the tokenization speed per
-                        // character and stop when:
-                        // - MAX_ALLOWED_TIME is reached
-                        // - tokenizing the next line would go above MAX_ALLOWED_TIME
+                    lineIndex = this.updateTokensInRange(eventBuilder, lineIndex, lineIndex) + 1;
+                    tokenizedChars += currentCharsToTokenize;
+                }
+            });
 
-                        int lineIndex = startLine;
-                        while (lineIndex <= toLineIndex
-                                && lineIndex < model.getLines().getNumberOfLines()) {
-                            elapsedTime = System.currentTimeMillis() - startTime;
-                            if (elapsedTime > MAX_ALLOWED_TIME) {
-                                // Stop if MAX_ALLOWED_TIME is reached
-                                model.invalidateLine(lineIndex);
-                                return;
-                            }
-
-                            // Compute how many characters will be tokenized for this line
-                            try {
-                                currentCharsToTokenize = model.lines.getLineLength(lineIndex);
-                            } catch (Exception e) {
-                                LOGGER.severe(e.getMessage());
-                            }
-
-                            if (tokenizedChars > 0) {
-                                // If we have enough history, estimate how long tokenizing this line
-                                // would take
-                                currentEstimatedTimeToTokenize =
-                                        (long) ((double) elapsedTime / tokenizedChars)
-                                                * currentCharsToTokenize;
-                                if (elapsedTime + currentEstimatedTimeToTokenize
-                                        > MAX_ALLOWED_TIME) {
-                                    // Tokenizing this line will go above MAX_ALLOWED_TIME
-                                    model.invalidateLine(lineIndex);
-                                    return;
-                                }
-                            }
-
-                            lineIndex =
-                                    this.updateTokensInRange(eventBuilder, lineIndex, lineIndex)
-                                            + 1;
-                            tokenizedChars += currentCharsToTokenize;
-                        }
-                    });
         }
 
         /**
+         *
          * @param eventBuilder
          * @param startIndex 0-based
          * @param endLineIndex 0-based
          * @param emitEvents
          * @return the first line index (0-based) that was NOT processed by this operation
          */
-        private int updateTokensInRange(
-                ModelTokensChangedEventBuilder eventBuilder, int startIndex, int endLineIndex) {
+        private int updateTokensInRange(ModelTokensChangedEventBuilder eventBuilder, int startIndex, int endLineIndex) {
             int stopLineTokenizationAfter = 1000000000; // 1 billion, if a line is
             // so long, you have other
             // trouble :).
@@ -285,19 +287,14 @@ public class TMModel implements ITMModel {
                 try {
                     text = model.lines.getLineText(lineIndex);
                     // Tokenize only the first X characters
-                    r =
-                            model.tokenizer.tokenize(
-                                    text, modeLine.getState(), 0, stopLineTokenizationAfter);
+                    r = model.tokenizer.tokenize(text, modeLine.getState(), 0, stopLineTokenizationAfter);
                 } catch (Exception e) {
                     LOGGER.severe(e.getMessage());
                 }
 
                 if (r != null && r.tokens != null && !r.tokens.isEmpty()) {
                     // Cannot have a stop offset before the last token
-                    r.actualStopOffset =
-                            Math.max(
-                                    r.actualStopOffset,
-                                    r.tokens.get(r.tokens.size() - 1).startIndex + 1);
+                    r.actualStopOffset = Math.max(r.actualStopOffset, r.tokens.get(r.tokens.size() - 1).startIndex + 1);
                 }
 
                 if (r != null && r.actualStopOffset < text.length()) {
@@ -308,11 +305,7 @@ public class TMModel implements ITMModel {
                 }
 
                 if (r == null) {
-                    r =
-                            new LineTokens(
-                                    Collections.singletonList(new TMToken(0, "")),
-                                    text.length(),
-                                    modeLine.getState());
+                    r = new LineTokens(Collections.singletonList(new TMToken(0, "")), text.length(), modeLine.getState());
                 }
                 modeLine.setTokens(r.tokens);
                 eventBuilder.registerChangedTokens(lineIndex + 1);
@@ -320,17 +313,13 @@ public class TMModel implements ITMModel {
 
                 if (endStateIndex < model.lines.getNumberOfLines()) {
                     ModelLine endStateLine = model.lines.get(endStateIndex);
-                    if (endStateLine.getState() != null
-                            && r.endState.equals(endStateLine.getState())) {
+                    if (endStateLine.getState() != null && r.endState.equals(endStateLine.getState())) {
                         // The end state of this line remains the same
                         nextInvalidLineIndex = lineIndex + 1;
                         while (nextInvalidLineIndex < model.lines.getNumberOfLines()) {
-                            boolean isLastLine =
-                                    nextInvalidLineIndex + 1 >= model.lines.getNumberOfLines();
+                            boolean isLastLine = nextInvalidLineIndex + 1 >= model.lines.getNumberOfLines();
                             if (model.lines.get(nextInvalidLineIndex).isInvalid
-                                    || (!isLastLine
-                                            && model.lines.get(nextInvalidLineIndex + 1).getState()
-                                                    == null)
+                                    || (!isLastLine && model.lines.get(nextInvalidLineIndex + 1).getState() == null)
                                     || (isLastLine && this.lastState == null)) {
                                 break;
                             }
@@ -348,5 +337,7 @@ public class TMModel implements ITMModel {
             }
             return nextInvalidLineIndex;
         }
+
     }
+
 }

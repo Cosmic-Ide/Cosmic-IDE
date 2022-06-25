@@ -23,9 +23,9 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.reader;
 
-import org.eclipse.tm4e.core.internal.types.IRawGrammar;
-
 import java.io.InputStream;
+
+import org.eclipse.tm4e.core.internal.types.IRawGrammar;
 
 public class SyncGrammarReader {
 

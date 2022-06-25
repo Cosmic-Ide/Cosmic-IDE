@@ -47,29 +47,12 @@ public class HandleStyleDrop implements SelectionHandleStyle {
 
     public HandleStyleDrop(Context context) {
         drawable = context.getDrawable(R.drawable.ic_sora_handle_drop).mutate();
-        width =
-                (int)
-                        TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP,
-                                20f,
-                                context.getResources().getDisplayMetrics());
-        height =
-                (int)
-                        TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP,
-                                30f,
-                                context.getResources().getDisplayMetrics());
+        width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, context.getResources().getDisplayMetrics());
+        height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30f, context.getResources().getDisplayMetrics());
     }
 
     @Override
-    public void draw(
-            @NonNull Canvas canvas,
-            int handleType,
-            float x,
-            float y,
-            int rowHeight,
-            int color,
-            @NonNull HandleDescriptor descriptor) {
+    public void draw(@NonNull Canvas canvas, int handleType, float x, float y, int rowHeight, int color, @NonNull HandleDescriptor descriptor) {
         if (lastColor != color) {
             lastColor = color;
             drawable.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));

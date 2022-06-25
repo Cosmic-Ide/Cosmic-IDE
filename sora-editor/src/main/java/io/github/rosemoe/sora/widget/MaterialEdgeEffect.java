@@ -30,9 +30,9 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-// BEGIN Rosemoe note
-// Rename class,remove some fields and add method isRecede()
-// END Rosemoe note
+//BEGIN Rosemoe note
+//Rename class,remove some fields and add method isRecede()
+//END Rosemoe note
 
 public class MaterialEdgeEffect {
 
@@ -78,7 +78,6 @@ public class MaterialEdgeEffect {
     private float mBaseGlowScale;
     private float mDisplacement = 0.5f;
     private float mTargetDisplacement = 0.5f;
-
     public MaterialEdgeEffect() {
         mPaint.setAntiAlias(true);
         final int themeColor = 0xff666666;
@@ -131,24 +130,14 @@ public class MaterialEdgeEffect {
         mPullDistance += deltaDistance;
 
         final float absdd = Math.abs(deltaDistance);
-        mGlowAlpha =
-                mGlowAlphaStart =
-                        Math.min(MAX_ALPHA, mGlowAlpha + (absdd * PULL_DISTANCE_ALPHA_GLOW_FACTOR));
+        mGlowAlpha = mGlowAlphaStart = Math.min(MAX_ALPHA,
+                mGlowAlpha + (absdd * PULL_DISTANCE_ALPHA_GLOW_FACTOR));
 
         if (mPullDistance == 0) {
             mGlowScaleY = mGlowScaleYStart = 0;
         } else {
-            final float scale =
-                    (float)
-                            (Math.max(
-                                            0,
-                                            1
-                                                    - 1
-                                                            / Math.sqrt(
-                                                                    Math.abs(mPullDistance)
-                                                                            * mBounds.height())
-                                                    - 0.3d)
-                                    / 0.7d);
+            final float scale = (float) (Math.max(0, 1 - 1 /
+                    Math.sqrt(Math.abs(mPullDistance) * mBounds.height()) - 0.3d) / 0.7d);
 
             mGlowScaleY = mGlowScaleYStart = scale;
         }
@@ -187,6 +176,7 @@ public class MaterialEdgeEffect {
         mGlowAlphaStart = GLOW_ALPHA_START;
         mGlowScaleYStart = Math.max(mGlowScaleY, 0.f);
 
+
         // Growth for the size of the glow should be quadratic to properly
         // respond
         // to a user's scrolling speed. The faster the scrolling speed, the more
@@ -194,10 +184,8 @@ public class MaterialEdgeEffect {
         //noinspection IntegerDivisionInFloatingPointContext
         mGlowScaleYFinish = Math.min(0.025f + (velocity * (velocity / 100) * 0.00015f) / 2, 1.f);
         // Alpha should change for the glow as well as size.
-        mGlowAlphaFinish =
-                Math.max(
-                        mGlowAlphaStart,
-                        Math.min(velocity * VELOCITY_GLOW_FACTOR * .00001f, MAX_ALPHA));
+        mGlowAlphaFinish = Math.max(
+                mGlowAlphaStart, Math.min(velocity * VELOCITY_GLOW_FACTOR * .00001f, MAX_ALPHA));
         mTargetDisplacement = 0.5f;
     }
 
@@ -282,4 +270,5 @@ public class MaterialEdgeEffect {
             }
         }
     }
+
 }

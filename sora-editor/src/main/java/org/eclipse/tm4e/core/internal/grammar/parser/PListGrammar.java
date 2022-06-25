@@ -23,9 +23,9 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.parser;
 
-import org.eclipse.tm4e.core.internal.parser.PListObject;
-
 import java.util.Map;
+
+import org.eclipse.tm4e.core.internal.parser.PListObject;
 
 public class PListGrammar extends PListObject {
 
@@ -37,4 +37,5 @@ public class PListGrammar extends PListObject {
     protected Map<String, Object> createRaw() {
         return new Raw();
     }
+
 }

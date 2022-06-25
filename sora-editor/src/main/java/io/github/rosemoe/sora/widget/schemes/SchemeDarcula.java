@@ -24,7 +24,9 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor picked from Android Studio Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
+ * ColorScheme for editor
+ * picked from Android Studio
+ * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeDarcula extends EditorColorScheme {
 
@@ -56,4 +58,5 @@ public class SchemeDarcula extends EditorColorScheme {
         setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
         setColor(TEXT_SELECTED, 0xffffffff);
     }
+
 }

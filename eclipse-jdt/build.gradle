@@ -9,12 +9,7 @@ java {
 }
 
 dependencies {
-    api ('org.eclipse.jdt:org.eclipse.jdt.compiler.tool:1.3.150') {
-        // It has a transitive dependency on jdt tools
-        // which we've already implemented here in this module
-        transitive = false
-    }
-
+    compileOnly 'com.zeoflow:jx:1.2.1'
     api 'org.eclipse.platform:org.eclipse.core.resources:3.17.0'
     api 'org.eclipse.platform:org.eclipse.core.runtime:3.25.0'
     api 'org.eclipse.platform:org.eclipse.equinox.preferences:3.10.1'

@@ -30,30 +30,48 @@ package io.github.rosemoe.sora.widget.style;
  */
 public interface CursorAnimator {
 
-    /** Mark the current cursor position as animation start position */
+    /**
+     * Mark the current cursor position as animation start position
+     */
     void markStartPos();
 
-    /** Mark the current cursor position as animation end position */
+    /**
+     * Mark the current cursor position as animation end position
+     */
     void markEndPos();
 
-    /** Start animation */
+    /**
+     * Start animation
+     */
     void start();
 
-    /** Cancel animation */
+    /**
+     * Cancel animation
+     */
     void cancel();
 
-    /** Check whether animation is in process */
+    /**
+     * Check whether animation is in process
+     */
     boolean isRunning();
 
-    /** The current x position of cursor in view offset */
+    /**
+     * The current x position of cursor in view offset
+     */
     float animatedX();
 
-    /** The current y position of cursor in view offset */
+    /**
+     * The current y position of cursor in view offset
+     */
     float animatedY();
 
-    /** Height of current line background */
+    /**
+     * Height of current line background
+     */
     float animatedLineHeight();
 
-    /** Bottom Y position in view offset of current line background */
+    /**
+     * Bottom Y position in view offset of current line background
+     */
     float animatedLineBottom();
 }

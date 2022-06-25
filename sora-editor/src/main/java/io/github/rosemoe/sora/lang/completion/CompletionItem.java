@@ -29,12 +29,12 @@ import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * The class used to save auto complete result items. For functionality, this class only manages the
- * information to be displayed in list view. You can implement {@link
- * CompletionItem#performCompletion(CodeEditor, Content, int, int)} to customize your own completion
- * method so that you can develop complex actions.
+ * The class used to save auto complete result items.
+ * For functionality, this class only manages the information to be displayed in list view.
+ * You can implement {@link CompletionItem#performCompletion(CodeEditor, Content, int, int)} to customize
+ * your own completion method so that you can develop complex actions.
  *
- * <p>For the simplest usage, see {@link SimpleCompletionItem}
+ * For the simplest usage, see {@link SimpleCompletionItem}
  *
  * @see SimpleCompletionItem
  * @author Rosemoe
@@ -42,14 +42,21 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 @SuppressWarnings("CanBeFinal")
 public abstract class CompletionItem {
 
-    /** Icon for displaying in adapter */
+    /**
+     * Icon for displaying in adapter
+     */
     public Drawable icon;
 
-    /** Text to display as title in adapter */
+    /**
+     * Text to display as title in adapter
+     */
     public CharSequence label;
 
-    /** Text to display as description in adapter */
+    /**
+     * Text to display as description in adapter
+     */
     public CharSequence desc;
+
 
     public CompletionItem(CharSequence label) {
         this(label, null);
@@ -81,15 +88,18 @@ public abstract class CompletionItem {
     }
 
     /**
-     * Perform this completion. You can implement custom logic to make your completion better(by
-     * updating selection and text from here). To make it considered as a single action, the editor
-     * will enter batch edit state before invoking this method. Feel free to update the text by
-     * multiple calls to {@code text}.
+     * Perform this completion.
+     * You can implement custom logic to make your completion better(by updating selection and text
+     * from here).
+     * To make it considered as a single action, the editor will enter batch edit state before invoking
+     * this method. Feel free to update the text by multiple calls to {@code text}.
      *
      * @param editor The editor. You can set cursor position with that.
      * @param text The text in editor. You can make modifications to it.
-     * @param line The auto-completion line
+     * @param line  The auto-completion line
      * @param column The auto-completion column
      */
     public abstract void performCompletion(CodeEditor editor, Content text, int line, int column);
+
 }
+

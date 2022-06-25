@@ -23,11 +23,13 @@
  */
 package io.github.rosemoe.sora.lang.folding;
 
-import io.github.rosemoe.sora.util.IntPair;
-
 import java.util.List;
 
-/** Indicates a folding region */
+import io.github.rosemoe.sora.util.IntPair;
+
+/**
+ * Indicates a folding region
+ */
 public class FoldingRegion {
 
     private long start;
@@ -64,8 +66,7 @@ public class FoldingRegion {
     }
 
     public FoldingRegion createChild(int startLine, int startColumn, int endLine, int endColumn) {
-        if (startLine < getStartLine()
-                || (startLine == getStartLine() && startColumn < getStartColumn())) {
+        if (startLine < getStartLine() || (startLine == getStartLine() && startColumn < getStartColumn())) {
             throw new IllegalArgumentException("child start is before parent start");
         }
         if (endLine > getEndLine() || (endLine == getEndLine() && endColumn > getEndColumn())) {
@@ -75,4 +76,5 @@ public class FoldingRegion {
         children.add(child);
         return child;
     }
+
 }

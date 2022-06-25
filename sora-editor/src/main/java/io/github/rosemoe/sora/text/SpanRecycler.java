@@ -25,11 +25,11 @@ package io.github.rosemoe.sora.text;
 
 import android.util.Log;
 
-import io.github.rosemoe.sora.lang.styling.Span;
-
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import io.github.rosemoe.sora.lang.styling.Span;
 
 public class SpanRecycler {
 
@@ -61,7 +61,7 @@ public class SpanRecycler {
 
     private class RecycleThread extends Thread {
 
-        private static final String LOG_TAG = "SpanRecycler";
+        private final static String LOG_TAG = "SpanRecycler";
 
         RecycleThread() {
             setDaemon(true);
@@ -94,5 +94,7 @@ public class SpanRecycler {
             }
             Log.i(LOG_TAG, "Recycler exited");
         }
+
     }
+
 }

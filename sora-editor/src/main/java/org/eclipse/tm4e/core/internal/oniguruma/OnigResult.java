@@ -65,4 +65,5 @@ public class OnigResult {
             return 0;
         }
     }
+
 }

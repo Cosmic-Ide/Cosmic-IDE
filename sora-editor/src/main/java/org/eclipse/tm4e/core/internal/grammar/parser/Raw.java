@@ -23,12 +23,6 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.parser;
 
-import org.eclipse.tm4e.core.internal.types.IRawCaptures;
-import org.eclipse.tm4e.core.internal.types.IRawGrammar;
-import org.eclipse.tm4e.core.internal.types.IRawRepository;
-import org.eclipse.tm4e.core.internal.types.IRawRule;
-import org.eclipse.tm4e.core.internal.utils.CloneUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,9 +30,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/** Raw */
-public class Raw extends HashMap<String, Object>
-        implements IRawRepository, IRawRule, IRawGrammar, IRawCaptures {
+import org.eclipse.tm4e.core.internal.types.IRawCaptures;
+import org.eclipse.tm4e.core.internal.types.IRawGrammar;
+import org.eclipse.tm4e.core.internal.types.IRawRepository;
+import org.eclipse.tm4e.core.internal.types.IRawRule;
+import org.eclipse.tm4e.core.internal.utils.CloneUtils;
+
+/**
+ * Raw
+ *
+ */
+public class Raw extends HashMap<String, Object> implements IRawRepository, IRawRule, IRawGrammar, IRawCaptures {
     private static final String FIRST_LINE_MATCH = "firstLineMatch";
     private static final String FILE_TYPES = "fileTypes";
     private static final String SCOPE_NAME = "scopeName";
@@ -290,7 +292,6 @@ public class Raw extends HashMap<String, Object>
         }
         return fileTypes;
     }
-
     @Override
     public String getFirstLineMatch() {
         return (String) super.get(FIRST_LINE_MATCH);
@@ -310,4 +311,5 @@ public class Raw extends HashMap<String, Object>
     public Object clone() {
         return CloneUtils.clone(this);
     }
+
 }

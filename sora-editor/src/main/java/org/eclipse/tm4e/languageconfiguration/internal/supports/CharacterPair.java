@@ -25,11 +25,14 @@ package org.eclipse.tm4e.languageconfiguration.internal.supports;
 
 import java.util.AbstractMap.SimpleEntry;
 
-/** A tuple of two characters, like a pair of opening and closing brackets. */
+/**
+ * A tuple of two characters, like a pair of opening and closing brackets.
+ */
 @SuppressWarnings("serial")
 public class CharacterPair extends SimpleEntry<String, String> {
 
-    public CharacterPair(String key, String value) {
-        super(key, value);
-    }
+	public CharacterPair(String key, String value) {
+		super(key, value);
+	}
+
 }

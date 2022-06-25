@@ -33,19 +33,15 @@ public class ParsedThemeRule {
     public final List<String> parentScopes;
     public final int index;
 
-    /** -1 if not set. An or mask of `FontStyle` otherwise. */
+    /**
+     * -1 if not set. An or mask of `FontStyle` otherwise.
+     */
     public final int fontStyle;
-
     public final String foreground;
     public final String background;
 
-    public ParsedThemeRule(
-            String scope,
-            List<String> parentScopes,
-            int index,
-            int fontStyle,
-            String foreground,
-            String background) {
+    public ParsedThemeRule(String scope, List<String> parentScopes, int index, int fontStyle, String foreground,
+                           String background) {
         this.scope = scope;
         this.parentScopes = parentScopes;
         this.index = index;
@@ -69,24 +65,38 @@ public class ParsedThemeRule {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         ParsedThemeRule other = (ParsedThemeRule) obj;
         if (background == null) {
-            if (other.background != null) return false;
-        } else if (!background.equals(other.background)) return false;
-        if (fontStyle != other.fontStyle) return false;
+            if (other.background != null)
+                return false;
+        } else if (!background.equals(other.background))
+            return false;
+        if (fontStyle != other.fontStyle)
+            return false;
         if (foreground == null) {
-            if (other.foreground != null) return false;
-        } else if (!foreground.equals(other.foreground)) return false;
-        if (index != other.index) return false;
+            if (other.foreground != null)
+                return false;
+        } else if (!foreground.equals(other.foreground))
+            return false;
+        if (index != other.index)
+            return false;
         if (parentScopes == null) {
-            if (other.parentScopes != null) return false;
-        } else if (!parentScopes.equals(other.parentScopes)) return false;
+            if (other.parentScopes != null)
+                return false;
+        } else if (!parentScopes.equals(other.parentScopes))
+            return false;
         if (scope == null) {
-            if (other.scope != null) return false;
-        } else if (!scope.equals(other.scope)) return false;
+            if (other.scope != null)
+                return false;
+        } else if (!scope.equals(other.scope))
+            return false;
         return true;
     }
+
 }

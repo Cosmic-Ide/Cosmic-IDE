@@ -24,8 +24,9 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor picked from Visual Studio 2019 Thanks to liyujiang-gzu
- * (GitHub @liyujiang-gzu)
+ * ColorScheme for editor
+ * picked from Visual Studio 2019
+ * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeVS2019 extends EditorColorScheme {
 
@@ -57,4 +58,5 @@ public class SchemeVS2019 extends EditorColorScheme {
         setColor(NON_PRINTABLE_CHAR, 0xffdddddd);
         setColor(TEXT_SELECTED, 0xffffffff);
     }
+
 }

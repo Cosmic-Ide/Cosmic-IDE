@@ -23,24 +23,28 @@
  */
 package org.eclipse.tm4e.core.model;
 
-import org.eclipse.tm4e.core.grammar.IGrammar;
-
 import java.util.List;
 
-/** TextMate model API. */
+import org.eclipse.tm4e.core.grammar.IGrammar;
+
+/**
+ * TextMate model API.
+ *
+ */
 public interface ITMModel {
 
     /**
-     * Returns the TextMate grammar to use to parse for each lines of the document the TextMate
-     * tokens.
+     * Returns the TextMate grammar to use to parse for each lines of the
+     * document the TextMate tokens.
      *
-     * @return the TextMate grammar to use to parse for each lines of the document the TextMate
-     *     tokens.
+     * @return the TextMate grammar to use to parse for each lines of the
+     *         document the TextMate tokens.
      */
     IGrammar getGrammar();
 
     /**
-     * Set the TextMate grammar to use to parse for each lines of the document the TextMate tokens.
+     * Set the TextMate grammar to use to parse for each lines of the document
+     * the TextMate tokens.
      *
      * @param grammar
      */
@@ -49,14 +53,16 @@ public interface ITMModel {
     /**
      * Add model tokens changed listener.
      *
-     * @param listener to add
+     * @param listener
+     *            to add
      */
     void addModelTokensChangedListener(IModelTokensChangedListener listener);
 
     /**
      * Remove model tokens changed listener.
      *
-     * @param listener to remove
+     * @param listener
+     *            to remove
      */
     void removeModelTokensChangedListener(IModelTokensChangedListener listener);
 
@@ -65,4 +71,5 @@ public interface ITMModel {
     List<TMToken> getLineTokens(int line);
 
     void forceTokenization(int lineNumber);
+
 }

@@ -34,8 +34,7 @@ public class ScopeMetadata {
     public final int tokenType;
     public final List<ThemeTrieElementRule> themeData;
 
-    public ScopeMetadata(
-            String scopeName, int languageId, int tokenType, List<ThemeTrieElementRule> themeData) {
+    public ScopeMetadata(String scopeName, int languageId, int tokenType, List<ThemeTrieElementRule> themeData) {
         this.scopeName = scopeName;
         this.languageId = languageId;
         this.tokenType = tokenType;

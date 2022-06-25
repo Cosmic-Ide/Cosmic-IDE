@@ -25,12 +25,14 @@ package io.github.rosemoe.sora.event;
 
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-/** Notifies a selection handle's touch state has changed */
+/**
+ * Notifies a selection handle's touch state has changed
+ */
 public class HandleStateChangeEvent extends Event {
 
-    public static final int HANDLE_TYPE_INSERT = 0;
-    public static final int HANDLE_TYPE_LEFT = 1;
-    public static final int HANDLE_TYPE_RIGHT = 2;
+    public final static int HANDLE_TYPE_INSERT = 0;
+    public final static int HANDLE_TYPE_LEFT = 1;
+    public final static int HANDLE_TYPE_RIGHT = 2;
     private final int mWhich;
     private final boolean isHeld;
 
@@ -47,4 +49,5 @@ public class HandleStateChangeEvent extends Event {
     public boolean isHeld() {
         return isHeld;
     }
+
 }

@@ -23,7 +23,10 @@
  */
 package org.eclipse.tm4e.core;
 
-/** TextMate exception. */
+/**
+ * TextMate exception.
+ *
+ */
 public class TMException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

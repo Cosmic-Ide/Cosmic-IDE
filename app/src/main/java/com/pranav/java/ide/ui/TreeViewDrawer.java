@@ -164,7 +164,7 @@ public class TreeViewDrawer extends Fragment {
         popup.show();
 
         if (node.getContent().getFile().getName().equals("java") && node.getLevel() == 0) {
-            /* Disable Option to delete a root folder 'java' */
+            /* Disable Option to delete the root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }
 
@@ -233,9 +233,7 @@ public class TreeViewDrawer extends Fragment {
                         var fileNameString = fileName.getText().toString();
 
                         if (!fileNameString.equals("")
-                                && fileNameString.length() <= 25
-                                && !fileNameString.endsWith(".java")
-                                && !isStringContainsNumbers(fileNameString)) {
+                                && !fileNameString.endsWith(".java")) {
                             try {
                                 var filePth =
                                         new File(
@@ -294,7 +292,7 @@ public class TreeViewDrawer extends Fragment {
 
                         if (fileNameString != null
                                 && !fileNameString.equals("")
-                                && fileNameString.length() <= 25) {
+                                && !fileNameString.contains(".")) {
                             var filePath =
                                     node.getContent().getFile().getPath() + "/" + fileNameString;
 
@@ -308,14 +306,11 @@ public class TreeViewDrawer extends Fragment {
                             fileName.setText("");
                             createNewDirectoryDialog.dismiss();
                         } else {
-                            if (fileNameString.length() <= 25) {
-                                fileName.setError("Name is too long!");
-                            }
-                            if (fileNameString.contains("/") || fileNameString.contains(".")) {
+                            if (fileNameString.contains(".")) {
                                 fileName.setError("Illegal Char!");
                             }
-                            if (isStringContainsNumbers(fileNameString)) {
-                                fileName.setError("Name cannot contains digits!");
+                            if (fileNameString.isEmpty()) {
+                                fileName.setError("Name cannot be empty");
                             }
                         }
                     });
@@ -330,7 +325,7 @@ public class TreeViewDrawer extends Fragment {
             MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
             MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
 
-            areUsure_txt.setText(getString(R.string.delete, node.getContent().getFile().getName()));
+            areUsure_txt.setText(getString(R.string.delete_file, node.getContent().getFile().getName()));
 
             confirmBttn.setOnClickListener(
                     v -> {
@@ -369,16 +364,5 @@ public class TreeViewDrawer extends Fragment {
         result.addAll(mFiles);
 
         return result;
-    }
-
-    public boolean isStringContainsNumbers(String target) {
-        var chars = target.toCharArray();
-        for (var c : chars) {
-            if (Character.isDigit(c)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

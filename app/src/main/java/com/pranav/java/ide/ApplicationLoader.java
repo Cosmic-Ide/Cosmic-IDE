@@ -17,7 +17,6 @@ public final class ApplicationLoader extends Application {
         final var dataDirectory = mContext.getExternalFilesDir(null).getAbsolutePath();
         FileUtil.setDataDirectory(dataDirectory);
         dpToPx.initalizeResources(mContext.getResources());
-        var uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
 
         Thread.setDefaultUncaughtExceptionHandler(
                 (thread, throwable) -> {

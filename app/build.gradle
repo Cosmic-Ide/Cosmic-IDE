@@ -70,6 +70,8 @@ android {
         exclude 'JavaSE-*.profile'
         exclude 'JavaSE_compact*-1.8.profile'
         exclude 'OSGi_Minimum-*.profile'
+        exclude 'OSGI-OPT/**'
+        exclude 'jdtCompilerAdapter.jar'
     }
 }
 

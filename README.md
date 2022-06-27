@@ -28,21 +28,21 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 <p align="center">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/editor.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/editor.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/diagnostic.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/diagnostic.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/run.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/run.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/settings.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/settings.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/javap.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/javap.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/decompiler.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/decompiler.webp">
 
-<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/treeview.webp">
+<img width="125" height="250" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/treeview.webp">
 
 </p>
 

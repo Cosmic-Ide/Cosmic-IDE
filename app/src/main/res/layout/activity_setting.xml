@@ -118,9 +118,8 @@
             android:layout_height="wrap_content"
             android:padding="4dp"
             android:text="@string/java_path"
-            android:textColor="@color/md_theme_light_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="?colorPrimary"
+            android:textAppearance="?textAppearanceTitleMedium" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/save_java_path_bttn"

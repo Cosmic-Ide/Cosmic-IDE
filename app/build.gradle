@@ -11,20 +11,10 @@ android {
         applicationId 'com.pranav.java.ide'
         minSdk 26
         targetSdk 33
-        versionCode 4
-        versionName '0.0.4'
+        versionCode 5
+        versionName '0.0.5'
     }
 
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    
-    
     signingConfigs {
         debug {
             storeFile file('testkey.keystore')
@@ -40,20 +30,29 @@ android {
             keyPassword 'testkey'
         }
     }
-    
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    
+
     kotlinOptions {
       jvmTarget = '11'
     }
-    
+
     lintOptions {
         checkDependencies true
     }
-    
+
     packagingOptions {
         exclude 'plugin.xml'
         exclude '.options'

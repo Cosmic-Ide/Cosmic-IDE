@@ -12,9 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:text="@string/create_new_file"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/md_theme_light_primary"/>
+        android:textColor="?colorPrimary"
+        android:textAppearance="?textAppearanceTitleMedium" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -22,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginHorizontal="8dp"
+        android:hint="@string/new_class_name"
         android:textDirection="locale"
         app:suffixText="@string/java_file_suffix"
         app:counterEnabled="true"
@@ -30,10 +30,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/fileName_edt"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="@string/new_class_name"
+            android:layout_height="wrap_content"
             android:inputType="text"
-            android:maxLines="1"/>
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -44,4 +43,5 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:text="@string/create"/>
+
 </LinearLayout>

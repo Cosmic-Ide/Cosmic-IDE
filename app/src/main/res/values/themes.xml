@@ -1,6 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Theme.JavaIde" parent="Theme.Material3.DayNight">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">@bool/isLight</item>
+        <item name="android:windowLightNavigationBar">@bool/isLight</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
 
-   <style name="AppTheme.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
+    <style name="Theme.JavaIde.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.JavaIde.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
+
 </resources>

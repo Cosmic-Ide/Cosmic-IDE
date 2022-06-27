@@ -38,7 +38,7 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 <img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/javap.webp">
 
-<img width="150" height="400" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
 
 <img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/decompiler.webp">
 

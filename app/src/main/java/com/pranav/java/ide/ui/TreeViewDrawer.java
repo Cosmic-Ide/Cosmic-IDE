@@ -13,11 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
+
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
@@ -28,6 +30,7 @@ import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
+import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +59,9 @@ public class TreeViewDrawer extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ViewCompat.requestApplyInsets(view);
+        UiUtilsKt.addSystemWindowInsetToPadding(view, false, true, false, true);
+        
         activity = ((MainActivity) getContext());
 
         buildCreateFileDialog();

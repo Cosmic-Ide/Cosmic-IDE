@@ -145,7 +145,13 @@ public class CompileTask extends Thread {
                             }
                             var s = new StringBuilder();
                             s.append("Success! ");
-                            s.append(prefs.getString("compiler", "Javac"));
+
+                            if (prefs.getString("compiler", "Javac").equals("Javac")) {
+                                s.append("Javac");
+                            } else  {
+                                s.append("ECJ");
+                            }
+
                             s.append(" took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");

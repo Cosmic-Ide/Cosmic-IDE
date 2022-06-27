@@ -113,6 +113,15 @@
             android:layout_marginHorizontal="4dp"
             android:text="@string/enter_program_arguments" />
 
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="@string/java_path"
+            android:textColor="@color/md_theme_light_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/save_java_path_bttn"
             android:layout_width="match_parent"

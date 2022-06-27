@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
+import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
@@ -165,6 +167,8 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
+        HorizontalScrollView scrollView = findViewById(R.id.scrollview);
+        UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
     }
 
     void reloadTreeView() {

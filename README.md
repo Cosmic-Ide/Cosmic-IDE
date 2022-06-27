@@ -12,7 +12,7 @@
 <a href="https://discord.gg/8Gu6YCq2eS">
     <img src="https://img.shields.io/badge/Chat-on%20discord-7289da">
 </a>
-<a href="">
+<a href="https://github.com/PranavPurwar/Java-Ide/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
 </a>
 <p>
@@ -26,21 +26,25 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/editor.webp">
+<p align="center">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/diagnostic.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/editor.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/run.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/diagnostic.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/settings.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/run.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/javap.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/settings.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/javap.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/decompiler.webp">
+<img width="150" height="400" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/smali.webp">
 
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/treeview.webp">
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/decompiler.webp">
+
+<img width="150" height="300" src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/img/treeview.webp">
+
+</p>
 
 ## Features
 
@@ -83,8 +87,8 @@ Clone this repository on your device and compile using Android Studio or by runn
 I would really appreciate all kinds of contributions.
 If you have any questions, ideas, need help or want to propose a change just open an issue.
 
-- Contributions are highly appreciated.
-- Create a pull request and I would merge it after thorough review.
+- Any type of contributions are highly appreciated.
+- Create a pull request and I would merge it after review.
 
 ## Special thanks
 

@@ -101,7 +101,7 @@ public class JavacAnalyzer {
         for (var it : diagnostics.getDiagnostics()) {
             if (it.getSource() == null) continue;
             short severity =
-                    it.getKind() == Diagnostic.Kind.ERROR
+                    (it.getKind() == Diagnostic.Kind.ERROR)
                             ? DiagnosticRegion.SEVERITY_ERROR
                             : DiagnosticRegion.SEVERITY_WARNING;
             problems.add(

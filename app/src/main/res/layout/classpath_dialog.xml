@@ -29,8 +29,7 @@
             android:id="@+id/classpath_edt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/classpath_separated_from_colon"
-            android:maxLines="1" />
+            android:hint="@string/classpath_separated_from_colon" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton

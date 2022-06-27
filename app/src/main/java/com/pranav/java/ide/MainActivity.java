@@ -235,7 +235,7 @@ public final class MainActivity extends AppCompatActivity {
 
         } else if (id == R.id.run_menu_button) {
 
-            compile(true);
+            compile(true, false);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -265,7 +265,7 @@ public final class MainActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void compile(boolean execute) {
+    private void compile(boolean execute, boolean blockMainThread) {
         final int id = 1;
         final var intent = new Intent(MainActivity.this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -320,7 +320,11 @@ public final class MainActivity extends AppCompatActivity {
                                         showErr(errorMessage);
                                     }
                                 }));
-        runThread.start();
+        if (!blockMainThread) {
+            runThread.start();
+        } else {
+            runThread.run();
+        }
     }
 
     private TextMateColorScheme getColorScheme() {
@@ -554,7 +558,7 @@ public final class MainActivity extends AppCompatActivity {
             var dex = new File(FileUtil.getBinDir().concat("classes.dex"));
             /* If the project doesn't seem to have been compiled yet, compile it */
             if (!dex.exists()) {
-                compile(false);
+                compile(false, true);
             }
             var classes = new ArrayList<String>();
             var dexfile = DexFileFactory.loadDexFile(dex.getAbsolutePath(), Opcodes.forApi(32));

@@ -7,5 +7,6 @@
 -keep class com.itsaky.androidide.** { *; }
 -keep class com.sun.** { *; }
 -keep class jdk.internal.** { *; }
+-keep class org.osgi.** { *; }
 -keep class javax.** { *; }
 -keep class com.googlecode.** { *; }

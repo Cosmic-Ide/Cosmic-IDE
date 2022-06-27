@@ -42,24 +42,22 @@
             android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fillViewport="true"
             android:background="#242424"
             android:orientation="horizontal">
-
             <LinearLayout
                 android:id="@+id/container"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="8dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal|center_vertical"
                     android:padding="8dp"
                     android:text="@string/smali"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
@@ -69,11 +67,9 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_disassemble"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center_horizontal|center_vertical"
+                    android:layout_weight="1"
                     android:padding="8dp"
                     android:text="@string/disassemble"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
@@ -83,18 +79,20 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali2java"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal|center_vertical"
                     android:padding="8dp"
                     android:text="@string/smali2java"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
                     android:textSize="12sp"
                     app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="8dp" />
+
             </LinearLayout>
         </HorizontalScrollView>
+
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView

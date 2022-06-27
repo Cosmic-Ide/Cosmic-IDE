@@ -12,9 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:text="@string/enter_program_arguments"
-        android:textColor="@color/md_theme_light_primary"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textColor="?colorPrimary"
+        android:textAppearance="?textAppearanceTitleMedium" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
@@ -27,7 +26,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/arguments_edt"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,4 +38,5 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:text="@string/save" />
+
 </LinearLayout>

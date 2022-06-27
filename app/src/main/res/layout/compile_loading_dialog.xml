@@ -11,9 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="@string/compilation_running"
-        android:textSize="18sp"
-        android:textStyle="normal"
-        android:textColor="@color/md_theme_light_primary"/>
+        android:textColor="?colorPrimary"
+        android:textAppearance="?textAppearanceBodyLarge" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:layout_width="wrap_content"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/stage"
-        android:textSize="14sp"
-        android:textStyle="normal"
-        android:textColor="@color/md_theme_light_primary"/>
+        android:textColor="?colorPrimary"
+        android:textAppearance="?textAppearanceBodyMedium" />
+
 </LinearLayout>

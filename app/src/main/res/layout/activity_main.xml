@@ -63,7 +63,6 @@
                     android:padding="8dp"
                     android:text="@string/smali"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="8dp" />
@@ -78,7 +77,6 @@
                     android:padding="8dp"
                     android:text="@string/disassemble"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="8dp" />
@@ -92,7 +90,6 @@
                     android:padding="8dp"
                     android:text="@string/smali2java"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textColor="#FFFFFF"
                     android:textSize="12sp"
                     app:backgroundTint="?attr/colorPrimary"
                     app:cornerRadius="8dp" />

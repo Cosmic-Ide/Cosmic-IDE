@@ -21,8 +21,8 @@ class ApplicationLoader : Application {
         dpToPx.initalizeResources(mContext.getResources())
 
         Thread.setDefaultUncaughtExceptionHandler {
-                { thread, throwable ->
-                    val intent = Intent(getApplicationContext(), DebugActivity::java.class)
+                thread, throwable ->
+                    val intent = Intent(getApplicationContext(), DebugActivity::class.java)
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     intent.putExtra("error", Log.getStackTraceString(throwable))
                     startActivity(intent)

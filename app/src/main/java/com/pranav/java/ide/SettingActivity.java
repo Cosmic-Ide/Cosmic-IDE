@@ -251,7 +251,7 @@ public final class SettingActivity extends AppCompatActivity {
 
                     save_java_path_bttn.setOnClickListener(
                             view -> {
-                                var enteredPath = path_edt.getText().toString();
+                                var enteredPath = path_edt.getText().toString().replace("..", "");
                                 if (enteredPath.isEmpty()) {
                                     FileUtil.setJavaDirectory(FileUtil.getDataDir() + "java/");
                                 } else {

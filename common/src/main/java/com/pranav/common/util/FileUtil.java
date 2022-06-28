@@ -31,15 +31,14 @@ public class FileUtil {
         if (!dir.endsWith("/")) {
             dir += "/";
         }
-        javaDir = dir;
         try {
-            var path = Paths.get(dir);
+            var path = Paths.get(dir).normalize();
             if (Files.isRegularFile(path)) {
                 Files.delete(path);
             }
             Files.createDirectories(path);
-            new Indexer("editor").put("java_path", dir).flush();
-        } catch (IOException | JSONException e) {
+            javaDir = path.toString();
+        } catch (IOException || JSONException e) {
             e.printStackTrace();
         }
     }
@@ -49,8 +48,8 @@ public class FileUtil {
     }
 
     public static void writeFile(InputStream in, String path) throws IOException {
-        var file = new File(path);
-        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        var path = Paths.get(path).normalize();
+        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void writeFile(String path, String content) throws IOException {

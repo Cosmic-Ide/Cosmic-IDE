@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:title="@string/run"
         android:id="@+id/run_menu_button"
         android:icon="@drawable/baseline_play_arrow_white_24"
         app:showAsAction="always" />
+
     <item
         android:title="@string/format"
         android:id="@+id/format_menu_button" />
+
     <item
         android:title="@string/settings"
         android:id="@+id/settings_menu_button" />

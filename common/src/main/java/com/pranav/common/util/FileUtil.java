@@ -45,8 +45,8 @@ public class FileUtil {
     }
 
     public static void writeFile(InputStream in, String path) throws IOException {
-        var path = Paths.get(path).normalize();
-        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+        var filePath = Paths.get(path).normalize();
+        Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static void writeFile(String path, String content) throws IOException {

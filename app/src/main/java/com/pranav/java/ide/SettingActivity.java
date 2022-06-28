@@ -14,25 +14,32 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.transition.platform.MaterialSharedAxis;
 
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
 public final class SettingActivity extends AppCompatActivity {
+
     private String[] javaVersions = {
         "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
     };
 
-    private String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};
+    private String[] javaCompilers = {
+        "Javac", "Eclipse Compiler for Java"
+    };
 
-    private String[] javaFormatters = {"Google Java Formatter", "Eclipse Java Formatter"};
+    private String[] javaFormatters = {
+        "Google Java Formatter", "Eclipse Java Formatter"
+    };
 
-    private String[] javaDisassemblers = {"Javap", "Eclipse Class Disassembler"};
+    private String[] javaDisassemblers = {
+        "Javap", "Eclipse Class Disassembler"
+    };
 
     private AlertDialog classpathDialog;
     private AlertDialog argumentsDialog;
@@ -42,17 +49,8 @@ public final class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setAllowEnterTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-
-        MaterialSharedAxis enterTransition = new MaterialSharedAxis(MaterialSharedAxis.X, true);
-        enterTransition.addTarget(R.id.coordinator);
-        getWindow().setEnterTransition(enterTransition);
-
-        MaterialSharedAxis returnTransition = new MaterialSharedAxis(MaterialSharedAxis.X, false);
-        returnTransition.addTarget(R.id.coordinator);
-        getWindow().setReturnTransition(returnTransition);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -60,7 +58,9 @@ public final class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
-        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
+
+        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
 
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
@@ -157,7 +157,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     .setMessage(
                                             "Please note that currently only ECJ supports Java 18."
                                                 + " Javac with Java 18 is not currently supported.")
-                                    .setPositiveButton("GOT IT", (dialog, which) -> {})
+                                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                                     .show();
                             return;
                         }
@@ -221,7 +221,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredClasspath = classpath_edt.getText().toString();
                                 settings.edit().putString("classpath", enteredClasspath).apply();
 
-                                showSnackbar("Saved");
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (classpathDialog.isShowing()) classpathDialog.dismiss();
@@ -247,7 +247,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredArgs = arguments_edt.getText().toString();
                                 settings.edit().putString("program_arguments", enteredArgs).apply();
 
-                                showSnackbar("Saved");
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
@@ -274,7 +274,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     FileUtil.setJavaDirectory(enteredPath);
                                 }
 
-                                showSnackbar("Saved");
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (javaPathDialog.isShowing()) javaPathDialog.dismiss();

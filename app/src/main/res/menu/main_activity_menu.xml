@@ -15,4 +15,5 @@
     <item
         android:title="@string/settings"
         android:id="@+id/settings_menu_button" />
+
 </menu>

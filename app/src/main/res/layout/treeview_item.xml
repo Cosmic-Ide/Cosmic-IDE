@@ -11,21 +11,20 @@
 
     <ImageView
         android:id="@+id/arrow"
-        android:src="@drawable/arrow"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginEnd="8dp" />
+        android:src="@drawable/arrow" />
 
     <ImageView
         android:id="@+id/icon"
-        android:src="@drawable/java_file"
         android:layout_width="24dp"
-        android:layout_height="24dp" />
+        android:layout_height="24dp"
+        android:layout_marginHorizontal="8dp"
+        android:src="@drawable/java_file" />
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -4,7 +4,6 @@
     android:id="@+id/mDrawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:transitionGroup="true"
     tools:openDrawer="start">
 
     <LinearLayout
@@ -80,6 +79,7 @@
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/treeViewFragment"
         android:name="com.pranav.java.ide.ui.TreeViewDrawer"
         android:layout_width="300dp"
         android:layout_height="match_parent"

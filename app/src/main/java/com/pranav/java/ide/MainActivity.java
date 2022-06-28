@@ -1,6 +1,5 @@
 package com.pranav.java.ide;
 
-import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -29,9 +28,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.transition.platform.MaterialSharedAxis;
 
 import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
@@ -94,7 +93,9 @@ public final class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
-        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
+
+        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
 
         drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
@@ -230,17 +231,8 @@ public final class MainActivity extends AppCompatActivity {
                     });
             editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
-            MaterialSharedAxis exitTransition = new MaterialSharedAxis(MaterialSharedAxis.X, true);
-            exitTransition.addTarget(R.id.mDrawerLayout);
-            getWindow().setExitTransition(exitTransition);
-
-            MaterialSharedAxis reEnterTransition = new MaterialSharedAxis(MaterialSharedAxis.X, false);
-            reEnterTransition.addTarget(R.id.mDrawerLayout);
-            getWindow().setReenterTransition(reEnterTransition);
-
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
             var intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent, options.toBundle());
+            startActivity(intent);
         } else if (id == R.id.run_menu_button) {
             compile(true, false);
         }
@@ -410,7 +402,7 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
                         edi.setEditorLanguage(getTextMateLanguageForSmali());
-                        edi.setTextSize(13);
+                        edi.setTextSize(12);
 
                         try {
                             edi.setText(FileUtil.readFile(smaliFile));
@@ -540,8 +532,8 @@ public final class MainActivity extends AppCompatActivity {
                 new MaterialAlertDialogBuilder(MainActivity.this)
                         .setTitle(title)
                         .setMessage(message)
-                        .setPositiveButton("GOT IT", null)
-                        .setNegativeButton("CANCEL", null);
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(android.R.string.cancel, null);
         if (copyButton)
             dialog.setNeutralButton(
                     "COPY",

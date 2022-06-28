@@ -16,13 +16,13 @@
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="wrap_content"
+                android:minHeight="?actionBarSize" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -52,8 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
-                android:fitsSystemWindows="true">
+                android:padding="8dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali"
@@ -89,18 +88,11 @@
 
     </LinearLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
+    <androidx.fragment.app.FragmentContainerView
+        android:name="com.pranav.java.ide.ui.TreeViewDrawer"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true">
+        android:background="?android:colorBackground" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/frameLayout"
-            android:name="com.pranav.java.ide.ui.TreeViewDrawer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

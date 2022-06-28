@@ -45,11 +45,11 @@ public final class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        MaterialSharedAxis enterTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+        MaterialSharedAxis enterTransition = new MaterialSharedAxis(MaterialSharedAxis.X, true);
         enterTransition.addTarget(R.id.coordinator);
         getWindow().setEnterTransition(enterTransition);
 
-        MaterialSharedAxis returnTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+        MaterialSharedAxis returnTransition = new MaterialSharedAxis(MaterialSharedAxis.X, false);
         returnTransition.addTarget(R.id.coordinator);
         getWindow().setReturnTransition(returnTransition);
 
@@ -59,6 +59,7 @@ public final class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
 
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 

@@ -90,20 +90,20 @@ public final class MainActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        editor = findViewById(R.id.editor);
-
         var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
+        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
 
         drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
                 new ActionBarDrawerToggle(
-                        this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
+                        this, drawer, toolbar, R.string.app_name, R.string.app_name);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        editor = findViewById(R.id.editor);
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setColorScheme(getColorScheme());
         editor.setEditorLanguage(getTextMateLanguageForJava());
@@ -171,7 +171,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
-        HorizontalScrollView scrollView = findViewById(R.id.scrollview);
+        var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
     }
 
@@ -239,11 +239,11 @@ public final class MainActivity extends AppCompatActivity {
                     });
             editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
-            MaterialSharedAxis exitTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+            MaterialSharedAxis exitTransition = new MaterialSharedAxis(MaterialSharedAxis.X, true);
             exitTransition.addTarget(R.id.mDrawerLayout);
             getWindow().setExitTransition(exitTransition);
 
-            MaterialSharedAxis reEnterTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+            MaterialSharedAxis reEnterTransition = new MaterialSharedAxis(MaterialSharedAxis.X, false);
             reEnterTransition.addTarget(R.id.mDrawerLayout);
             getWindow().setReenterTransition(reEnterTransition);
 

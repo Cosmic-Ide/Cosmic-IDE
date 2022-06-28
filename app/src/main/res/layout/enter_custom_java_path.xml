@@ -26,8 +26,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/java_path_edt"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1" />
+            android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton

@@ -10,7 +10,7 @@ import java.io.IOException
 
 class Indexer {
 
-    private var json: JSONObject
+    private lateinit var json: JSONObject
 
     private var filePath: String
 

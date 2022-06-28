@@ -4,6 +4,7 @@ import androidx.annotation.NonNull
 
 object TreeCreateNewFileContent {
 
+    @JvmStatic
     fun BUILD_NEW_FILE_CONTENT(@NonNull fileName: String) =
         """
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class $fileName {
 }
         """
 
+    @JvmStatic
     fun BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
             @NonNull fileName: String, extendPackage: String) =
         """

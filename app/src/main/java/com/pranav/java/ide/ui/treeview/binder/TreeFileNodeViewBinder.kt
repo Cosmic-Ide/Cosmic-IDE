@@ -19,9 +19,7 @@ class TreeFileNodeViewBinder(
 
     private lateinit var viewHolder: ViewHolder
 
-    public fun bnd(): BaseNodeViewBinder<TreeFile> {
-        return this
-    }
+    fun bnd(): BaseNodeViewBinder<TreeFile> = this
 
     override fun bindView(treeNode: TreeNode<TreeFile>) {
         viewHolder = ViewHolder(itemView)

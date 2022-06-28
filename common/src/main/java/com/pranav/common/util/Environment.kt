@@ -9,6 +9,7 @@ import java.io.File
     @JvmStatic
     lateinit var COMPILER_MODULE: File
 
+    @JvmStatic
     fun init(f: File) {
         COMPILER_MODULE = f
     }

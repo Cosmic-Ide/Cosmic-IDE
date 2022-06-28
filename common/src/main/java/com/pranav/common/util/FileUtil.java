@@ -1,9 +1,6 @@
 package com.pranav.common.util;
 
 import com.itsaky.androidide.utils.Environment;
-import com.pranav.common.Indexer;
-
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +35,7 @@ public class FileUtil {
             }
             Files.createDirectories(path);
             javaDir = path.toString();
-        } catch (IOException || JSONException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

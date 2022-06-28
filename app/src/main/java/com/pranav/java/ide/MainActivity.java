@@ -163,9 +163,6 @@ public final class MainActivity extends AppCompatActivity {
         /* Create Loading Dialog */
         buildLoadingDialog();
 
-        /* Insert Fragment with TreeView into Drawer */
-        reloadTreeView();
-
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
@@ -173,12 +170,6 @@ public final class MainActivity extends AppCompatActivity {
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
         var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
-    }
-
-    void reloadTreeView() {
-        var fragmentTransaction =
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer()).commit();
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */

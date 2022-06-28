@@ -1,16 +1,17 @@
 package com.pranav.java.ide
 
-import android.app.Application
 import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
+
+import androidx.multidex.MultiDexApplication
 
 import com.google.android.material.color.DynamicColors
 
 import com.pranav.common.util.FileUtil
 import com.pranav.java.ide.ui.utils.dpToPx
 
-class ApplicationLoader : Application() {
+class ApplicationLoader : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()

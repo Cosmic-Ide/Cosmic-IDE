@@ -10,13 +10,9 @@ import com.pranav.java.ide.ui.treeview.file.TreeFile
 
 import java.io.File
 
-class TreeFolder(file: File) : TreeFile() {
+class TreeFolder(file: File) : TreeFile(file) {
 
-    init {
-        super(file)
-    }
-
-    override fun getIcon(context: Context): Drawable {
+    override fun getIcon(context: Context): Drawable? {
         return AppCompatResources.getDrawable(context, R.drawable.folder)
     }
 }

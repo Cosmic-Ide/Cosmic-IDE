@@ -204,7 +204,7 @@ public class TreeViewDrawer extends Fragment {
         builder.setTitle(getString(R.string.create_new_file));
         builder.setView(R.layout.treeview_create_new_file_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
-        builder.setNegativeButton(android.R.string.cancel), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         createNewFileDialog = builder.create();
     }
 
@@ -213,7 +213,7 @@ public class TreeViewDrawer extends Fragment {
         builder.setTitle(getString(R.string.create_new_directory));
         builder.setView(R.layout.treeview_create_new_folder_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
-        builder.setNegativeButton(android.R.string.cancel), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         createNewDirectoryDialog = builder.create();
     }
 
@@ -222,7 +222,7 @@ public class TreeViewDrawer extends Fragment {
         builder.setTitle(getString(R.string.delete));
         builder.setMessage(getString(R.string.delete_file));
         builder.setPositiveButton(getString(R.string.delete), null);
-        builder.setNegativeButton(android.R.string.cancel), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         confirmDeleteDialog = builder.create();
     }
 

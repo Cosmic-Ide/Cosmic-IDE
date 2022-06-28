@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,7 +16,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.transition.platform.MaterialSharedAxis;
 
 import com.pranav.common.util.FileUtil;
 
@@ -38,8 +41,17 @@ public final class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setAllowEnterTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+
+        MaterialSharedAxis enterTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+        enterTransition.addTarget(R.id.coordinator);
+        getWindow().setEnterTransition(enterTransition);
+
+        MaterialSharedAxis returnTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+        returnTransition.addTarget(R.id.coordinator);
+        getWindow().setReturnTransition(returnTransition);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
 

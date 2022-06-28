@@ -1,5 +1,6 @@
 package com.pranav.java.ide;
 
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -30,6 +31,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.transition.platform.MaterialSharedAxis;
+
 import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
 import com.pranav.android.code.formatter.*;
@@ -80,6 +83,7 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        getWindow().setAllowEnterTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
@@ -235,12 +239,18 @@ public final class MainActivity extends AppCompatActivity {
                     });
             editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
+            MaterialSharedAxis exitTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, true);
+            exitTransition.addTarget(R.id.mDrawerLayout);
+            getWindow().setExitTransition(exitTransition);
 
+            MaterialSharedAxis reEnterTransition = new MaterialSharedAxis(MaterialSharedAxis.Z, false);
+            reEnterTransition.addTarget(R.id.mDrawerLayout);
+            getWindow().setReenterTransition(reEnterTransition);
+
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
             var intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent);
-
+            startActivity(intent, options.toBundle());
         } else if (id == R.id.run_menu_button) {
-
             compile(true, false);
         }
         return super.onOptionsItemSelected(item);

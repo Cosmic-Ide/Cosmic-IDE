@@ -209,7 +209,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredClasspath = classpath_edt.getText().toString();
                                 settings.edit().putString("classpath", enteredClasspath).apply();
 
-                                classpath_bttn.setText(getString(R.string.edit));
+                                showSnackbar("Saved");
 
                                 /* Dismiss Dialog If Showing */
                                 if (classpathDialog.isShowing()) classpathDialog.dismiss();
@@ -235,7 +235,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredArgs = arguments_edt.getText().toString();
                                 settings.edit().putString("program_arguments", enteredArgs).apply();
 
-                                arguments_bttn.setText(getString(R.string.edit));
+                                showSnackbar("Saved");
 
                                 /* Dismiss Dialog If Showing */
                                 if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
@@ -262,7 +262,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     FileUtil.setJavaDirectory(enteredPath);
                                 }
 
-                                save_java_path_bttn.setText(getString(R.string.edit));
+                                showSnackbar("Saved");
 
                                 /* Dismiss Dialog If Showing */
                                 if (javaPathDialog.isShowing()) javaPathDialog.dismiss();
@@ -273,25 +273,33 @@ public final class SettingActivity extends AppCompatActivity {
     private void buildClasspathDialog() {
         var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
         builder.setView(R.layout.classpath_dialog);
-        builder.setTitle(getResources().getString(R.string.enter_classpath));
-        builder.setPositiveButton(getResources().getString(R.string.save), null);
+        builder.setTitle(getString(R.string.enter_classpath));
+        builder.setPositiveButton(getString(R.string.save), null);
         classpathDialog = builder.create();
     }
 
     private void buildArgumentsDialog() {
         var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
         builder.setView(R.layout.arguments_dialog);
-        builder.setTitle(getResources().getString(R.string.enter_program_arguments));
-        builder.setPositiveButton(getResources().getString(R.string.save), null);
+        builder.setTitle(getString(R.string.enter_program_arguments));
+        builder.setPositiveButton(getString(R.string.save), null);
         argumentsDialog = builder.create();
     }
 
     private void buildJavaPathDialog() {
         var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
         builder.setView(R.layout.enter_custom_java_path);
-        builder.setTitle(getResources().getString(R.string.enter_java_path));
-        builder.setPositiveButton(getResources().getString(R.string.save), null);
+        builder.setTitle(getString(R.string.enter_java_path));
+        builder.setPositiveButton(getString(R.string.save), null);
         javaPathDialog = builder.create();
+    }
+
+    public void showSnackbar(final String message) {
+        Snackbar.make(
+                        (LinearLayout) findViewById(R.id.content),
+                        message,
+                        Snackbar.LENGTH_INDEFINITE)
+                .show();
     }
 
     @Override

@@ -62,10 +62,7 @@
                     android:layout_weight="1"
                     android:padding="8dp"
                     android:text="@string/smali"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_disassemble"
@@ -74,10 +71,7 @@
                     android:layout_weight="1"
                     android:padding="8dp"
                     android:text="@string/disassemble"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali2java"
@@ -87,10 +81,7 @@
                     android:layout_weight="1"
                     android:padding="8dp"
                     android:text="@string/smali2java"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
         </HorizontalScrollView>
@@ -102,13 +93,13 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:clipToPadding="false">
+        android:fitsSystemWindows="true">
 
-        <FrameLayout
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/frameLayout"
+            android:name="com.pranav.java.ide.ui.TreeViewDrawer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp" />
+            android:layout_height="match_parent" />
 
     </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

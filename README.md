@@ -24,7 +24,7 @@ Compile and run your java code anytime anywhere from your mobile phone
 
 ## How to get
 
-The app is available on F-Droid through [IzzyOnDroid](https://apt.izzysoft.de) repository [here](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+The app is available on F-Droid through [IzzyOnDroid](https://apt.izzysoft.de/fdroid) repository [here](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
 
 You can get the latest release from  [here](https://github.com/PranavPurwar/Java-Ide/releases/v0.0.5)
 and the latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).

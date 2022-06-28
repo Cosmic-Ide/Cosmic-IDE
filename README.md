@@ -1,7 +1,7 @@
 # Java IDE
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/ic_logo.webp">
+<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/icon.webp">
 
 <br>
 

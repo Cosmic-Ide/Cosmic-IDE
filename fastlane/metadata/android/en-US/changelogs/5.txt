@@ -1,0 +1,10 @@
+- Support for incremental compilation for Java sources!
+- Support for Java 18 with ECJ 3.30.0
+- Now, the editor will underline errors and warnings as you type
+- Now you can change the path of java source files
+- You can now set custom arguments for running the main method of your program
+- Fixed the bug when you cannot compile with source code above java 9 with Javac
+- Highlighting for smali language
+- Improved syntax highlighting with textmate language
+- Improved the TreeView drawer including the limitations in file and folder names there
+- Many bug fixes

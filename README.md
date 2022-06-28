@@ -1,9 +1,12 @@
 # Java IDE
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/icon.webp">
+<img src="https://raw.githubusercontent.com/PranavPurwar/Java-Ide/main/art/icon.png">
 
 <br>
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide">
+    <img src="https://img.shields.io/badge/IzzyOnDroid-v0.0.5-blue">
+</a>
 
 <a href="https://github.com/PranavPurwar/Java-Ide/actions/workflow/android.yaml">
     <img src="https://img.shields.io/badge/Android%20CI-passing-blue">
@@ -21,7 +24,9 @@ Compile and run your java code anytime anywhere from your mobile phone
 
 ## How to get
 
-You can get the latest release from [here](https://github.com/PranavPurwar/Java-Ide/releases/v0.0.5)
+The app is available on F-Droid through [IzzyOnDroid](https://apt.izzysoft.de) repository [here](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+
+You can get the latest release from  [here](https://github.com/PranavPurwar/Java-Ide/releases/v0.0.5)
 and the latest debug build from [Github Actions](https://github.com/PranavPurwar/Java-Ide/actions).
 
 ## Screenshots

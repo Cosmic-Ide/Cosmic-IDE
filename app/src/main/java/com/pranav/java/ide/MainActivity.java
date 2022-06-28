@@ -248,12 +248,6 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        reloadTreeView();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         editor.release();

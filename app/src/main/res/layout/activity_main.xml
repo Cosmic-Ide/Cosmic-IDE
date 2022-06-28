@@ -25,12 +25,6 @@
                 android:minHeight="?actionBarSize" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/coordinator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp" />
-
         <io.github.rosemoe.sora.widget.CodeEditor
             android:id="@+id/editor"
             android:layout_width="match_parent"
@@ -61,8 +55,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/smali"
-                    android:textSize="12sp" />
+                    android:text="@string/smali" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_disassemble"
@@ -70,8 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/disassemble"
-                    android:textSize="12sp" />
+                    android:text="@string/disassemble" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali2java"
@@ -80,8 +72,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/smali2java"
-                    android:textSize="12sp" />
+                    android:text="@string/smali2java" />
 
             </LinearLayout>
         </HorizontalScrollView>

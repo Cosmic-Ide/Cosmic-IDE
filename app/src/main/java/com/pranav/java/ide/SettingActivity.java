@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.transition.platform.MaterialSharedAxis;
 
 import com.pranav.common.util.FileUtil;
+import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
 public final class SettingActivity extends AppCompatActivity {
     private String[] javaVersions = {
@@ -101,8 +102,6 @@ public final class SettingActivity extends AppCompatActivity {
         /* Check if Classpath stored in SharedPref is empty - if yes, change button text */
         if (settings.getString("classpath", "").equals("")) {
             classpath_bttn.setText(getString(R.string.classpath_not_specified));
-        } else {
-            classpath_bttn.setText(getString(R.string.edit));
         }
 
         /* Select Version in Spinner based on SharedPreferences Value */

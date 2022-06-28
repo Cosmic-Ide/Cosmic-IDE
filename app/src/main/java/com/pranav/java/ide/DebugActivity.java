@@ -1,33 +1,32 @@
-package com.pranav.java.ide;
+package com.pranav.java.ide
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.os.Bundle;
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.os.Bundle
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-public final class DebugActivity extends AppCompatActivity {
+class DebugActivity : AppCompatActivity() {
 
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    override fun onCreate(val savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        var intent = getIntent();
-        var error = intent.getStringExtra("error");
+        val intent = getIntent()
+        val error = intent?.getStringExtra("error")!!
 
-        new MaterialAlertDialogBuilder(DebugActivity.this)
+        MaterialAlertDialogBuilder(this)
                 .setTitle("An error occurred...")
                 .setMessage(error)
-                .setPositiveButton("QUIT", (dialog, which) -> finish())
+                .setPositiveButton("QUIT", { _, _ -> finish()})
                 .setNegativeButton(
                         "COPY",
-                        (dialog, which) -> {
-                            ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE))
-                                    .setPrimaryClip(ClipData.newPlainText("clipboard", error));
+                        { _, _ ->
+                            (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
+                                    .setPrimaryClip(ClipData.newPlainText("clipboard", error))
                         })
                 .create()
-                .show();
+                .show()
     }
 }

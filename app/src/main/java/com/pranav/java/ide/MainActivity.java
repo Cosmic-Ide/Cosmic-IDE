@@ -107,7 +107,9 @@ public final class MainActivity extends AppCompatActivity {
         editor = findViewById(R.id.editor);
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setColorScheme(getColorScheme());
-        editor.setEditorLanguage(getTextMateLanguageForJava());
+        final var language = getTextMateLanguageForJava();
+        language.setEnableJavaCompletions(true);
+        editor.setEditorLanguage(language);
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
 

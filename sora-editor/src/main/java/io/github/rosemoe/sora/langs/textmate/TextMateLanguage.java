@@ -29,6 +29,8 @@ import java.io.Reader;
 import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
+import io.github.rosemoe.sora.lang.completion.IdentifierAutoComplete;
+import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 import org.eclipse.tm4e.core.theme.IRawTheme;
@@ -38,6 +40,8 @@ public class TextMateLanguage extends EmptyLanguage {
 
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
+    private boolean javaCompeletions = false;
+    private autoComplete = new IdentifierAutoComplete(javaKeywords);
 
     private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
         try {
@@ -93,5 +97,28 @@ public class TextMateLanguage extends EmptyLanguage {
     @Override
     public SymbolPairMatch getSymbolPairs() {
         return new SymbolPairMatch.DefaultSymbolPairs();
+    }
+
+    public void setEnableJavaCompletions(boolean condition) {
+        javaCompeletions = condition;
+    }
+
+    @Override
+    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
+        if (javaCompeletions) {
+            var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
+            autoComplete.requireAutoComplete(prefix, publisher, null);
+        }
+    }
+
+    private final String[] javaKeywords = {
+        "assert", "abstract", "boolean", "byte", "char", "class", "do",
+        "double", "final", "float", "for", "if", "int", "long", "new",
+        "public", "private", "protected", "package", "return", "static",
+        "short", "super", "switch", "else", "volatile", "synchronized", "strictfp",
+        "goto", "continue", "break", "transient", "void", "try", "catch",
+        "finally", "while", "case", "default", "const", "enum", "extends",
+        "implements", "import", "instanceof", "interface", "native",
+        "this", "throw", "throws", "true", "false", "null", "var", "sealed", "permits"
     }
 }

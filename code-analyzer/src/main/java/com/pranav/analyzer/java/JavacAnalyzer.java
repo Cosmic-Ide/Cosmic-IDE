@@ -37,17 +37,20 @@ public class JavacAnalyzer {
         final var output = new File(FileUtil.getBinDir(), "classes");
         output.mkdirs();
         final var version = prefs.getString("version", "7");
+        final var files = getSourceFiles(new File(FileUtil.getJavaDir()));
 
         final var javaFileObjects = new ArrayList<JavaFileObject>();
+        for (var file : files) {
         javaFileObjects.add(
                 new SimpleJavaFileObject(
-                        new File(currentFile).toURI(), JavaFileObject.Kind.SOURCE) {
+                        file.toURI(), JavaFileObject.Kind.SOURCE) {
                     @Override
                     public CharSequence getCharContent(boolean ignoreEncodingErrors)
                             throws IOException {
-                        return FileUtil.readFile(new File(currentFile));
+                        return FileUtil.readFile(file);
                     }
                 });
+        }
 
         final var tool = JavacTool.create();
 
@@ -58,7 +61,7 @@ public class JavacAnalyzer {
                 StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
         standardJavaFileManager.setLocation(
-                StandardLocation.SOURCE_PATH, getSourceFiles(new File(FileUtil.getJavaDir())));
+                StandardLocation.SOURCE_PATH, files);
 
         final var args = new ArrayList<String>();
 
@@ -100,6 +103,9 @@ public class JavacAnalyzer {
         final var problems = new ArrayList<DiagnosticRegion>();
         for (var it : diagnostics.getDiagnostics()) {
             if (it.getSource() == null) continue;
+//            if (!it.getCode().startsWith("compiler.err.cant.resolve")) {
+//                 problems.add(new DiagnosticRegion((int) it.getStartPosition(), (int) it.getEndPosition(), severity));
+//             }
             short severity =
                     (it.getKind() == Diagnostic.Kind.ERROR)
                             ? DiagnosticRegion.SEVERITY_ERROR

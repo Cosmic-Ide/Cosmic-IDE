@@ -13,7 +13,6 @@ android {
         targetSdk 33
         versionCode 5
         versionName '0.0.5'
-        multiDexEnabled true
     }
 
     signingConfigs {
@@ -92,8 +91,6 @@ dependencies {
     implementation 'org.json:json:20220320'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'androidx.appcompat:appcompat:1.6.0-alpha05'
-    implementation 'androidx.multidex:multidex:2.0.1'
-
     implementation 'com.google.android.material:material:1.7.0-alpha02'
     implementation project(path: ':common')
     implementation project(path: ':sora-editor')

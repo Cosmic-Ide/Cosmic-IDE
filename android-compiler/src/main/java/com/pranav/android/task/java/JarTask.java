@@ -13,7 +13,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
-public class JarTask extends Task {
+public class JarTask implements Task {
 
     @Override
     public void doFullTask() throws Exception {

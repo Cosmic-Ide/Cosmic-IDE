@@ -10,7 +10,7 @@ import com.pranav.common.util.FileUtil
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.List
+import java.util.ArrayList
 
 class D8Task : Task() {
 
@@ -25,12 +25,12 @@ class D8Task : Task() {
                             .build())
     }
 
-    private fun getClassFiles(root: File) : List<Path> {
-        val paths = listOf<Path>()
+    private fun getClassFiles(root: File) : ArrayList<Path> {
+        val paths = arrayListOf<Path>()
 
         val files = root.listFiles()
         if (files != null) {
-            for (var f : files) {
+            for (f in files) {
                 if (f.isFile()) {
                     paths.add(f.toPath())
                 } else {

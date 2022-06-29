@@ -1,6 +1,7 @@
 package com.pranav.android.code.disassembler
 
 import org.eclipse.jdt.internal.core.util.Disassembler
+import org.eclipse.jdt.core.util.ClassFileBytesDisassembler
 
 import java.io.IOException
 import java.nio.file.Files
@@ -16,6 +17,6 @@ class EclipseDisassembler(filePath: String) {
 
     @Throws(Throwable::class)
     fun disassemble() : String {
-        return Disassembler().disassemble(classFileBytes, System.lineSeparator())
+        return Disassembler().disassemble(classFileBytes, System.lineSeparator(), ClassFileBytesDisassembler.DETAILED)
     }
 }

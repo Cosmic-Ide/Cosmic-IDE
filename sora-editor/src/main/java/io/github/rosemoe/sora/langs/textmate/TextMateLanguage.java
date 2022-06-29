@@ -41,14 +41,15 @@ import io.github.rosemoe.sora.text.CharPosition;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 @Experimental
-public class TextMateLanguage extends EmptyLanguage {
+public class TextM  ateLanguage extends EmptyLanguage {
 
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
     private boolean javaCompeletions = false;
-    private IdentifierAutoComplete autoComplete = new IdentifierAutoComplete(javaKeywords);
+    private final IdentifierAutoComplete autoComplete;
 
     private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
+        autoComplete = new IdentifierAutoComplete(javaKeywords);
         try {
             textMateAnalyzer = new TextMateAnalyzer(this,grammarName, grammarIns,languageConfiguration, theme);
         } catch (Exception e) {
@@ -109,7 +110,7 @@ public class TextMateLanguage extends EmptyLanguage {
     }
 
     @Override
-    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
+    public void requireAutoComplete(ContentReference content, CharPosition position, CompletionPublisher publisher, Bundle extraArguments) {
         if (javaCompeletions) {
             var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
             autoComplete.requireAutoComplete(prefix, publisher, null);

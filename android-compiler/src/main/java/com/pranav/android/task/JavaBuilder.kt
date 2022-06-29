@@ -5,7 +5,7 @@ import android.content.Context
 import com.pranav.android.interfaces.*
 import com.pranav.android.task.java.*
 
-class JavaBuilder(context: Context, loader: ClassLoader) : Builder() {
+class JavaBuilder(context: Context, loader: ClassLoader) : Builder {
 
     private var classloader: ClassLoader
 

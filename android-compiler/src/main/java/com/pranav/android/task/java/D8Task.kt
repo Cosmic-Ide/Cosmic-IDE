@@ -12,7 +12,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.ArrayList
 
-class D8Task : Task() {
+class D8Task : Task {
 
     @Throws(Exception::class)
     override fun doFullTask() {

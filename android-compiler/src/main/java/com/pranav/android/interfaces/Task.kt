@@ -1,9 +1,9 @@
 package com.pranav.android.interfaces;
 
-public abstract class Task {
+interface class Task {
 
-    abstract fum getTaskName() : String
+    fun getTaskName() : String
 
     @Throws(Exception::class)
-    abstract fun doFullTask()
+    fun doFullTask()
 }

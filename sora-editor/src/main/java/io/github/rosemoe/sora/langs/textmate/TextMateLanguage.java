@@ -23,16 +23,21 @@
  */
 package io.github.rosemoe.sora.langs.textmate;
 
+import android.os.Bundle;
+
 import java.io.InputStream;
 import java.io.Reader;
 
 import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
+import io.github.rosemoe.sora.lang.completion.CompletionHelper;
+import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.lang.completion.IdentifierAutoComplete;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.text.CharPosition;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 @Experimental

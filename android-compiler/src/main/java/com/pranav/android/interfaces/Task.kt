@@ -1,6 +1,6 @@
 package com.pranav.android.interfaces;
 
-interface class Task {
+interface Task {
 
     fun getTaskName() : String
 

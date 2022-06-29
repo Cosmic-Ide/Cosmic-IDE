@@ -5,18 +5,16 @@
     <item
         android:id="@+id/create_class_menu_bttn"
         android:title="@string/create_class"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/create_directory_bttn"
         android:title="@string/create_directory"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/delete_menu_bttn"
         android:title="@string/delete"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never" />
+
 </menu>

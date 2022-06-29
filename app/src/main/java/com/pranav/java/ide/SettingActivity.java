@@ -6,31 +6,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+
 import com.pranav.common.util.FileUtil;
+import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
 public final class SettingActivity extends AppCompatActivity {
+
     private String[] javaVersions = {
         "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
     };
 
-    private String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};
+    private String[] javaCompilers = {
+        "Javac", "Eclipse Compiler for Java"
+    };
 
-    private String[] javaFormatters = {"Google Java Formatter", "Eclipse Java Formatter"};
+    private String[] javaFormatters = {
+        "Google Java Formatter", "Eclipse Java Formatter"
+    };
 
-    private String[] javaDisassemblers = {"Javap", "Eclipse Class Disassembler"};
+    private String[] javaDisassemblers = {
+        "Javap", "Eclipse Class Disassembler"
+    };
 
     private AlertDialog classpathDialog;
     private AlertDialog argumentsDialog;
     private AlertDialog javaPathDialog;
+
     private SharedPreferences settings;
 
     @Override
@@ -45,12 +59,16 @@ public final class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
+
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         Spinner javaVersions_spinner = findViewById(R.id.javaVersions_spinner);
         Spinner javaCompilers_spinner = findViewById(R.id.javaCompilers_spinner);
         Spinner javaFormatters_spinner = findViewById(R.id.javaFormatters_spinner);
         Spinner javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
+
         MaterialButton classpath_bttn = findViewById(R.id.classpath_bttn);
         MaterialButton arguments_bttn = findViewById(R.id.arguments_bttn);
         MaterialButton java_path_bttn = findViewById(R.id.save_java_path_bttn);
@@ -80,13 +98,6 @@ public final class SettingActivity extends AppCompatActivity {
         javaFormatters_spinner.setAdapter(formatterAdapter);
 
         javaDisassemblers_spinner.setAdapter(disassemblerAdapter);
-
-        /* Check if Classpath stored in SharedPref is empty - if yes, change button text */
-        if (settings.getString("classpath", "").equals("")) {
-            classpath_bttn.setText(getString(R.string.classpath_not_specified));
-        } else {
-            classpath_bttn.setText(getString(R.string.edit));
-        }
 
         /* Select Version in Spinner based on SharedPreferences Value */
         var version = settings.getString("version", "7");
@@ -141,7 +152,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     .setMessage(
                                             "Please note that currently only ECJ supports Java 18."
                                                 + " Javac with Java 18 is not currently supported.")
-                                    .setPositiveButton("GOT IT", (dialog, which) -> {})
+                                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                                     .show();
                             return;
                         }
@@ -192,9 +203,9 @@ public final class SettingActivity extends AppCompatActivity {
                     classpathDialog.show();
 
                     TextInputEditText classpath_edt =
-                            classpathDialog.findViewById(R.id.classpath_edt);
-                    MaterialButton save_classpath_bttn =
-                            classpathDialog.findViewById(R.id.save_classpath_bttn);
+                            classpathDialog.findViewById(android.R.id.text1);
+                    Button save_classpath_bttn =
+                            classpathDialog.findViewById(android.R.id.button1);
 
                     if (!settings.getString("classpath", "").equals("")) {
                         classpath_edt.setText(settings.getString("classpath", ""));
@@ -205,7 +216,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredClasspath = classpath_edt.getText().toString();
                                 settings.edit().putString("classpath", enteredClasspath).apply();
 
-                                classpath_bttn.setText(getString(R.string.edit));
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (classpathDialog.isShowing()) classpathDialog.dismiss();
@@ -218,9 +229,9 @@ public final class SettingActivity extends AppCompatActivity {
                     argumentsDialog.show();
 
                     TextInputEditText arguments_edt =
-                            argumentsDialog.findViewById(R.id.arguments_edt);
-                    MaterialButton save_arguments_bttn =
-                            argumentsDialog.findViewById(R.id.save_arguments_bttn);
+                            argumentsDialog.findViewById(android.R.id.text1);
+                    Button save_arguments_bttn =
+                            argumentsDialog.findViewById(android.R.id.button1);
 
                     if (!settings.getString("program_arguments", "").equals("")) {
                         arguments_edt.setText(settings.getString("program_arguments", ""));
@@ -231,7 +242,7 @@ public final class SettingActivity extends AppCompatActivity {
                                 var enteredArgs = arguments_edt.getText().toString();
                                 settings.edit().putString("program_arguments", enteredArgs).apply();
 
-                                arguments_bttn.setText(getString(R.string.edit));
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
@@ -243,9 +254,9 @@ public final class SettingActivity extends AppCompatActivity {
                 v -> {
                     javaPathDialog.show();
 
-                    TextInputEditText path_edt = javaPathDialog.findViewById(R.id.java_path_edt);
-                    MaterialButton save_java_path_bttn =
-                            javaPathDialog.findViewById(R.id.save_java_path_bttn);
+                    TextInputEditText path_edt = javaPathDialog.findViewById(android.R.id.text1);
+                    Button save_java_path_bttn =
+                            javaPathDialog.findViewById(android.R.id.button1);
 
                     path_edt.setText(FileUtil.getJavaDir());
 
@@ -258,7 +269,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     FileUtil.setJavaDirectory(enteredPath);
                                 }
 
-                                save_java_path_bttn.setText(getString(R.string.edit));
+                                showSnackbar(getString(R.string.saved));
 
                                 /* Dismiss Dialog If Showing */
                                 if (javaPathDialog.isShowing()) javaPathDialog.dismiss();
@@ -267,28 +278,35 @@ public final class SettingActivity extends AppCompatActivity {
     }
 
     private void buildClasspathDialog() {
-        var builder = new AlertDialog.Builder(SettingActivity.this);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
-        var dialogView = getLayoutInflater().inflate(R.layout.classpath_dialog, viewGroup, false);
-        builder.setView(dialogView);
+        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
+        builder.setView(R.layout.classpath_dialog);
+        builder.setTitle(getString(R.string.enter_classpath));
+        builder.setPositiveButton(getString(R.string.save), null);
         classpathDialog = builder.create();
     }
 
     private void buildArgumentsDialog() {
-        var builder = new AlertDialog.Builder(SettingActivity.this);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
-        var dialogView = getLayoutInflater().inflate(R.layout.arguments_dialog, viewGroup, false);
-        builder.setView(dialogView);
+        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
+        builder.setView(R.layout.arguments_dialog);
+        builder.setTitle(getString(R.string.enter_program_arguments));
+        builder.setPositiveButton(getString(R.string.save), null);
         argumentsDialog = builder.create();
     }
 
     private void buildJavaPathDialog() {
-        var builder = new AlertDialog.Builder(SettingActivity.this);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
-        var dialogView =
-                getLayoutInflater().inflate(R.layout.enter_custom_java_path, viewGroup, false);
-        builder.setView(dialogView);
+        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
+        builder.setView(R.layout.enter_custom_java_path);
+        builder.setTitle(getString(R.string.enter_java_path));
+        builder.setPositiveButton(getString(R.string.save), null);
         javaPathDialog = builder.create();
+    }
+
+    public void showSnackbar(final String message) {
+        Snackbar.make(
+                        (LinearLayout) findViewById(R.id.content),
+                        message,
+                        Snackbar.LENGTH_INDEFINITE)
+                .show();
     }
 
     @Override

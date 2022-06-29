@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Java IDE</string>
+
+    <!-- Strings used by MainActivity -->
+    <string name="run">Запустить</string>
+    <string name="smali">Smali</string>
+    <string name="disassemble">Disassembler</string>
+    <string name="smali2java">Smali2Java</string>
+    <string name="compilation_running">Выполнение</string>
+    <string name="open_drawer">Открыть меню</string>
+    <string name="close_drawer">Закрыть меню</string>
+    <string name="create_new_file">Создать файл</string>
+    <string name="create_new_directory">Создать папку</string>
+    <string name="new_class_name">Название класса</string>
+    <string name="new_directory_name">Название папки</string>
+    <string name="java_file_suffix">.java</string>
+    <string name="create">Создать</string>
+    <string name="create_class">Создать класс</string>
+    <string name="create_directory">Создать папку</string>
+    <string name="delete_file">Удалить %1$s?</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="compile_project">Скомпилировать проект</string>
+    <string name="java_file">Java-файл</string>
+
+    <!-- Strings used by SettingActivity -->
+    <string name="java_version">Версия Java</string>
+    <string name="java_compiler">Компилятор Java</string>
+    <string name="java_formatter">Форматировщик Java</string>
+    <string name="java_disassembler">Дизассемблер Java</string>
+    <string name="classpath">Путь к классам</string>
+    <string name="enter_path">Указать путь</string>
+    <string name="enter_classpath">Указать путь к классам</string>
+    <string name="enter_java_path">Указать путь к Java-файлам</string>
+    <string name="classpath_separated_from_colon">Путь к классам (разделены по \':\')</string>
+    <string name="program_arguments">Аргументы программы</string>
+    <string name="enter_program_arguments">Указать аргументы</string>
+    <string name="java_path">Путь к Java-файлам</string>
+    <string name="format">Форматировать</string>
+    <string name="settings">Настройки</string>
+    <string name="save">Сохранить</string>
+    <string name="saved">Сохранено!</string>
+    <string name="classpath_not_specified">Указать путь к классам</string>
+    <string name="edit">Изменить</string>
+
+    <!-- Strings used by CompilerTask Class -->
+    <string name="stage">Стадия</string>
+    <string name="stage_clean">Очистка сборки&#8230;</string>
+    <string name="stage_javac">Компиляция с Javac&#8230;</string>
+    <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
+    <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
+    <string name="stage_loading_dex">Загрузка файла DEX&#8230;</string>
+</resources>

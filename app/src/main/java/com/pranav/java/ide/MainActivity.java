@@ -28,8 +28,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+
 import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
 import com.pranav.android.code.formatter.*;
@@ -80,26 +82,29 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
+        getWindow().setAllowEnterTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        editor = findViewById(R.id.editor);
-
         var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
 
+        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
+
         drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
                 new ActionBarDrawerToggle(
-                        this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
+                        this, drawer, toolbar, R.string.app_name, R.string.app_name);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        editor = findViewById(R.id.editor);
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setColorScheme(getColorScheme());
         editor.setEditorLanguage(getTextMateLanguageForJava());
@@ -159,22 +164,13 @@ public final class MainActivity extends AppCompatActivity {
         /* Create Loading Dialog */
         buildLoadingDialog();
 
-        /* Insert Fragment with TreeView into Drawer */
-        reloadTreeView();
-
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
-        HorizontalScrollView scrollView = findViewById(R.id.scrollview);
+        var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
-    }
-
-    void reloadTreeView() {
-        var fragmentTransaction =
-                getSupportFragmentManager().beginTransaction().setReorderingAllowed(true);
-        fragmentTransaction.replace(R.id.frameLayout, new TreeViewDrawer()).commit();
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -235,21 +231,12 @@ public final class MainActivity extends AppCompatActivity {
                     });
             editor.setText(temp);
         } else if (id == R.id.settings_menu_button) {
-
             var intent = new Intent(MainActivity.this, SettingActivity.class);
             startActivity(intent);
-
         } else if (id == R.id.run_menu_button) {
-
             compile(true, false);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        reloadTreeView();
     }
 
     @Override
@@ -415,7 +402,7 @@ public final class MainActivity extends AppCompatActivity {
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
                         edi.setEditorLanguage(getTextMateLanguageForSmali());
-                        edi.setTextSize(13);
+                        edi.setTextSize(12);
 
                         try {
                             edi.setText(FileUtil.readFile(smaliFile));
@@ -545,8 +532,8 @@ public final class MainActivity extends AppCompatActivity {
                 new MaterialAlertDialogBuilder(MainActivity.this)
                         .setTitle(title)
                         .setMessage(message)
-                        .setPositiveButton("GOT IT", null)
-                        .setNegativeButton("CANCEL", null);
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(android.R.string.cancel, null);
         if (copyButton)
             dialog.setNeutralButton(
                     "COPY",

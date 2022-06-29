@@ -47,14 +47,6 @@ public class EditorStyleDelegate implements StyleReceiver {
 
     EditorStyleDelegate(@NonNull CodeEditor editor) {
         editorRef = new WeakReference<>(editor);
-        editor.subscribeEvent(ContentChangeEvent.class, (_1, _2) -> {
-            bracketsProvider = null;
-            var hasPair = foundPair != null;
-            foundPair = null;
-            if (hasPair) {
-                editor.invalidate();
-            }
-        });
         editor.subscribeEvent(SelectionChangeEvent.class, (event, __) -> {
             if (!event.isSelected()) {
                 postUpdateBracketPair();
@@ -62,11 +54,17 @@ public class EditorStyleDelegate implements StyleReceiver {
         });
     }
 
-    private void postUpdateBracketPair() {
+    void onTextChange() {
+        // Should we do this?
+        //bracketsProvider = null;
+        //foundPair = null;
+    }
+
+    void postUpdateBracketPair() {
         runOnUiThread(() -> {
             final var provider = bracketsProvider;
             final var editor = editorRef.get();
-            if (provider != null && editor != null && !editor.getCursor().isSelected()) {
+            if (provider != null && editor != null && !editor.getCursor().isSelected() && editor.isHighlightBracketPair()) {
                 foundPair = provider.getPairedBracketAt(editor.getText(), editor.getCursor().getLeft());
                 editor.invalidate();
             }
@@ -76,6 +74,11 @@ public class EditorStyleDelegate implements StyleReceiver {
     @Nullable
     public PairedBracket getFoundBracketPair() {
         return foundPair;
+    }
+
+    void reset() {
+        foundPair = null;
+        bracketsProvider = null;
     }
 
     private void runOnUiThread(Runnable operation) {
@@ -107,8 +110,15 @@ public class EditorStyleDelegate implements StyleReceiver {
     }
 
     @Override
-    public void updateBracketProvider(@Nullable BracketsProvider provider) {
-        this.bracketsProvider = provider;
-        postUpdateBracketPair();
+    public void updateBracketProvider(@NonNull AnalyzeManager sourceManager, @Nullable BracketsProvider provider) {
+        var editor = editorRef.get();
+        if (editor != null && sourceManager == editor.getEditorLanguage().getAnalyzeManager() && bracketsProvider != provider) {
+            this.bracketsProvider = provider;
+            postUpdateBracketPair();
+        }
+    }
+
+    public void clearFoundBracketPair() {
+        this.foundPair = null;
     }
 }

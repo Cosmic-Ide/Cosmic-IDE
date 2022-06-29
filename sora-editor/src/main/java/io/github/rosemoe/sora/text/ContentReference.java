@@ -29,31 +29,46 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Reference of a content due to accessed in read-only mode.
+ * Reference of a content due to be accessed in read-only mode.
  * Access can be validated during accesses.
  * {@link io.github.rosemoe.sora.text.TextReference.ValidateFailedException} may be thrown if the check is failed.
+ * The result of methods may be dirty when the content is modified.
  *
  * @author Rosemoe
  */
 public class ContentReference extends TextReference {
 
     private final Content content;
-    private final Indexer indexer;
-    private final CharPosition cached;
 
     public ContentReference(@NonNull Content ref) {
         super(ref);
         this.content = ref;
-        cached = new CharPosition();
-        // Use another Indexer to query characters by index, avoiding concurrent modification to cache list
-        this.indexer = new CachedIndexer(content);
     }
 
     @Override
     public char charAt(int index) {
         validateAccess();
-        indexer.getCharPosition(index, cached);
-        return content.charAt(cached.line, cached.column);
+        return content.charAt(index);
+    }
+
+    public char charAt(int line, int column) {
+        validateAccess();
+        return content.charAt(line, column);
+    }
+
+    public int getCharIndex(int line, int column) {
+        validateAccess();
+        return content.getCharIndex(line, column);
+    }
+
+    public CharPosition getCharPosition(int line, int column) {
+        validateAccess();
+        return content.getIndexer().getCharPosition(line, column);
+    }
+
+    public CharPosition getCharPosition(int index) {
+        validateAccess();
+        return content.getIndexer().getCharPosition(index);
     }
 
     /**

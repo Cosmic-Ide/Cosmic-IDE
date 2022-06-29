@@ -271,6 +271,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     private boolean mLigatureEnabled;
     private boolean mLastCursorState;
     private boolean mStickyTextSelection;
+    private boolean mHighlightBracketPair;
     private SelectionHandleStyle.HandleDescriptor mLeftHandle;
     private SelectionHandleStyle.HandleDescriptor mRightHandle;
     private SelectionHandleStyle.HandleDescriptor mInsertHandle;
@@ -531,6 +532,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         setScalable(true);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        mHighlightBracketPair = true;
         mConnection = new EditorInputConnection(this);
         mCompletionWindow = new EditorAutoCompletion(this);
         mVerticalGlow = new MaterialEdgeEffect();
@@ -850,6 +852,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
             old.destroy();
         }
 
+        mStyleDelegate.reset();
         this.mLanguage = lang;
         this.mStyles = null;
         this.mDiagnostics = null;
@@ -2073,6 +2076,26 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * Whether to highlight brackets pairs
+     */
+    public void setHighlightBracketPair(boolean highlightBracketPair) {
+        this.mHighlightBracketPair = highlightBracketPair;
+        if (!highlightBracketPair) {
+            mStyleDelegate.clearFoundBracketPair();
+        } else {
+            mStyleDelegate.postUpdateBracketPair();
+        }
+        invalidate();
+    }
+
+    /**
+     * @see #setHighlightBracketPair(boolean)
+     */
+    public boolean isHighlightBracketPair() {
+        return mHighlightBracketPair;
+    }
+
+    /**
      * @see CodeEditor#setInputType(int)
      */
     public int getInputType() {
@@ -3249,14 +3272,18 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         if (mText != null) {
             mText.removeContentListener(this);
             mText.setLineListener(null);
+            mText.resetBatchEdit();
         }
         mExtraArguments = extraArguments == null ? new Bundle() : extraArguments;
         if (reuseContentObject && text instanceof Content) {
             mText = (Content) text;
+            mText.resetBatchEdit();
             mPainter.updateTimestamp();
         } else {
             mText = new Content(text);
         }
+        mStyleDelegate.reset();
+        mStyles = null;
         mCursor = mText.getCursor();
         mEventHandler.reset();
         mText.addContentListener(this);
@@ -3759,6 +3786,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         }
 
         mConnection.reset();
+        mText.resetBatchEdit();
         setExtracting(null);
         return mConnection;
     }
@@ -3928,6 +3956,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     @Override
     public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
         mPainter.updateTimestamp();
+        mStyleDelegate.onTextChange();
         var start = mText.getIndexer().getCharPosition(startLine, startColumn);
         var end = mText.getIndexer().getCharPosition(endLine, endColumn);
         for (int i = startLine; i <= endLine && i < getLineCount(); i++) {
@@ -3985,6 +4014,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     @Override
     public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
         mPainter.updateTimestamp();
+        mStyleDelegate.onTextChange();
         var start = mText.getIndexer().getCharPosition(startLine, startColumn);
         var end = start.fromThis();
         end.column = endColumn;

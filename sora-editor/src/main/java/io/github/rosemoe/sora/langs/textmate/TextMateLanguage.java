@@ -41,7 +41,7 @@ import io.github.rosemoe.sora.text.CharPosition;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 @Experimental
-public class TextM  ateLanguage extends EmptyLanguage {
+public class TextMateLanguage extends EmptyLanguage {
 
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;

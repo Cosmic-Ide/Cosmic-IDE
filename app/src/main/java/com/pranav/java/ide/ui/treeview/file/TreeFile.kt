@@ -44,7 +44,7 @@ open class TreeFile {
         return AppCompatResources.getDrawable(context, R.drawable.java_file)
     }
 
-    override fun equals(o: Object): Boolean? {
+    override fun equals(o: Any?): Boolean {
         if (this == o) {
             return true
         }

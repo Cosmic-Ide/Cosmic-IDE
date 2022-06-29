@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Objects;
 
 import io.github.rosemoe.sora.lang.analysis.AsyncIncrementalAnalyzeManager;
+import io.github.rosemoe.sora.lang.brackets.BracketsProvider;
+import io.github.rosemoe.sora.lang.brackets.OnlineBracketsMatcher;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.TextStyle;
@@ -40,7 +42,6 @@ import io.github.rosemoe.sora.langs.textmate.folding.IndentRange;
 import io.github.rosemoe.sora.text.Content;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.grammar.ITokenizeLineResult2;
-import org.eclipse.tm4e.core.grammar.StackElement;
 import org.eclipse.tm4e.core.internal.grammar.StackElementMetadata;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigRegExp;
 import org.eclipse.tm4e.core.internal.oniguruma.OnigResult;
@@ -65,6 +66,7 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
     private final ILanguageConfiguration configuration;
     private OnigRegExp cachedRegExp;
     private boolean foldingOffside;
+    private BracketsProvider bracketsProvider;
 
     public TextMateAnalyzer(TextMateLanguage language, String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) throws Exception {
         registry.setTheme(theme);
@@ -74,6 +76,17 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
         if (languageConfiguration != null) {
             LanguageConfigurator languageConfigurator = new LanguageConfigurator(languageConfiguration);
             configuration = languageConfigurator.getLanguageConfiguration();
+            var pairs = configuration.getBrackets();
+            if (pairs != null && pairs.size() != 0) {
+                var pairArr = new char[pairs.size() * 2];
+                int i = 0;
+                for (var pair : pairs) {
+                    pairArr[i * 2] = pair.getKey().charAt(0);
+                    pairArr[i * 2 + 1] = pair.getValue().charAt(0);
+                    i++;
+                }
+                bracketsProvider = new OnlineBracketsMatcher(pairArr, 100000);
+            }
         } else {
             configuration = null;
         }
@@ -120,6 +133,12 @@ public class TextMateAnalyzer extends AsyncIncrementalAnalyzeManager<MyState, Sp
     public List<CodeBlock> computeBlocks(Content text, CodeBlockAnalyzeDelegate delegate) {
         var list = new ArrayList<CodeBlock>();
         analyzeCodeBlocks(text, list, delegate);
+        if (delegate.isNotCancelled()) {
+            var r = getReceiver();
+            if (r != null) {
+                r.updateBracketProvider(this, bracketsProvider);
+            }
+        }
         return list;
     }
 

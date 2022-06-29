@@ -21,36 +21,14 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.lang.brackets;
+package io.github.rosemoe.sora.graphics;
 
-/**
- * Describes paired brackets
- *
- * @author Rosemoe
- */
-public class PairedBracket {
+import android.graphics.RectF;
 
-    public final int leftIndex, leftLength, rightIndex, rightLength;
+public class RectUtils {
 
-    /**
-     * Currently length is always 1.
-     *
-     * @see #PairedBracket(int, int, int, int)
-     */
-    public PairedBracket(int leftIndex, int rightIndex) {
-        this(leftIndex, 1, rightIndex, 1);
+    public static boolean contains(RectF rect, float x, float y, float extraXSpace) {
+        return (x >= rect.left - extraXSpace && x <= rect.right + extraXSpace && y >= rect.top && y <= rect.bottom);
     }
 
-    /**
-     * @param leftIndex Index of left bracket in text
-     * @param leftLength Text length of left bracket
-     * @param rightIndex Index of right bracket in text
-     * @param rightLength Text length of right bracket
-     */
-    public PairedBracket(int leftIndex, int leftLength, int rightIndex, int rightLength) {
-        this.leftIndex = leftIndex;
-        this.leftLength = leftLength;
-        this.rightIndex = rightIndex;
-        this.rightLength = rightLength;
-    }
 }

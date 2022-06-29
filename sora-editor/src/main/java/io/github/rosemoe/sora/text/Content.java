@@ -26,6 +26,7 @@ package io.github.rosemoe.sora.text;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -108,14 +109,14 @@ public class Content implements CharSequence {
         return lock != null;
     }
 
-    private void lock(boolean write) {
+    protected void lock(boolean write) {
         if (lock == null) {
             return;
         }
         (write ? lock.writeLock() : lock.readLock()).lock();
     }
 
-    private void unlock(boolean write) {
+    protected void unlock(boolean write) {
         if (lock == null) {
             return;
         }
@@ -352,23 +353,43 @@ public class Content implements CharSequence {
         if (workIndex == -1) {
             workIndex = 0;
         }
-        ContentLine currLine = lines.get(workLine);
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (c == '\n') {
-                ContentLine newLine = new ContentLine();
-                newLine.append(currLine, workIndex, currLine.length());
-                currLine.delete(workIndex, currLine.length());
-                lines.add(workLine + 1, newLine);
-                currLine = newLine;
-                workIndex = 0;
-                workLine++;
+        var currLine = lines.get(workLine);
+        var helper = InsertTextHelper.forInsertion(text);
+        int type, peekType = InsertTextHelper.TYPE_EOF;
+        boolean fromPeek = false;
+        var minusLength = 0;
+        var newLines = new LinkedList<ContentLine>();
+        while (true) {
+            type = fromPeek ? peekType : helper.forward();
+            fromPeek = false;
+            if (type == InsertTextHelper.TYPE_EOF) {
+                break;
+            }
+            if (type == InsertTextHelper.TYPE_LINE_CONTENT) {
+                currLine.insert(workIndex, text, helper.getIndex(), helper.getIndexNext());
+                workIndex += helper.getIndexNext() - helper.getIndex();
             } else {
-                currLine.insert(workIndex, c);
-                workIndex++;
+                minusLength += helper.getIndexNext() - helper.getIndex() - 1;
+
+                // Peek!
+                peekType = helper.forward();
+                fromPeek = true;
+
+                var newLine = new ContentLine(currLine.length() - workIndex + helper.getIndexNext() - helper.getIndex() + 10);
+                newLine.insert(0, currLine, workIndex, currLine.length());
+                currLine.delete(workIndex, currLine.length());
+                workIndex = 0;
+                currLine = newLine;
+                newLines.add(newLine);
+                workLine ++;
             }
         }
-        textLength += text.length();
+        lines.addAll(line + 1, newLines);
+        helper.recycle();
+        textLength += text.length() - minusLength;
+        if (minusLength != 0 && !contentListeners.isEmpty()) {
+            text = text.toString().replace("\r\n", "\n").replace('\r', '\n');
+        }
         this.dispatchAfterInsert(line, column, workLine, workIndex, text);
     }
 
@@ -633,6 +654,10 @@ public class Content implements CharSequence {
         return isInBatchEdit();
     }
 
+    public void resetBatchEdit() {
+        nestedBatchEdit = 0;
+    }
+
     /**
      * Returns whether we are in batch edit
      *
@@ -677,7 +702,7 @@ public class Content implements CharSequence {
      * @return Indexer for this object
      */
     public Indexer getIndexer() {
-        if (indexer.getClass() != CachedIndexer.class && cursor != null) {
+        if (cursor != null) {
             return cursor.getIndexer();
         }
         return indexer;
@@ -716,7 +741,7 @@ public class Content implements CharSequence {
             c.lines.add(new ContentLine().insert(0, end, 0, endColumn));
             c.textLength += endColumn + 1;
         } else {
-            throw new IllegalArgumentException("start > end");
+            throw new StringIndexOutOfBoundsException("start > end");
         }
         c.setUndoEnabled(true);
         return c;
@@ -866,7 +891,7 @@ public class Content implements CharSequence {
      * @param index Index to check
      */
     protected void checkIndex(int index) {
-        if (index > length()) {
+        if (index > length() || index < 0) {
             throw new StringIndexOutOfBoundsException("Index " + index + " out of bounds. length:" + length());
         }
     }
@@ -877,7 +902,7 @@ public class Content implements CharSequence {
      * @param line Line to check
      */
     protected void checkLine(int line) {
-        if (line >= getLineCount()) {
+        if (line >= getLineCount() || line < 0) {
             throw new StringIndexOutOfBoundsException("Line " + line + " out of bounds. line count:" + getLineCount());
         }
     }
@@ -892,7 +917,7 @@ public class Content implements CharSequence {
     protected void checkLineAndColumn(int line, int column, boolean allowEqual) {
         checkLine(line);
         int len = lines.get(line).length();
-        if (column > len || (!allowEqual && column == len)) {
+        if (column > len || (!allowEqual && column == len) || column < 0) {
             throw new StringIndexOutOfBoundsException(
                     "Column " + column + " out of bounds.line: " + line + " ,column count:" + len);
         }
@@ -920,7 +945,10 @@ public class Content implements CharSequence {
         return n;
     }
 
-    public void replace(int startIndex, int endIndex, CharSequence text) {
+    /**
+     * Replace text in the given region with the
+     */
+    public void replace(int startIndex, int endIndex, @NonNull CharSequence text) {
         var start = getIndexer().getCharPosition(startIndex);
         var end = getIndexer().getCharPosition(endIndex);
         replace(start.line, start.column, end.line, end.column, text);

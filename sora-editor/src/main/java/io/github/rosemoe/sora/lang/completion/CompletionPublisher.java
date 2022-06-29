@@ -124,7 +124,7 @@ public class CompletionPublisher {
             return;
         }
         this.comparator = comparator;
-        if (!items.isEmpty()) {
+        if (items.size() != 0) {
             handler.post(() -> {
                 if (invalid) {
                     return;

@@ -10,7 +10,7 @@ class JavapDisassembler(filePath: String) {
     private val path: String
 
     init {
-        path = classFile
+        path = filePath
     }
 
     @Throws(Throwable::class)

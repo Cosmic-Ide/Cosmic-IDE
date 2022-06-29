@@ -5,13 +5,13 @@ import android.content.Context
 import com.pranav.android.interfaces.*
 import com.pranav.android.task.java.*
 
-class JavaBuilder : Builder() {
+class JavaBuilder(context: Context, loader: ClassLoader) : Builder() {
 
     private var classloader: ClassLoader
 
-    public var mContext: Context
+    private var mContext: Context
 
-    contructor(context: Context, loader: ClassLoader) {
+    init {
         mContext = context
         classloader = loader
     }

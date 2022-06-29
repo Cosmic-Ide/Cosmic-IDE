@@ -17,6 +17,6 @@ class EclipseDisassembler(filePath: String) {
 
     @Throws(Throwable::class)
     fun disassemble() : String {
-        return Disassembler().disassemble(classFileBytes, System.lineSeparator(), ClassFileBytesDisassembler.DETAILED)
+        return Disassembler().disassemble(classFileBytes, System.lineSeparator(), ClassFileBytesDisassembler.SYSTEM)
     }
 }

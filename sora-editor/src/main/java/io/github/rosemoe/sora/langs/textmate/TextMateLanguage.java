@@ -41,7 +41,7 @@ public class TextMateLanguage extends EmptyLanguage {
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
     private boolean javaCompeletions = false;
-    private autoComplete = new IdentifierAutoComplete(javaKeywords);
+    private IdentifierAutoComplete autoComplete = new IdentifierAutoComplete(javaKeywords);
 
     private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
         try {
@@ -120,5 +120,5 @@ public class TextMateLanguage extends EmptyLanguage {
         "finally", "while", "case", "default", "const", "enum", "extends",
         "implements", "import", "instanceof", "interface", "native",
         "this", "throw", "throws", "true", "false", "null", "var", "sealed", "permits"
-    }
+    };
 }

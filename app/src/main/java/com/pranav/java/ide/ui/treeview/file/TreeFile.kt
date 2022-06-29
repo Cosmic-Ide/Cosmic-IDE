@@ -48,7 +48,7 @@ open class TreeFile {
         if (this == o) {
             return true
         }
-        if (o == null || this::class != o.getClass()) {
+        if (o == null || this::class != o::class) {
             return false
         }
         val treeFile = o as TreeFile

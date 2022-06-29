@@ -6,38 +6,28 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <LinearLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:layout_height="wrap_content"
+                android:minHeight="?actionBarSize" />
         </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:id="@+id/coordinator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp" />
 
         <io.github.rosemoe.sora.widget.CodeEditor
             android:id="@+id/editor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="#242424"
-            android:orientation="horizontal"
-            android:padding="8dp" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <HorizontalScrollView
             android:id="@+id/scrollview"
@@ -45,14 +35,13 @@
             android:layout_height="wrap_content"
             android:fillViewport="true"
             android:background="#242424"
-            android:orientation="horizontal">
+            app:layout_behavior="@string/bottom_sheet_behavior">
             <LinearLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
-                android:fitsSystemWindows="true">
+                android:padding="8dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali"
@@ -61,11 +50,7 @@
                     android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/smali"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/smali" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_disassemble"
@@ -73,11 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/disassemble"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/disassemble" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali2java"
@@ -86,29 +67,19 @@
                     android:layout_marginHorizontal="8dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="@string/smali2java"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                    android:textSize="12sp"
-                    app:backgroundTint="?attr/colorPrimary"
-                    app:cornerRadius="8dp" />
+                    android:text="@string/smali2java" />
 
             </LinearLayout>
         </HorizontalScrollView>
 
-    </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/treeViewFragment"
+        android:name="com.pranav.java.ide.ui.TreeViewDrawer"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:clipToPadding="false">
+        android:background="?android:colorBackground" />
 
-        <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp" />
-
-    </com.google.android.material.navigation.NavigationView>
 </androidx.drawerlayout.widget.DrawerLayout>

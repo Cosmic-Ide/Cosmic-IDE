@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,28 +42,28 @@ import java.util.List;
 
 public class TreeViewDrawer extends Fragment {
 
-    private View mRootView;
     private TreeView<TreeFile> treeView;
-    private AlertDialog createNewFileDialog, createNewDirectoryDialog, confirmDeleteDialog;
+
+    private AlertDialog createNewFileDialog;
+    private AlertDialog createNewDirectoryDialog;
+    private AlertDialog confirmDeleteDialog;
 
     private MainActivity activity;
 
-    @Nullable
-    @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.drawer_treeview, container, false);
-        return mRootView;
+    public static TreeViewDrawer newInstance() {
+        TreeViewDrawer fragment = new TreeViewDrawer();
+        return fragment;
+    }
+
+    public TreeViewDrawer() {
+        super(R.layout.drawer_treeview);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         ViewCompat.requestApplyInsets(view);
         UiUtilsKt.addSystemWindowInsetToPadding(view, false, true, false, true);
-        
+
         activity = ((MainActivity) getContext());
 
         buildCreateFileDialog();
@@ -199,31 +201,28 @@ public class TreeViewDrawer extends Fragment {
 
     void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(getContext());
-        ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        var dialogView =
-                getLayoutInflater()
-                        .inflate(R.layout.treeview_create_new_file_dialog, viewGroup, false);
-        builder.setView(dialogView);
+        builder.setTitle(getString(R.string.create_new_file));
+        builder.setView(R.layout.treeview_create_new_file_dialog);
+        builder.setPositiveButton(getString(R.string.create), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         createNewFileDialog = builder.create();
     }
 
     void buildCreateDirectoryDialog() {
         var builder = new MaterialAlertDialogBuilder(getContext());
-        ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        var dialogView =
-                getLayoutInflater()
-                        .inflate(R.layout.treeview_create_new_folder_dialog, viewGroup, false);
-        builder.setView(dialogView);
+        builder.setTitle(getString(R.string.create_new_directory));
+        builder.setView(R.layout.treeview_create_new_folder_dialog);
+        builder.setPositiveButton(getString(R.string.create), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         createNewDirectoryDialog = builder.create();
     }
 
     void buildConfirmDeleteDialog() {
         var builder = new MaterialAlertDialogBuilder(getContext());
-        ViewGroup viewGroup = activity.findViewById(android.R.id.content);
-        var dialogView =
-                getLayoutInflater()
-                        .inflate(R.layout.treeview_confirm_delete_dialog, viewGroup, false);
-        builder.setView(dialogView);
+        builder.setTitle(getString(R.string.delete));
+        builder.setMessage(getString(R.string.delete_file));
+        builder.setPositiveButton(getString(R.string.delete), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         confirmDeleteDialog = builder.create();
     }
 
@@ -231,12 +230,12 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewFileDialog.isShowing()) {
             createNewFileDialog.show();
 
-            EditText fileName = createNewFileDialog.findViewById(R.id.fileName_edt);
-            MaterialButton createBttn = createNewFileDialog.findViewById(R.id.create_bttn);
+            EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
+            Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
 
             createBttn.setOnClickListener(
                     v -> {
-                        var fileNameString = fileName.getText().toString().replace("..", "");
+                        var fileNameString = fileName.getText().toString();
 
                         if (!fileNameString.equals("") && !fileNameString.endsWith(".java")) {
                             try {
@@ -288,8 +287,8 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewDirectoryDialog.isShowing()) {
             createNewDirectoryDialog.show();
 
-            EditText fileName = createNewDirectoryDialog.findViewById(R.id.directoryName_edt);
-            MaterialButton createBttn = createNewDirectoryDialog.findViewById(R.id.create_bttn);
+            EditText fileName = createNewDirectoryDialog.findViewById(android.R.id.text1);
+            Button createBttn = createNewDirectoryDialog.findViewById(android.R.id.button1);
 
             createBttn.setOnClickListener(
                     v -> {
@@ -326,9 +325,9 @@ public class TreeViewDrawer extends Fragment {
         if (!confirmDeleteDialog.isShowing()) {
             confirmDeleteDialog.show();
 
-            MaterialTextView areUsure_txt = confirmDeleteDialog.findViewById(R.id.areUSure_txt);
-            MaterialButton confirmBttn = confirmDeleteDialog.findViewById(R.id.confirm_delete_bttn);
-            MaterialButton cancelBttn = confirmDeleteDialog.findViewById(R.id.cancel_delete_button);
+            TextView areUsure_txt = confirmDeleteDialog.findViewById(android.R.id.message);
+            Button confirmBttn = confirmDeleteDialog.findViewById(android.R.id.button1);
+            Button cancelBttn = confirmDeleteDialog.findViewById(android.R.id.button2);
 
             areUsure_txt.setText(
                     getString(R.string.delete_file, node.getContent().getFile().getName()));

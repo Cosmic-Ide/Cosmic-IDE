@@ -9,8 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
@@ -27,11 +26,9 @@
         <io.github.rosemoe.sora.widget.CodeEditor
             android:id="@+id/editor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:background="#242424"
-            android:orientation="horizontal"
-            android:padding="8dp" />
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <HorizontalScrollView
             android:id="@+id/scrollview"
@@ -39,7 +36,7 @@
             android:layout_height="wrap_content"
             android:fillViewport="true"
             android:background="#242424"
-            android:orientation="horizontal">
+            app:layout_behavior="@string/bottom_sheet_behavior">
             <LinearLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"

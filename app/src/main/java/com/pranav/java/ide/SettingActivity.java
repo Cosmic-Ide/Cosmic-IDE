@@ -99,11 +99,6 @@ public final class SettingActivity extends AppCompatActivity {
 
         javaDisassemblers_spinner.setAdapter(disassemblerAdapter);
 
-        /* Check if Classpath stored in SharedPref is empty - if yes, change button text */
-        if (settings.getString("classpath", "").equals("")) {
-            classpath_bttn.setText(getString(R.string.classpath_not_specified));
-        }
-
         /* Select Version in Spinner based on SharedPreferences Value */
         var version = settings.getString("version", "7");
         var count = 0;

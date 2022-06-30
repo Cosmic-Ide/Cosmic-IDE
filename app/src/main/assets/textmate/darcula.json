@@ -3,7 +3,7 @@
     "settings": [
         {
             "settings": {
-                "background": "#353839",
+                "background": "#0a0b0b",
                 "foreground": "#cccccc",
                 "lineHighlight": "#494b4c",
                 "selection": "#214283"

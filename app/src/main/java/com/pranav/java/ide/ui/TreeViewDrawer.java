@@ -235,7 +235,7 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        var fileNameString = fileName.getText().toString();
+                        var fileNameString = fileName.getText().toString().replace("..", "");
 
                         if (!fileNameString.equals("") && !fileNameString.endsWith(".java")) {
                             try {

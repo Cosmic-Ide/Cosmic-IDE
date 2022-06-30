@@ -3,9 +3,9 @@
     "settings": [
         {
             "settings": {
-                "background": "#0a0b0b",
+                "background": "#242424",
                 "foreground": "#cccccc",
-                "lineHighlight": "#494b4c",
+                "lineHighlight": "#2b2b2b",
                 "selection": "#214283"
             }
         },

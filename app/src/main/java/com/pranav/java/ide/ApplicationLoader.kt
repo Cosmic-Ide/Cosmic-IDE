@@ -8,6 +8,7 @@ import android.util.Log
 import com.google.android.material.color.DynamicColors
 
 import com.pranav.common.util.FileUtil
+import com.pranav.completion.CircleDrawable
 import com.pranav.java.ide.ui.utils.dpToPx
 
 class ApplicationLoader : Application() {
@@ -17,8 +18,10 @@ class ApplicationLoader : Application() {
         DynamicColors.applyToActivitiesIfAvailable(this)
         val mContext = getApplicationContext()
         val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
+        val resources = mContext.getResources()
         FileUtil.setDataDirectory(dataDirectory)
-        dpToPx.initalizeResources(mContext.getResources())
+        dpToPx.initalizeResources(resources)
+        CircleDrawable.setResources(resources)
 
         Thread.setDefaultUncaughtExceptionHandler {
                 _, throwable ->

@@ -97,13 +97,13 @@ public class IdentifierAutoComplete {
             if (lowCase) {
                 for (String kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new CircleDrawable(Kind.Keyword), prefixLength, kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new KindDrawable(Kind.Keyword), prefixLength, kw));
                     }
                 }
             } else {
                 for (String kw : keywordArray) {
                     if (kw.toLowerCase(Locale.ROOT).startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new CircleDrawable(Kind.Keyword), prefixLength, kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new KindDrawable(Kind.Keyword), prefixLength, kw));
                     }
                 }
             }

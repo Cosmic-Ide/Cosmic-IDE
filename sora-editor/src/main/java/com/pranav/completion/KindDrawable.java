@@ -8,7 +8,7 @@ import android.graphics.Paint;
 import android.content.Context;
 import android.content.res.Resources;
 
-public class CircleDrawable extends Drawable {
+public class KindDrawable extends Drawable {
     
     private final Paint mPaint;
     private final Paint mTextPaint;
@@ -20,7 +20,7 @@ public class CircleDrawable extends Drawable {
         mResources = res;
     }
     
-    public CircleDrawable(Kind kind) {
+    public KindDrawable(Kind kind) {
         mKind = kind;
         
         mPaint = new Paint();

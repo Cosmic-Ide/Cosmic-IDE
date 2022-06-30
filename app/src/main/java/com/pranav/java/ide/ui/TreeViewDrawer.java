@@ -30,12 +30,12 @@ import com.pranav.java.ide.ui.treeview.TreeView;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
-import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.treeview.model.TreeFolder;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
+import com.pranav.project.mode.JavaProject;
+import com.pranav.project.mode.JavaTemplate;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,8 +50,11 @@ public class TreeViewDrawer extends Fragment {
 
     private MainActivity activity;
 
-    public static TreeViewDrawer newInstance() {
+    public static TreeViewDrawer newInstance(File root) {
         TreeViewDrawer fragment = new TreeViewDrawer();
+        Bundle args = new Bundle();
+        args.putSerializable("rootFile", root);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -80,10 +83,10 @@ public class TreeViewDrawer extends Fragment {
         var rootNodesList =
                 new ArrayList<
                         TreeNode<
-                                TreeFile>>(); /* Create List of root nodes and and their children's */
+                                TreeFile>>();/* Create List of root nodes and and their children's */
 
         final var mainFolderFile =
-                new File(FileUtil.getJavaDir()); /* Create File variable to Main Root Directory */
+                new File(activity.getProject().getProjectDirPath()); /* Create File variable to Main Root Directory */
         var mainRootNode =
                 new TreeNode<TreeFile>(
                         new TreeFolder(mainFolderFile),
@@ -109,28 +112,22 @@ public class TreeViewDrawer extends Fragment {
                 new TreeFileNodeViewFactory(
                         new TreeFileNodeViewBinder.TreeFileNodeListener() {
                             @Override
-                            public void onNodeClicked(
-                                    @Nullable View view, @Nullable TreeNode<TreeFile> treeNode) {
-                                if (treeNode.getContent().getFile().isFile()
-                                        && treeNode.getContent()
-                                                .getFile()
-                                                .getName()
-                                                .endsWith(".java")) {
-                                    try {
-                                        activity.loadFileToEditor(
-                                                treeNode.getContent().getFile().getPath());
-                                        if (activity.drawer.isDrawerOpen(GravityCompat.START)) {
-                                            activity.drawer.close();
+                            public void onNodeToggled(
+                                    @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {
+                                if(treeNode.isLeaf()) {
+                                    if(treeNode.getValue().getFile().isFile()) {
+                                        try {
+                                            activity.loadFileToEditor(
+                                                treeNode.getValue().getFile().getPath());
+                                            if (activity.drawer.isDrawerOpen(GravityCompat.START)) {
+                                                activity.drawer.close();
+                                            }
+                                        } catch (Exception e) {
+                                            activity.dialog("Cannot read file", e.getMessage(), true);
                                         }
-                                    } catch (Exception e) {
-                                        activity.dialog("Cannot read file", e.getMessage(), true);
                                     }
                                 }
                             }
-
-                            @Override
-                            public void onNodeToggled(
-                                    @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {}
 
                             @Override
                             public boolean onNodeLongClicked(
@@ -171,7 +168,7 @@ public class TreeViewDrawer extends Fragment {
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getContent().getFile().getName().equals("java") && node.getLevel() == 0) {
+        if (node.getContent().getFile().getName().equals(activity.getProject().getProjectName()) && node.getLevel() == 0) {
             /* Disable Option to delete the root folder 'java' */
             popup.getMenu().getItem(2).setVisible(false);
         }
@@ -235,7 +232,7 @@ public class TreeViewDrawer extends Fragment {
 
             createBttn.setOnClickListener(
                     v -> {
-                        var fileNameString = fileName.getText().toString();
+                        var fileNameString = fileName.getText().toString().replace(" ", "");
 
                         if (!fileNameString.equals("") && !fileNameString.endsWith(".java")) {
                             try {
@@ -246,23 +243,11 @@ public class TreeViewDrawer extends Fragment {
                                                         + fileNameString
                                                         + ".java");
 
-                                if (node.getParent().getContent() == null) {
-                                    FileUtil.writeFile(
-                                            filePth.getAbsolutePath(),
-                                            TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT(
-                                                    fileNameString));
-                                } else {
-                                    /* Extend package name to subdirectory | example: com.example.SUBDIRECTORY; */
-                                    FileUtil.writeFile(
-                                            filePth.getAbsolutePath(),
-                                            TreeCreateNewFileContent
-                                                    .BUILD_NEW_FILE_CONTENT_EXTEND_PACKAGE(
-                                                            fileNameString,
-                                                            "."
-                                                                    + node.getContent()
-                                                                            .getFile()
-                                                                            .getName()));
-                                }
+                                FileUtil.writeFileFromString(
+                                        node.getContent().getFile().getPath() + 
+                                        "/" + 
+                                        fileNameString +
+                                        ".java", JavaTemplate.getClassTemplate(node.getContent().getFile().getName(), fileNameString, false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
@@ -275,7 +260,7 @@ public class TreeViewDrawer extends Fragment {
                                 treeView.refreshTreeView();
                                 fileName.setText("");
                                 createNewFileDialog.dismiss();
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }

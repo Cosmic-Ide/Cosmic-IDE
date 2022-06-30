@@ -4,6 +4,7 @@ import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.Indexer;
 import com.pranav.common.util.ConcurrentUtil;
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
 
 import io.github.rosemoe.sora.lang.diagnostic.*;
 import io.github.rosemoe.sora.text.*;
@@ -13,11 +14,13 @@ public class ProblemMarker implements ContentListener {
 
     private CodeEditor editor;
     private JavacAnalyzer analyzer;
+    private JavaProject project;
     private DiagnosticsContainer diagnostics = new DiagnosticsContainer();
 
-    public ProblemMarker(CodeEditor editor, String file) {
+    public ProblemMarker(CodeEditor editor, String file, JavaProject project) {
         this.editor = editor;
-        this.analyzer = new JavacAnalyzer(editor.getContext(), file);
+        this.project = project;
+        this.analyzer = new JavacAnalyzer(editor.getContext(), file, project);
         run(editor.getText());
     }
 
@@ -53,7 +56,7 @@ public class ProblemMarker implements ContentListener {
                         analyzer.reset();
                     }
                     try {
-                        final var path = new Indexer("editor").getString("currentFile");
+                        final var path = new Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile");
                         FileUtil.writeFile(path, content.toString());
                         analyzer.analyze();
                     } catch (Exception ignored) {

@@ -1,9 +1,12 @@
-package com.pranav.android.interfaces;
+package com.pranav.android.interfaces
+
+import com.pranav.project.mode.JavaProject
 
 interface Task {
 
     fun getTaskName() : String
 
     @Throws(Exception::class)
-    fun doFullTask()
+    fun doFullTask(project: JavaProject)
+
 }

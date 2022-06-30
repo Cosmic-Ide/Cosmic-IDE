@@ -54,7 +54,7 @@ public abstract class BaseNodeViewBinder<D> extends RecyclerView.ViewHolder {
         return 0;
     }
 
-    public void onNodeClicked(View view, TreeNode<D> treeNode) {}
+    // public void onNodeClicked(View view, TreeNode<D> treeNode) {}
 
     /**
      * Callback when a toggle action happened (only by clicked)

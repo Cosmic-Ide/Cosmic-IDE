@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
+
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
@@ -27,17 +29,19 @@ public class JavacAnalyzer {
     private DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     private boolean isFirstUse = true;
     private final String currentFile;
+    private final JavaProject project;
 
-    public JavacAnalyzer(Context context, String file) {
+    public JavacAnalyzer(Context context, String file, JavaProject project) {
         prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        this.project = project;
         currentFile = file;
     }
 
     public void analyze() throws IOException {
-        final var output = new File(FileUtil.getBinDir(), "classes");
+        final var output = new File(project.getBinDirPath(), "classes");
         output.mkdirs();
         final var version = prefs.getString("version", "7");
-        final var files = getSourceFiles(new File(FileUtil.getJavaDir()));
+        final var files = getSourceFiles(new File(project.getSrcDirPath()));
 
         final var javaFileObjects = new ArrayList<JavaFileObject>();
         for (var file : files) {

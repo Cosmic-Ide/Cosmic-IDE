@@ -19,9 +19,6 @@ open class TreeFile {
         @Nullable
         @JvmStatic
         fun fromFile(file: File) : TreeFile? {
-            if (file == null) {
-                return null
-            }
             if (file.isDirectory()) {
                 return TreeFolder(file)
             }
@@ -32,7 +29,7 @@ open class TreeFile {
         }
     }
 
-    private lateinit var mFile: File
+    private var mFile: File
 
     constructor(file: File) {
         mFile = file
@@ -44,14 +41,14 @@ open class TreeFile {
         return AppCompatResources.getDrawable(context, R.drawable.java_file)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this == o) {
+    override fun equals(other: Any?): Boolean {
+        if (this == other) {
             return true
         }
-        if (o == null || this::class != o::class) {
+        if (other == null || this::class != other::class) {
             return false
         }
-        val treeFile = o as TreeFile
+        val treeFile = other as TreeFile
         return Objects.equals(mFile, treeFile.mFile)
     }
 

@@ -4,8 +4,7 @@ import android.content.res.Resources
 import android.util.TypedValue
 
 object dpToPx {
-    @JvmStatic
-    private var resources: Resources
+    private lateinit var resources: Resources
 
     @JvmStatic
     fun initalizeResources(res: Resources) {
@@ -13,7 +12,7 @@ object dpToPx {
     }
 
     @JvmStatic
-    fun dpToPx(dp: float): Int {
+    fun dpToPx(dp: Float): Int {
         return Math.round(
                 TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics()))

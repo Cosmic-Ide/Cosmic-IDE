@@ -9,16 +9,19 @@ on:
       - README.md
       - SECURITY.md
       - CODE_OF_CONDUCT.md
-      - ic_logo.webp
       - .github/ISSUE_TEMPLATE/*
+      - art/*
+      - fastlane/*
   pull_request:
     path-ignore:
+      - .idea/*
       - LICENSE
       - README.md
       - SECURITY.md
-      - ic_logo.webp
       - CODE_OF_CONDUCT.md
       - .github/ISSUE_TEMPLATE/*
+      - art/*
+      - fastlane/*
   workflow_dispatch:
 
 jobs:

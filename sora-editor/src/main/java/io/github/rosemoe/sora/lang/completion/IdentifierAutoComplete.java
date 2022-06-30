@@ -97,7 +97,7 @@ public class IdentifierAutoComplete {
             if (lowCase) {
                 for (String kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new CircleDrawable(Kind.Keyword) prefixLength, kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new CircleDrawable(Kind.Keyword), prefixLength, kw));
                     }
                 }
             } else {

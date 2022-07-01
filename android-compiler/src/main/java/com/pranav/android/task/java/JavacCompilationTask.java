@@ -60,7 +60,7 @@ public class JavacCompilationTask implements Task {
                 new File(
                                 output,
                                 path.substring(
-                                        path.indexOf(project.getSrcDirPath()), path.indexOf(".java")))
+                                        path.indexOf(project.getSrcDirPath()), path.length()))
                         .delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {

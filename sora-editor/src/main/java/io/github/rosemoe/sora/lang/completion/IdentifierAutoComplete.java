@@ -28,6 +28,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.pranav.completion.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -95,13 +97,13 @@ public class IdentifierAutoComplete {
             if (lowCase) {
                 for (String kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new KindDrawable(Kind.Keyword), prefixLength, kw));
                     }
                 }
             } else {
                 for (String kw : keywordArray) {
                     if (kw.toLowerCase(Locale.ROOT).startsWith(match)) {
-                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", new KindDrawable(Kind.Keyword), prefixLength, kw));
                     }
                 }
             }
@@ -258,6 +260,4 @@ public class IdentifierAutoComplete {
         }
 
     }
-
-
 }

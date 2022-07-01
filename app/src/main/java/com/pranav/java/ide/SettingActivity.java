@@ -26,7 +26,7 @@ import com.pranav.java.ide.ui.utils.UiUtilsKt;
 public final class SettingActivity extends AppCompatActivity {
 
     private String[] javaVersions = {
-        "1.3", "1.4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
+        "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
     };
 
     private String[] javaCompilers = {
@@ -145,7 +145,7 @@ public final class SettingActivity extends AppCompatActivity {
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
-                        if (javaVersions[i] == "18"
+                        if (javaVersions[i].equals("18")
                                 && settings.getString("compiler", "Javac").equals("Javac")) {
                             new MaterialAlertDialogBuilder(SettingActivity.this)
                                     .setTitle("Notice")

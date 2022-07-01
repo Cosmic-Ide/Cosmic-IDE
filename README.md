@@ -67,16 +67,15 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[x] Google Java Formatter
 - \[x] Eclipse Java Formatter
 - \[x] Baksmali Dex File
-- \[x] Basic Java auto-completion
+- \[x] Basic Java Keywords auto-completion
 - \[x] D8
 - \[x] File Tree Viewer
 - \[x] Completely offline
 
 ## TO-DO
 
-- \[ ] Dependency Injection
-- \[ ] JGit support
-- \[ ] Java auto-complete server or auto-completion service
+- \[ ] Git support
+- \[ ] Java auto-complete server
 - \[ ] Kotlin Language Support
 
 ## Building
@@ -100,6 +99,8 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - [TheWolf](https://github.com/thewolfprod)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
+
+- [Remaker71](https://github.com/Remaker71)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 

@@ -10,6 +10,7 @@ import com.pranav.android.task.java.*;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
+import com.pranav.project.mode.JavaProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class CompileTask extends Thread {
         try {
             // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            new File(activity.currentWorkingFilePath).getParentFile().mkdirs();
+            // new File(activity.getProject().getBuildDirPath() activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
             final String code =
                     activity.editor
@@ -78,11 +79,11 @@ public class CompileTask extends Thread {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(builder);
-                javaTask.doFullTask();
+                javaTask.doFullTask(activity.getProject());
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
                 var javaTask = new ECJCompilationTask(builder);
-                javaTask.doFullTask();
+                javaTask.doFullTask(activity.getProject());
             }
             errorsArePresent = false;
         } catch (CompilationFailedException e) {
@@ -100,7 +101,7 @@ public class CompileTask extends Thread {
         // run d8
         try {
             listener.onCurrentBuildStageChanged(STAGE_D8);
-            new D8Task().doFullTask();
+            new D8Task().doFullTask(activity.getProject());
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
             return;
@@ -123,7 +124,7 @@ public class CompileTask extends Thread {
                         (dialog, item) -> {
                             var task = new ExecuteJavaTask(builder, classes[item]);
                             try {
-                                task.doFullTask();
+                                task.doFullTask(activity.getProject());
                             } catch (InvocationTargetException e) {
                                 activity.dialog(
                                         "Failed...",
@@ -135,7 +136,7 @@ public class CompileTask extends Thread {
                                 return;
                             } catch (Exception e) {
                                 activity.dialog(
-                                        "Failed..",
+                                        "Failed...",
                                         "Couldn't execute the dex: "
                                                 + e.toString()
                                                 + "\n\nSystem logs:\n"

@@ -22,5 +22,6 @@ dependencies {
 	implementation project(path: ':eclipse-jdt')
 	implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
 	implementation project(path: ':common')
+	implementation project(path: ':project-creator')
 	compileOnly files('libs/android-stubs.jar')
 }

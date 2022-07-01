@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
 
 import org.eclipse.jdt.internal.compiler.batch.Main;
 
@@ -32,7 +33,7 @@ public class ECJCompilationTask implements Task {
     }
 
     @Override
-    public void doFullTask() throws Exception {
+    public void doFullTask(JavaProject project) throws Exception {
 
         var writer =
                 new PrintWriter(
@@ -45,12 +46,12 @@ public class ECJCompilationTask implements Task {
 
         var main = new Main(writer, writer, false, null, null);
 
-        var output = new File(FileUtil.getBinDir(), "classes");
+        var output = new File(project.getBinDirPath(), "classes");
 
         final var args = new ArrayList<String>();
 
         args.add("-log");
-        args.add(FileUtil.getBinDir().concat("debug.xml"));
+        args.add(project.getBinDirPath().concat("debug.xml"));
         args.add("-g");
         args.add("-" + prefs.getString("version", "7"));
         args.add("-d");
@@ -71,7 +72,7 @@ public class ECJCompilationTask implements Task {
         args.add("-proc:none");
         args.add("-sourcepath");
         args.add(" ");
-        args.add(FileUtil.getJavaDir());
+        args.add(project.getSrcDirPath());
 
         main.compile(args.toArray(new String[0]));
 

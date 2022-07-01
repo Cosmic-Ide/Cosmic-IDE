@@ -24,6 +24,13 @@
     <string name="compile_project">Скомпилировать проект</string>
     <string name="java_file">Java-файл</string>
 
+    <!-- Strings used by ProjectActivity -->
+    <string name="projects">Проекты</string>
+    <string name="new_project">Новый проект</string>
+    <string name="project_name">Имя проекта</string>
+    <string name="no_projects_title">Нет проектов</string>
+    <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
+
     <!-- Strings used by SettingActivity -->
     <string name="java_version">Версия Java</string>
     <string name="java_compiler">Компилятор Java</string>

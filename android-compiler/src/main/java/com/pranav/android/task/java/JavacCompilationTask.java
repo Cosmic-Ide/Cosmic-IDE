@@ -7,6 +7,7 @@ import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.interfaces.*;
 import com.pranav.common.Indexer;
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
@@ -38,28 +39,28 @@ public class JavacCompilationTask implements Task {
     }
 
     @Override
-    public void doFullTask() throws Exception {
+    public void doFullTask(JavaProject project) throws Exception {
 
-        final var output = new File(FileUtil.getBinDir(), "classes");
+        final var output = new File(project.getBinDirPath(), "classes");
 
         final var version = prefs.getString("version", "7");
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var lastBuildTime = new Indexer("editor").getLong("lastBuildTime");
+        var lastBuildTime = new Indexer(project.getProjectName(), project.getCacheDirPath()).getLong("lastBuildTime");
         if (!output.exists()) {
             lastBuildTime = 0;
             output.mkdirs();
         }
         final var javaFileObjects = new ArrayList<JavaFileObject>();
-        final var javaFiles = getSourceFiles(new File(FileUtil.getJavaDir()));
+        final var javaFiles = getSourceFiles(new File(project.getSrcDirPath()));
         for (var file : javaFiles) {
             if (file.lastModified() > lastBuildTime) {
                 var path = file.getAbsolutePath();
                 new File(
                                 output,
                                 path.substring(
-                                        path.indexOf(FileUtil.getJavaDir()), path.indexOf(".java")))
+                                        path.indexOf(project.getSrcDirPath()), path.indexOf(".java")))
                         .delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
@@ -146,7 +147,7 @@ public class JavacCompilationTask implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        new Indexer("editor").put("lastBuildTime", System.currentTimeMillis());
+        new Indexer(project.getProjectName(), project.getCacheDirPath()).put("lastBuildTime", System.currentTimeMillis());
     }
 
     public ArrayList<File> getSourceFiles(File path) {

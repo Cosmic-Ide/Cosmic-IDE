@@ -59,8 +59,7 @@ public class JavacCompilationTask implements Task {
                 var path = file.getAbsolutePath();
                 new File(
                                 output,
-                                path.substring(
-                                        path.indexOf(project.getSrcDirPath()), path.indexOf(".java")))
+                                path.replaceFirst(project.getSrcDirPath(), ""))
                         .delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {

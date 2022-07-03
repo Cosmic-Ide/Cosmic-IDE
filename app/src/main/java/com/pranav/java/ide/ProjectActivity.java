@@ -107,12 +107,12 @@ public final class ProjectActivity extends AppCompatActivity {
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
             createBtn.setOnClickListener(v -> {
                 var projectName = String.valueOf(input.getText());
-                if(TextUtils.isEmpty(projectName)) {
+                if (TextUtils.isEmpty(projectName)) {
                     return;
                 }
                 try {
                     JavaProject project = JavaProject.newProject(projectName);
-                    if(mListener != null) {
+                    if (mListener != null) {
                         runOnUiThread(() -> {
                             if (createNewProjectDialog.isShowing()) createNewProjectDialog.dismiss();
                             mListener.onProjectCreated(project);
@@ -137,12 +137,12 @@ public final class ProjectActivity extends AppCompatActivity {
             File projectDir = new File(JavaProject.getRootDirPath());
             File[] directories = projectDir.listFiles(File::isDirectory);
             List<JavaProject> projects = new ArrayList<>();
-            if(directories != null) {
+            if (directories != null) {
                 Arrays.sort(directories, Comparator.comparingLong(File::lastModified));
-                for(File directory : directories) {
+                for (File directory : directories) {
                      File project = new File(directory, "src");
-                     if(project.exists()) {
-                         JavaProject javaProject = new JavaProject(new File(directory.getAbsolutePath().replace("%20", " ")));
+                     if (project.exists()) {
+                         var javaProject = new JavaProject(new File(directory.getAbsolutePath()));
                          projects.add(javaProject);
                      }
                 }
@@ -155,7 +155,7 @@ public final class ProjectActivity extends AppCompatActivity {
     }
 
     private void toggleNullProject(List<JavaProject> projects) {
-        if(projects.size() == 0) {
+        if (projects.size() == 0) {
             projectRecycler.setVisibility(View.GONE);
             emptyContainer.setVisibility(View.VISIBLE);
         } else {

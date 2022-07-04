@@ -71,7 +71,6 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
 
     private AlertDialog loadingDialog;
-    private Thread runThread;
 
     private Bundle projectDatas;
     public JavaProject javaProject;
@@ -251,9 +250,6 @@ public final class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         editor.release();
-        if (runThread != null && runThread.isAlive()) {
-            runThread.interrupt();
-        }
     }
 
     /* Shows a snackbar indicating that there were problems during compilation */
@@ -292,39 +288,38 @@ public final class MainActivity extends AppCompatActivity {
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog
-        runThread =
-                new Thread(
-                        new CompileTask(
-                                MainActivity.this,
-                                execute,
-                                new CompileTask.CompilerListeners() {
-                                    @Override
-                                    public void onCurrentBuildStageChanged(String stage) {
-                                        mBuilder.setContentText(stage);
-                                        manager.notify(id, mBuilder.build());
-                                        changeLoadingDialogBuildStage(stage);
-                                    }
+        final var compilationRunnable =
+                new CompileTask(
+                        MainActivity.this,
+                        execute,
+                        new CompileTask.CompilerListeners() {
+                            @Override
+                            public void onCurrentBuildStageChanged(String stage) {
+                                mBuilder.setContentText(stage);
+                                manager.notify(id, mBuilder.build());
+                                changeLoadingDialogBuildStage(stage);
+                            }
 
-                                    @Override
-                                    public void onSuccess() {
-                                        loadingDialog.dismiss();
-                                        manager.cancel(id);
-                                    }
+                            @Override
+                            public void onSuccess() {
+                                loadingDialog.dismiss();
+                                manager.cancel(id);
+                            }
 
-                                    @Override
-                                    public void onFailed(String errorMessage) {
-                                        mBuilder.setContentText("Failure");
-                                        manager.notify(id, mBuilder.build());
-                                        if (loadingDialog.isShowing()) {
-                                            loadingDialog.dismiss();
-                                        }
-                                        showErr(errorMessage);
-                                    }
-                                }));
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                mBuilder.setContentText("Failure");
+                                manager.notify(id, mBuilder.build());
+                                if (loadingDialog.isShowing()) {
+                                    loadingDialog.dismiss();
+                                }
+                                showErr(errorMessage);
+                            }
+                        });
         if (!blockMainThread) {
-            runThread.start();
+            ConcurrentUtil.inParallel(compilationRunnable);
         } else {
-            runThread.run();
+            ConcurrentUtil.execute(compilationRunnable);
         }
     }
 

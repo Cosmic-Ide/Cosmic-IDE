@@ -9,7 +9,7 @@ import java.nio.file.Paths
 
 class EclipseDisassembler(filePath: String) {
 
-    private lateinit var classFileBytes: ByteArray
+    private var classFileBytes: ByteArray
 
     init {
         classFileBytes = Files.readAllBytes(Paths.get(filePath))

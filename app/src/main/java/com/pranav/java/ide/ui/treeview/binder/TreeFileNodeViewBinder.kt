@@ -19,8 +19,6 @@ class TreeFileNodeViewBinder(
 
     private lateinit var viewHolder: ViewHolder
 
-    fun bnd(): BaseNodeViewBinder<TreeFile> = this
-
     override fun bindView(treeNode: TreeNode<TreeFile>) {
         viewHolder = ViewHolder(itemView)
 
@@ -52,10 +50,6 @@ class TreeFileNodeViewBinder(
         nodeListener.onNodeToggled(treeNode, expand)
     }
 
-    override fun onNodeClicked(view: View, treeNode: TreeNode<TreeFile>) {
-        return nodeListener.onNodeClicked(view, treeNode)
-    }
-
     override fun onNodeLongClicked(view: View, treeNode: TreeNode<TreeFile>, expanded: Boolean): Boolean {
         return nodeListener.onNodeLongClicked(view, treeNode, expanded)
     }
@@ -67,7 +61,6 @@ class TreeFileNodeViewBinder(
     }
 
     interface TreeFileNodeListener {
-        fun onNodeClicked(view: View?, treeNode: TreeNode<TreeFile>?)
         fun onNodeToggled(treeNode: TreeNode<TreeFile>?, expanded: Boolean)
         fun onNodeLongClicked(view: View?, treeNode: TreeNode<TreeFile>?, expanded: Boolean): Boolean
     }

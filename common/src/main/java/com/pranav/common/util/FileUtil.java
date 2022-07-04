@@ -2,9 +2,12 @@ package com.pranav.common.util;
 
 import com.itsaky.androidide.utils.Environment;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,25 +19,25 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileUtil {
 
     private static String privateDataDirectory;
-    private static String javaDir;
+    private static String projectsDir;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory + "/";
-        javaDir = privateDataDirectory + "java/";
+        projectsDir = privateDataDirectory + "projects" + "/";
         Environment.init(new File(privateDataDirectory, "compiler-modules"));
     }
 
-    public static void setJavaDirectory(String dir) {
-        if (!dir.endsWith("/")) {
+    public static void setProjectsDirectory(String dir) {
+        if(!dir.endsWith("/")) {
             dir += "/";
         }
         try {
             var path = Paths.get(dir).normalize();
-            if (Files.isRegularFile(path)) {
+            if(Files.isRegularFile(path)) {
                 Files.delete(path);
             }
-            Files.createDirectories(path);
-            javaDir = path.toString();
+            Files.createDirectory(path);
+            projectsDir = path.toString(); 
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,21 +110,89 @@ public class FileUtil {
         return privateDataDirectory;
     }
 
-    public static String getJavaDir() {
-        return javaDir;
-    }
-
-    public static String getBinDir() {
-        return getDataDir() + "bin/";
-    }
-
-    public static String getCacheDir() {
-        // write caches to external storage because we don't want android system
-        // to delete index files
-        return getDataDir() + "cache/";
+    public static String getProjectsDir() {
+        return projectsDir;
     }
 
     public static String getClasspathDir() {
         return getDataDir() + "classpath/";
+    }
+
+    public static boolean createOrExistsDir(final String dirPath) {
+        return createOrExistsDir(getFileByPath(dirPath));
+    }
+
+    public static boolean createOrExistsDir(final File file) {
+        return file != null && (file.exists() ? file.isDirectory() : file.mkdirs());
+    }
+
+    public static boolean createOrExistsFile(final String filePath) {
+        return createOrExistsFile(getFileByPath(filePath));
+    }
+
+    public static boolean createOrExistsFile(final File file) {
+        if (file == null) return false;
+        if (file.exists()) return file.isFile();
+        if (!createOrExistsDir(file.getParentFile())) return false;
+        try {
+            return file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean writeFileFromString(final String filePath, final String content) {
+        return writeFileFromString(FileUtil.getFileByPath(filePath), content, false);
+    }
+
+    public static boolean writeFileFromString(final File file, final String content) {
+        return writeFileFromString(file, content, false);
+    }
+
+    public static boolean writeFileFromString(final String filePath,
+                                              final String content,
+                                              final boolean append) {
+        return writeFileFromString(FileUtil.getFileByPath(filePath), content, append);
+    }
+
+    public static boolean writeFileFromString(final File file,
+                                              final String content,
+                                              final boolean append) {
+        if (file == null || content == null) return false;
+        if (!FileUtil.createOrExistsFile(file)) {
+            return false;
+        }
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(file, append));
+            bw.write(content);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static File getFileByPath(final String filePath) {
+        return FileUtil.isSpace(filePath) ? null : new File(filePath);
+    }
+
+    public static boolean isSpace(final String s) {
+        if (s == null) return true;
+        for (int i = 0, len = s.length(); i < len; ++i) {
+            if (!Character.isWhitespace(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

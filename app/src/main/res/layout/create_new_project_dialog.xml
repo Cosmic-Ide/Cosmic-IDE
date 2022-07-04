@@ -12,6 +12,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/project_name"
         android:textDirection="locale">
 
         <com.google.android.material.textfield.TextInputEditText

@@ -7,6 +7,7 @@ import dalvik.system.PathClassLoader;
 
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -34,10 +35,10 @@ public class ExecuteJavaTask implements Task {
     }
 
     @Override
-    public void doFullTask() throws Exception {
+    public void doFullTask(JavaProject project) throws Exception {
         var defaultOut = System.out;
         var defaultErr = System.err;
-        var dexFile = FileUtil.getBinDir() + "classes.dex";
+        var dexFile = project.getBinDirPath() + "classes.dex";
         var out =
                 new OutputStream() {
                     @Override

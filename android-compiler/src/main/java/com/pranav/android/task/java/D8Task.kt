@@ -6,22 +6,23 @@ import com.android.tools.r8.OutputMode
 
 import com.pranav.android.interfaces.*
 import com.pranav.common.util.FileUtil
+import com.pranav.project.mode.JavaProject
 
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.ArrayList
 
-class D8Task : Task {
+class D8Task() : Task {
 
     @Throws(Exception::class)
-    override fun doFullTask() {
+    override fun doFullTask(project: JavaProject) {
             D8.run(
                     D8Command.builder()
-                            .setOutput(Paths.get(FileUtil.getBinDir()), OutputMode.DexIndexed)
+                            .setOutput(Paths.get(project.getBinDirPath()), OutputMode.DexIndexed)
                             .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
                             .addProgramFiles(
-                                    getClassFiles(File(FileUtil.getBinDir(), "classes")))
+                                    getClassFiles(File(project.getBinDirPath(), "classes")))
                             .build())
     }
 

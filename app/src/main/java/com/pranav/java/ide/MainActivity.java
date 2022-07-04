@@ -41,8 +41,9 @@ import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
 import com.pranav.java.ide.ui.TreeViewDrawer;
-import com.pranav.java.ide.ui.treeview.helper.TreeCreateNewFileContent;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
+import com.pranav.project.mode.JavaProject;
+import com.pranav.project.mode.JavaTemplate;
 
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
@@ -70,7 +71,9 @@ public final class MainActivity extends AppCompatActivity {
     public DrawerLayout drawer;
 
     private AlertDialog loadingDialog;
-    private Thread runThread;
+
+    private Bundle projectDatas;
+    public JavaProject javaProject;
 
     // It's a variable that stores an object temporarily, for e.g. if you want to access a local
     // variable in a lambda expression, etc.
@@ -82,17 +85,22 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        getWindow().setAllowEnterTransitionOverlap(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+        projectDatas = getIntent().getExtras();
+
+        var projectPath = projectDatas.getString("project_path"); 
+
+        javaProject = new JavaProject(new File(projectPath));
 
         var toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setTitle(getProject().getProjectName());
 
         var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
@@ -114,19 +122,17 @@ public final class MainActivity extends AppCompatActivity {
         editor.setPinLineNumber(true);
 
         try {
-            indexer = new Indexer("editor");
+            indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
             if (indexer.notHas("currentFile")) {
-                indexer.put("currentFile", FileUtil.getJavaDir() + "Main.java");
+                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.java");
                 indexer.flush();
             }
-
             currentWorkingFilePath = indexer.getString("currentFile");
         } catch (JSONException e) {
             dialog("JsonException", e.getMessage(), true);
         }
 
         final var file = new File(currentWorkingFilePath);
-
         if (file.exists()) {
             try {
                 editor.setText(FileUtil.readFile(file));
@@ -135,12 +141,11 @@ public final class MainActivity extends AppCompatActivity {
             }
         } else {
             try {
-                file.getParentFile().mkdirs();
-                FileUtil.writeFile(
-                        file.getAbsolutePath(),
-                        TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
-                editor.setText(TreeCreateNewFileContent.BUILD_NEW_FILE_CONTENT("Main"));
-            } catch (IOException e) {
+                FileUtil.writeFileFromString(
+                        getProject().getSrcDirPath() + 
+                        "Main.java", JavaTemplate.getClassTemplate(null, "Main", true));
+                editor.setText(JavaTemplate.getClassTemplate(null, "Main", true));
+            } catch (Exception e) {
                 dialog("Cannot create file", getString(e), true);
             }
         }
@@ -170,7 +175,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
-        editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath));
+        editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath, getProject()));
         var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
     }
@@ -204,7 +209,7 @@ public final class MainActivity extends AppCompatActivity {
     public void loadFileToEditor(String path) throws IOException, JSONException {
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
-        editor.getText().addContentListener(new ProblemMarker(editor, path));
+        editor.getText().addContentListener(new ProblemMarker(editor, path, getProject()));
         indexer.put("currentFile", path);
         indexer.flush();
         currentWorkingFilePath = path;
@@ -245,9 +250,6 @@ public final class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         editor.release();
-        if (runThread != null && runThread.isAlive()) {
-            runThread.interrupt();
-        }
     }
 
     /* Shows a snackbar indicating that there were problems during compilation */
@@ -286,39 +288,38 @@ public final class MainActivity extends AppCompatActivity {
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog
-        runThread =
-                new Thread(
-                        new CompileTask(
-                                MainActivity.this,
-                                execute,
-                                new CompileTask.CompilerListeners() {
-                                    @Override
-                                    public void onCurrentBuildStageChanged(String stage) {
-                                        mBuilder.setContentText(stage);
-                                        manager.notify(id, mBuilder.build());
-                                        changeLoadingDialogBuildStage(stage);
-                                    }
+        final var compilationRunnable =
+                new CompileTask(
+                        MainActivity.this,
+                        execute,
+                        new CompileTask.CompilerListeners() {
+                            @Override
+                            public void onCurrentBuildStageChanged(String stage) {
+                                mBuilder.setContentText(stage);
+                                manager.notify(id, mBuilder.build());
+                                changeLoadingDialogBuildStage(stage);
+                            }
 
-                                    @Override
-                                    public void onSuccess() {
-                                        loadingDialog.dismiss();
-                                        manager.cancel(id);
-                                    }
+                            @Override
+                            public void onSuccess() {
+                                loadingDialog.dismiss();
+                                manager.cancel(id);
+                            }
 
-                                    @Override
-                                    public void onFailed(String errorMessage) {
-                                        mBuilder.setContentText("Failure");
-                                        manager.notify(id, mBuilder.build());
-                                        if (loadingDialog.isShowing()) {
-                                            loadingDialog.dismiss();
-                                        }
-                                        showErr(errorMessage);
-                                    }
-                                }));
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                mBuilder.setContentText("Failure");
+                                manager.notify(id, mBuilder.build());
+                                if (loadingDialog.isShowing()) {
+                                    loadingDialog.dismiss();
+                                }
+                                showErr(errorMessage);
+                            }
+                        });
         if (!blockMainThread) {
-            runThread.start();
+            ConcurrentUtil.inParallel(compilationRunnable);
         } else {
-            runThread.run();
+            ConcurrentUtil.execute(compilationRunnable);
         }
     }
 
@@ -378,24 +379,24 @@ public final class MainActivity extends AppCompatActivity {
                         var claz = classes[pos];
                         var smaliFile =
                                 new File(
-                                        FileUtil.getBinDir(),
-                                        "smali/" + claz.replace(".", "/") + ".smali");
+                                        getProject().getBinDirPath(),
+                                        "smali" + "/" + claz.replace(".", "/") + ".smali");
                         try {
                             var opcodes = Opcodes.forApi(32);
                             var options = new BaksmaliOptions();
 
                             var dexFile =
                                     DexFileFactory.loadDexFile(
-                                            new File(FileUtil.getBinDir(), "classes.dex"), opcodes);
+                                            new File(getProject().getBinDirPath(), "classes.dex"), opcodes);
                             options.apiLevel = 26;
                             ConcurrentUtil.execute(
                                     () ->
                                             Baksmali.disassembleDexFile(
                                                     dexFile,
-                                                    new File(FileUtil.getBinDir(), "smali"),
+                                                    new File(getProject().getBinDirPath(), "smali"),
                                                     1,
                                                     options));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             dialog("Unable to load dex file", getString(e), true);
                             return;
                         }
@@ -433,15 +434,16 @@ public final class MainActivity extends AppCompatActivity {
                     var claz = classes[pos].replace(".", "/");
                     var args =
                             new String[] {
-                                FileUtil.getBinDir()
-                                        + "classes/"
+                                getProject().getBinDirPath()
+                                        + "classes"
+                                        + "/"
                                         + claz
                                         + // full class name
                                         ".class",
                                 "--extraclasspath",
                                 FileUtil.getClasspathDir() + "android.jar",
                                 "--outputdir",
-                                FileUtil.getBinDir() + "cfr/"
+                                getProject().getBinDirPath() + "cfr/"
                             };
 
                     ConcurrentUtil.execute(
@@ -459,7 +461,7 @@ public final class MainActivity extends AppCompatActivity {
                     edi.setEditorLanguage(getTextMateLanguageForJava());
                     edi.setTextSize(12);
 
-                    var decompiledFile = new File(FileUtil.getBinDir() + "cfr/" + claz + ".java");
+                    var decompiledFile = new File(getProject().getBinDirPath() + "cfr" + "/" + claz + ".java");
 
                     try {
                         edi.setText(FileUtil.readFile(decompiledFile));
@@ -493,16 +495,18 @@ public final class MainActivity extends AppCompatActivity {
                         if (prefs.getString("disassembler", "Javap").equals("Javap")) {
                             disassembled =
                                     new JavapDisassembler(
-                                                    FileUtil.getBinDir()
-                                                            + "classes/"
+                                                    getProject().getBinDirPath()
+                                                            + "classes"
+                                                            + "/"
                                                             + claz
                                                             + ".class")
                                             .disassemble();
                         } else {
                             disassembled =
                                     new EclipseDisassembler(
-                                                    FileUtil.getBinDir()
-                                                            + "classes/"
+                                                    getProject().getBinDirPath()
+                                                            + "classes"
+                                                            +"/"
                                                             + claz
                                                             + ".class")
                                             .disassemble();
@@ -550,7 +554,7 @@ public final class MainActivity extends AppCompatActivity {
     /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
-            var dex = new File(FileUtil.getBinDir().concat("classes.dex"));
+            var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
             /* If the project doesn't seem to have been compiled yet, compile it */
             if (!dex.exists()) {
                 compile(false, true);
@@ -570,5 +574,9 @@ public final class MainActivity extends AppCompatActivity {
 
     private String getString(final Throwable e) {
         return Log.getStackTraceString(e);
+    }
+    
+    public JavaProject getProject() {
+        return javaProject;
     }
 }

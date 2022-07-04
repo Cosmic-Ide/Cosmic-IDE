@@ -258,15 +258,15 @@ public final class SettingActivity extends AppCompatActivity {
                     Button save_java_path_bttn =
                             javaPathDialog.findViewById(android.R.id.button1);
 
-                    path_edt.setText(FileUtil.getJavaDir());
+                    path_edt.setText(FileUtil.getProjectsDir());
 
                     save_java_path_bttn.setOnClickListener(
                             view -> {
                                 var enteredPath = path_edt.getText().toString().replace("..", "");
                                 if (enteredPath.isEmpty()) {
-                                    FileUtil.setJavaDirectory(FileUtil.getDataDir() + "java/");
+                                    FileUtil.setProjectsDirectory(FileUtil.getProjectsDir());
                                 } else {
-                                    FileUtil.setJavaDirectory(enteredPath);
+                                    FileUtil.setProjectsDirectory(enteredPath);
                                 }
 
                                 showSnackbar(getString(R.string.saved));

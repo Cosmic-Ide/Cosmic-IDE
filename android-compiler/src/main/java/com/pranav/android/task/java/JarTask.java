@@ -2,6 +2,7 @@ package com.pranav.android.task.java;
 
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
+import com.pranav.project.mode.JavaProject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,13 +17,13 @@ import java.util.jar.Manifest;
 public class JarTask implements Task {
 
     @Override
-    public void doFullTask() throws Exception {
+    public void doFullTask(JavaProject project) throws Exception {
 
         // input file
-        var classesFolder = new File(FileUtil.getBinDir() + "classes");
+        var classesFolder = new File(project.getBinDirPath() + "classes");
 
         // Open archive file
-        var stream = new FileOutputStream(new File(FileUtil.getBinDir() + "classes.jar"));
+        var stream = new FileOutputStream(new File(project.getBinDirPath() + "classes.jar"));
 
         var manifest = buildManifest();
 

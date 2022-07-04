@@ -252,8 +252,7 @@ public class TreeViewDrawer extends Fragment {
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel()
-                                                        + 1); // Get Level of parent so it will have
+                                                node.getLevel()); // Get Level of parent so it will have
                                 // correct margin and disable some
                                 // popup functions if needed
                                 node.addChild(newDir);

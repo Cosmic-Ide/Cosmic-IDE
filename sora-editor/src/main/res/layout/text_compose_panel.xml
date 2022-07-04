@@ -45,11 +45,11 @@
 
 			<Button
 				android:id="@+id/panel_btn_select_all"
-				android:layout_width="55dp"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@android:string/selectAll"
 				android:textColor="@color/textActionNameColor"
-				android:textSize="9sp"
+				android:textSize="8sp"
 				android:drawableTop="@drawable/round_select_all_20"
 				android:drawablePadding="-4dp"
 				android:paddingTop="4dp"
@@ -57,11 +57,11 @@
 
 			<Button
 				android:id="@+id/panel_btn_copy"
-				android:layout_width="55dp"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@android:string/copy"
 				android:textColor="@color/textActionNameColor"
-				android:textSize="9sp"
+				android:textSize="8sp"
 				android:drawableTop="@drawable/round_content_copy_20"
 				android:drawablePadding="-4dp"
 				android:paddingTop="4dp"
@@ -69,11 +69,11 @@
 
 			<Button
 				android:id="@+id/panel_btn_paste"
-				android:layout_width="55dp"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@android:string/paste"
 				android:textColor="@color/textActionNameColor"
-				android:textSize="9sp"
+				android:textSize="8sp"
 				android:drawableTop="@drawable/round_content_paste_20"
 				android:drawablePadding="-4dp"
 				android:paddingTop="4dp"
@@ -81,11 +81,11 @@
 
 			<Button
 				android:id="@+id/panel_btn_cut"
-				android:layout_width="55dp"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@android:string/cut"
 				android:textColor="@color/textActionNameColor"
-				android:textSize="9sp"
+				android:textSize="8sp"
 				android:drawableTop="@drawable/round_content_cut_20"
 				android:drawablePadding="-4dp"
 				android:paddingTop="4dp"

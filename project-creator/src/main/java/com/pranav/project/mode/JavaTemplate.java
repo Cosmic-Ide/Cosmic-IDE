@@ -10,10 +10,10 @@ public class JavaTemplate {
         return header + 
             "import java.util.*;\n\n" +
             "public class " + className + " {\n" +
-            (isCreateMainMethod ? "\tpublic static void main(String[] args) {\n" +
-                "\t\tSystem.out.println(\"Hello, World!\");\n" +
-                "\t}"
-                : "\t") +
+            (isCreateMainMethod ? "    public static void main(String[] args) {\n" +
+                "        System.out.println(\"Hello, World!\");\n" +
+                "    }"
+                : "    ") +
             "\n" +
             "}\n";
     }

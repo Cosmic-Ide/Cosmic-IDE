@@ -1,12 +1,27 @@
 plugins {
-    id 'java-library'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.jvm'
 	id 'com.android.lint'
 }
+android {
+    namespace 'com.pranav.android'
+    compileSdk 33
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_11
-	targetCompatibility = JavaVersion.VERSION_11
+    defaultConfig {
+        minSdk 26
+        targetSdk 33
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 }
 
 compileKotlin {
@@ -23,5 +38,6 @@ dependencies {
 	implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
 	implementation project(path: ':common')
 	implementation project(path: ':project-creator')
+	implementation project(':kotlinc')
 	compileOnly files('libs/android-stubs.jar')
 }

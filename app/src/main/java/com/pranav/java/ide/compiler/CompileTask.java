@@ -76,6 +76,7 @@ public class CompileTask extends Thread {
         var time = System.currentTimeMillis();
         errorsArePresent = true;
         try {
+            new KotlinCompiler().doFullTask(activity.getProject());
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(builder);

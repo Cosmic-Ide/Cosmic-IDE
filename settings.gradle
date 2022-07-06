@@ -26,4 +26,5 @@ include ':google-java-format'
 include ':common'
 include ':sora-editor'
 include ':code-analyzer'
-include ':project-creator'
+include ':project-creator'include :kotlinc
+include :java-runtime

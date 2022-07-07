@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'org.jetbrains.kotlinc'
     compileSdk 33
 
     defaultConfig {

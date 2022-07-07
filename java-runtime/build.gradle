@@ -3,11 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    namespace 'com.sun'
+    compileSdk 33
 
     defaultConfig {
         minSdk 26
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 

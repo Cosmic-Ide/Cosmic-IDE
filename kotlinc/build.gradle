@@ -20,7 +20,7 @@ dependencies {
     api files('libs/kotlin-compiler-embeddable-1.6.0.jar')
 
     compileOnly files('libs/the-unsafe.jar')
-    compileOnly project(path: ':android-stubs')
+    compileOnly files('libs/android-stubs')
 
 }
 repositories {

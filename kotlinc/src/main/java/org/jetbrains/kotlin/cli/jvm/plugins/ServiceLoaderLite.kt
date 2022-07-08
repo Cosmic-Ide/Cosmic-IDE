@@ -1,6 +1,6 @@
 package org.jetbrains.kotlin.cli.jvm.plugins
 
-import dalvik.system.DexClassLoader
+import dalvik.system.PathClassLoader
 import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil.isJavaIdentifierPart
 import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil.isJavaIdentifierStart
 import java.io.File
@@ -38,7 +38,7 @@ object ServiceLoaderLite {
             val classpath = classLoader.urLs.joinToString(separator = File.pathSeparator) {
                 it.path
             }
-            val loader = DexClassLoader(classpath, "", "", this::class.java.classLoader)
+            val loader = DexClassLoader(classpath, this::class.java.classLoader)
             return loadImplementations(service, files, loader)
         }
         return loadImplementations(service, files, classLoader);

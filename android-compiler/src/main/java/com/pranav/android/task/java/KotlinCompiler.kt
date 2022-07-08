@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.io.File
+import java.io.IOException
 
 import com.pranav.common.util.FileUtil
 import com.pranav.android.interfaces.*
@@ -61,8 +62,6 @@ class KotlinCompiler() : Task {
             destination = mClassOutput.absolutePath
         }
 
-        Log.d("TAG", "Running kotlinc with these arguments: $arguments")
-
         compiler.parseArguments(arguments.toTypedArray(), args)
         compiler.exec(collector, Services.EMPTY, args)
         throw CompilationFailedException(collector.toString())
@@ -86,6 +85,9 @@ class KotlinCompiler() : Task {
         return sourceFiles
     }
     
+    override fun getTaskName() : String {
+        return "Kotlin Compiler"
+    }
 
     private data class Diagnostic(
         val severity: CompilerMessageSeverity,

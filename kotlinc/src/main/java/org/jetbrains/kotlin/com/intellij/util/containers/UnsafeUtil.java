@@ -1,7 +1,5 @@
 package org.jetbrains.kotlin.com.intellij.util.containers;
 
-import android.annotation.SuppressLint;
-
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -19,7 +17,7 @@ public class UnsafeUtil {
                 try {
                     Class<Unsafe> type = Unsafe.class;
                     try {
-                        @SuppressLint("DiscouragedPrivateApi") Field field = type.getDeclaredField("theUnsafe");
+                        Field field = type.getDeclaredField("theUnsafe");
                         field.setAccessible(true);
                         return type.cast(field.get(type));
                     } catch (Exception e) {

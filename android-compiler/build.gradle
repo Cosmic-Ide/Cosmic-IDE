@@ -32,7 +32,7 @@ dependencies {
 	implementation 'com.android.tools:r8:3.3.28'
 	implementation project(path: ':google-java-format')
 	implementation project(path: ':eclipse-jdt')
-	implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
+	implementation 'io.github.itsaky:nb-javac-android:17.0.0.2'
 	implementation project(path: ':common')
 	implementation project(path: ':project-creator')
 	implementation project(':kotlinc')

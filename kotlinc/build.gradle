@@ -14,7 +14,7 @@ dependencies {
     implementation project(path: ':jaxp:internal')
 
 
-    runtimeOnly ('org.jetbrains.kotlin:kotlin-reflect:1.7.10')
+    runtimeOnly ('org.jetbrains.kotlin:kotlin-reflect:1.6.21')
 
     api 'org.jetbrains.trove4j:trove4j:20160824'
     api files('libs/kotlin-compiler-embeddable-1.6.0.jar')

@@ -16,7 +16,7 @@ import com.pranav.android.exception.CompilationFailedException
 
 class KotlinCompiler() : Task {
 
-    @Throws(IOException::class)
+    @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
         if (sourceFiles.any {

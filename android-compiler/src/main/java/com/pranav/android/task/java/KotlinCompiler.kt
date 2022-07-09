@@ -18,6 +18,12 @@ class KotlinCompiler() : Task {
 
     @Throws(IOException::class)
     override fun doFullTask(project: JavaProject) {
+        val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
+        if (sourceFiles.any {
+            !it.absolutePath.endsWith(".kt")
+        }) {
+            return;
+        }
         val mKotlinHome  = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
 

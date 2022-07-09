@@ -29,6 +29,7 @@ public class CompileTask extends Thread {
     private final JavaBuilder builder;
 
     private final String STAGE_CLEAN;
+    private final String STAGE_KOTLINC;
     private final String STAGE_JAVAC;
     private final String STAGE_ECJ;
     private final String STAGE_D8;
@@ -41,6 +42,7 @@ public class CompileTask extends Thread {
         this.builder = new JavaBuilder(activity, activity.getClassLoader());
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
+        STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);
         STAGE_JAVAC = context.getString(R.string.stage_javac);
         STAGE_ECJ = context.getString(R.string.stage_ecj);
         STAGE_D8 = context.getString(R.string.stage_d8);
@@ -72,11 +74,19 @@ public class CompileTask extends Thread {
 
         var errorsArePresent = false;
 
-        // code that runs Javac or ECJ
+        // Run kotlinc
         var time = System.currentTimeMillis();
-        errorsArePresent = true;
+        listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
         try {
             new KotlinCompiler().doFullTask(activity.getProject());
+        } catch (CompilationFailedException e) {
+            listener.onFailed(e.getMessage());
+        } catch (Throwable e) {
+            listener.onFailed(Log.getStackTraceString(e));
+        }
+        // Compile Java Files
+        errorsArePresent = true;
+        try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(builder);
@@ -100,8 +110,8 @@ public class CompileTask extends Thread {
         time = System.currentTimeMillis();
 
         // run d8
+        listener.onCurrentBuildStageChanged(STAGE_D8);
         try {
-            listener.onCurrentBuildStageChanged(STAGE_D8);
             new D8Task().doFullTask(activity.getProject());
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
@@ -148,13 +158,7 @@ public class CompileTask extends Thread {
                             var s = new StringBuilder();
                             s.append("Success! ");
 
-                            if (prefs.getString("compiler", "Javac").equals("Javac")) {
-                                s.append("Javac");
-                            } else  {
-                                s.append("ECJ");
-                            }
-
-                            s.append(" took: ");
+                            s.append("Compiling took: ");
                             s.append(String.valueOf(ecjTime));
                             s.append("ms, ");
                             s.append("D8");

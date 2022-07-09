@@ -54,6 +54,7 @@
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Стадия</string>
     <string name="stage_clean">Очистка сборки&#8230;</string>
+    <string name="stage_kotlinc">Компиляция c Kotlinc&#8230;</string>
     <string name="stage_javac">Компиляция с Javac&#8230;</string>
     <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
     <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>

@@ -15,18 +15,14 @@ import java.lang.reflect.Modifier;
 
 public class ExecuteJavaTask implements Task {
 
-    private final Builder mBuilder;
     private final String clazz;
     private Object result;
     private StringBuilder log = new StringBuilder();
     private SharedPreferences prefs;
 
-    public ExecuteJavaTask(Builder builder, String claz) {
-        this.mBuilder = builder;
+    public ExecuteJavaTask(SharedPreferences preferences, String claz) {
         this.clazz = claz;
-        this.prefs =
-                builder.getContext()
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        this.prefs = preferences;
     }
 
     @Override
@@ -54,7 +50,7 @@ public class ExecuteJavaTask implements Task {
         System.setOut(new PrintStream(out));
         System.setErr(new PrintStream(out));
 
-        var loader = new PathClassLoader(dexFile, mBuilder.getClassloader());
+        var loader = new PathClassLoader(dexFile, this.class.getClassloader());
 
         var calledClass = loader.loadClass(clazz);
 

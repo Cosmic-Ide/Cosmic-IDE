@@ -27,10 +27,8 @@ public class JavacCompilationTask implements Task {
 
     private final SharedPreferences prefs;
 
-    public JavacCompilationTask(Builder builder) {
-        prefs =
-                builder.getContext()
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+    public JavacCompilationTask(SharedPreferences preferences) {
+        prefs = preferences;
     }
 
     @Override
@@ -81,16 +79,12 @@ public class JavacCompilationTask implements Task {
         final var standardJavaFileManager =
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
-        try {
-            standardJavaFileManager.setLocation(
+        standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
-            standardJavaFileManager.setLocation(
+        standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(output));
-            standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
-        } catch (IOException e) {
-            throw new CompilationFailedException(e);
-        }
+        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(output));
+        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
         final var args = new ArrayList<String>();
 

@@ -89,11 +89,11 @@ public class CompileTask extends Thread {
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-                var javaTask = new JavacCompilationTask(builder);
+                var javaTask = new JavacCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
-                var javaTask = new ECJCompilationTask(builder);
+                var javaTask = new ECJCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());
             }
             errorsArePresent = false;
@@ -133,7 +133,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task = new ExecuteJavaTask(builder, classes[item]);
+                            var task = new ExecuteJavaTask(prefs, classes[item]);
                             try {
                                 task.doFullTask(activity.getProject());
                             } catch (InvocationTargetException e) {

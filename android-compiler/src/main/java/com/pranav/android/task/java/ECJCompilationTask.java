@@ -21,10 +21,8 @@ public class ECJCompilationTask implements Task {
     private final StringBuilder errs = new StringBuilder();
     private final SharedPreferences prefs;
 
-    public ECJCompilationTask(Builder builder) {
-        prefs =
-                builder.getContext()
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+    public ECJCompilationTask(SharedPreferences preferences) {
+        prefs = preferences;
     }
 
     @Override

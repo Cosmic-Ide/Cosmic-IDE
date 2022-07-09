@@ -182,6 +182,7 @@ public class JavacCompilationTask implements Task {
         var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
+        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar"));
         return classpath;
     }
 }

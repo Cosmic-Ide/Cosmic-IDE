@@ -7,6 +7,7 @@ import dalvik.system.PathClassLoader;
 
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
+import com.pranav.common.util.MultipleDexClassLoader;
 import com.pranav.project.mode.JavaProject;
 
 import java.io.OutputStream;
@@ -55,7 +56,11 @@ public class ExecuteJavaTask implements Task {
         System.setErr(new PrintStream(out));
 
         // Load the dex file into a ClassLoader
-        var loader = new PathClassLoader(dexFile, ClassLoader.getSystemClassLoader());
+        var dexLoader = new MultipleDexClassLoader();
+
+        dexLoader.loadDex(dexFile);
+
+        final var loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
 
         var calledClass = loader.loadClass(clazz);
 

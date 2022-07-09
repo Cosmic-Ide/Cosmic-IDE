@@ -83,6 +83,7 @@ public class CompileTask extends Thread {
             listener.onFailed(e.getMessage());
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
+            return;
         }
         // Compile Java Files
         errorsArePresent = true;

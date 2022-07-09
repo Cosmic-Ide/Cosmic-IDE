@@ -58,7 +58,10 @@ class KotlinCompiler() : Task {
                     "android.jar" +
                     File.pathSeparator +
                     FileUtil.getClasspathDir() +
-                    "core-lambda-stubs.jar"
+                    "core-lambda-stubs.jar" +
+                    File.pathSeparator +
+                    FileUtil.getClasspathDir() +
+                    "kotlin-stdlib-1.7.10.jar"
                 )
 
             // Sources (.java & .kt)

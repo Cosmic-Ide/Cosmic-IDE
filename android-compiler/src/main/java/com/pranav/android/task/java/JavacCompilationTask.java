@@ -86,7 +86,7 @@ public class JavacCompilationTask implements Task {
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
             standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
+            standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(output));
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
         } catch (IOException e) {
             throw new CompilationFailedException(e);
@@ -171,7 +171,7 @@ public class JavacCompilationTask implements Task {
         return sourceFiles;
     }
 
-    public ArrayList<File> getClasspath() {
+    public ArrayList<File> getClasspath(File extraPath) {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("classpath", "");
 
@@ -180,7 +180,7 @@ public class JavacCompilationTask implements Task {
                 classpath.add(new File(clas));
             }
         }
-        classpath.add(FileUtil.getBinDirPath() + "classes");
+        classpath.add(extraPath);
         return classpath;
     }
 

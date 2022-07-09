@@ -284,11 +284,11 @@ public final class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(
                                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setAutoCancel(false)
+                        .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog
-        final var compilationRunnable =
+        final var compilationThread =
                 new CompileTask(
                         MainActivity.this,
                         execute,
@@ -317,7 +317,7 @@ public final class MainActivity extends AppCompatActivity {
                             }
                         });
         if (!blockMainThread) {
-            ConcurrentUtil.inParallel(compilationRunnable);
+            compilationThread.start();
         } else {
             ConcurrentUtil.execute(compilationRunnable);
         }

@@ -34,7 +34,10 @@ class KotlinCompiler() : Task {
                 message: String,
                 location: CompilerMessageSourceLocation?
             ) {
-                diagnostics += Diagnostic(severity, message, location)
+                // do not add redundant logging messages
+                if (severity != CompilerMessageSeverity.LOGGING) {
+                    diagnostics += Diagnostic(severity, message, location)
+                }
             }
 
             override fun toString() = diagnostics
@@ -68,7 +71,9 @@ class KotlinCompiler() : Task {
 
         compiler.parseArguments(arguments.toTypedArray(), args)
         compiler.exec(collector, Services.EMPTY, args)
-        throw CompilationFailedException(collector.toString())
+        if (collector.hasErrors()) {
+            throw CompilationFailedException(collector.toString())
+        }
     }
 
     fun getSourceFiles(path: File): ArrayList<File> {

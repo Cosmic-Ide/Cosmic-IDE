@@ -39,7 +39,7 @@ public class CompileTask extends Thread {
         this.activity = context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
-        this.builder = new JavaBuilder(activity, activity.getClassLoader());
+        this.builder = new JavaBuilder(activity);
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);

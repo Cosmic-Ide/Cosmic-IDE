@@ -5,22 +5,15 @@ import android.content.Context
 import com.pranav.android.interfaces.*
 import com.pranav.android.task.java.*
 
-class JavaBuilder(context: Context, loader: ClassLoader) : Builder {
+class JavaBuilder(context: Context) : Builder {
 
-    private var classloader: ClassLoader
-
-    private var mContext: Context
+    private val mContext: Context
 
     init {
         mContext = context
-        classloader = loader
     }
 
     override fun getContext() : Context {
         return mContext
-    }
-
-    override fun getClassloader() : ClassLoader {
-        return classloader
     }
 }

@@ -55,7 +55,7 @@ public class ExecuteJavaTask implements Task {
         System.setErr(new PrintStream(out));
 
         // Load the dex file into a ClassLoader
-        var loader = new PathClassLoader(dexFile, ClassLoader.getSystemClassloader());
+        var loader = new PathClassLoader(dexFile, ClassLoader.getSystemClassLoader());
 
         var calledClass = loader.loadClass(clazz);
 
@@ -68,7 +68,7 @@ public class ExecuteJavaTask implements Task {
 
         if (Modifier.isStatic(method.getModifiers())) {
             // If the method is static, directly call it
-            result = method.invoke(null, new Object[] {param});
+            result = method.invoke(null, new Object[] { param });
         } else if (Modifier.isPublic(method.getModifiers())) {
             // If the method is public, create an instance of the class,
             // and then call it on the instance

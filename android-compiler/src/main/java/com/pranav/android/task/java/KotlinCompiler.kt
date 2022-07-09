@@ -44,9 +44,13 @@ class KotlinCompiler() : Task {
         val arguments = mutableListOf<String>().apply {
             // Classpath
             add("-cp")
-            add(FileUtil.getClasspathDir() + "android.jar")
-            add(File.pathSeparator)
-            add(FileUtil.getClasspathDir() + "core-lambda-stubs.jar")
+            add(
+                    FileUtil.getClasspathDir() +
+                    "android.jar" +
+                    File.pathSeparator +
+                    FileUtil.getClasspathDir() +
+                    "core-lambda-stubs.jar"
+                )
 
             // Sources (.java & .kt)
             add(project.getSrcDirPath())

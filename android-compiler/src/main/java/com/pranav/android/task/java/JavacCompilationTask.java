@@ -72,6 +72,10 @@ public class JavacCompilationTask implements Task {
             }
         }
 
+        if (javaFileObjects.isEmpty()) {
+            return;
+        }
+
         final var tool = JavacTool.create();
 
         final var standardJavaFileManager =
@@ -176,6 +180,7 @@ public class JavacCompilationTask implements Task {
                 classpath.add(new File(clas));
             }
         }
+        classpath.add(FileUtil.getBinDirPath() + "classes");
         return classpath;
     }
 

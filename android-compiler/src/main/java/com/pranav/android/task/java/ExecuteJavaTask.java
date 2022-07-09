@@ -60,7 +60,7 @@ public class ExecuteJavaTask implements Task {
 
         dexLoader.loadDex(dexFile);
 
-        final var loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
+        final var loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar");
 
         var calledClass = loader.loadClass(clazz);
 

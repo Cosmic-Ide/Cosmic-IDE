@@ -16,7 +16,7 @@ class MultipleDexClassLoader(private val librarySearchPath: String? = null) {
     private val addDexPath = BaseDexClassLoader::class.java
         .getMethod("addDexPath", String::class.java)
 
-    fun loadDex(dexPath: String): DexClassLoader {
+    fun loadDex(dexPath: String): BaseDexClassLoader {
         addDexPath.invoke(loader, dexPath)
 
         return loader

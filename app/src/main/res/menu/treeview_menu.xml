@@ -3,8 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/create_class_menu_bttn"
-        android:title="@string/create_class"
+        android:id="@+id/create_kotlin_class_menu_bttn"
+        android:title="@string/create_kotlin_class"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/create_java_class_menu_bttn"
+        android:title="@string/create_java_class"
         app:showAsAction="never" />
 
     <item

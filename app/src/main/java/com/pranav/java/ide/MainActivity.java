@@ -154,6 +154,16 @@ public final class MainActivity extends AppCompatActivity {
             ZipUtil.unzipFromAssets(
                     MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
         }
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
+        if (!stdlib.exists()) {
+            try {
+                FileUtil.writeFile(
+                    getAssets().open("kotlin-stdlib-1.7.10.jar"),
+                    stdlib.getAbsolutePath());
+            } catch (Exception e) {
+                showErr(getString(e));
+            }
+        }
         if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
             ZipUtil.unzipFromAssets(
                     MainActivity.this, "compiler-modules.zip", FileUtil.getDataDir());
@@ -284,11 +294,11 @@ public final class MainActivity extends AppCompatActivity {
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(
                                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                        .setAutoCancel(false)
+                        .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show(); // Show Loading Dialog
-        final var compilationRunnable =
+        final var compilationThread =
                 new CompileTask(
                         MainActivity.this,
                         execute,
@@ -317,9 +327,9 @@ public final class MainActivity extends AppCompatActivity {
                             }
                         });
         if (!blockMainThread) {
-            ConcurrentUtil.inParallel(compilationRunnable);
+            compilationThread.start();
         } else {
-            ConcurrentUtil.execute(compilationRunnable);
+            ConcurrentUtil.execute(compilationThread);
         }
     }
 

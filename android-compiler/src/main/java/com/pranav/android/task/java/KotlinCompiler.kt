@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.config.Services
 import java.io.File
+import java.io.IOException
 
 import com.pranav.common.util.FileUtil
 import com.pranav.android.interfaces.*
@@ -15,8 +16,14 @@ import com.pranav.android.exception.CompilationFailedException
 
 class KotlinCompiler() : Task {
 
-    @Throws(IOException::class)
+    @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
+        val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
+        if (sourceFiles.any {
+            !it.absolutePath.endsWith(".kt")
+        }) {
+            return;
+        }
         val mKotlinHome  = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
 
@@ -33,7 +40,10 @@ class KotlinCompiler() : Task {
                 message: String,
                 location: CompilerMessageSourceLocation?
             ) {
-                diagnostics += Diagnostic(severity, message, location)
+                // do not add redundant logging messages
+                if (severity != CompilerMessageSeverity.LOGGING) {
+                    diagnostics += Diagnostic(severity, message, location)
+                }
             }
 
             override fun toString() = diagnostics
@@ -43,9 +53,16 @@ class KotlinCompiler() : Task {
         val arguments = mutableListOf<String>().apply {
             // Classpath
             add("-cp")
-            add(FileUtil.getClasspathDir() + "android.jar")
-            add(File.pathSeparator)
-            add(FileUtil.getClasspathDir() + "core-lambda-stubs.jar")
+            add(
+                    FileUtil.getClasspathDir() +
+                    "android.jar" +
+                    File.pathSeparator +
+                    FileUtil.getClasspathDir() +
+                    "core-lambda-stubs.jar" +
+                    File.pathSeparator +
+                    FileUtil.getClasspathDir() +
+                    "kotlin-stdlib-1.7.10.jar"
+                )
 
             // Sources (.java & .kt)
             add(project.getSrcDirPath())
@@ -61,11 +78,12 @@ class KotlinCompiler() : Task {
             destination = mClassOutput.absolutePath
         }
 
-        Log.d("TAG", "Running kotlinc with these arguments: $arguments")
-
         compiler.parseArguments(arguments.toTypedArray(), args)
         compiler.exec(collector, Services.EMPTY, args)
-        throw CompilationFailedException(collector.toString())
+        if (collector.hasErrors()) {
+            throw CompilationFailedException(collector.toString())
+        }
+        File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(path: File): ArrayList<File> {
@@ -86,6 +104,9 @@ class KotlinCompiler() : Task {
         return sourceFiles
     }
     
+    override fun getTaskName() : String {
+        return "Kotlin Compiler"
+    }
 
     private data class Diagnostic(
         val severity: CompilerMessageSeverity,

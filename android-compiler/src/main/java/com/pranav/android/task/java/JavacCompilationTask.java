@@ -27,10 +27,8 @@ public class JavacCompilationTask implements Task {
 
     private final SharedPreferences prefs;
 
-    public JavacCompilationTask(Builder builder) {
-        prefs =
-                builder.getContext()
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+    public JavacCompilationTask(SharedPreferences preferences) {
+        prefs = preferences;
     }
 
     @Override
@@ -72,21 +70,21 @@ public class JavacCompilationTask implements Task {
             }
         }
 
+        if (javaFileObjects.isEmpty()) {
+            return;
+        }
+
         final var tool = JavacTool.create();
 
         final var standardJavaFileManager =
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
-        try {
-            standardJavaFileManager.setLocation(
+        standardJavaFileManager.setLocation(
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
-            standardJavaFileManager.setLocation(
+        standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath());
-            standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
-        } catch (IOException e) {
-            throw new CompilationFailedException(e);
-        }
+        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(output));
+        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
         final var args = new ArrayList<String>();
 
@@ -167,7 +165,7 @@ public class JavacCompilationTask implements Task {
         return sourceFiles;
     }
 
-    public ArrayList<File> getClasspath() {
+    public ArrayList<File> getClasspath(File extraPath) {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("classpath", "");
 
@@ -176,6 +174,7 @@ public class JavacCompilationTask implements Task {
                 classpath.add(new File(clas));
             }
         }
+        classpath.add(extraPath);
         return classpath;
     }
 
@@ -183,6 +182,7 @@ public class JavacCompilationTask implements Task {
         var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
+        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar"));
         return classpath;
     }
 }

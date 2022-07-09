@@ -142,7 +142,8 @@ public final class ProjectActivity extends AppCompatActivity {
                 for (File directory : directories) {
                      File project = new File(directory, "src");
                      if (project.exists()) {
-                         var javaProject = new JavaProject(new File(directory.getAbsolutePath()));
+                         // a temporary solution to a bug that adds double slashes after project path
+                         var javaProject = new JavaProject(new File(directory.getAbsolutePath().replace("//", "/")));
                          projects.add(javaProject);
                      }
                 }

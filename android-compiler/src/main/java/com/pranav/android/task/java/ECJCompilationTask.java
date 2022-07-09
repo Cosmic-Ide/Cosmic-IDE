@@ -21,10 +21,8 @@ public class ECJCompilationTask implements Task {
     private final StringBuilder errs = new StringBuilder();
     private final SharedPreferences prefs;
 
-    public ECJCompilationTask(Builder builder) {
-        prefs =
-                builder.getContext()
-                        .getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+    public ECJCompilationTask(SharedPreferences preferences) {
+        prefs = preferences;
     }
 
     @Override
@@ -60,6 +58,8 @@ public class ECJCompilationTask implements Task {
         args.add(FileUtil.getClasspathDir() + "android.jar");
         var classpath = new StringBuilder();
         classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar");
+        classpath.append(File.pathSeparator);
+        classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar");
         var clspath = prefs.getString("classpath", "");
         if (!clspath.isEmpty() && classpath.length() > 0) {
             classpath.append(":");

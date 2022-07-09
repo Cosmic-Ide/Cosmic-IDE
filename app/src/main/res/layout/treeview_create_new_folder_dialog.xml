@@ -14,8 +14,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/new_directory_name"
         android:textDirection="locale"
-        app:counterEnabled="true"
-        app:counterMaxLength="25">
+        app:counterEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"

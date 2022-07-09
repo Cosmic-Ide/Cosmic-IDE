@@ -15,8 +15,10 @@
     <string name="new_class_name">Class Name</string>
     <string name="new_directory_name">Directory Name</string>
     <string name="java_file_suffix">.java</string>
+    <string name="kotlin_file_suffix">.kt</string>
     <string name="create">Create</string>
-    <string name="create_class">Create Class</string>
+    <string name="create_java_class">Create Java Class</string>
+    <string name="create_kotlin_class">Create Kotlin Class</string>
     <string name="create_directory">Create Directory</string>
     <string name="delete_file">Delete %1$s?</string>
     <string name="delete">Delete</string>

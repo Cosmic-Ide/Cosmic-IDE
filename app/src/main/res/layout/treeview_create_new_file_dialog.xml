@@ -10,13 +10,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+        android:id="@+id/inputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/new_class_name"
         android:textDirection="locale"
-        app:suffixText="@string/java_file_suffix"
-        app:counterEnabled="true"
-        app:counterMaxLength="25">
+        app:counterEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"

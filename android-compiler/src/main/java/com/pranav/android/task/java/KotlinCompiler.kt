@@ -80,6 +80,7 @@ class KotlinCompiler() : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
+        File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(path: File): ArrayList<File> {

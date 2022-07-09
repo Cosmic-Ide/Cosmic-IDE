@@ -30,6 +30,10 @@ public class ExecuteJavaTask implements Task {
         return "Execute java Task";
     }
 
+    /*
+     * Runs the main method pf the program by loading it through
+     * PathClassLoader
+     */
     @Override
     public void doFullTask(JavaProject project) throws Exception {
         var defaultOut = System.out;
@@ -50,7 +54,8 @@ public class ExecuteJavaTask implements Task {
         System.setOut(new PrintStream(out));
         System.setErr(new PrintStream(out));
 
-        var loader = new PathClassLoader(dexFile, this.class.getClassloader());
+        // Load the dex file into a ClassLoader
+        var loader = new PathClassLoader(dexFile, ClassLoader.getSystemClassloader());
 
         var calledClass = loader.loadClass(clazz);
 
@@ -58,13 +63,17 @@ public class ExecuteJavaTask implements Task {
 
         var args = prefs.getString("program_arguments", "").trim();
 
+        // Split argument into an array
         String[] param = args.split("\\s+");
 
         if (Modifier.isStatic(method.getModifiers())) {
+            // If the method is static, directly call it
             result = method.invoke(null, new Object[] {param});
         } else if (Modifier.isPublic(method.getModifiers())) {
+            // If the method is public, create an instance of the class,
+            // and then call it on the instance
             var classInstance = calledClass.getConstructor().newInstance();
-            result = method.invoke(classInstance, new Object[] {param});
+            result = method.invoke(classInstance, new Object[] { param });
         }
         if (result != null) {
             System.out.println(result.toString());
@@ -73,6 +82,9 @@ public class ExecuteJavaTask implements Task {
         System.setErr(defaultErr);
     }
 
+    /*
+     * Returns all the system logs recorded on executing the method
+     */
     public String getLogs() {
         return log.toString();
     }

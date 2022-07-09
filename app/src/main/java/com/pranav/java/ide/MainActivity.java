@@ -319,7 +319,7 @@ public final class MainActivity extends AppCompatActivity {
         if (!blockMainThread) {
             compilationThread.start();
         } else {
-            ConcurrentUtil.execute(compilationRunnable);
+            ConcurrentUtil.execute(compilationThread);
         }
     }
 

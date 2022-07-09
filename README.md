@@ -94,13 +94,15 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - Any type of contributions are highly appreciated.
 - Create a pull request and I would merge it after review.
 
-## Special thanks
+## Special thanks to
 
 - [TheWolf](https://github.com/thewolfprod)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
 
 - [Remaker71](https://github.com/Remaker71)
+
+- [Tyron Lucena Scott](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 

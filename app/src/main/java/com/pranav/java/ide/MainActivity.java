@@ -161,7 +161,7 @@ public final class MainActivity extends AppCompatActivity {
                     getAssets().open("kotlin-stdlib-1.7.10.jar"),
                     stdlib.getAbsolutePath());
             } catch (Exception e) {
-                showErr(getMessage(e));
+                showErr(getString(e));
             }
         }
         if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {

@@ -1,7 +1,5 @@
 package com.pranav.common.util;
 
-import com.itsaky.androidide.utils.Environment;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,7 +22,6 @@ public class FileUtil {
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory + "/";
         projectsDir = privateDataDirectory + "projects";
-        Environment.init(new File(privateDataDirectory, "compiler-modules"));
     }
 
     public static void setProjectsDirectory(String dir) {

@@ -130,7 +130,7 @@ public class JavacAnalyzer {
                 classpath.add(new File(clas));
             }
         }
-        classpath.add(FileUtil.getBinDir() + "classes");
+        classpath.add(project.getBinDir() + "classes");
         return classpath;
     }
 

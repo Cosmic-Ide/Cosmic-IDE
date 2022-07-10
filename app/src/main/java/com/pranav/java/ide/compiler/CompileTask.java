@@ -70,8 +70,6 @@ public class CompileTask extends Thread {
             listener.onFailed(e.getMessage());
         }
 
-        var errorsArePresent = false;
-
         // Run kotlinc
         var time = System.currentTimeMillis();
         listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
@@ -79,12 +77,12 @@ public class CompileTask extends Thread {
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
+            return;
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
             return;
         }
         // Compile Java Files
-        errorsArePresent = true;
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
@@ -95,13 +93,11 @@ public class CompileTask extends Thread {
                 var javaTask = new ECJCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());
             }
-            errorsArePresent = false;
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
+            return;
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
-        }
-        if (errorsArePresent) {
             return;
         }
 

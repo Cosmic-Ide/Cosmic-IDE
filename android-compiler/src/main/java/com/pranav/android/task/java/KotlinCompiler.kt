@@ -19,8 +19,8 @@ class KotlinCompiler() : Task {
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
-        if (sourceFiles.any {
-            !it.absolutePath.endsWith(".kt")
+        if (!sourceFiles.any {
+            it.absolutePath.endsWith(".kt")
         }) {
             return;
         }

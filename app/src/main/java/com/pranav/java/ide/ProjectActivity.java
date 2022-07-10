@@ -111,7 +111,7 @@ public final class ProjectActivity extends AppCompatActivity {
                     return;
                 }
                 try {
-                    JavaProject project = JavaProject.newProject(projectName);
+                    var project = JavaProject.newProject(projectName);
                     if (mListener != null) {
                         runOnUiThread(() -> {
                             if (createNewProjectDialog.isShowing()) createNewProjectDialog.dismiss();
@@ -127,20 +127,20 @@ public final class ProjectActivity extends AppCompatActivity {
 
     private void openProject(JavaProject project) {
         var projectPath = project.getProjectDirPath();
-        Intent intent = new Intent(ProjectActivity.this, MainActivity.class);
+        var intent = new Intent(ProjectActivity.this, MainActivity.class);
         intent.putExtra("project_path", projectPath);
         startActivity(intent);
     }
 
     private void loadProjects() {
         CoroutineUtil.inParallel(() -> {
-            File projectDir = new File(JavaProject.getRootDirPath());
-            File[] directories = projectDir.listFiles(File::isDirectory);
-            List<JavaProject> projects = new ArrayList<>();
+            var projectDir = new File(JavaProject.getRootDirPath());
+            var directories = projectDir.listFiles(File::isDirectory);
+            var projects = new ArrayList<JavaProject>();
             if (directories != null) {
                 Arrays.sort(directories, Comparator.comparingLong(File::lastModified));
-                for (File directory : directories) {
-                     File project = new File(directory, "src");
+                for (var directory : directories) {
+                     var project = new File(directory, "src");
                      if (project.exists()) {
                          // a temporary solution to a bug that adds double slashes after project path
                          var javaProject = new JavaProject(new File(directory.getAbsolutePath()));
@@ -164,5 +164,4 @@ public final class ProjectActivity extends AppCompatActivity {
             emptyContainer.setVisibility(View.GONE);
         }
     }
-
 }

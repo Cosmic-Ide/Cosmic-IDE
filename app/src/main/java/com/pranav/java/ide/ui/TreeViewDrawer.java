@@ -84,7 +84,7 @@ public class TreeViewDrawer extends Fragment {
         var rootNodesList =
                 new ArrayList<
                         TreeNode<
-                                TreeFile>>();/* Create List of root nodes and and their children's */
+                                TreeFile>>(); /* Create List of root nodes and and their children's */
 
         final var mainFolderFile =
                 new File(activity.getProject().getProjectDirPath()); /* Create File variable to Main Root Directory */
@@ -145,7 +145,9 @@ public class TreeViewDrawer extends Fragment {
         /*
          * Level 0: Root Folder
          * Level 1: Root Children's
-         * Level 2: Children's Children's */
+         * Level 2: Children's Children's
+         * and so on...
+         */
         var rootFile = ((TreeFile) mainRootNode.getValue()).getFile();
         var mFiles = getSortedFilesInPath(rootFile.getPath());
         for (final var file : mFiles) {
@@ -156,8 +158,7 @@ public class TreeViewDrawer extends Fragment {
             } else {
                 var directoryFileNode = new TreeNode<TreeFile>(new TreeFolder(file), n);
                 mainRootNode.addChild(directoryFileNode);
-                n++;
-                addChildDirsAndFiles(directoryFileNode, n);
+                addChildDirsAndFiles(directoryFileNode, n + 1);
             }
         }
     }

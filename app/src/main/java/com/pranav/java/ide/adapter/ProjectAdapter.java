@@ -41,7 +41,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     public void submitList(@NonNull List<JavaProject> projects) {
-         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+         var diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
             @Override
             public int getOldListSize() {
                  return mProjects.size();
@@ -70,12 +70,12 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View root = LayoutInflater.from(parent.getContext()).inflate(R.layout.project_item, parent, false);
-        final ViewHolder holder = new ViewHolder(root);
+        var root = LayoutInflater.from(parent.getContext()).inflate(R.layout.project_item, parent, false);
+        final var holder = new ViewHolder(root);
         root.setOnClickListener(v -> {
-            if(onProjectSelectedListener != null) {
+            if (onProjectSelectedListener != null) {
                 int position = holder.getBindingAdapterPosition();
-                if(position != RecyclerView.NO_POSITION) {
+                if (position != RecyclerView.NO_POSITION) {
                     onProjectSelectedListener.onProjectSelect(mProjects.get(position));
                 }
             }

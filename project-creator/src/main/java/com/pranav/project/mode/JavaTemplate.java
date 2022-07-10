@@ -3,7 +3,7 @@ package com.pranav.project.mode;
 public class JavaTemplate {
 
     public static String getClassTemplate(String packageName, String className, boolean isCreateMainMethod) {
-        String header = "";
+        var header = "";
         if(!JavaTemplate.isEmpty(packageName)) {
             header = "package " + packageName + ";\n" + "\n";
         }
@@ -19,7 +19,7 @@ public class JavaTemplate {
     }
 
     public static String getKotlinClassTemplate(String packageName, String className, boolean isCreateMainMethod) {
-        String header = "";
+        var header = "";
         if(!JavaTemplate.isEmpty(packageName)) {
             header = "package " + packageName + "\n" + "\n";
         }

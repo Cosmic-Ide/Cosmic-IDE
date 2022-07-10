@@ -28,13 +28,13 @@ public class JavaProject {
     }
 
     public static JavaProject newProject(String projectName) throws IOException {
-        File projectRoot = new File(getRootDirPath() + projectName);
+        var projectRoot = new File(getRootDirPath() + projectName);
         if(!projectRoot.exists()) {
             if(!projectRoot.mkdirs()) {
                 throw new IOException("Unable to create directory");
             }
         }
-        JavaProject project = new JavaProject(projectRoot);
+        var project = new JavaProject(projectRoot);
         project.init();
         return project;
     }
@@ -46,7 +46,7 @@ public class JavaProject {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        String classTemplate = JavaTemplate.getKotlinClassTemplate(null, "Main", true);
+        var classTemplate = JavaTemplate.getKotlinClassTemplate(null, "Main", true);
         FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 

@@ -451,7 +451,7 @@ public final class MainActivity extends AppCompatActivity {
                                         + // full class name
                                         ".class",
                                 "--extraclasspath",
-                                FileUtil.getClasspathDir() + "android.jar",
+                                FileUtil.getClasspathDir() + "android.jar" + File.pathSeparator + FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar",
                                 "--outputdir",
                                 getProject().getBinDirPath() + "cfr/"
                             };

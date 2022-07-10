@@ -55,9 +55,7 @@ public class CompileTask extends Thread {
 
         final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
-            // Delete previous build files
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            // new File(activity.getProject().getBuildDirPath() activity.currentWorkingFilePath).getParentFile().mkdirs();
             // a simple workaround to prevent calls to system.exit
             final String code =
                     activity.editor
@@ -157,7 +155,6 @@ public class CompileTask extends Thread {
                                 return;
                             }
                             var s = new StringBuilder();
-                            s.append("Success! ");
 
                             s.append("Compiling took: ");
                             s.append(String.valueOf(ecjTime));

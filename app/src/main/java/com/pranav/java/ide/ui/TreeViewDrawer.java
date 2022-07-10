@@ -339,7 +339,7 @@ public class TreeViewDrawer extends Fragment {
                             var dirPth = new File(filePath);
                             var newDir =
                                     new TreeNode<TreeFile>(
-                                            new TreeFolder(dirPth), node.getLevel() + 1);
+                                            new TreeFolder(dirPth), node.getLevel());
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");

@@ -217,11 +217,11 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Loads a file from a path to the editor */
     public void loadFileToEditor(String path) throws IOException, JSONException {
+        indexer.put("currentFile", path);
+        indexer.flush();
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
         editor.getText().addContentListener(new ProblemMarker(editor, path, getProject()));
-        indexer.put("currentFile", path);
-        indexer.flush();
         currentWorkingFilePath = path;
     }
 

@@ -23,7 +23,7 @@ public class FileUtil {
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory + "/";
-        projectsDir = privateDataDirectory + "projects" + "/";
+        projectsDir = privateDataDirectory + "projects";
         Environment.init(new File(privateDataDirectory, "compiler-modules"));
     }
 

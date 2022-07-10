@@ -46,8 +46,8 @@ public class JavaProject {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        String classTemplate = JavaTemplate.getClassTemplate(null, "Main", true);
-        FileUtil.writeFileFromString(getSrcDirPath() + "Main.java", classTemplate);
+        String classTemplate = JavaTemplate.getKotlinClassTemplate(null, "Main", true);
+        FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 
     public File getRootFile() {

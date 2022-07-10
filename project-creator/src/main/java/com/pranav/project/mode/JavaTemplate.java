@@ -27,7 +27,7 @@ public class JavaTemplate {
             "import java.util.*\n\n" +
             "class " + className + " {\n" +
             (isCreateMainMethod ? "    fun main(args: Array<String>) {\n" +
-                "        System.out.println(\"Hello, World!\")\n" +
+                "        println(\"Hello, World!\")\n" +
                 "    }"
                 : "    ") +
             "\n" +

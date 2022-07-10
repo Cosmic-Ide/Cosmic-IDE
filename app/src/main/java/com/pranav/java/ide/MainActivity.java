@@ -36,7 +36,7 @@ import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
 import com.pranav.android.code.formatter.*;
 import com.pranav.common.Indexer;
-import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.CoroutineUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
@@ -235,7 +235,7 @@ public final class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.format_menu_button) {
-            ConcurrentUtil.execute(
+            CoroutineUtil.execute(
                     () -> {
                         if (prefs.getString("formatter", "Google Java Formatter")
                                 .equals("Google Java Formatter")) {
@@ -329,7 +329,7 @@ public final class MainActivity extends AppCompatActivity {
         if (!blockMainThread) {
             compilationThread.start();
         } else {
-            ConcurrentUtil.execute(compilationThread);
+            CoroutineUtil.execute(compilationThread);
         }
     }
 
@@ -399,7 +399,7 @@ public final class MainActivity extends AppCompatActivity {
                                     DexFileFactory.loadDexFile(
                                             new File(getProject().getBinDirPath(), "classes.dex"), opcodes);
                             options.apiLevel = 26;
-                            ConcurrentUtil.execute(
+                            CoroutineUtil.execute(
                                     () ->
                                             Baksmali.disassembleDexFile(
                                                     dexFile,
@@ -456,7 +456,7 @@ public final class MainActivity extends AppCompatActivity {
                                 getProject().getBinDirPath() + "cfr/"
                             };
 
-                    ConcurrentUtil.execute(
+                    CoroutineUtil.execute(
                             () -> {
                                 try {
                                     Main.main(args);

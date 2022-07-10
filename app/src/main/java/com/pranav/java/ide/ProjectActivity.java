@@ -19,6 +19,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import com.pranav.common.util.CoroutineUtil;
 import com.pranav.java.ide.adapter.ProjectAdapter;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
 import com.pranav.project.mode.JavaProject;
@@ -29,7 +30,6 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public final class ProjectActivity extends AppCompatActivity {
 
@@ -133,7 +133,7 @@ public final class ProjectActivity extends AppCompatActivity {
     }
 
     private void loadProjects() {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        CoroutineUtil.inParallel(() -> {
             File projectDir = new File(JavaProject.getRootDirPath());
             File[] directories = projectDir.listFiles(File::isDirectory);
             List<JavaProject> projects = new ArrayList<>();

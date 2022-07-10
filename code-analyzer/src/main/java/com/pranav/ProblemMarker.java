@@ -2,7 +2,7 @@ package com.pranav;
 
 import com.pranav.analyzer.java.JavacAnalyzer;
 import com.pranav.common.Indexer;
-import com.pranav.common.util.ConcurrentUtil;
+import com.pranav.common.util.CoroutineUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.project.mode.JavaProject;
 
@@ -50,7 +50,7 @@ public class ProblemMarker implements ContentListener {
     }
 
     private void run(Content content) {
-        ConcurrentUtil.inParallel(
+        CoroutineUtil.inParallel(
                 () -> {
                     if (!analyzer.isFirstRun()) {
                         analyzer.reset();

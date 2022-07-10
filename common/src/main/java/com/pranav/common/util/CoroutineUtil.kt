@@ -2,7 +2,7 @@ package com.pranav.common.util
 
 import kotlinx.coroutines.*
 
-object ConcurrentUtil {
+object CoroutineUtil {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 

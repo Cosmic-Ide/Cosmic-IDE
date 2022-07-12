@@ -19,7 +19,7 @@ class ProblemMarker(
     private var editor: CodeEditor
     private var analyzer: JavacAnalyzer
     private var project: JavaProject
-    private val DiagnosticsContainer diagnostics = DiagnosticsContainer()
+    private val diagnostics = DiagnosticsContainer()
 
     init {
         this.editor = editor

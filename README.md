@@ -54,6 +54,7 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 ## Features
 
 - \[x] Java 17
+- \[x] Kotlin Language Support
 - \[x] Javac
 - \[x] Javap
 - \[x] Eclipse Compiler for Java (ecj)
@@ -74,16 +75,14 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 ## TO-DO
 
-- \[ ] Git support
 - \[ ] Java auto-complete server
-- \[ ] Kotlin Language Support
 
 ## Building
 
 Clone this repository on your device and compile using Android Studio or by running the command
 
 ```sh
-./gradlew build
+./gradlew assembleDebug
 ```
 
 ## Contributing

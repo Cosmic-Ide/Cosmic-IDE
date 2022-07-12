@@ -19,6 +19,7 @@ class ApplicationLoader : Application() {
         val mContext = getApplicationContext()
         val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = mContext.getResources()
+        Environment.init(File(privateDataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)

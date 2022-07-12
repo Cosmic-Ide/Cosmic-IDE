@@ -7,6 +7,7 @@ import android.util.Log
 
 import com.google.android.material.color.DynamicColors
 
+import com.itsaky.androidide.utils.Environment
 import com.pranav.common.util.FileUtil
 import com.pranav.completion.KindDrawable
 import com.pranav.java.ide.ui.utils.dpToPx

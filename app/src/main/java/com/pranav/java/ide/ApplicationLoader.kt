@@ -12,6 +12,8 @@ import com.pranav.common.util.FileUtil
 import com.pranav.completion.KindDrawable
 import com.pranav.java.ide.ui.utils.dpToPx
 
+import java.io.File
+
 class ApplicationLoader : Application() {
 
     override fun onCreate() {
@@ -20,7 +22,7 @@ class ApplicationLoader : Application() {
         val mContext = getApplicationContext()
         val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = mContext.getResources()
-        Environment.init(File(privateDataDirectory, "compiler-modules"))
+        Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)

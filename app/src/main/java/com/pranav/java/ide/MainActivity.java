@@ -378,7 +378,7 @@ public final class MainActivity extends AppCompatActivity {
                     classes,
                     (d, pos) -> {
                         final var claz = classes[pos];
-                        dinal var smaliFile =
+                        final var smaliFile =
                                 new File(
                                         getProject().getBinDirPath(),
                                         "smali" + "/" + claz.replace(".", "/") + ".smali");

@@ -124,7 +124,7 @@ public final class MainActivity extends AppCompatActivity {
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
             if (indexer.notHas("currentFile")) {
-                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.java");
+                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
                 indexer.flush();
             }
             currentWorkingFilePath = indexer.getString("currentFile");
@@ -138,15 +138,6 @@ public final class MainActivity extends AppCompatActivity {
                 editor.setText(FileUtil.readFile(file));
             } catch (IOException e) {
                 dialog("Cannot read file", getString(e), true);
-            }
-        } else {
-            try {
-                FileUtil.writeFileFromString(
-                        getProject().getSrcDirPath() + 
-                        "Main.java", JavaTemplate.getClassTemplate(null, "Main", true));
-                editor.setText(JavaTemplate.getClassTemplate(null, "Main", true));
-            } catch (Exception e) {
-                dialog("Cannot create file", getString(e), true);
             }
         }
 
@@ -181,6 +172,7 @@ public final class MainActivity extends AppCompatActivity {
         /* Create Loading Dialog */
         buildLoadingDialog();
 
+        System.setProperty("androidide.java.home", FileUtil.getDataDir() + "compiler-modules");
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());

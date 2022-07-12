@@ -53,29 +53,29 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 
 ## Features
 
-- \[x] Java 17
-- \[x] Kotlin Language Support
-- \[x] Javac
-- \[x] Javap
-- \[x] Eclipse Compiler for Java (ecj)
-- \[x] Incremental Compilation
-- \[x] Eclipse class disassembler
-- \[x] Execute Java Code
-- \[x] Error/Warning marker in editor
-- \[x] Code highlighting
-- \[x] Add Classpath
-- \[x] Decompile Class File
-- \[x] Google Java Formatter
-- \[x] Eclipse Java Formatter
-- \[x] Baksmali Dex File
-- \[x] Basic Java Keywords auto-completion
-- \[x] D8
-- \[x] File Tree Viewer
-- \[x] Completely offline
+- \[x\] Java 17
+- \[x\] Kotlin Language Support
+- \[x\] Javac
+- \[x\] Javap
+- \[x\] Eclipse Compiler for Java (ecj)
+- \[x\] Incremental Compilation
+- \[x\] Eclipse class disassembler
+- \[x\] Execute Java Code
+- \[x\] Error/Warning marker in editor
+- \[x\] Code highlighting
+- \[x\] Add Classpath
+- \[x\] Decompile Class File
+- \[x\] Google Java Formatter
+- \[x\] Eclipse Java Formatter
+- \[x\] Baksmali Dex File
+- \[x\] Basic Java Keywords auto-completion
+- \[x\] D8
+- \[x\] File Tree Viewer
+- \[x\] Completely offline
 
 ## TO-DO
 
-- \[ ] Java auto-complete server
+- \[ \] Java auto-complete server
 
 ## Building
 

@@ -172,13 +172,12 @@ public final class MainActivity extends AppCompatActivity {
         /* Create Loading Dialog */
         buildLoadingDialog();
 
-        System.setProperty("androidide.java.home", FileUtil.getDataDir() + "compiler-modules");
         findViewById(R.id.btn_disassemble).setOnClickListener(v -> disassemble());
         findViewById(R.id.btn_smali2java).setOnClickListener(v -> decompile());
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath, getProject()));
-        var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
+        HorizontalScrollView scrollView = findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
     }
 
@@ -331,18 +330,18 @@ public final class MainActivity extends AppCompatActivity {
 
     private IRawTheme getDarculaTheme() {
         try {
-            var rawTheme =
+            final var rawTheme =
                     ThemeReader.readThemeSync(
                             "darcula.json", getAssets().open("textmate/darcula.json"));
             return rawTheme;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     private TextMateLanguage getTextMateLanguageForJava() {
         try {
-            var language =
+            final var language =
                     TextMateLanguage.create(
                             "java.tmLanguage.json",
                             getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
@@ -351,13 +350,13 @@ public final class MainActivity extends AppCompatActivity {
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     private TextMateLanguage getTextMateLanguageForSmali() {
         try {
-            var language =
+            final var language =
                     TextMateLanguage.create(
                             "smali.tmLanguage.json",
                             getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
@@ -366,28 +365,28 @@ public final class MainActivity extends AppCompatActivity {
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     public void smali() {
         try {
-            var classes = getClassesFromDex();
+            final var classes = getClassesFromDex();
             if (classes == null) return;
             listDialog(
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
-                        var claz = classes[pos];
-                        var smaliFile =
+                        final var claz = classes[pos];
+                        dinal var smaliFile =
                                 new File(
                                         getProject().getBinDirPath(),
                                         "smali" + "/" + claz.replace(".", "/") + ".smali");
                         try {
-                            var opcodes = Opcodes.forApi(32);
-                            var options = new BaksmaliOptions();
+                            final var opcodes = Opcodes.forApi(32);
+                            final var options = new BaksmaliOptions();
 
-                            var dexFile =
+                            final var dexFile =
                                     DexFileFactory.loadDexFile(
                                             new File(getProject().getBinDirPath(), "classes.dex"), opcodes);
                             options.apiLevel = 26;

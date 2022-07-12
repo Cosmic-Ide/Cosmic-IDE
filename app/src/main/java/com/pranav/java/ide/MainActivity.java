@@ -221,6 +221,7 @@ public final class MainActivity extends AppCompatActivity {
         indexer.flush();
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
+        editor.setLineNumberAlign(Paint.Align.CENTER);
         editor.getText().addContentListener(new ProblemMarker(editor, path, getProject()));
         currentWorkingFilePath = path;
     }

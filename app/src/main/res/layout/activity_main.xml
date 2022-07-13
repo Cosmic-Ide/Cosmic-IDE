@@ -6,9 +6,10 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
@@ -26,6 +27,7 @@
             android:id="@+id/editor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="#242424"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -36,6 +38,7 @@
             android:fillViewport="true"
             android:background="#242424"
             app:layout_behavior="@string/bottom_sheet_behavior">
+
             <LinearLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
@@ -72,7 +75,7 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/treeViewFragment"

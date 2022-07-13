@@ -1,5 +1,6 @@
 plugins {
   id 'com.android.library'
+  id 'org.jetbrains.kotlin.android'
 }
 
 android {
@@ -23,7 +24,7 @@ android {
 }
 
 dependencies {
-    implementation 'io.github.itsaky:nb-javac-android:17.0.0.2'
+    implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
     implementation project(path: ':common')
     implementation project(path: ':sora-editor')
     implementation project(path: ':project-creator')

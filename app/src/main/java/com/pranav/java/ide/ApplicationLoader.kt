@@ -7,9 +7,12 @@ import android.util.Log
 
 import com.google.android.material.color.DynamicColors
 
+import com.itsaky.androidide.utils.Environment
 import com.pranav.common.util.FileUtil
 import com.pranav.completion.KindDrawable
 import com.pranav.java.ide.ui.utils.dpToPx
+
+import java.io.File
 
 class ApplicationLoader : Application() {
 
@@ -19,6 +22,7 @@ class ApplicationLoader : Application() {
         val mContext = getApplicationContext()
         val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = mContext.getResources()
+        Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)

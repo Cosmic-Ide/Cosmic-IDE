@@ -3,14 +3,18 @@ package com.pranav.java.ide;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.WorkerThread;
+import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -43,6 +47,7 @@ public final class ProjectActivity extends AppCompatActivity {
     private LinearLayout emptyContainer;
 
     private AlertDialog createNewProjectDialog;
+    private AlertDialog deleteProjectDialog;
 
     private OnProjectCreatedListener mListener;
 
@@ -54,8 +59,10 @@ public final class ProjectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         buildCreateNewProjectDialog();
+        buildDeleteProjectDialog();
 
         var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         var toolbar = (MaterialToolbar) findViewById(R.id.toolbar);
@@ -71,9 +78,26 @@ public final class ProjectActivity extends AppCompatActivity {
         projectRecycler.setAdapter(projectAdapter);
         projectRecycler.setLayoutManager(new LinearLayoutManager(this));
         projectAdapter.setOnProjectSelectedListener(this::openProject);
+        projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
         setOnProjectCreatedListener(this::openProject);
 
         createProjectFab.setOnClickListener(v -> showCreateNewProjectDialog());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.projects_activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.settings:
+                startActivity(new Intent(ProjectActivity.this, SettingActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -87,6 +111,9 @@ public final class ProjectActivity extends AppCompatActivity {
         if (createNewProjectDialog.isShowing()) {
             createNewProjectDialog.dismiss();
         }
+        if (deleteProjectDialog.isShowing()) {
+            deleteProjectDialog.dismiss();
+        }
         super.onDestroy();
     }
 
@@ -97,6 +124,15 @@ public final class ProjectActivity extends AppCompatActivity {
         builder.setPositiveButton(getString(R.string.create), null);
         builder.setNegativeButton(android.R.string.cancel, null);
         createNewProjectDialog = builder.create();
+    }
+
+    private void buildDeleteProjectDialog() {
+        var builder = new MaterialAlertDialogBuilder(this);
+        builder.setTitle(getString(R.string.delete_project));
+        builder.setMessage("blablabla"); // DON'T REMOVE THIS LINE
+        builder.setPositiveButton(getString(R.string.delete), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        deleteProjectDialog = builder.create();
     }
 
     @WorkerThread
@@ -125,11 +161,31 @@ public final class ProjectActivity extends AppCompatActivity {
         }
     }
 
+    private void showDeleteProjectDialog(JavaProject project) {
+        if (!deleteProjectDialog.isShowing()) {
+            deleteProjectDialog.show();
+            TextView message = deleteProjectDialog.findViewById(android.R.id.message);
+            Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
+            message.setText("Are you sure you want to delete the " + project.getProjectName() + " project?");
+            deleteBtn.setOnClickListener(v -> {
+                runOnUiThread(() -> {
+                    project.delete();
+                    loadProjects();
+                });
+            });
+        }
+    }
+
     private void openProject(JavaProject project) {
         var projectPath = project.getProjectDirPath();
         var intent = new Intent(ProjectActivity.this, MainActivity.class);
         intent.putExtra("project_path", projectPath);
         startActivity(intent);
+    }
+
+    private boolean deleteProject(JavaProject project) {
+        showDeleteProjectDialog(project);
+        return true;
     }
 
     private void loadProjects() {
@@ -142,7 +198,6 @@ public final class ProjectActivity extends AppCompatActivity {
                 for (var directory : directories) {
                      var project = new File(directory, "src");
                      if (project.exists()) {
-                         // a temporary solution to a bug that adds double slashes after project path
                          var javaProject = new JavaProject(new File(directory.getAbsolutePath()));
                          projects.add(javaProject);
                      }

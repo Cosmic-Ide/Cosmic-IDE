@@ -124,7 +124,7 @@ public final class MainActivity extends AppCompatActivity {
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
             if (indexer.notHas("currentFile")) {
-                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.java");
+                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
                 indexer.flush();
             }
             currentWorkingFilePath = indexer.getString("currentFile");
@@ -138,15 +138,6 @@ public final class MainActivity extends AppCompatActivity {
                 editor.setText(FileUtil.readFile(file));
             } catch (IOException e) {
                 dialog("Cannot read file", getString(e), true);
-            }
-        } else {
-            try {
-                FileUtil.writeFileFromString(
-                        getProject().getSrcDirPath() + 
-                        "Main.java", JavaTemplate.getClassTemplate(null, "Main", true));
-                editor.setText(JavaTemplate.getClassTemplate(null, "Main", true));
-            } catch (Exception e) {
-                dialog("Cannot create file", getString(e), true);
             }
         }
 
@@ -186,7 +177,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath, getProject()));
-        var scrollView = (HorizontalScrollView) findViewById(R.id.scrollview);
+        HorizontalScrollView scrollView = findViewById(R.id.scrollview);
         UiUtilsKt.addSystemWindowInsetToPadding(scrollView, false, false, false, true);
     }
 
@@ -233,25 +224,27 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.format_menu_button) {
-            CoroutineUtil.execute(
-                    () -> {
-                        if (prefs.getString("formatter", "Google Java Formatter")
-                                .equals("Google Java Formatter")) {
-                            var formatter = new GoogleJavaFormatter(editor.getText().toString());
-                            temp = formatter.format();
-                        } else {
-                            var formatter = new EclipseJavaFormatter(editor.getText().toString());
-                            temp = formatter.format();
-                        }
-                    });
-            editor.setText(temp);
-        } else if (id == R.id.settings_menu_button) {
-            var intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.run_menu_button) {
-            compile(true, false);
+        switch(item.getItemId()) {
+            case R.id.format_menu_button:
+                CoroutineUtil.execute(
+                        () -> {
+                            if (prefs.getString("formatter", "Google Java Formatter")
+                                    .equals("Google Java Formatter")) {
+                                var formatter = new GoogleJavaFormatter(editor.getText().toString());
+                                temp = formatter.format();
+                            } else {
+                                var formatter = new EclipseJavaFormatter(editor.getText().toString());
+                                temp = formatter.format();
+                            }
+                        });
+                editor.setText(temp);
+                break;
+            case R.id.settings_menu_button:
+                startActivity(new Intent(MainActivity.this, SettingActivity.class));
+                break;
+            case R.id.run_menu_button:
+                compile(true, false);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -339,18 +332,18 @@ public final class MainActivity extends AppCompatActivity {
 
     private IRawTheme getDarculaTheme() {
         try {
-            var rawTheme =
+            final var rawTheme =
                     ThemeReader.readThemeSync(
                             "darcula.json", getAssets().open("textmate/darcula.json"));
             return rawTheme;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     private TextMateLanguage getTextMateLanguageForJava() {
         try {
-            var language =
+            final var language =
                     TextMateLanguage.create(
                             "java.tmLanguage.json",
                             getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
@@ -359,13 +352,13 @@ public final class MainActivity extends AppCompatActivity {
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     private TextMateLanguage getTextMateLanguageForSmali() {
         try {
-            var language =
+            final var language =
                     TextMateLanguage.create(
                             "smali.tmLanguage.json",
                             getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
@@ -374,28 +367,28 @@ public final class MainActivity extends AppCompatActivity {
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     public void smali() {
         try {
-            var classes = getClassesFromDex();
+            final var classes = getClassesFromDex();
             if (classes == null) return;
             listDialog(
                     "Select a class to extract source",
                     classes,
                     (d, pos) -> {
-                        var claz = classes[pos];
-                        var smaliFile =
+                        final var claz = classes[pos];
+                        final var smaliFile =
                                 new File(
                                         getProject().getBinDirPath(),
                                         "smali" + "/" + claz.replace(".", "/") + ".smali");
                         try {
-                            var opcodes = Opcodes.forApi(32);
-                            var options = new BaksmaliOptions();
+                            final var opcodes = Opcodes.forApi(32);
+                            final var options = new BaksmaliOptions();
 
-                            var dexFile =
+                            final var dexFile =
                                     DexFileFactory.loadDexFile(
                                             new File(getProject().getBinDirPath(), "classes.dex"), opcodes);
                             options.apiLevel = 26;
@@ -585,7 +578,7 @@ public final class MainActivity extends AppCompatActivity {
     private String getString(final Throwable e) {
         return Log.getStackTraceString(e);
     }
-    
+
     public JavaProject getProject() {
         return javaProject;
     }

@@ -28,6 +28,7 @@ import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.TreeView;
+import com.pranav.java.ide.ui.treeview.TreeUtil;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;

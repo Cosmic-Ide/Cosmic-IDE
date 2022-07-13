@@ -18,7 +18,10 @@ import android.view.View;
 
 import com.pranav.java.ide.ui.treeview.TreeNode;
 
-/** Created by xinyuanzhong on 2017/4/27. */
+/**
+ * Created by xinyuanzhong on 2017/4/27.
+ */
+
 public abstract class CheckableNodeViewBinder<D> extends BaseNodeViewBinder<D> {
 
     public CheckableNodeViewBinder(View itemView) {

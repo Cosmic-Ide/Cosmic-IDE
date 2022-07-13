@@ -169,6 +169,7 @@ public final class ProjectActivity extends AppCompatActivity {
             message.setText("Are you sure you want to delete the " + project.getProjectName() + " project?");
             deleteBtn.setOnClickListener(v -> {
                 runOnUiThread(() -> {
+                    if (deleteProjectDialog.isShowing()) deleteProjectDialog.dismiss();
                     project.delete();
                     loadProjects();
                 });

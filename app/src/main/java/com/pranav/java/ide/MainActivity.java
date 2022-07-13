@@ -391,7 +391,7 @@ public final class MainActivity extends AppCompatActivity {
                             final var dexFile =
                                     DexFileFactory.loadDexFile(
                                             new File(getProject().getBinDirPath(), "classes.dex"), opcodes);
-                            options.apiLevel = 26;
+                            options.apiLevel = 32;
                             CoroutineUtil.execute(
                                     () ->
                                             Baksmali.disassembleDexFile(

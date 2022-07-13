@@ -11,7 +11,6 @@
  * ANY KIND, either express or implied. See the License for the specific language governing
  * permissions and limitations under.
  */
-
 package com.pranav.java.ide.ui.treeview.base;
 
 import android.view.View;
@@ -21,11 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.TreeView;
 
-/** Created by zxy on 17/4/23. */
+/**
+ * Created by zxy on 17/4/23.
+ */
+
 public abstract class BaseNodeViewBinder<D> extends RecyclerView.ViewHolder {
     /**
-     * This reference of TreeView make BaseNodeViewBinder has the ability to expand node or select
-     * node.
+     * This reference of TreeView make BaseNodeViewBinder has the ability
+     * to expand node or select node.
      */
     protected TreeView<D> treeView;
 
@@ -54,19 +56,19 @@ public abstract class BaseNodeViewBinder<D> extends RecyclerView.ViewHolder {
         return 0;
     }
 
-    // public void onNodeClicked(View view, TreeNode<D> treeNode) {}
-
     /**
      * Callback when a toggle action happened (only by clicked)
      *
      * @param treeNode The toggled node
-     * @param expand Expanded or collapsed
+     * @param expand   Expanded or collapsed
      */
     public void onNodeToggled(TreeNode<D> treeNode, boolean expand) {
-        // empty
+        //empty
     }
 
-    /** Callback when a node is long clicked. */
+    /**
+     * Callback when a node is long clicked.
+     */
     public boolean onNodeLongClicked(View view, TreeNode<D> treeNode, boolean expanded) {
         return false;
     }

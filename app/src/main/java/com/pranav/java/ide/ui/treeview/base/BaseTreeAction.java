@@ -14,11 +14,14 @@
 
 package com.pranav.java.ide.ui.treeview.base;
 
-import com.pranav.java.ide.ui.treeview.TreeNode;
-
 import java.util.List;
 
-/** Created by xinyuanzhong on 2017/4/20. */
+import com.pranav.java.ide.ui.treeview.TreeNode;
+
+/**
+ * Created by xinyuanzhong on 2017/4/20.
+ */
+
 public interface BaseTreeAction<D> {
     void expandAll();
 

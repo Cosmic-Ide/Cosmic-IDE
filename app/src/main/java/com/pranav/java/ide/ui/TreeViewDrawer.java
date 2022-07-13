@@ -28,6 +28,7 @@ import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.TreeView;
+import com.pranav.java.ide.ui.treeview.TreeUtil;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import com.pranav.java.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;
@@ -66,32 +67,8 @@ public class TreeViewDrawer extends Fragment {
         buildCreateDirectoryDialog();
         buildConfirmDeleteDialog();
 
-        /* If im right:
-         * List<TreeNode<TreeFile>> it's just
-         * a list where we can add new ROOT nodes
-         * The First Node is 'java' folder bcs it's a root dir obviously
-         * So If You want to add creating a folder next to java folder function
-         * You need also create a new 'new TreeNode<>(new TreeFolder(File), Int);'
-         * assign a child's to it and add to rootNodesList */
-        var rootNodesList =
-                new ArrayList<
-                        TreeNode<
-                                TreeFile>>(); /* Create List of root nodes and and their children's */
-
-        final var mainFolderFile =
-                new File(activity.getProject().getProjectDirPath()); /* Create File variable to Main Root Directory */
-        var mainRootNode =
-                new TreeNode<TreeFile>(
-                        new TreeFolder(mainFolderFile),
-                        0); /* Create new Root node for given Main Root Directory */
-
-        /* Add all children directories and files to the list */
-        addChildDirsAndFiles(mainRootNode, 0);
-        /* Add 'java' root folder node to the list */
-        rootNodesList.add(mainRootNode);
-
         /* Initialize TreeView */
-        treeView = new TreeView<TreeFile>(requireContext(), TreeNode.root(rootNodesList));
+        treeView = new TreeView<TreeFile>(requireContext(), TreeNode.root(Collections.emptyList()));
 
         /* Add TreeView into HorizontalScrollView */
         HorizontalScrollView horizontalScrollView = view.findViewById(R.id.horizontalScrollView);
@@ -99,6 +76,14 @@ public class TreeViewDrawer extends Fragment {
                 treeView.getView(),
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        TreeNode<TreeFile> currentNode = treeView.getRoot();
+        if(currentNode != null) {
+            partialRefresh(() -> treeView.refreshTreeView());
+        } else {
+            TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
+            treeView.refreshTreeView(node);
+        }
 
         /* Finally - set adapter for TreeView and assign a listener to it */
         treeView.setAdapter(
@@ -128,30 +113,16 @@ public class TreeViewDrawer extends Fragment {
                                     @Nullable TreeNode<TreeFile> treeNode,
                                     boolean expanded) {
                                 showPopup(view, treeNode);
-                                return false;
+                                return true;
                             }
                         }));
     }
 
-    private void addChildDirsAndFiles(TreeNode<TreeFile> mainRootNode, int n) {
-        /*
-         * Level 0: Root Folder
-         * Level 1: Root Children's
-         * Level 2: Children's Children's
-         * and so on...
-         */
-        var rootFile = ((TreeFile) mainRootNode.getValue()).getFile();
-        var mFiles = getSortedFilesInPath(rootFile.getPath());
-        for (final var file : mFiles) {
-            if (file.isFile()) {
-                /* If it's File - create file children node */
-                var javaFileNode = new TreeNode<TreeFile>(new TreeFile(file), n);
-                mainRootNode.addChild(javaFileNode);
-            } else {
-                var directoryFileNode = new TreeNode<TreeFile>(new TreeFolder(file), n);
-                mainRootNode.addChild(directoryFileNode);
-                addChildDirsAndFiles(directoryFileNode, n + 1);
-            }
+    private void partialRefresh(Runnable callback) {
+        if(!treeView.getAllNodes().isEmpty()) {
+            TreeNode<TreeFile> node = treeView.getAllNodes().get(0);
+            TreeUtil.updateNode(node);
+            callback.run();
         }
     }
 
@@ -250,7 +221,7 @@ public class TreeViewDrawer extends Fragment {
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel()); // Get Level of parent so it will have
+                                                node.getLevel() + 1); // Get Level of parent so it will have
                                 // correct margin and disable some
                                 // popup functions if needed
                                 node.addChild(newDir);
@@ -296,7 +267,7 @@ public class TreeViewDrawer extends Fragment {
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel()); // Get Level of parent so it will have
+                                                node.getLevel() + 1); // Get Level of parent so it will have
                                 // correct margin and disable some
                                 // popup functions if needed
                                 node.addChild(newDir);
@@ -332,7 +303,7 @@ public class TreeViewDrawer extends Fragment {
                             var dirPth = new File(filePath);
                             var newDir =
                                     new TreeNode<TreeFile>(
-                                            new TreeFolder(dirPth), node.getLevel());
+                                            new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");
@@ -372,30 +343,4 @@ public class TreeViewDrawer extends Fragment {
         }
     }
 
-    private List<File> getSortedFilesInPath(String path) {
-        var mFiles = new ArrayList<File>();
-        var mDirs = new ArrayList<File>();
-
-        var file = new File(path);
-        var files = file.listFiles();
-        if (files != null) {
-            for (var child : files) {
-                if (child.isFile()) {
-                    mFiles.add(child);
-                } else {
-                    mDirs.add(child);
-                }
-            }
-        }
-
-        // Sort files and directories according to alphabetical order
-        Collections.sort(mFiles);
-        Collections.sort(mDirs);
-
-        // Create a new arraylist which will contain the final sorted list
-        var result = mDirs;
-        result.addAll(mFiles);
-
-        return result;
-    }
 }

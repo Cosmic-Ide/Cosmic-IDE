@@ -51,7 +51,9 @@ public class CompileTask extends Thread {
 
     @Override
     public void run() {
-        Looper.prepare();
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+        }
 
         final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {

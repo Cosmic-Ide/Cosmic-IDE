@@ -158,6 +158,7 @@ public final class ProjectActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             });
+            input.setText(""); 
         }
     }
 

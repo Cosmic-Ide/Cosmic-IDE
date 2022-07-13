@@ -221,7 +221,7 @@ public class TreeViewDrawer extends Fragment {
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel()); // Get Level of parent so it will have
+                                                node.getLevel() + 1); // Get Level of parent so it will have
                                 // correct margin and disable some
                                 // popup functions if needed
                                 node.addChild(newDir);
@@ -267,7 +267,7 @@ public class TreeViewDrawer extends Fragment {
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel()); // Get Level of parent so it will have
+                                                node.getLevel() + 1); // Get Level of parent so it will have
                                 // correct margin and disable some
                                 // popup functions if needed
                                 node.addChild(newDir);
@@ -303,7 +303,7 @@ public class TreeViewDrawer extends Fragment {
                             var dirPth = new File(filePath);
                             var newDir =
                                     new TreeNode<TreeFile>(
-                                            new TreeFolder(dirPth), node.getLevel());
+                                            new TreeFolder(dirPth), node.getLevel() + 1);
                             node.addChild(newDir);
                             treeView.refreshTreeView();
                             fileName.setText("");

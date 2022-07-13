@@ -1,4 +1,4 @@
-package com.pranav.java.ide.code.ui.file.tree;
+package com.pranav.java.ide.ui.treeview;
 
 import com.pranav.java.ide.ui.treeview.TreeNode;
 import com.pranav.java.ide.ui.treeview.file.TreeFile;

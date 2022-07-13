@@ -6,18 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.WindowCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textfield.TextInputEditText;
 
 import com.pranav.common.util.FileUtil;
@@ -41,18 +42,18 @@ public final class SettingActivity extends AppCompatActivity {
         "Javap", "Eclipse Class Disassembler"
     };
 
-    private AlertDialog classpathDialog;
-    private AlertDialog argumentsDialog;
-    private AlertDialog javaPathDialog;
-
     private SharedPreferences settings;
+
+    private TextInputLayout classPath_til;
+    private TextInputLayout programArguments_til;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        final Toolbar toolbar = findViewById(R.id.toolbar);
+        final MaterialToolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -64,47 +65,53 @@ public final class SettingActivity extends AppCompatActivity {
 
         settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
-        Spinner javaVersions_spinner = findViewById(R.id.javaVersions_spinner);
-        Spinner javaCompilers_spinner = findViewById(R.id.javaCompilers_spinner);
-        Spinner javaFormatters_spinner = findViewById(R.id.javaFormatters_spinner);
-        Spinner javaDisassemblers_spinner = findViewById(R.id.javaDisassemblers_spinner);
+        classPath_til = findViewById(R.id.til_classPath);
+        programArguments_til = findViewById(R.id.til_programArguments);
 
-        MaterialButton classpath_bttn = findViewById(R.id.classpath_bttn);
-        MaterialButton arguments_bttn = findViewById(R.id.arguments_bttn);
-        MaterialButton java_path_bttn = findViewById(R.id.save_java_path_bttn);
+        AutoCompleteTextView javaVersions_et = findViewById(R.id.et_javaVersions);
+        AutoCompleteTextView javaCompilers_et = findViewById(R.id.et_javaCompilers);
+        AutoCompleteTextView javaFormatters_et = findViewById(R.id.et_javaFormatters);
+        AutoCompleteTextView javaDisassemblers_et = findViewById(R.id.et_javaDisassemblers);
 
-        var versionAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaVersions);
-        versionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (!settings.getString("classpath", "").equals("")) {
+            classPath_til.getEditText().setText(settings.getString("classpath", ""));
+        }
 
-        var compilerAdapter =
-                new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, javaCompilers);
-        compilerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (!settings.getString("program_arguments", "").equals("")) {
+            programArguments_til.getEditText().setText(settings.getString("program_arguments", ""));
+        }
 
-        var formatterAdapter =
-                new ArrayAdapter<String>(
-                        this, android.R.layout.simple_spinner_item, javaFormatters);
-        formatterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        javaVersions_et.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                        javaVersions));
 
-        var disassemblerAdapter =
-                new ArrayAdapter<String>(
-                        this, android.R.layout.simple_spinner_item, javaDisassemblers);
-        disassemblerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        javaCompilers_et.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                        javaCompilers));
 
-        javaVersions_spinner.setAdapter(versionAdapter);
+        javaFormatters_et.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                        javaFormatters));
 
-        javaCompilers_spinner.setAdapter(compilerAdapter);
+        javaDisassemblers_et.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                        javaDisassemblers));
 
-        javaFormatters_spinner.setAdapter(formatterAdapter);
-
-        javaDisassemblers_spinner.setAdapter(disassemblerAdapter);
-
-        /* Select Version in Spinner based on SharedPreferences Value */
         var version = settings.getString("version", "7");
         var count = 0;
         for (var vers : javaVersions) {
             if (vers.equals(version)) {
-                javaVersions_spinner.setSelection(count);
+                javaVersions_et.setListSelection(count);
+                javaVersions_et.setText(
+                    getSelectedItem(count, javaVersions_et), false);
                 break;
             }
             count++;
@@ -114,7 +121,9 @@ public final class SettingActivity extends AppCompatActivity {
         count = 0;
         for (var comp : javaCompilers) {
             if (comp.equals(compiler)) {
-                javaCompilers_spinner.setSelection(count);
+                javaCompilers_et.setListSelection(count);
+                javaCompilers_et.setText(
+                    getSelectedItem(count, javaCompilers_et), false);
                 break;
             }
             count++;
@@ -124,7 +133,9 @@ public final class SettingActivity extends AppCompatActivity {
         count = 0;
         for (var form : javaFormatters) {
             if (form.equals(formatter)) {
-                javaFormatters_spinner.setSelection(count);
+                javaFormatters_et.setListSelection(count);
+                javaFormatters_et.setText(
+                    getSelectedItem(count, javaFormatters_et), false);
                 break;
             }
             count++;
@@ -134,18 +145,20 @@ public final class SettingActivity extends AppCompatActivity {
         count = 0;
         for (var dis : javaDisassemblers) {
             if (dis.equals(disassembler)) {
-                javaDisassemblers_spinner.setSelection(count);
+                javaDisassemblers_et.setListSelection(count);
+                javaDisassemblers_et.setText(
+                    getSelectedItem(count, javaDisassemblers_et), false);
                 break;
             }
             count++;
         }
 
-        /* Save Selected Java Version in SharedPreferences */
-        javaVersions_spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
+        javaVersions_et.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
-                        if (javaVersions[i].equals("18")
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        if (javaVersions[position].equals("18")
                                 && settings.getString("compiler", "Javac").equals("Javac")) {
                             new MaterialAlertDialogBuilder(SettingActivity.this)
                                     .setTitle("Notice")
@@ -156,170 +169,46 @@ public final class SettingActivity extends AppCompatActivity {
                                     .show();
                             return;
                         }
-                        settings.edit().putString("version", javaVersions[i]).apply();
+                        settings.edit().putString("version", javaVersions[position]).apply();
                     }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
-        javaCompilers_spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
+        javaCompilers_et.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
-                        settings.edit().putString("compiler", javaCompilers[i]).apply();
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        settings.edit().putString("compiler", javaCompilers[position]).apply();
                     }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
-        javaFormatters_spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
+        javaFormatters_et.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
-                        settings.edit().putString("formatter", javaFormatters[i]).apply();
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        settings.edit().putString("formatter", javaFormatters[position]).apply();
                     }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapter) {}
                 });
 
-        javaDisassemblers_spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
+        javaDisassemblers_et.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onItemSelected(AdapterView<?> adapter, View view, int i, long l) {
-                        settings.edit().putString("disassembler", javaDisassemblers[i]).apply();
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        settings.edit().putString("disassembler", javaDisassemblers[position]).apply();
                     }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapter) {}
-                });
-
-        buildClasspathDialog();
-
-        classpath_bttn.setOnClickListener(
-                v -> {
-                    classpathDialog.show();
-
-                    TextInputEditText classpath_edt =
-                            classpathDialog.findViewById(android.R.id.text1);
-                    Button save_classpath_bttn =
-                            classpathDialog.findViewById(android.R.id.button1);
-
-                    if (!settings.getString("classpath", "").equals("")) {
-                        classpath_edt.setText(settings.getString("classpath", ""));
-                    }
-
-                    save_classpath_bttn.setOnClickListener(
-                            view -> {
-                                var enteredClasspath = classpath_edt.getText().toString();
-                                settings.edit().putString("classpath", enteredClasspath).apply();
-
-                                showSnackbar(getString(R.string.saved));
-
-                                /* Dismiss Dialog If Showing */
-                                if (classpathDialog.isShowing()) classpathDialog.dismiss();
-                            });
-                });
-        buildArgumentsDialog();
-
-        arguments_bttn.setOnClickListener(
-                v -> {
-                    argumentsDialog.show();
-
-                    TextInputEditText arguments_edt =
-                            argumentsDialog.findViewById(android.R.id.text1);
-                    Button save_arguments_bttn =
-                            argumentsDialog.findViewById(android.R.id.button1);
-
-                    if (!settings.getString("program_arguments", "").equals("")) {
-                        arguments_edt.setText(settings.getString("program_arguments", ""));
-                    }
-
-                    save_arguments_bttn.setOnClickListener(
-                            view -> {
-                                var enteredArgs = arguments_edt.getText().toString();
-                                settings.edit().putString("program_arguments", enteredArgs).apply();
-
-                                showSnackbar(getString(R.string.saved));
-
-                                /* Dismiss Dialog If Showing */
-                                if (argumentsDialog.isShowing()) argumentsDialog.dismiss();
-                            });
-                });
-        buildJavaPathDialog();
-
-        java_path_bttn.setOnClickListener(
-                v -> {
-                    javaPathDialog.show();
-
-                    TextInputEditText path_edt = javaPathDialog.findViewById(android.R.id.text1);
-                    Button save_java_path_bttn =
-                            javaPathDialog.findViewById(android.R.id.button1);
-
-                    path_edt.setText(FileUtil.getProjectsDir());
-
-                    save_java_path_bttn.setOnClickListener(
-                            view -> {
-                                var enteredPath = path_edt.getText().toString().replace("..", "");
-                                if (enteredPath.isEmpty()) {
-                                    FileUtil.setProjectsDirectory(FileUtil.getProjectsDir());
-                                } else {
-                                    FileUtil.setProjectsDirectory(enteredPath);
-                                }
-
-                                showSnackbar(getString(R.string.saved));
-
-                                /* Dismiss Dialog If Showing */
-                                if (javaPathDialog.isShowing()) javaPathDialog.dismiss();
-                            });
                 });
     }
 
-    private void buildClasspathDialog() {
-        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
-        builder.setView(R.layout.classpath_dialog);
-        builder.setTitle(getString(R.string.enter_classpath));
-        builder.setPositiveButton(getString(R.string.save), null);
-        classpathDialog = builder.create();
-    }
-
-    private void buildArgumentsDialog() {
-        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
-        builder.setView(R.layout.arguments_dialog);
-        builder.setTitle(getString(R.string.enter_program_arguments));
-        builder.setPositiveButton(getString(R.string.save), null);
-        argumentsDialog = builder.create();
-    }
-
-    private void buildJavaPathDialog() {
-        var builder = new MaterialAlertDialogBuilder(SettingActivity.this);
-        builder.setView(R.layout.enter_custom_java_path);
-        builder.setTitle(getString(R.string.enter_java_path));
-        builder.setPositiveButton(getString(R.string.save), null);
-        javaPathDialog = builder.create();
-    }
-
-    public void showSnackbar(final String message) {
-        Snackbar.make(
-                        (LinearLayout) findViewById(R.id.content),
-                        message,
-                        Snackbar.LENGTH_INDEFINITE)
-                .show();
+    private String getSelectedItem(int position, AutoCompleteTextView view) {
+        return view.getAdapter().getItem(position).toString();
     }
 
     @Override
     protected void onDestroy() {
-        if (classpathDialog.isShowing()) {
-            classpathDialog.dismiss();
-        }
-        if (argumentsDialog.isShowing()) {
-            argumentsDialog.dismiss();
-        }
-        if (javaPathDialog.isShowing()) {
-            javaPathDialog.dismiss();
-        }
+        settings.edit().putString("classpath", classPath_til.getEditText().getText().toString()).apply();
+        settings.edit().putString("program_arguments", programArguments_til.getEditText().getText().toString()).apply();
         super.onDestroy();
     }
 }

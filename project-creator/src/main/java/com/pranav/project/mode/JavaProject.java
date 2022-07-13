@@ -50,6 +50,11 @@ public class JavaProject {
         FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 
+    public void delete() {
+        FileUtil.deleteAllInDir(projectDirPath);
+        FileUtil.delete(projectDirPath);
+    }
+
     public File getRootFile() {
         return root;
     }

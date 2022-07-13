@@ -51,14 +51,6 @@ public class TreeViewDrawer extends Fragment {
 
     private MainActivity activity;
 
-    public static TreeViewDrawer newInstance(File root) {
-        TreeViewDrawer fragment = new TreeViewDrawer();
-        Bundle args = new Bundle();
-        args.putSerializable("rootFile", root);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     public TreeViewDrawer() {
         super(R.layout.drawer_treeview);
     }
@@ -170,7 +162,7 @@ public class TreeViewDrawer extends Fragment {
         popup.show();
 
         if (node.getContent().getFile().getName().equals(activity.getProject().getProjectName()) && node.getLevel() == 0) {
-            /* Disable Option to delete the root folder 'java' */
+            /* Disable Option to delete the root folder  */
             popup.getMenu().getItem(2).setVisible(false);
         }
 

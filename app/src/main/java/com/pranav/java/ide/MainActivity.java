@@ -224,25 +224,27 @@ public final class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.format_menu_button) {
-            CoroutineUtil.execute(
-                    () -> {
-                        if (prefs.getString("formatter", "Google Java Formatter")
-                                .equals("Google Java Formatter")) {
-                            var formatter = new GoogleJavaFormatter(editor.getText().toString());
-                            temp = formatter.format();
-                        } else {
-                            var formatter = new EclipseJavaFormatter(editor.getText().toString());
-                            temp = formatter.format();
-                        }
-                    });
-            editor.setText(temp);
-        } else if (id == R.id.settings_menu_button) {
-            var intent = new Intent(MainActivity.this, SettingActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.run_menu_button) {
-            compile(true, false);
+        switch(item.getItemId()) {
+            case R.id.format_menu_button:
+                CoroutineUtil.execute(
+                        () -> {
+                            if (prefs.getString("formatter", "Google Java Formatter")
+                                    .equals("Google Java Formatter")) {
+                                var formatter = new GoogleJavaFormatter(editor.getText().toString());
+                                temp = formatter.format();
+                            } else {
+                                var formatter = new EclipseJavaFormatter(editor.getText().toString());
+                                temp = formatter.format();
+                            }
+                        });
+                editor.setText(temp);
+                break;
+            case R.id.settings_menu_button:
+                startActivity(new Intent(MainActivity.this, SettingActivity.class));
+                break;
+            case R.id.run_menu_button:
+                compile(true, false);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -576,7 +578,7 @@ public final class MainActivity extends AppCompatActivity {
     private String getString(final Throwable e) {
         return Log.getStackTraceString(e);
     }
-    
+
     public JavaProject getProject() {
         return javaProject;
     }

@@ -2,6 +2,7 @@ package com.pranav.common.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -179,8 +180,80 @@ public class FileUtil {
         }
     }
 
+    public static boolean delete(final String filePath) {
+        return delete(getFileByPath(filePath));
+    }
+
+    public static boolean delete(final File file) {
+        if(file == null) return false;
+        if(file.isDirectory()) {
+            return deleteDir(file);
+        }
+        return deleteFile(file);
+    }
+
+    private static boolean deleteDir(final File dir) {
+        if(dir == null) return false;
+        if(!dir.exists()) return false;
+        if(!dir.isDirectory()) return false;
+        File[] files = dir.listFiles();
+        if(files != null && files.length > 0) {
+            for(File file : files) {
+                if(file.isFile()) {
+                    if(!file.delete()) return false;
+                } else {
+                    if(!deleteDir(file)) return false;
+                }
+            }
+        }
+        return dir.delete();
+    }
+
+    private static boolean deleteFile(final File file) {
+        return file != null && (!file.exists() || file.isFile() && file.delete());
+    }
+
+    public static boolean deleteAllInDir(final String dirPath) {
+        return deleteAllInDir(getFileByPath(dirPath));
+    }
+
+    public static boolean deleteAllInDir(final File dir) {
+        return deleteFilesInDirWithFilter(dir, new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                 return true;
+            }
+        });
+    }
+
+    public static boolean deleteFilesInDirWithFilter(final String dirPath,
+                                                     final FileFilter filter) {
+        return deleteFilesInDirWithFilter(getFileByPath(dirPath), filter);
+    }
+
+    public static boolean deleteFilesInDirWithFilter(final File dir, final FileFilter filter) {
+        if (dir == null || filter == null) return false;
+        // dir doesn't exist then return true
+        if (!dir.exists()) return true;
+        // dir isn't a directory then return false
+        if (!dir.isDirectory()) return false;
+        File[] files = dir.listFiles();
+        if (files != null && files.length != 0) {
+            for (File file : files) {
+                if (filter.accept(file)) {
+                    if (file.isFile()) {
+                        if (!file.delete()) return false;
+                    } else if (file.isDirectory()) {
+                        if (!deleteDir(file)) return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     public static File getFileByPath(final String filePath) {
-        return FileUtil.isSpace(filePath) ? null : new File(filePath);
+        return isSpace(filePath) ? null : new File(filePath);
     }
 
     public static boolean isSpace(final String s) {

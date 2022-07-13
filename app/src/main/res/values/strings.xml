@@ -29,6 +29,7 @@
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>
     <string name="new_project">New Project</string>
+    <string name="delete_project">Delete Project</string>
     <string name="project_name">Project Name</string>
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
@@ -52,6 +53,7 @@
     <string name="saved">Saved!</string>
     <string name="classpath_not_specified">Specify the classpath</string>
     <string name="edit">Edit</string>
+    <string name="text_autosaving">All data will be automatically saved after leaving this page</string>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

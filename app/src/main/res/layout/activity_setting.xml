@@ -8,7 +8,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -18,128 +19,120 @@
             app:title="@string/settings"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/content"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/java_version"
-            android:textAppearance="?textAppearanceTitleMedium" />
-
-        <Spinner
-            android:id="@+id/javaVersions_spinner"
+        <LinearLayout
+            android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_height="match_parent"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:orientation="vertical">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/java_compiler"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_javaVersions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/java_version"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
 
-        <Spinner
-            android:id="@+id/javaCompilers_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+                <AutoCompleteTextView
+                    android:id="@+id/et_javaVersions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/java_formatter"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_javaCompilers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/java_compiler"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
 
-        <Spinner
-            android:id="@+id/javaFormatters_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+                <AutoCompleteTextView
+                    android:id="@+id/et_javaCompilers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/java_disassembler"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_javaFormatters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/java_formatter"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
 
-        <Spinner
-            android:id="@+id/javaDisassemblers_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="16dp" />
+                <AutoCompleteTextView
+                    android:id="@+id/et_javaFormatters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/classpath"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_javaDisassemblers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/java_disassembler"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/classpath_bttn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/classpath_not_specified" />
+                <AutoCompleteTextView
+                    android:id="@+id/et_javaDisassemblers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/program_arguments"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_classPath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/classpath"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/arguments_bttn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/enter_program_arguments" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/java_path"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_programArguments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/program_arguments"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/save_java_path_bttn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:text="@string/enter_java_path" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/text_autosaving" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

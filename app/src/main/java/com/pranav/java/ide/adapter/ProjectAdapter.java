@@ -23,7 +23,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     public interface OnProjectLongClickedListener {
-        boolean onLongClicked(View view, JavaProject project);
+        boolean onLongClicked(JavaProject project);
     }
 
     private final List<JavaProject> mProjects = new ArrayList<>();
@@ -79,6 +79,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                     onProjectSelectedListener.onProjectSelect(mProjects.get(position));
                 }
             }
+        });
+        root.setOnLongClickListener(v -> {
+            if(onProjectLongClickedListener != null) {
+                int position = holder.getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    return onProjectLongClickedListener.onLongClicked(mProjects.get(position));
+                }
+            }
+            return false;
         });
         return holder;
     }

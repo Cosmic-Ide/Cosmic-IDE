@@ -7,7 +7,6 @@
         <item name="android:windowLightNavigationBar">@bool/isLight</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowActivityTransitions">true</item>
     </style>
 
     <style name="Theme.JavaIde.NoActionBar">

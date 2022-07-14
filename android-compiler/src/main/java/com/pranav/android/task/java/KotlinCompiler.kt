@@ -4,10 +4,8 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
-import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
 import java.io.File
-import java.io.IOException
 
 import com.pranav.common.util.FileUtil
 import com.pranav.android.interfaces.*
@@ -27,7 +25,6 @@ class KotlinCompiler() : Task {
         val mKotlinHome  = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
 
-        val compiler = K2JVMCompiler()
         val collector = object : MessageCollector {
             private val diagnostics = mutableListOf<Diagnostic>()
 
@@ -69,7 +66,7 @@ class KotlinCompiler() : Task {
         }
 
         val args = K2JVMCompilerArguments().apply {
-            compileJava = false
+            compileJava = true
             includeRuntime = false
             noJdk = true
             noReflect = true
@@ -78,8 +75,12 @@ class KotlinCompiler() : Task {
             destination = mClassOutput.absolutePath
         }
 
-        compiler.parseArguments(arguments.toTypedArray(), args)
-        compiler.exec(collector, Services.EMPTY, args)
+        val cacheDir = File(project.getBinDirPath(), "caches")
+
+        IncrementalJvmCompilerRunner.makeIncrementally(cacheDir,
+            listOf(File(project.getSrcDirPath()),
+            args, collector)
+
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }

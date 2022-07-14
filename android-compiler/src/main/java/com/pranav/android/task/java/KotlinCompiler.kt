@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.EmptyICReporter
+import org.jetbrains.kotlin.build.report.ICReporterBase
 import org.jetbrains.kotlin.build.report.BuildReporter
 import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
 import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
@@ -18,6 +18,15 @@ import com.pranav.project.mode.JavaProject
 import com.pranav.android.exception.CompilationFailedException
 
 class KotlinCompiler() : Task {
+
+object EmptyICReporter : ICReporterBase() {
+    override fun report(message: () -> String) {}
+    override fun reportVerbose(message: () -> String) {}
+    override fun reportCompileIteration(incremental: Boolean, sourceFiles: Collection<File>, exitCode: ExitCode) {}
+    override fun reportMarkDirtyClass(affectedFiles: Iterable<File>, classFqName: String) {}
+    override fun reportMarkDirtyMember(affectedFiles: Iterable<File>, scope: String, name: String) {}
+    override fun reportMarkDirty(affectedFiles: Iterable<File>, reason: String) {}
+}
 
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
@@ -84,12 +93,12 @@ class KotlinCompiler() : Task {
 
         val compiler = IncrementalJvmCompilerRunner(
                 cacheDir,
-                BuildReporter(icReporter = EmptyICReporter, buildMetricsReporter = DoNothingBuildMetricsReporter),
+                BuildReporter(EmptyICReporter,  DoNothingBuildMetricsReporter),
                 false,
-                outputFiles = emptyList(),
+                emptyList(),
                 File(cacheDir, "build-history.bin"),
-                modulesApiHistory = EmptyModulesApiHistory,
-                classpathChanges = ClasspathSnapshotDisabled
+                EmptyModulesApiHistory,
+                ClasspathSnapshotDisabled
         )
         compiler.compile(listOf(File(project.getSrcDirPath())),
             args, collector, null)

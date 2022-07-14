@@ -5,6 +5,11 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.EmptyICReporter
+import org.jetbrains.kotlin.build.report.BuildReporter
+import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
+import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
+import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotDisabled
 import java.io.File
 
 import com.pranav.common.util.FileUtil
@@ -77,9 +82,17 @@ class KotlinCompiler() : Task {
 
         val cacheDir = File(project.getBinDirPath(), "caches")
 
-        IncrementalJvmCompilerRunner.makeIncrementally(cacheDir,
-            listOf(File(project.getSrcDirPath())),
-            args, collector)
+        val compiler = IncrementalJvmCompilerRunner(
+                cacheDir,
+                BuildReporter(icReporter = EmptyICReporter, buildMetricsReporter = DoNothingBuildMetricsReporter),
+                false,
+                outputFiles = emptyList(),
+                File(cacheDir, "build-history.bin"),
+                modulesApiHistory = EmptyModulesApiHistory,
+                classpathChanges = ClasspathSnapshotDisabled
+        )
+        compiler.compile(listOf(File(project.getSrcDirPath())),
+            args, collector, null)
 
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())

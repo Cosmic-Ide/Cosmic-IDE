@@ -4,13 +4,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
-import org.jetbrains.kotlin.build.report.ICReporterBase
-import org.jetbrains.kotlin.build.report.BuildReporter
-import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
-import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
-import org.jetbrains.kotlin.incremental.ClasspathChanges
-import org.jetbrains.kotlin.cli.common.ExitCode
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt
 import java.io.File
 
 import com.pranav.common.util.FileUtil
@@ -19,15 +13,6 @@ import com.pranav.project.mode.JavaProject
 import com.pranav.android.exception.CompilationFailedException
 
 class KotlinCompiler() : Task {
-
-object EmptyICReporter : ICReporterBase() {
-    override fun report(message: () -> String) {}
-    override fun reportVerbose(message: () -> String) {}
-    override fun reportCompileIteration(incremental: Boolean, sourceFiles: Collection<File>, exitCode: ExitCode) {}
-    override fun reportMarkDirtyClass(affectedFiles: Iterable<File>, classFqName: String) {}
-    override fun reportMarkDirtyMember(affectedFiles: Iterable<File>, scope: String, name: String) {}
-    override fun reportMarkDirty(affectedFiles: Iterable<File>, reason: String) {}
-}
 
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
@@ -92,17 +77,9 @@ object EmptyICReporter : ICReporterBase() {
 
         val cacheDir = File(project.getBinDirPath(), "caches")
 
-        val compiler = IncrementalJvmCompilerRunner(
-                cacheDir,
-                BuildReporter(EmptyICReporter,  DoNothingBuildMetricsReporter),
-                usePreciseJavaTracking = false,
-                outputFiles = emptyList(),
-                buildHistoryFile = File(cacheDir, "build-history.bin"),
-                modulesApiHistory = EmptyModulesApiHistory,
-                classpathChanges = ClasspathChanges.ClasspathSnapshotDisabled
-        )
-        compiler.compile(listOf(File(project.getSrcDirPath())),
-            args, collector, null)
+        IncrementalJvmCompilerRunnerKt.makeIncrementally(cacheDir,
+            listOf(File(project.getSrcDirPath())),
+            args, collector)
 
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())

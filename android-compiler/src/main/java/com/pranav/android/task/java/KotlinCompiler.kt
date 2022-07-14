@@ -9,7 +9,8 @@ import org.jetbrains.kotlin.build.report.ICReporterBase
 import org.jetbrains.kotlin.build.report.BuildReporter
 import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
 import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
-import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotDisabled
+import org.jetbrains.kotlin.incremental.ClasspathChanges
+import org.jetbrains.kotlin.cli.common.ExitCode
 import java.io.File
 
 import com.pranav.common.util.FileUtil
@@ -94,11 +95,11 @@ object EmptyICReporter : ICReporterBase() {
         val compiler = IncrementalJvmCompilerRunner(
                 cacheDir,
                 BuildReporter(EmptyICReporter,  DoNothingBuildMetricsReporter),
-                false,
-                emptyList(),
-                File(cacheDir, "build-history.bin"),
-                EmptyModulesApiHistory,
-                ClasspathSnapshotDisabled
+                usePreciseJavaTracking = false,
+                outputFiles = emptyList(),
+                buildHistoryFile = File(cacheDir, "build-history.bin"),
+                modulesApiHistory = EmptyModulesApiHistory,
+                classpathChanges = ClasspathChanges.ClasspathSnapshotDisabled
         )
         compiler.compile(listOf(File(project.getSrcDirPath())),
             args, collector, null)

@@ -78,7 +78,7 @@ class KotlinCompiler() : Task {
         val cacheDir = File(project.getBinDirPath(), "caches")
 
         IncrementalJvmCompilerRunner.makeIncrementally(cacheDir,
-            listOf(File(project.getSrcDirPath()),
+            listOf(File(project.getSrcDirPath())),
             args, collector)
 
         if (collector.hasErrors()) {

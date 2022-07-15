@@ -73,6 +73,8 @@ class KotlinCompiler() : Task {
             noStdlib = true
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
+            // incremental compiler needs this somewhy
+            moduleName = "project-kotlin"
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

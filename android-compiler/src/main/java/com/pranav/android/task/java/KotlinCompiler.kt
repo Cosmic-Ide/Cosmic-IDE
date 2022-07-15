@@ -47,10 +47,13 @@ class KotlinCompiler() : Task {
                 .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
         }
 
-        val arguments = mutableListOf<String>().apply {
-            // Classpath
-            add("-cp")
-            add(
+        val args = K2JVMCompilerArguments().apply {
+            compileJava = true
+            includeRuntime = false
+            noJdk = true
+            noReflect = true
+            noStdlib = true
+            classpath =
                     FileUtil.getClasspathDir() +
                     "android.jar" +
                     File.pathSeparator +
@@ -59,18 +62,6 @@ class KotlinCompiler() : Task {
                     File.pathSeparator +
                     FileUtil.getClasspathDir() +
                     "kotlin-stdlib-1.7.10.jar"
-                )
-
-            // Sources (.java & .kt)
-            add(project.getSrcDirPath())
-        }
-
-        val args = K2JVMCompilerArguments().apply {
-            compileJava = true
-            includeRuntime = false
-            noJdk = true
-            noReflect = true
-            noStdlib = true
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             // incremental compiler needs this somewhy
@@ -119,5 +110,4 @@ class KotlinCompiler() : Task {
         val message: String,
         val location: CompilerMessageSourceLocation?
     )
-
 }

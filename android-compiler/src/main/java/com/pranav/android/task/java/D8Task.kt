@@ -33,7 +33,9 @@ class D8Task() : Task {
         if (files != null) {
             for (f in files) {
                 if (f.isFile()) {
-                    paths.add(f.toPath())
+                    if (f.getName().endsWith(".class")) {
+                        paths.add(f.toPath())
+                    }
                 } else {
                     paths.addAll(getClassFiles(f))
                 }

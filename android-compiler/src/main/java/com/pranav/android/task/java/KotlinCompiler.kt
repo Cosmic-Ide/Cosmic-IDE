@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
+import org.jetbrains.kotlin.incremental.*
 import java.io.File
 
 import com.pranav.common.util.FileUtil
@@ -77,7 +77,7 @@ class KotlinCompiler() : Task {
 
         val cacheDir = File(project.getBinDirPath(), "caches")
 
-        IncrementalJvmCompilerRunner.makeIncrementally(
+        IncrementalJvmCompilerRunnerKt.makeIncrementally(
                 cacheDir,
                 listOf(File(project.getSrcDirPath())),
                 args,
@@ -87,7 +87,7 @@ class KotlinCompiler() : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
-        File(mClassOutput, "META-INF").deleteRecursively()
+        // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(path: File): ArrayList<File> {

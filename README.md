@@ -108,3 +108,5 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - [Akash Yadav](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
 
 - [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
+
+- [QuinnWilton](https://github.com/QuinnWilton) for [Smali Grammers](https://github.com/QuinnWilton/sublime-smali)

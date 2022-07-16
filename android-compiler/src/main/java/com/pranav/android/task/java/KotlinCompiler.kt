@@ -18,7 +18,7 @@ class KotlinCompiler() : Task {
     override fun doFullTask(project: JavaProject) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
         if (!sourceFiles.any {
-            it.absolutePath.endsWith(".kt")
+            it.endsWith(".kt")
         }) {
             return;
         }
@@ -66,8 +66,8 @@ class KotlinCompiler() : Task {
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             javaSourceRoots = sourceFiles.filter {
-                it.absolutePath.endsWith(".java")
-            }
+                it.endsWith(".java")
+            }.toTypedArray()
             // incremental compiler needs this somewhy
             moduleName = "project-kotlin"
         }
@@ -87,16 +87,17 @@ class KotlinCompiler() : Task {
         // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
-    fun getSourceFiles(path: File): ArrayList<File> {
-        val sourceFiles = arrayListOf<File>()
+    fun getSourceFiles(path: File): ArrayList<String> {
+        val sourceFiles = arrayListOf<String>()
         val files = path.listFiles()
         if (files == null) {
-            return arrayListOf<File>()
+            return arrayListOf<String>()
         }
         for (file in files) {
             if (file.isFile()) {
-                if (file.getName().endsWith(".java") || file.getName().endsWith(".kt")) {
-                    sourceFiles.add(file)
+                val path = file.absolutePath
+                if (path.endsWith(".java") || path.endsWith(".kt")) {
+                    sourceFiles.add(path)
                 }
             } else {
                 sourceFiles.addAll(getSourceFiles(file))

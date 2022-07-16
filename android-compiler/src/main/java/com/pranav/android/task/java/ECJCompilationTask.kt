@@ -46,11 +46,14 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
 
         val classpath = StringBuilder()
         classpath.append(FileUtil.getClasspathDir() + "android.jar")
+        classpath.append(File.pathSeparator)
         classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar")
         classpath.append(File.pathSeparator)
         classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
+        classpath.append(File.pathSeparator)
+        classpath.append(output)
         val clspath = prefs.getString("classpath", "")
-        if (!clspath?.isEmpty() && classpath.length > 0) {
+        if (!clspath!!.isEmpty() && classpath.length > 0) {
             classpath.append(":")
             classpath.append(clspath)
         }

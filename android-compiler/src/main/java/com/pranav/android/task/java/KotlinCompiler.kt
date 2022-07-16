@@ -48,11 +48,17 @@ class KotlinCompiler() : Task {
         }
 
         val args = K2JVMCompilerArguments().apply {
+            useJavac = true
+            javacArguments = arrayOf(
+                   "-proc:none",
+                   "--system",
+                   FileUtil.getDataDir() + "compiler-modules")
             compileJava = true
             includeRuntime = false
             noJdk = true
             noReflect = true
             noStdlib = true
+            useFastJarFileSystem = true
             classpath =
                     FileUtil.getClasspathDir() +
                     "android.jar" +

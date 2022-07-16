@@ -16,7 +16,7 @@ class GoogleJavaFormatter(input: String) {
         val options =
                 JavaFormatterOptions.builder()
                         .style(JavaFormatterOptions.Style.AOSP) // Use AOSP formatting style
-                        .formatJavadoc(true) // Format Javadoc with code
+                        .formatJavadoc(true) // Format Javadoc
                         .build()
         val formatter = Formatter(options)
         try {

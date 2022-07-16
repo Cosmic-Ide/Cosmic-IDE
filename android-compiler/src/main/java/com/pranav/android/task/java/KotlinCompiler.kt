@@ -58,7 +58,6 @@ class KotlinCompiler() : Task {
             noJdk = true
             noReflect = true
             noStdlib = true
-            useFastJarFileSystem = true
             classpath =
                     FileUtil.getClasspathDir() +
                     "android.jar" +

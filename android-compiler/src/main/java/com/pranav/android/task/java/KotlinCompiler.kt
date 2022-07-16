@@ -48,12 +48,8 @@ class KotlinCompiler() : Task {
         }
 
         val args = K2JVMCompilerArguments().apply {
-            javacArguments = arrayOf(
-                   "-proc:none",
-                   "--system",
-                   FileUtil.getDataDir() + "compiler-modules")
-//            useJavac = false
-//            compileJava = false
+            useJavac = false
+            compileJava = false
             includeRuntime = false
             noJdk = true
             noReflect = true

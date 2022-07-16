@@ -45,7 +45,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.2.1
         with:
-          arguments: clean build
+          arguments: assembleDebug
 
       - name: Upload debug apk
         uses: actions/upload-artifact@v3

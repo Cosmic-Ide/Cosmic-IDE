@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.*
+import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
 
 import com.pranav.common.util.FileUtil
@@ -18,7 +18,7 @@ class KotlinCompiler() : Task {
     override fun doFullTask(project: JavaProject) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
         if (!sourceFiles.any {
-            it.absolutePath.endsWith(".kt")
+            it.endsWith(".kt")
         }) {
             return;
         }
@@ -47,10 +47,14 @@ class KotlinCompiler() : Task {
                 .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
         }
 
-        val arguments = mutableListOf<String>().apply {
-            // Classpath
-            add("-cp")
-            add(
+        val args = K2JVMCompilerArguments().apply {
+            useJavac = false
+            compileJava = false
+            includeRuntime = false
+            noJdk = true
+            noReflect = true
+            noStdlib = true
+            classpath =
                     FileUtil.getClasspathDir() +
                     "android.jar" +
                     File.pathSeparator +
@@ -59,25 +63,18 @@ class KotlinCompiler() : Task {
                     File.pathSeparator +
                     FileUtil.getClasspathDir() +
                     "kotlin-stdlib-1.7.10.jar"
-                )
-
-            // Sources (.java & .kt)
-            add(project.getSrcDirPath())
-        }
-
-        val args = K2JVMCompilerArguments().apply {
-            compileJava = true
-            includeRuntime = false
-            noJdk = true
-            noReflect = true
-            noStdlib = true
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
+            javaSourceRoots = sourceFiles.filter {
+                it.endsWith(".java")
+            }.toTypedArray()
+            // incremental compiler needs this somewhy
+            moduleName = "project-kotlin"
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")
 
-        IncrementalJvmCompilerRunnerKt.makeIncrementally(
+        makeIncrementally(
                 cacheDir,
                 listOf(File(project.getSrcDirPath())),
                 args,
@@ -90,16 +87,17 @@ class KotlinCompiler() : Task {
         // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
-    fun getSourceFiles(path: File): ArrayList<File> {
-        val sourceFiles = arrayListOf<File>()
+    fun getSourceFiles(path: File): ArrayList<String> {
+        val sourceFiles = arrayListOf<String>()
         val files = path.listFiles()
         if (files == null) {
-            return arrayListOf<File>()
+            return arrayListOf<String>()
         }
         for (file in files) {
             if (file.isFile()) {
-                if (file.getName().endsWith(".java") || file.getName().endsWith(".kt")) {
-                    sourceFiles.add(file)
+                val path = file.absolutePath
+                if (path.endsWith(".java") || path.endsWith(".kt")) {
+                    sourceFiles.add(path)
                 }
             } else {
                 sourceFiles.addAll(getSourceFiles(file))
@@ -117,5 +115,4 @@ class KotlinCompiler() : Task {
         val message: String,
         val location: CompilerMessageSourceLocation?
     )
-
 }

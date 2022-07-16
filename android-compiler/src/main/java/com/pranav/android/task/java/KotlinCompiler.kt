@@ -65,6 +65,9 @@ class KotlinCompiler() : Task {
                     "kotlin-stdlib-1.7.10.jar"
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
+            javaSourceRoots = sourceFiles.filter {
+                it.absolutePath.endsWith(".java")
+            }
             // incremental compiler needs this somewhy
             moduleName = "project-kotlin"
         }

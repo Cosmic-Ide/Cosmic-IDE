@@ -25,7 +25,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
         prefs = preferences
     }
 
-    override fun getTaskName() {
+    override fun getTaskName(): String {
         return "ECJ Compilation Task"
     }
 
@@ -50,7 +50,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
         classpath.append(File.pathSeparator)
         classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
         val clspath = prefs.getString("classpath", "")
-        if (!clspath.isEmpty() && classpath.length() > 0) {
+        if (!clspath?.isEmpty() && classpath.length > 0) {
             classpath.append(":")
             classpath.append(clspath)
         }

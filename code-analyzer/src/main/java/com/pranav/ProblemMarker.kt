@@ -55,12 +55,13 @@ class ProblemMarker(
     }
 
     private fun run(content: Content) {
-        CoroutineUtil.inParallel {
+        CoroutineUtil.inParallel thread@ {
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
             try {
                 val path = Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile")
+                if (!path.endsWith(".java")) return@thread
                 FileUtil.writeFile(path, content.toString())
                 analyzer.analyze()
             } catch (ignored: Exception) {

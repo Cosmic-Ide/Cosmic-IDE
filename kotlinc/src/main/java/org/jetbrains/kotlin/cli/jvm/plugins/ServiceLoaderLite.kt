@@ -49,7 +49,7 @@ object ServiceLoaderLite {
 
         for (className in findImplementations(service, files)) {
             try {
-                val instance = classLoader.loadClass(className)
+                val instance = classLoader.loadClass(className).getConstructor()
                     .newInstance();
                 implementations += service.cast(instance)
             } catch (e: ClassNotFoundException) {

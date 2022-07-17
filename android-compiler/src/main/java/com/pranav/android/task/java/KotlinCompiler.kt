@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
-import java.util.Collections
+import java.util.stream.Collectors
 
 import com.pranav.common.util.FileUtil
 import com.pranav.android.interfaces.*
@@ -47,11 +47,11 @@ class KotlinCompiler() : Task {
             override fun toString() = diagnostics
                 .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
         }
-        val classpath = arrayListOf<File>()
+        val claspath = arrayListOf<File>()
         val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
             for (lib in libs) {
-                classpath.add(lib)
+                claspath.add(lib)
             }
         }
 
@@ -71,7 +71,7 @@ class KotlinCompiler() : Task {
                     File.pathSeparator +
                     FileUtil.getClasspathDir() +
                     "kotlin-stdlib-1.7.10.jar" +
-                    classpath.stream()
+                    claspath.stream()
                             .map(File::getAbsolutePath)
                             .collect(Collectors.joining(File.pathSeparator)))
             kotlinHome = mKotlinHome.absolutePath

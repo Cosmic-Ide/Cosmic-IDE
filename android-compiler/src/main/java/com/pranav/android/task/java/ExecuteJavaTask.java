@@ -12,14 +12,15 @@ import com.pranav.project.mode.JavaProject;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.File;
 import java.lang.reflect.Modifier;
 
 public class ExecuteJavaTask implements Task {
 
     private final String clazz;
     private Object result;
-    private StringBuilder log = new StringBuilder();
-    private SharedPreferences prefs;
+    private final StringBuilder log = new StringBuilder();
+    private final SharedPreferences prefs;
 
     public ExecuteJavaTask(SharedPreferences preferences, String claz) {
         this.clazz = claz;
@@ -88,14 +89,14 @@ public class ExecuteJavaTask implements Task {
             result = method.invoke(classInstance, new Object[] { param });
         }
         if (result != null) {
-            System.out.println(result.toString());
+            log.append(result.toString());
         }
         System.setOut(defaultOut);
         System.setErr(defaultErr);
     }
 
     /*
-     * Returns all the system logs recorded on executing the method
+     * Returns all the system logs recorded while executing the method
      */
     public String getLogs() {
         return log.toString();

@@ -1,27 +1,14 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
 }
-android {
-    namespace 'com.pranav.android'
-    compileSdk 33
 
-    defaultConfig {
-        minSdk 26
-        targetSdk 33
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
 
-    buildTypes {
-        release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
+compileKotlin {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11
     }
@@ -34,7 +21,7 @@ dependencies {
 	implementation project(path: ':eclipse-jdt')
 	implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
 	implementation project(path: ':common')
-	implementation project(path: ':sora-editor')
 	implementation project(path: ':project-creator')
 	implementation project(':kotlinc')
+	compileOnly files('libs/sora-editor.jar')
 }

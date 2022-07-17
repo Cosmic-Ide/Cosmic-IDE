@@ -57,11 +57,11 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
             classpath.append(File.pathSeparator)
             classpath.append(clspath)
         }
-        var libs = new File(project.getLibDirPath()).listFiles();
+        val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
-            for (var lib : libs) {
-                classpath.append(File.pathSeparator);
-                classpath.append(lib.getAbsolutePath());
+            for (lib in libs) {
+                classpath.append(File.pathSeparator)
+                classpath.append(lib.absolutePath)
             }
         }
 

@@ -71,9 +71,7 @@ class KotlinCompiler() : Task {
                     File.pathSeparator +
                     FileUtil.getClasspathDir() +
                     "kotlin-stdlib-1.7.10.jar" +
-                    claspath.stream()
-                            .map(File::getAbsolutePath)
-                            .collect(Collectors.joining(File.pathSeparator)))
+                    claspath.joinToString(separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             javaSourceRoots = sourceFiles.filter {

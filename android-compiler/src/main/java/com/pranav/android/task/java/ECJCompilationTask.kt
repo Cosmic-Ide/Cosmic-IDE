@@ -54,8 +54,15 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
         classpath.append(output)
         val clspath = prefs.getString("classpath", "")
         if (!clspath!!.isEmpty() && classpath.length > 0) {
-            classpath.append(":")
+            classpath.append(File.pathSeparator)
             classpath.append(clspath)
+        }
+        var libs = new File(project.getLibDirPath()).listFiles();
+        if (libs != null) {
+            for (var lib : libs) {
+                classpath.append(File.pathSeparator);
+                classpath.append(lib.getAbsolutePath());
+            }
         }
 
         val args = arrayListOf<String>(

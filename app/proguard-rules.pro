@@ -10,3 +10,4 @@
 -keep class org.osgi.** { *; }
 -keep class javax.** { *; }
 -keep class com.googlecode.** { *; }
+-keep class org.jetbrains.kotlin.** { *; }

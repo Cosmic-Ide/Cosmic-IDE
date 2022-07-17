@@ -165,7 +165,7 @@ public class JavacCompilationTask implements Task {
         return sourceFiles;
     }
 
-    public ArrayList<File> getClasspath(File extraPath) {
+    public ArrayList<File> getClasspath(JavaProject project) {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("classpath", "");
 
@@ -174,7 +174,13 @@ public class JavacCompilationTask implements Task {
                 classpath.add(new File(clas));
             }
         }
-        classpath.add(extraPath);
+        classpath.add(new File(project.getBinDirPath(), "classes"));
+        var libs = new File(project.getLibDirPath()).listFiles();
+        if (libs != null) {
+            for (var lib : libs) {
+                classpath.add(lib);
+            }
+        }
         return classpath;
     }
 

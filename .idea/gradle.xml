@@ -12,11 +12,14 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/android-compiler" />
+            <option value="$PROJECT_DIR$/code-analyzer" />
+            <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/eclipse-jdt" />
             <option value="$PROJECT_DIR$/google-java-format" />
-            <option value="$PROJECT_DIR$/common" />
-            <option value="$PROJECT_DIR$/java-completions" />
-            <option value="$PROJECT_DIR$/code-analyzer" />
+            <option value="$PROJECT_DIR$/jacp" />
+            <option value="$PROJECT_DIR$/kotlinc" />
+            <option value="$PROJECT_DIR$/project-creator" />
+            <option value="$PROJECT_DIR$/sora-editor" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -83,7 +83,7 @@ public class JavacCompilationTask implements Task {
                     StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
         standardJavaFileManager.setLocation(
                     StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
-        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(output));
+        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(project));
         standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
         final var args = new ArrayList<String>();

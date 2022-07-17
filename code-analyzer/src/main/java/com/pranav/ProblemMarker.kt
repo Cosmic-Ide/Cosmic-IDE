@@ -61,6 +61,7 @@ class ProblemMarker(
             }
             try {
                 val path = Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile")
+                if (!path.endsWith(".java")) return
                 FileUtil.writeFile(path, content.toString())
                 analyzer.analyze()
             } catch (ignored: Exception) {

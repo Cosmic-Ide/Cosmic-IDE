@@ -79,6 +79,7 @@ public class ExecuteJavaTask implements Task {
                                 .addProgramFiles(lib.toPath())
                                 .build()
                     );
+                    new File(project.getBuildDirPath(), "classes.dex").renameTo(new File(outDex));
                 }
                 dexLoader.loadDex(outDex);
             }

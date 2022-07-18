@@ -69,9 +69,9 @@ public class ExecuteJavaTask implements Task {
         var libs = new File(project.getLibDirPath()).listFiles();
         if (libs != null) {
             for (var lib : libs) {
-                var out = project.getBuildDirPath() + lib.getName().replace(".jar", ".dex");
+                var outDex = project.getBuildDirPath() + lib.getName().replace(".jar", ".dex");
 
-                if (!new File(out).exists()) {
+                if (!new File(outDex).exists()) {
                     D8.run(
                         D8Command.builder()
                                 .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
@@ -80,7 +80,7 @@ public class ExecuteJavaTask implements Task {
                                 .build()
                     );
                 }
-                dexLoader.loadDex(out);
+                dexLoader.loadDex(outDex);
             }
         }
 

@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import dalvik.system.PathClassLoader;
 
+import com.android.tools.r8.D8;
+import com.android.tools.r8.D8Command;
+import com.android.tools.r8.OutputMode;
+
 import com.pranav.android.interfaces.*;
 import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.MultipleDexClassLoader;
@@ -64,7 +68,18 @@ public class ExecuteJavaTask implements Task {
         var libs = new File(project.getLibDirPath()).listFiles();
         if (libs != null) {
             for (var lib : libs) {
-                dexLoader.loadDex(lib.getAbsolutePath());
+                var out = project.getBuildDirPath() + lib.getName().replace(".jar", ".dex");
+
+                if (!new File(out).exists()) {
+                    D8.run(
+                        D8Command.builder()
+                                .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
+                                .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                                .addProgramFiles(lib.toPath())
+                                .build()
+                    );
+                }
+                dexLoader.loadDex(out);
             }
         }
 

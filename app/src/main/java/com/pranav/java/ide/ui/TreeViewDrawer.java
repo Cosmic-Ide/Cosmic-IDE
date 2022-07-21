@@ -122,6 +122,12 @@ public class TreeViewDrawer extends Fragment {
                         }));
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        partialRefresh();
+    }
+
     private void partialRefresh() {
         if(!treeView.getAllNodes().isEmpty()) {
             TreeNode<TreeFile> node = treeView.getAllNodes().get(0);

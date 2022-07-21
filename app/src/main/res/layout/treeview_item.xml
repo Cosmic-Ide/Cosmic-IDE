@@ -20,7 +20,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginHorizontal="8dp"
-        android:src="@drawable/java_file" />
+        android:src="@drawable/ic_file" />
 
     <TextView
         android:id="@+id/name"

@@ -38,6 +38,8 @@ import com.pranav.project.mode.JavaProject;
 import com.pranav.project.mode.JavaTemplate;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +51,7 @@ public class TreeViewDrawer extends Fragment {
     private AlertDialog createNewFileDialog;
     private AlertDialog createNewDirectoryDialog;
     private AlertDialog confirmDeleteDialog;
+    private AlertDialog renameFileDialog;
 
     private MainActivity activity;
 
@@ -66,6 +69,7 @@ public class TreeViewDrawer extends Fragment {
         buildCreateFileDialog();
         buildCreateDirectoryDialog();
         buildConfirmDeleteDialog();
+        buildRenameFileDialog();
 
         /* Initialize TreeView */
         treeView = new TreeView<TreeFile>(requireContext(), TreeNode.root(Collections.emptyList()));
@@ -144,23 +148,21 @@ public class TreeViewDrawer extends Fragment {
             popup.getMenu().getItem(2).setVisible(false);
         }
 
-        popup.setOnMenuItemClickListener(
-                new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        var id = item.getItemId();
-                        if (id == R.id.create_kotlin_class_menu_bttn) {
-                            showCreateNewKotlinFileDialog(node);
-                        } else if (id == R.id.create_java_class_menu_bttn) {
-                            showCreateNewJavaFileDialog(node);
-                        } else if (id == R.id.create_directory_bttn) {
-                            showCreateNewDirectoryDialog(node);
-                        } else if (id == R.id.delete_menu_bttn) {
-                            showConfirmDeleteDialog(node);
-                        }
-                        return false;
-                    }
-                });
+        popup.setOnMenuItemClickListener(item -> {
+            var id = item.getItemId();
+            if (id == R.id.create_kotlin_class_menu_bttn) {
+                showCreateNewKotlinFileDialog(node);
+            } else if (id == R.id.create_java_class_menu_bttn) {
+                showCreateNewJavaFileDialog(node);
+            } else if (id == R.id.create_directory_bttn) {
+                showCreateNewDirectoryDialog(node);
+            } else if (id == R.id.delete_menu_bttn) {
+                showConfirmDeleteDialog(node);
+            } else if (id == R.id.rename_menu_bttn) {
+                showRenameFileDialog(node);
+            }
+            return false;
+        });
     }
 
     private void buildCreateFileDialog() {
@@ -188,6 +190,43 @@ public class TreeViewDrawer extends Fragment {
         builder.setPositiveButton(getString(R.string.delete), null);
         builder.setNegativeButton(android.R.string.cancel, null);
         confirmDeleteDialog = builder.create();
+    }
+
+    private void buildRenameFileDialog() {
+        var builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle(getString(R.string.rename));
+        builder.setView(R.layout.treeview_rename_dialog);
+        builder.setPositiveButton(getString(R.string.create), null);
+        builder.setNegativeButton(android.R.string.cancel, null);
+        renameFileDialog = builder.create();
+    }
+
+    private void showRenameFileDialog(TreeNode<TreeFile> node) {
+        if (!renameFileDialog.isShowing()) {
+            renameFileDialog.show();
+
+            EditText fileName = renameFileDialog.findViewById(android.R.id.text1);
+            Button createBttn = renameFileDialog.findViewById(android.R.id.button1);
+            fileName.setText(node.getContent().getFile().getPath());
+
+            createBttn.setOnClickListener(
+                    v -> {
+                        var fileNameString = fileName.getText().toString().replace("..", "");
+
+                        if (!fileNameString.isEmpty()) {
+                            try {
+                                var path =
+                                        Paths.get(
+                                                node.getContent().getFile().getPath());
+                                Files.move(path, path.resolveSibling(fileNameString));
+
+                                renameFileDialog.dismiss();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+        }
     }
 
     private void showCreateNewJavaFileDialog(TreeNode<TreeFile> node) {

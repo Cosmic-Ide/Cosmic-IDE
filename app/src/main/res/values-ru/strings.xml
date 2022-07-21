@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Java IDE</string>
 
     <!-- Strings used by MainActivity -->
     <string name="run">Запустить</string>
-    <string name="smali">Smali</string>
-    <string name="disassemble">Disassembler</string>
-    <string name="smali2java">Smali2Java</string>
     <string name="compilation_running">Выполнение</string>
     <string name="open_drawer">Открыть меню</string>
     <string name="close_drawer">Закрыть меню</string>
@@ -14,14 +10,13 @@
     <string name="create_new_directory">Создать папку</string>
     <string name="new_class_name">Название класса</string>
     <string name="new_directory_name">Название папки</string>
-    <string name="java_file_suffix">.java</string>
-    <string name="kotlin_file_suffix">.kt</string>
     <string name="create">Создать</string>
     <string name="create_java_class">Создать класс Java</string>
     <string name="create_kotlin_class">Создать класс Kotlin</string>
     <string name="create_directory">Создать папку</string>
     <string name="delete_file">Удалить %1$s?</string>
     <string name="delete">Удалить</string>
+    <string name="rename">Переименовать</string>
     <string name="cancel">Отмена</string>
     <string name="compile_project">Скомпилировать проект</string>
     <string name="java_file">Java-файл</string>

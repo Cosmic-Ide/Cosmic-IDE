@@ -83,7 +83,7 @@ public class TreeViewDrawer extends Fragment {
 
         TreeNode<TreeFile> currentNode = treeView.getRoot();
         if(currentNode != null) {
-            partialRefresh(() -> treeView.refreshTreeView());
+            partialRefresh();
         } else {
             TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
             treeView.refreshTreeView(node);
@@ -122,10 +122,11 @@ public class TreeViewDrawer extends Fragment {
                         }));
     }
 
-    private void partialRefresh(Runnable callback) {
+    private void partialRefresh() {
         if(!treeView.getAllNodes().isEmpty()) {
             TreeNode<TreeFile> node = treeView.getAllNodes().get(0);
             TreeUtil.updateNode(node);
+            treeView.refreshTreeView();
             callback.run();
         }
     }
@@ -219,6 +220,7 @@ public class TreeViewDrawer extends Fragment {
                                         Paths.get(
                                                 node.getContent().getFile().getPath());
                                 Files.move(path, path.resolveSibling(fileNameString));
+                                partialRefresh();
 
                                 renameFileDialog.dismiss();
                             } catch (Exception e) {

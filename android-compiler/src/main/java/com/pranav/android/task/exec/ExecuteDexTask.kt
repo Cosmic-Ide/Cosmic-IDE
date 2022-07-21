@@ -1,4 +1,4 @@
-package com.pranav.android.task.java
+package com.pranav.android.task.exec
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -20,7 +20,7 @@ import java.io.File
 import java.nio.file.Paths
 import java.lang.reflect.Modifier
 
-class ExecuteJavaTask(preferences: SharedPreferences, claz: String) : Task {
+class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
 
     private val clazz: String
     private var result: Any? = null
@@ -88,7 +88,7 @@ class ExecuteJavaTask(preferences: SharedPreferences, claz: String) : Task {
 
         val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
 
-        val args = prefs.getString("program_arguments", "").trim()
+        val args = prefs.getString("program_arguments", "")!!.trim()
 
         // Split argument into an array
         val param = args.split("\\s+")

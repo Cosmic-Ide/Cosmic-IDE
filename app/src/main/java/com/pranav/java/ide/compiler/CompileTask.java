@@ -7,6 +7,9 @@ import android.util.Log;
 import com.pranav.android.exception.CompilationFailedException;
 import com.pranav.android.task.JavaBuilder;
 import com.pranav.android.task.java.*;
+import com.pranav.android.task.kotlin.KotlinCompiler;
+import com.pranav.android.task.dex.D8Task;
+import com.pranav.android.task.exec.ExecuteDexTask;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.MainActivity;
 import com.pranav.java.ide.R;
@@ -130,7 +133,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task = new ExecuteJavaTask(prefs, classes[item]);
+                            var task = new ExecuteDexTask(prefs, classes[item]);
                             try {
                                 task.doFullTask(activity.getProject());
                             } catch (InvocationTargetException e) {
@@ -148,7 +151,9 @@ public class CompileTask extends Thread {
                                         "Couldn't execute the dex: "
                                                 + e.toString()
                                                 + "\n\nSystem logs:\n"
-                                                + task.getLogs(),
+                                                + task.getLogs()
+                                                + "\n"
+                                                + Log.getStackTraceString(e),
                                         true);
                                 return;
                             }

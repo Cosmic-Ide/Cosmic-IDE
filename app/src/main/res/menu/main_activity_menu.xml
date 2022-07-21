@@ -5,7 +5,7 @@
     <item
         android:title="@string/run"
         android:id="@+id/run_menu_button"
-        android:icon="@drawable/baseline_play_arrow_white_24"
+        android:icon="@drawable/play_arrow"
         app:showAsAction="always" />
 
     <item

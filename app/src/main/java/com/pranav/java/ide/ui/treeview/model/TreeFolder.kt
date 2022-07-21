@@ -13,6 +13,6 @@ import java.io.File
 class TreeFolder(file: File) : TreeFile(file) {
 
     override fun getIcon(context: Context): Drawable? {
-        return AppCompatResources.getDrawable(context, R.drawable.folder)
+        return AppCompatResources.getDrawable(context, R.drawable.ic_folder)
     }
 }

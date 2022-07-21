@@ -38,7 +38,7 @@ open class TreeFile {
     fun getFile() = mFile
 
     open fun getIcon(context: Context) : Drawable? {
-        return AppCompatResources.getDrawable(context, R.drawable.java_file)
+        return AppCompatResources.getDrawable(context, R.drawable.ic_file)
     }
 
     override fun equals(other: Any?): Boolean {

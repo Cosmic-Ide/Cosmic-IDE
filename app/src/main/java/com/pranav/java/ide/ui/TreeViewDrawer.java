@@ -133,7 +133,6 @@ public class TreeViewDrawer extends Fragment {
             TreeNode<TreeFile> node = treeView.getAllNodes().get(0);
             TreeUtil.updateNode(node);
             treeView.refreshTreeView();
-            callback.run();
         }
     }
 

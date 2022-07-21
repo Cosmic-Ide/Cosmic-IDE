@@ -27,7 +27,7 @@ class TreeFileNodeViewBinder(
         )
 
         with(viewHolder.arrow) {
-            setImageResource(R.drawable.arrow)
+            setImageResource(R.drawable.arrow_forward)
             rotation = if (treeNode.isExpanded) 90F else 0F
             visibility = if (treeNode.isLeaf) View.INVISIBLE else View.VISIBLE
         }

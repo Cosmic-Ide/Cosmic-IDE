@@ -89,6 +89,7 @@ public class JavacCompilationTask implements Task {
         final var args = new ArrayList<String>();
 
         args.add("-proc:none");
+        args.add("-Xlint:-options");
         args.add("-source");
         args.add(version);
         args.add("-target");

@@ -17,6 +17,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -88,6 +89,12 @@ public class TreeViewDrawer extends Fragment {
             TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
             treeView.refreshTreeView(node);
         }
+
+        SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(() -> {
+            partialRefresh();
+            refreshLayout.setRefreshing(false);
+        });
 
         /* Finally - set adapter for TreeView and assign a listener to it */
         treeView.setAdapter(

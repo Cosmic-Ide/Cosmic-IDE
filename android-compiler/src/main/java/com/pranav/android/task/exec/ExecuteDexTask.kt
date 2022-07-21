@@ -65,6 +65,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
 
         val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
+            // check if all libs have been pre-dexed or not
             for (lib in libs) {
                 val outDex = project.getBuildDirPath() + lib.getName().replace(".jar", ".dex")
 
@@ -78,6 +79,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
                     )
                     File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
                 }
+                // load library into ClassLoader
                 dexLoader.loadDex(outDex)
             }
         }
@@ -91,7 +93,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
         val args = prefs.getString("program_arguments", "")!!.trim()
 
         // Split argument into an array
-        val param = args.split("\\s+")
+        val param = args.split("\\s+").toTypedArray()
 
         if (Modifier.isStatic(method.getModifiers())) {
             // If the method is static, directly call it

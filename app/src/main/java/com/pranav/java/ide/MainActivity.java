@@ -129,11 +129,10 @@ public final class MainActivity extends AppCompatActivity {
             dialog("Exception", e.getMessage(), true);
         }
         if (currentWorkingFilePath.endsWith(".kt")) {
-            language = getTextMateLanguageFor("kotlin");
+            editor.setEditorLanguage(getTextMateLanguageFor("kotlin"));
         } else if (currentWorkingFilePath.endsWith(".java") || currentWorkingFilePath.endsWith(".jav")) {
-            language = getTextMateLanguageFor("java");
+            editor.setEditorLanguage(getTextMateLanguageFor("java"));
         }
-        editor.setEditorLanguage(language);
 
         final var file = new File(currentWorkingFilePath);
         if (file.exists()) {

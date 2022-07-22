@@ -214,10 +214,8 @@ public final class MainActivity extends AppCompatActivity {
         TextMateLanguage language = null;
         if (path.endsWith(".kt")) {
             language = getTextMateLanguageFor("kotlin");
-            language.setEnableKotlinCompletions();
         } else if (path.endsWith(".java") || path.endsWith(".jav")) {
             language = getTextMateLanguageFor("java");
-            language.setEnableJavaCompletions();
         }
         editor.setEditorLanguage(language);
 

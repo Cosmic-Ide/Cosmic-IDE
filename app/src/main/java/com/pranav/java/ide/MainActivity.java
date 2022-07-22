@@ -125,7 +125,7 @@ public final class MainActivity extends AppCompatActivity {
             } else {
                 loadFileToEditor(indexer.getString("currentFile"));
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             dialog("Cannot read file", e.getMessage(), true);
         }
 
@@ -196,11 +196,13 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Loads a file from a path to the editor */
     public void loadFileToEditor(String path) throws IOException, JSONException {
-        indexer.put("currentFile", path);
-        indexer.flush();
+        if (!indexer.getString("currentFile").equals(path)) {
+            indexer.put("currentFile", path);
+            indexer.flush();
+        }
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
-        TextMateLanguage language;
+        TextMateLanguage language = null;
         if (path.endsWith(".kt")) {
             language = getTextMateLanguageFor("kotlin");
             language.setEnableKotlinCompletions();

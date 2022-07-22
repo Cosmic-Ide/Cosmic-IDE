@@ -356,7 +356,7 @@ public final class MainActivity extends AppCompatActivity {
     private TextMateLanguage getTextMateLanguageFor(String lang) {
         try {
             final var language =
-                    TextMateLanguage.create(
+                    TextMateLanguage.createNoCompletion(
                             lang + ".tmLanguage.json",
                             getAssets().open("textmate/" + lang + "/syntaxes/" + lang + ".tmLanguage.json"),
                             new InputStreamReader(

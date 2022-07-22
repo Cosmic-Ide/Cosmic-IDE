@@ -156,8 +156,8 @@ public class TextMateLanguage extends EmptyLanguage {
     
     private final String[] kotlinKeywords = {
         "as", "as?", "break", "class", "continue", "do", "else",
-        "false", "for", "fun", "if", "in", "!in", "interface", "is",
-        "!is", "null", "object", "package", "return", "super",
+        "false", "for", "fun", "if", "in", "interface", "is",
+        "null", "object", "package", "return", "super",
         "this", "throw", "true", "try", "typealias", "typeof", "val",
         "var", "when", "while", "by", "catch", "constructor",
         "delegate", "dynamic", "field", "file", "finally", "get",

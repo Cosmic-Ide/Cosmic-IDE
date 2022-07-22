@@ -201,7 +201,7 @@ public final class MainActivity extends AppCompatActivity {
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
         TextMateLanguage language;
-        if (paths.endsWith(".kt")) {
+        if (path.endsWith(".kt")) {
             language = getTextMateLanguageFor("kotlin");
             language.setEnableKotlinCompletions();
         } else if (path.endsWith(".java") || path.endsWith(".jav")) {
@@ -473,7 +473,7 @@ public final class MainActivity extends AppCompatActivity {
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
-                    edi.setEditorLanguage(getTextMateLanguageForJava());
+                    edi.setEditorLanguage(getTextMateLanguageFor("java"));
                     edi.setTextSize(12);
 
                     try {

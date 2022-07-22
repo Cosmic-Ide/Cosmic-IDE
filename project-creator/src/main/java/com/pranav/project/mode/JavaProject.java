@@ -80,7 +80,7 @@ public class JavaProject {
     }
 
     public String getLibDirPath() {
-        return getProjectDirPath + libDirName + "/";
+        return getProjectDirPath() + libDirName + "/";
     }
 
     public String getBuildDirPath() {

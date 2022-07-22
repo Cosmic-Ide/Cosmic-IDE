@@ -57,8 +57,9 @@ public class TextMateLanguage extends EmptyLanguage {
             autoComplete = new IdentifierAutoComplete(javaKeywords);
         } else if (grammarName.startsWith("kotlin")) {
             autoComplete = new IdentifierAutoComplete(kotlinKeywords);
+        }
         try {
-            textMateAnalyzer = new TextMateAnalyzer(this,grammarName, grammarIns,languageConfiguration, theme);
+            textMateAnalyzer = new TextMateAnalyzer(this, grammarName, grammarIns, languageConfiguration, theme);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,20 +67,20 @@ public class TextMateLanguage extends EmptyLanguage {
         autoCompleteEnabled = true;
     }
 
-    public static TextMateLanguage create(String grammarName, InputStream grammarIns,Reader languageConfiguration, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns,languageConfiguration, theme, true);
+    public static TextMateLanguage create(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
+        return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, true);
     }
 
     public static TextMateLanguage create(String grammarName, InputStream grammarIns, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns,null, theme, true);
+        return new TextMateLanguage(grammarName, grammarIns, null, theme, true);
     }
 
-    public static TextMateLanguage createNoCompletion(String grammarName, InputStream grammarIns,Reader languageConfiguration, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns,languageConfiguration, theme, false);
+    public static TextMateLanguage createNoCompletion(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
+        return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, false);
     }
 
     public static TextMateLanguage createNoCompletion(String grammarName, InputStream grammarIns, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns,null, theme, false);
+        return new TextMateLanguage(grammarName, grammarIns, null, theme, false);
     }
 
     /**

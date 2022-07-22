@@ -77,12 +77,12 @@ public class Paint extends android.graphics.Paint {
     /**
      * Find offset for a certain advance returned by {@link #measureTextRunAdvance(char[], int, int, int, int)}
      */
-    public int findOffsetByRunAdvance(ContentLine text, int start, int end, float advance) {
-        if (text.widthCache != null) {
+    public int findOffsetByRunAdvance(ContentLine text, int start, int end, float advance, boolean useCache) {
+        if (text.widthCache != null && useCache) {
             var cache = text.widthCache;
             var offset = start;
             var currAdvance = 0f;
-            for (;offset < end && currAdvance < advance;offset++) {
+            for (; offset < end && currAdvance < advance; offset++) {
                 currAdvance += cache[offset];
             }
             if (currAdvance > advance) {

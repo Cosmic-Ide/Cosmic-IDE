@@ -121,12 +121,21 @@ public final class MainActivity extends AppCompatActivity {
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
             if (indexer.notHas("currentFile")) {
-                loadFileToEditor(getProject().getSrcDirPath() + "Main.kt");
-            } else {
-                loadFileToEditor(indexer.getString("currentFile"));
+                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
+                indexer.flush();
             }
+            currentWorkingFilePath = indexer.getString("currentFile");
         } catch (Exception e) {
-            dialog("Cannot read file", e.getMessage(), true);
+            dialog("JsonException", e.getMessage(), true);
+        }
+
+        final var file = new File(currentWorkingFilePath);
+        if (file.exists()) {
+            try {
+                editor.setText(FileUtil.readFile(file));
+            } catch (IOException e) {
+                dialog("Cannot read file", getString(e), true);
+            }
         }
 
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
@@ -346,7 +355,7 @@ public final class MainActivity extends AppCompatActivity {
             final var language =
                     TextMateLanguage.create(
                             lang + ".tmLanguage.json",
-                            getAssets().open("textmate/java/syntaxes/" + lang + ".tmLanguage.json"),
+                            getAssets().open("textmate/" + lang + "/syntaxes/" + lang + ".tmLanguage.json"),
                             new InputStreamReader(
                                     getAssets().open("textmate/" + lang + "/language-configuration.json")),
                             getDarculaTheme());

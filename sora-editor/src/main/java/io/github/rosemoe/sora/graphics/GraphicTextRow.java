@@ -27,6 +27,10 @@ import static io.github.rosemoe.sora.lang.styling.TextStyle.isBold;
 import static io.github.rosemoe.sora.lang.styling.TextStyle.isItalics;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 
@@ -39,15 +43,16 @@ import io.github.rosemoe.sora.text.ContentLine;
 public class GraphicTextRow {
 
     private final static float SKEW_X = -0.2f;
+    private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private final float[] mBuffer;
     private Paint mPaint;
     private ContentLine mText;
     private int mStart;
     private int mEnd;
     private int mTabWidth;
     private List<Span> mSpans;
-    private final float[] mBuffer;
-
-    private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private boolean mCache = true;
+    private List<Integer> mSoftBreaks;
 
     private GraphicTextRow() {
         mBuffer = new float[2];
@@ -73,6 +78,8 @@ public class GraphicTextRow {
         st.mSpans = null;
         st.mPaint = null;
         st.mStart = st.mEnd = st.mTabWidth = 0;
+        st.mCache = true;
+        st.mSoftBreaks = null;
         synchronized (sCached) {
             for (int i = 0; i < sCached.length; ++i) {
                 if (sCached[i] == null) {
@@ -86,7 +93,7 @@ public class GraphicTextRow {
     /**
      * Reset
      */
-    public void set(ContentLine line, int start, int end, int tabWidth, List<Span> spans, Paint paint) {
+    public void set(@NonNull ContentLine line, int start, int end, int tabWidth, @Nullable List<Span> spans, @NonNull Paint paint) {
         mPaint = paint;
         mText = line;
         mTabWidth = tabWidth;
@@ -95,19 +102,27 @@ public class GraphicTextRow {
         mSpans = spans;
     }
 
+    public void setSoftBreaks(@Nullable List<Integer> softBreaks) {
+        mSoftBreaks = softBreaks;
+    }
+
+    public void disableCache() {
+        mCache = false;
+    }
+
     /**
      * Build measure cache for the text
      */
     public void buildMeasureCache() {
         if (mText.widthCache == null || mText.widthCache.length < mEnd + 4) {
-            mText.widthCache = new float[Math.max(128, mText.length() + 16)];
+            mText.widthCache = new float[Math.max(90, mText.length() + 16)];
         }
         measureTextInternal(mStart, mEnd, mText.widthCache);
         // Generate prefix sum
         var cache = mText.widthCache;
         var pending = cache[0];
         cache[0] = 0f;
-        for (int i = 1; i <= mEnd;i++) {
+        for (int i = 1; i <= mEnd; i++) {
             var tmp = cache[i];
             cache[i] = cache[i - 1] + pending;
             pending = tmp;
@@ -117,18 +132,18 @@ public class GraphicTextRow {
     /**
      * From {@code start} to measure characters, until measured width add next char's width is bigger
      * than {@code advance}.
-     *
+     * <p>
      * Note that the result array should not be stored.
      *
      * @return Element 0 is offset, Element 1 is measured width
      */
     public float[] findOffsetByAdvance(int start, float advance) {
-        if (mText.widthCache != null) {
+        if (mText.widthCache != null && mCache) {
             var cache = mText.widthCache;
             var end = mEnd;
             int left = start, right = end;
             var base = cache[start];
-            while(left <= right) {
+            while (left <= right) {
                 var mid = (left + right) / 2;
                 if (mid < start || mid >= end) {
                     left = mid;
@@ -152,23 +167,21 @@ public class GraphicTextRow {
             mBuffer[1] = cache[left] - base;
             return mBuffer;
         }
-        int regionStart = start;
-        int index = 0;
-        // Skip leading spans
-        while (index < mSpans.size() && mSpans.get(index).column < regionStart) {
-            index++;
-        }
+        var mRegionItr = new TextRegionIterator();
+        mRegionItr.set(mEnd, mSpans, mSoftBreaks);
+        mRegionItr.requireStartOffset(start);
         float currentPosition = 0f;
         // Find in each region
         var lastStyle = 0L;
         var chars = mText.value;
         float tabAdvance = mPaint.getSpaceWidth() * mTabWidth;
         int offset = start;
-        while (index <= mSpans.size() && currentPosition < advance) {
-            var regionEnd = index < mSpans.size() ? mSpans.get(index).column : mEnd;
+        while (mRegionItr.hasNextRegion() && currentPosition < advance) {
+            mRegionItr.nextRegion();
+            var regionStart = mRegionItr.getStartIndex();
+            var regionEnd = mRegionItr.getEndIndex();
             regionEnd = Math.min(mEnd, regionEnd);
-            int styleSpanIndex = Math.max(0, index - 1);
-            var style = mSpans.get(styleSpanIndex).getStyleBits();
+            var style = mRegionItr.getSpan().getStyleBits();
             if (style != lastStyle) {
                 if (isBold(style) != isBold(lastStyle)) {
                     mPaint.setFakeBoldText(isBold(style));
@@ -188,7 +201,7 @@ public class GraphicTextRow {
                         // Here is a tab
                         // Try to find advance
                         if (lastStart != i) {
-                            int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, i, advance - currentPosition);
+                            int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, i, advance - currentPosition, mCache);
                             currentPosition += mPaint.measureTextRunAdvance(chars, lastStart, idx, regionStart, regionEnd);
                             if (idx < i) {
                                 res = idx;
@@ -213,7 +226,7 @@ public class GraphicTextRow {
                     }
                 }
                 if (res == -1) {
-                    int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, regionEnd, advance - currentPosition);
+                    int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, regionEnd, advance - currentPosition, mCache);
                     currentPosition += measureText(lastStart, idx);
                     res = idx;
                 }
@@ -224,8 +237,6 @@ public class GraphicTextRow {
                 break;
             }
 
-            index ++;
-            regionStart = regionEnd;
             if (regionEnd == mEnd) {
                 break;
             }
@@ -244,10 +255,12 @@ public class GraphicTextRow {
     }
 
     public float measureText(int start, int end) {
-        if (start == end) {
+        if (start >= end) {
+            if (start != end)
+                Log.w("GraphicTextRow", "start > end");
             return 0f;
         }
-        if (mText.widthCache != null) {
+        if (mText.widthCache != null && mCache) {
             var cache = mText.widthCache;
             return cache[end] - cache[start];
         }
@@ -261,23 +274,18 @@ public class GraphicTextRow {
 
         start = Math.max(start, mStart);
         end = Math.min(end, mEnd);
-        if (mSpans.size() == 0) {
-            throw new IllegalArgumentException("At least one span is needed");
-        }
-        int regionStart = start;
-        int index = 0;
-        // Skip leading spans
-        while (index < mSpans.size() && mSpans.get(index).column < regionStart) {
-            index++;
-        }
+        var mRegionItr = new TextRegionIterator();
+        mRegionItr.set(end, mSpans, mSoftBreaks);
+        mRegionItr.requireStartOffset(start);
         float width = 0f;
         // Measure for each region
         var lastStyle = 0L;
-        while (index <= mSpans.size()) {
-            var regionEnd = index < mSpans.size() ? mSpans.get(index).column : mEnd;
+        while (mRegionItr.hasNextRegion()) {
+            mRegionItr.nextRegion();
+            var regionStart = mRegionItr.getStartIndex();
+            var regionEnd = mRegionItr.getEndIndex();
             regionEnd = Math.min(end, regionEnd);
-            int styleSpanIndex = Math.max(0, index - 1);
-            var style = mSpans.get(styleSpanIndex).getStyleBits();
+            var style = mRegionItr.getSpan().getStyleBits();
             if (style != lastStyle) {
                 if (isBold(style) != isBold(lastStyle)) {
                     mPaint.setFakeBoldText(isBold(style));
@@ -288,14 +296,13 @@ public class GraphicTextRow {
                 lastStyle = style;
             }
             width += measureTextInner(regionStart, regionEnd, widths);
-            index++;
-            regionStart = regionEnd;
-            if (regionEnd == end) {
+            if (regionEnd >= end) {
                 break;
             }
         }
         mPaint.setFakeBoldText(originalBold);
         mPaint.setTextSkewX(originalSkew);
+        mRegionItr.reset();
         return width;
     }
 

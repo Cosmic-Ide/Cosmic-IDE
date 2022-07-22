@@ -26,10 +26,9 @@ package io.github.rosemoe.sora.widget;
 import android.content.res.Resources;
 import android.graphics.RectF;
 import android.os.Build;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.HapticFeedbackConstants;
 import android.view.GestureDetector;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.OverScroller;
@@ -42,7 +41,6 @@ import io.github.rosemoe.sora.event.LongPressEvent;
 import io.github.rosemoe.sora.event.ScrollEvent;
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.graphics.RectUtils;
-import io.github.rosemoe.sora.text.ICUUtils;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.widget.component.Magnifier;
 import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
@@ -50,7 +48,7 @@ import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
 /**
  * Handles touch events of editor
  *
- * @author Rose
+ * @author Rosemoe
  */
 @SuppressWarnings("CanBeFinal")
 public final class EditorTouchEventHandler implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, ScaleGestureDetector.OnScaleGestureListener {
@@ -65,20 +63,7 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
 
     private final CodeEditor mEditor;
     private final OverScroller mScroller;
-    private long mLastScroll = 0;
-    private long mLastSetSelection = 0;
-    private boolean mHoldingScrollbarVertical = false;
-    private boolean mHoldingScrollbarHorizontal = false;
-    private boolean mHoldingInsertHandle = false;
-    private float mThumbDownY = 0;
-    private float mThumbDownX = 0;
     private final SelectionHandle mInsertHandle;
-    private SelectionHandle mLeftHandle;
-    private SelectionHandle mRightHandle;
-    private int mTouchedHandleType = -1;
-    private float mEdgeFieldSize;
-    private int mEdgeFlags;
-    private MotionEvent mThumbRecord;
     Magnifier mMagnifier;
     int selHandleType = -1;
     float motionX;
@@ -88,6 +73,20 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
     boolean isScaling = false;
     float scaleMaxSize;
     float scaleMinSize;
+    private float textSizeStart;
+    private long mLastScroll = 0;
+    private long mLastSetSelection = 0;
+    private boolean mHoldingScrollbarVertical = false;
+    private boolean mHoldingScrollbarHorizontal = false;
+    private boolean mHoldingInsertHandle = false;
+    private float mThumbDownY = 0;
+    private float mThumbDownX = 0;
+    private SelectionHandle mLeftHandle;
+    private SelectionHandle mRightHandle;
+    private int mTouchedHandleType = -1;
+    private float mEdgeFieldSize;
+    private int mEdgeFlags;
+    private MotionEvent mThumbRecord;
 
     /**
      * Create an event handler for the given editor
@@ -225,6 +224,12 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
      */
     public void reset() {
         mScroller.startScroll(0, 0, 0, 0, 0);
+        reset2();
+    }
+
+    public void reset2() {
+        mHoldingInsertHandle = mHoldingScrollbarHorizontal = mHoldingScrollbarVertical = false;
+        dismissMagnifier();
     }
 
     public void updateMagnifier(MotionEvent e) {
@@ -486,6 +491,7 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
                     mScroller.getCurrY(),
                     endX - mScroller.getCurrX(),
                     endY - mScroller.getCurrY(), 0);
+            mScroller.abortAnimation();
         }
         mEditor.invalidate();
     }
@@ -497,6 +503,9 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         mScroller.forceFinished(true);
+        if (mEditor.isFormatting()) {
+            return true;
+        }
         long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
         int line = IntPair.getFirst(res);
         int column = IntPair.getSecond(res);
@@ -513,6 +522,9 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
 
     @Override
     public void onLongPress(MotionEvent e) {
+        if (mEditor.isFormatting()) {
+            return;
+        }
         long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
         int line = IntPair.getFirst(res);
         int column = IntPair.getSecond(res);
@@ -625,6 +637,9 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
+        if (mEditor.isFormatting()) {
+            return true;
+        }
         if (mEditor.isScalable()) {
             float newSize = mEditor.getTextSizePx() * detector.getScaleFactor();
             if (newSize < scaleMinSize || newSize > scaleMaxSize) {
@@ -640,7 +655,7 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
             afterScrollX = Math.max(0, Math.min(afterScrollX, mEditor.getScrollMaxX()));
             afterScrollY = Math.max(0, Math.min(afterScrollY, mEditor.getScrollMaxY()));
             mEditor.dispatchEvent(new ScrollEvent(mEditor, mScroller.getCurrX(),
-                    mScroller.getCurrY(), (int)afterScrollX, (int)afterScrollY, ScrollEvent.CAUSE_SCALE_TEXT));
+                    mScroller.getCurrY(), (int) afterScrollX, (int) afterScrollY, ScrollEvent.CAUSE_SCALE_TEXT));
             mScroller.startScroll((int) afterScrollX, (int) afterScrollY, 0, 0, 0);
             isScaling = true;
             mEditor.invalidate();
@@ -652,12 +667,16 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
         mScroller.forceFinished(true);
-        return mEditor.isScalable();
+        textSizeStart = mEditor.getTextSizePx();
+        return mEditor.isScalable() && !mEditor.isFormatting();
     }
 
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         isScaling = false;
+        if (textSizeStart == mEditor.getTextSizePx()) {
+            return;
+        }
         mEditor.getEditorPainter().updateTimestamp();
         mEditor.createLayout();
         mEditor.invalidate();
@@ -679,6 +698,9 @@ public final class EditorTouchEventHandler implements GestureDetector.OnGestureL
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
+        if (mEditor.isFormatting()) {
+            return true;
+        }
         long res = mEditor.getPointPositionOnScreen(e.getX(), e.getY());
         int line = IntPair.getFirst(res);
         int column = IntPair.getSecond(res);

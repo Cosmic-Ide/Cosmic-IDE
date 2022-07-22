@@ -31,9 +31,12 @@ import androidx.annotation.Nullable;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.analysis.StyleReceiver;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.lang.format.Formatter;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.text.TextRange;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 /**
@@ -43,9 +46,13 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
  */
 public class EmptyLanguage implements Language {
 
+
+    public final static SymbolPairMatch EMPTY_SYMBOL_PAIRS = new SymbolPairMatch();
+
+    @NonNull
     @Override
-    public CharSequence format(CharSequence text) {
-        return text;
+    public Formatter getFormatter() {
+        return EmptyFormatter.INSTANCE;
     }
 
     @Override
@@ -89,7 +96,35 @@ public class EmptyLanguage implements Language {
         return false;
     }
 
-    public final static SymbolPairMatch EMPTY_SYMBOL_PAIRS = new SymbolPairMatch();
+    public static class EmptyFormatter implements Formatter {
+
+        public final static EmptyFormatter INSTANCE = new EmptyFormatter();
+
+        @Override
+        public void format(@NonNull Content text, @NonNull TextRange cursorRange) {
+
+        }
+
+        @Override
+        public void formatRegion(@NonNull Content text, @NonNull TextRange rangeToFormat, @NonNull TextRange cursorRange) {
+
+        }
+
+        @Override
+        public void setReceiver(@Nullable FormatResultReceiver receiver) {
+
+        }
+
+        @Override
+        public boolean isRunning() {
+            return false;
+        }
+
+        @Override
+        public void destroy() {
+
+        }
+    }
 
     public static class EmptyAnalyzeManager implements AnalyzeManager {
 

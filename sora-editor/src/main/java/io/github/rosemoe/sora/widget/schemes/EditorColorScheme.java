@@ -65,6 +65,7 @@ import io.github.rosemoe.sora.widget.CodeEditor;
  * @author Rose
  */
 public class EditorColorScheme {
+
     //----------------Issue colors----------------
     public static final int PROBLEM_TYPO = 37;
     public static final int PROBLEM_WARNING = 36;
@@ -90,14 +91,18 @@ public class EditorColorScheme {
      */
     public static final int TEXT_SELECTED = 30;
     public static final int MATCHED_TEXT_BACKGROUND = 29;
-    public static final int AUTO_COMP_PANEL_CORNER = 20;
-    public static final int AUTO_COMP_PANEL_BG = 19;
+    public static final int COMPLETION_WND_CORNER = 20;
+    public static final int COMPLETION_WND_BACKGROUND = 19;
+    public static final int COMPLETION_WND_TEXT_PRIMARY = 42;
+    public static final int COMPLETION_WND_TEXT_SECONDARY = 43;
+    public static final int COMPLETION_WND_ITEM_CURRENT = 44;
 
     /**
      * No longer supported
      */
     public static final int LINE_BLOCK_LABEL = 18;
 
+    public static final int HIGHLIGHTED_DELIMITERS_BACKGROUND = 41;
     public static final int HIGHLIGHTED_DELIMITERS_UNDERLINE = 40;
     public static final int HIGHLIGHTED_DELIMITERS_FOREGROUND = 39;
     public static final int LINE_NUMBER_PANEL_TEXT = 17;
@@ -126,15 +131,17 @@ public class EditorColorScheme {
     /**
      * Max pre-defined color id
      */
-    protected static final int END_COLOR_ID = 40;
+    protected static final int END_COLOR_ID = 44;
     /**
      * Real color saver
      */
-    protected final SparseIntArray mColors;
+    protected final SparseIntArray colors;
     /**
      * Host editor object
      */
-    private final List<WeakReference<CodeEditor>> mEditors;
+    private final List<WeakReference<CodeEditor>> editors;
+
+    private final boolean dark;
 
     /**
      * Create a new ColorScheme for the given editor
@@ -147,28 +154,38 @@ public class EditorColorScheme {
     }
 
     /**
-     * For sub-classes
+     * Create a default color scheme
      */
     public EditorColorScheme() {
-        mColors = new SparseIntArray();
-        mEditors = new ArrayList<>();
+        this(false);
+    }
+
+    /**
+     * For subclass
+     *
+     * @param isDark Whether this is a dark theme
+     */
+    protected EditorColorScheme(boolean isDark) {
+        colors = new SparseIntArray();
+        editors = new ArrayList<>();
+        this.dark = isDark;
         applyDefault();
     }
 
     /**
      * Subscribe changes
-     *
+     * <p>
      * Called by editor
      */
     @UnsupportedUserUsage
     public void attachEditor(CodeEditor editor) {
         Objects.requireNonNull(editor);
-        for (var ref : mEditors) {
+        for (var ref : editors) {
             if (ref.get() == editor) {
                 return;
             }
         }
-        mEditors.add(new WeakReference<>(editor));
+        editors.add(new WeakReference<>(editor));
         editor.onColorFullUpdate();
     }
 
@@ -177,7 +194,7 @@ public class EditorColorScheme {
      */
     @UnsupportedUserUsage
     public void detachEditor(CodeEditor editor) {
-        var itr = mEditors.iterator();
+        var itr = editors.iterator();
         while (itr.hasNext()) {
             if (itr.next().get() == editor) {
                 itr.remove();
@@ -201,7 +218,7 @@ public class EditorColorScheme {
      * @param type The type
      */
     private void applyDefault(int type) {
-        int color = mColors.get(type);
+        int color = colors.get(type);
         switch (type) {
             case LINE_NUMBER:
                 color = 0xFF505050;
@@ -212,8 +229,8 @@ public class EditorColorScheme {
                 break;
             case WHOLE_BACKGROUND:
             case LINE_NUMBER_PANEL_TEXT:
-            case AUTO_COMP_PANEL_BG:
-            case AUTO_COMP_PANEL_CORNER:
+            case COMPLETION_WND_BACKGROUND:
+            case COMPLETION_WND_CORNER:
                 color = 0xffffffff;
                 break;
             case OPERATOR:
@@ -226,7 +243,6 @@ public class EditorColorScheme {
                 color = 0xdd536dfe;
                 break;
             case UNDERLINE:
-            case SIDE_BLOCK_LINE:
                 color = 0xff000000;
                 break;
             case SELECTION_HANDLE:
@@ -269,6 +285,7 @@ public class EditorColorScheme {
                 color = 0xdd000000;
                 break;
             case BLOCK_LINE_CURRENT:
+            case SIDE_BLOCK_LINE:
                 color = 0xff999999;
                 break;
             case IDENTIFIER_VAR:
@@ -296,6 +313,16 @@ public class EditorColorScheme {
             case HIGHLIGHTED_DELIMITERS_UNDERLINE:
                 color = 0xff3f51b5;
                 break;
+            case HIGHLIGHTED_DELIMITERS_BACKGROUND:
+                color = 0x1D000000;
+                break;
+            case COMPLETION_WND_TEXT_PRIMARY:
+            case COMPLETION_WND_TEXT_SECONDARY:
+                color = isDark() ? 0xffffffff : 0xff000000;
+                break;
+            case COMPLETION_WND_ITEM_CURRENT:
+                color = 0xffeeeeee;
+                break;
         }
         setColor(type, color);
     }
@@ -314,10 +341,10 @@ public class EditorColorScheme {
             return;
         }
 
-        mColors.put(type, color);
+        colors.put(type, color);
 
         //Notify the editor
-        var itr = mEditors.iterator();
+        var itr = editors.iterator();
         while (itr.hasNext()) {
             var editor = itr.next().get();
             if (editor == null) {
@@ -335,7 +362,14 @@ public class EditorColorScheme {
      * @return The color for type
      */
     public int getColor(int type) {
-        return mColors.get(type);
+        return colors.get(type);
+    }
+
+    /**
+     * Check whether this color scheme is dark
+     */
+    public boolean isDark() {
+        return dark;
     }
 
 }

@@ -24,6 +24,7 @@
 package org.eclipse.tm4e.core.internal.theme.reader;
 
 import org.eclipse.tm4e.core.internal.parser.json.JSONPListParser;
+import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
 import java.io.InputStream;
@@ -34,6 +35,15 @@ import java.io.InputStream;
  */
 public class ThemeReader {
 
+    public static final IThemeParser XML_PARSER = new IThemeParser() {
+
+        private final XMLPListParser<IRawTheme> parser = new XMLPListParser<>(true);
+
+        @Override
+        public IRawTheme parse(InputStream contents) throws Exception {
+            return parser.parse(contents);
+        }
+    };
     public static final IThemeParser JSON_PARSER = new IThemeParser() {
 
         private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
@@ -56,6 +66,9 @@ public class ThemeReader {
     }
 
     private static IThemeParser getThemeParser(String filePath) {
+        if (filePath.endsWith(".json")) {
             return JSON_PARSER;
+        }
+        return XML_PARSER;
     }
 }

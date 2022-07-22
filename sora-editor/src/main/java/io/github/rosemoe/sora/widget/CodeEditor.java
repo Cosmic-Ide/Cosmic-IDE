@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,7 +64,6 @@ import android.widget.OverScroller;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.FloatRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -87,6 +87,7 @@ import io.github.rosemoe.sora.graphics.Paint;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
+import io.github.rosemoe.sora.lang.format.Formatter;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Styles;
@@ -96,10 +97,10 @@ import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.text.ContentListener;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.Cursor;
-import io.github.rosemoe.sora.text.FormatThread;
 import io.github.rosemoe.sora.text.ICUUtils;
 import io.github.rosemoe.sora.text.LineRemoveListener;
 import io.github.rosemoe.sora.text.TextLayoutHelper;
+import io.github.rosemoe.sora.text.TextRange;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.Floats;
 import io.github.rosemoe.sora.util.IntPair;
@@ -134,25 +135,16 @@ import io.github.rosemoe.sora.widget.style.builtin.MoveCursorAnimator;
  * @author Rosemoe
  */
 @SuppressWarnings("unused")
-public class CodeEditor extends View implements ContentListener, FormatThread.FormatResultReceiver, LineRemoveListener {
-
-    private final static Logger logger = Logger.instance("CodeEditor");
-
-    /**
-     * Digits for line number measuring
-     */
-    private final static String NUMBER_DIGITS = "0 1 2 3 4 5 6 7 8 9";
+public class CodeEditor extends View implements ContentListener, Formatter.FormatResultReceiver, LineRemoveListener {
 
     /**
      * The default size when creating the editor object. Unit is sp.
      */
     public static final int DEFAULT_TEXT_SIZE = 18;
-
     /**
      * The default cursor blinking period
      */
     public static final int DEFAULT_CURSOR_BLINK_PERIOD = 500;
-
     /**
      * Draw whitespace characters before line content start
      * <strong>Whitespace here only means space and tab</strong>
@@ -160,7 +152,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_WHITESPACE_LEADING = 1;
-
     /**
      * Draw whitespace characters inside line content
      * <strong>Whitespace here only means space and tab</strong>
@@ -168,7 +159,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_WHITESPACE_INNER = 1 << 1;
-
     /**
      * Draw whitespace characters after line content end
      * <strong>Whitespace here only means space and tab</strong>
@@ -176,7 +166,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_WHITESPACE_TRAILING = 1 << 2;
-
     /**
      * Draw whitespace characters even if it is a line full of whitespaces
      * To apply this, you must enable {@link #FLAG_DRAW_WHITESPACE_LEADING}
@@ -185,14 +174,12 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE = 1 << 3;
-
     /**
      * Draw newline signals in text
      *
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_LINE_SEPARATOR = 1 << 4;
-
     /**
      * Draw the tab character the same as space.
      * If not set, tab will be display to be a line.
@@ -200,43 +187,52 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_TAB_SAME_AS_SPACE = 1 << 5;
-
     /**
      * Draw the whitespaces in selected text
      *
      * @see #setNonPrintablePaintingFlags(int)
      */
     public static final int FLAG_DRAW_WHITESPACE_IN_SELECTION = 1 << 6;
-
     /**
      * Adjust the completion window's position scheme according to the device's screen size.
      */
     public static final int WINDOW_POS_MODE_AUTO = 0;
-
     /**
      * Completion window always follow the cursor
      */
     public static final int WINDOW_POS_MODE_FOLLOW_CURSOR_ALWAYS = 1;
-
     /**
      * Completion window always stay at the bottom of view and occupies the
      * horizontal viewport
      */
     public static final int WINDOW_POS_MODE_FULL_WIDTH_ALWAYS = 2;
-
     /**
      * Text size scale of small graph
      */
     static final float SCALE_MINI_GRAPH = 0.9f;
-
     /*
      * Internal state identifiers of action mode
      */
     static final int ACTION_MODE_NONE = 0;
     static final int ACTION_MODE_SEARCH_TEXT = 1;
     static final int ACTION_MODE_SELECT_TEXT = 2;
+    private final static Logger logger = Logger.instance("CodeEditor");
+    /**
+     * Digits for line number measuring
+     */
+    private final static String NUMBER_DIGITS = "0 1 2 3 4 5 6 7 8 9";
     private static final String LOG_TAG = "CodeEditor";
+    private final static String COPYRIGHT = "sora-editor\nCopyright (C) Rosemoe roses2020@qq.com\nThis project is distributed under the LGPL v2.1 license";
+    final EditorKeyEventHandler mKeyEventHandler = new EditorKeyEventHandler(this);
     protected SymbolPairMatch mLanguageSymbolPairs;
+    protected EditorTextActionWindow mTextActionWindow;
+    protected List<Span> defSpans = new ArrayList<>(2);
+    protected EditorStyleDelegate mStyleDelegate;
+    int mStartedActionMode;
+    CharPosition mSelectionAnchor;
+    EditorInputConnection mConnection;
+    EventManager mEventManager;
+    Layout mLayout;
     private int mTabWidth;
     private int mCursorPosition;
     private int mDownX = 0;
@@ -258,6 +254,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     private boolean mEditable;
     private boolean mWordwrap;
     private boolean mUndoEnabled;
+    private boolean mLayoutBusy;
     private boolean mDisplayLnPanel;
     private boolean mLineNumberEnabled;
     private boolean mBlockLineEnabled;
@@ -291,34 +288,28 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     private EditorTouchEventHandler mEventHandler;
     private Paint.Align mLineNumberAlign;
     private GestureDetector mBasicDetector;
-    protected EditorTextActionWindow mTextActionWindow;
     private ScaleGestureDetector mScaleDetector;
     private CursorAnchorInfo.Builder mAnchorInfoBuilder;
     private EdgeEffect mVerticalGlow;
     private EdgeEffect mHorizontalGlow;
     private ExtractedTextRequest mExtracting;
-    private FormatThread mFormatThread;
     private EditorSearcher mSearcher;
     private CursorAnimator mCursorAnimator;
     private Paint.FontMetricsInt mLineNumberMetrics;
     private Paint.FontMetricsInt mGraphMetrics;
     private SelectionHandleStyle mHandleStyle;
     private CursorBlink mCursorBlink;
-    protected List<Span> defSpans = new ArrayList<>(2);
     private HwAcceleratedRenderer mRenderer;
     private DirectAccessProps mProps;
     private Bundle mExtraArguments;
-    protected EditorStyleDelegate mStyleDelegate;
     private Styles mStyles;
     private DiagnosticsContainer mDiagnostics;
-    final EditorKeyEventHandler mKeyEventHandler = new EditorKeyEventHandler(this);
-    int mStartedActionMode;
-    CharPosition mSelectionAnchor;
-    EditorInputConnection mConnection;
-    EventManager mEventManager;
-    Layout mLayout;
-
     private EditorPainter mPainter;
+    private boolean mHardwareAccAllowed;
+    private float scrollerFinalX;
+    private float scrollerFinalY;
+    private boolean verticalAbsorb;
+    private boolean horizontalAbsorb;
 
     public CodeEditor(Context context) {
         this(context, null);
@@ -335,6 +326,19 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public CodeEditor(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initialize(attrs, defStyleAttr, defStyleRes);
+    }
+
+    /**
+     * Checks whether this region has visible region on screen
+     *
+     * @param begin The start line of code block
+     * @param end   The end line of code block
+     * @param first The first visible line on screen
+     * @param last  The last visible line on screen
+     * @return Whether this block can be seen
+     */
+    static boolean hasVisibleRegion(int begin, int end, int first, int last) {
+        return (end > first && begin < last);
     }
 
     /**
@@ -385,19 +389,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     public KeyMetaStates getKeyMetaStates() {
         return mKeyEventHandler.getKeyMetaStates();
-    }
-
-    /**
-     * Checks whether this region has visible region on screen
-     *
-     * @param begin The start line of code block
-     * @param end   The end line of code block
-     * @param first The first visible line on screen
-     * @param last  The last visible line on screen
-     * @return Whether this block can be seen
-     */
-    static boolean hasVisibleRegion(int begin, int end, int first, int last) {
-        return (end > first && begin < last);
     }
 
     /**
@@ -504,7 +495,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mInsertSelWidth = mDpUnit;
         mDividerMargin = mDpUnit * 2;
 
-
         mMatrix = new Matrix();
         mHandleStyle = new HandleStyleSideDrop(getContext());
         mSearcher = new EditorSearcher(this);
@@ -526,7 +516,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mLineNumberAlign = Paint.Align.RIGHT;
         mWait = false;
         mBlockLineEnabled = true;
-        mBlockLineWidth = 1.5f;
+        mBlockLineWidth = 1f;
         mInputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         mClipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         setUndoEnabled(true);
@@ -570,6 +560,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see #setCompletionWndPositionMode(int)
+     */
+    public int getCompletionWndPositionMode() {
+        return mCompletionPosMode;
+    }
+
+    /**
      * Set how should we control the position&size of completion window
      *
      * @see #WINDOW_POS_MODE_AUTO
@@ -582,13 +579,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * @see #setCompletionWndPositionMode(int)
-     */
-    public int getCompletionWndPositionMode() {
-        return mCompletionPosMode;
-    }
-
-    /**
      * Get {@code DirectAccessProps} object of the editor.
      * <p>
      * You can update some features in editor with the instance without disturb to call methods.
@@ -598,17 +588,17 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * Set the tip text while formatting
-     */
-    public void setFormatTip(@NonNull String formatTip) {
-        this.mFormatTip = Objects.requireNonNull(formatTip);
-    }
-
-    /**
      * @see #setFormatTip(String)
      */
     public String getFormatTip() {
         return mFormatTip;
+    }
+
+    /**
+     * Set the tip text while formatting
+     */
+    public void setFormatTip(@NonNull String formatTip) {
+        this.mFormatTip = Objects.requireNonNull(formatTip);
     }
 
     /**
@@ -631,6 +621,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see CodeEditor#setFirstLineNumberAlwaysVisible(boolean)
+     */
+    public boolean isFirstLineNumberAlwaysVisible() {
+        return mFirstLineNumberAlwaysVisible;
+    }
+
+    /**
      * Show first line number in screen in word wrap mode
      *
      * @see CodeEditor#isFirstLineNumberAlwaysVisible()
@@ -640,13 +637,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         if (isWordwrap()) {
             invalidate();
         }
-    }
-
-    /**
-     * @see CodeEditor#setFirstLineNumberAlwaysVisible(boolean)
-     */
-    public boolean isFirstLineNumberAlwaysVisible() {
-        return mFirstLineNumberAlwaysVisible;
     }
 
     /**
@@ -710,6 +700,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see CodeEditor#setLigatureEnabled(boolean)
+     */
+    public boolean isLigatureEnabled() {
+        return mLigatureEnabled;
+    }
+
+    /**
      * Enable/disable ligature of all types(except 'rlig').
      * Generally you should disable them unless enabling this will have no effect on text measuring.
      * <p>
@@ -725,13 +722,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public void setLigatureEnabled(boolean enabled) {
         this.mLigatureEnabled = enabled;
         setFontFeatureSettings(enabled ? null : "'liga' 0,'calt' 0,'hlig' 0,'dlig' 0,'clig' 0");
-    }
-
-    /**
-     * @see CodeEditor#setLigatureEnabled(boolean)
-     */
-    public boolean isLigatureEnabled() {
-        return mLigatureEnabled;
     }
 
     /**
@@ -810,19 +800,19 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see CodeEditor#setHighlightCurrentLine(boolean)
+     */
+    public boolean isHighlightCurrentLine() {
+        return mHighlightCurrentLine;
+    }
+
+    /**
      * Specify whether the editor should use a different color to draw
      * the background of current line
      */
     public void setHighlightCurrentLine(boolean highlightCurrentLine) {
         mHighlightCurrentLine = highlightCurrentLine;
         invalidate();
-    }
-
-    /**
-     * @see CodeEditor#setHighlightCurrentLine(boolean)
-     */
-    public boolean isHighlightCurrentLine() {
-        return mHighlightCurrentLine;
     }
 
     /**
@@ -849,6 +839,8 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         // Destroy old one
         var old = mLanguage;
         if (old != null) {
+            old.getFormatter().setReceiver(null);
+            old.getFormatter().destroy();
             old.getAnalyzeManager().setReceiver(null);
             old.getAnalyzeManager().destroy();
             old.destroy();
@@ -959,6 +951,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see #setCursorAnimationEnabled(boolean)
+     */
+    public boolean isCursorAnimationEnabled() {
+        return mCursorAnimation;
+    }
+
+    /**
      * Set cursor animation enabled
      */
     public void setCursorAnimationEnabled(boolean enabled) {
@@ -969,10 +968,10 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * @see #setCursorAnimationEnabled(boolean)
+     * @see #setCursorAnimator(CursorAnimator)
      */
-    public boolean isCursorAnimationEnabled() {
-        return mCursorAnimation;
+    public CursorAnimator getCursorAnimator() {
+        return mCursorAnimator;
     }
 
     /**
@@ -984,13 +983,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     public void setCursorAnimator(@NonNull CursorAnimator cursorAnimator) {
         mCursorAnimator = cursorAnimator;
-    }
-
-    /**
-     * @see #setCursorAnimator(CursorAnimator)
-     */
-    public CursorAnimator getCursorAnimator() {
-        return mCursorAnimator;
     }
 
     /**
@@ -1167,6 +1159,9 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
                     line.widthCache = obtainFloatArray(Math.max(line.length() + 8, 90), usePainter);
                 }
                 gtr.set(line, 0, line.length(), getTabWidth(), getSpansForLine(startLine), mPainter.getPaint());
+                if (mLayout instanceof WordwrapLayout) {
+                    gtr.setSoftBreaks(((WordwrapLayout) mLayout).getSoftBreaksForLine(startLine));
+                }
                 gtr.buildMeasureCache();
                 GraphicTextRow.recycle(gtr);
                 line.timestamp = timestamp;
@@ -1194,7 +1189,12 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         return clearFlag(clearFlag(mNonPrintableOptions, FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE), FLAG_DRAW_TAB_SAME_AS_SPACE) != 0;
     }
 
-    private boolean mHardwareAccAllowed;
+    /**
+     * @see #setHardwareAcceleratedDrawAllowed(boolean)
+     */
+    public boolean isHardwareAcceleratedDrawAllowed() {
+        return mHardwareAccAllowed;
+    }
 
     /**
      * Set whether allow the editor to use RenderNode to draw its text.
@@ -1208,13 +1208,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         if (acceleratedDraw && !isWordwrap()) {
             mPainter.invalidateHwRenderer();
         }
-    }
-
-    /**
-     * @see #setHardwareAcceleratedDrawAllowed(boolean)
-     */
-    public boolean isHardwareAcceleratedDrawAllowed() {
-        return mHardwareAccAllowed;
     }
 
     /**
@@ -1290,7 +1283,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
             }
         }
     }
-
 
     /**
      * Get the color of EdgeEffect
@@ -1436,11 +1428,14 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     @UnsupportedUserUsage
     public float measureText(ContentLine text, int index, int count, int line) {
         var gtr = GraphicTextRow.obtain();
-        List<Span> spans = null;
+        List<Span> spans = defSpans;
         if (text.widthCache == null) {
             spans = getSpansForLine(line);
         }
         gtr.set(text, 0, text.length(), mTabWidth, spans, mPainter.getPaint());
+        if (mLayout instanceof WordwrapLayout && text.widthCache == null) {
+            gtr.setSoftBreaks(((WordwrapLayout) mLayout).getSoftBreaksForLine(line));
+        }
         var res = gtr.measureText(index, index + count);
         GraphicTextRow.recycle(gtr);
         return res;
@@ -1449,6 +1444,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     /**
      * Get spans on the given line
      */
+    @NonNull
     public List<Span> getSpansForLine(int line) {
         var spanMap = mStyles == null ? null : mStyles.spans;
         if (defSpans.size() == 0) {
@@ -1511,6 +1507,28 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         }
         var gtr = GraphicTextRow.obtain();
         gtr.set(line, contextStart, end, mTabWidth, line.widthCache == null ? getSpansForLine(lineNumber) : null, mPainter.getPaint());
+        if (mLayout instanceof WordwrapLayout && line.widthCache == null) {
+            gtr.setSoftBreaks(((WordwrapLayout) mLayout).getSoftBreaksForLine(lineNumber));
+        }
+        var res = gtr.findOffsetByAdvance(start, target);
+        GraphicTextRow.recycle(gtr);
+        return res;
+    }
+
+    /**
+     * Find first visible character
+     */
+    @UnsupportedUserUsage
+    public float[] findFirstVisibleCharNoCache(float target, int start, int end, int contextStart, ContentLine line, int lineNumber, Paint paint) {
+        if (start >= end) {
+            return new float[]{end, 0};
+        }
+        var gtr = GraphicTextRow.obtain();
+        if (defSpans.size() == 0) {
+            defSpans.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
+        }
+        gtr.set(line, contextStart, end, mTabWidth, defSpans, paint);
+        gtr.disableCache();
         var res = gtr.findOffsetByAdvance(start, target);
         GraphicTextRow.recycle(gtr);
         return res;
@@ -1547,11 +1565,21 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     protected void createLayout() {
         if (mLayout != null) {
+            if (mLayout instanceof LineBreakLayout && !mWordwrap) {
+                ((LineBreakLayout) mLayout).reuse(mText);
+                return;
+            }
+            if (mLayout instanceof WordwrapLayout && mWordwrap) {
+                var newLayout = new WordwrapLayout(this, mText, ((WordwrapLayout) mLayout).getRowTable());
+                mLayout.destroyLayout();
+                mLayout = newLayout;
+                return;
+            }
             mLayout.destroyLayout();
         }
         if (mWordwrap) {
             mPainter.setCachedLineNumberWidth((int) measureLineNumber());
-            mLayout = new WordwrapLayout(this, mText);
+            mLayout = new WordwrapLayout(this, mText, null);
         } else {
             mLayout = new LineBreakLayout(this, mText);
         }
@@ -1775,6 +1803,19 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see #setNonPrintablePaintingFlags(int)
+     * @see #FLAG_DRAW_WHITESPACE_LEADING
+     * @see #FLAG_DRAW_WHITESPACE_INNER
+     * @see #FLAG_DRAW_WHITESPACE_TRAILING
+     * @see #FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE
+     * @see #FLAG_DRAW_LINE_SEPARATOR
+     * @see #FLAG_DRAW_WHITESPACE_IN_SELECTION
+     */
+    public int getNonPrintablePaintingFlags() {
+        return mNonPrintableOptions;
+    }
+
+    /**
      * Sets non-printable painting flags.
      * Specify where they should be drawn and some other properties.
      * <p>
@@ -1791,19 +1832,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public void setNonPrintablePaintingFlags(int flags) {
         this.mNonPrintableOptions = flags;
         invalidate();
-    }
-
-    /**
-     * @see #setNonPrintablePaintingFlags(int)
-     * @see #FLAG_DRAW_WHITESPACE_LEADING
-     * @see #FLAG_DRAW_WHITESPACE_INNER
-     * @see #FLAG_DRAW_WHITESPACE_TRAILING
-     * @see #FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE
-     * @see #FLAG_DRAW_LINE_SEPARATOR
-     * @see #FLAG_DRAW_WHITESPACE_IN_SELECTION
-     */
-    public int getNonPrintablePaintingFlags() {
-        return mNonPrintableOptions;
     }
 
     /**
@@ -1983,11 +2011,14 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @return Whether the format task is scheduled
      */
     public synchronized boolean formatCodeAsync() {
-        if (mFormatThread != null) {
+        if (mLanguage.getFormatter().isRunning()) {
             return false;
         }
-        mFormatThread = new FormatThread(mText, mLanguage, this);
-        mFormatThread.start();
+        mLanguage.getFormatter().setReceiver(this);
+        var formatContent = mText.copyText(false);
+        formatContent.setUndoEnabled(false);
+        mLanguage.getFormatter().format(formatContent, createCursorRange());
+        postInvalidate();
         return true;
     }
 
@@ -2005,12 +2036,19 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         if (start.index > end.index) {
             throw new IllegalArgumentException("start > end");
         }
-        if (mFormatThread != null) {
+        if (mLanguage.getFormatter().isRunning()) {
             return false;
         }
-        mFormatThread = new FormatThread(mText, mLanguage, this);
-        mFormatThread.start();
+        mLanguage.getFormatter().setReceiver(this);
+        var formatContent = mText.copyText(false);
+        formatContent.setUndoEnabled(false);
+        mLanguage.getFormatter().formatRegion(formatContent, new TextRange(start, end), createCursorRange());
+        postInvalidate();
         return true;
+    }
+
+    public TextRange createCursorRange() {
+        return new TextRange(mCursor.left(), mCursor.right());
     }
 
     /**
@@ -2078,6 +2116,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see #setHighlightBracketPair(boolean)
+     */
+    public boolean isHighlightBracketPair() {
+        return mHighlightBracketPair;
+    }
+
+    /**
      * Whether to highlight brackets pairs
      */
     public void setHighlightBracketPair(boolean highlightBracketPair) {
@@ -2088,13 +2133,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
             mStyleDelegate.postUpdateBracketPair();
         }
         invalidate();
-    }
-
-    /**
-     * @see #setHighlightBracketPair(boolean)
-     */
-    public boolean isHighlightBracketPair() {
-        return mHighlightBracketPair;
     }
 
     /**
@@ -2172,13 +2210,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         }
     }
 
+    public DiagnosticIndicatorStyle getDiagnosticIndicatorStyle() {
+        return mDiagnosticStyle;
+    }
+
     public void setDiagnosticIndicatorStyle(@NonNull DiagnosticIndicatorStyle diagnosticIndicatorStyle) {
         this.mDiagnosticStyle = diagnosticIndicatorStyle;
         invalidate();
-    }
-
-    public DiagnosticIndicatorStyle getDiagnosticIndicatorStyle() {
-        return mDiagnosticStyle;
     }
 
     /**
@@ -2358,6 +2396,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @see #setTextScaleX(float)
+     */
+    public float getTextScaleX() {
+        return mPainter.getPaint().getTextScaleX();
+    }
+
+    /**
      * Set text scale x of Paint
      *
      * @see Paint#setTextScaleX(float)
@@ -2368,10 +2413,10 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * @see #setTextScaleX(float)
+     * @see #setTextLetterSpacing(float)
      */
-    public float getTextScaleX() {
-        return mPainter.getPaint().getTextScaleX();
+    public float getTextLetterSpacing() {
+        return mPainter.getPaint().getLetterSpacing();
     }
 
     /**
@@ -2382,13 +2427,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     public void setTextLetterSpacing(float textLetterSpacing) {
         mPainter.setLetterSpacing(textLetterSpacing);
-    }
-
-    /**
-     * @see #setTextLetterSpacing(float)
-     */
-    public float getTextLetterSpacing() {
-        return mPainter.getPaint().getLetterSpacing();
     }
 
     /**
@@ -2472,12 +2510,11 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
 
     /**
      * Get last visible row on screen.
-     * The result is <strong>unchecked</strong>. It can be bigger than the max row count in layout
      *
      * @return last visible row
      */
     public int getLastVisibleRow() {
-        return Math.max(0, Math.min(mLayout.getLayoutHeight(), getOffsetY() + getHeight()) / getRowHeight());
+        return Math.max(0, Math.min(mLayout.getRowCount() - 1, (getOffsetY() + getHeight()) / getRowHeight()));
     }
 
     /**
@@ -2507,11 +2544,10 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * Sets line spacing for this TextView.  Each line other than the last line will have its height
      * multiplied by {@code mult} and have {@code add} added to it.
      *
-     * @param add The value in pixels that should be added to each line other than the last line.
-     *            This will be applied after the multiplier
+     * @param add  The value in pixels that should be added to each line other than the last line.
+     *             This will be applied after the multiplier
      * @param mult The value by which each line height other than the last line will be multiplied
      *             by
-     *
      */
     public void setLineSpacing(float add, float mult) {
         mLineSpacingAdd = add;
@@ -2522,7 +2558,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * Gets the line spacing extra space
      *
      * @return the extra space that is added to the height of each lines of this TextView.
-     *
      * @see #setLineSpacing(float, float)
      * @see #getLineSpacingMultiplier()
      */
@@ -2532,29 +2567,28 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
 
     /**
      * @param lineSpacingExtra The value in pixels that should be added to each line other than the last line.
-     *      *            This will be applied after the multiplier
+     *                         *            This will be applied after the multiplier
      */
     public void setLineSpacingExtra(float lineSpacingExtra) {
         mLineSpacingAdd = lineSpacingExtra;
         invalidate();
     }
 
+    /**
+     * @return the value by which each line's height is multiplied to get its actual height.
+     * @see #setLineSpacingMultiplier(float)
+     */
+    public float getLineSpacingMultiplier() {
+        return mLineSpacingMultiplier;
+    }
 
     /**
      * @param lineSpacingMultiplier The value by which each line height other than the last line will be multiplied
-     *      *             by. Default 1.0f
+     *                              *             by. Default 1.0f
      */
     public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
         this.mLineSpacingMultiplier = lineSpacingMultiplier;
         invalidate();
-    }
-
-    /**
-     * @see #setLineSpacingMultiplier(float)
-     * @return the value by which each line's height is multiplied to get its actual height.
-     */
-    public float getLineSpacingMultiplier() {
-        return mLineSpacingMultiplier;
     }
 
     /**
@@ -2647,10 +2681,27 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * @return Whether editable
+     * Indicate whether the layout is working
+     */
+    @UnsupportedUserUsage
+    public void setLayoutBusy(boolean busy) {
+        this.mLayoutBusy = busy;
+    }
+
+    /**
+     * @return Whether the editor is editable, actually.
      * @see CodeEditor#setEditable(boolean)
+     * @see CodeEditor#setLayoutBusy(boolean)
+     * @see #isFormatting()
      */
     public boolean isEditable() {
+        return mEditable && !mLayoutBusy && !isFormatting();
+    }
+
+    /**
+     * @see #setEditable(boolean)
+     */
+    public boolean getEditable() {
         return mEditable;
     }
 
@@ -2667,6 +2718,14 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
+     * @return Whether allow scaling
+     * @see CodeEditor#setScalable(boolean)
+     */
+    public boolean isScalable() {
+        return mScalable;
+    }
+
+    /**
      * Allow scale text size by thumb
      *
      * @param scale Whether allow
@@ -2675,21 +2734,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mScalable = scale;
     }
 
-    /**
-     * @return Whether allow scaling
-     * @see CodeEditor#setScalable(boolean)
-     */
-    public boolean isScalable() {
-        return mScalable;
+    public boolean isBlockLineEnabled() {
+        return mBlockLineEnabled;
     }
 
     public void setBlockLineEnabled(boolean enabled) {
         mBlockLineEnabled = enabled;
         invalidate();
-    }
-
-    public boolean isBlockLineEnabled() {
-        return mBlockLineEnabled;
     }
 
     /**
@@ -2888,7 +2939,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         updateCursor();
         updateSelection();
         mPainter.invalidateInCursor();
-        if (!mEventHandler.hasAnyHeldHandle() && !mConnection.mComposingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
+        if (!mEventHandler.hasAnyHeldHandle() && !mConnection.composingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
             mCursorAnimator.markEndPos();
             mCursorAnimator.start();
         }
@@ -3215,6 +3266,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
                 }
             }
         }
+        requestFocusFromTouch();
         setSelectionRegion(startLine, startColumn, endLine, endColumn, SelectionChangeEvent.CAUSE_LONG_PRESS);
     }
 
@@ -3229,14 +3281,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     /**
-     * Get extra argument set by {@link CodeEditor#setText(CharSequence, Bundle)}
-     */
-    @NonNull
-    public Bundle getExtraArguments() {
-        return mExtraArguments;
-    }
-
-    /**
      * Set the text to be displayed.
      * With no extra arguments.
      *
@@ -3244,6 +3288,14 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     public void setText(@Nullable CharSequence text) {
         setText(text, true, null);
+    }
+
+    /**
+     * Get extra argument set by {@link CodeEditor#setText(CharSequence, Bundle)}
+     */
+    @NonNull
+    public Bundle getExtraArguments() {
+        return mExtraArguments;
     }
 
     /**
@@ -3256,7 +3308,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public void setText(@Nullable CharSequence text, @Nullable Bundle extraArguments) {
         setText(text, true, extraArguments);
     }
-
 
     /**
      * Sets the text to be displayed.
@@ -3343,14 +3394,13 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         return mEventManager.dispatchEvent(event);
     }
 
-
     /**
      * Check whether the editor is currently performing a format operation
      *
      * @return whether the editor is currently formatting
      */
     public boolean isFormatting() {
-        return mFormatThread != null;
+        return mLanguage.getFormatter().isRunning();
     }
 
     /**
@@ -3415,15 +3465,12 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * @param colors A non-null and free EditorColorScheme
      */
     public void setColorScheme(@NonNull EditorColorScheme colors) {
-        colors.attachEditor(this);
         if (mColors != null) {
             mColors.detachEditor(this);
         }
         mColors = colors;
-        if (mCompletionWindow != null) {
-            mCompletionWindow.applyColorScheme();
-        }
-        mPainter.invalidateHwRenderer();
+        // Automatically invoke scheme updating related methods
+        colors.attachEditor(this);
         invalidate();
     }
 
@@ -3436,6 +3483,10 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         setSelection(line, 0);
     }
 
+
+    //-------------------------------------------------------------------------------
+    //-------------------------IME Interaction---------------------------------------
+    //-------------------------------------------------------------------------------
 
     /**
      * Rerun analysis forcibly
@@ -3455,9 +3506,26 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         return mStyles;
     }
 
+    @UiThread
+    public void setStyles(@Nullable Styles styles) {
+        mStyles = styles;
+        if (mHighlightCurrentBlock) {
+            mCursorPosition = findCursorBlock();
+        }
+        mPainter.invalidateHwRenderer();
+        mPainter.updateTimestamp();
+        invalidate();
+    }
+
     @Nullable
     public DiagnosticsContainer getDiagnostics() {
         return mDiagnostics;
+    }
+
+    @UiThread
+    public void setDiagnostics(@Nullable DiagnosticsContainer diagnostics) {
+        mDiagnostics = diagnostics;
+        invalidate();
     }
 
     /**
@@ -3477,11 +3545,6 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public int getBlockIndex() {
         return mCursorPosition;
     }
-
-
-    //-------------------------------------------------------------------------------
-    //-------------------------IME Interaction---------------------------------------
-    //-------------------------------------------------------------------------------
 
     /**
      * Display soft input method for self
@@ -3511,10 +3574,10 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      */
     protected void updateSelection() {
         int candidatesStart = -1, candidatesEnd = -1;
-        if (mConnection.mComposingText.isComposing()) {
+        if (mConnection.composingText.isComposing()) {
             try {
-                candidatesStart = mConnection.mComposingText.startIndex;
-                candidatesEnd = mConnection.mComposingText.endIndex;
+                candidatesStart = mConnection.composingText.startIndex;
+                candidatesEnd = mConnection.composingText.endIndex;
             } catch (IndexOutOfBoundsException e) {
                 //Ignored
             }
@@ -3532,10 +3595,18 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         }
     }
 
+    //-------------------------------------------------------------------------------
+    //------------------------Internal Callbacks-------------------------------------
+    //-------------------------------------------------------------------------------
+
     /**
      * Set request needed to update when editor updates selection
      */
     protected void setExtracting(@Nullable ExtractedTextRequest request) {
+        if (getProps().disallowSuggestions) {
+            mExtracting = null;
+            return;
+        }
         mExtracting = request;
     }
 
@@ -3543,6 +3614,9 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
      * Extract text in editor for input method
      */
     protected ExtractedText extractText(@NonNull ExtractedTextRequest request) {
+        if (getProps().disallowSuggestions) {
+            return null;
+        }
         Cursor cur = getCursor();
         ExtractedText text = new ExtractedText();
         int selBegin = cur.getLeft();
@@ -3574,7 +3648,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         updateSelection();
         updateCursorAnchor();
         // Restart if composing
-        if (mConnection.mComposingText.isComposing()) {
+        if (mConnection.composingText.isComposing()) {
             restartInput();
         }
     }
@@ -3598,7 +3672,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     public void updateCursor() {
         updateCursorAnchor();
         updateExtractedText();
-        if (!mText.isInBatchEdit() && !mConnection.mComposingText.isComposing()) {
+        if (!mText.isInBatchEdit() && !mConnection.composingText.isComposing()) {
             updateSelection();
         }
     }
@@ -3613,6 +3687,8 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         hideEditorWindows();
         if (mLanguage != null) {
             mLanguage.getAnalyzeManager().destroy();
+            mLanguage.getFormatter().setReceiver(null);
+            mLanguage.getFormatter().destroy();
             mLanguage.destroy();
             mLanguage = new EmptyLanguage();
         }
@@ -3627,17 +3703,15 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mEventHandler.mMagnifier.dismiss();
     }
 
-    //-------------------------------------------------------------------------------
-    //------------------------Internal Callbacks-------------------------------------
-    //-------------------------------------------------------------------------------
-
     /**
      * Called by ColorScheme to notify invalidate
      *
      * @param type Color type changed
      */
     public void onColorUpdated(int type) {
-        if (type == EditorColorScheme.AUTO_COMP_PANEL_BG || type == EditorColorScheme.AUTO_COMP_PANEL_CORNER) {
+        if (type == EditorColorScheme.COMPLETION_WND_BACKGROUND || type == EditorColorScheme.COMPLETION_WND_CORNER
+                || type == EditorColorScheme.COMPLETION_WND_ITEM_CURRENT || type == EditorColorScheme.COMPLETION_WND_TEXT_SECONDARY
+                || type == EditorColorScheme.COMPLETION_WND_TEXT_PRIMARY) {
             if (mCompletionWindow != null)
                 mCompletionWindow.applyColorScheme();
             return;
@@ -3800,6 +3874,11 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         if (!isEnabled()) {
             return false;
         }
+        if (isFormatting()) {
+            mEventHandler.reset2();
+            mScaleDetector.onTouchEvent(event);
+            return mBasicDetector.onTouchEvent(event);
+        }
         boolean handlingBefore = mEventHandler.handlingMotions();
         boolean res = mEventHandler.onTouchEvent(event);
         boolean handling = mEventHandler.handlingMotions();
@@ -3893,25 +3972,30 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mCursorBlink.valid = mCursorBlink.period > 0;
-        if (mCursorBlink.valid) {
-            post(mCursorBlink);
-        }
-    }
-
-    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mCursorBlink.valid = false;
         removeCallbacks(mCursorBlink);
     }
 
-    private float scrollerFinalX;
-    private float scrollerFinalY;
-    private boolean verticalAbsorb;
-    private boolean horizontalAbsorb;
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+        if (gainFocus) {
+            mCursorBlink.valid = mCursorBlink.period > 0;
+            if (mCursorBlink.valid) {
+                post(mCursorBlink);
+            }
+        } else {
+            mCursorBlink.valid = false;
+            mCursorBlink.visibility = false;
+            mCompletionWindow.hide();
+            mTextActionWindow.dismiss();
+            mEventHandler.hideInsertHandle();
+            removeCallbacks(mCursorBlink);
+        }
+        invalidate();
+    }
 
     @Override
     public void computeScroll() {
@@ -3988,8 +4072,8 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mWait = false;
 
         // Auto completion
-        if (mCompletionWindow.isEnabled() && !mText.isUndoOrRedo()) {
-            if ((!mConnection.mComposingText.isComposing() || mProps.autoCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
+        if (mCompletionWindow.isEnabled() && !mText.isUndoManagerWorking()) {
+            if ((!mConnection.composingText.isComposing() || mProps.autoCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
                 mCompletionWindow.requireCompletion();
             } else {
                 mCompletionWindow.hide();
@@ -4007,7 +4091,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
         mLanguage.getAnalyzeManager().insert(start, end, insertedContent);
         mEventHandler.hideInsertHandle();
         onSelectionChanged(SelectionChangeEvent.CAUSE_TEXT_MODIFICATION);
-        if (!mCursor.isSelected() && !mConnection.mComposingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
+        if (!mCursor.isSelected() && !mConnection.composingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
             mCursorAnimator.markEndPos();
             mCursorAnimator.start();
         }
@@ -4046,8 +4130,8 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
 
         updateCursor();
 
-        if (mCompletionWindow.isEnabled() && !mText.isUndoOrRedo()) {
-            if (!mConnection.mComposingText.isComposing() && mCompletionWindow.isShowing()) {
+        if (mCompletionWindow.isEnabled() && !mText.isUndoManagerWorking()) {
+            if (!mConnection.composingText.isComposing() && mCompletionWindow.isShowing()) {
                 if (startLine != endLine || startColumn != endColumn - 1) {
                     mCompletionWindow.hide();
                 } else {
@@ -4066,7 +4150,7 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
             ensureSelectionVisible();
             mEventHandler.hideInsertHandle();
         }
-        if (!mCursor.isSelected() && !mWait && !mConnection.mComposingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
+        if (!mCursor.isSelected() && !mWait && !mConnection.composingText.isComposing() && !mCompletionWindow.shouldRejectComposing()) {
             mCursorAnimator.markEndPos();
             mCursorAnimator.start();
         }
@@ -4081,63 +4165,47 @@ public class CodeEditor extends View implements ContentListener, FormatThread.Fo
     }
 
     @Override
+    public void onFormatSucceed(@NonNull CharSequence applyContent, @Nullable TextRange cursorRange) {
+        post(() -> {
+            int line = mCursor.getLeftLine();
+            int column = mCursor.getLeftColumn();
+            int x = getOffsetX();
+            int y = getOffsetY();
+            var string = (applyContent instanceof Content) ? ((Content) applyContent).toStringBuilder() : applyContent;
+            mText.beginBatchEdit();
+            mText.delete(0, 0, mText.getLineCount() - 1,
+                    mText.getColumnCount(mText.getLineCount() - 1));
+            mText.insert(0, 0, string);
+            mText.endBatchEdit();
+            mCompletionWindow.hide();
+            mConnection.invalid();
+            if (cursorRange == null) {
+                setSelectionAround(line, column);
+            } else {
+                try {
+                    var start = cursorRange.getStart();
+                    var end = cursorRange.getEnd();
+                    setSelectionRegion(start.line, start.column, end.line, end.column);
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+            }
+            getScroller().forceFinished(true);
+            getScroller().startScroll(x, y, 0, 0, 0);
+            getScroller().abortAnimation();
+            // Ensure the scroll offset is valid
+            mEventHandler.scrollBy(0, 0);
+        });
+    }
+
+    @Override
     public void onFormatFail(final Throwable throwable) {
-        post(() -> Toast.makeText(getContext(), throwable.toString(), Toast.LENGTH_SHORT).show());
-        mFormatThread = null;
+        post(() -> Toast.makeText(getContext(), "Format:" + throwable, Toast.LENGTH_SHORT).show());
     }
 
     @Override
     public void onRemove(Content content, ContentLine line) {
         mLayout.onRemove(content, line);
     }
-
-    @Override
-    public void onFormatSucceed(CharSequence originalText, final CharSequence newText) {
-        mFormatThread = null;
-        if (originalText == mText && newText != null) {
-            post(() -> {
-                int line = mCursor.getLeftLine();
-                int column = mCursor.getLeftColumn();
-                mText.replace(0, 0, getLineCount() - 1, mText.getColumnCount(getLineCount() - 1), newText);
-                getScroller().forceFinished(true);
-                mCompletionWindow.hide();
-                setSelectionAround(line, column);
-            });
-        }
-    }
-
-    @Override
-    public void onFormatSucceed(CharSequence originalText, CharSequence replaceText, CharPosition start, CharPosition end) {
-        mFormatThread = null;
-        if (originalText == mText && replaceText != null) {
-            post(() -> {
-                int line = mCursor.getLeftLine();
-                int column = mCursor.getLeftColumn();
-                mText.replace(start.line, start.column, end.line, end.column, replaceText);
-                getScroller().forceFinished(true);
-                mCompletionWindow.hide();
-                setSelectionAround(line, column);
-            });
-        }
-    }
-
-    @UiThread
-    public void setStyles(@Nullable Styles styles) {
-        mStyles = styles;
-        if (mHighlightCurrentBlock) {
-            mCursorPosition = findCursorBlock();
-        }
-        mPainter.invalidateHwRenderer();
-        mPainter.updateTimestamp();
-        invalidate();
-    }
-
-    @UiThread
-    public void setDiagnostics(@Nullable DiagnosticsContainer diagnostics) {
-        mDiagnostics = diagnostics;
-        invalidate();
-    }
-
-    private final static String COPYRIGHT = "sora-editor\nCopyright (C) Rosemoe roses2020@qq.com\nThis project is distributed under the LGPL v2.1 license";
 
 }

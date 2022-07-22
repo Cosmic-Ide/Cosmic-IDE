@@ -76,7 +76,7 @@ public class EditorSearcher {
         mOptions = options;
         if (options.useRegex) {
             runRegexMatch();
-        } else if(mThread != null && mThread.isAlive()) {
+        } else if (mThread != null && mThread.isAlive()) {
             mThread.interrupt();
         }
         mEditor.postInvalidate();
@@ -119,7 +119,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var right = mEditor.getCursor().getRight();
-                for (int i = 0;i < res.size();i++) {
+                for (int i = 0; i < res.size(); i++) {
                     var data = res.get(i);
                     var start = IntPair.getFirst(data);
                     if (start >= right) {
@@ -153,7 +153,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var left = mEditor.getCursor().getLeft();
-                for (int i = 0;i < res.size();i++) {
+                for (int i = 0; i < res.size(); i++) {
                     var data = res.get(i);
                     var end = IntPair.getSecond(data);
                     if (end <= left) {
@@ -193,7 +193,7 @@ public class EditorSearcher {
             if (isResultValid()) {
                 var res = mLastResults;
                 var packed = IntPair.pack(left, right);
-                for (int i = 0;i < res.size();i++) {
+                for (int i = 0; i < res.size(); i++) {
                     var value = res.get(i);
                     if (value == packed) {
                         return true;
@@ -211,6 +211,9 @@ public class EditorSearcher {
     }
 
     public void replaceThis(@NonNull String replacement) {
+        if (!mEditor.isEditable()) {
+            return;
+        }
         if (isMatchedPositionSelected()) {
             mEditor.commitText(replacement);
         } else {
@@ -218,11 +221,14 @@ public class EditorSearcher {
         }
     }
 
-    public void replaceAll (@NonNull String replacement) {
-        replaceAll (replacement, null);
+    public void replaceAll(@NonNull String replacement) {
+        replaceAll(replacement, null);
     }
 
     public void replaceAll(@NonNull String replacement, @Nullable final Runnable whenFinished) {
+        if (!mEditor.isEditable()) {
+            return;
+        }
         checkState();
         if (!isResultValid()) {
             Toast.makeText(mEditor.getContext(), R.string.editor_search_busy, Toast.LENGTH_SHORT).show();
@@ -259,9 +265,9 @@ public class EditorSearcher {
                     mEditor.getText().replace(0, 0, mEditor.getLineCount() - 1, mEditor.getText().getColumnCount(mEditor.getLineCount() - 1), sb);
                     mEditor.setSelectionAround(pos.line, pos.column);
                     dialog.dismiss();
-    
+
                     if (whenFinished != null) {
-                        whenFinished.run ();
+                        whenFinished.run();
                     }
                 });
             } catch (Exception e) {

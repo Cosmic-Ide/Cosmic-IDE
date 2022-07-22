@@ -24,7 +24,7 @@ android {
 }
 
 dependencies {
-    // We're currently using textmate-language from this commit dbd0b275e9ac59ca847b1f0a4f82d0f004580e57
+    // We are using sora-editor from this commit 24e40b8
     implementation 'androidx.core:core:1.9.0-alpha05'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.jruby.jcodings:jcodings:1.0.57'

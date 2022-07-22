@@ -18,27 +18,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 public class FileUtil {
 
     private static String privateDataDirectory;
-    private static String projectsDir;
 
     public static void setDataDirectory(String directory) {
         privateDataDirectory = directory + "/";
-        projectsDir = privateDataDirectory + "projects";
-    }
-
-    public static void setProjectsDirectory(String dir) {
-        if(!dir.endsWith("/")) {
-            dir += "/";
-        }
-        try {
-            var path = Paths.get(dir).normalize();
-            if(Files.isRegularFile(path)) {
-                Files.delete(path);
-            }
-            Files.createDirectory(path);
-            projectsDir = path.toString(); 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static boolean createDirectory(String path) {
@@ -109,7 +91,7 @@ public class FileUtil {
     }
 
     public static String getProjectsDir() {
-        return projectsDir;
+        return getDataDir() + "projects/";
     }
 
     public static String getClasspathDir() {
@@ -185,24 +167,24 @@ public class FileUtil {
     }
 
     public static boolean delete(final File file) {
-        if(file == null) return false;
-        if(file.isDirectory()) {
+        if (file == null) return false;
+        if (file.isDirectory()) {
             return deleteDir(file);
         }
         return deleteFile(file);
     }
 
     private static boolean deleteDir(final File dir) {
-        if(dir == null) return false;
-        if(!dir.exists()) return false;
-        if(!dir.isDirectory()) return false;
+        if (dir == null) return false;
+        if (!dir.exists()) return false;
+        if (!dir.isDirectory()) return false;
         File[] files = dir.listFiles();
-        if(files != null && files.length > 0) {
-            for(File file : files) {
-                if(file.isFile()) {
-                    if(!file.delete()) return false;
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    if (!file.delete()) return false;
                 } else {
-                    if(!deleteDir(file)) return false;
+                    if (!deleteDir(file)) return false;
                 }
             }
         }
@@ -218,16 +200,12 @@ public class FileUtil {
     }
 
     public static boolean deleteAllInDir(final File dir) {
-        return deleteFilesInDirWithFilter(dir, new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                 return true;
-            }
+        return deleteFilesInDirWithFilter(dir, (pathName) -> {
+            return true;
         });
     }
 
-    public static boolean deleteFilesInDirWithFilter(final String dirPath,
-                                                     final FileFilter filter) {
+    public static boolean deleteFilesInDirWithFilter(final String dirPath, final FileFilter filter) {
         return deleteFilesInDirWithFilter(getFileByPath(dirPath), filter);
     }
 

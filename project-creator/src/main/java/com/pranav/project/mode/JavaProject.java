@@ -29,8 +29,8 @@ public class JavaProject {
 
     public static JavaProject newProject(String projectName) throws IOException {
         var projectRoot = new File(getRootDirPath() + projectName);
-        if(!projectRoot.exists()) {
-            if(!projectRoot.mkdirs()) {
+        if (!projectRoot.exists()) {
+            if (!projectRoot.mkdirs()) {
                 throw new IOException("Unable to create directory");
             }
         }
@@ -60,7 +60,7 @@ public class JavaProject {
     }
 
     public static String getRootDirPath() {
-        return rootDirPath + "/";
+        return rootDirPath;
     }
 
     public String getProjectName() {
@@ -72,22 +72,22 @@ public class JavaProject {
     }
 
     public String getSrcDirPath() {
-        return projectDirPath + "/" + srcDirName + "/";
+        return getProjectDirPath() + srcDirName + "/";
     }
 
     public String getBinDirPath() {
-        return projectDirPath + "/" + binDirName + "/";
+        return getProjectDirPath() + binDirName + "/";
     }
 
     public String getLibDirPath() {
-        return projectDirPath + "/" + libDirName + "/";
+        return getProjectDirPath + libDirName + "/";
     }
 
     public String getBuildDirPath() {
-        return projectDirPath + "/" + buildDirName + "/";
+        return getProjectDirPath() + buildDirName + "/";
     }
 
     public String getCacheDirPath() {
-        return projectDirPath + "/" + cacheDirName + "/";
+        return getProjectDirPath() + cacheDirName + "/";
     }
 }

@@ -65,7 +65,7 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         if (isCurrentCursorPosition) {
             view.setBackgroundColor(getThemeColor(EditorColorScheme.COMPLETION_WND_ITEM_CURRENT));
         } else {
-            view.setBackgroundColor(0);
+            view.setBackgroundColor(0xff353839);
         }
         ImageView iv = view.findViewById(R.id.result_item_image);
         iv.setImageDrawable(item.icon);

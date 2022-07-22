@@ -38,12 +38,14 @@ public class KindDrawable extends Drawable {
     public void draw(Canvas canvas) {
         float width = getBounds().right;
         float height = getBounds().bottom;
-
-        canvas.drawRect(0, 0, width, height, mPaint);
-
+        
         canvas.save();
+        
         canvas.translate(width / 2f, height / 2f);
+        canvas.drawCircle(0, 0, width / 2f, mPaint);
+             
         float textCenter = (-(mTextPaint.descent() + mTextPaint.ascent()) / 2f);
+        
         canvas.drawText(mKind.getValue(), 0, textCenter, mTextPaint);
         canvas.restore();
         

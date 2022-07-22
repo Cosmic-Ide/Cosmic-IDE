@@ -31,7 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.github.rosemoe.sora.R;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+import io.github.rosemoe.sora.lang.completion.CompletionItem;
 
 /**
  * Default adapter to display results
@@ -52,18 +52,13 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
             view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
         }
         var item = getItem(pos);
-
         TextView tv = view.findViewById(R.id.result_item_label);
         tv.setText(item.label);
-        tv.setTextColor(getThemeColor(EditorColorScheme.COMPLETION_WND_TEXT_PRIMARY));
-
         tv = view.findViewById(R.id.result_item_desc);
         tv.setText(item.desc);
-        tv.setTextColor(getThemeColor(EditorColorScheme.COMPLETION_WND_TEXT_SECONDARY));
-
         view.setTag(pos);
         if (isCurrentCursorPosition) {
-            view.setBackgroundColor(getThemeColor(EditorColorScheme.COMPLETION_WND_ITEM_CURRENT));
+            view.setBackgroundColor(0xff494b4c);
         } else {
             view.setBackgroundColor(0xff353839);
         }

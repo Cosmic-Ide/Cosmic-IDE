@@ -168,9 +168,7 @@ public class TextMateLanguage extends EmptyLanguage {
         "inner", "internal", "lateinit", "noinline", "open",
         "operator", "out", "override", "private", "protected",
         "public", "reified", "sealed", "suspend", "tailrec", "vararg", 
-        "field", "it", "+=", "-=", "*=", "/=", "%=", "++", "--", "&&", 
-        "||", "==", "!=", "===", "!==", "<=", ">=", "!!", "?.", "?:",
-        "::", "..", "->"
+        "field", "it"
     };
 
 }

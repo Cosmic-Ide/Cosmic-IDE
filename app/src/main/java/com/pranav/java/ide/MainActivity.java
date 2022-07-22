@@ -126,8 +126,14 @@ public final class MainActivity extends AppCompatActivity {
             }
             currentWorkingFilePath = indexer.getString("currentFile");
         } catch (Exception e) {
-            dialog("JsonException", e.getMessage(), true);
+            dialog("Exception", e.getMessage(), true);
         }
+        if (currentWorkingFilePath.endsWith(".kt")) {
+            language = getTextMateLanguageFor("kotlin");
+        } else if (currentWorkingFilePath.endsWith(".java") || currentWorkingFilePath.endsWith(".jav")) {
+            language = getTextMateLanguageFor("java");
+        }
+        editor.setEditorLanguage(language);
 
         final var file = new File(currentWorkingFilePath);
         if (file.exists()) {

@@ -53,11 +53,11 @@ public class TextMateLanguage extends EmptyLanguage {
     final boolean createIdentifiers;
 
     private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme, boolean createIdentifiers) {
-        if (grammarName.startsWith("java")) {
-            autoComplete = new IdentifierAutoComplete(javaKeywords);
-        } else if (grammarName.startsWith("kotlin")) {
-            autoComplete = new IdentifierAutoComplete(kotlinKeywords);
-        }
+//        if (grammarName.startsWith("java")) {
+//            autoComplete = new IdentifierAutoComplete(javaKeywords);
+//        } else if (grammarName.startsWith("kotlin")) {
+//            autoComplete = new IdentifierAutoComplete(kotlinKeywords);
+//        }
         try {
             textMateAnalyzer = new TextMateAnalyzer(this, grammarName, grammarIns, languageConfiguration, theme);
         } catch (Exception e) {
@@ -141,7 +141,7 @@ public class TextMateLanguage extends EmptyLanguage {
         final var idt = textMateAnalyzer.syncIdentifiers;
         autoComplete.requireAutoComplete(prefix, publisher, idt);
     }
-
+/*
     private final String[] javaKeywords = {
         "assert", "abstract", "boolean", "byte", "char", "class", "do",
         "double", "final", "float", "for", "if", "int", "long", "new",
@@ -172,4 +172,5 @@ public class TextMateLanguage extends EmptyLanguage {
         "||", "==", "!=", "===", "!==", "<=", ">=", "!!", "?.", "?:",
         "::", "..", "->"
     };
+*/
 }

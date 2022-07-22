@@ -115,30 +115,18 @@ public final class MainActivity extends AppCompatActivity {
         editor = findViewById(R.id.editor);
         editor.setTypefaceText(Typeface.MONOSPACE);
         editor.setColorScheme(getColorScheme());
-        final var language = getTextMateLanguageForJava();
-        language.setEnableJavaCompletions(true);
-        editor.setEditorLanguage(language);
         editor.setTextSize(12);
         editor.setPinLineNumber(true);
 
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
             if (indexer.notHas("currentFile")) {
-                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
-                indexer.flush();
+                loadFileToEditor(getProject().getSrcDirPath() + "Main.kt");
+            } else {
+                loadFileToEditor(indexer.getString("currentFile"));
             }
-            currentWorkingFilePath = indexer.getString("currentFile");
         } catch (JSONException e) {
-            dialog("JsonException", e.getMessage(), true);
-        }
-
-        final var file = new File(currentWorkingFilePath);
-        if (file.exists()) {
-            try {
-                editor.setText(FileUtil.readFile(file));
-            } catch (IOException e) {
-                dialog("Cannot read file", getString(e), true);
-            }
+            dialog("Cannot read file", e.getMessage(), true);
         }
 
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
@@ -212,6 +200,16 @@ public final class MainActivity extends AppCompatActivity {
         indexer.flush();
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
+        TextMateLanguage language;
+        if (paths.endsWith(".kt")) {
+            language = getTextMateLanguageFor("kotlin");
+            language.setEnableKotlinCompletions();
+        } else if (path.endsWith(".java") || path.endsWith(".jav")) {
+            language = getTextMateLanguageFor("java");
+            language.setEnableJavaCompletions();
+        }
+        editor.setEditorLanguage(language);
+
         editor.getText().addContentListener(new ProblemMarker(editor, path, getProject()));
         currentWorkingFilePath = path;
     }
@@ -341,29 +339,14 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    private TextMateLanguage getTextMateLanguageForJava() {
+    private TextMateLanguage getTextMateLanguageFor(String lang) {
         try {
             final var language =
                     TextMateLanguage.create(
-                            "java.tmLanguage.json",
-                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            lang + ".tmLanguage.json",
+                            getAssets().open("textmate/java/syntaxes/" + lang + ".tmLanguage.json"),
                             new InputStreamReader(
-                                    getAssets().open("textmate/java/language-configuration.json")),
-                            getDarculaTheme());
-            return language;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private TextMateLanguage getTextMateLanguageForSmali() {
-        try {
-            final var language =
-                    TextMateLanguage.create(
-                            "smali.tmLanguage.json",
-                            getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
-                            new InputStreamReader(
-                                    getAssets().open("textmate/smali/language-configuration.json")),
+                                    getAssets().open("textmate/" + lang + "/language-configuration.json")),
                             getDarculaTheme());
             return language;
         } catch (Exception e) {
@@ -407,7 +390,7 @@ public final class MainActivity extends AppCompatActivity {
                         var edi = new CodeEditor(MainActivity.this);
                         edi.setTypefaceText(Typeface.MONOSPACE);
                         edi.setColorScheme(getColorScheme());
-                        edi.setEditorLanguage(getTextMateLanguageForSmali());
+                        edi.setEditorLanguage(getTextMateLanguageFor("smali"));
                         edi.setTextSize(12);
 
                         try {
@@ -461,7 +444,7 @@ public final class MainActivity extends AppCompatActivity {
                     var edi = new CodeEditor(MainActivity.this);
                     edi.setTypefaceText(Typeface.MONOSPACE);
                     edi.setColorScheme(getColorScheme());
-                    edi.setEditorLanguage(getTextMateLanguageForJava());
+                    edi.setEditorLanguage(getTextMateLanguageFor("java"));
                     edi.setTextSize(12);
 
                     var decompiledFile = new File(getProject().getBinDirPath() + "cfr" + "/" + claz + ".java");

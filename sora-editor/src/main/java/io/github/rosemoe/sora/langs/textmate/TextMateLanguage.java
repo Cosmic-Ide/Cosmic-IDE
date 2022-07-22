@@ -45,11 +45,10 @@ public class TextMateLanguage extends EmptyLanguage {
 
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
-    private boolean javaCompeletions = false;
-    private final IdentifierAutoComplete autoComplete;
+    private IdentifierAutoComplete autoComplete;
 
     private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
-        autoComplete = new IdentifierAutoComplete(javaKeywords);
+        autoComplete = new IdentifierAutoComplete();
         try {
             textMateAnalyzer = new TextMateAnalyzer(this,grammarName, grammarIns,languageConfiguration, theme);
         } catch (Exception e) {
@@ -105,16 +104,18 @@ public class TextMateLanguage extends EmptyLanguage {
         return new SymbolPairMatch.DefaultSymbolPairs();
     }
 
-    public void setEnableJavaCompletions(boolean condition) {
-        javaCompeletions = condition;
+    public void setEnableJavaCompletions() {
+        autoComplete = new IdentifierAutoComplete(javaKeywords);
+    }
+
+    public void setEnableKotlinCompletions() {
+        autoComplete = new IdentifierAutoComplete(kotlinKeywords);
     }
 
     @Override
     public void requireAutoComplete(ContentReference content, CharPosition position, CompletionPublisher publisher, Bundle extraArguments) {
-        if (javaCompeletions) {
-            var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
-            autoComplete.requireAutoComplete(prefix, publisher, null);
-        }
+        var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
+        autoComplete.requireAutoComplete(prefix, publisher, null);
     }
 
     private final String[] javaKeywords = {
@@ -127,4 +128,24 @@ public class TextMateLanguage extends EmptyLanguage {
         "implements", "import", "instanceof", "interface", "native",
         "this", "throw", "throws", "true", "false", "null", "var", "sealed", "permits"
     };
+
+    private final String[] kotlinKeywords = {
+        "as", "as?", "break", "class", "continue", "do", "else",
+        "false", "for", "fun", "if", "in", "!in", "interface", "is",
+        "!is", "null", "object", "package", "return", "super",
+        "this", "throw", "true", "try", "typealias", "typeof", "val",
+        "var", "when", "while", "by", "catch", "constructor",
+        "delegate", "dynamic", "field", "file", "finally", "get",
+        "import", "init", "param", "property", "reciever", "set",
+        "setparam", "value", "where", "abstract", "actual",
+        "annotation", "companion", "const", "crossinline", "data",
+        "enum", "expect", "external", "final", "infix", "inline",
+        "inner", "internal", "lateinit", "noinline", "open",
+        "operator", "out", "override", "private", "protected",
+        "public", "reified", "sealed", "suspend", "tailrec", "vararg", 
+        "field", "it", "+=", "-=", "*=", "/=", "%=", "++", "--", "&&", 
+        "||", "==", "!=", "===", "!==", "<=", ">=", "!!", "?.", "?:",
+        "::", "..", "->"
+        };
+    
 }

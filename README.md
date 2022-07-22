@@ -57,7 +57,7 @@ and the latest debug build from [Github Actions](https://github.com/PranavPurwar
 - \[x\] Kotlin Language Support
 - \[x\] Javac
 - \[x\] Javap
-- \[x\] Eclipse Compiler for Java (ecj)
+- \[x\] Eclipse Compiler for Java (ECJ)
 - \[x\] Incremental Compilation
 - \[x\] Eclipse class disassembler
 - \[x\] Execute Java Code

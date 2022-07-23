@@ -1,3 +1,4 @@
+Project Development has been moved to [Cosmic-Ide](https://github.com/Cosmic-Ide/Cosmic-Ide)
 # Java IDE
 
 <p align="center">

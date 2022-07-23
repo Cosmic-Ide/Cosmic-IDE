@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.JavaIde.NoActionBar">
+        android:theme="@style/Theme.CosmicIde.NoActionBar">
 
         <activity
             android:name=".MainActivity"

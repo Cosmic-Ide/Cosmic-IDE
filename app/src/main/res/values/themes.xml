@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.JavaIde" parent="Theme.Material3.DayNight">
+    <style name="Theme.CosmicIde" parent="Theme.Material3.DayNight">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/isLight</item>
@@ -9,11 +9,11 @@
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
 
-    <style name="Theme.JavaIde.NoActionBar">
+    <style name="Theme.CosmicIde.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.JavaIde.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
+    <style name="Theme.CosmicIde.PopupOverlay" parent="Theme.Material3.DynamicColors.Dark" />
 
 </resources>

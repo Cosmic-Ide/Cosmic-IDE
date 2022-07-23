@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Java IDE"
+rootProject.name = "Cosmic Ide"
 
 include ':app'
 include ':android-compiler'

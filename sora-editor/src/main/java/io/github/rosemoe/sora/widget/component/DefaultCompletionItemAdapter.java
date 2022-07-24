@@ -57,11 +57,11 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         tv = view.findViewById(R.id.result_item_desc);
         tv.setText(item.desc);
         view.setTag(pos);
-        if (isCurrentCursorPosition) {
-            view.setBackgroundColor(0xff494b4c);
-        } else {
-            view.setBackgroundColor(0xff353839);
-        }
+//        if (isCurrentCursorPosition) {
+//            view.setBackgroundColor(0xff494b4c);
+//        } else {
+//            view.setBackgroundColor(0xff353839);
+//        }
         ImageView iv = view.findViewById(R.id.result_item_image);
         iv.setImageDrawable(item.icon);
         return view;

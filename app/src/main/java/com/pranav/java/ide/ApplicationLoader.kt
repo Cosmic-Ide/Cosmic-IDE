@@ -5,8 +5,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 
-import com.google.android.material.color.DynamicColors
-
 import com.itsaky.androidide.utils.Environment
 import com.pranav.common.util.FileUtil
 import com.pranav.completion.KindDrawable
@@ -18,7 +16,6 @@ class ApplicationLoader : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
         val mContext = getApplicationContext()
         val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = mContext.getResources()

@@ -205,6 +205,14 @@ public class IdentifierAutoComplete {
         private final Lock lock = new ReentrantLock(true);
         private final Map<String, MutableInt> identifierMap = new HashMap<>();
 
+        public void clear() {
+            lock.lock();
+            try {
+                identifierMap.clear();
+            } finally {
+                lock.unlock();
+            }
+        }
 
         public void identifierIncrease(@NonNull String identifier) {
             lock.lock();

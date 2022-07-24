@@ -27,8 +27,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     private final List<JavaProject> mProjects = new ArrayList<>();
-    private OnProjectSelectedListener onProjectSelectedListener;
-    private OnProjectLongClickedListener onProjectLongClickedListener; 
+    public OnProjectSelectedListener onProjectSelectedListener;
+    public OnProjectLongClickedListener onProjectLongClickedListener; 
 
     public ProjectAdapter() {}
 
@@ -72,23 +72,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         var root = LayoutInflater.from(parent.getContext()).inflate(R.layout.project_item, parent, false);
         final var holder = new ViewHolder(root);
-        root.setOnClickListener(v -> {
-            if (onProjectSelectedListener != null) {
-                int position = holder.getBindingAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    onProjectSelectedListener.onProjectSelect(mProjects.get(position));
-                }
-            }
-        });
-        root.setOnLongClickListener(v -> {
-            if(onProjectLongClickedListener != null) {
-                int position = holder.getBindingAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    return onProjectLongClickedListener.onLongClicked(mProjects.get(position));
-                }
-            }
-            return false;
-        });
         return holder;
     }
 
@@ -96,8 +79,23 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bind(mProjects.get(position));
+        holder.background.setOnClickListener(v -> {
+            if (onProjectSelectedListener != null) {
+                if(position != RecyclerView.NO_POSITION) {
+                    onProjectSelectedListener.onProjectSelect(mProjects.get(position));
+                }
+            }
+        });
+        holder.background.setOnLongClickListener(v -> {
+            if(onProjectLongClickedListener != null) {
+                if(position != RecyclerView.NO_POSITION) {
+                    return onProjectLongClickedListener.onLongClicked(mProjects.get(position));
+                }
+            }
+            return false;
+        });
     }
-    
+
     @Override
     public int getItemCount() {
         return mProjects.size(); 
@@ -107,16 +105,18 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
         private final TextView title;
         private final TextView path;
+        public final View background;
 
         public ViewHolder(View view) {
             super(view);
             title = view.findViewById(R.id.project_title);
             path = view.findViewById(R.id.project_path);
+            background = view.findViewById(R.id.background);
         }
 
         public void bind(JavaProject project) {
-             title.setText(project.getProjectName());
-             path.setText(project.getProjectDirPath());
+            title.setText(project.getProjectName());
+            path.setText(project.getProjectDirPath());
         }
     }
 }

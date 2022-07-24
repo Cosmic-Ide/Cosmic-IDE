@@ -10,21 +10,13 @@ public class JavaProject {
 
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
-    private static final String srcDirName = "src";
-    private static final String binDirName = "bin";
-    private static final String libDirName = "lib";
-    private static final String buildDirName = "build";
-    private static final String cacheDirName = "cache";
-
     private final File root;
 
     private String projectName;
-    private String projectDirPath;
 
     public JavaProject(File root) {
         this.root = root;
         this.projectName = root.getName();
-        this.projectDirPath = getRootDirPath() + projectName;
     }
 
     public static JavaProject newProject(String projectName) throws IOException {
@@ -51,8 +43,8 @@ public class JavaProject {
     }
 
     public void delete() {
-        FileUtil.deleteAllInDir(projectDirPath);
-        FileUtil.delete(projectDirPath);
+        FileUtil.deleteAllInDir(getProjectDirPath());
+        FileUtil.delete(getProjectDirPath());
     }
 
     public File getRootFile() {
@@ -68,26 +60,26 @@ public class JavaProject {
     }
 
     public String getProjectDirPath() {
-        return projectDirPath + "/";
+        return getRootFile().getAbsolutePath() + File.separator;
     }
 
     public String getSrcDirPath() {
-        return getProjectDirPath() + srcDirName + "/";
+        return getProjectDirPath() + "src" + File.separator;
     }
 
     public String getBinDirPath() {
-        return getProjectDirPath() + binDirName + "/";
+        return getProjectDirPath() + "bin" + File.separator;
     }
 
     public String getLibDirPath() {
-        return getProjectDirPath() + libDirName + "/";
+        return getProjectDirPath() + "lib" + File.separator;
     }
 
     public String getBuildDirPath() {
-        return getProjectDirPath() + buildDirName + "/";
+        return getProjectDirPath() + "build" + File.separator;
     }
 
     public String getCacheDirPath() {
-        return getProjectDirPath() + cacheDirName + "/";
+        return getProjectDirPath() + "cache" + File.separator;
     }
 }

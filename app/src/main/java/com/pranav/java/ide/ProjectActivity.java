@@ -64,13 +64,15 @@ public final class ProjectActivity extends AppCompatActivity {
         buildCreateNewProjectDialog();
         buildDeleteProjectDialog();
 
+        View scrollingView = findViewById(R.id.scrolling_view);
         var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         var toolbar = (MaterialToolbar) findViewById(R.id.toolbar);
         var createProjectFab = (FloatingActionButton) findViewById(R.id.fab);
         emptyContainer = findViewById(R.id.empty_container);
 
         setSupportActionBar(toolbar);
-        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
+        UiUtilsKt.addSystemWindowInsetToPadding(scrollingView, false, false, false, true);
+        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
         UiUtilsKt.addSystemWindowInsetToMargin(createProjectFab, false, false, false, true);
 
         projectAdapter = new ProjectAdapter();

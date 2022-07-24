@@ -1,1 +1,1 @@
-Java-Ide
+Cosmic-Ide

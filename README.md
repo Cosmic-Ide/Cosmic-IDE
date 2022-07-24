@@ -1,21 +1,21 @@
 # Cosmic IDE
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/icon.png">
+<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png">
 
 <br>
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide">
     <img src="https://img.shields.io/badge/IzzyOnDroid-v0.0.5-blue">
 </a>
 
-<a href="https://github.com/Cosmic-Ide/Java-Ide/actions/workflow/android.yaml">
+<a href="https://github.com/Cosmic-Ide/Cosmic-Ide/actions/workflow/android.yaml">
     <img src="https://img.shields.io/badge/Android%20CI-passing-blue">
 </a>
 
 <a href="https://discord.gg/8Gu6YCq2eS">
     <img src="https://img.shields.io/badge/Chat-on%20discord-7289da">
 </a>
-<a href="https://github.com/Cosmic-Ide/Java-Ide/blob/main/LICENSE">
+<a href="https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
 </a>
 <p>
@@ -26,28 +26,28 @@ A next-gen Ide for JVM development on Android!
 
 The app is available on F-Droid through [IzzyOnDroid](https://apt.izzysoft.de/fdroid) repository [here](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
 
-You can get the latest release from  [here](https://github.com/Cosmic-Ide/Java-Ide/releases/v0.0.5)
-and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Java-Ide/actions).
+You can get the latest release from  [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v0.0.5)
+and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Cosmic-Ide/actions).
 
 ## Screenshots
 
 <p align="center">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/editor.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/editor.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/diagnostic.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/diagnostic.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/run.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/run.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/settings.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/settings.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/javap.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/javap.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/smali.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/smali.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/decompiler.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/decompiler.png">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Java-Ide/main/art/img/treeview.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/treeview.png">
 
 </p>
 

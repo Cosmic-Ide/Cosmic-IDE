@@ -1,15 +1,17 @@
-Java Ide
+Cosmic Ide
 
 There are a lot of cases where you want to quickly test some Java code but don't have your computer open besides you. You open your browser and search for some website for this purpose. But you're neither guaranteed to have internet all the time (do you?), nor you are sure if the website sells your code or not.
 
-Java-Ide is a program that aims to solve this issue. It is a completely offline, open source application that meets all your needs.
+Cosmic-Ide is a program that aims to solve this issue. It is a completely offline, open source application that meets all your needs.
 
 <b>It currently features</b>
 
 - Support for JDK 18 and below
+- Kotlin Support
 - Javac for compiling the Java Code
 - Javap tool for viewing bytecode instructions
 - Eclipse Compiler for Java
+- Incremental kotlin compilation
 - Support for Incremental Compilation
 - Support for running Java Code
 - Google Java Format
@@ -21,9 +23,9 @@ Java-Ide is a program that aims to solve this issue. It is a completely offline,
 - Changing Java Versions
 - Custom classpath
 - Custom program arguments
-- Custom Java Directory
+- Project System
 - Code Highlighting
 - TreeView for quickly Changing Java files
 - Minimal Material Design
 
-Github: <a>https://github.com/PranavPurwar/Java-Ide</a>
+Github: <a>https://github.com/Cosmic-Ide/Cosmic-Ide</a>

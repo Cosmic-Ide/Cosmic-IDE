@@ -59,7 +59,6 @@ class KotlinCompiler() : Task {
             useJavac = false
             compileJava = false
             includeRuntime = false
-            noJdk = true
             noReflect = true
             noStdlib = true
             classpath =
@@ -79,6 +78,7 @@ class KotlinCompiler() : Task {
             }.toTypedArray()
             // incremental compiler needs this somewhy
             moduleName = "project-kotlin"
+            noJdk = true
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

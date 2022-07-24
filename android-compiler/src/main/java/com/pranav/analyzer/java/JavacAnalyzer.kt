@@ -47,9 +47,9 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         val javaFileObjects = arrayListOf<JavaFileObject>()
         for (file in files) {
         javaFileObjects.add(
-                SimpleJavaFileObject(
+                object : SimpleJavaFileObject(
                         file.toURI(), JavaFileObject.Kind.SOURCE) {
-                    override fun getCharContent(ignoreEncodingErrors: Boolean) {
+                    override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
                         return FileUtil.readFile(file)
                     }
                 })
@@ -70,10 +70,10 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
 
         args.add("-proc:none")
         args.add("-source")
-        args.add(version)
+        args.add(version?)
         args.add("-target")
-        args.add(version)
-        if (version.toInt() >= 9) {
+        args.add(version?)
+        if (version?.toInt() >= 9) {
             args.add("--system")
             args.add(FileUtil.getDataDir() + "compiler-modules")
         }
@@ -96,7 +96,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
     fun isFirstRun() = isFirstUse
 
     fun reset() {
-        diagnostics = DiagnosticCollector<>()
+        diagnostics = DiagnosticCollector<JavaFileObject>()
     }
 
     fun getDiagnostics(): ArrayList<DiagnosticRegion> {
@@ -109,7 +109,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
                             : DiagnosticRegion.SEVERITY_WARNING
             problems.add(
                     DiagnosticRegion(
-                            it.getStartPosition() as Int, it.getEndPosition() as Int, severity))
+                            it.getStartPosition() as Short, it.getEndPosition() as Short, severity))
         }
         return problems
     }
@@ -118,8 +118,8 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         val classpath = arrayListOf<File>()
         val clspath = prefs.getString("classpath", "")
 
-        if (!clspath.isEmpty()) {
-            for (clas in clspath.split(":")) {
+        if (!clspath?.isEmpty()) {
+            for (clas in clspath?.split(":")) {
                 classpath.add(File(clas))
             }
         }

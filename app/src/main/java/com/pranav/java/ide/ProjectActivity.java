@@ -11,12 +11,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.WorkerThread;
-import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -35,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public final class ProjectActivity extends AppCompatActivity {
+public class ProjectActivity extends BaseActivity {
 
     public interface OnProjectCreatedListener {
         void onProjectCreated(JavaProject project);
@@ -59,30 +58,33 @@ public final class ProjectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_project);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         buildCreateNewProjectDialog();
         buildDeleteProjectDialog();
 
-        View scrollingView = findViewById(R.id.scrolling_view);
-        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        SwipeRefreshLayout refreshLayout = findViewById(R.id.refreshLayout);
+        View appBarLayout = findViewById(R.id.appbar);
         var toolbar = (MaterialToolbar) findViewById(R.id.toolbar);
         var createProjectFab = (FloatingActionButton) findViewById(R.id.fab);
+        projectRecycler = findViewById(R.id.project_recycler);
         emptyContainer = findViewById(R.id.empty_container);
 
         setSupportActionBar(toolbar);
-        UiUtilsKt.addSystemWindowInsetToPadding(scrollingView, false, false, false, true);
-        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
+        UiUtilsKt.addSystemWindowInsetToPadding(projectRecycler, false, false, false, true);
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
         UiUtilsKt.addSystemWindowInsetToMargin(createProjectFab, false, false, false, true);
 
         projectAdapter = new ProjectAdapter();
-        projectRecycler = findViewById(R.id.project_recycler);
         projectRecycler.setAdapter(projectAdapter);
         projectRecycler.setLayoutManager(new LinearLayoutManager(this));
         projectAdapter.setOnProjectSelectedListener(this::openProject);
         projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
         setOnProjectCreatedListener(this::openProject);
 
+        refreshLayout.setOnRefreshListener(() -> {
+            loadProjects();
+            refreshLayout.setRefreshing(false);
+        });
         createProjectFab.setOnClickListener(v -> showCreateNewProjectDialog());
     }
 
@@ -96,7 +98,7 @@ public final class ProjectActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.settings:
-                startActivity(new Intent(ProjectActivity.this, SettingActivity.class));
+                startActivity(new Intent(this, SettingActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -105,6 +107,7 @@ public final class ProjectActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        projectRecycler.invalidate();
         loadProjects();
     }
 
@@ -144,8 +147,8 @@ public final class ProjectActivity extends AppCompatActivity {
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
             createBtn.setOnClickListener(v -> {
-                var projectName = String.valueOf(input.getText());
-                if (TextUtils.isEmpty(projectName)) {
+                var projectName = input.getText().toString().trim();
+                if (projectName.isEmpty()) {
                     return;
                 }
                 try {
@@ -182,7 +185,7 @@ public final class ProjectActivity extends AppCompatActivity {
 
     private void openProject(JavaProject project) {
         var projectPath = project.getProjectDirPath();
-        var intent = new Intent(ProjectActivity.this, MainActivity.class);
+        var intent = new Intent(this, MainActivity.class);
         intent.putExtra("project_path", projectPath);
         startActivity(intent);
     }

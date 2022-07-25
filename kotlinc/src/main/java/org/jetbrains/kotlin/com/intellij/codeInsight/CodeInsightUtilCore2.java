@@ -20,7 +20,6 @@ public class CodeInsightUtilCore2 extends FileModificationService2 {
 
     private static final Logger LOG = Logger.getInstance(CodeInsightUtilCore.class);
 
-
     @Override
     public boolean preparePsiElementsForWrite(@NonNull Collection<? extends PsiElement> elements) {
         if (elements.isEmpty()) return true;

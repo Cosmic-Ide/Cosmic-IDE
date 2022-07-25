@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="Theme.CosmicIde.V29" parent="Theme.CosmicIde.V27">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+
+</resources>

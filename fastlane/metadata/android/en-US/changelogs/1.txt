@@ -1,4 +1,4 @@
--JDK 8 Support
+- JDK 8 Support
 - Eclipse Compiler for Java
 - Eclipse class disassembler
 - Eclipse Code Formatter

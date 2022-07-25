@@ -1,4 +1,4 @@
-package com.pranav.java.ide.editor;
+package com.pranav.java.ide.editor.scheme;
 
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 

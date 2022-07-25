@@ -1,5 +1,6 @@
 package com.pranav.java.ide;
 
+import android.animation.ValueAnimator;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,29 +11,34 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.WindowCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.shape.MaterialShapeDrawable;
 
 import com.pranav.ProblemMarker;
 import com.pranav.android.code.disassembler.*;
@@ -42,8 +48,10 @@ import com.pranav.common.util.CoroutineUtil;
 import com.pranav.common.util.FileUtil;
 import com.pranav.common.util.ZipUtil;
 import com.pranav.java.ide.compiler.CompileTask;
-import com.pranav.java.ide.editor.DarculaScheme;
-import com.pranav.java.ide.editor.LightScheme;
+import com.pranav.java.ide.editor.completion.CustomCompletionItemAdapter;
+import com.pranav.java.ide.editor.completion.CustomCompletionLayout;
+import com.pranav.java.ide.editor.scheme.DarculaScheme;
+import com.pranav.java.ide.editor.scheme.LightScheme;
 import com.pranav.java.ide.ui.TreeViewDrawer;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
 import com.pranav.project.mode.JavaProject;
@@ -54,7 +62,9 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+import io.github.rosemoe.sora.widget.DirectAccessProps;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.benf.cfr.reader.Main;
@@ -72,16 +82,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public final class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int LANGUAGE_JAVA = 0;
     private static final int LANGUAGE_KOTLIN = 1;
 
+    private AppBarLayout appBarLayout;
     public CodeEditor editor;
-    public SharedPreferences prefs;
     public DrawerLayout drawer;
+    private View bottom;
 
     private AlertDialog loadingDialog;
 
@@ -99,9 +110,6 @@ public final class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
-        prefs = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         javaProject = new JavaProject(new File(getIntent().getStringExtra("project_path")));
 
@@ -111,7 +119,9 @@ public final class MainActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(false);
         getSupportActionBar().setTitle(getProject().getProjectName());
 
-        UiUtilsKt.addSystemWindowInsetToPadding(toolbar, false, true, false, false);
+        appBarLayout = findViewById(R.id.appbar);
+        tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
+        UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
 
         drawer = findViewById(R.id.mDrawerLayout);
         var toggle =
@@ -121,10 +131,18 @@ public final class MainActivity extends AppCompatActivity {
         toggle.syncState();
 
         editor = findViewById(R.id.editor);
-        editor.setTypefaceText(Typeface.createFromAsset(getAssets(), "font/JetBrainsMono-Regular.ttf"));
+        editor.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
         editor.setTextSize(12);
-        editor.setPinLineNumber(true);
-        editor.setLineNumberEnabled(true);
+        editor.setEdgeEffectColor(Color.TRANSPARENT);
+        editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+        editor.setInputType(EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS | EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editor.getComponent(EditorAutoCompletion.class).setLayout(new CustomCompletionLayout());
+        editor.getComponent(EditorAutoCompletion.class).setAdapter(new CustomCompletionItemAdapter());
+
+        DirectAccessProps props = editor.getProps();
+        props.overScrollEnabled = false;
+        props.allowFullscreen = false;
+        props.deleteEmptyLineFast = false;
 
         try { 
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
@@ -148,13 +166,13 @@ public final class MainActivity extends AppCompatActivity {
             try {
                 editor.setText(FileUtil.readFile(file));
             } catch (IOException e) {
-                dialog("Cannot read file", getString(e), true);
+                dialog("Failed to read file", getString(e), true);
             }
         }
 
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
             ZipUtil.unzipFromAssets(
-                    MainActivity.this, "android.jar.zip", FileUtil.getClasspathDir());
+                    this, "android.jar.zip", FileUtil.getClasspathDir());
         }
         final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
         if (!stdlib.exists()) {
@@ -168,7 +186,7 @@ public final class MainActivity extends AppCompatActivity {
         }
         if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
             ZipUtil.unzipFromAssets(
-                    MainActivity.this, "compiler-modules.zip", FileUtil.getDataDir());
+                    this, "compiler-modules.zip", FileUtil.getDataDir());
         }
         var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
         if (!output.exists()) {
@@ -188,13 +206,13 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.btn_smali).setOnClickListener(v -> smali());
 
         editor.getText().addContentListener(new ProblemMarker(editor, currentWorkingFilePath, getProject()));
-        LinearLayout bottom = findViewById(R.id.bottom_buttons);
+        bottom = findViewById(R.id.bottom_buttons);
         UiUtilsKt.addSystemWindowInsetToPadding(bottom, false, false, false, true);
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
-        var builder = new MaterialAlertDialogBuilder(MainActivity.this);
+        var builder = new MaterialAlertDialogBuilder(this);
         ViewGroup viewGroup = findViewById(android.R.id.content);
         View dialogView =
                 getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
@@ -222,6 +240,8 @@ public final class MainActivity extends AppCompatActivity {
         if (!indexer.getString("currentFile").equals(path)) {
             indexer.put("currentFile", path);
             indexer.flush();
+            final String code = editor.getText().toString().replace("System.exit(", "System.out.println(\"Exit code \" + ");
+            FileUtil.writeFile(currentWorkingFilePath, code);
         }
         var newWorkingFile = new File(path);
         editor.setText(FileUtil.readFile(newWorkingFile));
@@ -249,8 +269,8 @@ public final class MainActivity extends AppCompatActivity {
             case R.id.format_menu_button:
                 CoroutineUtil.execute(
                         () -> {
-                            if (prefs.getString("formatter", "Google Java Formatter")
-                                    .equals("Google Java Formatter")) {
+                            if (compiler_settings.getString("formatter", javaFormatters[0])
+                                    .equals(javaFormatters[0])) {
                                 var formatter = new GoogleJavaFormatter(editor.getText().toString());
                                 temp = formatter.format();
                             } else {
@@ -261,7 +281,7 @@ public final class MainActivity extends AppCompatActivity {
                 editor.setText(temp);
                 break;
             case R.id.settings_menu_button:
-                startActivity(new Intent(MainActivity.this, SettingActivity.class));
+                startActivity(new Intent(this, SettingActivity.class));
                 break;
             case R.id.run_menu_button:
                 compile(true, false);
@@ -271,15 +291,46 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            final String code = editor.getText().toString().replace("System.exit(", "System.out.println(\"Exit code \" + ");
+            FileUtil.writeFile(currentWorkingFilePath, code);
+        } catch (IOException e) {
+            Log.e(TAG, e + "while saving a file");
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         editor.release();
     }
 
+    private void tintAppBarLayout(@ColorInt int targetColor) {
+        int appBarColor = getAppBarLayoutColor();
+        if (appBarColor == targetColor) {
+            return;
+        }
+        ValueAnimator valueAnimator = ValueAnimator.ofArgb(appBarColor, targetColor);
+        valueAnimator.addUpdateListener(
+            animation -> appBarLayout.setBackgroundColor((int) valueAnimator.getAnimatedValue())
+        );
+        valueAnimator.setDuration(200).start();
+    }
+
+    private int getAppBarLayoutColor() {
+        Drawable background = appBarLayout.getBackground();
+        if (background == null || background.getClass() != ColorDrawable.class) {
+            appBarLayout.setBackgroundColor(getColorAttr(this, android.R.attr.colorBackground));
+        }
+        return ((ColorDrawable) appBarLayout.getBackground()).getColor();
+    }
+
     /* Shows a snackbar indicating that there were problems during compilation */
     public void showErr(final String e) {
         Snackbar.make(
-                        (LinearLayout) findViewById(R.id.bottom_buttons),
+                        editor,
                         "An error occurred",
                         Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", v -> dialog("Failed...", e, true))
@@ -288,11 +339,11 @@ public final class MainActivity extends AppCompatActivity {
 
     private void compile(boolean execute, boolean blockMainThread) {
         final int id = 1;
-        final var intent = new Intent(MainActivity.this, MainActivity.class);
+        final var intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         final var pendingIntent =
                 PendingIntent.getActivity(
-                        MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+                        this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         final var channel =
                 new NotificationChannel(
@@ -303,7 +354,7 @@ public final class MainActivity extends AppCompatActivity {
         manager.createNotificationChannel(channel);
 
         final var mBuilder =
-                new Notification.Builder(MainActivity.this, BUILD_STATUS)
+                new Notification.Builder(this, BUILD_STATUS)
                         .setContentTitle("Build Status")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(
@@ -314,7 +365,7 @@ public final class MainActivity extends AppCompatActivity {
         loadingDialog.show(); // Show Loading Dialog
         final var compilationThread =
                 new CompileTask(
-                        MainActivity.this,
+                        this,
                         execute,
                         new CompileTask.CompilerListeners() {
                             @Override
@@ -361,38 +412,50 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private EditorColorScheme getColorScheme(boolean isTextMate) {
-        return isDarkMode(this) ? getDarculaTheme(isTextMate) : getLightTheme(isTextMate);
+        return isDarkMode() ? getDarculaTheme(isTextMate) : getLightTheme(isTextMate);
     }
 
     private EditorColorScheme getDarculaTheme(boolean isTextMate) {
         if(isTextMate) {
             try {
-                return TextMateColorScheme.create(ThemeReader.readThemeSync(
+                TextMateColorScheme tmcs = TextMateColorScheme.create(ThemeReader.readThemeSync(
                         "darcula.json", getAssets().open("textmate/darcula.json")));
+                tmcs.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
+                tmcs.setColor(EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
+                tmcs.setColor(EditorColorScheme.COMPLETION_WND_BACKGROUND, SurfaceColors.SURFACE_1.getColor(this));
+                tmcs.setColor(EditorColorScheme.COMPLETION_WND_CORNER, MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
+                return tmcs;
             } catch (Exception e) {
-                Log.e(TAG, e + " while creating a dark scheme for textMate language");
+                Log.e(TAG, e + " while creating a dark scheme for TextMateLanguage");
             }
         }
         EditorColorScheme scheme = new DarculaScheme();
         scheme.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
         scheme.setColor(EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
         scheme.setColor(EditorColorScheme.COMPLETION_WND_BACKGROUND, SurfaceColors.SURFACE_1.getColor(this));
+        scheme.setColor(EditorColorScheme.COMPLETION_WND_CORNER, MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
         return scheme;
     }
 
     private EditorColorScheme getLightTheme(boolean isTextMate) {
         if(isTextMate) {
             try {
-                return TextMateColorScheme.create(ThemeReader.readThemeSync(
+                TextMateColorScheme tmcs = TextMateColorScheme.create(ThemeReader.readThemeSync(
                         "light.tmTheme", getAssets().open("textmate/light.tmTheme")));
+                tmcs.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
+                tmcs.setColor(EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
+                tmcs.setColor(EditorColorScheme.COMPLETION_WND_BACKGROUND, SurfaceColors.SURFACE_1.getColor(this));
+                tmcs.setColor(EditorColorScheme.COMPLETION_WND_CORNER, MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
+                return tmcs;
             } catch (Exception e) {
-                Log.e(TAG, e + " while creating a light scheme for textMate language");
+                Log.e(TAG, e + " while creating a light scheme for TextMateLanguage");
             }
         }
         EditorColorScheme scheme = new LightScheme();
         scheme.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
         scheme.setColor(EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
         scheme.setColor(EditorColorScheme.COMPLETION_WND_BACKGROUND, SurfaceColors.SURFACE_1.getColor(this));
+        scheme.setColor(EditorColorScheme.COMPLETION_WND_CORNER, MaterialColors.getColor(this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
         return scheme;
     }
 
@@ -428,11 +491,6 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isDarkMode(Context context) {
-        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
-    }
-
     public void smali() {
         try {
             final var classes = getClassesFromDex();
@@ -466,8 +524,8 @@ public final class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        var edi = new CodeEditor(MainActivity.this);
-                        edi.setTypefaceText(Typeface.createFromAsset(getAssets(), "font/JetBrainsMono-Regular.ttf"));
+                        var edi = new CodeEditor(this);
+                        edi.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
                         edi.setColorScheme(getColorScheme(true));
                         edi.setTextSize(12);
                         edi.setEditorLanguage(getSmaliLanguage());
@@ -475,12 +533,12 @@ public final class MainActivity extends AppCompatActivity {
                         try {
                             edi.setText(FileUtil.readFile(smaliFile));
                         } catch (IOException e) {
-                            dialog("Cannot read file", getString(e), true);
+                            dialog("Failed to read file", getString(e), true);
                             return;
                         }
 
                         var dialog =
-                                new AlertDialog.Builder(MainActivity.this).setView(edi).create();
+                                new AlertDialog.Builder(this).setView(edi).create();
                         dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
                     });
@@ -495,7 +553,7 @@ public final class MainActivity extends AppCompatActivity {
         listDialog(
                 "Select a class to extract source",
                 classes,
-                (dialog, pos) -> {
+                (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
                     var args =
                             new String[] {
@@ -520,8 +578,8 @@ public final class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-                    var edi = new CodeEditor(MainActivity.this);
-                    edi.setTypefaceText(Typeface.createFromAsset(getAssets(), "font/JetBrainsMono-Regular.ttf"));
+                    var edi = new CodeEditor(this);
+                    edi.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
                     edi.setColorScheme(getColorScheme(false));
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
@@ -531,12 +589,12 @@ public final class MainActivity extends AppCompatActivity {
                     try {
                         edi.setText(FileUtil.readFile(decompiledFile));
                     } catch (IOException e) {
-                        dialog("Cannot read file", getString(e), true);
+                        dialog("Failed to read file", getString(e), true);
                     }
 
-                    var d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-                    d.setCanceledOnTouchOutside(true);
-                    d.show();
+                    var dialog = new AlertDialog.Builder(this).setView(edi).create();
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.show();
                 });
     }
 
@@ -546,18 +604,18 @@ public final class MainActivity extends AppCompatActivity {
         listDialog(
                 "Select a class to disassemble",
                 classes,
-                (dialog, pos) -> {
+                (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
 
-                    var edi = new CodeEditor(MainActivity.this);
-                    edi.setTypefaceText(Typeface.createFromAsset(getAssets(), "font/JetBrainsMono-Regular.ttf"));
+                    var edi = new CodeEditor(this);
+                    edi.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
                     edi.setColorScheme(getColorScheme(false));
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
                     try {
                         var disassembled = "";
-                        if (prefs.getString("disassembler", "Javap").equals("Javap")) {
+                        if (compiler_settings.getString("disassembler", "Javap").equals("Javap")) {
                             disassembled =
                                     new JavapDisassembler(
                                                     getProject().getBinDirPath()
@@ -581,16 +639,16 @@ public final class MainActivity extends AppCompatActivity {
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }
-                    var d = new AlertDialog.Builder(MainActivity.this).setView(edi).create();
-                    d.setCanceledOnTouchOutside(true);
-                    d.show();
+                    var dialog = new AlertDialog.Builder(this).setView(edi).create();
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.show();
                 });
     }
 
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
-                    new MaterialAlertDialogBuilder(MainActivity.this)
+                    new MaterialAlertDialogBuilder(this)
                             .setTitle(title)
                             .setItems(items, listener)
                             .create()
@@ -600,7 +658,7 @@ public final class MainActivity extends AppCompatActivity {
 
     public void dialog(String title, final String message, boolean copyButton) {
         var dialog =
-                new MaterialAlertDialogBuilder(MainActivity.this)
+                new MaterialAlertDialogBuilder(this)
                         .setTitle(title)
                         .setMessage(message)
                         .setPositiveButton(android.R.string.ok, null)
@@ -610,8 +668,8 @@ public final class MainActivity extends AppCompatActivity {
                     "Copy",
                     (dialogInterface, i) -> {
                         ((ClipboardManager)
-                                        getSystemService(getApplicationContext().CLIPBOARD_SERVICE))
-                                .setPrimaryClip(ClipData.newPlainText("clipboard", message));
+                                        getSystemService(Context.CLIPBOARD_SERVICE))
+                                .setPrimaryClip(ClipData.newPlainText("", message));
                     });
         dialog.create().show();
     }
@@ -637,7 +695,7 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
 
-    private String getString(final Throwable e) {
+    private String getString(Throwable e) {
         return Log.getStackTraceString(e);
     }
 

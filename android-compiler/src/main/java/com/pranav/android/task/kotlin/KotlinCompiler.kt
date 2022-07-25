@@ -96,9 +96,9 @@ class KotlinCompiler() : Task {
         // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
-    fun getSourceFiles(path: File): ArrayList<String> {
+    fun getSourceFiles(dir: File): ArrayList<String> {
         val sourceFiles = arrayListOf<String>()
-        val files = path.listFiles()
+        val files = dir.listFiles()
         if (files == null) {
             return arrayListOf<String>()
         }

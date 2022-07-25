@@ -219,6 +219,14 @@ public final class MainActivity extends AppCompatActivity {
 
     /* Loads a file from a path to the editor */
     public void loadFileToEditor(String path) throws IOException, JSONException {
+        final String code =
+                    editor
+                            .getText()
+                            .toString()
+                            .replace("System.exit(", "System.err.println(\"Exit code \" + ");
+
+        FileUtil.writeFile(currentWorkingFilePath, code);
+        
         if (!indexer.getString("currentFile").equals(path)) {
             indexer.put("currentFile", path);
             indexer.flush();

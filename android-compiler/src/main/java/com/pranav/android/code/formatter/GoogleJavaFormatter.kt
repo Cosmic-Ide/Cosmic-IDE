@@ -15,7 +15,7 @@ class GoogleJavaFormatter(input: String) {
     fun format(): String {
         val options =
                 JavaFormatterOptions.builder()
-                        .style(JavaFormatterOptions.Style.AOSP) // Use AOSP formatting style
+                        .style(JavaFormatterOptions.Style.AOSP) // Use 4 spaces for tab
                         .formatJavadoc(true) // Format Javadoc
                         .build()
         val formatter = Formatter(options)

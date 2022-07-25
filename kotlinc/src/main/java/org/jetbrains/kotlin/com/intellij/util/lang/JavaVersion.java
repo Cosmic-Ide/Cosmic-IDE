@@ -173,7 +173,6 @@ public final class JavaVersion implements Comparable<JavaVersion> {
         }
     }
 
-
     public static JavaVersion parse( String versionString) throws IllegalArgumentException {
         return new JavaVersion(8, 0, 0, 69, false);
     }

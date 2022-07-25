@@ -30,6 +30,7 @@
     <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
 
     <!-- Strings used by SettingActivity -->
+    <string name="current_theme">Текущая тема</string>
     <string name="java_version">Версия Java</string>
     <string name="java_compiler">Компилятор Java</string>
     <string name="java_formatter">Форматировщик Java</string>
@@ -58,4 +59,5 @@
     <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
     <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
     <string name="stage_loading_dex">Загрузка файла DEX&#8230;</string>
+
 </resources>

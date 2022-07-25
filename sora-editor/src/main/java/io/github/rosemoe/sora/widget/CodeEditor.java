@@ -2011,7 +2011,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      * @return Whether the format task is scheduled
      */
     public synchronized boolean formatCodeAsync() {
-        if (mLanguage.getFormatter().isRunning()) {
+        if (isFormatting()) {
             return false;
         }
         mLanguage.getFormatter().setReceiver(this);
@@ -2036,7 +2036,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         if (start.index > end.index) {
             throw new IllegalArgumentException("start > end");
         }
-        if (mLanguage.getFormatter().isRunning()) {
+        if (isFormatting()) {
             return false;
         }
         mLanguage.getFormatter().setReceiver(this);
@@ -3954,7 +3954,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     @Override
     protected void onSizeChanged(int w, int h, int oldWidth, int oldHeight) {
         super.onSizeChanged(w, h, oldWidth, oldHeight);
-        mPainter.onSizeChanged(w, h, oldWidth, oldHeight);
+        mPainter.onSizeChanged(w, h);
         getVerticalEdgeEffect().setSize(w, h);
         getHorizontalEdgeEffect().setSize(h, w);
         getVerticalEdgeEffect().finish();
@@ -4195,6 +4195,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             getScroller().abortAnimation();
             // Ensure the scroll offset is valid
             mEventHandler.scrollBy(0, 0);
+            mConnection.reset();
         });
     }
 

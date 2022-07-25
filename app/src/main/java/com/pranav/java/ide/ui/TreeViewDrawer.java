@@ -44,6 +44,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TreeViewDrawer extends Fragment {
 
@@ -112,7 +114,7 @@ public class TreeViewDrawer extends Fragment {
                                                 activity.drawer.close();
                                             }
                                         } catch (Exception e) {
-                                            activity.dialog("Cannot read file", e.getMessage(), true);
+                                            activity.dialog("Failed to read file", e.getMessage(), true);
                                         }
                                     }
                                 }
@@ -155,7 +157,6 @@ public class TreeViewDrawer extends Fragment {
         }
 
         if (node.getContent().getFile().isFile()) {
-            /* We cannot create a new class or directory inside a file so we should disable these options */
             popup.getMenu().getItem(0).setVisible(false);
             popup.getMenu().getItem(1).setVisible(false);
             popup.getMenu().getItem(2).setVisible(false);
@@ -178,8 +179,21 @@ public class TreeViewDrawer extends Fragment {
         });
     }
 
+    private String getPackageName(final File file) {
+        // A new way to get the package name, because the previous one didn't work.
+        Matcher pkgMatcher = Pattern.compile("src").matcher(file.getAbsolutePath());
+        if (pkgMatcher.find()) {
+            int end = pkgMatcher.end();
+            if (end <= 0) return "";
+            String name = file.getAbsolutePath().substring(pkgMatcher.end());
+            if (name.startsWith(File.separator)) name.substring(1);
+            return name.replace(File.separator, ".");
+        }
+        return "";
+    }
+
     private void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(requireContext());
         builder.setTitle(getString(R.string.create_new_file));
         builder.setView(R.layout.treeview_create_new_file_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
@@ -188,7 +202,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(requireContext());
         builder.setTitle(getString(R.string.create_new_directory));
         builder.setView(R.layout.treeview_create_new_folder_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
@@ -197,7 +211,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private void buildConfirmDeleteDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
+        var builder = new MaterialAlertDialogBuilder(requireContext());
         builder.setTitle(getString(R.string.delete));
         builder.setMessage(getString(R.string.delete_file));
         builder.setPositiveButton(getString(R.string.delete), null);
@@ -269,14 +283,12 @@ public class TreeViewDrawer extends Fragment {
                                         node.getContent().getFile().getPath() + 
                                         "/" + 
                                         fileNameString +
-                                        ".java", JavaTemplate.getClassTemplate(node.getContent().getFile().getName(), fileNameString, false));
+                                        ".java", JavaTemplate.getClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
                                                 node.getLevel() + 1); // Get Level of parent so it will have
-                                // correct margin and disable some
-                                // popup functions if needed
                                 node.addChild(newDir);
                                 treeView.refreshTreeView();
                                 fileName.setText("");
@@ -315,14 +327,12 @@ public class TreeViewDrawer extends Fragment {
                                         node.getContent().getFile().getPath() + 
                                         "/" + 
                                         fileNameString +
-                                        ".kt", JavaTemplate.getKotlinClassTemplate(node.getContent().getFile().getName(), fileNameString, false));
+                                        ".kt", JavaTemplate.getKotlinClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
                                                 node.getLevel() + 1); // Get Level of parent so it will have
-                                // correct margin and disable some
-                                // popup functions if needed
                                 node.addChild(newDir);
                                 treeView.refreshTreeView();
                                 fileName.setText("");

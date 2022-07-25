@@ -1,6 +1,5 @@
 package com.pranav.java.ide;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -24,25 +20,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.pranav.common.util.FileUtil;
 import com.pranav.java.ide.ui.utils.UiUtilsKt;
 
-public final class SettingActivity extends AppCompatActivity {
-
-    private String[] javaVersions = {
-        "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
-    };
-
-    private String[] javaCompilers = {
-        "Javac", "Eclipse Compiler for Java"
-    };
-
-    private String[] javaFormatters = {
-        "Google Java Formatter", "Eclipse Java Formatter"
-    };
-
-    private String[] javaDisassemblers = {
-        "Javap", "Eclipse Class Disassembler"
-    };
-
-    private SharedPreferences settings;
+public class SettingActivity extends BaseActivity {
 
     private TextInputLayout classPath_til;
     private TextInputLayout programArguments_til;
@@ -51,7 +29,6 @@ public final class SettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         final MaterialToolbar toolbar = findViewById(R.id.toolbar);
 
@@ -60,26 +37,31 @@ public final class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-        var appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        View appBarLayout = findViewById(R.id.appbar);
         UiUtilsKt.addSystemWindowInsetToPadding(appBarLayout, false, true, false, false);
-
-        settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
 
         classPath_til = findViewById(R.id.til_classPath);
         programArguments_til = findViewById(R.id.til_programArguments);
 
+        AutoCompleteTextView themes_et = findViewById(R.id.et_themes);
         AutoCompleteTextView javaVersions_et = findViewById(R.id.et_javaVersions);
         AutoCompleteTextView javaCompilers_et = findViewById(R.id.et_javaCompilers);
         AutoCompleteTextView javaFormatters_et = findViewById(R.id.et_javaFormatters);
         AutoCompleteTextView javaDisassemblers_et = findViewById(R.id.et_javaDisassemblers);
 
-        if (!settings.getString("classpath", "").equals("")) {
-            classPath_til.getEditText().setText(settings.getString("classpath", ""));
+        if (!compiler_settings.getString("classpath", "").equals("")) {
+            classPath_til.getEditText().setText(compiler_settings.getString("classpath", ""));
         }
 
-        if (!settings.getString("program_arguments", "").equals("")) {
-            programArguments_til.getEditText().setText(settings.getString("program_arguments", ""));
+        if (!compiler_settings.getString("program_arguments", "").equals("")) {
+            programArguments_til.getEditText().setText(compiler_settings.getString("program_arguments", ""));
         }
+
+        themes_et.setAdapter(
+                new ArrayAdapter<>(
+                        this,
+                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                        themes));
 
         javaVersions_et.setAdapter(
                 new ArrayAdapter<>(
@@ -105,8 +87,20 @@ public final class SettingActivity extends AppCompatActivity {
                         androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         javaDisassemblers));
 
-        var version = settings.getString("version", "7");
+        var currentTheme = ui_settings.getString("current_theme", themes[0]);
         var count = 0;
+        for (var theme : themes) {
+            if (theme.equals(currentTheme)) {
+                themes_et.setListSelection(count);
+                themes_et.setText(
+                    getSelectedItem(count, themes_et), false);
+                break;
+            }
+            count++;
+        }
+
+        var version = compiler_settings.getString("version", javaVersions[2]);
+        count = 0;
         for (var vers : javaVersions) {
             if (vers.equals(version)) {
                 javaVersions_et.setListSelection(count);
@@ -117,7 +111,7 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
-        var compiler = settings.getString("compiler", "Javac");
+        var compiler = compiler_settings.getString("compiler", javaCompilers[0]);
         count = 0;
         for (var comp : javaCompilers) {
             if (comp.equals(compiler)) {
@@ -129,7 +123,7 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
-        var formatter = settings.getString("formatter", "Google Java Formatter");
+        var formatter = compiler_settings.getString("formatter", javaFormatters[0]);
         count = 0;
         for (var form : javaFormatters) {
             if (form.equals(formatter)) {
@@ -141,7 +135,7 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
-        var disassembler = settings.getString("disassembler", "Javap");
+        var disassembler = compiler_settings.getString("disassembler", javaDisassemblers[0]);
         count = 0;
         for (var dis : javaDisassemblers) {
             if (dis.equals(disassembler)) {
@@ -153,13 +147,22 @@ public final class SettingActivity extends AppCompatActivity {
             count++;
         }
 
+        themes_et.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(
+                            AdapterView<?> parent, View view, int position, long id) {
+                        setCurrentTheme(themes[position]);
+                    }
+                });
+
         javaVersions_et.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(
                             AdapterView<?> parent, View view, int position, long id) {
                         if (javaVersions[position].equals("18")
-                                && settings.getString("compiler", "Javac").equals("Javac")) {
+                                && compiler_settings.getString("compiler", javaCompilers[0]).equals(javaCompilers[0])) {
                             new MaterialAlertDialogBuilder(SettingActivity.this)
                                     .setTitle("Notice")
                                     .setMessage(
@@ -169,7 +172,7 @@ public final class SettingActivity extends AppCompatActivity {
                                     .show();
                             return;
                         }
-                        settings.edit().putString("version", javaVersions[position]).apply();
+                        compiler_settings.edit().putString("version", javaVersions[position]).apply();
                     }
                 });
 
@@ -178,7 +181,7 @@ public final class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(
                             AdapterView<?> parent, View view, int position, long id) {
-                        settings.edit().putString("compiler", javaCompilers[position]).apply();
+                        compiler_settings.edit().putString("compiler", javaCompilers[position]).apply();
                     }
                 });
 
@@ -187,7 +190,7 @@ public final class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(
                             AdapterView<?> parent, View view, int position, long id) {
-                        settings.edit().putString("formatter", javaFormatters[position]).apply();
+                        compiler_settings.edit().putString("formatter", javaFormatters[position]).apply();
                     }
                 });
 
@@ -196,7 +199,7 @@ public final class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(
                             AdapterView<?> parent, View view, int position, long id) {
-                        settings.edit().putString("disassembler", javaDisassemblers[position]).apply();
+                        compiler_settings.edit().putString("disassembler", javaDisassemblers[position]).apply();
                     }
                 });
     }
@@ -207,8 +210,8 @@ public final class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        settings.edit().putString("classpath", classPath_til.getEditText().getText().toString()).apply();
-        settings.edit().putString("program_arguments", programArguments_til.getEditText().getText().toString()).apply();
+        compiler_settings.edit().putString("classpath", classPath_til.getEditText().getText().toString()).apply();
+        compiler_settings.edit().putString("program_arguments", programArguments_til.getEditText().getText().toString()).apply();
         super.onDestroy();
     }
 }

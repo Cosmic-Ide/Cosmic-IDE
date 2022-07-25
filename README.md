@@ -1,83 +1,69 @@
+![CI](https://github.com/Cosmic-Ide/Cosmic-Ide/actions/workflows/android.yml/badge.svg)
+[![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.pranav.java.ide)](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+[![Chat on Discord](https://img.shields.io/badge/Chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
+
 # Cosmic IDE
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png">
-
-<br>
-<a href="https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide">
-    <img src="https://img.shields.io/badge/IzzyOnDroid-v0.0.5-blue">
-</a>
-
-<a href="https://github.com/Cosmic-Ide/Cosmic-Ide/actions/workflow/android.yaml">
-    <img src="https://img.shields.io/badge/Android%20CI-passing-blue">
-</a>
-
-<a href="https://discord.gg/8Gu6YCq2eS">
-    <img src="https://img.shields.io/badge/Chat-on%20discord-7289da">
-</a>
-<a href="https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/License-GPLv3-blue.svg">
-</a>
-<p>
 
 A next-gen Ide for JVM development on Android!
 
-## How to get
+Overview
+---
 
-The app is available on F-Droid through [IzzyOnDroid](https://apt.izzysoft.de/fdroid) repository [here](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png" align="right" width="40%" height="40%"></img>
 
-You can get the latest release from  [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v0.0.5)
+<div style="display:flex;">
+
+- Java 17
+- Kotlin Language Support
+- Javac, Javap, D8
+- Eclipse Compiler for Java (ECJ)
+- Incremental Compilation
+- Eclipse class disassembler
+- Execute Java Code
+- Error/Warning marker in editor
+- Code highlighting
+- Add Classpath
+- Decompile Class File
+- Google Java Formatter
+- Eclipse Java Formatter
+- Baksmali Dex File
+- Basic Java Keywords auto-completion
+
+</div>
+<p>
+
+Downloads
+---
+
+[<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+
+You can get the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v0.0.5)
 and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Cosmic-Ide/actions).
 
-## Screenshots
+Screenshots
+---
 
 <p align="center">
 
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/editor.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/diagnostic.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/run.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/settings.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/javap.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/smali.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/decompiler.png">
-
 <img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/treeview.png">
 
 </p>
 
-## Features
-
-- \[x\] Java 17
-- \[x\] Kotlin Language Support
-- \[x\] Javac
-- \[x\] Javap
-- \[x\] Eclipse Compiler for Java (ECJ)
-- \[x\] Incremental Compilation
-- \[x\] Eclipse class disassembler
-- \[x\] Execute Java Code
-- \[x\] Error/Warning marker in editor
-- \[x\] Code highlighting
-- \[x\] Add Classpath
-- \[x\] Decompile Class File
-- \[x\] Google Java Formatter
-- \[x\] Eclipse Java Formatter
-- \[x\] Baksmali Dex File
-- \[x\] Basic Java Keywords auto-completion
-- \[x\] D8
-- \[x\] File Tree Viewer
-- \[x\] Completely offline
-
-## TO-DO
+TO-DO
+---
 
 - \[ \] Java auto-complete server
 
-## Building
+Building
+---
 
 Clone this repository on your device and compile using Android Studio or by running the command
 
@@ -85,7 +71,8 @@ Clone this repository on your device and compile using Android Studio or by runn
 ./gradlew assembleDebug
 ```
 
-## Contributing
+Contribution
+---
 
 We would really appreciate all kinds of contributions.
 If you have any questions, ideas, need help or want to propose a change just open an issue.
@@ -93,7 +80,8 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - Any type of contributions are highly appreciated.
 - Create a pull request and we'll merge it after review.
 
-## Special thanks to
+Special Thanks
+---
 
 - [TheWolf](https://github.com/thewolfprod)
 

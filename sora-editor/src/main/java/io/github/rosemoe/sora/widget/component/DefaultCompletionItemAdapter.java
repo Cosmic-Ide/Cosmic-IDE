@@ -52,18 +52,14 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
             view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
         }
         var item = getItem(pos);
+
         TextView tv = view.findViewById(R.id.result_item_label);
         tv.setText(item.label);
         tv = view.findViewById(R.id.result_item_desc);
         tv.setText(item.desc);
         view.setTag(pos);
-//        if (isCurrentCursorPosition) {
-//            view.setBackgroundColor(0xff494b4c);
-//        } else {
-//            view.setBackgroundColor(0xff353839);
-//        }
-        ImageView iv = view.findViewById(R.id.result_item_image);
-        iv.setImageDrawable(item.icon);
+        TextView iv = view.findViewById(R.id.result_item_image);
+        iv.setText(item.desc.subSequence(0, 1));
         return view;
     }
 

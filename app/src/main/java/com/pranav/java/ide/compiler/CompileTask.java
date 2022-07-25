@@ -61,17 +61,12 @@ public class CompileTask extends Thread {
         final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            // a simple workaround to prevent calls to system.exit
-            final String code =
-                    activity.editor
-                            .getText()
-                            .toString()
-                            .replace("System.exit(", "System.err.println(\"Exit code \" + ");
+            final String code = activity.editor.getText().toString().replace("System.exit(", "System.out.println(\"Exit code \" + ");
             final String currentPath = activity.currentWorkingFilePath;
-            if (code != FileUtil.readFile(new File(currentPath))) {
+            if(code != FileUtil.readFile(new File(currentPath))) {
                 FileUtil.writeFile(currentPath, code);
-            }
-        } catch (final IOException e) {
+            } 
+        } catch (Exception e) {
             listener.onFailed(e.getMessage());
         }
 
@@ -87,6 +82,7 @@ public class CompileTask extends Thread {
             listener.onFailed(Log.getStackTraceString(e));
             return;
         }
+
         // Compile Java Files
         try {
             if (prefs.getString("compiler", "Javac").equals("Javac")) {
@@ -109,7 +105,7 @@ public class CompileTask extends Thread {
         ecjTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
 
-        // run d8
+        // Run D8
         listener.onCurrentBuildStageChanged(STAGE_D8);
         try {
             new D8Task().doFullTask(activity.getProject());

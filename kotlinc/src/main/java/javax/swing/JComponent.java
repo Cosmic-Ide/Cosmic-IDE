@@ -1,4 +1,3 @@
 package javax.swing;
 
-public class JComponent {
-}
+public class JComponent {}

@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.rosemoe.sora.graphics.BufferedDrawPoints;
+import io.github.rosemoe.sora.graphics.GraphicsConstants;
 import io.github.rosemoe.sora.graphics.Paint;
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion;
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
@@ -70,6 +71,8 @@ import io.github.rosemoe.sora.lang.styling.color.ResolvableColor;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.text.Cursor;
+import io.github.rosemoe.sora.text.bidi.ContentBidi;
+import io.github.rosemoe.sora.text.bidi.TextBidi;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.LongArrayList;
 import io.github.rosemoe.sora.util.Numbers;
@@ -82,7 +85,7 @@ import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
 
 public class EditorPainter {
 
-    private static final String LOG_TAG = EditorPainter.class.getSimpleName();
+    private static final String LOG_TAG = "EditorPainter";
     private final static int[] sDiagnosticsColorMapping = {
             0,
             EditorColorScheme.PROBLEM_TYPO,
@@ -112,6 +115,8 @@ public class EditorPainter {
     private int mCachedLineNumberWidth;
     private Cursor mCursor;
     private ContentLine mBuffer;
+
+    private ContentBidi mBidi;
 
     public EditorPainter(@NonNull CodeEditor editor) {
         mEditor = editor;
@@ -145,13 +150,19 @@ public class EditorPainter {
 
     public void notifyFullTextUpdate() {
         mCursor = mEditor.getCursor();
+        if (mBidi != null) {
+            mBidi.destroy();
+        }
+        if (mEditor.getText() != null) {
+            mBidi = new ContentBidi(mEditor.getText());
+        }
     }
 
     public void draw(@NonNull Canvas canvas) {
         drawView(canvas);
     }
 
-    public void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+    public void onSizeChanged(int width, int height) {
         mViewRect.right = width;
         mViewRect.bottom = height;
     }
@@ -166,10 +177,6 @@ public class EditorPainter {
 
     Paint getPaintGraph() {
         return mPaintGraph;
-    }
-
-    int getCachedLineNumberWidth() {
-        return mCachedLineNumberWidth;
     }
 
     void setCachedLineNumberWidth(int width) {
@@ -278,7 +285,7 @@ public class EditorPainter {
     /**
      * Invalidate the region in hardware-accelerated renderer
      */
-    public void invalidateChanged(int startLine, int endLine) {
+    public void invalidateChanged(int startLine) {
         if (mRenderer != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && mCursor != null) {
             if (mRenderer.invalidateInRegion(startLine, Integer.MAX_VALUE)) {
                 mEditor.invalidate();
@@ -290,7 +297,7 @@ public class EditorPainter {
      * Invalidate the cursor region in hardware-accelerated renderer
      */
     public void invalidateInCursor() {
-        invalidateChanged(mCursor.getLeftLine(), mCursor.getRightLine());
+        invalidateChanged(mCursor.getLeftLine());
     }
 
     // draw methods
@@ -337,7 +344,7 @@ public class EditorPainter {
             if (span.getStyleBits() != lastStyle) {
                 mPaint.setFakeBoldText(TextStyle.isBold(styleBits));
                 if (TextStyle.isItalics(styleBits)) {
-                    mPaint.setTextSkewX(-0.2f);
+                    mPaint.setTextSkewX(GraphicsConstants.TEXT_SKEW_X);
                 } else {
                     mPaint.setTextSkewX(0);
                 }
@@ -352,7 +359,7 @@ public class EditorPainter {
                     mRect.left = paintingOffset;
                     mRect.right = mRect.left + width;
                     mPaint.setColor(mEditor.getColorScheme().getColor(backgroundColorId));
-                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * 0.13f, mEditor.getRowHeight() * 0.13f, mPaint);
+                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mPaint);
                 }
             }
 
@@ -819,7 +826,7 @@ public class EditorPainter {
                     mRect.left = paintingOffset;
                     mRect.right = mRect.left + mPaint.getSpaceWidth() * 2;
                     mPaint.setColor(mEditor.getColorScheme().getColor(EditorColorScheme.SELECTED_TEXT_BACKGROUND));
-                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * 0.13f, mEditor.getRowHeight() * 0.13f, mPaint);
+                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mPaint);
                 } else {
                     drawRowRegionBackground(canvas, paintingOffset, row, firstVisibleChar, lastVisibleChar, selectionStart, selectionEnd, mEditor.getColorScheme().getColor(EditorColorScheme.SELECTED_TEXT_BACKGROUND), line);
                 }
@@ -925,7 +932,7 @@ public class EditorPainter {
                     if (span.getStyleBits() != lastStyle) {
                         mPaint.setFakeBoldText(TextStyle.isBold(styleBits));
                         if (TextStyle.isItalics(styleBits)) {
-                            mPaint.setTextSkewX(-0.2f);
+                            mPaint.setTextSkewX(GraphicsConstants.TEXT_SKEW_X);
                         } else {
                             mPaint.setTextSkewX(0);
                         }
@@ -940,12 +947,12 @@ public class EditorPainter {
                             mRect.left = paintingOffset;
                             mRect.right = mRect.left + width;
                             mPaint.setColor(mEditor.getColorScheme().getColor(backgroundColorId));
-                            canvas.drawRoundRect(mRect, mEditor.getRowHeight() * 0.13f, mEditor.getRowHeight() * 0.13f, mPaint);
+                            canvas.drawRoundRect(mRect, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mPaint);
                         }
                     }
 
                     // Draw text
-                    drawRegionText(canvas, paintingOffset, mEditor.getRowBaseline(row) - mEditor.getOffsetY(), line, paintStart, paintEnd, span.column, spanEnd, false, columnCount, mEditor.getColorScheme().getColor(span.getForegroundColorId()));
+                    drawRegionTextDirectional(canvas, paintingOffset, mEditor.getRowBaseline(row) - mEditor.getOffsetY(), line, paintStart, paintEnd, span.column, spanEnd, columnCount, mEditor.getColorScheme().getColor(span.getForegroundColorId()));
 
                     // Draw strikethrough
                     if (TextStyle.isStrikeThrough(styleBits)) {
@@ -1277,7 +1284,7 @@ public class EditorPainter {
             mRect.right = mRect.left + mEditor.measureText(mBuffer, paintStart, paintEnd - paintStart, line);
             mPaint.setColor(color);
             if (mEditor.getProps().enableRoundTextBackground) {
-                canvas.drawRoundRect(mRect, mEditor.getRowHeight() * 0.13f, mEditor.getRowHeight() * 0.13f, mPaint);
+                canvas.drawRoundRect(mRect, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mPaint);
             } else {
                 canvas.drawRect(mRect, mPaint);
             }
@@ -1355,7 +1362,21 @@ public class EditorPainter {
     }
 
     protected void drawRegionTextDirectional(Canvas canvas, float offsetX, float baseline, int line, int startIndex, int endIndex, int contextStart, int contextEnd, int columnCount, int color) {
-        drawRegionText(canvas, offsetX, baseline, line, startIndex, endIndex, contextStart, contextEnd, false, columnCount, color);
+        if (mEditor.getProps().computeDirectionsForRtl && mBidi != null) {
+            var directions = mBidi.getLineBidi(line);
+            var width = 0f;
+            for (int i = 0; i < directions.getRunCount(); i++) {
+                int sharedStart = Math.max(directions.getRunStart(i), startIndex);
+                int sharedEnd = Math.min(directions.getRunEnd(i), endIndex);
+                if (sharedEnd > sharedStart) {
+                    drawRegionText(canvas, offsetX + width, baseline, line, sharedStart, sharedEnd, contextStart, contextEnd, directions.isRunRtl(i), columnCount, color);
+                }
+                if (i + 1 < directions.getRunCount())
+                    width += mEditor.measureText(getLine(line), sharedStart, sharedEnd - sharedStart, line);
+            }
+        } else {
+            drawRegionText(canvas, offsetX, baseline, line, startIndex, endIndex, contextStart, contextEnd, false, columnCount, color);
+        }
     }
 
     /**
@@ -1693,13 +1714,13 @@ public class EditorPainter {
                 mRect.right = mEditor.getWidth();
                 mPaintOther.setColor(backgroundColor);
                 if (mEditor.getProps().enableRoundTextBackground) {
-                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * 0.13f, mEditor.getRowHeight() * 0.13f, mPaintOther);
+                    canvas.drawRoundRect(mRect, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mEditor.getRowHeight() * mEditor.getProps().roundTextBackgroundFactor, mPaintOther);
                 } else {
                     canvas.drawRect(mRect, mPaintOther);
                 }
             }
             if (color != 0) {
-                mPaint.setTextSkewX(TextStyle.isItalics(style) ? -0.2f : 0f);
+                mPaint.setTextSkewX(TextStyle.isItalics(style) ? GraphicsConstants.TEXT_SKEW_X : 0f);
                 mPaint.setStrikeThruText(TextStyle.isStrikeThrough(style));
                 drawText(canvas, getLine(line), startCol, endCol - startCol, startCol, endCol - startCol, false, horizontalOffset, mEditor.getRowBaseline(row) - mEditor.getOffsetY(), line);
             }
@@ -1756,7 +1777,7 @@ public class EditorPainter {
             try {
                 reader.moveToLine(line);
             } catch (Exception e) {
-                Log.e("EditorPainter", "patchTextRegions: Unable to get spans", e);
+                Log.e(LOG_TAG, "patchTextRegions: Unable to get spans", e);
                 break;
             }
             var startCol = position.startColumn;
@@ -1764,8 +1785,8 @@ public class EditorPainter {
             var lineText = getLine(line);
             var column = lineText.length();
             canvas.save();
-            canvas.clipRect(textOffset + position.left, 0, textOffset + position.right, mEditor.getHeight());
             var horizontalOffset = textOffset;
+            var first = true;
             // Find spans to draw
             for (int i = 0; i < reader.getSpanCount(); i++) {
                 var span = reader.getSpanAt(i);
@@ -1777,10 +1798,40 @@ public class EditorPainter {
                 }
                 var sharedEnd = Math.min(endCol, spanEnd);
                 if (sharedEnd - sharedStart > 0) {
+                    // Clip canvas to patch the requested region
+                    if (first) {
+                        first = false;
+                        if (TextStyle.isItalics(span.getStyleBits())) {
+                            var path = new Path();
+                            var y = mEditor.getRowBottomOfText(position.row) - mEditor.getOffsetY();
+                            path.moveTo(textOffset + position.left, y);
+                            path.lineTo(textOffset + position.left - GraphicsConstants.TEXT_SKEW_X * y, 0f);
+                            path.lineTo(mEditor.getWidth(), 0f);
+                            path.lineTo(mEditor.getWidth(), mEditor.getHeight());
+                            path.close();
+                            canvas.clipPath(path);
+                        } else {
+                            canvas.clipRect(textOffset + position.left, 0, mEditor.getWidth(), mEditor.getHeight());
+                        }
+                    }
+                    if (spanEnd >= endCol || i + 1 >= reader.getSpanCount()) {
+                        if (TextStyle.isItalics(span.getStyleBits())) {
+                            var path = new Path();
+                            var y = mEditor.getRowBottomOfText(position.row) - mEditor.getOffsetY();
+                            path.moveTo(textOffset + position.right, y);
+                            path.lineTo(textOffset + position.right - GraphicsConstants.TEXT_SKEW_X * y, 0f);
+                            path.lineTo(0, 0f);
+                            path.lineTo(0, mEditor.getHeight());
+                            path.close();
+                            canvas.clipPath(path);
+                        } else {
+                            canvas.clipRect(0, 0, textOffset + position.right, mEditor.getHeight());
+                        }
+                    }
                     // Patch the text
                     patch.draw(canvas, horizontalOffset, position.row, line, spanStart, spanEnd, span.style);
                 }
-                if (span.column >= endCol) {
+                if (spanEnd >= endCol) {
                     break;
                 }
                 horizontalOffset += mEditor.measureText(lineText, spanStart, spanEnd - spanStart, line);

@@ -7,8 +7,7 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/Widget.CosmicIde.AppBarLayout"
         app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -21,24 +20,41 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
+            android:layout_marginTop="@dimen/spacing_small_inv"
+            android:paddingStart="@dimen/spacing_large"
+            android:paddingEnd="@dimen/spacing_large"
             android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_themes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/current_theme"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
+
+                <AutoCompleteTextView
+                    android:id="@+id/et_themes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_javaVersions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/java_version"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
                 <AutoCompleteTextView
                     android:id="@+id/et_javaVersions"
@@ -51,9 +67,9 @@
                 android:id="@+id/til_javaCompilers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/java_compiler"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
                 <AutoCompleteTextView
                     android:id="@+id/et_javaCompilers"
@@ -66,9 +82,9 @@
                 android:id="@+id/til_javaFormatters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/java_formatter"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
                 <AutoCompleteTextView
                     android:id="@+id/et_javaFormatters"
@@ -81,9 +97,9 @@
                 android:id="@+id/til_javaDisassemblers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/java_disassembler"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense.ExposedDropdownMenu">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
 
                 <AutoCompleteTextView
                     android:id="@+id/et_javaDisassemblers"
@@ -96,9 +112,9 @@
                 android:id="@+id/til_classPath"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/classpath"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -112,9 +128,9 @@
                 android:id="@+id/til_programArguments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/program_arguments"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.Dense">
+                style="@style/Widget.Material3.TextInputLayout.FilledBox">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -127,8 +143,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/text_autosaving" />
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/text_autosaving"
+                android:textAppearance="?textAppearanceBodyMedium" />
 
         </LinearLayout>
 

@@ -5,7 +5,7 @@ import java.io.File
 /*
  * Required by nb-javac-android
  */
- object Environment {
+object Environment {
     @JvmStatic
     lateinit var COMPILER_MODULE: File
 

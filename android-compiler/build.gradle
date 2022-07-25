@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -26,16 +27,14 @@ android {
         jvmTarget = JavaVersion.VERSION_11
     }
 }
-
 dependencies {
-	// r8 dependency
-	implementation 'com.android.tools:r8:3.3.28'
-	implementation project(path: ':google-java-format')
-	implementation project(path: ':eclipse-jdt')
-	implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
-	implementation project(path: ':common')
-	implementation project(path: ':project-creator')
-	implementation project(':kotlinc')
-	
-	compileOnly files('libs/sora-editor.jar')
+    // r8 dependency
+    implementation 'com.android.tools:r8:3.3.28'
+    implementation project(path: ':google-java-format')
+    implementation project(path: ':eclipse-jdt')
+    implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
+    implementation project(path: ':common')
+    implementation project(path: ':project-creator')
+    implementation project(':kotlinc')
+    compileOnly files('libs/sora-editor.jar')
 }

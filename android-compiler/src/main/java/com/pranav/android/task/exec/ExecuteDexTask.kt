@@ -33,7 +33,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
     }
 
     override fun getTaskName(): String {
-        return "Execute java Task";
+        return "Execute Java Task";
     }
 
     /*

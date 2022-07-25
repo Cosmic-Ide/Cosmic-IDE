@@ -41,7 +41,7 @@ public class DefaultCompletionLayout implements CompletionLayout {
 
     private ListView mListView;
     private ProgressBar mProgressBar;
-    private RelativeLayout mRoot;
+    private GradientDrawable mBackground;
     private EditorAutoCompletion mEditorAutoCompletion;
 
     @Override
@@ -52,19 +52,20 @@ public class DefaultCompletionLayout implements CompletionLayout {
     @Override
     public View inflate(Context context) {
         RelativeLayout layout = new RelativeLayout(context);
-        mListView = new ListView(context);
-        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1));
+
         mProgressBar = new ProgressBar(context);
         layout.addView(mProgressBar);
         var params = ((RelativeLayout.LayoutParams) mProgressBar.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         params.width = params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
-        GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
-        layout.setBackground(gd);
-        mRoot = layout;
+
+        mBackground = new GradientDrawable(); 
+        mBackground.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
+        layout.setBackground(mBackground);
+
+        mListView = new ListView(context);
         mListView.setDividerHeight(0);
-        setLoading(true);
+        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1)); 
         mListView.setOnItemClickListener((parent, view, position, id) -> {
             try {
                 mEditorAutoCompletion.select(position);
@@ -72,16 +73,14 @@ public class DefaultCompletionLayout implements CompletionLayout {
                 Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+        setLoading(true);
         return layout;
     }
 
     @Override
     public void onApplyColorScheme(EditorColorScheme colorScheme) {
-        GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, mEditorAutoCompletion.getContext().getResources().getDisplayMetrics()));
-        gd.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER));
-        gd.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND));
-        mRoot.setBackground(gd);
+        mBackground.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER));
+        mBackground.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND));
     }
 
     @Override

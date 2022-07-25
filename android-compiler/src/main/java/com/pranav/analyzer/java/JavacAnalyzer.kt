@@ -72,8 +72,8 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         args.add("-source")
         args.add(version!!)
         args.add("-target")
-        args.add(version!!)
-        if (version!!.toInt() >= 9) {
+        args.add(version)
+        if (version.toInt() >= 9) {
             args.add("--system")
             args.add(FileUtil.getDataDir() + "compiler-modules")
         }
@@ -106,7 +106,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
             val severity = if (it.getKind() == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
             problems.add(
                     DiagnosticRegion(
-                            (it.getStartPosition() as Int), (it.getEndPosition() as Int), severity))
+                            it.getStartPosition().toInt(), it.getEndPosition().toInt(), severity))
         }
         return problems
     }
@@ -116,7 +116,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         val clspath = prefs.getString("classpath", "")
 
         if (!clspath!!.isEmpty()) {
-            for (clas in clspath!!.split(":")) {
+            for (clas in clspath.split(":")) {
                 classpath.add(File(clas))
             }
         }

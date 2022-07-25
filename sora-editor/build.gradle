@@ -30,7 +30,6 @@ android {
 
 dependencies {
     // We are using sora-editor from this commit 24e40b8
-    implementation 'androidx.core:core:1.9.0-alpha05'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.jruby.jcodings:jcodings:1.0.57'
     implementation 'org.jruby.joni:joni:2.1.43'

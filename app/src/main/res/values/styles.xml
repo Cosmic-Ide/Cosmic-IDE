@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Widget.CosmicIde.Toolbar.Surface" parent="Widget.Material3.Toolbar.Surface">
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="TextAppearance.CosmicIde.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+</resources>

@@ -4,7 +4,7 @@ public class JavaTemplate {
 
     public static String getClassTemplate(String packageName, String className, boolean isCreateMainMethod) {
         var header = "";
-        if(!JavaTemplate.isEmpty(packageName)) {
+        if(!isEmpty(packageName)) {
             header = "package " + packageName + ";\n" + "\n";
         }
         return header + 
@@ -20,7 +20,7 @@ public class JavaTemplate {
 
     public static String getKotlinClassTemplate(String packageName, String className, boolean isCreateMainMethod) {
         var header = "";
-        if(!JavaTemplate.isEmpty(packageName)) {
+        if(!isEmpty(packageName)) {
             header = "package " + packageName + "\n" + "\n";
         }
         return header + 

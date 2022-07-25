@@ -72,8 +72,8 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         args.add("-source")
         args.add(version!!)
         args.add("-target")
-        args.add(version)
-        if (version.toInt() >= 9) {
+        args.add(version!!)
+        if (version!!.toInt() >= 9) {
             args.add("--system")
             args.add(FileUtil.getDataDir() + "compiler-modules")
         }

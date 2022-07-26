@@ -178,6 +178,14 @@ public class TreeViewDrawer extends Fragment {
         });
     }
 
+    private String getPackageName(final File file) {
+        if (file == null) return "";
+        var packageName = file.getAbsolutePath();
+        packageName = packageName.substring(activity.getProject().getSrcDirPath().length());
+        packageName = packageName.replace(File.pathSeparator, ".");
+        return packageName;
+    }
+
     private void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(getContext());
         builder.setTitle(getString(R.string.create_new_file));
@@ -269,7 +277,7 @@ public class TreeViewDrawer extends Fragment {
                                         node.getContent().getFile().getPath() + 
                                         "/" + 
                                         fileNameString +
-                                        ".java", JavaTemplate.getClassTemplate(node.getContent().getFile().getName(), fileNameString, false));
+                                        ".java", JavaTemplate.getClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
@@ -315,7 +323,7 @@ public class TreeViewDrawer extends Fragment {
                                         node.getContent().getFile().getPath() + 
                                         "/" + 
                                         fileNameString +
-                                        ".kt", JavaTemplate.getKotlinClassTemplate(node.getContent().getFile().getName(), fileNameString, false));
+                                        ".kt", JavaTemplate.getKotlinClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(

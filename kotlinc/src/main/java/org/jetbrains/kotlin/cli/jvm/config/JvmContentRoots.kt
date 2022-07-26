@@ -16,7 +16,7 @@
 
 package org.jetbrains.kotlin.cli.jvm.config
 
-import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.kotlin.com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.config.ContentRoot
 import org.jetbrains.kotlin.cli.common.config.KotlinSourceRoot

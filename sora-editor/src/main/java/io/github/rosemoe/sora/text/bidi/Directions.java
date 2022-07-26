@@ -21,23 +21,41 @@
  *     Please contact Rosemoe by email 2073412493@qq.com if you need
  *     additional information or have any questions
  */
-package io.github.rosemoe.sora.lang.styling.color;
+package io.github.rosemoe.sora.text.bidi;
 
 import androidx.annotation.NonNull;
 
-import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.util.IntPair;
 
 /**
- * Describe a color that can be resolved when rendering.
+ * Manages directions in a text segment
  *
  * @author Rosemoe
  */
-public interface ResolvableColor {
+public class Directions {
 
-    /**
-     * Resolve this color
-     * @return Color int
-     */
-    int resolve(@NonNull CodeEditor editor);
+    private final long[] runs;
+    private final int length;
+
+    public Directions(@NonNull long[] runs, int length) {
+        this.runs = runs;
+        this.length = length;
+    }
+
+    public int getRunCount() {
+        return runs.length;
+    }
+
+    public int getRunStart(int i) {
+        return IntPair.getFirst(runs[i]);
+    }
+
+    public int getRunEnd(int i) {
+        return i == runs.length - 1 ? length : getRunStart(i + 1);
+    }
+
+    public boolean isRunRtl(int i) {
+        return IntPair.getSecond(runs[i]) == 1;
+    }
 
 }

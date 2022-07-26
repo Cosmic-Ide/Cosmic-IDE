@@ -142,6 +142,10 @@ public class TextMateLanguage extends EmptyLanguage {
         autoComplete.requireAutoComplete(prefix, publisher, idt);
     }
 
+    public IdentifierAutoComplete getAutoCompleter() {
+        return autoComplete;
+    }
+
     private final String[] javaKeywords = {
         "assert", "abstract", "boolean", "byte", "char", "class", "do",
         "double", "final", "float", "for", "if", "int", "long", "new",

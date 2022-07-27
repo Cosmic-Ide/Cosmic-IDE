@@ -181,7 +181,9 @@ public class TreeViewDrawer extends Fragment {
     private String getPackageName(final File file) {
         if (file == null) return "";
         var packageName = file.getAbsolutePath();
-        packageName = packageName.substring(activity.getProject().getSrcDirPath().length());
+        final var srcDirLength = activity.getProject().getSrcDirPath().length();
+        if (packageName.length() <= srcDirLength) return "";
+        packageName = packageName.substring(srcDirLength);
         packageName = packageName.replace(File.pathSeparator, ".");
         return packageName;
     }
@@ -265,33 +267,29 @@ public class TreeViewDrawer extends Fragment {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
                         if (!fileNameString.isEmpty()) {
-                            try {
-                                var filePth =
-                                        new File(
-                                                node.getContent().getFile().getPath()
-                                                        + "/"
-                                                        + fileNameString
+                            var filePth =
+                                    new File(
+                                            node.getContent().getFile().getPath()
+                                                    + "/"
+                                                    + fileNameString
                                                         + ".java");
 
-                                FileUtil.writeFileFromString(
-                                        node.getContent().getFile().getPath() + 
-                                        "/" + 
-                                        fileNameString +
-                                        ".java", JavaTemplate.getClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
+                            FileUtil.writeFileFromString(
+                                    node.getContent().getFile().getPath() + 
+                                    "/" + 
+                                    fileNameString +
+                                    ".java", JavaTemplate.getClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
-                                var newDir =
-                                        new TreeNode<TreeFile>(
-                                                new TreeFile(filePth),
-                                                node.getLevel() + 1); // Get Level of parent so it will have
-                                // correct margin and disable some
-                                // popup functions if needed
-                                node.addChild(newDir);
-                                treeView.refreshTreeView();
-                                fileName.setText("");
-                                createNewFileDialog.dismiss();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            var newDir =
+                                    new TreeNode<TreeFile>(
+                                            new TreeFile(filePth),
+                                            node.getLevel() + 1); // Get Level of parent so it will have
+                            // correct margin and disable some
+                            // popup functions if needed
+                            node.addChild(newDir);
+                            treeView.refreshTreeView();
+                            fileName.setText("");
+                            createNewFileDialog.dismiss();
                         }
                     });
         }
@@ -311,33 +309,29 @@ public class TreeViewDrawer extends Fragment {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
                         if (!fileNameString.isEmpty()) {
-                            try {
-                                var filePth =
-                                        new File(
-                                                node.getContent().getFile().getPath()
-                                                        + "/"
-                                                        + fileNameString
-                                                        + ".kt");
+                            var filePth =
+                                    new File(
+                                            node.getContent().getFile().getPath()
+                                                    + "/"
+                                                    + fileNameString
+                                                            + ".kt");
 
-                                FileUtil.writeFileFromString(
-                                        node.getContent().getFile().getPath() + 
-                                        "/" + 
-                                        fileNameString +
-                                        ".kt", JavaTemplate.getKotlinClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
+                            FileUtil.writeFileFromString(
+                                    node.getContent().getFile().getPath() + 
+                                    "/" + 
+                                    fileNameString +
+                                    ".kt", JavaTemplate.getKotlinClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
 
-                                var newDir =
-                                        new TreeNode<TreeFile>(
-                                                new TreeFile(filePth),
-                                                node.getLevel() + 1); // Get Level of parent so it will have
-                                // correct margin and disable some
-                                // popup functions if needed
-                                node.addChild(newDir);
-                                treeView.refreshTreeView();
-                                fileName.setText("");
-                                createNewFileDialog.dismiss();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            var newDir =
+                                    new TreeNode<TreeFile>(
+                                            new TreeFile(filePth),
+                                            node.getLevel() + 1); // Get Level of parent so it will have
+                            // correct margin and disable some
+                            // popup functions if needed
+                            node.addChild(newDir);
+                            treeView.refreshTreeView();
+                            fileName.setText("");
+                            createNewFileDialog.dismiss();
                         }
                     });
         }

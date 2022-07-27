@@ -234,10 +234,10 @@ public class FileUtil {
         return isSpace(filePath) ? null : new File(filePath);
     }
 
-    public static boolean isSpace(final String s) {
+    private static boolean isSpace(final String s) {
         if (s == null) return true;
-        for (int i = 0, len = s.length(); i < len; ++i) {
-            if (!Character.isWhitespace(s.charAt(i))) {
+        for (char c : s.toCharArray()) {
+            if (!Character.isWhitespace(c)) {
                 return false;
             }
         }

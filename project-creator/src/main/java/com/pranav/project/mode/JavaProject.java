@@ -12,11 +12,8 @@ public class JavaProject {
 
     private final File root;
 
-    private String projectName;
-
     public JavaProject(File root) {
         this.root = root;
-        this.projectName = root.getName();
     }
 
     public static JavaProject newProject(String projectName) throws IOException {
@@ -56,7 +53,7 @@ public class JavaProject {
     }
 
     public String getProjectName() {
-        return projectName;
+        return getRootFile().getName();
     }
 
     public String getProjectDirPath() {

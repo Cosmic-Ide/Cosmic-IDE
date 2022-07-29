@@ -26,14 +26,11 @@ package javax.swing.text.html;
 
 public class HTMLEditorKit {
 
-
     /**
      * Constructs an HTMLEditorKit, creates a StyleContext,
      * and loads the style sheet.
      */
-    public HTMLEditorKit() {
-
-    }
+    public HTMLEditorKit() {}
 
     /**
      * Get the MIME type of the data that this
@@ -46,7 +43,5 @@ public class HTMLEditorKit {
         return "text/html";
     }
 
-    public static class ParserCallback {
-    
-    }
+    public static class ParserCallback {}
 }

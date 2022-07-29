@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Used on devices when we cannot set dark/light mode on the system bars -->
+    <color name="chrome_translucent">#80000000</color>
+
+    <!--
+    Used on devices when we can technically use "transparent" system bars, but fully
+    transparent system bars would actually be made translucent by OS.
+    -->
+    <color name="chrome_transparent_ish">#01ffffff</color>
+</resources>

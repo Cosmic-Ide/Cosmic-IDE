@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dimens for padding/margin attributes -->
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_mid_medium">12dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_mid_large">20dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_huge">32dp</dimen>
+
+    <dimen name="spacing_tiny_inv">-4dp</dimen>
+    <dimen name="spacing_small_inv">-8dp</dimen>
+    <dimen name="spacing_mid_medium_inv">-12dp</dimen>
+    <dimen name="spacing_medium_inv">-16dp</dimen>
+    <dimen name="spacing_mid_large_inv">-20dp</dimen>
+    <dimen name="spacing_large_inv">-24dp</dimen>
+    <dimen name="spacing_huge_inv">-32dp</dimen>
+
+    <!-- Width & Heights for UI elements -->
+    <dimen name="size_btn">48dp</dimen>
+
+    <!-- Misc -->
+    <dimen name="elevation_small">2dp</dimen>
+    <dimen name="elevation_normal">4dp</dimen>
+</resources>

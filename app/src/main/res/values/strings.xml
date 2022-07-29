@@ -36,6 +36,7 @@
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
 
     <!-- Strings used by SettingActivity -->
+    <string name="current_theme">Current Theme</string>
     <string name="java_version">Java Version</string>
     <string name="java_compiler">Java Compiler</string>
     <string name="java_formatter">Java Formatter</string>

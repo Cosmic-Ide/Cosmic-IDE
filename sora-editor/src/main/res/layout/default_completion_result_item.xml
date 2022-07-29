@@ -26,18 +26,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground"
+    android:background="?android:selectableItemBackground"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingTop="2dp"
-    android:paddingBottom="2dp">
+    android:gravity="center_vertical">
 
-    <ImageView
-        android:layout_height="24dp"
-        android:layout_width="24dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:id="@+id/result_item_image" />
+    <TextView
+        android:id="@+id/result_item_image"
+        android:layout_height="match_parent"
+        android:layout_width="30dp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:text="K"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_height="wrap_content"
@@ -52,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Medium Text"
-            android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/result_item_desc"
@@ -60,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Small Text"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
+            android:textSize="12sp" />
 
     </LinearLayout>
 

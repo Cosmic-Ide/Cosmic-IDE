@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.CosmicIde.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.CosmicIde.AppBarLayout.Surface">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:elevation">@dimen/elevation_small</item>
+        <item name="android:outlineAmbientShadowColor">@android:color/black</item>
+        <item name="android:outlineSpotShadowColor">@android:color/black</item>
+        <item name="elevation">@dimen/elevation_small</item>
+    </style>
+
+    <style name="Widget.CosmicIde.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="maxButtonHeight">@dimen/size_btn</item>
+        <item name="android:paddingStart">@dimen/spacing_tiny</item>
+        <item name="android:paddingEnd">@dimen/spacing_tiny</item>
+    </style>
+
+    <style name="Widget.CosmicIde.Toolbar.Surface">
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurfaceVariant</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Toolbar.Surface</item>
+        <item name="android:background">?attr/colorSurface</item>
+    </style>
+
+</resources>

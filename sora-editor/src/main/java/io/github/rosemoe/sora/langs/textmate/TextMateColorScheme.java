@@ -41,7 +41,6 @@ public class TextMateColorScheme extends EditorColorScheme {
         this.iRawTheme = iRawTheme;
         this.theme = Theme.createFromRawTheme(iRawTheme);
         applyDefault();
-
     }
 
     public static TextMateColorScheme create(IRawTheme iRawTheme) {
@@ -61,7 +60,6 @@ public class TextMateColorScheme extends EditorColorScheme {
             if (caret != null) {
                 setColor(SELECTION_INSERT, Color.parseColor(caret));
             }
-
 
             String selection = (String) themeRaw.get("selection");
             if (selection != null) {

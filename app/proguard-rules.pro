@@ -1,5 +1,6 @@
 -keep class com.google.googlejavaformat.** { *; }
 -keep class org.eclipse.** { *; }
+-keep class org.apache.harmony.** { *; }
 -keep class com.itsaky.androidide.** { *; }
 -keep class com.sun.** { *; }
 -keep class jdk.internal.** { *; }

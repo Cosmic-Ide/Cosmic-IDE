@@ -29,7 +29,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.pranav.completion.*;
+import org.cosmic.ide.completion.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;

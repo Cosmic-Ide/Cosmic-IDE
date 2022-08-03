@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.pranav.java.ide'
+    namespace 'org.cosmic.ide'
     compileSdk 33
 
     defaultConfig {
-        applicationId 'com.pranav.java.ide'
+        applicationId 'org.cosmic.ide'
         minSdk 26
         targetSdk 33
         versionCode 10
@@ -40,6 +40,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -50,6 +54,7 @@ android {
     }
 
     lintOptions {
+        abortOnError false
         checkDependencies true
     }
 

@@ -1,5 +1,5 @@
 ---
-name: 'Release Build CI'
+name: Release Build CI
 
 on:
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.2.2
         with:
-          arguments: --no-build-cache assembleRelease
+          arguments: assembleRelease
 
       - name: Upload release apk
         uses: actions/upload-artifact@v3

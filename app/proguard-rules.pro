@@ -7,3 +7,4 @@
 -keep class javax.** { *; }
 -keep class com.googlecode.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
+-keep class org.xml.sax.** { *; }

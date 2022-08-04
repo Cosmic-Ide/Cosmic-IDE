@@ -21,7 +21,7 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, getContext().getResources().getDisplayMetrics()).toInt()
     }
 
-    override fun getView(pos: Int, v: View, parent: ViewGroup, isCurrentCursorPosition: Boolean): View {
+    override fun getView(pos: Int, v: View?, parent: ViewGroup, isCurrentCursorPosition: Boolean): View {
         val view = LayoutInflater.from(getContext()).inflate(R.layout.custom_completion_result_item, parent, false)
         if (isCurrentCursorPosition) {
             val color = MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorControlHighlight, Color.TRANSPARENT)

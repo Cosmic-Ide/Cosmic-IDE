@@ -8,7 +8,6 @@
     <string name="close_drawer">Закрыть меню</string>
     <string name="create_new_file">Создать файл</string>
     <string name="create_new_directory">Создать папку</string>
-    <string name="new_class_name">Название класса</string>
     <string name="new_directory_name">Название папки</string>
     <string name="create">Создать</string>
     <string name="create_java_class">Создать класс Java</string>

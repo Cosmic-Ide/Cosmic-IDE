@@ -1,5 +1,5 @@
 ---
-name: ReleaseBuild CI
+name: Release Build CI
 
 on:
   workflow_dispatch:

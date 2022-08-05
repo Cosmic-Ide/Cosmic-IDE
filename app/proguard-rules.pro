@@ -8,3 +8,4 @@
 -keep class com.googlecode.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
+-keep class org.openjdk.com.sun.xml.internal.stream.** { *; }

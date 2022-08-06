@@ -1,5 +1,5 @@
 ---
-name: 'Update Gradle Wrapper'
+name: Update Gradle Wrapper
 
 on:
   workflow_dispatch:

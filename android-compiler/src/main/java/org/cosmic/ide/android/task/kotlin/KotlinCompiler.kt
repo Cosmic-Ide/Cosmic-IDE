@@ -99,7 +99,8 @@ class KotlinCompiler : Task {
     fun getSourceFiles(dir: File): ArrayList<String> {
         val sourceFiles = arrayListOf<String>()
         val files = dir.listFiles()
-        for (file in files?) {
+        if (files == null) return
+        for (file in files) {
             if (file.isFile()) {
                 val path = file.name
                 if (path.endsWith(".java") || path.endsWith(".kt")) {

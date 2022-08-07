@@ -30,7 +30,8 @@ class D8Task : Task {
         val paths = arrayListOf<Path>()
 
         val files = root.listFiles()
-        for (f in files?) {
+        if (files == null) return paths
+        for (f in files) {
             if (f.isFile()) {
                 if (f.getName().endsWith(".class")) {
                     paths.add(f.toPath())

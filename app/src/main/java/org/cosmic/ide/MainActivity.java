@@ -36,7 +36,6 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
-import io.github.rosemoe.sora.textmate.core.theme.IRawTheme;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
@@ -55,6 +54,7 @@ import org.cosmic.ide.editor.completion.CustomCompletionLayout;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
+import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.jf.baksmali.Baksmali;
 import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
@@ -419,7 +419,7 @@ public class MainActivity extends BaseActivity {
 
     private TextMateColorScheme getColorScheme() {
         try {
-            iRawTheme rawTheme;
+            IRawTheme rawTheme;
             if(isDarkMode()) {
                 rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
             } else {
@@ -438,7 +438,7 @@ public class MainActivity extends BaseActivity {
                     getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
                     new InputStreamReader(
                             getAssets().open("textmate/java/language-configuration.json")),
-                    getColorScheme()).getRawTheme());
+                    getColorScheme().getRawTheme());
         } catch (IOException e) {
             Log.e(TAG, e + " while loading kotlin language");
             return new EmptyLanguage();
@@ -452,7 +452,7 @@ public class MainActivity extends BaseActivity {
                     getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
                     new InputStreamReader(
                             getAssets().open("textmate/kotlin/language-configuration.json")),
-                    getColorScheme()).getRawTheme());
+                    getColorScheme().getRawTheme());
         } catch (IOException e) {
             Log.e(TAG, e + " while loading kotlin language");
             return new EmptyLanguage();
@@ -466,7 +466,7 @@ public class MainActivity extends BaseActivity {
                     getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
                     new InputStreamReader(
                             getAssets().open("textmate/smali/language-configuration.json")),
-                    getColorScheme()).getRawTheme());
+                    getColorScheme().getRawTheme());
         } catch (IOException e) {
             Log.e(TAG, e + " while loading smali language");
             return new EmptyLanguage();

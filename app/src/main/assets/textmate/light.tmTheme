@@ -25,6 +25,10 @@
                     <string>#E4F6D4</string>
                     <key>selection</key>
                     <string>#C9D0D9</string>
+                    <key>completionWindowBackground</key>
+                    <string>#F5F5F5</string>
+                    <key>completionWindowStroke</key>
+                    <string>#79747E</string>
                 </dict>
             </dict>
             <dict>

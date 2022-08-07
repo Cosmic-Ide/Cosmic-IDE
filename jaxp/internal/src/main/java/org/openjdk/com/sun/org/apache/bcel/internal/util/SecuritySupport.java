@@ -227,7 +227,7 @@ public final class SecuritySupport {
             // this will ensure bootclassloader is used
             return null;
         } else {
-            return SecuritySupport.class.getClassLoader();
+            return (java.lang.ClassLoader) SecuritySupport.class.getClassLoader();
         }
     } // findClassLoader():ClassLoader
 

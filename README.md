@@ -1,7 +1,12 @@
 ![CI](https://github.com/Cosmic-Ide/Cosmic-Ide/actions/workflows/android.yml/badge.svg)
 [![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.pranav.java.ide)](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
-[![Chat on Discord](https://img.shields.io/badge/Chat-on%20discord-7289da)](https://discord.gg/8Gu6YCq2eS)
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
+[![Chat on Discord](https://img.shields.io/discord/867985135931383809)](https://discord.gg/8Gu6YCq2eS)
+[![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
+[![CodeFactor](https://www.codefactor.io/repository/github/cosmic-ide/cosmic-ide/badge/main)](https://codefactor.io/repository/github/cosmic-ide/cosmic-ide/overview/main)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2e411243d41f4fa8abdfd204e41ef773)](https://codacy.com/gh/Cosmic-Ide/Cosmic-Ide/dashboard)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/Cosmic-Ide/Cosmic-Ide)
+[![Total downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-Ide/total)](https://github.com/Cosmic-Ide/Cosmic-Ide/releases)
+![Repository Size](https://img.shields.io/github/repo-size/Cosmic-Ide/Cosmic-Ide)
 
 # Cosmic IDE
 
@@ -83,11 +88,11 @@ If you have any questions, ideas, need help or want to propose a change just ope
 Special Thanks
 ---
 
-- [TheWolf](https://github.com/thewolfprod)
+- [Nonzzzz](https://github.com/Nonzzzz)
+
+- [TheWolf](https://github.com/TheWolfProd)
 
 - [Mike Anderson](https://github.com/MikeAndrson)
-
-- [Nonzzzz](https://github.com/Nonzzzz)
 
 - [Tyron Lucena Scott](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
 
@@ -95,6 +100,6 @@ Special Thanks
 
 - [Akash Yadav](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
 
-- [ShineM](https://github.com/shineM) for [TreeView](https://github.com/ShineM/TreeView)
+- [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
 
 - [QuinnWilton](https://github.com/QuinnWilton) for [Smali Grammers](https://github.com/QuinnWilton/sublime-smali)

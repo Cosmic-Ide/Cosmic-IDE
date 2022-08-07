@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.common.util.FileUtil;
+import org.cosmic.ide.common.util.StringSearch;
 import org.cosmic.ide.project.JavaTemplate;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
@@ -177,21 +178,6 @@ public class TreeViewDrawer extends Fragment {
                 });
     }
 
-    private String getPackageName(final File file) {
-        // A new way to get the package name, because the previous one didn't work.
-        Matcher pkgMatcher = Pattern.compile("src").matcher(file.getAbsolutePath());
-        if (pkgMatcher.find()) {
-            int end = pkgMatcher.end();
-            if (end <= 0) return "";
-            var name = file.getAbsolutePath().substring(pkgMatcher.end());
-            if (name.startsWith(File.separator)) {
-                name = name.substring(1);
-            }
-            return name.replace(File.separator, ".");
-        }
-        return "";
-    }
-
     private void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(requireContext());
         builder.setTitle(getString(R.string.create_new_file));
@@ -284,7 +270,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + fileNameString
                                                 + ".java",
                                         JavaTemplate.getClassTemplate(
-                                                getPackageName(node.getContent().getFile()),
+                                                StringSearch.packageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));
 
@@ -334,7 +320,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + fileNameString
                                                 + ".kt",
                                         JavaTemplate.getKotlinClassTemplate(
-                                                getPackageName(node.getContent().getFile()),
+                                                StringSearch.packageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));
 

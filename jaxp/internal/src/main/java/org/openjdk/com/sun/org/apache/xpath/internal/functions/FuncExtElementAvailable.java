@@ -22,15 +22,17 @@
  */
 package org.openjdk.com.sun.org.apache.xpath.internal.functions;
 
-import org.openjdk.com.sun.org.apache.xalan.internal.templates.Constants;
 // J2SE does not support Xalan interpretive
 /*
 import org.openjdk.com.sun.org.apache.xalan.internal.transformer.TransformerImpl;
 */
+
 import org.openjdk.com.sun.org.apache.xpath.internal.ExtensionsProvider;
 import org.openjdk.com.sun.org.apache.xpath.internal.XPathContext;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XBoolean;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XObject;
+import org.openjdk.com.sun.org.apache.xalan.internal.templates.Constants;
+
 
 /**
  * Execute the ExtElementAvailable() function.

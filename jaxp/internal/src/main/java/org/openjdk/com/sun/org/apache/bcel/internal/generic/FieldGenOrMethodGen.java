@@ -3,7 +3,6 @@
  * DO NOT REMOVE OR ALTER!
  */
 package org.openjdk.com.sun.org.apache.bcel.internal.generic;
-import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 
 /* ====================================================================
  * The Apache Software License, Version 1.1
@@ -58,7 +57,8 @@ import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-
+ 
+import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.*;
 
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.AccessFlags;

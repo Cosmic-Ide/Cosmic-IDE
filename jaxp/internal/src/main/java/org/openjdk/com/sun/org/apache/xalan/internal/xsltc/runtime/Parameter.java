@@ -30,8 +30,8 @@ package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime;
  */
 public class Parameter {
 
-    public String  _name;
-    public Object  _value;
+    public String _name;
+    public Object _value;
     public boolean _isDefault;
 
     public Parameter(String name, Object value) {

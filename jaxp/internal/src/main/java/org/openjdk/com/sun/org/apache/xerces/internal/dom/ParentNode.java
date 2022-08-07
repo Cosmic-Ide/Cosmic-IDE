@@ -20,58 +20,53 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.dom;
 
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.UserDataHandler;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
- * ParentNode inherits from ChildNode and adds the capability of having child
- * nodes. Not every node in the DOM can have children, so only nodes that can
- * should inherit from this class and pay the price for it.
- * <P>
- * ParentNode, just like NodeImpl, also implements NodeList, so it can
- * return itself in response to the getChildNodes() query. This eliminiates
- * the need for a separate ChildNodeList object. Note that this is an
- * IMPLEMENTATION DETAIL; applications should _never_ assume that
- * this identity exists. On the other hand, subclasses may need to override
- * this, in case of conflicting names. This is the case for the classes
- * HTMLSelectElementImpl and HTMLFormElementImpl of the HTML DOM.
- * <P>
- * While we have a direct reference to the first child, the last child is
- * stored as the previous sibling of the first child. First child nodes are
- * marked as being so, and getNextSibling hides this fact.
- * <P>Note: Not all parent nodes actually need to also be a child. At some
- * point we used to have ParentNode inheriting from NodeImpl and another class
- * called ChildAndParentNode that inherited from ChildNode. But due to the lack
- * of multiple inheritance a lot of code had to be duplicated which led to a
- * maintenance nightmare. At the same time only a few nodes (Document,
- * DocumentFragment, Entity, and Attribute) cannot be a child so the gain in
- * memory wasn't really worth it. The only type for which this would be the
- * case is Attribute, but we deal with there in another special way, so this is
- * not applicable.
- * <p>
- * This class doesn't directly support mutation events, however, it notifies
- * the document when mutations are performed so that the document class do so.
+ * ParentNode inherits from ChildNode and adds the capability of having child nodes. Not every node
+ * in the DOM can have children, so only nodes that can should inherit from this class and pay the
+ * price for it.
  *
- * <p><b>WARNING</b>: Some of the code here is partially duplicated in
- * AttrImpl, be careful to keep these two classes in sync!
+ * <p>ParentNode, just like NodeImpl, also implements NodeList, so it can return itself in response
+ * to the getChildNodes() query. This eliminiates the need for a separate ChildNodeList object. Note
+ * that this is an IMPLEMENTATION DETAIL; applications should _never_ assume that this identity
+ * exists. On the other hand, subclasses may need to override this, in case of conflicting names.
+ * This is the case for the classes HTMLSelectElementImpl and HTMLFormElementImpl of the HTML DOM.
+ *
+ * <p>While we have a direct reference to the first child, the last child is stored as the previous
+ * sibling of the first child. First child nodes are marked as being so, and getNextSibling hides
+ * this fact.
+ *
+ * <p>Note: Not all parent nodes actually need to also be a child. At some point we used to have
+ * ParentNode inheriting from NodeImpl and another class called ChildAndParentNode that inherited
+ * from ChildNode. But due to the lack of multiple inheritance a lot of code had to be duplicated
+ * which led to a maintenance nightmare. At the same time only a few nodes (Document,
+ * DocumentFragment, Entity, and Attribute) cannot be a child so the gain in memory wasn't really
+ * worth it. The only type for which this would be the case is Attribute, but we deal with there in
+ * another special way, so this is not applicable.
+ *
+ * <p>This class doesn't directly support mutation events, however, it notifies the document when
+ * mutations are performed so that the document class do so.
+ *
+ * <p><b>WARNING</b>: Some of the code here is partially duplicated in AttrImpl, be careful to keep
+ * these two classes in sync!
  *
  * @xerces.internal
- *
- * @author Arnaud  Le Hors, IBM
+ * @author Arnaud Le Hors, IBM
  * @author Joe Kesselman, IBM
  * @author Andy Clark, IBM
  * @version $Id: ParentNode.java,v 1.6 2009/07/21 20:30:28 joehw Exp $
  */
-public abstract class ParentNode
-    extends ChildNode {
+public abstract class ParentNode extends ChildNode {
 
     /** Serialization version. */
     static final long serialVersionUID = 2815829867152120872L;
@@ -92,8 +87,8 @@ public abstract class ParentNode
     //
 
     /**
-     * No public constructor; only subclasses of ParentNode should be
-     * instantiated, and those normally via a Document's factory methods
+     * No public constructor; only subclasses of ParentNode should be instantiated, and those
+     * normally via a Document's factory methods
      */
     protected ParentNode(CoreDocumentImpl ownerDocument) {
         super(ownerDocument);
@@ -108,22 +103,19 @@ public abstract class ParentNode
     //
 
     /**
-     * Returns a duplicate of a given node. You can consider this a
-     * generic "copy constructor" for nodes. The newly returned object should
-     * be completely independent of the source object's subtree, so changes
-     * in one after the clone has been made will not affect the other.
-     * <p>
-     * Example: Cloning a Text node will copy both the node and the text it
-     * contains.
-     * <p>
-     * Example: Cloning something that has children -- Element or Attr, for
-     * example -- will _not_ clone those children unless a "deep clone"
-     * has been requested. A shallow clone of an Attr node will yield an
-     * empty Attr of the same name.
-     * <p>
-     * NOTE: Clones will always be read/write, even if the node being cloned
-     * is read-only, to permit applications using only the DOM API to obtain
-     * editable copies of locked portions of the tree.
+     * Returns a duplicate of a given node. You can consider this a generic "copy constructor" for
+     * nodes. The newly returned object should be completely independent of the source object's
+     * subtree, so changes in one after the clone has been made will not affect the other.
+     *
+     * <p>Example: Cloning a Text node will copy both the node and the text it contains.
+     *
+     * <p>Example: Cloning something that has children -- Element or Attr, for example -- will _not_
+     * clone those children unless a "deep clone" has been requested. A shallow clone of an Attr
+     * node will yield an empty Attr of the same name.
+     *
+     * <p>NOTE: Clones will always be read/write, even if the node being cloned is read-only, to
+     * permit applications using only the DOM API to obtain editable copies of locked portions of
+     * the tree.
      */
     public Node cloneNode(boolean deep) {
 
@@ -136,62 +128,54 @@ public abstract class ParentNode
         newnode.ownerDocument = ownerDocument;
 
         // Need to break the association w/ original kids
-        newnode.firstChild      = null;
+        newnode.firstChild = null;
 
         // invalidate cache for children NodeList
         newnode.fNodeListCache = null;
 
         // Then, if deep, clone the kids too.
         if (deep) {
-            for (ChildNode child = firstChild;
-                 child != null;
-                 child = child.nextSibling) {
+            for (ChildNode child = firstChild; child != null; child = child.nextSibling) {
                 newnode.appendChild(child.cloneNode(true));
             }
         }
 
         return newnode;
-
     } // cloneNode(boolean):Node
 
     /**
-     * Find the Document that this Node belongs to (the document in
-     * whose context the Node was created). The Node may or may not
-     * currently be part of that Document's actual contents.
+     * Find the Document that this Node belongs to (the document in whose context the Node was
+     * created). The Node may or may not currently be part of that Document's actual contents.
      */
     public Document getOwnerDocument() {
         return ownerDocument;
     }
 
     /**
-     * same as above but returns internal type and this one is not overridden
-     * by CoreDocumentImpl to return null
+     * same as above but returns internal type and this one is not overridden by CoreDocumentImpl to
+     * return null
      */
     CoreDocumentImpl ownerDocument() {
         return ownerDocument;
     }
 
-    /**
-     * NON-DOM
-     * set the ownerDocument of this node and its children
-     */
+    /** NON-DOM set the ownerDocument of this node and its children */
     void setOwnerDocument(CoreDocumentImpl doc) {
         if (needsSyncChildren()) {
             synchronizeChildren();
         }
-       for (ChildNode child = firstChild;
-             child != null; child = child.nextSibling) {
-             child.setOwnerDocument(doc);
+        for (ChildNode child = firstChild; child != null; child = child.nextSibling) {
+            child.setOwnerDocument(doc);
         }
         /* setting the owner document of self, after it's children makes the
-           data of children available to the new document. */
+        data of children available to the new document. */
         super.setOwnerDocument(doc);
         ownerDocument = doc;
     }
 
     /**
-     * Test whether this node has any children. Convenience shorthand
-     * for (Node.getFirstChild()!=null)
+     * Test whether this node has any children. Convenience shorthand for
+     * (Node.getFirstChild()!=null)
      */
     public boolean hasChildNodes() {
         if (needsSyncChildren()) {
@@ -201,17 +185,15 @@ public abstract class ParentNode
     }
 
     /**
-     * Obtain a NodeList enumerating all children of this node. If there
-     * are none, an (initially) empty NodeList is returned.
-     * <p>
-     * NodeLists are "live"; as children are added/removed the NodeList
-     * will immediately reflect those changes. Also, the NodeList refers
-     * to the actual nodes, so changes to those nodes made via the DOM tree
-     * will be reflected in the NodeList and vice versa.
-     * <p>
-     * In this implementation, Nodes implement the NodeList interface and
-     * provide their own getChildNodes() support. Other DOMs may solve this
-     * differently.
+     * Obtain a NodeList enumerating all children of this node. If there are none, an (initially)
+     * empty NodeList is returned.
+     *
+     * <p>NodeLists are "live"; as children are added/removed the NodeList will immediately reflect
+     * those changes. Also, the NodeList refers to the actual nodes, so changes to those nodes made
+     * via the DOM tree will be reflected in the NodeList and vice versa.
+     *
+     * <p>In this implementation, Nodes implement the NodeList interface and provide their own
+     * getChildNodes() support. Other DOMs may solve this differently.
      */
     public NodeList getChildNodes() {
 
@@ -219,7 +201,6 @@ public abstract class ParentNode
             synchronizeChildren();
         }
         return this;
-
     } // getChildNodes():NodeList
 
     /** The first child of this Node, or null if none. */
@@ -229,8 +210,7 @@ public abstract class ParentNode
             synchronizeChildren();
         }
         return firstChild;
-
-    }   // getFirstChild():Node
+    } // getFirstChild():Node
 
     /** The last child of this Node, or null if none. */
     public Node getLastChild() {
@@ -239,7 +219,6 @@ public abstract class ParentNode
             synchronizeChildren();
         }
         return lastChild();
-
     } // getLastChild():Node
 
     final ChildNode lastChild() {
@@ -255,46 +234,32 @@ public abstract class ParentNode
     }
 
     /**
-     * Move one or more node(s) to our list of children. Note that this
-     * implicitly removes them from their previous parent.
+     * Move one or more node(s) to our list of children. Note that this implicitly removes them from
+     * their previous parent.
      *
-     * @param newChild The Node to be moved to our subtree. As a
-     * convenience feature, inserting a DocumentNode will instead insert
-     * all its children.
-     *
-     * @param refChild Current child which newChild should be placed
-     * immediately before. If refChild is null, the insertion occurs
-     * after all existing Nodes, like appendChild().
-     *
-     * @return newChild, in its new state (relocated, or emptied in the case of
-     * DocumentNode.)
-     *
-     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a
-     * type that shouldn't be a child of this node, or if newChild is an
-     * ancestor of this node.
-     *
-     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a
-     * different owner document than we do.
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if refChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @param newChild The Node to be moved to our subtree. As a convenience feature, inserting a
+     *     DocumentNode will instead insert all its children.
+     * @param refChild Current child which newChild should be placed immediately before. If refChild
+     *     is null, the insertion occurs after all existing Nodes, like appendChild().
+     * @return newChild, in its new state (relocated, or emptied in the case of DocumentNode.)
+     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a type that shouldn't be a
+     *     child of this node, or if newChild is an ancestor of this node.
+     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a different owner document than we
+     *     do.
+     * @throws DOMException(NOT_FOUND_ERR) if refChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node insertBefore(Node newChild, Node refChild)
-        throws DOMException {
+    public Node insertBefore(Node newChild, Node refChild) throws DOMException {
         // Tail-call; optimizer should be able to do good things with.
         return internalInsertBefore(newChild, refChild, false);
     } // insertBefore(Node,Node):Node
 
-    /** NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able
-     * to control which mutation events are spawned. This version of the
-     * insertBefore operation allows us to do so. It is not intended
-     * for use by application programs.
+    /**
+     * NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able to control which mutation
+     * events are spawned. This version of the insertBefore operation allows us to do so. It is not
+     * intended for use by application programs.
      */
-    Node internalInsertBefore(Node newChild, Node refChild, boolean replace)
-        throws DOMException {
+    Node internalInsertBefore(Node newChild, Node refChild, boolean replace) throws DOMException {
 
         boolean errorChecking = ownerDocument.errorChecking;
 
@@ -318,12 +283,16 @@ public abstract class ParentNode
             // they wouldn't be kids of that DocFrag.
             if (errorChecking) {
                 for (Node kid = newChild.getFirstChild(); // Prescan
-                     kid != null; kid = kid.getNextSibling()) {
+                        kid != null;
+                        kid = kid.getNextSibling()) {
 
                     if (!ownerDocument.isKidOK(this, kid)) {
                         throw new DOMException(
-                              DOMException.HIERARCHY_REQUEST_ERR,
-                              DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null));
+                                DOMException.HIERARCHY_REQUEST_ERR,
+                                DOMMessageFormatter.formatMessage(
+                                        DOMMessageFormatter.DOM_DOMAIN,
+                                        "HIERARCHY_REQUEST_ERR",
+                                        null));
                     }
                 }
             }
@@ -349,21 +318,30 @@ public abstract class ParentNode
         if (errorChecking) {
             if (isReadOnly()) {
                 throw new DOMException(
-                              DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                              DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null));
+                        DOMException.NO_MODIFICATION_ALLOWED_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN,
+                                "NO_MODIFICATION_ALLOWED_ERR",
+                                null));
             }
             if (newChild.getOwnerDocument() != ownerDocument && newChild != ownerDocument) {
-                throw new DOMException(DOMException.WRONG_DOCUMENT_ERR,
-                            DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "WRONG_DOCUMENT_ERR", null));
+                throw new DOMException(
+                        DOMException.WRONG_DOCUMENT_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "WRONG_DOCUMENT_ERR", null));
             }
             if (!ownerDocument.isKidOK(this, newChild)) {
-                throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR,
-                            DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null));
+                throw new DOMException(
+                        DOMException.HIERARCHY_REQUEST_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null));
             }
             // refChild must be a child of this node (or null)
             if (refChild != null && refChild.getParentNode() != this) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR,
-                            DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null));
+                throw new DOMException(
+                        DOMException.NOT_FOUND_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null));
             }
 
             // Prevent cycles in the tree
@@ -371,13 +349,14 @@ public abstract class ParentNode
             // and actually cannot be this
             if (ownerDocument.ancestorChecking) {
                 boolean treeSafe = true;
-                for (NodeImpl a = this; treeSafe && a != null; a = a.parentNode())
-                {
+                for (NodeImpl a = this; treeSafe && a != null; a = a.parentNode()) {
                     treeSafe = newChild != a;
                 }
-                if(!treeSafe) {
-                    throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR,
-                                DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null));
+                if (!treeSafe) {
+                    throw new DOMException(
+                            DOMException.HIERARCHY_REQUEST_ERR,
+                            DOMMessageFormatter.formatMessage(
+                                    DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null));
                 }
             }
         }
@@ -386,7 +365,7 @@ public abstract class ParentNode
         ownerDocument.insertingNode(this, replace);
 
         // Convert to internal type, to avoid repeated casting
-        ChildNode newInternal = (ChildNode)newChild;
+        ChildNode newInternal = (ChildNode) newChild;
 
         Node oldparent = newInternal.parentNode();
         if (oldparent != null) {
@@ -394,7 +373,7 @@ public abstract class ParentNode
         }
 
         // Convert to internal type, to avoid repeated casting
-        ChildNode refInternal = (ChildNode)refChild;
+        ChildNode refInternal = (ChildNode) refChild;
 
         // Attach up
         newInternal.ownerNode = this;
@@ -407,16 +386,14 @@ public abstract class ParentNode
             firstChild = newInternal;
             newInternal.isFirstChild(true);
             newInternal.previousSibling = newInternal;
-        }
-        else {
+        } else {
             if (refInternal == null) {
                 // this is an append
                 ChildNode lastChild = firstChild.previousSibling;
                 lastChild.nextSibling = newInternal;
                 newInternal.previousSibling = lastChild;
                 firstChild.previousSibling = newInternal;
-            }
-            else {
+            } else {
                 // this is an insert
                 if (refChild == firstChild) {
                     // at the head of the list
@@ -426,8 +403,7 @@ public abstract class ParentNode
                     firstChild.previousSibling = newInternal;
                     firstChild = newInternal;
                     newInternal.isFirstChild(true);
-                }
-                else {
+                } else {
                     // somewhere in the middle
                     ChildNode prev = refInternal.previousSibling;
                     newInternal.nextSibling = refInternal;
@@ -463,45 +439,43 @@ public abstract class ParentNode
         checkNormalizationAfterInsert(newInternal);
 
         return newChild;
-
     } // internalInsertBefore(Node,Node,boolean):Node
 
     /**
-     * Remove a child from this Node. The removed child's subtree
-     * remains intact so it may be re-inserted elsewhere.
+     * Remove a child from this Node. The removed child's subtree remains intact so it may be
+     * re-inserted elsewhere.
      *
      * @return oldChild, in its new state (removed).
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node removeChild(Node oldChild)
-        throws DOMException {
+    public Node removeChild(Node oldChild) throws DOMException {
         // Tail-call, should be optimizable
         return internalRemoveChild(oldChild, false);
     } // removeChild(Node) :Node
 
-    /** NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able
-     * to control which mutation events are spawned. This version of the
-     * removeChild operation allows us to do so. It is not intended
-     * for use by application programs.
+    /**
+     * NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able to control which mutation
+     * events are spawned. This version of the removeChild operation allows us to do so. It is not
+     * intended for use by application programs.
      */
-    Node internalRemoveChild(Node oldChild, boolean replace)
-        throws DOMException {
+    Node internalRemoveChild(Node oldChild, boolean replace) throws DOMException {
 
         CoreDocumentImpl ownerDocument = ownerDocument();
         if (ownerDocument.errorChecking) {
             if (isReadOnly()) {
                 throw new DOMException(
-                            DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                            DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null));
+                        DOMException.NO_MODIFICATION_ALLOWED_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN,
+                                "NO_MODIFICATION_ALLOWED_ERR",
+                                null));
             }
             if (oldChild != null && oldChild.getParentNode() != this) {
-                throw new DOMException(DOMException.NOT_FOUND_ERR,
-                            DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null));
+                throw new DOMException(
+                        DOMException.NOT_FOUND_ERR,
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null));
             }
         }
 
@@ -555,9 +529,9 @@ public abstract class ParentNode
         ChildNode oldPreviousSibling = oldInternal.previousSibling();
 
         // Remove oldInternal's references to tree
-        oldInternal.ownerNode       = ownerDocument;
+        oldInternal.ownerNode = ownerDocument;
         oldInternal.isOwned(false);
-        oldInternal.nextSibling     = null;
+        oldInternal.nextSibling = null;
         oldInternal.previousSibling = null;
 
         changed();
@@ -568,32 +542,22 @@ public abstract class ParentNode
         checkNormalizationAfterRemove(oldPreviousSibling);
 
         return oldInternal;
-
     } // internalRemoveChild(Node,boolean):Node
 
     /**
-     * Make newChild occupy the location that oldChild used to
-     * have. Note that newChild will first be removed from its previous
-     * parent, if any. Equivalent to inserting newChild before oldChild,
-     * then removing oldChild.
+     * Make newChild occupy the location that oldChild used to have. Note that newChild will first
+     * be removed from its previous parent, if any. Equivalent to inserting newChild before
+     * oldChild, then removing oldChild.
      *
      * @return oldChild, in its new state (removed).
-     *
-     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a
-     * type that shouldn't be a child of this node, or if newChild is
-     * one of our ancestors.
-     *
-     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a
-     * different owner document than we do.
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a type that shouldn't be a
+     *     child of this node, or if newChild is one of our ancestors.
+     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a different owner document than we
+     *     do.
+     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node replaceChild(Node newChild, Node oldChild)
-        throws DOMException {
+    public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
         // If Mutation Events are being generated, this operation might
         // throw aggregate events twice when modifying an Attr -- once
         // on insertion and once on removal. DOM Level 2 does not specify
@@ -625,10 +589,9 @@ public abstract class ParentNode
             if (next == null) {
                 return hasTextContent(child) ? ((NodeImpl) child).getTextContent() : "";
             }
-            if (fBufferStr == null){
+            if (fBufferStr == null) {
                 fBufferStr = new StringBuffer();
-            }
-            else {
+            } else {
                 fBufferStr.setLength(0);
             }
             getTextContent(fBufferStr);
@@ -650,25 +613,24 @@ public abstract class ParentNode
 
     // internal method returning whether to take the given node's text content
     final boolean hasTextContent(Node child) {
-        return child.getNodeType() != COMMENT_NODE &&
-            child.getNodeType() != PROCESSING_INSTRUCTION_NODE &&
-            (child.getNodeType() != TEXT_NODE ||
-             ((TextImpl) child).isIgnorableWhitespace() == false);
+        return child.getNodeType() != COMMENT_NODE
+                && child.getNodeType() != PROCESSING_INSTRUCTION_NODE
+                && (child.getNodeType() != TEXT_NODE
+                        || ((TextImpl) child).isIgnorableWhitespace() == false);
     }
 
     /*
      * Set Node text content
      * @since DOM Level 3
      */
-    public void setTextContent(String textContent)
-        throws DOMException {
+    public void setTextContent(String textContent) throws DOMException {
         // get rid of any existing children
         Node child;
         while ((child = getFirstChild()) != null) {
             removeChild(child);
         }
         // create a Text node to hold the given content
-        if (textContent != null && textContent.length() != 0){
+        if (textContent != null && textContent.length() != 0) {
             appendChild(ownerDocument().createTextNode(textContent));
         }
     }
@@ -678,8 +640,8 @@ public abstract class ParentNode
     //
 
     /**
-     * Count the immediate children of this node.  Use to implement
-     * NodeList.getLength().
+     * Count the immediate children of this node. Use to implement NodeList.getLength().
+     *
      * @return int
      */
     private int nodeListGetLength() {
@@ -699,8 +661,7 @@ public abstract class ParentNode
             int l;
             ChildNode n;
             // start from the cached node if we have one
-            if (fNodeListCache.fChildIndex != -1 &&
-                fNodeListCache.fChild != null) {
+            if (fNodeListCache.fChildIndex != -1 && fNodeListCache.fChild != null) {
                 l = fNodeListCache.fChildIndex;
                 n = fNodeListCache.fChild;
             } else {
@@ -715,11 +676,11 @@ public abstract class ParentNode
         }
 
         return fNodeListCache.fLength;
-
     } // nodeListGetLength():int
 
     /**
      * NodeList method: Count the immediate children of this node
+     *
      * @return int
      */
     public int getLength() {
@@ -727,8 +688,9 @@ public abstract class ParentNode
     }
 
     /**
-     * Return the Nth immediate child of this node, or null if the index is
-     * out of bounds.  Use to implement NodeList.item().
+     * Return the Nth immediate child of this node, or null if the index is out of bounds. Use to
+     * implement NodeList.item().
+     *
      * @param index int
      */
     private Node nodeListItem(int index) {
@@ -752,15 +714,13 @@ public abstract class ParentNode
                     i++;
                     n = n.nextSibling;
                 }
-            }
-            else if (i > index) {
+            } else if (i > index) {
                 while (i > index && n != null) {
                     i--;
                     n = n.previousSibling();
                 }
             }
-        }
-        else {
+        } else {
             // long way
             if (index < 0) {
                 return null;
@@ -780,19 +740,18 @@ public abstract class ParentNode
             // fNodeListCache will be nulled by the pool (document) if that
             // happens.
             // fNodeListCache = null;
-        }
-        else {
+        } else {
             // otherwise update it
             fNodeListCache.fChildIndex = i;
             fNodeListCache.fChild = n;
         }
         return n;
-
     } // nodeListItem(int):Node
 
     /**
-     * NodeList method: Return the Nth immediate child of this node, or
-     * null if the index is out of bounds.
+     * NodeList method: Return the Nth immediate child of this node, or null if the index is out of
+     * bounds.
+     *
      * @return org.w3c.dom.Node
      * @param index int
      */
@@ -801,36 +760,34 @@ public abstract class ParentNode
     } // item(int):Node
 
     /**
-     * Create a NodeList to access children that is use by subclass elements
-     * that have methods named getLength() or item(int).  ChildAndParentNode
-     * optimizes getChildNodes() by implementing NodeList itself.  However if
-     * a subclass Element implements methods with the same name as the NodeList
-     * methods, they will override the actually methods in this class.
-     * <p>
-     * To use this method, the subclass should implement getChildNodes() and
-     * have it call this method.  The resulting NodeList instance maybe
-     * shared and cached in a transient field, but the cached value must be
-     * cleared if the node is cloned.
+     * Create a NodeList to access children that is use by subclass elements that have methods named
+     * getLength() or item(int). ChildAndParentNode optimizes getChildNodes() by implementing
+     * NodeList itself. However if a subclass Element implements methods with the same name as the
+     * NodeList methods, they will override the actually methods in this class.
+     *
+     * <p>To use this method, the subclass should implement getChildNodes() and have it call this
+     * method. The resulting NodeList instance maybe shared and cached in a transient field, but the
+     * cached value must be cleared if the node is cloned.
      */
     protected final NodeList getChildNodesUnoptimized() {
         if (needsSyncChildren()) {
             synchronizeChildren();
         }
         return new NodeList() {
-                /**
-                 * @see NodeList.getLength()
-                 */
-                public int getLength() {
-                    return nodeListGetLength();
-                } // getLength():int
+            /**
+             * @see NodeList.getLength()
+             */
+            public int getLength() {
+                return nodeListGetLength();
+            } // getLength():int
 
-                /**
-                 * @see NodeList.item(int)
-                 */
-                public Node item(int index) {
-                    return nodeListItem(index);
-                } // item(int):Node
-            };
+            /**
+             * @see NodeList.item(int)
+             */
+            public Node item(int index) {
+                return nodeListItem(index);
+            } // item(int):Node
+        };
     } // getChildNodesUnoptimized():NodeList
 
     //
@@ -838,9 +795,8 @@ public abstract class ParentNode
     //
 
     /**
-     * Override default behavior to call normalize() on this Node's
-     * children. It is up to implementors or Node to override normalize()
-     * to take action.
+     * Override default behavior to call normalize() on this Node's children. It is up to
+     * implementors or Node to override normalize() to take action.
      */
     public void normalize() {
         // No need to normalize if already normalized.
@@ -858,8 +814,8 @@ public abstract class ParentNode
     }
 
     /**
-     * DOM Level 3 WD- Experimental.
-     * Override inherited behavior from NodeImpl to support deep equal.
+     * DOM Level 3 WD- Experimental. Override inherited behavior from NodeImpl to support deep
+     * equal.
      */
     public boolean isEqualNode(Node arg) {
         if (!super.isEqualNode(arg)) {
@@ -888,12 +844,11 @@ public abstract class ParentNode
     //
 
     /**
-     * Override default behavior so that if deep is true, children are also
-     * toggled.
+     * Override default behavior so that if deep is true, children are also toggled.
+     *
      * @see Node
-     * <P>
-     * Note: this will not change the state of an EntityReference or its
-     * children, which are always read-only.
+     *     <p>Note: this will not change the state of an EntityReference or its children, which are
+     *     always read-only.
      */
     public void setReadOnly(boolean readOnly, boolean deep) {
 
@@ -906,11 +861,9 @@ public abstract class ParentNode
             }
 
             // Recursively set kids
-            for (ChildNode mykid = firstChild;
-                 mykid != null;
-                 mykid = mykid.nextSibling) {
+            for (ChildNode mykid = firstChild; mykid != null; mykid = mykid.nextSibling) {
                 if (mykid.getNodeType() != ENTITY_REFERENCE_NODE) {
-                    mykid.setReadOnly(readOnly,true);
+                    mykid.setReadOnly(readOnly, true);
                 }
             }
         }
@@ -920,28 +873,23 @@ public abstract class ParentNode
     // Protected methods
     //
 
-    /**
-     * Override this method in subclass to hook in efficient
-     * internal data structure.
-     */
+    /** Override this method in subclass to hook in efficient internal data structure. */
     protected void synchronizeChildren() {
         // By default just change the flag to avoid calling this method again
         needsSyncChildren(false);
     }
 
     /**
-     * Checks the normalized state of this node after inserting a child.
-     * If the inserted child causes this node to be unnormalized, then this
-     * node is flagged accordingly.
-     * The conditions for changing the normalized state are:
+     * Checks the normalized state of this node after inserting a child. If the inserted child
+     * causes this node to be unnormalized, then this node is flagged accordingly. The conditions
+     * for changing the normalized state are:
+     *
      * <ul>
-     * <li>The inserted child is a text node and one of its adjacent siblings
-     * is also a text node.
-     * <li>The inserted child is is itself unnormalized.
+     *   <li>The inserted child is a text node and one of its adjacent siblings is also a text node.
+     *   <li>The inserted child is is itself unnormalized.
      * </ul>
      *
      * @param insertedChild the child node that was inserted into this node
-     *
      * @throws NullPointerException if the inserted child is <code>null</code>
      */
     void checkNormalizationAfterInsert(ChildNode insertedChild) {
@@ -951,12 +899,11 @@ public abstract class ParentNode
             ChildNode next = insertedChild.nextSibling;
             // If an adjacent sibling of the new child is a text node,
             // flag this node as unnormalized.
-            if ((prev != null && prev.getNodeType() == TEXT_NODE) ||
-                (next != null && next.getNodeType() == TEXT_NODE)) {
+            if ((prev != null && prev.getNodeType() == TEXT_NODE)
+                    || (next != null && next.getNodeType() == TEXT_NODE)) {
                 isNormalized(false);
             }
-        }
-        else {
+        } else {
             // If the new child is not normalized,
             // then this node is inherently not normalized.
             if (!insertedChild.isNormalized()) {
@@ -966,23 +913,21 @@ public abstract class ParentNode
     } // checkNormalizationAfterInsert(ChildNode)
 
     /**
-     * Checks the normalized of this node after removing a child.
-     * If the removed child causes this node to be unnormalized, then this
-     * node is flagged accordingly.
-     * The conditions for changing the normalized state are:
+     * Checks the normalized of this node after removing a child. If the removed child causes this
+     * node to be unnormalized, then this node is flagged accordingly. The conditions for changing
+     * the normalized state are:
+     *
      * <ul>
-     * <li>The removed child had two adjacent siblings that were text nodes.
+     *   <li>The removed child had two adjacent siblings that were text nodes.
      * </ul>
      *
-     * @param previousSibling the previous sibling of the removed child, or
-     * <code>null</code>
+     * @param previousSibling the previous sibling of the removed child, or <code>null</code>
      */
     void checkNormalizationAfterRemove(ChildNode previousSibling) {
         // See if removal caused this node to be unnormalized.
         // If the adjacent siblings of the removed child were both text nodes,
         // flag this node as unnormalized.
-        if (previousSibling != null &&
-            previousSibling.getNodeType() == TEXT_NODE) {
+        if (previousSibling != null && previousSibling.getNodeType() == TEXT_NODE) {
 
             ChildNode next = previousSibling.nextSibling;
             if (next != null && next.getNodeType() == TEXT_NODE) {
@@ -1004,12 +949,10 @@ public abstract class ParentNode
         }
         // write object
         out.defaultWriteObject();
-
     } // writeObject(ObjectOutputStream)
 
     /** Deserialize object. */
-    private void readObject(ObjectInputStream ois)
-        throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 
         // perform default deseralization
         ois.defaultReadObject();
@@ -1017,7 +960,6 @@ public abstract class ParentNode
         // hardset synchildren - so we don't try to sync - it does not make any
         // sense to try to synchildren when we just deserialize object.
         needsSyncChildren(false);
-
     } // readObject(ObjectInputStream)
 
     /*
@@ -1029,6 +971,7 @@ public abstract class ParentNode
 
         Object fData;
         UserDataHandler fHandler;
+
         UserDataRecord(Object data, UserDataHandler handler) {
             fData = data;
             fHandler = handler;

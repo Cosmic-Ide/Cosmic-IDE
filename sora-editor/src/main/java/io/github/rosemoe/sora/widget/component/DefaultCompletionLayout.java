@@ -57,22 +57,33 @@ public class DefaultCompletionLayout implements CompletionLayout {
         layout.addView(mProgressBar);
         var params = ((RelativeLayout.LayoutParams) mProgressBar.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.width = params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
+        params.width =
+                params.height =
+                        (int)
+                                TypedValue.applyDimension(
+                                        TypedValue.COMPLEX_UNIT_DIP,
+                                        30,
+                                        context.getResources().getDisplayMetrics());
 
-        mBackground = new GradientDrawable(); 
-        mBackground.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
+        mBackground = new GradientDrawable();
+        mBackground.setCornerRadius(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        8,
+                        context.getResources().getDisplayMetrics()));
         layout.setBackground(mBackground);
 
         mListView = new ListView(context);
         mListView.setDividerHeight(0);
-        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1)); 
-        mListView.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                mEditorAutoCompletion.select(position);
-            } catch (Exception e) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1));
+        mListView.setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    try {
+                        mEditorAutoCompletion.select(position);
+                    } catch (Exception e) {
+                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
         setLoading(true);
         return layout;
     }
@@ -93,9 +104,7 @@ public class DefaultCompletionLayout implements CompletionLayout {
         return mListView;
     }
 
-    /**
-     * Perform motion events
-     */
+    /** Perform motion events */
     private void performScrollList(int offset) {
         var adpView = getCompletionList();
 
@@ -115,13 +124,16 @@ public class DefaultCompletionLayout implements CompletionLayout {
 
     @Override
     public void ensureListPositionVisible(int position, int increment) {
-        mListView.post(() -> {
-            while (mListView.getFirstVisiblePosition() + 1 > position && mListView.canScrollList(-1)) {
-                performScrollList(increment / 2);
-            }
-            while (mListView.getLastVisiblePosition() - 1 < position && mListView.canScrollList(1)) {
-                performScrollList(-increment / 2);
-            }
-        });
+        mListView.post(
+                () -> {
+                    while (mListView.getFirstVisiblePosition() + 1 > position
+                            && mListView.canScrollList(-1)) {
+                        performScrollList(increment / 2);
+                    }
+                    while (mListView.getLastVisiblePosition() - 1 < position
+                            && mListView.canScrollList(1)) {
+                        performScrollList(-increment / 2);
+                    }
+                });
     }
 }

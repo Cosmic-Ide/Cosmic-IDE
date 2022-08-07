@@ -61,58 +61,50 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.Constants;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLDTDScannerImpl;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
+import org.openjdk.com.sun.org.apache.xerces.internal.util.DefaultErrorHandler;
+import org.openjdk.com.sun.org.apache.xerces.internal.util.Status;
+import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.Grammar;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarLoader;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLErrorHandler;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Locale;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.Constants;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLDTDScannerImpl;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.util.Status;
-import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
-import org.openjdk.com.sun.org.apache.xerces.internal.util.DefaultErrorHandler;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarLoader;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.Grammar;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLErrorHandler;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
-
-
 /**
- * The DTD loader. The loader knows how to build grammars from XMLInputSources.
- * It extends the DTD processor in order to do this; it's
- * a separate class because DTD processors don't need to know how
- * to talk to the outside world in their role as instance-document
- * helpers.
- * <p>
- * This component requires the following features and properties.  It
- * know ho to set them if no one else does:from the
+ * The DTD loader. The loader knows how to build grammars from XMLInputSources. It extends the DTD
+ * processor in order to do this; it's a separate class because DTD processors don't need to know
+ * how to talk to the outside world in their role as instance-document helpers.
+ *
+ * <p>This component requires the following features and properties. It know ho to set them if no
+ * one else does:from the
+ *
  * <ul>
- *  <li>http://xml.org/sax/features/namespaces</li>
- *  <li>http://apache.org/xml/properties/internal/symbol-table</li>
- *  <li>http://apache.org/xml/properties/internal/error-reporter</li>
- *  <li>http://apache.org/xml/properties/internal/grammar-pool</li>
- *  <li>http://apache.org/xml/properties/internal/datatype-validator-factory</li>
+ *   <li>http://xml.org/sax/features/namespaces
+ *   <li>http://apache.org/xml/properties/internal/symbol-table
+ *   <li>http://apache.org/xml/properties/internal/error-reporter
+ *   <li>http://apache.org/xml/properties/internal/grammar-pool
+ *   <li>http://apache.org/xml/properties/internal/datatype-validator-factory
  * </ul>
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
  * @author Michael Glavassevich, IBM
- *
  * @version $Id: XMLDTDLoader.java,v 1.6 2010-11-01 04:39:42 joehw Exp $
  */
-public class XMLDTDLoader
-        extends XMLDTDProcessor
-        implements XMLGrammarLoader {
+public class XMLDTDLoader extends XMLDTDProcessor implements XMLGrammarLoader {
 
     //
     // Constants
@@ -122,11 +114,11 @@ public class XMLDTDLoader
 
     /** Feature identifier: standard uri conformant feature. */
     protected static final String STANDARD_URI_CONFORMANT_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.STANDARD_URI_CONFORMANT_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.STANDARD_URI_CONFORMANT_FEATURE;
 
     /** Feature identifier: balance syntax trees. */
     protected static final String BALANCE_SYNTAX_TREES =
-        Constants.XERCES_FEATURE_PREFIX + Constants.BALANCE_SYNTAX_TREES;
+            Constants.XERCES_FEATURE_PREFIX + Constants.BALANCE_SYNTAX_TREES;
 
     // recognized features:
     private static final String[] LOADER_RECOGNIZED_FEATURES = {
@@ -142,15 +134,15 @@ public class XMLDTDLoader
 
     /** Property identifier: error handler. */
     protected static final String ERROR_HANDLER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
 
     /** Property identifier: entity resolver. */
     public static final String ENTITY_RESOLVER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
 
     /** Property identifier: locale. */
     public static final String LOCALE =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.LOCALE_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.LOCALE_PROPERTY;
 
     /** Recognized properties. */
     private static final String[] LOADER_RECOGNIZED_PROPERTIES = {
@@ -194,17 +186,18 @@ public class XMLDTDLoader
         this(symbolTable, null);
     } // init(SymbolTable)
 
-    public XMLDTDLoader(SymbolTable symbolTable,
-                XMLGrammarPool grammarPool) {
+    public XMLDTDLoader(SymbolTable symbolTable, XMLGrammarPool grammarPool) {
         this(symbolTable, grammarPool, null, new XMLEntityManager());
     } // init(SymbolTable, XMLGrammarPool)
 
-    XMLDTDLoader(SymbolTable symbolTable,
-                XMLGrammarPool grammarPool, XMLErrorReporter errorReporter,
-                XMLEntityResolver entityResolver) {
+    XMLDTDLoader(
+            SymbolTable symbolTable,
+            XMLGrammarPool grammarPool,
+            XMLErrorReporter errorReporter,
+            XMLEntityResolver entityResolver) {
         fSymbolTable = symbolTable;
         fGrammarPool = grammarPool;
-        if(errorReporter == null) {
+        if (errorReporter == null) {
             errorReporter = new XMLErrorReporter();
             errorReporter.setProperty(ERROR_HANDLER, new DefaultErrorHandler());
         }
@@ -216,12 +209,14 @@ public class XMLDTDLoader
             fErrorReporter.putMessageFormatter(XMLMessageFormatter.XMLNS_DOMAIN, xmft);
         }
         fEntityResolver = entityResolver;
-        if(fEntityResolver instanceof XMLEntityManager) {
-            fEntityManager = (XMLEntityManager)fEntityResolver;
+        if (fEntityResolver instanceof XMLEntityManager) {
+            fEntityManager = (XMLEntityManager) fEntityResolver;
         } else {
             fEntityManager = new XMLEntityManager();
         }
-        fEntityManager.setProperty(Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY, errorReporter);
+        fEntityManager.setProperty(
+                Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY,
+                errorReporter);
         fDTDScanner = createDTDScanner(fSymbolTable, fErrorReporter, fEntityManager);
         fDTDScanner.setDTDHandler(this);
         fDTDScanner.setDTDContentModelHandler(this);
@@ -231,120 +226,95 @@ public class XMLDTDLoader
     // XMLGrammarLoader methods
 
     /**
-     * Returns a list of feature identifiers that are recognized by
-     * this component. This method may return null if no features
-     * are recognized by this component.
+     * Returns a list of feature identifiers that are recognized by this component. This method may
+     * return null if no features are recognized by this component.
      */
     public String[] getRecognizedFeatures() {
-        return (String[])(LOADER_RECOGNIZED_FEATURES.clone());
+        return (String[]) (LOADER_RECOGNIZED_FEATURES.clone());
     } // getRecognizedFeatures():String[]
 
     /**
-     * Sets the state of a feature. This method is called by the component
-     * manager any time after reset when a feature changes state.
-     * <p>
-     * <strong>Note:</strong> Components should silently ignore features
-     * that do not affect the operation of the component.
+     * Sets the state of a feature. This method is called by the component manager any time after
+     * reset when a feature changes state.
+     *
+     * <p><strong>Note:</strong> Components should silently ignore features that do not affect the
+     * operation of the component.
      *
      * @param featureId The feature identifier.
-     * @param state     The state of the feature.
-     *
-     * @throws SAXNotRecognizedException The component should not throw
-     *                                   this exception.
-     * @throws SAXNotSupportedException The component should not throw
-     *                                  this exception.
+     * @param state The state of the feature.
+     * @throws SAXNotRecognizedException The component should not throw this exception.
+     * @throws SAXNotSupportedException The component should not throw this exception.
      */
-    public void setFeature(String featureId, boolean state)
-            throws XMLConfigurationException {
+    public void setFeature(String featureId, boolean state) throws XMLConfigurationException {
         if (featureId.equals(VALIDATION)) {
             fValidation = state;
-        }
-        else if (featureId.equals(WARN_ON_DUPLICATE_ATTDEF)) {
+        } else if (featureId.equals(WARN_ON_DUPLICATE_ATTDEF)) {
             fWarnDuplicateAttdef = state;
-        }
-        else if (featureId.equals(WARN_ON_UNDECLARED_ELEMDEF)) {
+        } else if (featureId.equals(WARN_ON_UNDECLARED_ELEMDEF)) {
             fWarnOnUndeclaredElemdef = state;
-        }
-        else if (featureId.equals(NOTIFY_CHAR_REFS)) {
+        } else if (featureId.equals(NOTIFY_CHAR_REFS)) {
             fDTDScanner.setFeature(featureId, state);
-        }
-        else if (featureId.equals(STANDARD_URI_CONFORMANT_FEATURE)) {
+        } else if (featureId.equals(STANDARD_URI_CONFORMANT_FEATURE)) {
             fStrictURI = state;
-        }
-        else if (featureId.equals(BALANCE_SYNTAX_TREES)) {
+        } else if (featureId.equals(BALANCE_SYNTAX_TREES)) {
             fBalanceSyntaxTrees = state;
-        }
-        else {
+        } else {
             throw new XMLConfigurationException(Status.NOT_RECOGNIZED, featureId);
         }
     } // setFeature(String,boolean)
 
     /**
-     * Returns a list of property identifiers that are recognized by
-     * this component. This method may return null if no properties
-     * are recognized by this component.
+     * Returns a list of property identifiers that are recognized by this component. This method may
+     * return null if no properties are recognized by this component.
      */
     public String[] getRecognizedProperties() {
-        return (String[])(LOADER_RECOGNIZED_PROPERTIES.clone());
+        return (String[]) (LOADER_RECOGNIZED_PROPERTIES.clone());
     } // getRecognizedProperties():String[]
 
     /**
      * Returns the state of a property.
      *
      * @param propertyId The property identifier.
-     *
      * @throws XMLConfigurationException Thrown on configuration error.
      */
-    public Object getProperty(String propertyId)
-            throws XMLConfigurationException {
+    public Object getProperty(String propertyId) throws XMLConfigurationException {
         if (propertyId.equals(SYMBOL_TABLE)) {
             return fSymbolTable;
-        }
-        else if (propertyId.equals(ERROR_REPORTER)) {
+        } else if (propertyId.equals(ERROR_REPORTER)) {
             return fErrorReporter;
-        }
-        else if (propertyId.equals(ERROR_HANDLER)) {
+        } else if (propertyId.equals(ERROR_HANDLER)) {
             return fErrorReporter.getErrorHandler();
-        }
-        else if (propertyId.equals(ENTITY_RESOLVER)) {
+        } else if (propertyId.equals(ENTITY_RESOLVER)) {
             return fEntityResolver;
-        }
-        else if (propertyId.equals(LOCALE)) {
+        } else if (propertyId.equals(LOCALE)) {
             return getLocale();
-        }
-        else if (propertyId.equals(GRAMMAR_POOL)) {
+        } else if (propertyId.equals(GRAMMAR_POOL)) {
             return fGrammarPool;
-        }
-        else if (propertyId.equals(DTD_VALIDATOR)) {
+        } else if (propertyId.equals(DTD_VALIDATOR)) {
             return fValidator;
         }
         throw new XMLConfigurationException(Status.NOT_RECOGNIZED, propertyId);
     } // getProperty(String):  Object
 
     /**
-     * Sets the value of a property. This method is called by the component
-     * manager any time after reset when a property changes value.
-     * <p>
-     * <strong>Note:</strong> Components should silently ignore properties
-     * that do not affect the operation of the component.
+     * Sets the value of a property. This method is called by the component manager any time after
+     * reset when a property changes value.
+     *
+     * <p><strong>Note:</strong> Components should silently ignore properties that do not affect the
+     * operation of the component.
      *
      * @param propertyId The property identifier.
-     * @param value      The value of the property.
-     *
-     * @throws SAXNotRecognizedException The component should not throw
-     *                                   this exception.
-     * @throws SAXNotSupportedException The component should not throw
-     *                                  this exception.
+     * @param value The value of the property.
+     * @throws SAXNotRecognizedException The component should not throw this exception.
+     * @throws SAXNotSupportedException The component should not throw this exception.
      */
-    public void setProperty(String propertyId, Object value)
-            throws XMLConfigurationException {
+    public void setProperty(String propertyId, Object value) throws XMLConfigurationException {
         if (propertyId.equals(SYMBOL_TABLE)) {
-            fSymbolTable = (SymbolTable)value;
+            fSymbolTable = (SymbolTable) value;
             fDTDScanner.setProperty(propertyId, value);
             fEntityManager.setProperty(propertyId, value);
-        }
-        else if(propertyId.equals(ERROR_REPORTER)) {
-            fErrorReporter = (XMLErrorReporter)value;
+        } else if (propertyId.equals(ERROR_REPORTER)) {
+            fErrorReporter = (XMLErrorReporter) value;
             // Add XML message formatter if there isn't one.
             if (fErrorReporter.getMessageFormatter(XMLMessageFormatter.XML_DOMAIN) == null) {
                 XMLMessageFormatter xmft = new XMLMessageFormatter();
@@ -353,21 +323,16 @@ public class XMLDTDLoader
             }
             fDTDScanner.setProperty(propertyId, value);
             fEntityManager.setProperty(propertyId, value);
-        }
-        else if (propertyId.equals(ERROR_HANDLER)) {
+        } else if (propertyId.equals(ERROR_HANDLER)) {
             fErrorReporter.setProperty(propertyId, value);
-        }
-        else if (propertyId.equals(ENTITY_RESOLVER)) {
-            fEntityResolver = (XMLEntityResolver)value;
+        } else if (propertyId.equals(ENTITY_RESOLVER)) {
+            fEntityResolver = (XMLEntityResolver) value;
             fEntityManager.setProperty(propertyId, value);
-        }
-        else if (propertyId.equals(LOCALE)) {
+        } else if (propertyId.equals(LOCALE)) {
             setLocale((Locale) value);
-        }
-        else if(propertyId.equals(GRAMMAR_POOL)) {
-            fGrammarPool = (XMLGrammarPool)value;
-        }
-        else {
+        } else if (propertyId.equals(GRAMMAR_POOL)) {
+            fGrammarPool = (XMLGrammarPool) value;
+        } else {
             throw new XMLConfigurationException(Status.NOT_RECOGNIZED, propertyId);
         }
     } // setProperty(String,Object)
@@ -376,39 +341,30 @@ public class XMLDTDLoader
      * Returns the state of a feature.
      *
      * @param featureId The feature identifier.
-     *
      * @throws XMLConfigurationException Thrown on configuration error.
      */
-    public boolean getFeature(String featureId)
-            throws XMLConfigurationException {
+    public boolean getFeature(String featureId) throws XMLConfigurationException {
         if (featureId.equals(VALIDATION)) {
             return fValidation;
-        }
-        else if (featureId.equals(WARN_ON_DUPLICATE_ATTDEF)) {
+        } else if (featureId.equals(WARN_ON_DUPLICATE_ATTDEF)) {
             return fWarnDuplicateAttdef;
-        }
-        else if (featureId.equals(WARN_ON_UNDECLARED_ELEMDEF)) {
+        } else if (featureId.equals(WARN_ON_UNDECLARED_ELEMDEF)) {
             return fWarnOnUndeclaredElemdef;
-        }
-        else if (featureId.equals(NOTIFY_CHAR_REFS)) {
+        } else if (featureId.equals(NOTIFY_CHAR_REFS)) {
             return fDTDScanner.getFeature(featureId);
-        }
-        else if (featureId.equals(STANDARD_URI_CONFORMANT_FEATURE)) {
+        } else if (featureId.equals(STANDARD_URI_CONFORMANT_FEATURE)) {
             return fStrictURI;
-        }
-        else if (featureId.equals(BALANCE_SYNTAX_TREES)) {
+        } else if (featureId.equals(BALANCE_SYNTAX_TREES)) {
             return fBalanceSyntaxTrees;
         }
         throw new XMLConfigurationException(Status.NOT_RECOGNIZED, featureId);
-    } //getFeature(String):  boolean
+    } // getFeature(String):  boolean
 
     /**
      * Set the locale to use for messages.
      *
      * @param locale The locale object to use for localization of messages.
-     *
-     * @exception XNIException Thrown if the parser does not support the
-     *                         specified locale.
+     * @exception XNIException Thrown if the parser does not support the specified locale.
      */
     public void setLocale(Locale locale) {
         fLocale = locale;
@@ -420,7 +376,6 @@ public class XMLDTDLoader
         return fLocale;
     } // getLocale():  Locale
 
-
     /**
      * Sets the error handler.
      *
@@ -430,7 +385,7 @@ public class XMLDTDLoader
         fErrorReporter.setProperty(ERROR_HANDLER, errorHandler);
     } // setErrorHandler(XMLErrorHandler)
 
-    /** Returns the registered error handler.  */
+    /** Returns the registered error handler. */
     public XMLErrorHandler getErrorHandler() {
         return fErrorReporter.getErrorHandler();
     } // getErrorHandler():  XMLErrorHandler
@@ -445,31 +400,36 @@ public class XMLDTDLoader
         fEntityManager.setProperty(ENTITY_RESOLVER, entityResolver);
     } // setEntityResolver(XMLEntityResolver)
 
-    /** Returns the registered entity resolver.  */
+    /** Returns the registered entity resolver. */
     public XMLEntityResolver getEntityResolver() {
         return fEntityResolver;
     } // getEntityResolver():  XMLEntityResolver
 
     /**
-     * Returns a Grammar object by parsing the contents of the
-     * entity pointed to by source.
+     * Returns a Grammar object by parsing the contents of the entity pointed to by source.
      *
-     * @param source        the location of the entity which forms
-     *                          the starting point of the grammar to be constructed.
-     * @throws IOException      When a problem is encountered reading the entity
-     *          XNIException    When a condition arises (such as a FatalError) that requires parsing
-     *                              of the entity be terminated.
+     * @param source the location of the entity which forms the starting point of the grammar to be
+     *     constructed.
+     * @throws IOException When a problem is encountered reading the entity XNIException When a
+     *     condition arises (such as a FatalError) that requires parsing of the entity be
+     *     terminated.
      */
-    public Grammar loadGrammar(XMLInputSource source)
-            throws IOException, XNIException {
+    public Grammar loadGrammar(XMLInputSource source) throws IOException, XNIException {
         reset();
         // First chance checking strict URI
-        String eid = XMLEntityManager.expandSystemId(source.getSystemId(), source.getBaseSystemId(), fStrictURI);
-        XMLDTDDescription desc = new XMLDTDDescription(source.getPublicId(), source.getSystemId(), source.getBaseSystemId(), eid, null);
+        String eid =
+                XMLEntityManager.expandSystemId(
+                        source.getSystemId(), source.getBaseSystemId(), fStrictURI);
+        XMLDTDDescription desc =
+                new XMLDTDDescription(
+                        source.getPublicId(),
+                        source.getSystemId(),
+                        source.getBaseSystemId(),
+                        eid,
+                        null);
         if (!fBalanceSyntaxTrees) {
             fDTDGrammar = new DTDGrammar(fSymbolTable, desc);
-        }
-        else {
+        } else {
             fDTDGrammar = new BalancedDTDGrammar(fSymbolTable, desc);
         }
         fGrammarBucket = new DTDGrammarBucket();
@@ -484,24 +444,28 @@ public class XMLDTDLoader
             fDTDScanner.scanDTDExternalSubset(true);
         } catch (EOFException e) {
             // expected behaviour...
-        }
-        finally {
+        } finally {
             // Close all streams opened by the parser.
             fEntityManager.closeReaders();
         }
-        if(fDTDGrammar != null && fGrammarPool != null) {
+        if (fDTDGrammar != null && fGrammarPool != null) {
             fGrammarPool.cacheGrammars(XMLDTDDescription.XML_DTD, new Grammar[] {fDTDGrammar});
         }
         return fDTDGrammar;
     } // loadGrammar(XMLInputSource):  Grammar
 
     /**
-     * Parse a DTD internal and/or external subset and insert the content
-     * into the existing DTD grammar owned by the given DTDValidator.
+     * Parse a DTD internal and/or external subset and insert the content into the existing DTD
+     * grammar owned by the given DTDValidator.
      */
-    public void loadGrammarWithContext(XMLDTDValidator validator, String rootName,
-            String publicId, String systemId, String baseSystemId, String internalSubset)
-        throws IOException, XNIException {
+    public void loadGrammarWithContext(
+            XMLDTDValidator validator,
+            String rootName,
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            String internalSubset)
+            throws IOException, XNIException {
         final DTDGrammarBucket grammarBucket = validator.getGrammarBucket();
         final DTDGrammar activeGrammar = grammarBucket.getActiveGrammar();
         if (activeGrammar != null && !activeGrammar.isImmutable()) {
@@ -516,23 +480,27 @@ public class XMLDTDLoader
                     // in a real document.
                     StringBuffer buffer = new StringBuffer(internalSubset.length() + 2);
                     buffer.append(internalSubset).append("]>");
-                    XMLInputSource is = new XMLInputSource(null, baseSystemId,
-                            null, new StringReader(buffer.toString()), null);
+                    XMLInputSource is =
+                            new XMLInputSource(
+                                    null,
+                                    baseSystemId,
+                                    null,
+                                    new StringReader(buffer.toString()),
+                                    null);
                     fEntityManager.startDocumentEntity(is);
                     fDTDScanner.scanDTDInternalSubset(true, false, systemId != null);
                 }
                 // process external subset
                 if (systemId != null) {
-                    XMLDTDDescription desc = new XMLDTDDescription(publicId, systemId, baseSystemId, null, rootName);
+                    XMLDTDDescription desc =
+                            new XMLDTDDescription(publicId, systemId, baseSystemId, null, rootName);
                     XMLInputSource source = fEntityManager.resolveEntity(desc);
                     fDTDScanner.setInputSource(source);
                     fDTDScanner.scanDTDExternalSubset(true);
                 }
-            }
-            catch (EOFException e) {
+            } catch (EOFException e) {
                 // expected behaviour...
-            }
-            finally {
+            } finally {
                 // Close all streams opened by the parser.
                 fEntityManager.closeReaders();
             }
@@ -547,13 +515,14 @@ public class XMLDTDLoader
         fErrorReporter.setDocumentLocator(fEntityManager.getEntityScanner());
     }
 
-    protected XMLDTDScannerImpl createDTDScanner(SymbolTable symbolTable,
-            XMLErrorReporter errorReporter, XMLEntityManager entityManager) {
+    protected XMLDTDScannerImpl createDTDScanner(
+            SymbolTable symbolTable,
+            XMLErrorReporter errorReporter,
+            XMLEntityManager entityManager) {
         return new XMLDTDScannerImpl(symbolTable, errorReporter, entityManager);
     } // createDTDScanner(SymbolTable, XMLErrorReporter, XMLEntityManager) : XMLDTDScannerImpl
 
     protected short getScannerVersion() {
         return Constants.XML_VERSION_1_0;
     } // getScannerVersion() : short
-
 } // class XMLDTDLoader

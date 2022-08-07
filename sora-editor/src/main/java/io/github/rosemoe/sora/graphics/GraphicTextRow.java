@@ -32,17 +32,15 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.text.ContentLine;
 
-/**
- * Manages graphical(actually measuring) operations of a text row
- */
+import java.util.List;
+
+/** Manages graphical(actually measuring) operations of a text row */
 public class GraphicTextRow {
 
-    private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private static final GraphicTextRow[] sCached = new GraphicTextRow[5];
     private final float[] mBuffer;
     private Paint mPaint;
     private ContentLine mText;
@@ -89,10 +87,14 @@ public class GraphicTextRow {
         }
     }
 
-    /**
-     * Reset
-     */
-    public void set(@NonNull ContentLine line, int start, int end, int tabWidth, @Nullable List<Span> spans, @NonNull Paint paint) {
+    /** Reset */
+    public void set(
+            @NonNull ContentLine line,
+            int start,
+            int end,
+            int tabWidth,
+            @Nullable List<Span> spans,
+            @NonNull Paint paint) {
         mPaint = paint;
         mText = line;
         mTabWidth = tabWidth;
@@ -109,9 +111,7 @@ public class GraphicTextRow {
         mCache = false;
     }
 
-    /**
-     * Build measure cache for the text
-     */
+    /** Build measure cache for the text */
     public void buildMeasureCache() {
         if (mText.widthCache == null || mText.widthCache.length < mEnd + 4) {
             mText.widthCache = new float[Math.max(90, mText.length() + 16)];
@@ -129,10 +129,10 @@ public class GraphicTextRow {
     }
 
     /**
-     * From {@code start} to measure characters, until measured width add next char's width is bigger
-     * than {@code advance}.
-     * <p>
-     * Note that the result array should not be stored.
+     * From {@code start} to measure characters, until measured width add next char's width is
+     * bigger than {@code advance}.
+     *
+     * <p>Note that the result array should not be stored.
      *
      * @return Element 0 is offset, Element 1 is measured width
      */
@@ -200,8 +200,12 @@ public class GraphicTextRow {
                         // Here is a tab
                         // Try to find advance
                         if (lastStart != i) {
-                            int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, i, advance - currentPosition, mCache);
-                            currentPosition += mPaint.measureTextRunAdvance(chars, lastStart, idx, regionStart, regionEnd);
+                            int idx =
+                                    mPaint.findOffsetByRunAdvance(
+                                            mText, lastStart, i, advance - currentPosition, mCache);
+                            currentPosition +=
+                                    mPaint.measureTextRunAdvance(
+                                            chars, lastStart, idx, regionStart, regionEnd);
                             if (idx < i) {
                                 res = idx;
                                 break;
@@ -225,7 +229,9 @@ public class GraphicTextRow {
                     }
                 }
                 if (res == -1) {
-                    int idx = mPaint.findOffsetByRunAdvance(mText, lastStart, regionEnd, advance - currentPosition, mCache);
+                    int idx =
+                            mPaint.findOffsetByRunAdvance(
+                                    mText, lastStart, regionEnd, advance - currentPosition, mCache);
                     currentPosition += measureText(lastStart, idx);
                     res = idx;
                 }
@@ -255,8 +261,7 @@ public class GraphicTextRow {
 
     public float measureText(int start, int end) {
         if (start >= end) {
-            if (start != end)
-                Log.w("GraphicTextRow", "start > end");
+            if (start != end) Log.w("GraphicTextRow", "start > end");
             return 0f;
         }
         if (mText.widthCache != null && mCache) {
@@ -311,7 +316,16 @@ public class GraphicTextRow {
             return 0f;
         }
         // Can be called directly
-        float width = mPaint.getTextRunAdvances(mText.value, start, end - start, start, end - start, false, widths, widths == null ? 0 : start);
+        float width =
+                mPaint.getTextRunAdvances(
+                        mText.value,
+                        start,
+                        end - start,
+                        start,
+                        end - start,
+                        false,
+                        widths,
+                        widths == null ? 0 : start);
         float tabWidth = mPaint.getSpaceWidth() * mTabWidth;
         int tabCount = 0;
         for (int i = start; i < end; i++) {
@@ -325,6 +339,4 @@ public class GraphicTextRow {
         float extraWidth = tabCount == 0 ? 0 : tabWidth - mPaint.measureText("\t");
         return width + extraWidth * tabCount;
     }
-
-
 }

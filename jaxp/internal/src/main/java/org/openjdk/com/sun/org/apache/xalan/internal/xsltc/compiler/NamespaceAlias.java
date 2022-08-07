@@ -44,7 +44,7 @@ final class NamespaceAlias extends TopLevelElement {
     public void parseContents(Parser parser) {
         sPrefix = getAttribute("stylesheet-prefix");
         rPrefix = getAttribute("result-prefix");
-        parser.getSymbolTable().addPrefixAlias(sPrefix,rPrefix);
+        parser.getSymbolTable().addPrefixAlias(sPrefix, rPrefix);
     }
 
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {

@@ -28,34 +28,28 @@ package org.openjdk.com.sun.org.apache.xerces.internal.util;
 public class XMLSymbols {
 
     // public constructor.
-    public XMLSymbols(){}
+    public XMLSymbols() {}
 
-    //==========================
+    // ==========================
     // Commonly used strings
-    //==========================
+    // ==========================
 
-    /**
-     * The empty string.
-     */
-    public final static String EMPTY_STRING = "".intern();
+    /** The empty string. */
+    public static final String EMPTY_STRING = "".intern();
 
-    //==========================
+    // ==========================
     // Namespace prefixes/uris
-    //==========================
+    // ==========================
 
-    /**
-     * The internalized "xml" prefix.
-     */
-    public final static String PREFIX_XML = "xml".intern();
+    /** The internalized "xml" prefix. */
+    public static final String PREFIX_XML = "xml".intern();
 
-    /**
-     * The internalized "xmlns" prefix.
-     */
-    public final static String PREFIX_XMLNS = "xmlns".intern();
+    /** The internalized "xmlns" prefix. */
+    public static final String PREFIX_XMLNS = "xmlns".intern();
 
-    //==========================
+    // ==========================
     // DTD symbols
-    //==========================
+    // ==========================
 
     /** Symbol: "ANY". */
     public static final String fANYSymbol = "ANY".intern();
@@ -98,6 +92,4 @@ public class XMLSymbols {
 
     /** Symbol: "#FIXED". */
     public static final String fFIXEDSymbol = "#FIXED".intern();
-
-
 }

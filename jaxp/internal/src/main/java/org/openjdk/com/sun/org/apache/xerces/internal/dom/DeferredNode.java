@@ -26,12 +26,10 @@ import org.w3c.dom.Node;
  * An interface for deferred node object.
  *
  * @xerces.internal
- *
  */
 public interface DeferredNode extends Node {
 
-
-     public static final short TYPE_NODE  =  20;
+    public static final short TYPE_NODE = 20;
 
     //
     // DeferredNode methods
@@ -39,5 +37,4 @@ public interface DeferredNode extends Node {
 
     /** Returns the node index. */
     public int getNodeIndex();
-
 } // interface DeferredNode

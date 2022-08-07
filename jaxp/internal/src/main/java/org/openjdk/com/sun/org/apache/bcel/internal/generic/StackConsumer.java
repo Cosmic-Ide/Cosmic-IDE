@@ -61,10 +61,11 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
 /**
  * Denote an instruction that may consume a value from the stack.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface StackConsumer {
-  /** @return how many words are consumed from stack
-   */
-  public int consumeStack(ConstantPoolGen cpg);
+    /**
+     * @return how many words are consumed from stack
+     */
+    public int consumeStack(ConstantPoolGen cpg);
 }

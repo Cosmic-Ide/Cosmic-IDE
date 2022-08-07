@@ -23,6 +23,7 @@
  */
 package org.eclipse.tm4e.core.internal.parser.xml;
 
+import org.eclipse.tm4e.core.internal.parser.PList;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -31,8 +32,6 @@ import java.io.InputStream;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.eclipse.tm4e.core.internal.parser.PList;
 
 public class XMLPListParser<T> {
 
@@ -47,7 +46,11 @@ public class XMLPListParser<T> {
         spf.setNamespaceAware(true);
         SAXParser saxParser = spf.newSAXParser();
         XMLReader xmlReader = saxParser.getXMLReader();
-        xmlReader.setEntityResolver((arg0, arg1) -> new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes())));
+        xmlReader.setEntityResolver(
+                (arg0, arg1) ->
+                        new InputSource(
+                                new ByteArrayInputStream(
+                                        "<?xml version='1.0' encoding='UTF-8'?>".getBytes())));
         PList<T> result = new PList<>(theme);
         xmlReader.setContentHandler(result);
         xmlReader.parse(new InputSource(contents));

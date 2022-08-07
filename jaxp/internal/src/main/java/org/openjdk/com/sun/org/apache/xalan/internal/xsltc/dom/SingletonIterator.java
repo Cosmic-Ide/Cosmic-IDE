@@ -48,17 +48,15 @@ public class SingletonIterator extends DTMAxisIteratorBase {
     }
 
     /**
-     * Override the value of <tt>_node</tt> only when this
-     * object was constructed using the empty constructor.
+     * Override the value of <tt>_node</tt> only when this object was constructed using the empty
+     * constructor.
      */
     public DTMAxisIterator setStartNode(int node) {
         if (_isConstant) {
             _node = _startNode;
             return resetPosition();
-        }
-        else if (_isRestartable) {
-            if (_node <= 0)
-                _node = _startNode = node;
+        } else if (_isRestartable) {
+            if (_node <= 0) _node = _startNode = node;
             return resetPosition();
         }
         return this;
@@ -68,8 +66,7 @@ public class SingletonIterator extends DTMAxisIteratorBase {
         if (_isConstant) {
             _node = _startNode;
             return resetPosition();
-        }
-        else {
+        } else {
             final boolean temp = _isRestartable;
             _isRestartable = true;
             setStartNode(_startNode);

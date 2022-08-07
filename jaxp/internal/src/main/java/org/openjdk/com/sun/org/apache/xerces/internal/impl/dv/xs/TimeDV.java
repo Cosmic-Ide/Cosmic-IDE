@@ -20,20 +20,17 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs;
 
-import org.openjdk.javax.xml.datatype.DatatypeConstants;
-import org.openjdk.javax.xml.datatype.XMLGregorianCalendar;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+import org.openjdk.javax.xml.datatype.DatatypeConstants;
+import org.openjdk.javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Validator for &lt;time&gt; datatype (W3C Schema Datatypes)
  *
  * @xerces.internal
- *
  * @author Elena Litani
  * @author Gopal Sharma, SUN Microsystem Inc.
- *
  * @version $Id: TimeDV.java,v 1.7 2010-11-01 04:39:47 joehw Exp $
  */
 public class TimeDV extends AbstractDateTimeDV {
@@ -41,45 +38,47 @@ public class TimeDV extends AbstractDateTimeDV {
     /**
      * Convert a string to a compiled form
      *
-     * @param  content The lexical representation of time
+     * @param content The lexical representation of time
      * @return a valid and normalized time object
      */
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException{
-        try{
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
+        try {
             return parse(content);
-        } catch(Exception ex){
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "time"});
+        } catch (Exception ex) {
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "time"});
         }
     }
 
     /**
      * Parses, validates and computes normalized version of time object
      *
-     * @param str    The lexical representation of time object hh:mm:ss.sss
-     *               with possible time zone Z or (-),(+)hh:mm
-     *               Pattern: "(\\d\\d):(\\d\\d):(\\d\\d)(\\.(\\d)*)?(Z|(([-+])(\\d\\d)(:(\\d\\d))?))?")
+     * @param str The lexical representation of time object hh:mm:ss.sss with possible time zone Z
+     *     or (-),(+)hh:mm Pattern:
+     *     "(\\d\\d):(\\d\\d):(\\d\\d)(\\.(\\d)*)?(Z|(([-+])(\\d\\d)(:(\\d\\d))?))?")
      * @return normalized time representation
      * @exception SchemaDateTimeException Invalid lexical representation
      */
-    protected DateTimeData parse(String str) throws SchemaDateTimeException{
+    protected DateTimeData parse(String str) throws SchemaDateTimeException {
         DateTimeData date = new DateTimeData(str, this);
         int len = str.length();
 
         // time
         // initialize to default values
-        date.year=YEAR;
-        date.month=MONTH;
-        date.day=15;
+        date.year = YEAR;
+        date.month = MONTH;
+        date.day = 15;
         getTime(str, 0, len, date);
 
-        //validate and normalize
+        // validate and normalize
 
         validateDateTime(date);
 
-        //save unnormalized values
+        // save unnormalized values
         saveUnnormalized(date);
 
-        if ( date.utc!=0 && date.utc != 'Z') {
+        if (date.utc != 0 && date.utc != 'Z') {
             normalize(date);
         }
         date.position = 2;
@@ -89,7 +88,7 @@ public class TimeDV extends AbstractDateTimeDV {
     /**
      * Converts time object representation to String
      *
-     * @param date   time object
+     * @param date time object
      * @return lexical representation of time: hh:mm:ss.sss with an optional time zone sign
      */
     protected String dateToString(DateTimeData date) {
@@ -100,14 +99,21 @@ public class TimeDV extends AbstractDateTimeDV {
         message.append(':');
         append(message, date.second);
 
-        append(message, (char)date.utc, 0);
+        append(message, (char) date.utc, 0);
         return message.toString();
     }
 
     protected XMLGregorianCalendar getXMLGregorianCalendar(DateTimeData date) {
-        return datatypeFactory.newXMLGregorianCalendar(null, DatatypeConstants.FIELD_UNDEFINED,
-                DatatypeConstants.FIELD_UNDEFINED, date.unNormHour, date.unNormMinute,
-                (int)date.unNormSecond, date.unNormSecond != 0 ? getFractionalSecondsAsBigDecimal(date) : null,
-                date.hasTimeZone() ? (date.timezoneHr * 60 + date.timezoneMin) : DatatypeConstants.FIELD_UNDEFINED);
+        return datatypeFactory.newXMLGregorianCalendar(
+                null,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                date.unNormHour,
+                date.unNormMinute,
+                (int) date.unNormSecond,
+                date.unNormSecond != 0 ? getFractionalSecondsAsBigDecimal(date) : null,
+                date.hasTimeZone()
+                        ? (date.timezoneHr * 60 + date.timezoneMin)
+                        : DatatypeConstants.FIELD_UNDEFINED);
     }
 }

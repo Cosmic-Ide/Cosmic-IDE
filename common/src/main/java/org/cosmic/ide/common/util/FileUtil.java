@@ -6,7 +6,6 @@ import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -130,15 +129,13 @@ public class FileUtil {
         return writeFileFromString(file, content, false);
     }
 
-    public static boolean writeFileFromString(final String filePath,
-                                              final String content,
-                                              final boolean append) {
+    public static boolean writeFileFromString(
+            final String filePath, final String content, final boolean append) {
         return writeFileFromString(FileUtil.getFileByPath(filePath), content, append);
     }
 
-    public static boolean writeFileFromString(final File file,
-                                              final String content,
-                                              final boolean append) {
+    public static boolean writeFileFromString(
+            final File file, final String content, final boolean append) {
         if (file == null || content == null) return false;
         if (!FileUtil.createOrExistsFile(file)) {
             return false;
@@ -200,12 +197,15 @@ public class FileUtil {
     }
 
     public static boolean deleteAllInDir(final File dir) {
-        return deleteFilesInDirWithFilter(dir, (pathName) -> {
-            return true;
-        });
+        return deleteFilesInDirWithFilter(
+                dir,
+                (pathName) -> {
+                    return true;
+                });
     }
 
-    public static boolean deleteFilesInDirWithFilter(final String dirPath, final FileFilter filter) {
+    public static boolean deleteFilesInDirWithFilter(
+            final String dirPath, final FileFilter filter) {
         return deleteFilesInDirWithFilter(getFileByPath(dirPath), filter);
     }
 

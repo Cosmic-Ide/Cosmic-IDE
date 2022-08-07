@@ -27,16 +27,14 @@ import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 import org.openjdk.com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * A ClonedNodeListIterator is returned by the cloneIterator() method
- * of a CachedNodeListIterator. Its next() method retrieves the nodes from
- * the cache of the CachedNodeListIterator.
+ * A ClonedNodeListIterator is returned by the cloneIterator() method of a CachedNodeListIterator.
+ * Its next() method retrieves the nodes from the cache of the CachedNodeListIterator.
  */
 public final class ClonedNodeListIterator extends DTMAxisIteratorBase {
 
-    /**
-     * Source for this iterator.
-     */
+    /** Source for this iterator. */
     private CachedNodeListIterator _source;
+
     private int _index = 0;
 
     public ClonedNodeListIterator(CachedNodeListIterator source) {
@@ -44,8 +42,8 @@ public final class ClonedNodeListIterator extends DTMAxisIteratorBase {
     }
 
     public void setRestartable(boolean isRestartable) {
-        //_isRestartable = isRestartable;
-        //_source.setRestartable(isRestartable);
+        // _isRestartable = isRestartable;
+        // _source.setRestartable(isRestartable);
     }
 
     public DTMAxisIterator setStartNode(int node) {

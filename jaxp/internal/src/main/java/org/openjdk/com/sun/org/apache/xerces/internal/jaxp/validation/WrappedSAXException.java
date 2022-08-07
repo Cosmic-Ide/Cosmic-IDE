@@ -64,24 +64,21 @@ import org.xml.sax.SAXException;
 
 /**
  * Wraps {@link SAXException} and make it an unchecked exception.
- * <p>
- * Xerces XNI doesn't allow {@link SAXException} to be thrown.
- * So when the user-supplied error handler throws it,
- * it needs to be tunneled through Xerces.
  *
- * <p>
- * It is a bug if this exception "leaks" to the application.
+ * <p>Xerces XNI doesn't allow {@link SAXException} to be thrown. So when the user-supplied error
+ * handler throws it, it needs to be tunneled through Xerces.
  *
- * FIXME: use XNIException for this purpose. It's already doing this
- * kind of SAXException tunneling.
+ * <p>It is a bug if this exception "leaks" to the application.
  *
- * @author
- *     Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
+ * <p>FIXME: use XNIException for this purpose. It's already doing this kind of SAXException
+ * tunneling.
+ *
+ * @author Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
  */
 public class WrappedSAXException extends RuntimeException {
     public final SAXException exception;
 
-    WrappedSAXException( SAXException e ) {
+    WrappedSAXException(SAXException e) {
         this.exception = e;
     }
 }

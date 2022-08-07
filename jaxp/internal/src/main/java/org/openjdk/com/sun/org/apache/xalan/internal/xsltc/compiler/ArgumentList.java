@@ -28,7 +28,7 @@ package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
  * @author Santiago Pericas-Geertsen
  */
 final class ArgumentList {
-    private final Expression   _arg;
+    private final Expression _arg;
     private final ArgumentList _rest;
 
     public ArgumentList(Expression arg, ArgumentList rest) {
@@ -37,8 +37,6 @@ final class ArgumentList {
     }
 
     public String toString() {
-        return _rest == null
-            ? _arg.toString()
-            : _arg.toString() + ", " + _rest.toString();
+        return _rest == null ? _arg.toString() : _arg.toString() + ", " + _rest.toString();
     }
 }

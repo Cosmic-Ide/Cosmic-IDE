@@ -23,9 +23,9 @@
  */
 package org.eclipse.tm4e.core.internal.grammar;
 
-import java.util.List;
-
 import org.eclipse.tm4e.core.grammar.IToken;
+
+import java.util.List;
 
 class Token implements IToken {
 

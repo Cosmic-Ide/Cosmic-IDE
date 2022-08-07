@@ -73,11 +73,11 @@ final class ValueOf extends Instruction {
              *** %HZ% Would like to treat result-tree fragments in the same
              *** %HZ% way as node sets for value-of, but that's running into
              *** %HZ% some snags.  Instead, they'll be converted to String
-            if (type.identicalTo(Type.ResultTree)) {
-                _select = new CastExpr(new CastExpr(_select, Type.NodeSet),
-                                       Type.Node);
-            } else
-            ***/
+             * if (type.identicalTo(Type.ResultTree)) {
+             * _select = new CastExpr(new CastExpr(_select, Type.NodeSet),
+             * Type.Node);
+             * } else
+             ***/
             if (type.identicalTo(Type.NodeSet)) {
                 _select = new CastExpr(_select, Type.Node);
             } else {
@@ -94,14 +94,13 @@ final class ValueOf extends Instruction {
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
-        final int setEscaping = cpg.addInterfaceMethodref(OUTPUT_HANDLER,
-                                                          "setEscaping","(Z)Z");
+        final int setEscaping = cpg.addInterfaceMethodref(OUTPUT_HANDLER, "setEscaping", "(Z)Z");
 
         // Turn off character escaping if so is wanted.
         if (!_escaping) {
             il.append(methodGen.loadHandler());
-            il.append(new PUSH(cpg,false));
-            il.append(new INVOKEINTERFACE(setEscaping,2));
+            il.append(new PUSH(cpg, false));
+            il.append(new INVOKEINTERFACE(setEscaping, 2));
         }
 
         // Translate the contents.  If the value is a string, use the
@@ -110,18 +109,14 @@ final class ValueOf extends Instruction {
         // dom.characters(int node, TransletOutputHandler) method can dispatch
         // the string value of the node to the output handler more efficiently.
         if (_isString) {
-            final int characters = cpg.addMethodref(TRANSLET_CLASS,
-                                                    CHARACTERSW,
-                                                    CHARACTERSW_SIG);
+            final int characters = cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG);
 
             il.append(classGen.loadTranslet());
             _select.translate(classGen, methodGen);
             il.append(methodGen.loadHandler());
             il.append(new INVOKEVIRTUAL(characters));
         } else {
-            final int characters = cpg.addInterfaceMethodref(DOM_INTF,
-                                                             CHARACTERS,
-                                                             CHARACTERS_SIG);
+            final int characters = cpg.addInterfaceMethodref(DOM_INTF, CHARACTERS, CHARACTERS_SIG);
 
             il.append(methodGen.loadDOM());
             _select.translate(classGen, methodGen);
@@ -133,7 +128,7 @@ final class ValueOf extends Instruction {
         if (!_escaping) {
             il.append(methodGen.loadHandler());
             il.append(SWAP);
-            il.append(new INVOKEINTERFACE(setEscaping,2));
+            il.append(new INVOKEINTERFACE(setEscaping, 2));
             il.append(POP);
         }
     }

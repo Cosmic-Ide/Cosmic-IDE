@@ -20,17 +20,9 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.jaxp;
 
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.openjdk.javax.xml.parsers.DocumentBuilder;
-import org.openjdk.javax.xml.validation.Schema;
-import org.openjdk.javax.xml.XMLConstants;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.dom.DOMImplementationImpl;
 import org.openjdk.com.sun.org.apache.xerces.internal.dom.DOMMessageFormatter;
+import org.openjdk.com.sun.org.apache.xerces.internal.dom.DocumentImpl;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.Constants;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.validation.ValidationManager;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaValidator;
@@ -46,8 +38,9 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLComponentMan
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.dom.DocumentImpl;
+import org.openjdk.javax.xml.XMLConstants;
+import org.openjdk.javax.xml.parsers.DocumentBuilder;
+import org.openjdk.javax.xml.validation.Schema;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -57,49 +50,52 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * @author Rajiv Mordani
  * @author Edwin Goei
  * @version $Id: DocumentBuilderImpl.java,v 1.8 2010-11-01 04:40:06 joehw Exp $
  */
-public class DocumentBuilderImpl extends DocumentBuilder
-        implements JAXPConstants
-{
+public class DocumentBuilderImpl extends DocumentBuilder implements JAXPConstants {
     /** Feature identifier: namespaces. */
     private static final String NAMESPACES_FEATURE =
-        Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE;
+            Constants.SAX_FEATURE_PREFIX + Constants.NAMESPACES_FEATURE;
 
     /** Feature identifier: include ignorable white space. */
     private static final String INCLUDE_IGNORABLE_WHITESPACE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.INCLUDE_IGNORABLE_WHITESPACE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.INCLUDE_IGNORABLE_WHITESPACE;
 
     /** Feature identifier: create entiry ref nodes feature. */
     private static final String CREATE_ENTITY_REF_NODES_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.CREATE_ENTITY_REF_NODES_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.CREATE_ENTITY_REF_NODES_FEATURE;
 
     /** Feature identifier: include comments feature. */
     private static final String INCLUDE_COMMENTS_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.INCLUDE_COMMENTS_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.INCLUDE_COMMENTS_FEATURE;
 
     /** Feature identifier: create cdata nodes feature. */
     private static final String CREATE_CDATA_NODES_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.CREATE_CDATA_NODES_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.CREATE_CDATA_NODES_FEATURE;
 
     /** Feature identifier: XInclude processing */
     private static final String XINCLUDE_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
 
     /** feature identifier: XML Schema validation */
     private static final String XMLSCHEMA_VALIDATION_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.SCHEMA_VALIDATION_FEATURE;
 
     /** Feature identifier: validation */
     private static final String VALIDATION_FEATURE =
-        Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
+            Constants.SAX_FEATURE_PREFIX + Constants.VALIDATION_FEATURE;
 
     /** Property identifier: security manager. */
     private static final String SECURITY_MANAGER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
 
     /** Property identifier: Security property manager. */
     private static final String XML_SECURITY_PROPERTY_MANAGER =
@@ -110,7 +106,6 @@ public class DocumentBuilderImpl extends DocumentBuilder
 
     /** Property identifier: access to external schema */
     public static final String ACCESS_EXTERNAL_SCHEMA = XMLConstants.ACCESS_EXTERNAL_SCHEMA;
-
 
     private final DOMParser domParser;
     private final Schema grammar;
@@ -130,23 +125,27 @@ public class DocumentBuilderImpl extends DocumentBuilder
     private XMLSecurityPropertyManager fSecurityPropertyMgr;
 
     DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Hashtable dbfAttrs, Hashtable features)
-        throws SAXNotRecognizedException, SAXNotSupportedException {
+            throws SAXNotRecognizedException, SAXNotSupportedException {
         this(dbf, dbfAttrs, features, false);
     }
 
-    DocumentBuilderImpl(DocumentBuilderFactoryImpl dbf, Hashtable dbfAttrs, Hashtable features, boolean secureProcessing)
-        throws SAXNotRecognizedException, SAXNotSupportedException
-    {
+    DocumentBuilderImpl(
+            DocumentBuilderFactoryImpl dbf,
+            Hashtable dbfAttrs,
+            Hashtable features,
+            boolean secureProcessing)
+            throws SAXNotRecognizedException, SAXNotSupportedException {
         domParser = new DOMParser();
 
         // If validating, provide a default ErrorHandler that prints
         // validation errors with a warning telling the user to set an
         // ErrorHandler
         if (dbf.isValidating()) {
-            fInitErrorHandler = new DefaultValidationErrorHandler(domParser.getXMLParserConfiguration().getLocale());
+            fInitErrorHandler =
+                    new DefaultValidationErrorHandler(
+                            domParser.getXMLParserConfiguration().getLocale());
             setErrorHandler(fInitErrorHandler);
-        }
-        else {
+        } else {
             fInitErrorHandler = domParser.getErrorHandler();
         }
 
@@ -156,14 +155,11 @@ public class DocumentBuilderImpl extends DocumentBuilder
         domParser.setFeature(NAMESPACES_FEATURE, dbf.isNamespaceAware());
 
         // Set various parameters obtained from DocumentBuilderFactory
-        domParser.setFeature(INCLUDE_IGNORABLE_WHITESPACE,
-                !dbf.isIgnoringElementContentWhitespace());
-        domParser.setFeature(CREATE_ENTITY_REF_NODES_FEATURE,
-                !dbf.isExpandEntityReferences());
-        domParser.setFeature(INCLUDE_COMMENTS_FEATURE,
-                !dbf.isIgnoringComments());
-        domParser.setFeature(CREATE_CDATA_NODES_FEATURE,
-                !dbf.isCoalescing());
+        domParser.setFeature(
+                INCLUDE_IGNORABLE_WHITESPACE, !dbf.isIgnoringElementContentWhitespace());
+        domParser.setFeature(CREATE_ENTITY_REF_NODES_FEATURE, !dbf.isExpandEntityReferences());
+        domParser.setFeature(INCLUDE_COMMENTS_FEATURE, !dbf.isIgnoringComments());
+        domParser.setFeature(CREATE_CDATA_NODES_FEATURE, !dbf.isCoalescing());
 
         // Avoid setting the XInclude processing feature if the value is false.
         // This will keep the configuration from throwing an exception if it
@@ -180,19 +176,22 @@ public class DocumentBuilderImpl extends DocumentBuilder
 
         if (secureProcessing) {
             /**
-             * If secure processing is explicitly set on the factory, the
-             * access properties will be set unless the corresponding
-             * System Properties or jaxp.properties are set
+             * If secure processing is explicitly set on the factory, the access properties will be
+             * set unless the corresponding System Properties or jaxp.properties are set
              */
             if (features != null) {
                 Object temp = features.get(XMLConstants.FEATURE_SECURE_PROCESSING);
                 if (temp != null) {
                     boolean value = ((Boolean) temp).booleanValue();
                     if (value && Constants.IS_JDK8_OR_ABOVE) {
-                        fSecurityPropertyMgr.setValue(Property.ACCESS_EXTERNAL_DTD,
-                                State.FSP, Constants.EXTERNAL_ACCESS_DEFAULT_FSP);
-                        fSecurityPropertyMgr.setValue(Property.ACCESS_EXTERNAL_SCHEMA,
-                                State.FSP, Constants.EXTERNAL_ACCESS_DEFAULT_FSP);
+                        fSecurityPropertyMgr.setValue(
+                                Property.ACCESS_EXTERNAL_DTD,
+                                State.FSP,
+                                Constants.EXTERNAL_ACCESS_DEFAULT_FSP);
+                        fSecurityPropertyMgr.setValue(
+                                Property.ACCESS_EXTERNAL_SCHEMA,
+                                State.FSP,
+                                Constants.EXTERNAL_ACCESS_DEFAULT_FSP);
                     }
                 }
             }
@@ -202,7 +201,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
         if (grammar != null) {
             XMLParserConfiguration config = domParser.getXMLParserConfiguration();
             XMLComponent validatorComponent = null;
-            /** For Xerces grammars, use built-in schema validator. **/
+            /** For Xerces grammars, use built-in schema validator. * */
             if (grammar instanceof XSGrammarPoolContainer) {
                 validatorComponent = new XMLSchemaValidator();
                 fSchemaValidationManager = new ValidationManager();
@@ -210,10 +209,11 @@ public class DocumentBuilderImpl extends DocumentBuilder
                 config.setDTDHandler(fUnparsedEntityHandler);
                 fUnparsedEntityHandler.setDTDHandler(domParser);
                 domParser.setDTDSource(fUnparsedEntityHandler);
-                fSchemaValidatorComponentManager = new SchemaValidatorConfiguration(config,
-                        (XSGrammarPoolContainer) grammar, fSchemaValidationManager);
+                fSchemaValidatorComponentManager =
+                        new SchemaValidatorConfiguration(
+                                config, (XSGrammarPoolContainer) grammar, fSchemaValidationManager);
             }
-            /** For third party grammars, use the JAXP validator component. **/
+            /** For third party grammars, use the JAXP validator component. * */
             else {
                 validatorComponent = new JAXPValidatorComponent(grammar.newValidatorHandler());
                 fSchemaValidationManager = null;
@@ -222,13 +222,12 @@ public class DocumentBuilderImpl extends DocumentBuilder
             }
             config.addRecognizedFeatures(validatorComponent.getRecognizedFeatures());
             config.addRecognizedProperties(validatorComponent.getRecognizedProperties());
-            setFeatures(features);      // Must set before calling setDocumentHandler()
+            setFeatures(features); // Must set before calling setDocumentHandler()
             config.setDocumentHandler((XMLDocumentHandler) validatorComponent);
-            ((XMLDocumentSource)validatorComponent).setDocumentHandler(domParser);
+            ((XMLDocumentSource) validatorComponent).setDocumentHandler(domParser);
             domParser.setDocumentSource((XMLDocumentSource) validatorComponent);
             fSchemaValidator = validatorComponent;
-        }
-        else {
+        } else {
             fSchemaValidationManager = null;
             fUnparsedEntityHandler = null;
             fSchemaValidatorComponentManager = null;
@@ -236,7 +235,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
             setFeatures(features);
         }
 
-        //setAttribute override those that may be set by other means
+        // setAttribute override those that may be set by other means
         setDocumentBuilderFactoryAttributes(dbfAttrs);
 
         // Initial EntityResolver
@@ -244,7 +243,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
     }
 
     private void setFeatures(Hashtable features)
-        throws SAXNotSupportedException, SAXNotRecognizedException {
+            throws SAXNotSupportedException, SAXNotRecognizedException {
         if (features != null) {
             Iterator entries = features.entrySet().iterator();
             while (entries.hasNext()) {
@@ -252,20 +251,18 @@ public class DocumentBuilderImpl extends DocumentBuilder
                 String feature = (String) entry.getKey();
                 boolean value = ((Boolean) entry.getValue()).booleanValue();
                 domParser.setFeature(feature, value);
+            }
         }
-    }
     }
 
     /**
      * Set any DocumentBuilderFactory attributes of our underlying DOMParser
      *
-     * Note: code does not handle possible conflicts between DOMParser
-     * attribute names and JAXP specific attribute names,
-     * eg. DocumentBuilderFactory.setValidating()
+     * <p>Note: code does not handle possible conflicts between DOMParser attribute names and JAXP
+     * specific attribute names, eg. DocumentBuilderFactory.setValidating()
      */
     private void setDocumentBuilderFactoryAttributes(Hashtable dbfAttrs)
-        throws SAXNotSupportedException, SAXNotRecognizedException
-    {
+            throws SAXNotSupportedException, SAXNotRecognizedException {
         if (dbfAttrs == null) {
             // Nothing to do
             return;
@@ -278,53 +275,57 @@ public class DocumentBuilderImpl extends DocumentBuilder
             Object val = entry.getValue();
             if (val instanceof Boolean) {
                 // Assume feature
-                domParser.setFeature(name, ((Boolean)val).booleanValue());
+                domParser.setFeature(name, ((Boolean) val).booleanValue());
             } else {
                 // Assume property
                 if (JAXP_SCHEMA_LANGUAGE.equals(name)) {
                     // JAXP 1.2 support
-                    //None of the properties will take effect till the setValidating(true) has been called
-                    if ( W3C_XML_SCHEMA.equals(val) ) {
-                        if( isValidating() ) {
+                    // None of the properties will take effect till the setValidating(true) has been
+                    // called
+                    if (W3C_XML_SCHEMA.equals(val)) {
+                        if (isValidating()) {
                             domParser.setFeature(XMLSCHEMA_VALIDATION_FEATURE, true);
                             // this should allow us not to emit DTD errors, as expected by the
                             // spec when schema validation is enabled
                             domParser.setProperty(JAXP_SCHEMA_LANGUAGE, W3C_XML_SCHEMA);
                         }
-                     }
-                 } else if(JAXP_SCHEMA_SOURCE.equals(name)){
-                    if( isValidating() ) {
-                        String value=(String)dbfAttrs.get(JAXP_SCHEMA_LANGUAGE);
-                        if(value !=null && W3C_XML_SCHEMA.equals(value)){
+                    }
+                } else if (JAXP_SCHEMA_SOURCE.equals(name)) {
+                    if (isValidating()) {
+                        String value = (String) dbfAttrs.get(JAXP_SCHEMA_LANGUAGE);
+                        if (value != null && W3C_XML_SCHEMA.equals(value)) {
                             domParser.setProperty(name, val);
-                        }else{
+                        } else {
                             throw new IllegalArgumentException(
-                                DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN,
-                                "jaxp-order-not-supported",
-                                new Object[] {JAXP_SCHEMA_LANGUAGE, JAXP_SCHEMA_SOURCE}));
+                                    DOMMessageFormatter.formatMessage(
+                                            DOMMessageFormatter.DOM_DOMAIN,
+                                            "jaxp-order-not-supported",
+                                            new Object[] {
+                                                JAXP_SCHEMA_LANGUAGE, JAXP_SCHEMA_SOURCE
+                                            }));
                         }
-                     }
-                  } else {
-                     //check if the property is managed by security manager
-                     if (fSecurityManager == null ||
-                             !fSecurityManager.setLimit(name, XMLSecurityManager.State.APIPROPERTY, val)) {
-                         //check if the property is managed by security property manager
-                         if (fSecurityPropertyMgr == null ||
-                                 !fSecurityPropertyMgr.setValue(name, XMLSecurityPropertyManager.State.APIPROPERTY, val)) {
-                             //fall back to the existing property manager
-                             domParser.setProperty(name, val);
-                         }
-                     }
-
-                  }
-             }
+                    }
+                } else {
+                    // check if the property is managed by security manager
+                    if (fSecurityManager == null
+                            || !fSecurityManager.setLimit(
+                                    name, XMLSecurityManager.State.APIPROPERTY, val)) {
+                        // check if the property is managed by security property manager
+                        if (fSecurityPropertyMgr == null
+                                || !fSecurityPropertyMgr.setValue(
+                                        name, XMLSecurityPropertyManager.State.APIPROPERTY, val)) {
+                            // fall back to the existing property manager
+                            domParser.setProperty(name, val);
+                        }
+                    }
+                }
+            }
         }
     }
 
     /**
-     * Non-preferred: use the getDOMImplementation() method instead of this
-     * one to get a DOM Level 2 DOMImplementation object and then use DOM
-     * Level 2 methods to create a DOM Document object.
+     * Non-preferred: use the getDOMImplementation() method instead of this one to get a DOM Level 2
+     * DOMImplementation object and then use DOM Level 2 methods to create a DOM Document object.
      */
     public Document newDocument() {
         return new DocumentImpl();
@@ -337,8 +338,8 @@ public class DocumentBuilderImpl extends DocumentBuilder
     public Document parse(InputSource is) throws SAXException, IOException {
         if (is == null) {
             throw new IllegalArgumentException(
-                DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN,
-                "jaxp-null-input-source", null));
+                    DOMMessageFormatter.formatMessage(
+                            DOMMessageFormatter.DOM_DOMAIN, "jaxp-null-input-source", null));
         }
         if (fSchemaValidator != null) {
             if (fSchemaValidationManager != null) {
@@ -356,8 +357,7 @@ public class DocumentBuilderImpl extends DocumentBuilder
     public boolean isNamespaceAware() {
         try {
             return domParser.getFeature(NAMESPACES_FEATURE);
-        }
-        catch (SAXException x) {
+        } catch (SAXException x) {
             throw new IllegalStateException(x.getMessage());
         }
     }
@@ -365,21 +365,20 @@ public class DocumentBuilderImpl extends DocumentBuilder
     public boolean isValidating() {
         try {
             return domParser.getFeature(VALIDATION_FEATURE);
-        }
-        catch (SAXException x) {
+        } catch (SAXException x) {
             throw new IllegalStateException(x.getMessage());
         }
     }
 
     /**
      * Gets the XInclude processing mode for this parser
+     *
      * @return the state of XInclude processing mode
      */
     public boolean isXIncludeAware() {
         try {
             return domParser.getFeature(XINCLUDE_FEATURE);
-        }
-        catch (SAXException exc) {
+        } catch (SAXException exc) {
             return false;
         }
     }
@@ -397,11 +396,11 @@ public class DocumentBuilderImpl extends DocumentBuilder
     }
 
     public void reset() {
-        /** Restore the initial error handler. **/
+        /** Restore the initial error handler. * */
         if (domParser.getErrorHandler() != fInitErrorHandler) {
             domParser.setErrorHandler(fInitErrorHandler);
         }
-        /** Restore the initial entity resolver. **/
+        /** Restore the initial entity resolver. * */
         if (domParser.getEntityResolver() != fInitEntityResolver) {
             domParser.setEntityResolver(fInitEntityResolver);
         }

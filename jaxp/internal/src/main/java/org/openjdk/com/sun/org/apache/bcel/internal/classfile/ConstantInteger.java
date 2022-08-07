@@ -59,94 +59,91 @@ package org.openjdk.com.sun.org.apache.bcel.internal.classfile;
  * <http://www.apache.org/>.
  */
 
-
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 
-import  java.io.*;
+import java.io.*;
 
 /**
- * This class is derived from the abstract
- * <A HREF="org.openjdk.com.sun.org.apache.bcel.internal.classfile.Constant.html">Constant</A> class
+ * This class is derived from the abstract <A
+ * HREF="org.openjdk.com.sun.org.apache.bcel.internal.classfile.Constant.html">Constant</A> class
  * and represents a reference to an int object.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
- * @see     Constant
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @see Constant
  */
 public final class ConstantInteger extends Constant implements ConstantObject {
-  private int bytes;
+    private int bytes;
 
-  /**
-   * @param bytes Data
-   */
-  public ConstantInteger(int bytes)
-  {
-    super(Constants.CONSTANT_Integer);
-    this.bytes = bytes;
-  }
+    /**
+     * @param bytes Data
+     */
+    public ConstantInteger(int bytes) {
+        super(Constants.CONSTANT_Integer);
+        this.bytes = bytes;
+    }
 
-  /**
-   * Initialize from another object.
-   */
-  public ConstantInteger(ConstantInteger c) {
-    this(c.getBytes());
-  }
+    /** Initialize from another object. */
+    public ConstantInteger(ConstantInteger c) {
+        this(c.getBytes());
+    }
 
-  /**
-   * Initialize instance from file data.
-   *
-   * @param file Input stream
-   * @throws IOException
-   */
-  ConstantInteger(DataInputStream file) throws IOException
-  {
-    this(file.readInt());
-  }
+    /**
+     * Initialize instance from file data.
+     *
+     * @param file Input stream
+     * @throws IOException
+     */
+    ConstantInteger(DataInputStream file) throws IOException {
+        this(file.readInt());
+    }
 
-  /**
-   * Called by objects that are traversing the nodes of the tree implicitely
-   * defined by the contents of a Java class. I.e., the hierarchy of methods,
-   * fields, attributes, etc. spawns a tree of objects.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitConstantInteger(this);
-  }
+    /**
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
+     *
+     * @param v Visitor object
+     */
+    public void accept(Visitor v) {
+        v.visitConstantInteger(this);
+    }
 
-  /**
-   * Dump constant integer to file stream in binary format.
-   *
-   * @param file Output file stream
-   * @throws IOException
-   */
-  public final void dump(DataOutputStream file) throws IOException
-  {
-    file.writeByte(tag);
-    file.writeInt(bytes);
-  }
+    /**
+     * Dump constant integer to file stream in binary format.
+     *
+     * @param file Output file stream
+     * @throws IOException
+     */
+    public final void dump(DataOutputStream file) throws IOException {
+        file.writeByte(tag);
+        file.writeInt(bytes);
+    }
 
-  /**
-   * @return data, i.e., 4 bytes.
-   */
-  public final int getBytes() { return bytes; }
+    /**
+     * @return data, i.e., 4 bytes.
+     */
+    public final int getBytes() {
+        return bytes;
+    }
 
-  /**
-   * @param bytes.
-   */
-  public final void setBytes(int bytes) {
-    this.bytes = bytes;
-  }
+    /**
+     * @param bytes.
+     */
+    public final void setBytes(int bytes) {
+        this.bytes = bytes;
+    }
 
-  /**
-   * @return String representation.
-   */
-  public final String toString() {
-    return super.toString() + "(bytes = " + bytes + ")";
-  }
+    /**
+     * @return String representation.
+     */
+    public final String toString() {
+        return super.toString() + "(bytes = " + bytes + ")";
+    }
 
-  /** @return Integer object
-   */
-  public Object getConstantValue(ConstantPool cp) {
-    return new Integer(bytes);
-  }
+    /**
+     * @return Integer object
+     */
+    public Object getConstantValue(ConstantPool cp) {
+        return new Integer(bytes);
+    }
 }

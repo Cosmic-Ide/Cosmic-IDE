@@ -22,10 +22,8 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util;
 
 /**
  * @xerces.internal
- *
  * @author Henry Zongaro, IBM
  */
-
 public final class XInt {
 
     private int fValue;
@@ -39,7 +37,7 @@ public final class XInt {
     }
 
     public final short shortValue() {
-        return (short)fValue;
+        return (short) fValue;
     }
 
     public final boolean equals(XInt compareVal) {

@@ -21,17 +21,14 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.util;
 
-
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
 import org.openjdk.javax.xml.stream.Location;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
-
 /**
- * <p>A light wrapper around a StAX location. This is useful
- * when bridging between StAX and XNI components.</p>
+ * A light wrapper around a StAX location. This is useful when bridging between StAX and XNI
+ * components.
  *
  * @author Michael Glavassevich, IBM
- *
  * @version $Id: StAXLocationWrapper.java,v 1.2 2010-10-26 23:01:13 joehw Exp $
  */
 public final class StAXLocationWrapper implements XMLLocator {
@@ -102,5 +99,4 @@ public final class StAXLocationWrapper implements XMLLocator {
     public String getXMLVersion() {
         return null;
     }
-
 } // StAXLocationWrapper

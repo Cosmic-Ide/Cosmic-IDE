@@ -81,35 +81,26 @@ public final class NodeType extends Type {
     }
 
     /**
-     * Translates a node into an object of internal type <code>type</code>.
-     * The translation to int is undefined since nodes are always converted
-     * to reals in arithmetic expressions.
+     * Translates a node into an object of internal type <code>type</code>. The translation to int
+     * is undefined since nodes are always converted to reals in arithmetic expressions.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Type type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
         if (type == String) {
             translateTo(classGen, methodGen, (StringType) type);
-        }
-        else if (type == Boolean) {
+        } else if (type == Boolean) {
             translateTo(classGen, methodGen, (BooleanType) type);
-        }
-        else if (type == Real) {
+        } else if (type == Real) {
             translateTo(classGen, methodGen, (RealType) type);
-        }
-        else if (type == NodeSet) {
+        } else if (type == NodeSet) {
             translateTo(classGen, methodGen, (NodeSetType) type);
-        }
-        else if (type == Reference) {
+        } else if (type == Reference) {
             translateTo(classGen, methodGen, (ReferenceType) type);
-        }
-        else if (type == Object) {
+        } else if (type == Object) {
             translateTo(classGen, methodGen, (ObjectType) type);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), type.toString());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
@@ -117,54 +108,49 @@ public final class NodeType extends Type {
     /**
      * Expects a node on the stack and pushes its string value.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            StringType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
         switch (_type) {
-        case NodeTest.ROOT:
-        case NodeTest.ELEMENT:
-            il.append(methodGen.loadDOM());
-            il.append(SWAP); // dom ref must be below node index
-            int index = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  GET_ELEMENT_VALUE,
-                                                  GET_ELEMENT_VALUE_SIG);
-            il.append(new INVOKEINTERFACE(index, 2));
-            break;
+            case NodeTest.ROOT:
+            case NodeTest.ELEMENT:
+                il.append(methodGen.loadDOM());
+                il.append(SWAP); // dom ref must be below node index
+                int index =
+                        cpg.addInterfaceMethodref(
+                                DOM_INTF, GET_ELEMENT_VALUE, GET_ELEMENT_VALUE_SIG);
+                il.append(new INVOKEINTERFACE(index, 2));
+                break;
 
-        case NodeTest.ANODE:
-        case NodeTest.COMMENT:
-        case NodeTest.ATTRIBUTE:
-        case NodeTest.PI:
-            il.append(methodGen.loadDOM());
-            il.append(SWAP); // dom ref must be below node index
-            index = cpg.addInterfaceMethodref(DOM_INTF,
-                                              GET_NODE_VALUE,
-                                              GET_NODE_VALUE_SIG);
-            il.append(new INVOKEINTERFACE(index, 2));
-            break;
+            case NodeTest.ANODE:
+            case NodeTest.COMMENT:
+            case NodeTest.ATTRIBUTE:
+            case NodeTest.PI:
+                il.append(methodGen.loadDOM());
+                il.append(SWAP); // dom ref must be below node index
+                index = cpg.addInterfaceMethodref(DOM_INTF, GET_NODE_VALUE, GET_NODE_VALUE_SIG);
+                il.append(new INVOKEINTERFACE(index, 2));
+                break;
 
-        default:
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), type.toString());
-            classGen.getParser().reportError(Constants.FATAL, err);
-            break;
+            default:
+                ErrorMsg err =
+                        new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
+                classGen.getParser().reportError(Constants.FATAL, err);
+                break;
         }
     }
 
     /**
-     * Translates a node into a synthesized boolean.
-     * If the expression is "@attr",
-     * then "true" is pushed iff "attr" is an attribute of the current node.
-     * If the expression is ".", the result is always "true".
+     * Translates a node into a synthesized boolean. If the expression is "@attr", then "true" is
+     * pushed iff "attr" is an attribute of the current node. If the expression is ".", the result
+     * is always "true".
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            BooleanType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final InstructionList il = methodGen.getInstructionList();
         FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
         il.append(ICONST_1);
@@ -174,25 +160,23 @@ public final class NodeType extends Type {
     }
 
     /**
-     * Expects a node on the stack and pushes a real.
-     * First the node is converted to string, and from string to real.
+     * Expects a node on the stack and pushes a real. First the node is converted to string, and
+     * from string to real.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            RealType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
         translateTo(classGen, methodGen, String);
         String.translateTo(classGen, methodGen, Real);
     }
 
     /**
-     * Expects a node on the stack and pushes a singleton node-set. Singleton
-     * iterators are already started after construction.
+     * Expects a node on the stack and pushes a singleton node-set. Singleton iterators are already
+     * started after construction.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            NodeSetType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, NodeSetType type) {
         ConstantPoolGen cpg = classGen.getConstantPool();
         InstructionList il = methodGen.getInstructionList();
 
@@ -200,118 +184,93 @@ public final class NodeType extends Type {
         il.append(new NEW(cpg.addClass(SINGLETON_ITERATOR)));
         il.append(DUP_X1);
         il.append(SWAP);
-        final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>",
-                                          "(" + NODE_SIG +")V");
+        final int init = cpg.addMethodref(SINGLETON_ITERATOR, "<init>", "(" + NODE_SIG + ")V");
         il.append(new INVOKESPECIAL(init));
     }
 
     /**
      * Subsume Node into ObjectType.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            ObjectType type) {
-            methodGen.getInstructionList().append(NOP);
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, ObjectType type) {
+        methodGen.getInstructionList().append(NOP);
     }
 
     /**
-     * Translates a node into a non-synthesized boolean. It does not push a
-     * 0 or a 1 but instead returns branchhandle list to be appended to the
-     * false list.
+     * Translates a node into a non-synthesized boolean. It does not push a 0 or a 1 but instead
+     * returns branchhandle list to be appended to the false list.
      *
-     * @see     Type#translateToDesynthesized
+     * @see Type#translateToDesynthesized
      */
-    public FlowList translateToDesynthesized(ClassGenerator classGen,
-                                             MethodGenerator methodGen,
-                                             BooleanType type) {
+    public FlowList translateToDesynthesized(
+            ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final InstructionList il = methodGen.getInstructionList();
         return new FlowList(il.append(new IFEQ(null)));
     }
 
     /**
-     * Expects a node on the stack and pushes a boxed node. Boxed nodes
-     * are represented by an instance of <code>com.sun.org.apache.xalan.internal.xsltc.dom.Node</code>.
+     * Expects a node on the stack and pushes a boxed node. Boxed nodes are represented by an
+     * instance of <code>com.sun.org.apache.xalan.internal.xsltc.dom.Node</code>.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            ReferenceType type) {
+    public void translateTo(
+            ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
         il.append(new NEW(cpg.addClass(RUNTIME_NODE_CLASS)));
         il.append(DUP_X1);
         il.append(SWAP);
         il.append(new PUSH(cpg, _type));
-        il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS,
-                                                     "<init>", "(II)V")));
+        il.append(new INVOKESPECIAL(cpg.addMethodref(RUNTIME_NODE_CLASS, "<init>", "(II)V")));
     }
 
     /**
-     * Translates a node into the Java type denoted by <code>clazz</code>.
-     * Expects a node on the stack and pushes an object of the appropriate
-     * type after coercion.
+     * Translates a node into the Java type denoted by <code>clazz</code>. Expects a node on the
+     * stack and pushes an object of the appropriate type after coercion.
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Class clazz) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
         String className = clazz.getName();
         if (className.equals("java.lang.String")) {
-           translateTo(classGen, methodGen, String);
-           return;
+            translateTo(classGen, methodGen, String);
+            return;
         }
 
         il.append(methodGen.loadDOM());
-        il.append(SWAP);                // dom ref must be below node index
+        il.append(SWAP); // dom ref must be below node index
 
-        if (className.equals("org.w3c.dom.Node") ||
-            className.equals("java.lang.Object")) {
-            int index = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  MAKE_NODE,
-                                                  MAKE_NODE_SIG);
+        if (className.equals("org.w3c.dom.Node") || className.equals("java.lang.Object")) {
+            int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE, MAKE_NODE_SIG);
             il.append(new INVOKEINTERFACE(index, 2));
-        }
-        else if (className.equals("org.w3c.dom.NodeList")) {
-            int index = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  MAKE_NODE_LIST,
-                                                  MAKE_NODE_LIST_SIG);
+        } else if (className.equals("org.w3c.dom.NodeList")) {
+            int index = cpg.addInterfaceMethodref(DOM_INTF, MAKE_NODE_LIST, MAKE_NODE_LIST_SIG);
             il.append(new INVOKEINTERFACE(index, 2));
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), className);
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), className);
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
 
-    /**
-     * Translates an object of this type to its boxed representation.
-     */
-    public void translateBox(ClassGenerator classGen,
-                             MethodGenerator methodGen) {
+    /** Translates an object of this type to its boxed representation. */
+    public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
         translateTo(classGen, methodGen, Reference);
     }
 
-    /**
-     * Translates an object of this type to its unboxed representation.
-     */
-    public void translateUnBox(ClassGenerator classGen,
-                               MethodGenerator methodGen) {
+    /** Translates an object of this type to its unboxed representation. */
+    public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
         il.append(new CHECKCAST(cpg.addClass(RUNTIME_NODE_CLASS)));
-        il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS,
-                                               NODE_FIELD,
-                                               NODE_FIELD_SIG)));
+        il.append(new GETFIELD(cpg.addFieldref(RUNTIME_NODE_CLASS, NODE_FIELD, NODE_FIELD_SIG)));
     }
 
-    /**
-     * Returns the class name of an internal type's external representation.
-     */
+    /** Returns the class name of an internal type's external representation. */
     public String getClassName() {
-        return(RUNTIME_NODE_CLASS);
+        return (RUNTIME_NODE_CLASS);
     }
 
     public Instruction LOAD(int slot) {

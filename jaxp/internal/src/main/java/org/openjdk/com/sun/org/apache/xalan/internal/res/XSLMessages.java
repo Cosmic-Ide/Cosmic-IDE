@@ -23,40 +23,34 @@
 package org.openjdk.com.sun.org.apache.xalan.internal.res;
 
 import org.openjdk.com.sun.org.apache.xalan.internal.utils.SecuritySupport;
-import java.util.ListResourceBundle;
-
 import org.openjdk.com.sun.org.apache.xpath.internal.res.XPATHMessages;
 
+import java.util.ListResourceBundle;
+
 /**
- * Sets things up for issuing error messages. This class is misnamed, and should
- * be called XalanMessages, or some such.
+ * Sets things up for issuing error messages. This class is misnamed, and should be called
+ * XalanMessages, or some such.
  *
  * @xsl.usage internal
  */
 public class XSLMessages extends XPATHMessages {
 
-    /**
-     * The language specific resource object for Xalan messages.
-     */
+    /** The language specific resource object for Xalan messages. */
     private static ListResourceBundle XSLTBundle = null;
-    /**
-     * The class name of the Xalan error message string table.
-     */
+    /** The class name of the Xalan error message string table. */
     private static final String XSLT_ERROR_RESOURCES =
             "org.openjdk.com.sun.org.apache.xalan.internal.res.XSLTErrorResources";
 
     /**
-     * Creates a message from the specified key and replacement arguments,
-     * localized to the given locale.
+     * Creates a message from the specified key and replacement arguments, localized to the given
+     * locale.
      *
      * @param msgKey The key for the message text.
-     * @param args The arguments to be used as replacement text in the message
-     * created.
-     *
+     * @param args The arguments to be used as replacement text in the message created.
      * @return The formatted message string.
      */
-    public static String createMessage(String msgKey, Object args[]) //throws Exception
-    {
+    public static String createMessage(String msgKey, Object args[]) // throws Exception
+            {
         if (XSLTBundle == null) {
             XSLTBundle = SecuritySupport.getResourceBundle(XSLT_ERROR_RESOURCES);
         }
@@ -69,17 +63,15 @@ public class XSLMessages extends XPATHMessages {
     }
 
     /**
-     * Creates a message from the specified key and replacement arguments,
-     * localized to the given locale.
+     * Creates a message from the specified key and replacement arguments, localized to the given
+     * locale.
      *
      * @param msgKey The key for the message text.
-     * @param args The arguments to be used as replacement text in the message
-     * created.
-     *
+     * @param args The arguments to be used as replacement text in the message created.
      * @return The formatted warning string.
      */
-    public static String createWarning(String msgKey, Object args[]) //throws Exception
-    {
+    public static String createWarning(String msgKey, Object args[]) // throws Exception
+            {
         if (XSLTBundle == null) {
             XSLTBundle = SecuritySupport.getResourceBundle(XSLT_ERROR_RESOURCES);
         }

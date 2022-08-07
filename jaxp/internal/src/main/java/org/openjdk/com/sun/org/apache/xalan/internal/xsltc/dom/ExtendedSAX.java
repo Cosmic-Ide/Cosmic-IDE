@@ -30,7 +30,4 @@ import org.xml.sax.ext.LexicalHandler;
 /**
  * @author Morten Jorgensen
  */
-public interface ExtendedSAX extends ContentHandler, LexicalHandler, DTDHandler,
-                                     DeclHandler
-{
-}
+public interface ExtendedSAX extends ContentHandler, LexicalHandler, DTDHandler, DeclHandler {}

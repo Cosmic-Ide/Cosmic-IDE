@@ -4,19 +4,17 @@ import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
-import org.cosmic.ide.android.exception.CompilationFailedException;
-import org.cosmic.ide.android.task.JavaBuilder;
-import org.cosmic.ide.android.task.java.*;
-import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
-import org.cosmic.ide.android.task.dex.D8Task;
-import org.cosmic.ide.android.task.exec.ExecuteDexTask;
-import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
-import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.android.exception.CompilationFailedException;
+import org.cosmic.ide.android.task.JavaBuilder;
+import org.cosmic.ide.android.task.dex.D8Task;
+import org.cosmic.ide.android.task.exec.ExecuteDexTask;
+import org.cosmic.ide.android.task.java.*;
+import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
+import org.cosmic.ide.common.util.FileUtil;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public class CompileTask extends Thread {
@@ -61,11 +59,16 @@ public class CompileTask extends Thread {
         final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
         try {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            final String code = activity.binding.editor.getText().toString().replace("System.exit(", "System.out.println(\"Exit code \" + ");
+            final String code =
+                    activity.binding
+                            .editor
+                            .getText()
+                            .toString()
+                            .replace("System.exit(", "System.out.println(\"Exit code \" + ");
             final String currentPath = activity.currentWorkingFilePath;
-            if(code != FileUtil.readFile(new File(currentPath))) {
+            if (code != FileUtil.readFile(new File(currentPath))) {
                 FileUtil.writeFile(currentPath, code);
-            } 
+            }
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
         }

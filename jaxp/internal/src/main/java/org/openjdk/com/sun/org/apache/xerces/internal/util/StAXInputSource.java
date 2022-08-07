@@ -21,14 +21,14 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.util;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.openjdk.javax.xml.stream.XMLEventReader;
 import org.openjdk.javax.xml.stream.XMLStreamException;
 import org.openjdk.javax.xml.stream.XMLStreamReader;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
-
 /**
- * <p>An <code>XMLInputSource</code> analogue to <code>org.openjdk.javax.xml.transform.stax.StAXSource</code>.</p>
+ * An <code>XMLInputSource</code> analogue to <code>org.openjdk.javax.xml.transform.stax.StAXSource
+ * </code>.
  *
  * @version $Id: StAXInputSource.java,v 1.2 2010-10-26 23:01:17 joehw Exp $
  */
@@ -78,7 +78,7 @@ public final class StAXInputSource extends XMLInputSource {
         return fConsumeRemainingContent;
     }
 
-    public void setSystemId(String systemId){
+    public void setSystemId(String systemId) {
         throw new UnsupportedOperationException("Cannot set the system ID on a StAXInputSource");
     }
 
@@ -87,9 +87,8 @@ public final class StAXInputSource extends XMLInputSource {
             if (reader != null) {
                 return reader.peek().getLocation().getSystemId();
             }
+        } catch (XMLStreamException e) {
         }
-        catch (XMLStreamException e) {}
         return null;
     }
-
 } // StAXInputSource

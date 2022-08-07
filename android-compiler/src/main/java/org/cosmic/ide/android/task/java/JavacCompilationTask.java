@@ -2,13 +2,14 @@ package org.cosmic.ide.android.task.java;
 
 import android.content.SharedPreferences;
 
+import com.sun.source.util.JavacTask;
+import com.sun.tools.javac.api.JavacTool;
+
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.interfaces.*;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.JavaProject;
-import com.sun.source.util.JavacTask;
-import com.sun.tools.javac.api.JavacTool;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +45,9 @@ public class JavacCompilationTask implements Task {
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var lastBuildTime = new Indexer(project.getProjectName(), project.getCacheDirPath()).getLong("lastBuildTime");
+        var lastBuildTime =
+                new Indexer(project.getProjectName(), project.getCacheDirPath())
+                        .getLong("lastBuildTime");
         if (!output.exists()) {
             lastBuildTime = 0;
             output.mkdirs();
@@ -54,10 +57,7 @@ public class JavacCompilationTask implements Task {
         for (var file : javaFiles) {
             if (file.lastModified() > lastBuildTime) {
                 var path = file.getAbsolutePath();
-                new File(
-                                output,
-                                path.replaceFirst(project.getSrcDirPath(), ""))
-                        .delete();
+                new File(output, path.replaceFirst(project.getSrcDirPath(), "")).delete();
                 javaFileObjects.add(
                         new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
                             @Override
@@ -79,9 +79,9 @@ public class JavacCompilationTask implements Task {
                 tool.getStandardFileManager(
                         diagnostics, Locale.getDefault(), Charset.defaultCharset());
         standardJavaFileManager.setLocation(
-                    StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
+                StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
         standardJavaFileManager.setLocation(
-                    StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
+                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(project));
         standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
@@ -145,7 +145,8 @@ public class JavacCompilationTask implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        new Indexer(project.getProjectName(), project.getCacheDirPath()).put("lastBuildTime", System.currentTimeMillis());
+        new Indexer(project.getProjectName(), project.getCacheDirPath())
+                .put("lastBuildTime", System.currentTimeMillis());
     }
 
     public ArrayList<File> getSourceFiles(File path) {

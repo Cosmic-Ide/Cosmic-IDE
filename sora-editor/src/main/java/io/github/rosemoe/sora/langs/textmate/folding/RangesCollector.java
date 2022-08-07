@@ -30,20 +30,21 @@ import io.github.rosemoe.sora.text.Content;
 public class RangesCollector {
     private final SparseIntArray _startIndexes;
     private final SparseIntArray _endIndexes;
-    //private final SparseIntArray _indentOccurrences;
+    // private final SparseIntArray _indentOccurrences;
     private int _length;
-    //private final int tabSize;
+    // private final int tabSize;
 
-    public RangesCollector(/*int tabSize*/) {
-        //this.tabSize = tabSize;
+    public RangesCollector(/*int tabSize*/ ) {
+        // this.tabSize = tabSize;
         this._startIndexes = new SparseIntArray();
         this._endIndexes = new SparseIntArray();
-        //this._indentOccurrences = new SparseIntArray();
+        // this._indentOccurrences = new SparseIntArray();
         this._length = 0;
     }
 
     public void insertFirst(int startLineNumber, int endLineNumber, int indent) {
-        if (startLineNumber > IndentRange.MAX_LINE_NUMBER || endLineNumber > IndentRange.MAX_LINE_NUMBER) {
+        if (startLineNumber > IndentRange.MAX_LINE_NUMBER
+                || endLineNumber > IndentRange.MAX_LINE_NUMBER) {
             return;
         }
         int index = this._length;

@@ -34,38 +34,37 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLConfiguratio
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
 
 /**
- * This class is the configuration used to parse XML 1.0 and XML 1.1 documents
- * and provides support for XInclude. This is the default Xerces configuration.
+ * This class is the configuration used to parse XML 1.0 and XML 1.1 documents and provides support
+ * for XInclude. This is the default Xerces configuration.
  *
  * @author Michael Glavassevich, IBM
- *
  * @version $Id: XIncludeAwareParserConfiguration.java,v 1.5 2010-11-01 04:40:10 joehw Exp $
  */
 public class XIncludeAwareParserConfiguration extends XML11Configuration {
 
     /** Feature identifier: allow notation and unparsed entity events to be sent out of order. */
     protected static final String ALLOW_UE_AND_NOTATION_EVENTS =
-        Constants.SAX_FEATURE_PREFIX + Constants.ALLOW_DTD_EVENTS_AFTER_ENDDTD_FEATURE;
+            Constants.SAX_FEATURE_PREFIX + Constants.ALLOW_DTD_EVENTS_AFTER_ENDDTD_FEATURE;
 
     /** Feature identifier: fixup base URIs. */
     protected static final String XINCLUDE_FIXUP_BASE_URIS =
-        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_BASE_URIS_FEATURE;
 
     /** Feature identifier: fixup language. */
     protected static final String XINCLUDE_FIXUP_LANGUAGE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_LANGUAGE_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FIXUP_LANGUAGE_FEATURE;
 
     /** Feature identifier: XInclude processing */
     protected static final String XINCLUDE_FEATURE =
-        Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.XINCLUDE_FEATURE;
 
     /** Property identifier: error reporter. */
     protected static final String XINCLUDE_HANDLER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.XINCLUDE_HANDLER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.XINCLUDE_HANDLER_PROPERTY;
 
     /** Property identifier: error reporter. */
     protected static final String NAMESPACE_CONTEXT =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.NAMESPACE_CONTEXT_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.NAMESPACE_CONTEXT_PROPERTY;
 
     //
     // Components
@@ -101,26 +100,25 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
     } // <init>(SymbolTable)
 
     /**
-     * Constructs a parser configuration using the specified symbol table and
-     * grammar pool.
+     * Constructs a parser configuration using the specified symbol table and grammar pool.
+     *
      * <p>
      *
      * @param symbolTable The symbol table to use.
      * @param grammarPool The grammar pool to use.
      */
-    public XIncludeAwareParserConfiguration(
-            SymbolTable symbolTable,
-            XMLGrammarPool grammarPool) {
+    public XIncludeAwareParserConfiguration(SymbolTable symbolTable, XMLGrammarPool grammarPool) {
         this(symbolTable, grammarPool, null);
     } // <init>(SymbolTable,XMLGrammarPool)
 
     /**
-     * Constructs a parser configuration using the specified symbol table,
-     * grammar pool, and parent settings.
+     * Constructs a parser configuration using the specified symbol table, grammar pool, and parent
+     * settings.
+     *
      * <p>
      *
-     * @param symbolTable    The symbol table to use.
-     * @param grammarPool    The grammar pool to use.
+     * @param symbolTable The symbol table to use.
+     * @param grammarPool The grammar pool to use.
      * @param parentSettings The parent settings.
      */
     public XIncludeAwareParserConfiguration(
@@ -130,15 +128,12 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
         super(symbolTable, grammarPool, parentSettings);
 
         final String[] recognizedFeatures = {
-                ALLOW_UE_AND_NOTATION_EVENTS,
-                XINCLUDE_FIXUP_BASE_URIS,
-                XINCLUDE_FIXUP_LANGUAGE
+            ALLOW_UE_AND_NOTATION_EVENTS, XINCLUDE_FIXUP_BASE_URIS, XINCLUDE_FIXUP_LANGUAGE
         };
         addRecognizedFeatures(recognizedFeatures);
 
         // add default recognized properties
-        final String[] recognizedProperties =
-        { XINCLUDE_HANDLER, NAMESPACE_CONTEXT };
+        final String[] recognizedProperties = {XINCLUDE_HANDLER, NAMESPACE_CONTEXT};
         addRecognizedProperties(recognizedProperties);
 
         setFeature(ALLOW_UE_AND_NOTATION_EVENTS, true);
@@ -149,7 +144,6 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
         fCurrentNSContext = fNonXIncludeNSContext;
         setProperty(NAMESPACE_CONTEXT, fNonXIncludeNSContext);
     }
-
 
     /** Configures the pipeline. */
     protected void configurePipeline() {
@@ -171,7 +165,7 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
                 fCurrentNSContext = fXIncludeNSContext;
                 setProperty(NAMESPACE_CONTEXT, fXIncludeNSContext);
             }
-            //configure DTD pipeline
+            // configure DTD pipeline
             fDTDScanner.setDTDHandler(fDTDProcessor);
             fDTDProcessor.setDTDSource(fDTDScanner);
             fDTDProcessor.setDTDHandler(fXIncludeHandler);
@@ -202,8 +196,7 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
                 fXIncludeHandler.setDocumentHandler(next);
                 next.setDocumentSource(fXIncludeHandler);
             }
-        }
-        else {
+        } else {
             // Setup NamespaceContext
             if (fCurrentNSContext != fNonXIncludeNSContext) {
                 fCurrentNSContext = fNonXIncludeNSContext;
@@ -262,8 +255,7 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
                 fXIncludeHandler.setDocumentHandler(next);
                 next.setDocumentSource(fXIncludeHandler);
             }
-        }
-        else {
+        } else {
             // Setup NamespaceContext
             if (fCurrentNSContext != fNonXIncludeNSContext) {
                 fCurrentNSContext = fNonXIncludeNSContext;
@@ -272,26 +264,21 @@ public class XIncludeAwareParserConfiguration extends XML11Configuration {
         }
     } // configureXML11Pipeline()
 
-    public FeatureState getFeatureState(String featureId)
-        throws XMLConfigurationException {
+    public FeatureState getFeatureState(String featureId) throws XMLConfigurationException {
         if (featureId.equals(PARSER_SETTINGS)) {
             return FeatureState.is(fConfigUpdated);
-        }
-        else if (featureId.equals(XINCLUDE_FEATURE)) {
+        } else if (featureId.equals(XINCLUDE_FEATURE)) {
             return FeatureState.is(fXIncludeEnabled);
         }
         return super.getFeatureState0(featureId);
-
     } // getFeature(String):boolean
 
-    public void setFeature(String featureId, boolean state)
-        throws XMLConfigurationException {
+    public void setFeature(String featureId, boolean state) throws XMLConfigurationException {
         if (featureId.equals(XINCLUDE_FEATURE)) {
             fXIncludeEnabled = state;
             fConfigUpdated = true;
             return;
         }
-        super.setFeature(featureId,state);
+        super.setFeature(featureId, state);
     }
-
 }

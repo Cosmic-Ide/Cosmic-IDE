@@ -26,14 +26,13 @@ import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.XSConstraints;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.XSElementDecl;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.QName;
 
-import java.util.Vector;
 import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  * XSAllCM implements XSCMValidator and handles &lt;all&gt;.
  *
  * @xerces.internal
- *
  * @author Pavani Mukthipudi, Sun Microsystems Inc.
  * @version $Id: XSAllCM.java,v 1.10 2010-11-01 04:39:58 joehw Exp $
  */
@@ -48,7 +47,6 @@ public class XSAllCM implements XSCMValidator {
     private static final short STATE_VALID = 1;
     private static final short STATE_CHILD = 1;
 
-
     //
     // Data
     //
@@ -62,27 +60,25 @@ public class XSAllCM implements XSCMValidator {
     // Constructors
     //
 
-    public XSAllCM (boolean hasOptionalContent, int size) {
+    public XSAllCM(boolean hasOptionalContent, int size) {
         fHasOptionalContent = hasOptionalContent;
         fAllElements = new XSElementDecl[size];
         fIsOptionalElement = new boolean[size];
     }
 
-    public void addElement (XSElementDecl element, boolean isOptional) {
+    public void addElement(XSElementDecl element, boolean isOptional) {
         fAllElements[fNumElements] = element;
         fIsOptionalElement[fNumElements] = isOptional;
         fNumElements++;
     }
-
 
     //
     // XSCMValidator methods
     //
 
     /**
-     * This methods to be called on entering a first element whose type
-     * has this content model. It will return the initial state of the
-     * content model
+     * This methods to be called on entering a first element whose type has this content model. It
+     * will return the initial state of the content model
      *
      * @return Start state of the content model
      */
@@ -102,8 +98,7 @@ public class XSAllCM implements XSCMValidator {
         Object matchingDecl = null;
         for (int i = 0; i < fNumElements; i++) {
             matchingDecl = subGroupHandler.getMatchingElemDecl(elementName, fAllElements[i]);
-            if (matchingDecl != null)
-                break;
+            if (matchingDecl != null) break;
         }
         return matchingDecl;
     }
@@ -112,10 +107,11 @@ public class XSAllCM implements XSCMValidator {
      * The method corresponds to one transition in the content model.
      *
      * @param elementName
-     * @param currentState  Current state
+     * @param currentState Current state
      * @return an element decl object
      */
-    public Object oneTransition (QName elementName, int[] currentState, SubstitutionGroupHandler subGroupHandler) {
+    public Object oneTransition(
+            QName elementName, int[] currentState, SubstitutionGroupHandler subGroupHandler) {
 
         // error state
         if (currentState[0] < 0) {
@@ -131,12 +127,11 @@ public class XSAllCM implements XSCMValidator {
         for (int i = 0; i < fNumElements; i++) {
             // we only try to look for a matching decl if we have not seen
             // this element yet.
-            if (currentState[i+1] != STATE_START)
-                continue;
+            if (currentState[i + 1] != STATE_START) continue;
             matchingDecl = subGroupHandler.getMatchingElemDecl(elementName, fAllElements[i]);
             if (matchingDecl != null) {
                 // found the decl, mark this element as "seen".
-                currentState[i+1] = STATE_VALID;
+                currentState[i + 1] = STATE_VALID;
                 return matchingDecl;
             }
         }
@@ -146,14 +141,13 @@ public class XSAllCM implements XSCMValidator {
         return findMatchingDecl(elementName, subGroupHandler);
     }
 
-
     /**
      * The method indicates the end of list of children
      *
-     * @param currentState  Current state of the content model
+     * @param currentState Current state of the content model
      * @return true if the last state was a valid final state
      */
-    public boolean endContentModel (int[] currentState) {
+    public boolean endContentModel(int[] currentState) {
 
         int state = currentState[0];
 
@@ -169,8 +163,7 @@ public class XSAllCM implements XSCMValidator {
 
         for (int i = 0; i < fNumElements; i++) {
             // if one element is required, but not present, then error
-            if (!fIsOptionalElement[i] && currentState[i+1] == STATE_START)
-                return false;
+            if (!fIsOptionalElement[i] && currentState[i + 1] == STATE_START) return false;
         }
 
         return true;
@@ -182,14 +175,16 @@ public class XSAllCM implements XSCMValidator {
      * @param subGroupHandler the substitution group handler
      * @return true if this content model contains other or list wildcard
      */
-    public boolean checkUniqueParticleAttribution(SubstitutionGroupHandler subGroupHandler) throws XMLSchemaException {
+    public boolean checkUniqueParticleAttribution(SubstitutionGroupHandler subGroupHandler)
+            throws XMLSchemaException {
         // check whether there is conflict between any two leaves
         for (int i = 0; i < fNumElements; i++) {
-            for (int j = i+1; j < fNumElements; j++) {
+            for (int j = i + 1; j < fNumElements; j++) {
                 if (XSConstraints.overlapUPA(fAllElements[i], fAllElements[j], subGroupHandler)) {
                     // REVISIT: do we want to report all errors? or just one?
-                    throw new XMLSchemaException("cos-nonambig", new Object[]{fAllElements[i].toString(),
-                                                                              fAllElements[j].toString()});
+                    throw new XMLSchemaException(
+                            "cos-nonambig",
+                            new Object[] {fAllElements[i].toString(), fAllElements[j].toString()});
                 }
             }
         }
@@ -198,21 +193,18 @@ public class XSAllCM implements XSCMValidator {
     }
 
     /**
-     * Check which elements are valid to appear at this point. This method also
-     * works if the state is in error, in which case it returns what should
-     * have been seen.
+     * Check which elements are valid to appear at this point. This method also works if the state
+     * is in error, in which case it returns what should have been seen.
      *
-     * @param state  the current state
-     * @return       a Vector whose entries are instances of
-     *               either XSWildcardDecl or XSElementDecl.
+     * @param state the current state
+     * @return a Vector whose entries are instances of either XSWildcardDecl or XSElementDecl.
      */
     public Vector whatCanGoHere(int[] state) {
         Vector ret = new Vector();
         for (int i = 0; i < fNumElements; i++) {
             // we only try to look for a matching decl if we have not seen
             // this element yet.
-            if (state[i+1] == STATE_START)
-                ret.addElement(fAllElements[i]);
+            if (state[i + 1] == STATE_START) ret.addElement(fAllElements[i]);
         }
         return ret;
     }
@@ -220,5 +212,4 @@ public class XSAllCM implements XSCMValidator {
     public ArrayList checkMinMaxBounds() {
         return null;
     }
-
 } // class XSAllCM

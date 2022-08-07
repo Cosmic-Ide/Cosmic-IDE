@@ -62,7 +62,7 @@ public final class Cursor {
     /**
      * Make left and right cursor on the given position
      *
-     * @param line   The line position
+     * @param line The line position
      * @param column The column position
      */
     public void set(int line, int column) {
@@ -73,7 +73,7 @@ public final class Cursor {
     /**
      * Make left cursor on the given position
      *
-     * @param line   The line position
+     * @param line The line position
      * @param column The column position
      */
     public void setLeft(int line, int column) {
@@ -83,7 +83,7 @@ public final class Cursor {
     /**
      * Make right cursor on the given position
      *
-     * @param line   The line position
+     * @param line The line position
      * @param column The column position
      */
     public void setRight(int line, int column) {
@@ -129,7 +129,7 @@ public final class Cursor {
     /**
      * Whether the given position is in selected region
      *
-     * @param line   The line to query
+     * @param line The line to query
      * @param column The column to query
      * @return Whether is in selected region
      */
@@ -167,10 +167,11 @@ public final class Cursor {
 
     /**
      * Notify the Indexer to update its cache for current display position
-     * <p>
-     * This will make querying actions quicker
-     * <p>
-     * Especially when the editor user want to set a new cursor position after scrolling long time
+     *
+     * <p>This will make querying actions quicker
+     *
+     * <p>Especially when the editor user want to set a new cursor position after scrolling long
+     * time
      *
      * @param line First visible line
      */
@@ -240,16 +241,12 @@ public final class Cursor {
         }
     }
 
-    /**
-     * Get copy of left cursor
-     */
+    /** Get copy of left cursor */
     public CharPosition left() {
         return mLeft.fromThis();
     }
 
-    /**
-     * Get copy of right cursor
-     */
+    /** Get copy of right cursor */
     public CharPosition right() {
         return mRight.fromThis();
     }
@@ -257,7 +254,7 @@ public final class Cursor {
     /**
      * Internal call back before insertion
      *
-     * @param startLine   Start line
+     * @param startLine Start line
      * @param startColumn Start column
      */
     void beforeInsert(int startLine, int startColumn) {
@@ -267,19 +264,17 @@ public final class Cursor {
     /**
      * Internal call back before deletion
      *
-     * @param startLine   Start line
+     * @param startLine Start line
      * @param startColumn Start column
-     * @param endLine     End line
-     * @param endColumn   End column
+     * @param endLine End line
+     * @param endColumn End column
      */
     void beforeDelete(int startLine, int startColumn, int endLine, int endColumn) {
         cache1 = mIndexer.getCharPosition(startLine, startColumn).fromThis();
         cache2 = mIndexer.getCharPosition(endLine, endColumn).fromThis();
     }
 
-    /**
-     * Internal call back before replace
-     */
+    /** Internal call back before replace */
     void beforeReplace() {
         mIndexer.beforeReplace(mContent);
     }
@@ -287,14 +282,18 @@ public final class Cursor {
     /**
      * Internal call back after insertion
      *
-     * @param startLine       Start line
-     * @param startColumn     Start column
-     * @param endLine         End line
-     * @param endColumn       End column
+     * @param startLine Start line
+     * @param startColumn Start column
+     * @param endLine End line
+     * @param endColumn End column
      * @param insertedContent Inserted content
      */
-    void afterInsert(int startLine, int startColumn, int endLine, int endColumn,
-                     CharSequence insertedContent) {
+    void afterInsert(
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         mIndexer.afterInsert(mContent, startLine, startColumn, endLine, endColumn, insertedContent);
         int beginIdx = cache0.getIndex();
         if (getLeft() >= beginIdx) {
@@ -308,14 +307,18 @@ public final class Cursor {
     /**
      * Internal call back
      *
-     * @param startLine      Start line
-     * @param startColumn    Start column
-     * @param endLine        End line
-     * @param endColumn      End column
+     * @param startLine Start line
+     * @param startColumn Start column
+     * @param endLine End line
+     * @param endColumn End column
      * @param deletedContent Deleted content
      */
-    void afterDelete(int startLine, int startColumn, int endLine, int endColumn,
-                     CharSequence deletedContent) {
+    void afterDelete(
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         mIndexer.afterDelete(mContent, startLine, startColumn, endLine, endColumn, deletedContent);
         int beginIdx = cache1.getIndex();
         int endIdx = cache2.getIndex();
@@ -327,7 +330,8 @@ public final class Cursor {
         if (endIdx <= left) {
             mLeft = mIndexer.getCharPosition(left - (endIdx - beginIdx)).fromThis();
             mRight = mIndexer.getCharPosition(right - (endIdx - beginIdx)).fromThis();
-        } else if (/* endIdx > left && */ endIdx < right) {
+        } else if (
+        /* endIdx > left && */ endIdx < right) {
             if (beginIdx <= left) {
                 mLeft = mIndexer.getCharPosition(beginIdx).fromThis();
                 mRight = mIndexer.getCharPosition(right - (endIdx - left)).fromThis();
@@ -343,6 +347,4 @@ public final class Cursor {
             }
         }
     }
-
 }
-

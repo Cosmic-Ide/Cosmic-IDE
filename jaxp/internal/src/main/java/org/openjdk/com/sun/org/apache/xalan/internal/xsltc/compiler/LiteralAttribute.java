@@ -31,7 +31,6 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodG
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
-
 import org.openjdk.com.sun.org.apache.xml.internal.serializer.ElemDesc;
 import org.openjdk.com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 
@@ -42,18 +41,17 @@ import org.openjdk.com.sun.org.apache.xml.internal.serializer.SerializationHandl
  */
 final class LiteralAttribute extends Instruction {
 
-    private final String  _name;         // Attribute name (incl. prefix)
+    private final String _name; // Attribute name (incl. prefix)
     private final AttributeValue _value; // Attribute value
 
     /**
      * Creates a new literal attribute (but does not insert it into the AST).
+     *
      * @param name the attribute name (incl. prefix) as a String.
      * @param value the attribute value.
      * @param parser the XSLT parser (wraps XPath parser).
      */
-    public LiteralAttribute(String name, String value, Parser parser,
-        SyntaxTreeNode parent)
-    {
+    public LiteralAttribute(String name, String value, Parser parser, SyntaxTreeNode parent) {
         _name = name;
         setParent(parent);
         _value = AttributeValue.create(this, value, parser);
@@ -88,26 +86,24 @@ final class LiteralAttribute extends Instruction {
         // Generate code that calls SerializationHandler.addUniqueAttribute()
         // if all attributes are unique.
         SyntaxTreeNode parent = getParent();
-        if (parent instanceof LiteralElement
-            && ((LiteralElement)parent).allAttributesUnique()) {
+        if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
 
             int flags = 0;
             boolean isHTMLAttrEmpty = false;
-            ElemDesc elemDesc = ((LiteralElement)parent).getElemDesc();
+            ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
 
             // Set the HTML flags
             if (elemDesc != null) {
                 if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTREMPTY)) {
                     flags = flags | SerializationHandler.HTML_ATTREMPTY;
                     isHTMLAttrEmpty = true;
-                }
-                else if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTRURL)) {
+                } else if (elemDesc.isAttrFlagSet(_name, ElemDesc.ATTRURL)) {
                     flags = flags | SerializationHandler.HTML_ATTRURL;
                 }
             }
 
             if (_value instanceof SimpleAttributeValue) {
-                String attrValue = ((SimpleAttributeValue)_value).toString();
+                String attrValue = ((SimpleAttributeValue) _value).toString();
 
                 if (!hasBadChars(attrValue) && !isHTMLAttrEmpty) {
                     flags = flags | SerializationHandler.NO_BAD_CHARS;
@@ -116,20 +112,17 @@ final class LiteralAttribute extends Instruction {
 
             il.append(new PUSH(cpg, flags));
             il.append(methodGen.uniqueAttribute());
-        }
-        else {
+        } else {
             // call attribute
             il.append(methodGen.attribute());
         }
     }
 
     /**
-     * Return true if at least one character in the String is considered to
-     * be a "bad" character. A bad character is one whose code is:
-     * less than 32 (a space),
-     * or greater than 126,
-     * or it is one of '<', '>', '&' or '\"'.
-     * This helps the serializer to decide whether the String needs to be escaped.
+     * Return true if at least one character in the String is considered to be a "bad" character. A
+     * bad character is one whose code is: less than 32 (a space), or greater than 126, or it is one
+     * of '<', '>', '&' or '\"'. This helps the serializer to decide whether the String needs to be
+     * escaped.
      */
     private boolean hasBadChars(String value) {
         char[] chars = value.toCharArray();
@@ -142,18 +135,13 @@ final class LiteralAttribute extends Instruction {
         return false;
     }
 
-    /**
-     * Return the name of the attribute
-     */
+    /** Return the name of the attribute */
     public String getName() {
         return _name;
     }
 
-    /**
-     * Return the value of the attribute
-     */
+    /** Return the value of the attribute */
     public AttributeValue getValue() {
         return _value;
     }
-
 }

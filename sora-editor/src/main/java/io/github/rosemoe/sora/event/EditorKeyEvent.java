@@ -29,13 +29,12 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
  * Receives key related events in editor.
- * <p>
- * You may set a boolean for editor to return to the Android KeyEvent framework.
+ *
+ * <p>You may set a boolean for editor to return to the Android KeyEvent framework.
  *
  * @author Rosemoe
  * @see ResultedEvent#setResult(Object)
- * <p>
- * This class mirrors methods of {@link KeyEvent}, but some methods are changed:
+ *     <p>This class mirrors methods of {@link KeyEvent}, but some methods are changed:
  * @see #isAltPressed()
  * @see #isShiftPressed()
  */
@@ -92,16 +91,12 @@ public class EditorKeyEvent extends ResultedEvent<Boolean> {
         return src.getEventTime();
     }
 
-    /**
-     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
-     */
+    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
     public boolean isShiftPressed() {
         return shiftPressed;
     }
 
-    /**
-     * editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates}
-     */
+    /** editor change: track shift/alt by {@link io.github.rosemoe.sora.widget.KeyMetaStates} */
     public boolean isAltPressed() {
         return altPressed;
     }
@@ -119,24 +114,16 @@ public class EditorKeyEvent extends ResultedEvent<Boolean> {
         }
     }
 
-    /**
-     * The type of {@link EditorKeyEvent}.
-     */
+    /** The type of {@link EditorKeyEvent}. */
     public enum Type {
 
-        /**
-         * Used for {@link CodeEditor#onKeyUp(int, KeyEvent)}.
-         */
+        /** Used for {@link CodeEditor#onKeyUp(int, KeyEvent)}. */
         UP,
 
-        /**
-         * Used for {@link CodeEditor#onKeyDown(int, KeyEvent)}.
-         */
+        /** Used for {@link CodeEditor#onKeyDown(int, KeyEvent)}. */
         DOWN,
 
-        /**
-         * Used for {@link CodeEditor#onKeyMultiple(int, int, KeyEvent)}.
-         */
+        /** Used for {@link CodeEditor#onKeyMultiple(int, int, KeyEvent)}. */
         MULTIPLE
     }
 }

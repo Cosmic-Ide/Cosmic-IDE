@@ -29,15 +29,12 @@ import org.xml.sax.*;
 /**
  * The SAXCatalogParser interface.
  *
- * <p>This interface must be implemented in order for a class to
- * participate as a parser for the SAXCatalogReader.
+ * <p>This interface must be implemented in order for a class to participate as a parser for the
+ * SAXCatalogReader.
  *
  * @see Catalog
  * @see SAXCatalogReader
- *
- * @author Norman Walsh
- * <a href="mailto:Norman.Walsh@Sun.COM">Norman.Walsh@Sun.COM</a>
- *
+ * @author Norman Walsh <a href="mailto:Norman.Walsh@Sun.COM">Norman.Walsh@Sun.COM</a>
  */
 public interface SAXCatalogParser extends ContentHandler, DocumentHandler {
     /** Set the Catalog for which parsing is being performed. */

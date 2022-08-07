@@ -23,13 +23,13 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -55,8 +55,7 @@ final class NumberCall extends FunctionCall {
         if (argumentCount() == 0) {
             il.append(methodGen.loadContextNode());
             targ = Type.Node;
-        }
-        else {
+        } else {
             final Expression arg = argument();
             arg.translate(classGen, methodGen);
             arg.startIterator(classGen, methodGen);

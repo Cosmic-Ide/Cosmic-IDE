@@ -25,10 +25,7 @@
 
 package org.openjdk.com.sun.xml.internal.stream.writers;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import org.openjdk.javax.xml.XMLConstants;
-import org.openjdk.javax.xml.namespace.NamespaceContext;
 import org.openjdk.javax.xml.stream.XMLStreamException;
 import org.openjdk.javax.xml.stream.XMLStreamWriter;
 import org.openjdk.javax.xml.transform.dom.DOMResult;
@@ -43,8 +40,12 @@ import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 import org.xml.sax.helpers.NamespaceSupport;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * This class provides support to build a DOM tree using XMLStreamWriter API's.
+ *
  * @author K.Venugopal@sun.com
  */
 
@@ -57,29 +58,29 @@ import org.xml.sax.helpers.NamespaceSupport;
  * Change StringBuffer to StringBuilder, when JDK 1.5 will be minimum requirement for SJSXP.
  */
 
-public class XMLDOMWriterImpl implements XMLStreamWriter  {
-
+public class XMLDOMWriterImpl implements XMLStreamWriter {
 
     private Document ownerDoc = null;
     private Node currentNode = null;
     private Node node = null;
     private NamespaceSupport namespaceContext = null;
-    private Method  mXmlVersion = null;
-    private boolean [] needContextPop = null;
+    private Method mXmlVersion = null;
+    private boolean[] needContextPop = null;
     private StringBuffer stringBuffer = null;
     private int resizeValue = 20;
     private int depth = 0;
     /**
      * Creates a new instance of XMLDOMwriterImpl
+     *
      * @param result DOMResult object @org.openjdk.javax.xml.transform.dom.DOMResult
      */
     public XMLDOMWriterImpl(DOMResult result) {
 
         node = result.getNode();
-        if( node.getNodeType() == Node.DOCUMENT_NODE){
-            ownerDoc = (Document)node;
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            ownerDoc = (Document) node;
             currentNode = ownerDoc;
-        }else{
+        } else {
             ownerDoc = node.getOwnerDocument();
             currentNode = node;
         }
@@ -89,37 +90,40 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
         namespaceContext = new NamespaceSupport();
     }
 
-    private void getDLThreeMethods(){
-        try{
-            mXmlVersion =  ownerDoc.getClass().getMethod("setXmlVersion",new Class[] {String.class});
-        }catch(NoSuchMethodException mex){
-            //log these errors at fine level.
+    private void getDLThreeMethods() {
+        try {
+            mXmlVersion =
+                    ownerDoc.getClass().getMethod("setXmlVersion", new Class[] {String.class});
+        } catch (NoSuchMethodException mex) {
+            // log these errors at fine level.
             mXmlVersion = null;
-        }catch(SecurityException se){
-            //log these errors at fine level.
+        } catch (SecurityException se) {
+            // log these errors at fine level.
             mXmlVersion = null;
         }
     }
 
-
     /**
      * This method has no effect when called.
+     *
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void close() throws XMLStreamException {
-        //no-op
+        // no-op
     }
 
     /**
      * This method has no effect when called.
+     *
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void flush() throws XMLStreamException {
-        //no-op
+        // no-op
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@inheritDoc}
      */
     public org.openjdk.javax.xml.namespace.NamespaceContext getNamespaceContext() {
@@ -128,13 +132,14 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * {@inheritDoc}
+     *
      * @param namespaceURI {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      * @return {@inheritDoc}
      */
     public String getPrefix(String namespaceURI) throws XMLStreamException {
         String prefix = null;
-        if(this.namespaceContext != null){
+        if (this.namespaceContext != null) {
             prefix = namespaceContext.getPrefix(namespaceURI);
         }
         return prefix;
@@ -142,6 +147,7 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * Is not supported in this implementation.
+     *
      * @param str {@inheritDoc}
      * @throws java.lang.IllegalArgumentException {@inheritDoc}
      * @return {@inheritDoc}
@@ -152,145 +158,164 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * Is not supported in this version of the implementation.
+     *
      * @param uri {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void setDefaultNamespace(String uri) throws XMLStreamException {
         namespaceContext.declarePrefix(XMLConstants.DEFAULT_NS_PREFIX, uri);
-        if(!needContextPop[depth]){
+        if (!needContextPop[depth]) {
             needContextPop[depth] = true;
         }
     }
 
     /**
      * {@inheritDoc}
+     *
      * @param namespaceContext {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
-    public void setNamespaceContext(org.openjdk.javax.xml.namespace.NamespaceContext namespaceContext) throws XMLStreamException {
+    public void setNamespaceContext(
+            org.openjdk.javax.xml.namespace.NamespaceContext namespaceContext)
+            throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Is not supported in this version of the implementation.
+     *
      * @param prefix {@inheritDoc}
      * @param uri {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void setPrefix(String prefix, String uri) throws XMLStreamException {
-        if(prefix == null){
+        if (prefix == null) {
             throw new XMLStreamException("Prefix cannot be null");
         }
         namespaceContext.declarePrefix(prefix, uri);
-        if(!needContextPop[depth]){
+        if (!needContextPop[depth]) {
             needContextPop[depth] = true;
         }
     }
 
     /**
-     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM element @see org.w3c.dom.Node.
+     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM
+     * element @see org.w3c.dom.Node.
+     *
      * @param localName {@inheritDoc}
      * @param value {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeAttribute(String localName, String value) throws XMLStreamException {
 
-        if(currentNode.getNodeType() == Node.ELEMENT_NODE){
+        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
             Attr attr = ownerDoc.createAttribute(localName);
             attr.setValue(value);
-            ((Element)currentNode).setAttributeNode(attr);
-        }else{
-            //Convert node type to String
-            throw new IllegalStateException("Current DOM Node type  is "+ currentNode.getNodeType() +
-                    "and does not allow attributes to be set ");
+            ((Element) currentNode).setAttributeNode(attr);
+        } else {
+            // Convert node type to String
+            throw new IllegalStateException(
+                    "Current DOM Node type  is "
+                            + currentNode.getNodeType()
+                            + "and does not allow attributes to be set ");
         }
     }
 
     /**
-     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM element @see org.w3c.dom.Node.
+     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM
+     * element @see org.w3c.dom.Node.
+     *
      * @param namespaceURI {@inheritDoc}
      * @param localName {@inheritDoc}
      * @param value {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
-    public void writeAttribute(String namespaceURI,String localName,String value)throws XMLStreamException {
-        if(currentNode.getNodeType() == Node.ELEMENT_NODE){
+    public void writeAttribute(String namespaceURI, String localName, String value)
+            throws XMLStreamException {
+        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
             String prefix = null;
-            if(namespaceURI == null ){
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
-            if(namespaceContext != null){
+            if (namespaceContext != null) {
                 prefix = namespaceContext.getPrefix(namespaceURI);
             }
 
-            if(prefix == null){
-                throw new XMLStreamException("Namespace URI "+namespaceURI +
-                        "is not bound to any prefix" );
+            if (prefix == null) {
+                throw new XMLStreamException(
+                        "Namespace URI " + namespaceURI + "is not bound to any prefix");
             }
 
             String qualifiedName = null;
-            if(prefix.equals("")){
+            if (prefix.equals("")) {
                 qualifiedName = localName;
-            }else{
-                qualifiedName = getQName(prefix,localName);
+            } else {
+                qualifiedName = getQName(prefix, localName);
             }
             Attr attr = ownerDoc.createAttributeNS(namespaceURI, qualifiedName);
             attr.setValue(value);
-            ((Element)currentNode).setAttributeNode(attr);
-        }else{
-            //Convert node type to String
-            throw new IllegalStateException("Current DOM Node type  is "+ currentNode.getNodeType() +
-                    "and does not allow attributes to be set ");
+            ((Element) currentNode).setAttributeNode(attr);
+        } else {
+            // Convert node type to String
+            throw new IllegalStateException(
+                    "Current DOM Node type  is "
+                            + currentNode.getNodeType()
+                            + "and does not allow attributes to be set ");
         }
     }
 
     /**
-     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM element @see org.w3c.dom.Node.
+     * Creates a DOM Atrribute @see org.w3c.dom.Node and associates it with the current DOM
+     * element @see org.w3c.dom.Node.
+     *
      * @param prefix {@inheritDoc}
      * @param namespaceURI {@inheritDoc}
      * @param localName {@inheritDoc}
      * @param value {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
-    public void writeAttribute(String prefix,String namespaceURI,String localName,String value)throws XMLStreamException {
-        if(currentNode.getNodeType() == Node.ELEMENT_NODE){
-            if(namespaceURI == null ){
+    public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
+            throws XMLStreamException {
+        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
-            if(prefix == null){
+            if (prefix == null) {
                 throw new XMLStreamException("prefix cannot be null");
             }
             String qualifiedName = null;
-            if(prefix.equals("")){
+            if (prefix.equals("")) {
                 qualifiedName = localName;
-            }else{
+            } else {
 
-                qualifiedName = getQName(prefix,localName);
+                qualifiedName = getQName(prefix, localName);
             }
             Attr attr = ownerDoc.createAttributeNS(namespaceURI, qualifiedName);
             attr.setValue(value);
-            ((Element)currentNode).setAttributeNodeNS(attr);
-        }else{
-            //Convert node type to String
-            throw new IllegalStateException("Current DOM Node type  is "+ currentNode.getNodeType() +
-                    "and does not allow attributes to be set ");
+            ((Element) currentNode).setAttributeNodeNS(attr);
+        } else {
+            // Convert node type to String
+            throw new IllegalStateException(
+                    "Current DOM Node type  is "
+                            + currentNode.getNodeType()
+                            + "and does not allow attributes to be set ");
         }
-
     }
 
     /**
      * Creates a CDATA object @see org.w3c.dom.CDATASection.
+     *
      * @param data {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeCData(String data) throws XMLStreamException {
-        if(data == null){
+        if (data == null) {
             throw new XMLStreamException("CDATA cannot be null");
         }
 
@@ -299,8 +324,9 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
     }
 
     /**
-     * Creates a character object @see org.w3c.dom.Text and appends it to the current
-     * element in the DOM tree.
+     * Creates a character object @see org.w3c.dom.Text and appends it to the current element in the
+     * DOM tree.
+     *
      * @param charData {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
@@ -310,8 +336,9 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
     }
 
     /**
-     * Creates a character object @see org.w3c.dom.Text and appends it to the current
-     * element in the DOM tree.
+     * Creates a character object @see org.w3c.dom.Text and appends it to the current element in the
+     * DOM tree.
+     *
      * @param values {@inheritDoc}
      * @param param {@inheritDoc}
      * @param param2 {@inheritDoc}
@@ -319,13 +346,14 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
      */
     public void writeCharacters(char[] values, int param, int param2) throws XMLStreamException {
 
-        Text text = ownerDoc.createTextNode(new String(values,param,param2));
+        Text text = ownerDoc.createTextNode(new String(values, param, param2));
         currentNode.appendChild(text);
     }
 
     /**
-     * Creates a Comment object @see org.w3c.dom.Comment and appends it to the current
-     * element in the DOM tree.
+     * Creates a Comment object @see org.w3c.dom.Comment and appends it to the current element in
+     * the DOM tree.
+     *
      * @param str {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
@@ -336,6 +364,7 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * This method is not supported in this implementation.
+     *
      * @param str {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
@@ -345,141 +374,148 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * Creates a DOM attribute and adds it to the current element in the DOM tree.
+     *
      * @param namespaceURI {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeDefaultNamespace(String namespaceURI) throws XMLStreamException {
-        if(currentNode.getNodeType() == Node.ELEMENT_NODE){
+        if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
             String qname = XMLConstants.XMLNS_ATTRIBUTE;
-            ((Element)currentNode).setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,qname, namespaceURI);
-        }else{
-            //Convert node type to String
-            throw new IllegalStateException("Current DOM Node type  is "+ currentNode.getNodeType() +
-                    "and does not allow attributes to be set ");
+            ((Element) currentNode)
+                    .setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, qname, namespaceURI);
+        } else {
+            // Convert node type to String
+            throw new IllegalStateException(
+                    "Current DOM Node type  is "
+                            + currentNode.getNodeType()
+                            + "and does not allow attributes to be set ");
         }
     }
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param localName {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeEmptyElement(String localName) throws XMLStreamException {
-        if(ownerDoc != null){
+        if (ownerDoc != null) {
             Element element = ownerDoc.createElement(localName);
-            if(currentNode!=null){
+            if (currentNode != null) {
                 currentNode.appendChild(element);
-            }else{
+            } else {
                 ownerDoc.appendChild(element);
             }
         }
-
     }
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param namespaceURI {@inheritDoc}
      * @param localName {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeEmptyElement(String namespaceURI, String localName) throws XMLStreamException {
-        if(ownerDoc != null){
+        if (ownerDoc != null) {
             String qualifiedName = null;
             String prefix = null;
-            if(namespaceURI == null ){
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
 
-            if(namespaceContext != null){
+            if (namespaceContext != null) {
                 prefix = namespaceContext.getPrefix(namespaceURI);
             }
-            if(prefix == null){
-                throw new XMLStreamException("Namespace URI "+namespaceURI +
-                        "is not bound to any prefix" );
+            if (prefix == null) {
+                throw new XMLStreamException(
+                        "Namespace URI " + namespaceURI + "is not bound to any prefix");
             }
-            if("".equals(prefix)){
+            if ("".equals(prefix)) {
                 qualifiedName = localName;
-            }else{
+            } else {
 
-                qualifiedName = getQName(prefix,localName);
-
+                qualifiedName = getQName(prefix, localName);
             }
             Element element = ownerDoc.createElementNS(namespaceURI, qualifiedName);
-            if(currentNode!=null){
+            if (currentNode != null) {
                 currentNode.appendChild(element);
-            }else{
+            } else {
                 ownerDoc.appendChild(element);
             }
-            //currentNode = element;
+            // currentNode = element;
         }
     }
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param prefix {@inheritDoc}
      * @param localName {@inheritDoc}
      * @param namespaceURI {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
-    public void writeEmptyElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
-        if(ownerDoc != null){
-            if(namespaceURI == null ){
+    public void writeEmptyElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
+        if (ownerDoc != null) {
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
-            if(prefix == null){
+            if (prefix == null) {
                 throw new XMLStreamException("Prefix cannot be null");
             }
             String qualifiedName = null;
-            if("".equals(prefix)){
+            if ("".equals(prefix)) {
                 qualifiedName = localName;
-            }else{
-                qualifiedName = getQName(prefix,localName);
+            } else {
+                qualifiedName = getQName(prefix, localName);
             }
-            Element el  = ownerDoc.createElementNS(namespaceURI,qualifiedName);
-            if(currentNode!=null){
+            Element el = ownerDoc.createElementNS(namespaceURI, qualifiedName);
+            if (currentNode != null) {
                 currentNode.appendChild(el);
-            }else{
+            } else {
                 ownerDoc.appendChild(el);
             }
-
         }
     }
 
     /**
      * Will reset current Node pointer maintained by the implementation.
+     *
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeEndDocument() throws XMLStreamException {
-        //What do you want me to do eh! :)
+        // What do you want me to do eh! :)
         currentNode = null;
-        for(int i=0; i< depth;i++){
-            if(needContextPop[depth]){
+        for (int i = 0; i < depth; i++) {
+            if (needContextPop[depth]) {
                 needContextPop[depth] = false;
                 namespaceContext.popContext();
             }
             depth--;
         }
-        depth =0;
+        depth = 0;
     }
 
     /**
      * Internal current Node pointer will point to the parent of the current Node.
+     *
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeEndElement() throws XMLStreamException {
-        Node node= currentNode.getParentNode();
-        if(currentNode.getNodeType() == Node.DOCUMENT_NODE){
+        Node node = currentNode.getParentNode();
+        if (currentNode.getNodeType() == Node.DOCUMENT_NODE) {
             currentNode = null;
-        }else{
+        } else {
             currentNode = node;
         }
-        if(needContextPop[depth]){
+        if (needContextPop[depth]) {
             needContextPop[depth] = false;
             namespaceContext.popContext();
         }
@@ -488,6 +524,7 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * Is not supported in this implementation.
+     *
      * @param name {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
@@ -497,8 +534,8 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
     }
 
     /**
-     * creates a namespace attribute and will associate it with the current element in
-     * the DOM tree.
+     * creates a namespace attribute and will associate it with the current element in the DOM tree.
+     *
      * @param prefix {@inheritDoc}
      * @param namespaceURI {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
@@ -518,19 +555,21 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
         if (prefix.equals("")) {
             qname = XMLConstants.XMLNS_ATTRIBUTE;
         } else {
-            qname = getQName(XMLConstants.XMLNS_ATTRIBUTE,prefix);
+            qname = getQName(XMLConstants.XMLNS_ATTRIBUTE, prefix);
         }
 
-        ((Element)currentNode).setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI,qname, namespaceURI);
+        ((Element) currentNode)
+                .setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, qname, namespaceURI);
     }
 
     /**
      * is not supported in this release.
+     *
      * @param target {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeProcessingInstruction(String target) throws XMLStreamException {
-        if(target == null){
+        if (target == null) {
             throw new XMLStreamException("Target cannot be null");
         }
         ProcessingInstruction pi = ownerDoc.createProcessingInstruction(target, "");
@@ -539,31 +578,33 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * is not supported in this release.
+     *
      * @param target {@inheritDoc}
      * @param data {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeProcessingInstruction(String target, String data) throws XMLStreamException {
-        if(target == null){
+        if (target == null) {
             throw new XMLStreamException("Target cannot be null");
         }
-        ProcessingInstruction pi  = ownerDoc.createProcessingInstruction(target, data);
+        ProcessingInstruction pi = ownerDoc.createProcessingInstruction(target, data);
         currentNode.appendChild(pi);
     }
 
     /**
      * will set version on the Document object when the DOM Node passed to this implementation
      * supports DOM Level3 API's.
+     *
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeStartDocument() throws XMLStreamException {
-        try{
-            if(mXmlVersion != null){
+        try {
+            if (mXmlVersion != null) {
                 mXmlVersion.invoke(ownerDoc, new Object[] {"1.0"});
             }
-        }catch(IllegalAccessException iae){
+        } catch (IllegalAccessException iae) {
             throw new XMLStreamException(iae);
-        }catch(InvocationTargetException ite){
+        } catch (InvocationTargetException ite) {
             throw new XMLStreamException(ite);
         }
     }
@@ -571,17 +612,18 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
     /**
      * will set version on the Document object when the DOM Node passed to this implementation
      * supports DOM Level3 API's.
+     *
      * @param version {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeStartDocument(String version) throws XMLStreamException {
-        try{
-            if(mXmlVersion != null){
+        try {
+            if (mXmlVersion != null) {
                 mXmlVersion.invoke(ownerDoc, new Object[] {version});
             }
-        }catch(IllegalAccessException iae){
+        } catch (IllegalAccessException iae) {
             throw new XMLStreamException(iae);
-        }catch(InvocationTargetException ite){
+        } catch (InvocationTargetException ite) {
             throw new XMLStreamException(ite);
         }
     }
@@ -589,39 +631,41 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
     /**
      * will set version on the Document object when the DOM Node passed to this implementation
      * supports DOM Level3 API's.
+     *
      * @param encoding {@inheritDoc}
      * @param version {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeStartDocument(String encoding, String version) throws XMLStreamException {
-        try{
-            if(mXmlVersion != null){
+        try {
+            if (mXmlVersion != null) {
                 mXmlVersion.invoke(ownerDoc, new Object[] {version});
             }
-        }catch(IllegalAccessException iae){
+        } catch (IllegalAccessException iae) {
             throw new XMLStreamException(iae);
-        }catch(InvocationTargetException ite){
+        } catch (InvocationTargetException ite) {
             throw new XMLStreamException(ite);
         }
-        //TODO: What to do with encoding.-Venu
+        // TODO: What to do with encoding.-Venu
     }
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param localName {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeStartElement(String localName) throws XMLStreamException {
-        if(ownerDoc != null){
+        if (ownerDoc != null) {
             Element element = ownerDoc.createElement(localName);
-            if(currentNode!=null){
+            if (currentNode != null) {
                 currentNode.appendChild(element);
-            }else{
+            } else {
                 ownerDoc.appendChild(element);
             }
             currentNode = element;
         }
-        if(needContextPop[depth]){
+        if (needContextPop[depth]) {
             namespaceContext.pushContext();
         }
         incDepth();
@@ -629,45 +673,46 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param namespaceURI {@inheritDoc}
      * @param localName {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
     public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
-        if(ownerDoc != null){
+        if (ownerDoc != null) {
             String qualifiedName = null;
             String prefix = null;
 
-            if(namespaceURI == null ){
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
 
-            if(namespaceContext != null){
+            if (namespaceContext != null) {
                 prefix = namespaceContext.getPrefix(namespaceURI);
             }
-            if(prefix == null){
-                throw new XMLStreamException("Namespace URI "+namespaceURI +
-                        "is not bound to any prefix" );
+            if (prefix == null) {
+                throw new XMLStreamException(
+                        "Namespace URI " + namespaceURI + "is not bound to any prefix");
             }
-            if("".equals(prefix)){
+            if ("".equals(prefix)) {
                 qualifiedName = localName;
-            }else{
-                qualifiedName =  getQName(prefix,localName);
+            } else {
+                qualifiedName = getQName(prefix, localName);
             }
 
             Element element = ownerDoc.createElementNS(namespaceURI, qualifiedName);
 
-            if(currentNode!=null){
+            if (currentNode != null) {
                 currentNode.appendChild(element);
-            }else{
+            } else {
                 ownerDoc.appendChild(element);
             }
             currentNode = element;
         }
-        if(needContextPop[depth]){
+        if (needContextPop[depth]) {
             namespaceContext.pushContext();
         }
         incDepth();
@@ -675,48 +720,49 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
 
     /**
      * creates a DOM Element and appends it to the current element in the tree.
+     *
      * @param prefix {@inheritDoc}
      * @param localName {@inheritDoc}
      * @param namespaceURI {@inheritDoc}
      * @throws org.openjdk.javax.xml.stream.XMLStreamException {@inheritDoc}
      */
-    public void writeStartElement(String prefix, String localName, String namespaceURI) throws XMLStreamException {
+    public void writeStartElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
 
-        if(ownerDoc != null){
+        if (ownerDoc != null) {
             String qname = null;
-            if(namespaceURI == null ){
+            if (namespaceURI == null) {
                 throw new XMLStreamException("NamespaceURI cannot be null");
             }
-            if(localName == null){
+            if (localName == null) {
                 throw new XMLStreamException("Local name cannot be null");
             }
-            if(prefix == null){
+            if (prefix == null) {
                 throw new XMLStreamException("Prefix cannot be null");
             }
 
-            if(prefix.equals("")){
+            if (prefix.equals("")) {
                 qname = localName;
-            }else{
-                qname = getQName(prefix,localName);
+            } else {
+                qname = getQName(prefix, localName);
             }
 
-            Element el = ownerDoc.createElementNS(namespaceURI,qname);
+            Element el = ownerDoc.createElementNS(namespaceURI, qname);
 
-            if(currentNode!=null){
+            if (currentNode != null) {
                 currentNode.appendChild(el);
-            }else{
+            } else {
                 ownerDoc.appendChild(el);
             }
             currentNode = el;
-            if(needContextPop[depth]){
+            if (needContextPop[depth]) {
                 namespaceContext.pushContext();
             }
             incDepth();
-
         }
     }
 
-    private String getQName(String prefix , String localName){
+    private String getQName(String prefix, String localName) {
         stringBuffer.setLength(0);
         stringBuffer.append(prefix);
         stringBuffer.append(":");
@@ -724,13 +770,14 @@ public class XMLDOMWriterImpl implements XMLStreamWriter  {
         return stringBuffer.toString();
     }
 
-    private Node getNode(){
-        if(currentNode == null){
+    private Node getNode() {
+        if (currentNode == null) {
             return ownerDoc;
-        } else{
+        } else {
             return currentNode;
         }
     }
+
     private void incDepth() {
         depth++;
         if (depth == needContextPop.length) {

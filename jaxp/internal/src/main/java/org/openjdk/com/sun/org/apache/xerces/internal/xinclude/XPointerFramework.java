@@ -62,16 +62,16 @@ package org.openjdk.com.sun.org.apache.xerces.internal.xinclude;
 
 import java.util.Stack;
 
-public class XPointerFramework{
+public class XPointerFramework {
 
-        /*
-                Todo's by next integration.
-                While constructing schema names and uris use a dynamic datastructure.
-         */
+    /*
+           Todo's by next integration.
+           While constructing schema names and uris use a dynamic datastructure.
+    */
 
-    XPointerSchema [] fXPointerSchema;
-    String [] fSchemaPointerName;
-    String [] fSchemaPointerURI;
+    XPointerSchema[] fXPointerSchema;
+    String[] fSchemaPointerName;
+    String[] fSchemaPointerURI;
     String fSchemaPointer;
     String fCurrentSchemaPointer;
     Stack fSchemaNotAvailable;
@@ -79,16 +79,16 @@ public class XPointerFramework{
     int schemaLength = 0;
     XPointerSchema fDefaultXPointerSchema;
 
-    public XPointerFramework(){
+    public XPointerFramework() {
         this(null);
     }
 
-    public XPointerFramework(XPointerSchema [] xpointerschema){
+    public XPointerFramework(XPointerSchema[] xpointerschema) {
         fXPointerSchema = xpointerschema;
         fSchemaNotAvailable = new Stack();
     }
 
-    public void reset(){
+    public void reset() {
         fXPointerSchema = null;
         fXPointerSchema = null;
         fCountSchemaName = 0;
@@ -99,110 +99,107 @@ public class XPointerFramework{
         fCurrentSchemaPointer = null;
     }
 
-    public void setXPointerSchema(XPointerSchema [] xpointerschema){
+    public void setXPointerSchema(XPointerSchema[] xpointerschema) {
         fXPointerSchema = xpointerschema;
     }
 
-    public void setSchemaPointer(String schemaPointer){
+    public void setSchemaPointer(String schemaPointer) {
         fSchemaPointer = schemaPointer;
     }
 
-    public XPointerSchema getNextXPointerSchema(){
-        int  i=fCountSchemaName;
-        if(fSchemaPointerName == null){
+    public XPointerSchema getNextXPointerSchema() {
+        int i = fCountSchemaName;
+        if (fSchemaPointerName == null) {
             getSchemaNames();
         }
-        if(fDefaultXPointerSchema == null){
+        if (fDefaultXPointerSchema == null) {
             getDefaultSchema();
         }
-        if(fDefaultXPointerSchema.getXpointerSchemaName().equalsIgnoreCase(fSchemaPointerName[i])){
+        if (fDefaultXPointerSchema
+                .getXpointerSchemaName()
+                .equalsIgnoreCase(fSchemaPointerName[i])) {
             fDefaultXPointerSchema.reset();
             fDefaultXPointerSchema.setXPointerSchemaPointer(fSchemaPointerURI[i]);
             fCountSchemaName = ++i;
-            return  getDefaultSchema();
+            return getDefaultSchema();
         }
-        if(fXPointerSchema == null){
+        if (fXPointerSchema == null) {
             fCountSchemaName = ++i;
             return null;
         }
 
         int fschemalength = fXPointerSchema.length;
 
-        for(;fSchemaPointerName[i] != null; i++){
-            for(int j=0; j<fschemalength; j++ ){
-                if(fSchemaPointerName[i].equalsIgnoreCase(fXPointerSchema[j].getXpointerSchemaName())){
+        for (; fSchemaPointerName[i] != null; i++) {
+            for (int j = 0; j < fschemalength; j++) {
+                if (fSchemaPointerName[i].equalsIgnoreCase(
+                        fXPointerSchema[j].getXpointerSchemaName())) {
                     fXPointerSchema[j].setXPointerSchemaPointer(fSchemaPointerURI[i]);
                     fCountSchemaName = ++i;
                     return fXPointerSchema[j];
                 }
             }
 
-            if(fSchemaNotAvailable == null)
-            fSchemaNotAvailable = new Stack();
+            if (fSchemaNotAvailable == null) fSchemaNotAvailable = new Stack();
 
             fSchemaNotAvailable.push(fSchemaPointerName[i]);
         }
         return null;
     }
 
-    public XPointerSchema getDefaultSchema(){
-        if(fDefaultXPointerSchema == null)
-            fDefaultXPointerSchema = new XPointerElementHandler();
+    public XPointerSchema getDefaultSchema() {
+        if (fDefaultXPointerSchema == null) fDefaultXPointerSchema = new XPointerElementHandler();
         return fDefaultXPointerSchema;
     }
 
-    public void getSchemaNames(){
-        int count =0;
-        int index =0, lastindex =0;
-        int schemapointerindex  =0, schemapointerURIindex=0;
+    public void getSchemaNames() {
+        int count = 0;
+        int index = 0, lastindex = 0;
+        int schemapointerindex = 0, schemapointerURIindex = 0;
         char c;
         int length = fSchemaPointer.length();
-        fSchemaPointerName = new String [5];
-        fSchemaPointerURI = new String [5];
+        fSchemaPointerName = new String[5];
+        fSchemaPointerURI = new String[5];
 
         index = fSchemaPointer.indexOf('(');
-        if( index <= 0)
-            return;
+        if (index <= 0) return;
 
         fSchemaPointerName[schemapointerindex++] = fSchemaPointer.substring(0, index++).trim();
         lastindex = index;
         String tempURI = null;
         count++;
 
-        while(index < length){
+        while (index < length) {
             c = fSchemaPointer.charAt(index);
-            if(c == '(')
-                count++;
-            if(c == ')')
-                count--;
-            if(count==0 ){
+            if (c == '(') count++;
+            if (c == ')') count--;
+            if (count == 0) {
                 tempURI = fSchemaPointer.substring(lastindex, index).trim();
                 fSchemaPointerURI[schemapointerURIindex++] = getEscapedURI(tempURI);
                 lastindex = index;
-                if((index = fSchemaPointer.indexOf('(', lastindex)) != -1){
-                    fSchemaPointerName[schemapointerindex++] = fSchemaPointer.substring(lastindex+1, index).trim();
+                if ((index = fSchemaPointer.indexOf('(', lastindex)) != -1) {
+                    fSchemaPointerName[schemapointerindex++] =
+                            fSchemaPointer.substring(lastindex + 1, index).trim();
                     count++;
-                    lastindex = index+1;
-                }
-                else{
+                    lastindex = index + 1;
+                } else {
                     index = lastindex;
                 }
             }
             index++;
         }
-        schemaLength = schemapointerURIindex -1;
+        schemaLength = schemapointerURIindex - 1;
     }
 
-    public String   getEscapedURI(String URI){
+    public String getEscapedURI(String URI) {
         return URI;
     }
 
-    public int getSchemaCount(){
+    public int getSchemaCount() {
         return schemaLength;
     }
 
-    public int getCurrentPointer(){
+    public int getCurrentPointer() {
         return fCountSchemaName;
     }
-
-}//XPointerFramwork
+} // XPointerFramwork

@@ -24,12 +24,9 @@ package org.openjdk.com.sun.org.apache.xerces.internal.dom;
  * Represents an XML (or HTML) comment.
  *
  * @xerces.internal
- *
- * @since  PR-DOM-Level-1-19980818.
+ * @since PR-DOM-Level-1-19980818.
  */
-public class DeferredCommentImpl
-    extends CommentImpl
-    implements DeferredNode {
+public class DeferredCommentImpl extends CommentImpl implements DeferredNode {
 
     //
     // Constants
@@ -50,15 +47,14 @@ public class DeferredCommentImpl
     //
 
     /**
-     * This is the deferred constructor. Only the fNodeIndex is given here. All other data,
-     * can be requested from the ownerDocument via the index.
+     * This is the deferred constructor. Only the fNodeIndex is given here. All other data, can be
+     * requested from the ownerDocument via the index.
      */
     DeferredCommentImpl(DeferredDocumentImpl ownerDocument, int nodeIndex) {
         super(ownerDocument, null);
 
         fNodeIndex = nodeIndex;
         needsSyncData(true);
-
     } // <init>(DeferredDocumentImpl,int)
 
     //
@@ -81,10 +77,7 @@ public class DeferredCommentImpl
         needsSyncData(false);
 
         // fluff data
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl) this.ownerDocument();
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) this.ownerDocument();
         data = ownerDocument.getNodeValueString(fNodeIndex);
-
     } // synchronizeData()
-
 } // class DeferredCommentImpl

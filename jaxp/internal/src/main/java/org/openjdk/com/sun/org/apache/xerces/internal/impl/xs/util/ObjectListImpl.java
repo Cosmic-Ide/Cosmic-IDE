@@ -21,23 +21,20 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
+
 import java.lang.reflect.Array;
 import java.util.AbstractList;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 
 /**
  * Contains a list of Objects.
  *
  * @xerces.internal
- *
  * @version $Id: ObjectListImpl.java,v 1.2 2010-10-26 23:01:04 joehw Exp $
  */
 public final class ObjectListImpl extends AbstractList implements ObjectList {
 
-    /**
-     * An immutable empty list.
-     */
+    /** An immutable empty list. */
     public static final ObjectListImpl EMPTY_LIST = new ObjectListImpl(new Object[0], 0);
 
     // The array to hold all data
@@ -58,14 +55,11 @@ public final class ObjectListImpl extends AbstractList implements ObjectList {
     public boolean contains(Object item) {
         if (item == null) {
             for (int i = 0; i < fLength; i++) {
-                if (fArray[i] == null)
-                    return true;
+                if (fArray[i] == null) return true;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < fLength; i++) {
-                if (item.equals(fArray[i]))
-                    return true;
+                if (item.equals(fArray[i])) return true;
             }
         }
         return false;

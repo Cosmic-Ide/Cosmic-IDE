@@ -23,11 +23,11 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -40,9 +40,11 @@ final class FloorCall extends FunctionCall {
 
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         argument().translate(classGen, methodGen);
-        methodGen.getInstructionList()
-            .append(new INVOKESTATIC(classGen.getConstantPool()
-                                     .addMethodref(MATH_CLASS,
-                                                   "floor", "(D)D")));
+        methodGen
+                .getInstructionList()
+                .append(
+                        new INVOKESTATIC(
+                                classGen.getConstantPool()
+                                        .addMethodref(MATH_CLASS, "floor", "(D)D")));
     }
 }

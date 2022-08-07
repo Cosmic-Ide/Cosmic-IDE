@@ -57,8 +57,7 @@ final class AbsolutePathPattern extends LocationPathPattern {
 
     public void setParser(Parser parser) {
         super.setParser(parser);
-        if (_left != null)
-            _left.setParser(parser);
+        if (_left != null) _left.setParser(parser);
     }
 
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
@@ -84,28 +83,21 @@ final class AbsolutePathPattern extends LocationPathPattern {
         if (_left != null) {
             if (_left instanceof StepPattern) {
                 final LocalVariableGen local =
-                    // absolute path pattern temporary
-                    methodGen.addLocalVariable2("apptmp",
-                                                Util.getJCRefType(NODE_SIG),
-                                                null);
+                        // absolute path pattern temporary
+                        methodGen.addLocalVariable2("apptmp", Util.getJCRefType(NODE_SIG), null);
                 il.append(DUP);
                 local.setStart(il.append(new ISTORE(local.getIndex())));
                 _left.translate(classGen, methodGen);
                 il.append(methodGen.loadDOM());
                 local.setEnd(il.append(new ILOAD(local.getIndex())));
                 methodGen.removeLocalVariable(local);
-            }
-            else {
+            } else {
                 _left.translate(classGen, methodGen);
             }
         }
 
-        final int getParent = cpg.addInterfaceMethodref(DOM_INTF,
-                                                        GET_PARENT,
-                                                        GET_PARENT_SIG);
-        final int getType = cpg.addInterfaceMethodref(DOM_INTF,
-                                                      "getExpandedTypeID",
-                                                      "(I)I");
+        final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
+        final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
 
         InstructionHandle begin = il.append(methodGen.loadDOM());
         il.append(SWAP);
@@ -130,7 +122,7 @@ final class AbsolutePathPattern extends LocationPathPattern {
              */
             if (_left instanceof AncestorPattern) {
                 final AncestorPattern ancestor = (AncestorPattern) _left;
-                _falseList.backPatch(ancestor.getLoopHandle());         // clears list
+                _falseList.backPatch(ancestor.getLoopHandle()); // clears list
             }
             _falseList.append(_left._falseList);
         }

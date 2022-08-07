@@ -20,26 +20,22 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xs.StringList;
+
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.Vector;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.xs.StringList;
 
 /**
  * Containts a list of Object's.
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
- *
  * @version $Id: StringListImpl.java,v 1.7 2010-11-01 04:40:06 joehw Exp $
  */
 public final class StringListImpl extends AbstractList implements StringList {
 
-    /**
-     * An immutable empty list.
-     */
+    /** An immutable empty list. */
     public static final StringListImpl EMPTY_LIST = new StringListImpl(new String[0], 0);
 
     // The array to hold all data
@@ -60,8 +56,8 @@ public final class StringListImpl extends AbstractList implements StringList {
     /**
      * Construct an XSObjectList implementation
      *
-     * @param array     the data array
-     * @param length    the number of elements
+     * @param array the data array
+     * @param length the number of elements
      */
     public StringListImpl(String[] array, int length) {
         fArray = array;
@@ -70,20 +66,18 @@ public final class StringListImpl extends AbstractList implements StringList {
     }
 
     /**
-     * The number of <code>Objects</code> in the list. The range of valid
-     * child node indices is 0 to <code>length-1</code> inclusive.
+     * The number of <code>Objects</code> in the list. The range of valid child node indices is 0 to
+     * <code>length-1</code> inclusive.
      */
     public int getLength() {
         return fLength;
     }
 
     /**
-     *  Checks if the <code>GenericString</code> <code>item</code> is a member
-     * of this list.
-     * @param item  <code>GenericString</code> whose presence in this list is
-     *   to be tested.
-     * @return  True if this list contains the <code>GenericString</code>
-     *   <code>item</code>.
+     * Checks if the <code>GenericString</code> <code>item</code> is a member of this list.
+     *
+     * @param item <code>GenericString</code> whose presence in this list is to be tested.
+     * @return True if this list contains the <code>GenericString</code> <code>item</code>.
      */
     public boolean contains(String item) {
         if (fVector != null) {
@@ -91,14 +85,11 @@ public final class StringListImpl extends AbstractList implements StringList {
         }
         if (item == null) {
             for (int i = 0; i < fLength; i++) {
-                if (fArray[i] == null)
-                    return true;
+                if (fArray[i] == null) return true;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < fLength; i++) {
-                if (item.equals(fArray[i]))
-                    return true;
+                if (item.equals(fArray[i])) return true;
             }
         }
         return false;
@@ -109,7 +100,7 @@ public final class StringListImpl extends AbstractList implements StringList {
             return null;
         }
         if (fVector != null) {
-            return (String)fVector.elementAt(index);
+            return (String) fVector.elementAt(index);
         }
         return fArray[index];
     }
@@ -162,5 +153,4 @@ public final class StringListImpl extends AbstractList implements StringList {
             System.arraycopy(fArray, 0, a, 0, fLength);
         }
     }
-
 } // class StringListImpl

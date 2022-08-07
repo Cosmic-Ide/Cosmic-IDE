@@ -23,12 +23,12 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.BranchHandle;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
+
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -61,8 +61,7 @@ public final class FlowList {
     public FlowList append(FlowList right) {
         if (_elements == null) {
             _elements = right._elements;
-        }
-        else {
+        } else {
             final Vector temp = right._elements;
             if (temp != null) {
                 final int n = temp.size();
@@ -74,27 +73,23 @@ public final class FlowList {
         return this;
     }
 
-    /**
-     * Back patch a flow list. All instruction handles must be branch handles.
-     */
+    /** Back patch a flow list. All instruction handles must be branch handles. */
     public void backPatch(InstructionHandle target) {
         if (_elements != null) {
             final int n = _elements.size();
             for (int i = 0; i < n; i++) {
-                BranchHandle bh = (BranchHandle)_elements.elementAt(i);
+                BranchHandle bh = (BranchHandle) _elements.elementAt(i);
                 bh.setTarget(target);
             }
-            _elements.clear();          // avoid backpatching more than once
+            _elements.clear(); // avoid backpatching more than once
         }
     }
 
     /**
-     * Redirect the handles from oldList to newList. "This" flow list
-     * is assumed to be relative to oldList.
+     * Redirect the handles from oldList to newList. "This" flow list is assumed to be relative to
+     * oldList.
      */
-    public FlowList copyAndRedirect(InstructionList oldList,
-        InstructionList newList)
-    {
+    public FlowList copyAndRedirect(InstructionList oldList, InstructionList newList) {
         final FlowList result = new FlowList();
         if (_elements == null) {
             return result;

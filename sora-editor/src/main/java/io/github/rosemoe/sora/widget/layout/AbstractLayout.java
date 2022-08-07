@@ -23,20 +23,20 @@
  */
 package io.github.rosemoe.sora.widget.layout;
 
-import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import io.github.rosemoe.sora.graphics.GraphicTextRow;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
+import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
- * Base layout implementation of {@link Layout}.
- * It provides some convenient methods to editor instance and text measuring.
+ * Base layout implementation of {@link Layout}. It provides some convenient methods to editor
+ * instance and text measuring.
  *
  * @author Rosemoe
  */
@@ -44,7 +44,13 @@ public abstract class AbstractLayout implements Layout {
 
     protected static final int SUBTASK_COUNT = 8;
     protected static final int MIN_LINE_COUNT_FOR_SUBTASK = 3000;
-    private static final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, Runtime.getRuntime().availableProcessors(), 1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(128));
+    private static final ThreadPoolExecutor executor =
+            new ThreadPoolExecutor(
+                    2,
+                    Runtime.getRuntime().availableProcessors(),
+                    1,
+                    TimeUnit.MINUTES,
+                    new LinkedBlockingQueue<>(128));
     protected CodeEditor editor;
     protected Content text;
 
@@ -57,7 +63,8 @@ public abstract class AbstractLayout implements Layout {
         return editor.getSpansForLine(line);
     }
 
-    protected float[] orderedFindCharIndex(float targetOffset, ContentLine str, int line, int index, int end) {
+    protected float[] orderedFindCharIndex(
+            float targetOffset, ContentLine str, int line, int index, int end) {
         var gtr = GraphicTextRow.obtain();
         gtr.set(str, index, end, editor.getTabWidth(), getSpans(line), editor.getTextPaint());
         if (this instanceof WordwrapLayout && str.widthCache == null) {
@@ -72,16 +79,23 @@ public abstract class AbstractLayout implements Layout {
         return orderedFindCharIndex(targetOffset, str, line, 0, str.length());
     }
 
+    @Override
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {}
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
-
-    }
-
-    @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
-
-    }
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {}
 
     @Override
     public void destroyLayout() {
@@ -116,7 +130,6 @@ public abstract class AbstractLayout implements Layout {
         public interface Callback {
             void onCompleted(Object[] results);
         }
-
     }
 
     protected abstract class LayoutTask<T> implements Runnable {
@@ -140,5 +153,4 @@ public abstract class AbstractLayout implements Layout {
 
         protected abstract T compute();
     }
-
 }

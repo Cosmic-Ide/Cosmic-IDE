@@ -23,8 +23,8 @@ package org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 
 /**
- * <p> This interface describes basic attributes of XML grammars--their
- * physical location and their type. </p>
+ * This interface describes basic attributes of XML grammars--their physical location and their
+ * type.
  *
  * @author Neil Graham, IBM
  */
@@ -36,24 +36,21 @@ public interface XMLGrammarDescription extends XMLResourceIdentifier {
     // their Grammar objects implement this interface).
 
     /**
-     * The grammar type constant for XML Schema grammars. When getGrammarType()
-     * method returns this constant, the object should be an instance of
-     * the XMLSchemaDescription interface.
+     * The grammar type constant for XML Schema grammars. When getGrammarType() method returns this
+     * constant, the object should be an instance of the XMLSchemaDescription interface.
      */
     public static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
     /**
-     * The grammar type constant for DTD grammars. When getGrammarType()
-     * method returns this constant, the object should be an instance of
-     * the XMLDTDDescription interface.
+     * The grammar type constant for DTD grammars. When getGrammarType() method returns this
+     * constant, the object should be an instance of the XMLDTDDescription interface.
      */
     public static final String XML_DTD = "http://www.w3.org/TR/REC-xml";
 
     /**
      * Return the type of this grammar.
      *
-     * @return  the type of this grammar
+     * @return the type of this grammar
      */
     public String getGrammarType();
-
 } // interface XMLGrammarDescription

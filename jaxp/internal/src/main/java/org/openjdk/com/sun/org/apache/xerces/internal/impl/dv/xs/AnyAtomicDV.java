@@ -27,9 +27,7 @@ import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
  * Represent the schema type "anyAtomicType"
  *
  * @xerces.experimental
- *
  * @author Ankit Pasricha, IBM
- *
  */
 class AnyAtomicDV extends TypeValidator {
 
@@ -37,8 +35,8 @@ class AnyAtomicDV extends TypeValidator {
         return 0;
     }
 
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException {
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
         return content;
     }
-
 } // class AnyAtomicDV

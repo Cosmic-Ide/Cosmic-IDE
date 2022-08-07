@@ -25,24 +25,23 @@
 
 package org.openjdk.com.sun.xml.internal.stream.events;
 
-import java.io.IOException;
-import java.io.Writer;
-import org.openjdk.javax.xml.stream.events.XMLEvent;
-import org.openjdk.javax.xml.stream.events.Characters;
-import org.openjdk.javax.xml.stream.events.EndElement;
-import org.openjdk.javax.xml.stream.events.StartElement;
 import org.openjdk.javax.xml.namespace.QName;
 import org.openjdk.javax.xml.stream.Location;
 import org.openjdk.javax.xml.stream.XMLStreamException;
+import org.openjdk.javax.xml.stream.events.Characters;
+import org.openjdk.javax.xml.stream.events.EndElement;
+import org.openjdk.javax.xml.stream.events.StartElement;
+import org.openjdk.javax.xml.stream.events.XMLEvent;
 
-/** DummyEvent is an abstract class. It provides functionality for most of the
- * function of XMLEvent.
+import java.io.IOException;
+import java.io.Writer;
+
+/**
+ * DummyEvent is an abstract class. It provides functionality for most of the function of XMLEvent.
  *
  * @author Neeraj Bajaj Sun Microsystems,Inc.
  * @author K.Venugopal Sun Microsystems,Inc.
- *
  */
-
 public abstract class DummyEvent implements XMLEvent {
     // Make sure that getLocation() never returns null. Instead, return this dummy location
     // that indicates "nowhere" as effectively as possible.
@@ -52,8 +51,7 @@ public abstract class DummyEvent implements XMLEvent {
     private int fEventType;
     protected Location fLocation = (Location) nowhere;
 
-    public DummyEvent() {
-    }
+    public DummyEvent() {}
 
     public DummyEvent(int i) {
         fEventType = i;
@@ -63,10 +61,9 @@ public abstract class DummyEvent implements XMLEvent {
         return fEventType;
     }
 
-    protected void setEventType(int eventType){
+    protected void setEventType(int eventType) {
         fEventType = eventType;
     }
-
 
     public boolean isStartElement() {
         return fEventType == XMLEvent.START_ELEMENT;
@@ -96,11 +93,11 @@ public abstract class DummyEvent implements XMLEvent {
         return fEventType == XMLEvent.END_DOCUMENT;
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return fLocation;
     }
 
-    void setLocation(Location loc){
+    void setLocation(Location loc) {
         if (loc == null) {
             fLocation = nowhere;
         } else {
@@ -108,69 +105,74 @@ public abstract class DummyEvent implements XMLEvent {
         }
     }
 
-    /** Returns this event as Characters, may result in
-     * a class cast exception if this event is not Characters.
+    /**
+     * Returns this event as Characters, may result in a class cast exception if this event is not
+     * Characters.
      */
     public Characters asCharacters() {
-        return (Characters)this;
+        return (Characters) this;
     }
 
-    /** Returns this event as an end  element event, may result in
-     * a class cast exception if this event is not a end element.
+    /**
+     * Returns this event as an end element event, may result in a class cast exception if this
+     * event is not a end element.
      */
     public EndElement asEndElement() {
-        return (EndElement)this;
+        return (EndElement) this;
     }
 
-    /** Returns this event as a start element event, may result in
-     * a class cast exception if this event is not a start element.
+    /**
+     * Returns this event as a start element event, may result in a class cast exception if this
+     * event is not a start element.
      */
     public StartElement asStartElement() {
-        return (StartElement)this;
+        return (StartElement) this;
     }
 
-    /** This method is provided for implementations to provide
-     * optional type information about the associated event.
-     * It is optional and will return null if no information
-     * is available.
+    /**
+     * This method is provided for implementations to provide optional type information about the
+     * associated event. It is optional and will return null if no information is available.
      */
     public QName getSchemaType() {
-        //Base class will take care of providing extra information about this event.
+        // Base class will take care of providing extra information about this event.
         return null;
     }
 
-    /** A utility function to check if this event is an Attribute.
+    /**
+     * A utility function to check if this event is an Attribute.
+     *
      * @see Attribute
      */
     public boolean isAttribute() {
         return fEventType == XMLEvent.ATTRIBUTE;
     }
 
-    /** A utility function to check if this event is Characters.
+    /**
+     * A utility function to check if this event is Characters.
+     *
      * @see Characters
      */
     public boolean isCharacters() {
         return fEventType == XMLEvent.CHARACTERS;
     }
 
-    /** A utility function to check if this event is a Namespace.
+    /**
+     * A utility function to check if this event is a Namespace.
+     *
      * @see Namespace
      */
     public boolean isNamespace() {
         return fEventType == XMLEvent.NAMESPACE;
     }
 
-    /** This method will write the XMLEvent as per the XML 1.0 specification as Unicode characters.
+    /**
+     * This method will write the XMLEvent as per the XML 1.0 specification as Unicode characters.
      * No indentation or whitespace should be outputted.
      *
-     * Any user defined event type SHALL have this method
-     * called when being written to on an output stream.
-     * Built in Event types MUST implement this method,
-     * but implementations MAY choose not call these methods
-     * for optimizations reasons when writing out built in
-     * Events to an output stream.
-     * The output generated MUST be equivalent in terms of the
-     * infoset expressed.
+     * <p>Any user defined event type SHALL have this method called when being written to on an
+     * output stream. Built in Event types MUST implement this method, but implementations MAY
+     * choose not call these methods for optimizations reasons when writing out built in Events to
+     * an output stream. The output generated MUST be equivalent in terms of the infoset expressed.
      *
      * @param writer The writer that will output the data
      * @throws XMLStreamException if there is a fatal error writing the event
@@ -182,20 +184,18 @@ public abstract class DummyEvent implements XMLEvent {
             throw new XMLStreamException(e);
         }
     }
-    /** Helper method in order to expose IOException.
+    /**
+     * Helper method in order to expose IOException.
+     *
      * @param writer The writer that will output the data
      * @throws XMLStreamException if there is a fatal error writing the event
      * @throws IOException if there is an IO error
      */
     protected abstract void writeAsEncodedUnicodeEx(Writer writer)
-        throws IOException, XMLStreamException;
+            throws IOException, XMLStreamException;
 
-    /** Helper method to escape < > & for characters event and
-     *  quotes, lt and amps for Entity
-     */
-    protected void charEncode(Writer writer, String data)
-        throws IOException
-    {
+    /** Helper method to escape < > & for characters event and quotes, lt and amps for Entity */
+    protected void charEncode(Writer writer, String data) throws IOException {
         if (data == null || data == "") return;
         int i = 0, start = 0;
         int len = data.length();
@@ -203,28 +203,28 @@ public abstract class DummyEvent implements XMLEvent {
         loop:
         for (; i < len; ++i) {
             switch (data.charAt(i)) {
-            case '<':
-                writer.write(data, start, i - start);
-                writer.write("&lt;");
-                start = i + 1;
-                break;
+                case '<':
+                    writer.write(data, start, i - start);
+                    writer.write("&lt;");
+                    start = i + 1;
+                    break;
 
-            case '&':
-                writer.write(data, start, i - start);
-                writer.write("&amp;");
-                start = i + 1;
-                break;
+                case '&':
+                    writer.write(data, start, i - start);
+                    writer.write("&amp;");
+                    start = i + 1;
+                    break;
 
-            case '>':
-                writer.write(data, start, i - start);
-                writer.write("&gt;");
-                start = i + 1;
-                break;
-            case '"':
-                writer.write(data, start, i - start);
-                writer.write("&quot;");
-                start = i + 1;
-                break;
+                case '>':
+                    writer.write(data, start, i - start);
+                    writer.write("&gt;");
+                    start = i + 1;
+                    break;
+                case '"':
+                    writer.write(data, start, i - start);
+                    writer.write("&quot;");
+                    start = i + 1;
+                    break;
             }
         }
         // Write any pending data
@@ -232,8 +232,7 @@ public abstract class DummyEvent implements XMLEvent {
     }
 
     static class DummyLocation implements Location {
-        public DummyLocation() {
-        }
+        public DummyLocation() {}
 
         public int getCharacterOffset() {
             return -1;

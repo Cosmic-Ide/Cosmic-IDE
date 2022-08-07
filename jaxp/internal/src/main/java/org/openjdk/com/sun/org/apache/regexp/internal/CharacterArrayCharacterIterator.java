@@ -25,8 +25,7 @@ package org.openjdk.com.sun.org.apache.regexp.internal;
  *
  * @author <a href="mailto:ales.novak@netbeans.com">Ales Novak</a>
  */
-public final class CharacterArrayCharacterIterator implements CharacterIterator
-{
+public final class CharacterArrayCharacterIterator implements CharacterIterator {
     /** encapsulated */
     private final char[] src;
     /** offset in the char array */
@@ -34,43 +33,47 @@ public final class CharacterArrayCharacterIterator implements CharacterIterator
     /** used portion of the array */
     private final int len;
 
-    /** @param src - encapsulated String */
-    public CharacterArrayCharacterIterator(char[] src, int off, int len)
-    {
+    /**
+     * @param src - encapsulated String
+     */
+    public CharacterArrayCharacterIterator(char[] src, int off, int len) {
         this.src = src;
         this.off = off;
         this.len = len;
     }
 
-    /** @return a substring */
-    public String substring(int beginIndex, int endIndex)
-    {
+    /**
+     * @return a substring
+     */
+    public String substring(int beginIndex, int endIndex) {
         if (endIndex > len) {
-            throw new IndexOutOfBoundsException("endIndex=" + endIndex
-                                                + "; sequence size=" + len);
+            throw new IndexOutOfBoundsException("endIndex=" + endIndex + "; sequence size=" + len);
         }
         if (beginIndex < 0 || beginIndex > endIndex) {
-            throw new IndexOutOfBoundsException("beginIndex=" + beginIndex
-                                                + "; endIndex=" + endIndex);
+            throw new IndexOutOfBoundsException(
+                    "beginIndex=" + beginIndex + "; endIndex=" + endIndex);
         }
         return new String(src, off + beginIndex, endIndex - beginIndex);
     }
 
-    /** @return a substring */
-    public String substring(int beginIndex)
-    {
+    /**
+     * @return a substring
+     */
+    public String substring(int beginIndex) {
         return substring(beginIndex, len);
     }
 
-    /** @return a character at the specified position. */
-    public char charAt(int pos)
-    {
+    /**
+     * @return a character at the specified position.
+     */
+    public char charAt(int pos) {
         return src[off + pos];
     }
 
-    /** @return <tt>true</tt> iff if the specified index is after the end of the character stream */
-    public boolean isEnd(int pos)
-    {
+    /**
+     * @return <tt>true</tt> iff if the specified index is after the end of the character stream
+     */
+    public boolean isEnd(int pos) {
         return (pos >= len);
     }
 }

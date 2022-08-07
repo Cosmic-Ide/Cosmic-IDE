@@ -36,10 +36,10 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 /**
- * <p>Implements pluggable Datatypes.</p>
+ * Implements pluggable Datatypes.
  *
- * <p>This class is duplicated for each JAXP subpackage so keep it in
- * sync.  It is package private for secure class loading.</p>
+ * <p>This class is duplicated for each JAXP subpackage so keep it in sync. It is package private
+ * for secure class loading.
  *
  * @author Santiago.PericasGeertsen@sun.com
  * @author Huizhe.Wang@oracle.com
@@ -47,27 +47,19 @@ import java.util.ServiceLoader;
 class FactoryFinder {
     private static final String DEFAULT_PACKAGE = "com.sun.org.apache.xalan.internal.";
 
-    /**
-     * Internal debug flag.
-     */
+    /** Internal debug flag. */
     private static boolean debug = false;
 
-    /**
-     * Cache for properties in java.home/lib/jaxp.properties
-     */
-    private final static Properties cacheProps = new Properties();
+    /** Cache for properties in java.home/lib/jaxp.properties */
+    private static final Properties cacheProps = new Properties();
 
-    /**
-     * Flag indicating if properties from java.home/lib/jaxp.properties
-     * have been cached.
-     */
+    /** Flag indicating if properties from java.home/lib/jaxp.properties have been cached. */
     static volatile boolean firstTime = true;
 
     /**
-     * Security support class use to check access control before
-     * getting certain system resources.
+     * Security support class use to check access control before getting certain system resources.
      */
-    private final static SecuritySupport ss = new SecuritySupport();
+    private static final SecuritySupport ss = new SecuritySupport();
 
     // Define system property "jaxp.debug" to get output
     static {
@@ -77,8 +69,7 @@ class FactoryFinder {
             String val = ss.getSystemProperty("jaxp.debug");
             // Allow simply setting the prop to turn on debug
             debug = val != null && !"false".equals(val);
-        }
-        catch (SecurityException se) {
+        } catch (SecurityException se) {
             debug = false;
         }
     }
@@ -90,19 +81,17 @@ class FactoryFinder {
     }
 
     /**
-     * Attempt to load a class using the class loader supplied. If that fails
-     * and fall back is enabled, the current (i.e. bootstrap) class loader is
-     * tried.
+     * Attempt to load a class using the class loader supplied. If that fails and fall back is
+     * enabled, the current (i.e. bootstrap) class loader is tried.
      *
-     * If the class loader supplied is <code>null</code>, first try using the
-     * context class loader followed by the current (i.e. bootstrap) class
-     * loader.
+     * <p>If the class loader supplied is <code>null</code>, first try using the context class
+     * loader followed by the current (i.e. bootstrap) class loader.
      *
-     * Use bootstrap classLoader if cl = null and useBSClsLoader is true
+     * <p>Use bootstrap classLoader if cl = null and useBSClsLoader is true
      */
-    static private Class<?> getProviderClass(String className, ClassLoader cl,
-            boolean doFallback, boolean useBSClsLoader) throws ClassNotFoundException
-    {
+    private static Class<?> getProviderClass(
+            String className, ClassLoader cl, boolean doFallback, boolean useBSClsLoader)
+            throws ClassNotFoundException {
         try {
             if (cl == null) {
                 if (useBSClsLoader) {
@@ -111,49 +100,42 @@ class FactoryFinder {
                     cl = ss.getContextClassLoader();
                     if (cl == null) {
                         throw new ClassNotFoundException();
-                    }
-                    else {
+                    } else {
                         return Class.forName(className, false, cl);
                     }
                 }
-            }
-            else {
+            } else {
                 return Class.forName(className, false, cl);
             }
-        }
-        catch (ClassNotFoundException e1) {
+        } catch (ClassNotFoundException e1) {
             if (doFallback) {
                 // Use current class loader - should always be bootstrap CL
                 return Class.forName(className, false, FactoryFinder.class.getClassLoader());
-            }
-            else {
+            } else {
                 throw e1;
             }
         }
     }
 
     /**
-     * Create an instance of a class. Delegates to method
-     * <code>getProviderClass()</code> in order to load the class.
+     * Create an instance of a class. Delegates to method <code>getProviderClass()</code> in order
+     * to load the class.
      *
-     * @param type Base class / Service interface  of the factory to
-     *             instantiate.
-     *
-     * @param className Name of the concrete class corresponding to the
-     * service provider
-     *
+     * @param type Base class / Service interface of the factory to instantiate.
+     * @param className Name of the concrete class corresponding to the service provider
      * @param cl <code>ClassLoader</code> used to load the factory class. If <code>null</code>
-     * current <code>Thread</code>'s context classLoader is used to load the factory class.
-     *
-     * @param doFallback True if the current ClassLoader should be tried as
-     * a fallback if the class is not found using cl
-     *
+     *     current <code>Thread</code>'s context classLoader is used to load the factory class.
+     * @param doFallback True if the current ClassLoader should be tried as a fallback if the class
+     *     is not found using cl
      * @param useServicesMechanism True use services mechanism
      */
-    static <T> T newInstance(Class<T> type, String className, ClassLoader cl,
-                             boolean doFallback, boolean useServicesMechanism)
-        throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError
-    {
+    static <T> T newInstance(
+            Class<T> type,
+            String className,
+            ClassLoader cl,
+            boolean doFallback,
+            boolean useServicesMechanism)
+            throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError {
         assert type != null;
 
         boolean useBSClsLoader = false;
@@ -177,26 +159,20 @@ class FactoryFinder {
             if (instance == null) {
                 instance = providerClass.newInstance();
             }
-            if (debug) {    // Extra check to avoid computing cl strings
-                dPrint("created new instance of " + providerClass +
-                       " using ClassLoader: " + cl);
+            if (debug) { // Extra check to avoid computing cl strings
+                dPrint("created new instance of " + providerClass + " using ClassLoader: " + cl);
             }
             return type.cast(instance);
-        }
-        catch (ClassNotFoundException x) {
-            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(x,
-                "Provider " + className + " not found");
-        }
-        catch (Exception x) {
-            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(x,
-                "Provider " + className + " could not be instantiated: " + x);
+        } catch (ClassNotFoundException x) {
+            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(
+                    x, "Provider " + className + " not found");
+        } catch (Exception x) {
+            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(
+                    x, "Provider " + className + " could not be instantiated: " + x);
         }
     }
 
-    /**
-     * Try to construct using newTransformerFactoryNoServiceLoader
-     *   method if available.
-     */
+    /** Try to construct using newTransformerFactoryNoServiceLoader method if available. */
     private static <T> T newInstanceNoServiceLoader(Class<T> type, Class<?> providerClass) {
         // Retain maximum compatibility if no security manager.
         if (System.getSecurityManager() == null) {
@@ -204,9 +180,7 @@ class FactoryFinder {
         }
         try {
             final Method creationMethod =
-                    providerClass.getDeclaredMethod(
-                        "newTransformerFactoryNoServiceLoader"
-                    );
+                    providerClass.getDeclaredMethod("newTransformerFactoryNoServiceLoader");
             final int modifiers = creationMethod.getModifiers();
 
             // Do not call the method if it's not public static.
@@ -218,7 +192,7 @@ class FactoryFinder {
             // TransformerFactory
             final Class<?> returnType = creationMethod.getReturnType();
             if (type.isAssignableFrom(returnType)) {
-                final Object result = creationMethod.invoke(null, (Object[])null);
+                final Object result = creationMethod.invoke(null, (Object[]) null);
                 return type.cast(result);
             } else {
                 // This should not happen, as
@@ -227,7 +201,8 @@ class FactoryFinder {
                 throw new ClassCastException(returnType + " cannot be cast to " + type);
             }
         } catch (ClassCastException e) {
-            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(e, e.getMessage());
+            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(
+                    e, e.getMessage());
         } catch (NoSuchMethodException exc) {
             return null;
         } catch (Exception exc) {
@@ -236,21 +211,16 @@ class FactoryFinder {
     }
 
     /**
-     * Finds the implementation Class object in the specified order.  Main
-     * entry point.
+     * Finds the implementation Class object in the specified order. Main entry point.
+     *
      * @return Class object of factory, never null
-     *
-     * @param type                  Base class / Service interface  of the
-     *                              factory to find.
-     *
-     * @param fallbackClassName     Implementation class name, if nothing else
-     *                              is found.  Use null to mean no fallback.
-     *
-     * Package private so this code can be shared.
+     * @param type Base class / Service interface of the factory to find.
+     * @param fallbackClassName Implementation class name, if nothing else is found. Use null to
+     *     mean no fallback.
+     *     <p>Package private so this code can be shared.
      */
     static <T> T find(Class<T> type, String fallbackClassName)
-        throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError
-    {
+            throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError {
         assert type != null;
 
         final String factoryId = type.getName();
@@ -263,8 +233,7 @@ class FactoryFinder {
                 dPrint("found system property, value=" + systemProp);
                 return newInstance(type, systemProp, null, true, true);
             }
-        }
-        catch (SecurityException se) {
+        } catch (SecurityException se) {
             if (debug) se.printStackTrace();
         }
 
@@ -273,12 +242,16 @@ class FactoryFinder {
             if (firstTime) {
                 synchronized (cacheProps) {
                     if (firstTime) {
-                        String configFile = ss.getSystemProperty("java.home") + File.separator +
-                            "lib" + File.separator + "jaxp.properties";
+                        String configFile =
+                                ss.getSystemProperty("java.home")
+                                        + File.separator
+                                        + "lib"
+                                        + File.separator
+                                        + "jaxp.properties";
                         File f = new File(configFile);
                         firstTime = false;
                         if (ss.doesFileExist(f)) {
-                            dPrint("Read properties file "+f);
+                            dPrint("Read properties file " + f);
                             cacheProps.load(ss.getFileInputStream(f));
                         }
                     }
@@ -290,8 +263,7 @@ class FactoryFinder {
                 dPrint("found in $java.home/jaxp.properties, value=" + factoryClassName);
                 return newInstance(type, factoryClassName, null, true, true);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             if (debug) ex.printStackTrace();
         }
 
@@ -301,8 +273,8 @@ class FactoryFinder {
             return provider;
         }
         if (fallbackClassName == null) {
-            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(null,
-                "Provider for " + factoryId + " cannot be found");
+            throw new org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError(
+                    null, "Provider for " + factoryId + " cannot be found");
         }
 
         dPrint("loaded from fallback value: " + fallbackClassName);
@@ -317,21 +289,21 @@ class FactoryFinder {
      * @return instance of provider class if found or null
      */
     private static <T> T findServiceProvider(final Class<T> type)
-        throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError
-    {
-      try {
-            return AccessController.doPrivileged(new PrivilegedAction<T>() {
-                public T run() {
-                    final ServiceLoader<T> serviceLoader = ServiceLoader.load(type);
-                    final Iterator<T> iterator = serviceLoader.iterator();
-                    if (iterator.hasNext()) {
-                        return iterator.next();
-                    } else {
-                        return null;
-                    }
-                 }
-            });
-        } catch(ServiceConfigurationError e) {
+            throws org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError {
+        try {
+            return AccessController.doPrivileged(
+                    new PrivilegedAction<T>() {
+                        public T run() {
+                            final ServiceLoader<T> serviceLoader = ServiceLoader.load(type);
+                            final Iterator<T> iterator = serviceLoader.iterator();
+                            if (iterator.hasNext()) {
+                                return iterator.next();
+                            } else {
+                                return null;
+                            }
+                        }
+                    });
+        } catch (ServiceConfigurationError e) {
             // It is not possible to wrap an error directly in
             // FactoryConfigurationError - so we need to wrap the
             // ServiceConfigurationError in a RuntimeException.
@@ -339,8 +311,8 @@ class FactoryFinder {
             // FactoryConfigurationError to allow setting a
             // Throwable as the cause, but that could cause
             // compatibility issues down the road.
-            final RuntimeException x = new RuntimeException(
-                    "Provider for " + type + " cannot be created", e);
+            final RuntimeException x =
+                    new RuntimeException("Provider for " + type + " cannot be created", e);
             final org.openjdk.javax.xml.transform.TransformerFactoryConfigurationError error =
                     new TransformerFactoryConfigurationError(x, x.getMessage());
             throw error;

@@ -21,19 +21,17 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.SecuritySupport;
-import java.util.ResourceBundle;
+
 import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
- * Base class for datatype exceptions. For DTD types, the exception can be
- * created from an error message. For Schema types, it needs an error code
- * (as defined in Appendix C of the structure spec), plus an array of arguents,
- * for error message substitution.
+ * Base class for datatype exceptions. For DTD types, the exception can be created from an error
+ * message. For Schema types, it needs an error code (as defined in Appendix C of the structure
+ * spec), plus an array of arguents, for error message substitution.
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
- *
  * @version $Id: DatatypeException.java,v 1.6 2010-11-01 04:39:43 joehw Exp $
  */
 public class DatatypeException extends Exception {
@@ -46,10 +44,10 @@ public class DatatypeException extends Exception {
     protected Object[] args;
 
     /**
-     * Create a new datatype exception by providing an error code and a list
-     * of error message substitution arguments.
+     * Create a new datatype exception by providing an error code and a list of error message
+     * substitution arguments.
      *
-     * @param key  error code
+     * @param key error code
      * @param args error arguments
      */
     public DatatypeException(String key, Object[] args) {
@@ -61,7 +59,7 @@ public class DatatypeException extends Exception {
     /**
      * Return the error code
      *
-     * @return  error code
+     * @return error code
      */
     public String getKey() {
         return key;
@@ -70,7 +68,7 @@ public class DatatypeException extends Exception {
     /**
      * Return the list of error arguments
      *
-     * @return  error arguments
+     * @return error arguments
      */
     public Object[] getArgs() {
         return args;
@@ -79,20 +77,27 @@ public class DatatypeException extends Exception {
     /**
      * Overrides this method to get the formatted&localized error message.
      *
-     * REVISIT: the system locale is used to load the property file.
-     *          do we want to allow the appilcation to specify a
-     *          different locale?
+     * <p>REVISIT: the system locale is used to load the property file. do we want to allow the
+     * appilcation to specify a different locale?
      */
     public String getMessage() {
         ResourceBundle resourceBundle = null;
-        resourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages");
+        resourceBundle =
+                SecuritySupport.getResourceBundle(
+                        "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages");
         if (resourceBundle == null)
-            throw new MissingResourceException("Property file not found!", "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages", key);
+            throw new MissingResourceException(
+                    "Property file not found!",
+                    "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages",
+                    key);
 
         String msg = resourceBundle.getString(key);
         if (msg == null) {
             msg = resourceBundle.getString("BadMessageKey");
-            throw new MissingResourceException(msg, "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages", key);
+            throw new MissingResourceException(
+                    msg,
+                    "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages",
+                    key);
         }
 
         if (args != null) {

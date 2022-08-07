@@ -34,41 +34,33 @@ import java.util.Comparator;
  */
 public class CodeBlock {
 
-    public static final Comparator<CodeBlock> COMPARATOR_END = (a, b) -> {
-        var res = Integer.compare(a.endLine, b.endLine);
-        if (res == 0) {
-            return Integer.compare(a.endColumn, b.endColumn);
-        } else {
-            return res;
-        }
-    };
-    public static final Comparator<CodeBlock> COMPARATOR_START = (a, b) -> {
-        var res = Integer.compare(a.startLine, b.startLine);
-        if (res == 0) {
-            return Integer.compare(a.startColumn, b.startColumn);
-        } else {
-            return res;
-        }
-    };
-    /**
-     * Start line of code block
-     */
+    public static final Comparator<CodeBlock> COMPARATOR_END =
+            (a, b) -> {
+                var res = Integer.compare(a.endLine, b.endLine);
+                if (res == 0) {
+                    return Integer.compare(a.endColumn, b.endColumn);
+                } else {
+                    return res;
+                }
+            };
+    public static final Comparator<CodeBlock> COMPARATOR_START =
+            (a, b) -> {
+                var res = Integer.compare(a.startLine, b.startLine);
+                if (res == 0) {
+                    return Integer.compare(a.startColumn, b.startColumn);
+                } else {
+                    return res;
+                }
+            };
+    /** Start line of code block */
     public int startLine;
-    /**
-     * Start column of code block
-     */
+    /** Start column of code block */
     public int startColumn;
-    /**
-     * End line of code block
-     */
+    /** End line of code block */
     public int endLine;
-    /**
-     * End column of code block
-     */
+    /** End column of code block */
     public int endColumn;
-    /**
-     * Indicates that this BlockLine should be drawn vertically until the bottom of its end line
-     */
+    /** Indicates that this BlockLine should be drawn vertically until the bottom of its end line */
     public boolean toBottomOfEndLine;
 
     public void clear() {
@@ -79,12 +71,17 @@ public class CodeBlock {
     @NonNull
     @Override
     public String toString() {
-        return "BlockLine{" +
-                "startLine=" + startLine +
-                ", startColumn=" + startColumn +
-                ", endLine=" + endLine +
-                ", endColumn=" + endColumn +
-                ", toBottomOfEndLine=" + toBottomOfEndLine +
-                '}';
+        return "BlockLine{"
+                + "startLine="
+                + startLine
+                + ", startColumn="
+                + startColumn
+                + ", endLine="
+                + endLine
+                + ", endColumn="
+                + endColumn
+                + ", toBottomOfEndLine="
+                + toBottomOfEndLine
+                + '}';
     }
 }

@@ -28,17 +28,15 @@ import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 import org.openjdk.com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
 
 /**
- * CachedNodeListIterator is used for select expressions in a
- * variable or parameter. This iterator caches all nodes in an
- * IntegerArray. Its cloneIterator() method is overridden to
- * return an object of ClonedNodeListIterator.
+ * CachedNodeListIterator is used for select expressions in a variable or parameter. This iterator
+ * caches all nodes in an IntegerArray. Its cloneIterator() method is overridden to return an object
+ * of ClonedNodeListIterator.
  */
 public final class CachedNodeListIterator extends DTMAxisIteratorBase {
 
-    /**
-     * Source for this iterator.
-     */
+    /** Source for this iterator. */
     private DTMAxisIterator _source;
+
     private IntegerArray _nodes = new IntegerArray();
     private int _numCachedNodes = 0;
     private int _index = 0;
@@ -49,8 +47,8 @@ public final class CachedNodeListIterator extends DTMAxisIteratorBase {
     }
 
     public void setRestartable(boolean isRestartable) {
-        //_isRestartable = isRestartable;
-        //_source.setRestartable(isRestartable);
+        // _isRestartable = isRestartable;
+        // _source.setRestartable(isRestartable);
     }
 
     public DTMAxisIterator setStartNode(int node) {
@@ -79,20 +77,16 @@ public final class CachedNodeListIterator extends DTMAxisIteratorBase {
     public int getNode(int index) {
         if (index < _numCachedNodes) {
             return _nodes.at(index);
-        }
-        else if (!_isEnded){
+        } else if (!_isEnded) {
             int node = _source.next();
             if (node != END) {
                 _nodes.add(node);
                 _numCachedNodes++;
-            }
-            else {
+            } else {
                 _isEnded = true;
             }
             return node;
-        }
-        else
-            return END;
+        } else return END;
     }
 
     public DTMAxisIterator cloneIterator() {

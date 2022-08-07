@@ -59,12 +59,17 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Thrown on internal errors. Extends RuntimeException so it hasn't to be declared
- * in the throws clause every time.
+ * Thrown on internal errors. Extends RuntimeException so it hasn't to be declared in the throws
+ * clause every time.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class ClassGenException extends RuntimeException {
-  public ClassGenException() { super(); }
-  public ClassGenException(String s) { super(s); }
+    public ClassGenException() {
+        super();
+    }
+
+    public ClassGenException(String s) {
+        super(s);
+    }
 }

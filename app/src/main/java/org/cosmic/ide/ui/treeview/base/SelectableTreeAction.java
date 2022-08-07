@@ -14,14 +14,11 @@
 
 package org.cosmic.ide.ui.treeview.base;
 
-import java.util.List;
-
 import org.cosmic.ide.ui.treeview.TreeNode;
 
-/**
- * Created by xinyuanzhong on 2017/4/27.
- */
+import java.util.List;
 
+/** Created by xinyuanzhong on 2017/4/27. */
 public interface SelectableTreeAction<D> extends BaseTreeAction<D> {
     void selectNode(TreeNode<D> treeNode);
 

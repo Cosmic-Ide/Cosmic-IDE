@@ -58,8 +58,9 @@ public abstract class Rule {
         return RegexSource.replaceCaptures(this.contentName, lineText, captureIndices);
     }
 
-    public abstract void collectPatternsRecursive(IRuleRegistry grammar, RegExpSourceList out, boolean isFirst);
+    public abstract void collectPatternsRecursive(
+            IRuleRegistry grammar, RegExpSourceList out, boolean isFirst);
 
-    public abstract ICompiledRule compile(IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG);
-
+    public abstract ICompiledRule compile(
+            IRuleRegistry grammar, String endRegexSource, boolean allowA, boolean allowG);
 }

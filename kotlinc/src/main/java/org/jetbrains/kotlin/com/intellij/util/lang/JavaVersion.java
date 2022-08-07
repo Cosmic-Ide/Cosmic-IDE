@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.com.intellij.util.lang;
 
-import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil;
 
 public final class JavaVersion implements Comparable<JavaVersion> {
     public final int feature;
@@ -23,7 +22,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
         this.ea = ea;
     }
 
-    public int compareTo( JavaVersion o) {
+    public int compareTo(JavaVersion o) {
 
         int diff = this.feature - o.feature;
         if (diff != 0) {
@@ -50,8 +49,12 @@ public final class JavaVersion implements Comparable<JavaVersion> {
         } else if (!(o instanceof JavaVersion)) {
             return false;
         } else {
-            JavaVersion other = (JavaVersion)o;
-            return this.feature == other.feature && this.minor == other.minor && this.update == other.update && this.build == other.build && this.ea == other.ea;
+            JavaVersion other = (JavaVersion) o;
+            return this.feature == other.feature
+                    && this.minor == other.minor
+                    && this.update == other.update
+                    && this.build == other.build
+                    && this.ea == other.ea;
         }
     }
 
@@ -117,8 +120,8 @@ public final class JavaVersion implements Comparable<JavaVersion> {
         return sb.toString();
     }
 
-
-    public static JavaVersion compose(int feature, int minor, int update, int build, boolean ea) throws IllegalArgumentException {
+    public static JavaVersion compose(int feature, int minor, int update, int build, boolean ea)
+            throws IllegalArgumentException {
         if (feature < 0) {
             throw new IllegalArgumentException();
         } else if (minor < 0) {
@@ -132,11 +135,9 @@ public final class JavaVersion implements Comparable<JavaVersion> {
         }
     }
 
-
     public static JavaVersion compose(int feature) {
         return compose(feature, 0, 0, 0, false);
     }
-
 
     public static JavaVersion current() {
         if (current == null) {
@@ -149,7 +150,10 @@ public final class JavaVersion implements Comparable<JavaVersion> {
                 }
             }
 
-            current = rt != null && rt.feature == fallback.feature && rt.minor == fallback.minor ? rt : fallback;
+            current =
+                    rt != null && rt.feature == fallback.feature && rt.minor == fallback.minor
+                            ? rt
+                            : fallback;
         }
 
         JavaVersion var10000 = current;
@@ -159,25 +163,31 @@ public final class JavaVersion implements Comparable<JavaVersion> {
 
     private static JavaVersion rtVersion() {
         try {
-            Object version = Runtime.class.getMethod("version").invoke((Object)null);
-            int major = (Integer)version.getClass().getMethod("major").invoke(version);
-            int minor = (Integer)version.getClass().getMethod("minor").invoke(version);
-            int security = (Integer)version.getClass().getMethod("security").invoke(version);
+            Object version = Runtime.class.getMethod("version").invoke((Object) null);
+            int major = (Integer) version.getClass().getMethod("major").invoke(version);
+            int minor = (Integer) version.getClass().getMethod("minor").invoke(version);
+            int security = (Integer) version.getClass().getMethod("security").invoke(version);
             Object buildOpt = version.getClass().getMethod("build").invoke(version);
-            int build = (Integer)buildOpt.getClass().getMethod("orElse", Object.class).invoke(buildOpt, 0);
+            int build =
+                    (Integer)
+                            buildOpt.getClass()
+                                    .getMethod("orElse", Object.class)
+                                    .invoke(buildOpt, 0);
             Object preOpt = version.getClass().getMethod("pre").invoke(version);
-            boolean ea = (Boolean)preOpt.getClass().getMethod("isPresent").invoke(preOpt);
+            boolean ea = (Boolean) preOpt.getClass().getMethod("isPresent").invoke(preOpt);
             return new JavaVersion(major, minor, security, build, ea);
         } catch (Throwable var8) {
             return null;
         }
     }
 
-    public static JavaVersion parse( String versionString) throws IllegalArgumentException {
+    public static JavaVersion parse(String versionString) throws IllegalArgumentException {
         return new JavaVersion(8, 0, 0, 69, false);
     }
 
     private static boolean startsWithWord(String s, String word) {
-        return s.startsWith(word) && (s.length() == word.length() || !Character.isLetterOrDigit(s.charAt(word.length())));
+        return s.startsWith(word)
+                && (s.length() == word.length()
+                        || !Character.isLetterOrDigit(s.charAt(word.length())));
     }
 }

@@ -67,8 +67,7 @@ public class TypeCheckError extends Exception {
 
         if (_error == null) {
             if (_node != null) {
-                _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_ERR,
-                                      _node.toString());
+                _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_ERR, _node.toString());
             } else {
                 _error = new ErrorMsg(ErrorMsg.TYPE_CHECK_UNK_LOC_ERR);
             }

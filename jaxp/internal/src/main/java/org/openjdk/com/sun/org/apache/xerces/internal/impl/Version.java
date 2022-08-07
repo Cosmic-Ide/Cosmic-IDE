@@ -72,8 +72,11 @@ public class Version {
     // Data
     //
 
-    /** Version string.
-     * @deprecated  getVersion() should be used instead.  */
+    /**
+     * Version string.
+     *
+     * @deprecated getVersion() should be used instead.
+     */
     public static final String fVersion = getVersion();
 
     private static final String fImmutableVersion = "Xerces-J 2.7.1";
@@ -91,12 +94,8 @@ public class Version {
     // MAIN
     //
 
-    /**
-     * Prints out the version number to System.out. This is needed
-     * for the build system.
-     */
+    /** Prints out the version number to System.out. This is needed for the build system. */
     public static void main(String argv[]) {
         System.out.println(fVersion);
     }
-
 } // class Version

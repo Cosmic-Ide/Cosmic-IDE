@@ -59,12 +59,11 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Denotes an unparameterized instruction to pop a value on top from the stack,
- * such as ISTORE, POP, PUTSTATIC.
+ * Denotes an unparameterized instruction to pop a value on top from the stack, such as ISTORE, POP,
+ * PUTSTATIC.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ISTORE
  * @see POP
  */
-public interface PopInstruction extends StackConsumer {
-}
+public interface PopInstruction extends StackConsumer {}

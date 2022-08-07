@@ -73,41 +73,32 @@ public final class IntType extends NumberType {
     }
 
     /**
-     * @see     Type#distanceTo
+     * @see Type#distanceTo
      */
     public int distanceTo(Type type) {
         if (type == this) {
             return 0;
-        }
-        else if (type == Real) {
+        } else if (type == Real) {
             return 1;
-        }
-        else
-            return Integer.MAX_VALUE;
+        } else return Integer.MAX_VALUE;
     }
 
     /**
      * Translates an integer into an object of internal type <code>type</code>.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            final Type type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, final Type type) {
         if (type == Real) {
             translateTo(classGen, methodGen, (RealType) type);
-        }
-        else if (type == String) {
+        } else if (type == String) {
             translateTo(classGen, methodGen, (StringType) type);
-        }
-        else if (type == Boolean) {
+        } else if (type == Boolean) {
             translateTo(classGen, methodGen, (BooleanType) type);
-        }
-        else if (type == Reference) {
+        } else if (type == Reference) {
             translateTo(classGen, methodGen, (ReferenceType) type);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), type.toString());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
@@ -115,36 +106,31 @@ public final class IntType extends NumberType {
     /**
      * Expects an integer on the stack and pushes a real.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            RealType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
         methodGen.getInstructionList().append(I2D);
     }
 
     /**
-     * Expects an integer on the stack and pushes its string value by calling
-     * <code>Integer.toString(int i)</code>.
+     * Expects an integer on the stack and pushes its string value by calling <code>
+     * Integer.toString(int i)</code>.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            StringType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
-        il.append(new INVOKESTATIC(cpg.addMethodref(INTEGER_CLASS,
-                                                    "toString",
-                                                    "(I)" + STRING_SIG)));
+        il.append(
+                new INVOKESTATIC(cpg.addMethodref(INTEGER_CLASS, "toString", "(I)" + STRING_SIG)));
     }
 
     /**
-     * Expects an integer on the stack and pushes a 0 if its value is 0 and
-     * a 1 otherwise.
+     * Expects an integer on the stack and pushes a 0 if its value is 0 and a 1 otherwise.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            BooleanType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final InstructionList il = methodGen.getInstructionList();
         final BranchHandle falsec = il.append(new IFEQ(null));
         il.append(ICONST_1);
@@ -154,97 +140,75 @@ public final class IntType extends NumberType {
     }
 
     /**
-     * Expects an integer on the stack and translates it to a non-synthesized
-     * boolean. It does not push a 0 or a 1 but instead returns branchhandle
-     * list to be appended to the false list.
+     * Expects an integer on the stack and translates it to a non-synthesized boolean. It does not
+     * push a 0 or a 1 but instead returns branchhandle list to be appended to the false list.
      *
-     * @see     Type#translateToDesynthesized
+     * @see Type#translateToDesynthesized
      */
-    public FlowList translateToDesynthesized(ClassGenerator classGen,
-                                             MethodGenerator methodGen,
-                                             BooleanType type) {
+    public FlowList translateToDesynthesized(
+            ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final InstructionList il = methodGen.getInstructionList();
         return new FlowList(il.append(new IFEQ(null)));
     }
 
     /**
-     * Expects an integer on the stack and pushes a boxed integer.
-     * Boxed integers are represented by an instance of
-     * <code>java.lang.Integer</code>.
+     * Expects an integer on the stack and pushes a boxed integer. Boxed integers are represented by
+     * an instance of <code>java.lang.Integer</code>.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            ReferenceType type) {
+    public void translateTo(
+            ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
         il.append(new NEW(cpg.addClass(INTEGER_CLASS)));
         il.append(DUP_X1);
         il.append(SWAP);
-        il.append(new INVOKESPECIAL(cpg.addMethodref(INTEGER_CLASS,
-                                                     "<init>", "(I)V")));
+        il.append(new INVOKESPECIAL(cpg.addMethodref(INTEGER_CLASS, "<init>", "(I)V")));
     }
 
     /**
-     * Translates an integer into the Java type denoted by <code>clazz</code>.
-     * Expects an integer on the stack and pushes a number of the appropriate
-     * type after coercion.
+     * Translates an integer into the Java type denoted by <code>clazz</code>. Expects an integer on
+     * the stack and pushes a number of the appropriate type after coercion.
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Class clazz) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
         final InstructionList il = methodGen.getInstructionList();
         if (clazz == Character.TYPE) {
             il.append(I2C);
-        }
-        else if (clazz == Byte.TYPE) {
+        } else if (clazz == Byte.TYPE) {
             il.append(I2B);
-        }
-        else if (clazz == Short.TYPE) {
+        } else if (clazz == Short.TYPE) {
             il.append(I2S);
-        }
-        else if (clazz == Integer.TYPE) {
+        } else if (clazz == Integer.TYPE) {
             il.append(NOP);
-        }
-        else if (clazz == Long.TYPE) {
+        } else if (clazz == Long.TYPE) {
             il.append(I2L);
-        }
-        else if (clazz == Float.TYPE) {
+        } else if (clazz == Float.TYPE) {
             il.append(I2F);
-        }
-        else if (clazz == Double.TYPE) {
+        } else if (clazz == Double.TYPE) {
             il.append(I2D);
         }
-         // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
-       else if (clazz.isAssignableFrom(java.lang.Double.class)) {
-           il.append(I2D);
-           Real.translateTo(classGen, methodGen, Reference);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), clazz.getName());
+        // Is Double <: clazz? I.e. clazz in { Double, Number, Object }
+        else if (clazz.isAssignableFrom(java.lang.Double.class)) {
+            il.append(I2D);
+            Real.translateTo(classGen, methodGen, Reference);
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
 
-    /**
-     * Translates an object of this type to its boxed representation.
-     */
-    public void translateBox(ClassGenerator classGen,
-                             MethodGenerator methodGen) {
+    /** Translates an object of this type to its boxed representation. */
+    public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
         translateTo(classGen, methodGen, Reference);
     }
 
-    /**
-     * Translates an object of this type to its unboxed representation.
-     */
-    public void translateUnBox(ClassGenerator classGen,
-                               MethodGenerator methodGen) {
+    /** Translates an object of this type to its unboxed representation. */
+    public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
         il.append(new CHECKCAST(cpg.addClass(INTEGER_CLASS)));
-        final int index = cpg.addMethodref(INTEGER_CLASS,
-                                           INT_VALUE,
-                                           INT_VALUE_SIG);
+        final int index = cpg.addMethodref(INTEGER_CLASS, INT_VALUE, INT_VALUE_SIG);
         il.append(new INVOKEVIRTUAL(index));
     }
 
@@ -281,22 +245,26 @@ public final class IntType extends NumberType {
     }
 
     public BranchInstruction GT(boolean tozero) {
-        return tozero ? (BranchInstruction) new IFGT(null) :
-            (BranchInstruction) new IF_ICMPGT(null);
+        return tozero
+                ? (BranchInstruction) new IFGT(null)
+                : (BranchInstruction) new IF_ICMPGT(null);
     }
 
     public BranchInstruction GE(boolean tozero) {
-        return tozero ? (BranchInstruction) new IFGE(null) :
-            (BranchInstruction) new IF_ICMPGE(null);
+        return tozero
+                ? (BranchInstruction) new IFGE(null)
+                : (BranchInstruction) new IF_ICMPGE(null);
     }
 
     public BranchInstruction LT(boolean tozero) {
-        return tozero ? (BranchInstruction) new IFLT(null) :
-            (BranchInstruction) new IF_ICMPLT(null);
+        return tozero
+                ? (BranchInstruction) new IFLT(null)
+                : (BranchInstruction) new IF_ICMPLT(null);
     }
 
     public BranchInstruction LE(boolean tozero) {
-        return tozero ? (BranchInstruction) new IFLE(null) :
-            (BranchInstruction) new IF_ICMPLE(null);
+        return tozero
+                ? (BranchInstruction) new IFLE(null)
+                : (BranchInstruction) new IF_ICMPLE(null);
     }
 }

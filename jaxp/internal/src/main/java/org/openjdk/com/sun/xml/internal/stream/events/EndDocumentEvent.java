@@ -25,18 +25,15 @@
 
 package org.openjdk.com.sun.xml.internal.stream.events;
 
-import org.openjdk.javax.xml.stream.events.EndDocument;
 import org.openjdk.javax.xml.stream.XMLStreamConstants;
+import org.openjdk.javax.xml.stream.events.EndDocument;
 
 /**
  * This class contains information about EndDocument event.
  *
  * @author Neeraj Bajaj, Sun Microsystems.
  */
-
-
-public class EndDocumentEvent extends DummyEvent
-implements EndDocument {
+public class EndDocumentEvent extends DummyEvent implements EndDocument {
 
     public EndDocumentEvent() {
         init();
@@ -50,11 +47,7 @@ implements EndDocument {
         return "ENDDOCUMENT";
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
-        //end document
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
+        // end document
     }
-
-
 }

@@ -29,9 +29,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionItem;
@@ -45,6 +42,9 @@ import io.github.rosemoe.sora.text.TextReference;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 /**
  * Auto complete window for editing code quicker
@@ -120,11 +120,13 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         }
         requestShow = System.currentTimeMillis();
         final var requireRequest = mRequestTime;
-        mEditor.postDelayed(() -> {
-            if (requestHide < requestShow && mRequestTime == requireRequest) {
-                super.show();
-            }
-        }, 70);
+        mEditor.postDelayed(
+                () -> {
+                    if (requestHide < requestShow && mRequestTime == requireRequest) {
+                        super.show();
+                    }
+                },
+                70);
     }
 
     public void hide() {
@@ -141,9 +143,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         return mCurrent;
     }
 
-    /**
-     * Apply colors for self
-     */
+    /** Apply colors for self */
     public void applyColorScheme() {
         EditorColorScheme colors = mEditor.getColorScheme();
         mLayout.onApplyColorScheme(colors);
@@ -158,9 +158,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         mLayout.setLoading(state);
     }
 
-    /**
-     * Move selection down
-     */
+    /** Move selection down */
     public void moveDown() {
         var adpView = mLayout.getCompletionList();
         if (mCurrent + 1 >= adpView.getAdapter().getCount()) {
@@ -171,9 +169,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         ensurePosition();
     }
 
-    /**
-     * Move selection up
-     */
+    /** Move selection up */
     public void moveUp() {
         var adpView = mLayout.getCompletionList();
         if (mCurrent - 1 < 0) {
@@ -184,24 +180,17 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         ensurePosition();
     }
 
-    /**
-     * Make current selection visible
-     */
+    /** Make current selection visible */
     private void ensurePosition() {
-        if (mCurrent != -1)
-            mLayout.ensureListPositionVisible(mCurrent, mAdapter.getItemHeight());
+        if (mCurrent != -1) mLayout.ensureListPositionVisible(mCurrent, mAdapter.getItemHeight());
     }
 
-    /**
-     * Reject the requests from IME to set composing region/text
-     */
+    /** Reject the requests from IME to set composing region/text */
     public boolean shouldRejectComposing() {
         return mCancelShowUp;
     }
 
-    /**
-     * Select current position
-     */
+    /** Select current position */
     public void select() {
         select(mCurrent);
     }
@@ -223,7 +212,8 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             mCancelShowUp = true;
             mEditor.restartInput();
             mEditor.getText().beginBatchEdit();
-            item.performCompletion(mEditor, mEditor.getText(), mThread.mPosition.line, mThread.mPosition.column);
+            item.performCompletion(
+                    mEditor, mEditor.getText(), mThread.mPosition.line, mThread.mPosition.column);
             mEditor.getText().endBatchEdit();
             mEditor.updateCursor();
             mCancelShowUp = false;
@@ -232,9 +222,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         hide();
     }
 
-    /**
-     * Stop previous completion thread
-     */
+    /** Stop previous completion thread */
     public void cancelCompletion() {
         var previous = mThread;
         if (previous != null && previous.isAlive()) {
@@ -245,8 +233,8 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
     }
 
     /**
-     * Check cursor position's span.
-     * If {@link io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
+     * Check cursor position's span. If {@link
+     * io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
      */
     public boolean checkNoCompletion() {
         var pos = mEditor.getCursor().left();
@@ -285,9 +273,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         }
     }
 
-    /**
-     * Start completion at current selection position
-     */
+    /** Start completion at current selection position */
     @SuppressWarnings("unchecked")
     public void requireCompletion() {
         if (mCancelShowUp || !isEnabled()) {
@@ -306,21 +292,25 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
         cancelCompletion();
         mRequestTime = System.nanoTime();
         mCurrent = -1;
-        mPublisher = new CompletionPublisher(mEditor.getHandler(), () -> {
-            var items = mPublisher.getItems();
-            if (mLastAttachedItems == null || mLastAttachedItems.get() != items) {
-                mAdapter.attachValues(this, items);
-                mAdapter.notifyDataSetInvalidated();
-                mLastAttachedItems = new WeakReference<>(items);
-            } else {
-                mAdapter.notifyDataSetChanged();
-            }
-            float newHeight = mAdapter.getItemHeight() * mAdapter.getCount();
-            setSize(getWidth(), (int) Math.min(newHeight, mMaxHeight));
-            if (!isShowing()) {
-                show();
-            }
-        }, mEditor.getEditorLanguage().getInterruptionLevel());
+        mPublisher =
+                new CompletionPublisher(
+                        mEditor.getHandler(),
+                        () -> {
+                            var items = mPublisher.getItems();
+                            if (mLastAttachedItems == null || mLastAttachedItems.get() != items) {
+                                mAdapter.attachValues(this, items);
+                                mAdapter.notifyDataSetInvalidated();
+                                mLastAttachedItems = new WeakReference<>(items);
+                            } else {
+                                mAdapter.notifyDataSetChanged();
+                            }
+                            float newHeight = mAdapter.getItemHeight() * mAdapter.getCount();
+                            setSize(getWidth(), (int) Math.min(newHeight, mMaxHeight));
+                            if (!isShowing()) {
+                                show();
+                            }
+                        },
+                        mEditor.getEditorLanguage().getInterruptionLevel());
         mThread = new CompletionThread(mRequestTime, mPublisher);
         setLoading(true);
         mThread.start();
@@ -356,9 +346,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             mAborted = false;
         }
 
-        /**
-         * Abort the completion thread
-         */
+        /** Abort the completion thread */
         public void cancel() {
             mAborted = true;
             var level = mLanguage.getInterruptionLevel();
@@ -396,9 +384,5 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
                 e.printStackTrace();
             }
         }
-
-
     }
-
 }
-

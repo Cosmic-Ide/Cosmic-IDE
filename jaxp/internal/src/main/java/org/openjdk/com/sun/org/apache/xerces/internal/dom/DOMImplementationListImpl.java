@@ -20,33 +20,29 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.dom;
 
-import java.util.Vector;
-import org.w3c.dom.DOMImplementationList;
 import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.DOMImplementationList;
+
+import java.util.Vector;
 
 /**
- * <p>This class implements the DOM Level 3 Core interface DOMImplementationList.</p>
+ * This class implements the DOM Level 3 Core interface DOMImplementationList.
  *
  * @xerces.internal
- *
  * @author Neil Delima, IBM
  * @since DOM Level 3 Core
  */
 public class DOMImplementationListImpl implements DOMImplementationList {
 
-    //A collection of DOMImplementations
+    // A collection of DOMImplementations
     private Vector fImplementations;
 
-    /**
-     * Construct an empty list of DOMImplementations
-     */
+    /** Construct an empty list of DOMImplementations */
     public DOMImplementationListImpl() {
         fImplementations = new Vector();
     }
 
-    /**
-     * Construct an empty list of DOMImplementations
-     */
+    /** Construct an empty list of DOMImplementations */
     public DOMImplementationListImpl(Vector params) {
         fImplementations = params;
     }

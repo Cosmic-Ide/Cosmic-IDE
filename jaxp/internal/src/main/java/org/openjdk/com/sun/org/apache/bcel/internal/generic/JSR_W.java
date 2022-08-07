@@ -57,59 +57,56 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 import org.openjdk.com.sun.org.apache.bcel.internal.util.ByteSequence;
+
+import java.io.*;
 
 /**
  * JSR_W - Jump to subroutine
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class JSR_W extends JsrInstruction {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  JSR_W() {}
+    /**
+     * Empty constructor needed for the Class.newInstance() statement in
+     * Instruction.readInstruction(). Not to be used otherwise.
+     */
+    JSR_W() {}
 
-  public JSR_W(InstructionHandle target) {
-    super(Constants.JSR_W, target);
-    length = 5;
-  }
+    public JSR_W(InstructionHandle target) {
+        super(Constants.JSR_W, target);
+        length = 5;
+    }
 
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    index = getTargetOffset();
-    out.writeByte(opcode);
-    out.writeInt(index);
-  }
+    /**
+     * Dump instruction as byte code to stream out.
+     *
+     * @param out Output stream
+     */
+    public void dump(DataOutputStream out) throws IOException {
+        index = getTargetOffset();
+        out.writeByte(opcode);
+        out.writeInt(index);
+    }
 
-  /**
-   * Read needed data (e.g. index) from file.
-   */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
-  {
-    index = bytes.readInt();
-    length = 5;
-  }
+    /** Read needed data (e.g. index) from file. */
+    protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException {
+        index = bytes.readInt();
+        length = 5;
+    }
 
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitStackProducer(this);
-    v.visitBranchInstruction(this);
-    v.visitJsrInstruction(this);
-    v.visitJSR_W(this);
-  }
+    /**
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
+     * i.e., the most specific visitXXX() call comes last.
+     *
+     * @param v Visitor object
+     */
+    public void accept(Visitor v) {
+        v.visitStackProducer(this);
+        v.visitBranchInstruction(this);
+        v.visitJsrInstruction(this);
+        v.visitJSR_W(this);
+    }
 }

@@ -59,11 +59,10 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Denotes an instruction to be a variable length instruction, such as
- * GOTO, JSR, LOOKUPSWITCH and TABLESWITCH.
+ * Denotes an instruction to be a variable length instruction, such as GOTO, JSR, LOOKUPSWITCH and
+ * TABLESWITCH.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
-
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see GOTO
  * @see JSR
  * @see LOOKUPSWITCH

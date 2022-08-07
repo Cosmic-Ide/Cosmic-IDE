@@ -23,7 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime.output;
 
-
 /**
  * @author Santiago Pericas-Geertsen
  */

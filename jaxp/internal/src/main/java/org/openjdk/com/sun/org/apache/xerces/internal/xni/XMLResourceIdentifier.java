@@ -21,12 +21,11 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.xni;
 
 /**
- * <p> This represents the basic physical description of the location of any
- * XML resource (a Schema grammar, a DTD, a general entity etc.) </p>
+ * This represents the basic physical description of the location of any XML resource (a Schema
+ * grammar, a DTD, a general entity etc.)
  *
  * @author Neil Graham, IBM
  */
-
 public interface XMLResourceIdentifier {
 
     /** Sets the public identifier. */
@@ -47,12 +46,10 @@ public interface XMLResourceIdentifier {
     /** Returns the literal system identifier. */
     public String getLiteralSystemId();
 
-    /** Setsthe base URI against which the literal SystemId is to be
-        resolved.*/
+    /** Setsthe base URI against which the literal SystemId is to be resolved. */
     public void setBaseSystemId(String systemId);
 
-    /** <p> Returns the base URI against which the literal SystemId is to be
-        resolved. </p> */
+    /** Returns the base URI against which the literal SystemId is to be resolved. */
     public String getBaseSystemId();
 
     /** Sets the namespace of the resource. */
@@ -60,5 +57,4 @@ public interface XMLResourceIdentifier {
 
     /** Returns the namespace of the resource. */
     public String getNamespace();
-
 } // XMLResourceIdentifier

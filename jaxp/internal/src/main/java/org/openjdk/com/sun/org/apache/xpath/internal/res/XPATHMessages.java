@@ -24,6 +24,7 @@ package org.openjdk.com.sun.org.apache.xpath.internal.res;
 
 import org.openjdk.com.sun.org.apache.bcel.internal.util.SecuritySupport;
 import org.openjdk.com.sun.org.apache.xml.internal.res.XMLMessages;
+
 import java.util.ListResourceBundle;
 
 /**
@@ -33,28 +34,22 @@ import java.util.ListResourceBundle;
  */
 public class XPATHMessages extends XMLMessages {
 
-    /**
-     * The language specific resource object for XPath messages.
-     */
+    /** The language specific resource object for XPath messages. */
     private static ListResourceBundle XPATHBundle = null;
-    /**
-     * The class name of the XPath error message string table.
-     */
+    /** The class name of the XPath error message string table. */
     private static final String XPATH_ERROR_RESOURCES =
             "org.openjdk.com.sun.org.apache.xpath.internal.res.XPATHErrorResources";
 
     /**
-     * Creates a message from the specified key and replacement arguments,
-     * localized to the given locale.
+     * Creates a message from the specified key and replacement arguments, localized to the given
+     * locale.
      *
      * @param msgKey The key for the message text.
-     * @param args The arguments to be used as replacement text in the message
-     * created.
-     *
+     * @param args The arguments to be used as replacement text in the message created.
      * @return The formatted message string.
      */
-    public static final String createXPATHMessage(String msgKey, Object args[]) //throws Exception
-    {
+    public static final String createXPATHMessage(String msgKey, Object args[]) // throws Exception
+            {
         if (XPATHBundle == null) {
             XPATHBundle = SecuritySupport.getResourceBundle(XPATH_ERROR_RESOURCES);
         }
@@ -67,17 +62,15 @@ public class XPATHMessages extends XMLMessages {
     }
 
     /**
-     * Creates a message from the specified key and replacement arguments,
-     * localized to the given locale.
+     * Creates a message from the specified key and replacement arguments, localized to the given
+     * locale.
      *
      * @param msgKey The key for the message text.
-     * @param args The arguments to be used as replacement text in the message
-     * created.
-     *
+     * @param args The arguments to be used as replacement text in the message created.
      * @return The formatted warning string.
      */
-    public static final String createXPATHWarning(String msgKey, Object args[]) //throws Exception
-    {
+    public static final String createXPATHWarning(String msgKey, Object args[]) // throws Exception
+            {
         if (XPATHBundle == null) {
             XPATHBundle = SecuritySupport.getResourceBundle(XPATH_ERROR_RESOURCES);
         }
@@ -90,19 +83,17 @@ public class XPATHMessages extends XMLMessages {
     }
 
     /**
-     * Creates a message from the specified key and replacement arguments,
-     * localized to the given locale.
+     * Creates a message from the specified key and replacement arguments, localized to the given
+     * locale.
      *
      * @param fResourceBundle The resource bundle to use.
      * @param msgKey The message key to use.
-     * @param args The arguments to be used as replacement text in the message
-     * created.
-     *
+     * @param args The arguments to be used as replacement text in the message created.
      * @return The formatted message string.
      */
-    public static final String createXPATHMsg(ListResourceBundle fResourceBundle,
-            String msgKey, Object args[]) //throws Exception
-    {
+    public static final String createXPATHMsg(
+            ListResourceBundle fResourceBundle, String msgKey, Object args[]) // throws Exception
+            {
 
         String fmsg = null;
         boolean throwex = false;

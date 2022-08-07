@@ -61,8 +61,7 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
-/**
- */
+/** */
 public class XMLEntityDecl {
 
     //
@@ -88,7 +87,10 @@ public class XMLEntityDecl {
     public boolean isPE;
 
     /** inExternal */
-    /** <strong>Note:</strong> flag of where the entity is defined, not whether it is a external entity */
+    /**
+     * <strong>Note:</strong> flag of where the entity is defined, not whether it is a external
+     * entity
+     */
     public boolean inExternal;
 
     /** Value. */
@@ -109,9 +111,14 @@ public class XMLEntityDecl {
      * @param isPE
      * @param inExternal
      */
-    public void setValues(String name, String publicId, String systemId,
-                          String baseSystemId, String notation,
-                          boolean isPE, boolean inExternal) {
+    public void setValues(
+            String name,
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            String notation,
+            boolean isPE,
+            boolean inExternal) {
         setValues(name, publicId, systemId, baseSystemId, notation, null, isPE, inExternal);
     }
 
@@ -127,32 +134,34 @@ public class XMLEntityDecl {
      * @param isPE
      * @param inExternal
      */
-    public void setValues(String name, String publicId, String systemId,
-                          String baseSystemId, String notation,
-                          String value, boolean isPE, boolean inExternal) {
-        this.name         = name;
-        this.publicId     = publicId;
-        this.systemId     = systemId;
+    public void setValues(
+            String name,
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            String notation,
+            String value,
+            boolean isPE,
+            boolean inExternal) {
+        this.name = name;
+        this.publicId = publicId;
+        this.systemId = systemId;
         this.baseSystemId = baseSystemId;
-        this.notation     = notation;
-        this.value        = value;
-        this.isPE         = isPE;
-        this.inExternal   = inExternal;
+        this.notation = notation;
+        this.value = value;
+        this.isPE = isPE;
+        this.inExternal = inExternal;
     } // setValues(String,String,String,String,String,boolean,boolean)
 
-    /**
-     * clear
-     */
+    /** clear */
     public void clear() {
-       this.name         = null;
-       this.publicId     = null;
-       this.systemId     = null;
-       this.baseSystemId = null;
-       this.notation     = null;
-       this.value        = null;
-       this.isPE         = false;
-       this.inExternal   = false;
-
+        this.name = null;
+        this.publicId = null;
+        this.systemId = null;
+        this.baseSystemId = null;
+        this.notation = null;
+        this.value = null;
+        this.isPE = false;
+        this.inExternal = false;
     } // clear
-
 } // class XMLEntityDecl

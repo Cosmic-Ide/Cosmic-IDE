@@ -26,54 +26,42 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPoo
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
 
 /**
- * This is a concrete vanilla XML parser class. It uses the abstract parser
- * with either a BasicConfiguration object or the one specified by the
- * application.
+ * This is a concrete vanilla XML parser class. It uses the abstract parser with either a
+ * BasicConfiguration object or the one specified by the application.
  *
- * @author Arnaud  Le Hors, IBM
+ * @author Arnaud Le Hors, IBM
  * @author Andy Clark, IBM
- *
  * @version $Id: XMLDocumentParser.java,v 1.6 2010-11-01 04:40:10 joehw Exp $
  */
-public class XMLDocumentParser
-    extends AbstractXMLDocumentParser {
+public class XMLDocumentParser extends AbstractXMLDocumentParser {
 
     //
     // Constructors
     //
 
-    /**
-     * Constructs a document parser using the default basic parser
-     * configuration.
-     */
+    /** Constructs a document parser using the default basic parser configuration. */
     public XMLDocumentParser() {
         super(new XIncludeAwareParserConfiguration());
     } // <init>()
 
-    /**
-     * Constructs a document parser using the specified parser configuration.
-     */
+    /** Constructs a document parser using the specified parser configuration. */
     public XMLDocumentParser(XMLParserConfiguration config) {
         super(config);
     } // <init>(ParserConfiguration)
 
-    /**
-     * Constructs a document parser using the specified symbol table.
-     */
+    /** Constructs a document parser using the specified symbol table. */
     public XMLDocumentParser(SymbolTable symbolTable) {
         super(new XIncludeAwareParserConfiguration());
-        fConfiguration.setProperty(Constants.XERCES_PROPERTY_PREFIX+Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
+        fConfiguration.setProperty(
+                Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
     } // <init>(SymbolTable)
 
-    /**
-     * Constructs a document parser using the specified symbol table and
-     * grammar pool.
-     */
-    public XMLDocumentParser(SymbolTable symbolTable,
-                             XMLGrammarPool grammarPool) {
+    /** Constructs a document parser using the specified symbol table and grammar pool. */
+    public XMLDocumentParser(SymbolTable symbolTable, XMLGrammarPool grammarPool) {
         super(new XIncludeAwareParserConfiguration());
-        fConfiguration.setProperty(Constants.XERCES_PROPERTY_PREFIX+Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
-        fConfiguration.setProperty(Constants.XERCES_PROPERTY_PREFIX+Constants.XMLGRAMMAR_POOL_PROPERTY, grammarPool);
+        fConfiguration.setProperty(
+                Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
+        fConfiguration.setProperty(
+                Constants.XERCES_PROPERTY_PREFIX + Constants.XMLGRAMMAR_POOL_PROPERTY, grammarPool);
     }
-
 } // class XMLDocumentParser

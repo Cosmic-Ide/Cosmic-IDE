@@ -39,54 +39,44 @@ import org.w3c.dom.DOMStringList;
 import org.w3c.dom.ls.LSInput;
 
 /**
- * <p>An implementation of XSLoader which wraps XMLSchemaLoader.</p>
+ * An implementation of XSLoader which wraps XMLSchemaLoader.
  *
  * @xerces.internal
- *
  * @author Michael Glavassevich, IBM
- *
  * @version $Id: XSLoaderImpl.java,v 1.7 2010-11-01 04:39:55 joehw Exp $
  */
 public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
 
-    /**
-     * Grammar pool. Need this to prevent us from
-     * getting two grammars from the same namespace.
-     */
+    /** Grammar pool. Need this to prevent us from getting two grammars from the same namespace. */
     private final XSGrammarPool fGrammarPool = new XSGrammarMerger();
 
-    /** Schema loader. **/
+    /** Schema loader. * */
     private final XMLSchemaLoader fSchemaLoader = new XMLSchemaLoader();
 
-    /**
-     * No-args constructor.
-     */
+    /** No-args constructor. */
     public XSLoaderImpl() {
         fSchemaLoader.setProperty(XMLSchemaLoader.XMLGRAMMAR_POOL, fGrammarPool);
     }
 
     /**
-     *  The configuration of a document. It maintains a table of recognized
-     * parameters. Using the configuration, it is possible to change the
-     * behavior of the load methods. The configuration may support the
-     * setting of and the retrieval of the following non-boolean parameters
-     * defined on the <code>DOMConfiguration</code> interface:
-     * <code>error-handler</code> (<code>DOMErrorHandler</code>) and
-     * <code>resource-resolver</code> (<code>LSResourceResolver</code>).
-     * <br> The following list of boolean parameters is defined:
+     * The configuration of a document. It maintains a table of recognized parameters. Using the
+     * configuration, it is possible to change the behavior of the load methods. The configuration
+     * may support the setting of and the retrieval of the following non-boolean parameters defined
+     * on the <code>DOMConfiguration</code> interface: <code>error-handler</code> (<code>
+     * DOMErrorHandler</code>) and <code>resource-resolver</code> (<code>LSResourceResolver</code>).
+     * <br>
+     * The following list of boolean parameters is defined:
+     *
      * <dl>
-     * <dt>
-     * <code>"validate"</code></dt>
-     * <dd>
-     * <dl>
-     * <dt><code>true</code></dt>
-     * <dd>[required] (default) Validate an XML
-     * Schema during loading. If validation errors are found, the error
-     * handler is notified. </dd>
-     * <dt><code>false</code></dt>
-     * <dd>[optional] Do not
-     * report errors during the loading of an XML Schema document. </dd>
-     * </dl></dd>
+     *   <dt><code>"validate"</code>
+     *   <dd>
+     *       <dl>
+     *         <dt><code>true</code>
+     *         <dd>[required] (default) Validate an XML Schema during loading. If validation errors
+     *             are found, the error handler is notified.
+     *         <dt><code>false</code>
+     *         <dd>[optional] Do not report errors during the loading of an XML Schema document.
+     *       </dl>
      * </dl>
      */
     public DOMConfiguration getConfig() {
@@ -94,9 +84,9 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
     }
 
     /**
-     * Parses the content of XML Schema documents specified as the list of URI
-     * references. If the URI contains a fragment identifier, the behavior
-     * is not defined by this specification.
+     * Parses the content of XML Schema documents specified as the list of URI references. If the
+     * URI contains a fragment identifier, the behavior is not defined by this specification.
+     *
      * @param uriList The list of URI locations.
      * @return An XSModel representing the schema documents.
      */
@@ -108,18 +98,17 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 fSchemaLoader.loadGrammar(new XMLInputSource(null, uriList.item(i), null));
             }
             return fGrammarPool.toXSModel();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fSchemaLoader.reportDOMFatalError(e);
             return null;
         }
     }
 
     /**
-     *  Parses the content of XML Schema documents specified as a list of
-     * <code>LSInput</code>s.
-     * @param is  The list of <code>LSInput</code>s from which the XML
-     *   Schema documents are to be read.
+     * Parses the content of XML Schema documents specified as a list of <code>LSInput</code>s.
+     *
+     * @param is The list of <code>LSInput</code>s from which the XML Schema documents are to be
+     *     read.
      * @return An XSModel representing the schema documents.
      */
     public XSModel loadInputList(LSInputList is) {
@@ -130,44 +119,42 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 fSchemaLoader.loadGrammar(fSchemaLoader.dom2xmlInputSource(is.item(i)));
             }
             return fGrammarPool.toXSModel();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fSchemaLoader.reportDOMFatalError(e);
             return null;
         }
     }
 
     /**
-     * Parse an XML Schema document from a location identified by a URI
-     * reference. If the URI contains a fragment identifier, the behavior is
-     * not defined by this specification.
+     * Parse an XML Schema document from a location identified by a URI reference. If the URI
+     * contains a fragment identifier, the behavior is not defined by this specification.
+     *
      * @param uri The location of the XML Schema document to be read.
      * @return An XSModel representing this schema.
      */
     public XSModel loadURI(String uri) {
         try {
             fGrammarPool.clear();
-            return ((XSGrammar) fSchemaLoader.loadGrammar(new XMLInputSource(null, uri, null))).toXSModel();
-        }
-        catch (Exception e){
+            return ((XSGrammar) fSchemaLoader.loadGrammar(new XMLInputSource(null, uri, null)))
+                    .toXSModel();
+        } catch (Exception e) {
             fSchemaLoader.reportDOMFatalError(e);
             return null;
         }
     }
 
     /**
-     *  Parse an XML Schema document from a resource identified by a
-     * <code>LSInput</code> .
-     * @param is  The <code>LSInput</code> from which the source
-     *   document is to be read.
+     * Parse an XML Schema document from a resource identified by a <code>LSInput</code> .
+     *
+     * @param is The <code>LSInput</code> from which the source document is to be read.
      * @return An XSModel representing this schema.
      */
     public XSModel load(LSInput is) {
         try {
             fGrammarPool.clear();
-            return ((XSGrammar) fSchemaLoader.loadGrammar(fSchemaLoader.dom2xmlInputSource(is))).toXSModel();
-        }
-        catch (Exception e) {
+            return ((XSGrammar) fSchemaLoader.loadGrammar(fSchemaLoader.dom2xmlInputSource(is)))
+                    .toXSModel();
+        } catch (Exception e) {
             fSchemaLoader.reportDOMFatalError(e);
             return null;
         }
@@ -203,34 +190,33 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
 
     /**
      * Grammar pool which merges grammars from the same namespace into one. This eliminates
-     * duplicate named components. It doesn't ensure that the grammar is consistent, however
-     * this no worse than than the behaviour of XMLSchemaLoader alone when used as an XSLoader.
+     * duplicate named components. It doesn't ensure that the grammar is consistent, however this no
+     * worse than than the behaviour of XMLSchemaLoader alone when used as an XSLoader.
      */
     private static final class XSGrammarMerger extends XSGrammarPool {
 
-        public XSGrammarMerger () {}
+        public XSGrammarMerger() {}
 
         public void putGrammar(Grammar grammar) {
             SchemaGrammar cachedGrammar =
-                toSchemaGrammar(super.getGrammar(grammar.getGrammarDescription()));
+                    toSchemaGrammar(super.getGrammar(grammar.getGrammarDescription()));
             if (cachedGrammar != null) {
                 SchemaGrammar newGrammar = toSchemaGrammar(grammar);
                 if (newGrammar != null) {
                     mergeSchemaGrammars(cachedGrammar, newGrammar);
                 }
-            }
-            else {
+            } else {
                 super.putGrammar(grammar);
             }
         }
 
-        private SchemaGrammar toSchemaGrammar (Grammar grammar) {
+        private SchemaGrammar toSchemaGrammar(Grammar grammar) {
             return (grammar instanceof SchemaGrammar) ? (SchemaGrammar) grammar : null;
         }
 
         private void mergeSchemaGrammars(SchemaGrammar cachedGrammar, SchemaGrammar newGrammar) {
 
-            /** Add new top-level element declarations. **/
+            /** Add new top-level element declarations. * */
             XSNamedMap map = newGrammar.getComponents(XSConstants.ELEMENT_DECLARATION);
             int length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -240,7 +226,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 }
             }
 
-            /** Add new top-level attribute declarations. **/
+            /** Add new top-level attribute declarations. * */
             map = newGrammar.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
             length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -250,7 +236,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 }
             }
 
-            /** Add new top-level type definitions. **/
+            /** Add new top-level type definitions. * */
             map = newGrammar.getComponents(XSConstants.TYPE_DEFINITION);
             length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -260,7 +246,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 }
             }
 
-            /** Add new top-level attribute group definitions. **/
+            /** Add new top-level attribute group definitions. * */
             map = newGrammar.getComponents(XSConstants.ATTRIBUTE_GROUP);
             length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -270,7 +256,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 }
             }
 
-            /** Add new top-level model group definitions. **/
+            /** Add new top-level model group definitions. * */
             map = newGrammar.getComponents(XSConstants.MODEL_GROUP);
             length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -280,7 +266,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
                 }
             }
 
-            /** Add new top-level notation declarations. **/
+            /** Add new top-level notation declarations. * */
             map = newGrammar.getComponents(XSConstants.NOTATION_DECLARATION);
             length = map.getLength();
             for (int i = 0; i < length; ++i) {
@@ -291,16 +277,15 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
             }
 
             /**
-             * Add all annotations. Since these components are not named it's
-             * possible we'll add duplicate components. There isn't much we can
-             * do. It's no worse than XMLSchemaLoader when used as an XSLoader.
+             * Add all annotations. Since these components are not named it's possible we'll add
+             * duplicate components. There isn't much we can do. It's no worse than XMLSchemaLoader
+             * when used as an XSLoader.
              */
             XSObjectList annotations = newGrammar.getAnnotations();
             length = annotations.getLength();
             for (int i = 0; i < length; ++i) {
                 cachedGrammar.addAnnotation((XSAnnotationImpl) annotations.item(i));
             }
-
         }
 
         public boolean containsGrammar(XMLGrammarDescription desc) {
@@ -315,7 +300,7 @@ public final class XSLoaderImpl implements XSLoader, DOMConfiguration {
             return null;
         }
 
-        public Grammar [] retrieveInitialGrammarSet (String grammarType) {
+        public Grammar[] retrieveInitialGrammarSet(String grammarType) {
             return new Grammar[0];
         }
     }

@@ -73,30 +73,20 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentFilt
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
 
 /**
- *
- *
- * @author
- *     Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
+ * @author Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
  */
 public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
     /**
-     * The next component in the pipeline who receives the event.
-     * This component receives events after the "side" handler
-     * receives them.
+     * The next component in the pipeline who receives the event. This component receives events
+     * after the "side" handler receives them.
      */
     private XMLDocumentHandler next;
 
-    /**
-     * The component who intercepts events.
-     */
+    /** The component who intercepts events. */
     private XMLDocumentHandler side;
 
-    /**
-     * The source of the event.
-     */
+    /** The source of the event. */
     private XMLDocumentSource source;
-
-
 
     public XMLDocumentHandler getSide() {
         return side;
@@ -122,11 +112,11 @@ public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
         next = handler;
     }
 
-//
-//
-// XMLDocumentHandler implementation
-//
-//
+    //
+    //
+    // XMLDocumentHandler implementation
+    //
+    //
     public void characters(XMLString text, Augmentations augs) throws XNIException {
         side.characters(text, augs);
         next.characters(text, augs);
@@ -137,13 +127,15 @@ public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
         next.comment(text, augs);
     }
 
-    public void doctypeDecl(String rootElement, String publicId, String systemId, Augmentations augs)
-        throws XNIException {
+    public void doctypeDecl(
+            String rootElement, String publicId, String systemId, Augmentations augs)
+            throws XNIException {
         side.doctypeDecl(rootElement, publicId, systemId, augs);
         next.doctypeDecl(rootElement, publicId, systemId, augs);
     }
 
-    public void emptyElement(QName element, XMLAttributes attributes, Augmentations augs) throws XNIException {
+    public void emptyElement(QName element, XMLAttributes attributes, Augmentations augs)
+            throws XNIException {
         side.emptyElement(element, attributes, augs);
         next.emptyElement(element, attributes, augs);
     }
@@ -173,7 +165,8 @@ public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
         next.ignorableWhitespace(text, augs);
     }
 
-    public void processingInstruction(String target, XMLString data, Augmentations augs) throws XNIException {
+    public void processingInstruction(String target, XMLString data, Augmentations augs)
+            throws XNIException {
         side.processingInstruction(target, data, augs);
         next.processingInstruction(target, data, augs);
     }
@@ -184,22 +177,24 @@ public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
     }
 
     public void startDocument(
-        XMLLocator locator,
-        String encoding,
-        NamespaceContext namespaceContext,
-        Augmentations augs)
-        throws XNIException {
+            XMLLocator locator,
+            String encoding,
+            NamespaceContext namespaceContext,
+            Augmentations augs)
+            throws XNIException {
         side.startDocument(locator, encoding, namespaceContext, augs);
         next.startDocument(locator, encoding, namespaceContext, augs);
     }
 
-    public void startElement(QName element, XMLAttributes attributes, Augmentations augs) throws XNIException {
+    public void startElement(QName element, XMLAttributes attributes, Augmentations augs)
+            throws XNIException {
         side.startElement(element, attributes, augs);
         next.startElement(element, attributes, augs);
     }
 
-    public void startGeneralEntity(String name, XMLResourceIdentifier identifier, String encoding, Augmentations augs)
-        throws XNIException {
+    public void startGeneralEntity(
+            String name, XMLResourceIdentifier identifier, String encoding, Augmentations augs)
+            throws XNIException {
         side.startGeneralEntity(name, identifier, encoding, augs);
         next.startGeneralEntity(name, identifier, encoding, augs);
     }
@@ -209,9 +204,9 @@ public class TeeXMLDocumentFilterImpl implements XMLDocumentFilter {
         next.textDecl(version, encoding, augs);
     }
 
-    public void xmlDecl(String version, String encoding, String standalone, Augmentations augs) throws XNIException {
+    public void xmlDecl(String version, String encoding, String standalone, Augmentations augs)
+            throws XNIException {
         side.xmlDecl(version, encoding, standalone, augs);
         next.xmlDecl(version, encoding, standalone, augs);
     }
-
 }

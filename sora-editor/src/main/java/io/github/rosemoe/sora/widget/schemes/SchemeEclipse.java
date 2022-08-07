@@ -24,8 +24,7 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor
- * picked from Eclipse IDE for Java Developers Version 2019-12 (4.14.0)
+ * ColorScheme for editor picked from Eclipse IDE for Java Developers Version 2019-12 (4.14.0)
  * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeEclipse extends EditorColorScheme {
@@ -54,5 +53,4 @@ public class SchemeEclipse extends EditorColorScheme {
         setColor(BLOCK_LINE_CURRENT, 0);
         setColor(TEXT_SELECTED, 0xffffffff);
     }
-
 }

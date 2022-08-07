@@ -50,27 +50,31 @@ public final class TestGenerator extends MethodGenerator {
     private final Instruction _astoreIterator;
     private final Instruction _aloadIterator;
 
-    public TestGenerator(int access_flags, Type return_type,
-                         Type[] arg_types, String[] arg_names,
-                         String method_name, String class_name,
-                         InstructionList il, ConstantPoolGen cp) {
-        super(access_flags, return_type, arg_types, arg_names, method_name,
-              class_name, il, cp);
+    public TestGenerator(
+            int access_flags,
+            Type return_type,
+            Type[] arg_types,
+            String[] arg_names,
+            String method_name,
+            String class_name,
+            InstructionList il,
+            ConstantPoolGen cp) {
+        super(access_flags, return_type, arg_types, arg_names, method_name, class_name, il, cp);
 
-        _iloadCurrent  = new ILOAD(CURRENT_NODE_INDEX);
+        _iloadCurrent = new ILOAD(CURRENT_NODE_INDEX);
         _istoreCurrent = new ISTORE(CURRENT_NODE_INDEX);
-        _iloadContext  = new ILOAD(CONTEXT_NODE_INDEX);
-        _istoreContext  = new ILOAD(CONTEXT_NODE_INDEX);
+        _iloadContext = new ILOAD(CONTEXT_NODE_INDEX);
+        _istoreContext = new ILOAD(CONTEXT_NODE_INDEX);
         _astoreIterator = new ASTORE(ITERATOR_INDEX);
-        _aloadIterator  = new ALOAD(ITERATOR_INDEX);
+        _aloadIterator = new ALOAD(ITERATOR_INDEX);
     }
 
     public int getHandlerIndex() {
-        return INVALID_INDEX;           // not available
+        return INVALID_INDEX; // not available
     }
 
     public int getIteratorIndex() {
-        return ITERATOR_INDEX;          // not available
+        return ITERATOR_INDEX; // not available
     }
 
     public void setDomIndex(int domIndex) {
@@ -109,8 +113,7 @@ public final class TestGenerator extends MethodGenerator {
     public int getLocalIndex(String name) {
         if (name.equals("current")) {
             return CURRENT_NODE_INDEX;
-        }
-        else {
+        } else {
             return super.getLocalIndex(name);
         }
     }

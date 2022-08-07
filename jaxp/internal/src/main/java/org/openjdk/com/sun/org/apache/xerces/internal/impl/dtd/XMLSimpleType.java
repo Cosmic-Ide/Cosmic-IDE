@@ -63,8 +63,7 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
 
-/**
- */
+/** */
 public class XMLSimpleType {
 
     //
@@ -151,27 +150,30 @@ public class XMLSimpleType {
      * @param nonNormalizedDefaultValue
      * @param datatypeValidator
      */
-    public void setValues(short type, String name, String[] enumeration,
-                          boolean list, short defaultType,
-                          String defaultValue, String nonNormalizedDefaultValue,
-                          DatatypeValidator datatypeValidator) {
+    public void setValues(
+            short type,
+            String name,
+            String[] enumeration,
+            boolean list,
+            short defaultType,
+            String defaultValue,
+            String nonNormalizedDefaultValue,
+            DatatypeValidator datatypeValidator) {
 
-        this.type              = type;
-        this.name              = name;
+        this.type = type;
+        this.name = name;
         // REVISIT: Should this be a copy? -Ac
         if (enumeration != null && enumeration.length > 0) {
             this.enumeration = new String[enumeration.length];
             System.arraycopy(enumeration, 0, this.enumeration, 0, this.enumeration.length);
-        }
-        else {
+        } else {
             this.enumeration = null;
         }
-        this.list              = list;
-        this.defaultType       = defaultType;
-        this.defaultValue      = defaultValue;
-        this.nonNormalizedDefaultValue      = nonNormalizedDefaultValue;
+        this.list = list;
+        this.defaultType = defaultType;
+        this.defaultValue = defaultValue;
+        this.nonNormalizedDefaultValue = nonNormalizedDefaultValue;
         this.datatypeValidator = datatypeValidator;
-
     } // setValues(short,String,String[],boolean,short,String,String,DatatypeValidator)
 
     /** Set values. */
@@ -183,8 +185,7 @@ public class XMLSimpleType {
         if (simpleType.enumeration != null && simpleType.enumeration.length > 0) {
             enumeration = new String[simpleType.enumeration.length];
             System.arraycopy(simpleType.enumeration, 0, enumeration, 0, enumeration.length);
-        }
-        else {
+        } else {
             enumeration = null;
         }
         list = simpleType.list;
@@ -192,21 +193,17 @@ public class XMLSimpleType {
         defaultValue = simpleType.defaultValue;
         nonNormalizedDefaultValue = simpleType.nonNormalizedDefaultValue;
         datatypeValidator = simpleType.datatypeValidator;
-
     } // setValues(XMLSimpleType)
 
-    /**
-     * clear
-     */
+    /** clear */
     public void clear() {
-        this.type              = -1;
-        this.name              = null;
-        this.enumeration       = null;
-        this.list              = false;
-        this.defaultType       = -1;
-        this.defaultValue      = null;
-        this.nonNormalizedDefaultValue      = null;
+        this.type = -1;
+        this.name = null;
+        this.enumeration = null;
+        this.list = false;
+        this.defaultType = -1;
+        this.defaultValue = null;
+        this.nonNormalizedDefaultValue = null;
         this.datatypeValidator = null;
     } // clear
-
 } // class XMLSimpleType

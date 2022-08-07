@@ -27,32 +27,27 @@ package org.openjdk.com.sun.org.apache.xalan.internal.utils;
 
 import org.openjdk.com.sun.org.apache.xalan.internal.XalanConstants;
 
-/**
- * This is the base class for features and properties
- *
- */
+/** This is the base class for features and properties */
 public abstract class FeaturePropertyBase {
 
     /**
-     * States of the settings of a property, in the order: default value, value
-     * set by FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system
-     * properties, and jaxp api properties
+     * States of the settings of a property, in the order: default value, value set by
+     * FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system properties, and jaxp api
+     * properties
      */
     public static enum State {
-        //this order reflects the overriding order
-        DEFAULT, FSP, JAXPDOTPROPERTIES, SYSTEMPROPERTY, APIPROPERTY
+        // this order reflects the overriding order
+        DEFAULT,
+        FSP,
+        JAXPDOTPROPERTIES,
+        SYSTEMPROPERTY,
+        APIPROPERTY
     }
 
-
-    /**
-     * Values of the properties as defined in enum Properties
-     */
+    /** Values of the properties as defined in enum Properties */
     String[] values = null;
-    /**
-     * States of the settings for each property in Properties above
-     */
+    /** States of the settings for each property in Properties above */
     State[] states = {State.DEFAULT, State.DEFAULT};
-
 
     /**
      * Set the value for a specific property.
@@ -62,7 +57,7 @@ public abstract class FeaturePropertyBase {
      * @param value the value of the property
      */
     public void setValue(Enum property, State state, String value) {
-        //only update if it shall override
+        // only update if it shall override
         if (state.compareTo(states[property.ordinal()]) >= 0) {
             values[property.ordinal()] = value;
             states[property.ordinal()] = state;
@@ -71,42 +66,43 @@ public abstract class FeaturePropertyBase {
 
     /**
      * Set the value of a property by its index
+     *
      * @param index the index of the property
      * @param state the state of the property
      * @param value the value of the property
      */
     public void setValue(int index, State state, String value) {
-        //only update if it shall override
+        // only update if it shall override
         if (state.compareTo(states[index]) >= 0) {
             values[index] = value;
             states[index] = state;
         }
     }
 
-     /**
+    /**
      * Set value by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the security property manager;
-     *         false if otherwise.
+     * @return true if the property is managed by the security property manager; false if otherwise.
      */
     public boolean setValue(String propertyName, State state, Object value) {
         int index = getIndex(propertyName);
         if (index > -1) {
-            setValue(index, state, (String)value);
+            setValue(index, state, (String) value);
             return true;
         }
         return false;
     }
 
-     /**
+    /**
      * Set value by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the security property manager;
-     *         false if otherwise.
+     * @return true if the property is managed by the security property manager; false if otherwise.
      */
     public boolean setValue(String propertyName, State state, boolean value) {
         int index = getIndex(propertyName);
@@ -149,8 +145,8 @@ public abstract class FeaturePropertyBase {
      * Return the value of the specified property.
      *
      * @param propertyName the property name
-     * @return the value of the property as a string. If a property is managed
-     * by this manager, its value shall not be null.
+     * @return the value of the property as a string. If a property is managed by this manager, its
+     *     value shall not be null.
      */
     public String getValueAsString(String propertyName) {
         int index = getIndex(propertyName);
@@ -163,6 +159,7 @@ public abstract class FeaturePropertyBase {
 
     /**
      * Return the value of a property by its ordinal
+     *
      * @param index the index of a property
      * @return value of a property
      */
@@ -172,6 +169,7 @@ public abstract class FeaturePropertyBase {
 
     /**
      * Get the index by property name
+     *
      * @param propertyName property name
      * @return the index of the property if found; return -1 if not
      */
@@ -180,13 +178,13 @@ public abstract class FeaturePropertyBase {
     public <E extends Enum<E>> int getIndex(Class<E> property, String propertyName) {
         for (Enum<E> enumItem : property.getEnumConstants()) {
             if (enumItem.toString().equals(propertyName)) {
-                //internally, ordinal is used as index
+                // internally, ordinal is used as index
                 return enumItem.ordinal();
             }
         }
         return -1;
-    };
-
+    }
+    ;
 
     /**
      * Read from system properties, or those in jaxp.properties
@@ -209,7 +207,7 @@ public abstract class FeaturePropertyBase {
                 states[property.ordinal()] = State.JAXPDOTPROPERTIES;
             }
         } catch (NumberFormatException e) {
-            //invalid setting ignored
+            // invalid setting ignored
         }
     }
 }

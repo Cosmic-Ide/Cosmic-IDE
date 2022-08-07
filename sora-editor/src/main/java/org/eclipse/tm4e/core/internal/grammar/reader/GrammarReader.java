@@ -23,43 +23,38 @@
  */
 package org.eclipse.tm4e.core.internal.grammar.reader;
 
-import java.io.InputStream;
-
 import org.eclipse.tm4e.core.internal.parser.json.JSONPListParser;
 import org.eclipse.tm4e.core.internal.parser.xml.XMLPListParser;
 import org.eclipse.tm4e.core.internal.types.IRawGrammar;
 
-/**
- * TextMate Grammar reader utilities.
- *
- */
+import java.io.InputStream;
+
+/** TextMate Grammar reader utilities. */
 public class GrammarReader {
 
-    public static final IGrammarParser XML_PARSER = new IGrammarParser() {
+    public static final IGrammarParser XML_PARSER =
+            new IGrammarParser() {
 
-        private XMLPListParser<IRawGrammar> parser = new XMLPListParser<>(false);
+                private XMLPListParser<IRawGrammar> parser = new XMLPListParser<>(false);
 
-        @Override
-        public IRawGrammar parse(InputStream contents) throws Exception {
-            return parser.parse(contents);
-        }
-    };
-    public static final IGrammarParser JSON_PARSER = new IGrammarParser() {
+                @Override
+                public IRawGrammar parse(InputStream contents) throws Exception {
+                    return parser.parse(contents);
+                }
+            };
+    public static final IGrammarParser JSON_PARSER =
+            new IGrammarParser() {
 
-        private JSONPListParser<IRawGrammar> parser = new JSONPListParser<>(false);
+                private JSONPListParser<IRawGrammar> parser = new JSONPListParser<>(false);
 
-        @Override
-        public IRawGrammar parse(InputStream contents) throws Exception {
-            return parser.parse(contents);
-        }
-    };
+                @Override
+                public IRawGrammar parse(InputStream contents) throws Exception {
+                    return parser.parse(contents);
+                }
+            };
 
-    /**
-     * methods should be accessed statically
-     */
-    private GrammarReader() {
-
-    }
+    /** methods should be accessed statically */
+    private GrammarReader() {}
 
     public static IRawGrammar readGrammarSync(String filePath, InputStream in) throws Exception {
         SyncGrammarReader reader = new SyncGrammarReader(in, getGrammarParser(filePath));

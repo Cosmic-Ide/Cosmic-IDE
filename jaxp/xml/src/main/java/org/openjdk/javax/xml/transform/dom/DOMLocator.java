@@ -26,18 +26,14 @@
 package org.openjdk.javax.xml.transform.dom;
 
 import org.openjdk.javax.xml.transform.SourceLocator;
-
 import org.openjdk.javax.xml.transform.Transformer;
 import org.w3c.dom.Node;
 
-
 /**
- * Indicates the position of a node in a source DOM, intended
- * primarily for error reporting.  To use a DOMLocator, the receiver of an
- * error must downcast the {@link SourceLocator}
- * object returned by an exception. A {@link Transformer}
- * may use this object for purposes other than error reporting, for instance,
- * to indicate the source node that originated a result node.
+ * Indicates the position of a node in a source DOM, intended primarily for error reporting. To use
+ * a DOMLocator, the receiver of an error must downcast the {@link SourceLocator} object returned by
+ * an exception. A {@link Transformer} may use this object for purposes other than error reporting,
+ * for instance, to indicate the source node that originated a result node.
  */
 public interface DOMLocator extends SourceLocator {
 

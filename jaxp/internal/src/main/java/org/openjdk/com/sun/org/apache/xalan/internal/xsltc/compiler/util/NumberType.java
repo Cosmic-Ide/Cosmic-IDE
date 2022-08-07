@@ -23,7 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util;
 
-
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen

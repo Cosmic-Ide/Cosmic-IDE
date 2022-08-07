@@ -30,65 +30,58 @@ import org.openjdk.javax.xml.XMLConstants;
 import java.util.Iterator;
 
 /**
- * <p>Interface for read only XML Namespace context processing.</p>
+ * Interface for read only XML Namespace context processing.
  *
- * <p>An XML Namespace has the properties:</p>
+ * <p>An XML Namespace has the properties:
+ *
  * <ul>
- *   <li>Namespace URI:
- *       Namespace name expressed as a URI to which the prefix is bound</li>
- *   <li>prefix: syntactically, this is the part of the attribute name
- *       following the <code>XMLConstants.XMLNS_ATTRIBUTE</code>
- *       ("xmlns") in the Namespace declaration</li>
+ *   <li>Namespace URI: Namespace name expressed as a URI to which the prefix is bound
+ *   <li>prefix: syntactically, this is the part of the attribute name following the <code>
+ *       XMLConstants.XMLNS_ATTRIBUTE</code> ("xmlns") in the Namespace declaration
  * </ul>
- * <p>example:
- * <code>&lt;element xmlns:prefix="http://Namespace-name-URI"&gt;</code></p>
  *
- * <p>All <code>get*(*)</code> methods operate in the current scope
- * for Namespace URI and prefix resolution.</p>
+ * <p>example: <code>&lt;element xmlns:prefix="http://Namespace-name-URI"&gt;</code>
  *
- * <p>Note that a Namespace URI can be bound to
- * <strong>multiple</strong> prefixes in the current scope.  This can
- * occur when multiple <code>XMLConstants.XMLNS_ATTRIBUTE</code>
- * ("xmlns") Namespace declarations occur in the same Start-Tag and
- * refer to the same Namespace URI. e.g.<br />
+ * <p>All <code>get*(*)</code> methods operate in the current scope for Namespace URI and prefix
+ * resolution.
+ *
+ * <p>Note that a Namespace URI can be bound to <strong>multiple</strong> prefixes in the current
+ * scope. This can occur when multiple <code>XMLConstants.XMLNS_ATTRIBUTE</code> ("xmlns") Namespace
+ * declarations occur in the same Start-Tag and refer to the same Namespace URI. e.g.<br>
+ *
  * <pre>
  * &lt;element xmlns:prefix1="http://Namespace-name-URI"
  *          xmlns:prefix2="http://Namespace-name-URI"&gt;
  * </pre>
- * This can also occur when the same Namespace URI is used in multiple
- * <code>XMLConstants.XMLNS_ATTRIBUTE</code> ("xmlns") Namespace
- * declarations in the logical parent element hierarchy.  e.g.<br />
+ *
+ * This can also occur when the same Namespace URI is used in multiple <code>
+ * XMLConstants.XMLNS_ATTRIBUTE</code> ("xmlns") Namespace declarations in the logical parent
+ * element hierarchy. e.g.<br>
+ *
  * <pre>
  * &lt;parent xmlns:prefix1="http://Namespace-name-URI">
  *   &lt;child xmlns:prefix2="http://Namespace-name-URI"&gt;
  *     ...
  *   &lt;/child&gt;
  * &lt;/parent&gt;
- * </pre></p>
+ * </pre>
  *
- * <p>A prefix can only be bound to a <strong>single</strong>
- * Namespace URI in the current scope.</p>
+ * <p>A prefix can only be bound to a <strong>single</strong> Namespace URI in the current scope.
  *
  * @author <a href="mailto:Jeff.Suttor@Sun.com">Jeff Suttor</a>
- * @see XMLConstants
- *   javax.xml.XMLConstants for declarations of common XML values
- * @see <a href="http://www.w3.org/TR/xmlschema-2/#QName">
- *   XML Schema Part2: Datatypes</a>
- * @see <a href="http://www.w3.org/TR/REC-xml-names/#ns-qualnames">
- *   Namespaces in XML</a>
- * @see <a href="http://www.w3.org/XML/xml-names-19990114-errata">
- *   Namespaces in XML Errata</a>
+ * @see XMLConstants javax.xml.XMLConstants for declarations of common XML values
+ * @see <a href="http://www.w3.org/TR/xmlschema-2/#QName">XML Schema Part2: Datatypes</a>
+ * @see <a href="http://www.w3.org/TR/REC-xml-names/#ns-qualnames">Namespaces in XML</a>
+ * @see <a href="http://www.w3.org/XML/xml-names-19990114-errata">Namespaces in XML Errata</a>
  * @since 1.5
  */
-
 public interface NamespaceContext {
 
     /**
-     * <p>Get Namespace URI bound to a prefix in the current scope.</p>
+     * Get Namespace URI bound to a prefix in the current scope.
      *
-     * <p>When requesting a Namespace URI by prefix, the following
-     * table describes the returned Namespace URI value for all
-     * possible prefix values:</p>
+     * <p>When requesting a Namespace URI by prefix, the following table describes the returned
+     * Namespace URI value for all possible prefix values:
      *
      * <table border="2" rules="all" cellpadding="4">
      *   <thead>
@@ -142,23 +135,19 @@ public interface NamespaceContext {
      * </table>
      *
      * @param prefix prefix to look up
-     *
      * @return Namespace URI bound to prefix in the current scope
-     *
-     * @throws IllegalArgumentException When <code>prefix</code> is
-     *   <code>null</code>
+     * @throws IllegalArgumentException When <code>prefix</code> is <code>null</code>
      */
     String getNamespaceURI(String prefix);
 
     /**
-     * <p>Get prefix bound to Namespace URI in the current scope.</p>
+     * Get prefix bound to Namespace URI in the current scope.
      *
-     * <p>To get all prefixes bound to a Namespace URI in the current
-     * scope, use {@link #getPrefixes(String namespaceURI)}.</p>
+     * <p>To get all prefixes bound to a Namespace URI in the current scope, use {@link
+     * #getPrefixes(String namespaceURI)}.
      *
-     * <p>When requesting a prefix by Namespace URI, the following
-     * table describes the returned prefix value for all Namespace URI
-     * values:</p>
+     * <p>When requesting a prefix by Namespace URI, the following table describes the returned
+     * prefix value for all Namespace URI values:
      *
      * <table border="2" rules="all" cellpadding="4">
      *   <thead>
@@ -208,29 +197,22 @@ public interface NamespaceContext {
      * </table>
      *
      * @param namespaceURI URI of Namespace to lookup
-     *
      * @return prefix bound to Namespace URI in current context
-     *
-     * @throws IllegalArgumentException When <code>namespaceURI</code> is
-     *   <code>null</code>
+     * @throws IllegalArgumentException When <code>namespaceURI</code> is <code>null</code>
      */
     String getPrefix(String namespaceURI);
 
     /**
-     * <p>Get all prefixes bound to a Namespace URI in the current
-     * scope.</p>
+     * Get all prefixes bound to a Namespace URI in the current scope.
      *
-     * <p>An Iterator over String elements is returned in an arbitrary,
-     * <strong>implementation dependent</strong>, order.</p>
+     * <p>An Iterator over String elements is returned in an arbitrary, <strong>implementation
+     * dependent</strong>, order.
      *
-     * <p><strong>The <code>Iterator</code> is
-     * <em>not</em> modifiable.  e.g. the
-     * <code>remove()</code> method will throw
-     * <code>UnsupportedOperationException</code>.</strong></p>
+     * <p><strong>The <code>Iterator</code> is <em>not</em> modifiable. e.g. the <code>remove()
+     * </code> method will throw <code>UnsupportedOperationException</code>.</strong>
      *
-     * <p>When requesting prefixes by Namespace URI, the following
-     * table describes the returned prefixes value for all Namespace
-     * URI values:</p>
+     * <p>When requesting prefixes by Namespace URI, the following table describes the returned
+     * prefixes value for all Namespace URI values:
      *
      * <table border="2" rules="all" cellpadding="4">
      *   <thead>
@@ -279,12 +261,9 @@ public interface NamespaceContext {
      * </table>
      *
      * @param namespaceURI URI of Namespace to lookup
-     *
-     * @return <code>Iterator</code> for all prefixes bound to the
-     *   Namespace URI in the current scope
-     *
-     * @throws IllegalArgumentException When <code>namespaceURI</code> is
-     *   <code>null</code>
+     * @return <code>Iterator</code> for all prefixes bound to the Namespace URI in the current
+     *     scope
+     * @throws IllegalArgumentException When <code>namespaceURI</code> is <code>null</code>
      */
     Iterator getPrefixes(String namespaceURI);
 }

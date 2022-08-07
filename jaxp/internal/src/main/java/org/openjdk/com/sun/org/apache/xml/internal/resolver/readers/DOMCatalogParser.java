@@ -29,22 +29,19 @@ import org.w3c.dom.Node;
 /**
  * The DOMCatalogParser interface.
  *
- * <p>This interface must be implemented in order for a class to
- * participate as a parser for the DOMCatalogReader.
+ * <p>This interface must be implemented in order for a class to participate as a parser for the
+ * DOMCatalogReader.
  *
  * @see Catalog
  * @see DOMCatalogReader
- *
- * @author Norman Walsh
- * <a href="mailto:Norman.Walsh@Sun.COM">Norman.Walsh@Sun.COM</a>
- *
+ * @author Norman Walsh <a href="mailto:Norman.Walsh@Sun.COM">Norman.Walsh@Sun.COM</a>
  */
 public interface DOMCatalogParser {
     /**
      * Parse a DOM node as a catalog entry.
      *
-     * <p>This method is expected to analyze the specified node and
-     * construct appropriate catalog entry(ies) from it.</p>
+     * <p>This method is expected to analyze the specified node and construct appropriate catalog
+     * entry(ies) from it.
      *
      * @param catalog The catalog for which this node is being considered.
      * @param node The DOM Node from the catalog.

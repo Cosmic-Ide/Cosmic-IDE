@@ -23,9 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Enumeration;
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.BranchHandle;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.GOTO;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.IFEQ;
@@ -38,6 +35,9 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
@@ -45,9 +45,7 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
  */
 final class Choose extends Instruction {
 
-    /**
-     * Display the element contents (a lot of when's and an otherwise)
-     */
+    /** Display the element contents (a lot of when's and an otherwise) */
     public void display(int indent) {
         indent(indent);
         Util.println("Choose");
@@ -56,8 +54,8 @@ final class Choose extends Instruction {
     }
 
     /**
-     * Translate this Choose element. Generate a test-chain for the various
-     * <xsl:when> elements and default to the <xsl:otherwise> if present.
+     * Translate this Choose element. Generate a test-chain for the various <xsl:when> elements and
+     * default to the <xsl:otherwise> if present.
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final Vector whenElements = new Vector();
@@ -78,15 +76,13 @@ final class Choose extends Instruction {
             // Add an Otherwise child element
             else if (element instanceof Otherwise) {
                 if (otherwise == null) {
-                    otherwise = (Otherwise)element;
-                }
-                else {
+                    otherwise = (Otherwise) element;
+                } else {
                     error = new ErrorMsg(ErrorMsg.MULTIPLE_OTHERWISE_ERR, this);
                     getParser().reportError(Constants.ERROR, error);
                 }
-            }
-            else if (element instanceof Text) {
-                ((Text)element).ignore();
+            } else if (element instanceof Text) {
+                ((Text) element).ignore();
             }
             // It is an error if we find some other element here
             else {
@@ -112,24 +108,22 @@ final class Choose extends Instruction {
 
         Enumeration whens = whenElements.elements();
         while (whens.hasMoreElements()) {
-            final When when = (When)whens.nextElement();
+            final When when = (When) whens.nextElement();
             final Expression test = when.getTest();
 
             InstructionHandle truec = il.getEnd();
 
-            if (nextElement != null)
-                nextElement.setTarget(il.append(NOP));
+            if (nextElement != null) nextElement.setTarget(il.append(NOP));
             test.translateDesynthesized(classGen, methodGen);
 
             if (test instanceof FunctionCall) {
-                FunctionCall call = (FunctionCall)test;
+                FunctionCall call = (FunctionCall) test;
                 try {
                     Type type = call.typeCheck(getParser().getSymbolTable());
                     if (type != Type.Boolean) {
                         test._falseList.add(il.append(new IFEQ(null)));
                     }
-                }
-                catch (TypeCheckError e) {
+                } catch (TypeCheckError e) {
                     // handled later!
                 }
             }
@@ -145,9 +139,7 @@ final class Choose extends Instruction {
             if (whens.hasMoreElements() || otherwise != null) {
                 nextElement = il.append(new GOTO(null));
                 test.backPatchFalseList(nextElement);
-            }
-            else
-                test.backPatchFalseList(exit = il.append(NOP));
+            } else test.backPatchFalseList(exit = il.append(NOP));
             test.backPatchTrueList(truec.getNext());
         }
 
@@ -161,7 +153,7 @@ final class Choose extends Instruction {
         // now that end is known set targets of exit gotos
         Enumeration exitGotos = exitHandles.elements();
         while (exitGotos.hasMoreElements()) {
-            BranchHandle gotoExit = (BranchHandle)exitGotos.nextElement();
+            BranchHandle gotoExit = (BranchHandle) exitGotos.nextElement();
             gotoExit.setTarget(exit);
         }
     }

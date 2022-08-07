@@ -22,63 +22,55 @@
  */
 package org.openjdk.com.sun.org.apache.xpath.internal.functions;
 
+import org.openjdk.com.sun.org.apache.xalan.internal.res.XSLMessages;
+import org.openjdk.com.sun.org.apache.xalan.internal.res.XSLTErrorResources;
 import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTM;
-
 import org.openjdk.com.sun.org.apache.xpath.internal.XPathContext;
 import org.openjdk.com.sun.org.apache.xpath.internal.axes.LocPathIterator;
 import org.openjdk.com.sun.org.apache.xpath.internal.axes.PredicatedNodeTest;
+import org.openjdk.com.sun.org.apache.xpath.internal.axes.SubContextList;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XNodeSet;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XObject;
-import org.openjdk.com.sun.org.apache.xpath.internal.axes.SubContextList;
 import org.openjdk.com.sun.org.apache.xpath.internal.patterns.StepPattern;
-import org.openjdk.com.sun.org.apache.xalan.internal.res.XSLMessages;
-import org.openjdk.com.sun.org.apache.xalan.internal.res.XSLTErrorResources;
-
 
 /**
  * Execute the current() function.
+ *
  * @xsl.usage advanced
  */
-public class FuncCurrent extends Function
-{
+public class FuncCurrent extends Function {
     static final long serialVersionUID = 5715316804877715008L;
 
-  /**
-   * Execute the function.  The function must return
-   * a valid object.
-   * @param xctxt The current execution context.
-   * @return A valid XObject.
-   *
-   * @throws org.openjdk.javax.xml.transform.TransformerException
-   */
-  public XObject execute(XPathContext xctxt) throws org.openjdk.javax.xml.transform.TransformerException
-  {
+    /**
+     * Execute the function. The function must return a valid object.
+     *
+     * @param xctxt The current execution context.
+     * @return A valid XObject.
+     * @throws org.openjdk.javax.xml.transform.TransformerException
+     */
+    public XObject execute(XPathContext xctxt)
+            throws org.openjdk.javax.xml.transform.TransformerException {
 
-    SubContextList subContextList = xctxt.getCurrentNodeList();
-    int currentNode = DTM.NULL;
+        SubContextList subContextList = xctxt.getCurrentNodeList();
+        int currentNode = DTM.NULL;
 
-    if (null != subContextList) {
-        if (subContextList instanceof PredicatedNodeTest) {
-            LocPathIterator iter = ((PredicatedNodeTest)subContextList)
-                                                          .getLocPathIterator();
-            currentNode = iter.getCurrentContextNode();
-         } else if(subContextList instanceof StepPattern) {
-           throw new RuntimeException(XSLMessages.createMessage(
-              XSLTErrorResources.ER_PROCESSOR_ERROR,null));
-         }
-    } else {
-        // not predicate => ContextNode == CurrentNode
-        currentNode = xctxt.getContextNode();
+        if (null != subContextList) {
+            if (subContextList instanceof PredicatedNodeTest) {
+                LocPathIterator iter = ((PredicatedNodeTest) subContextList).getLocPathIterator();
+                currentNode = iter.getCurrentContextNode();
+            } else if (subContextList instanceof StepPattern) {
+                throw new RuntimeException(
+                        XSLMessages.createMessage(XSLTErrorResources.ER_PROCESSOR_ERROR, null));
+            }
+        } else {
+            // not predicate => ContextNode == CurrentNode
+            currentNode = xctxt.getContextNode();
+        }
+        return new XNodeSet(currentNode, xctxt.getDTMManager());
     }
-    return new XNodeSet(currentNode, xctxt.getDTMManager());
-  }
 
-  /**
-   * No arguments to process, so this does nothing.
-   */
-  public void fixupVariables(java.util.Vector vars, int globalsSize)
-  {
-    // no-op
-  }
-
+    /** No arguments to process, so this does nothing. */
+    public void fixupVariables(java.util.Vector vars, int globalsSize) {
+        // no-op
+    }
 }

@@ -20,102 +20,85 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.dom;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
-import org.w3c.dom.TypeInfo;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.w3c.dom.TypeInfo;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
- * Attribute represents an XML-style attribute of an
- * Element. Typically, the allowable values are controlled by its
- * declaration in the Document Type Definition (DTD) governing this
- * kind of document.
- * <P>
- * If the attribute has not been explicitly assigned a value, but has
- * been declared in the DTD, it will exist and have that default. Only
- * if neither the document nor the DTD specifies a value will the
- * Attribute really be considered absent and have no value; in that
- * case, querying the attribute will return null.
- * <P>
- * Attributes may have multiple children that contain their data. (XML
- * allows attributes to contain entity references, and tokenized
- * attribute types such as NMTOKENS may have a child for each token.)
- * For convenience, the Attribute object's getValue() method returns
- * the string version of the attribute's value.
- * <P>
- * Attributes are not children of the Elements they belong to, in the
- * usual sense, and have no valid Parent reference. However, the spec
- * says they _do_ belong to a specific Element, and an INUSE exception
- * is to be thrown if the user attempts to explicitly share them
- * between elements.
- * <P>
- * Note that Elements do not permit attributes to appear to be shared
- * (see the INUSE exception), so this object's mutability is
- * officially not an issue.
- * <p>
- * Note: The ownerNode attribute is used to store the Element the Attr
- * node is associated with. Attr nodes do not have parent nodes.
- * Besides, the getOwnerElement() method can be used to get the element node
- * this attribute is associated with.
- * <P>
- * AttrImpl does not support Namespaces. AttrNSImpl, which inherits from
- * it, does.
+ * Attribute represents an XML-style attribute of an Element. Typically, the allowable values are
+ * controlled by its declaration in the Document Type Definition (DTD) governing this kind of
+ * document.
  *
- * <p>AttrImpl used to inherit from ParentNode. It now directly inherits from
- * NodeImpl and provide its own implementation of the ParentNode's behavior.
- * The reason is that we now try and avoid to always create a Text node to
- * hold the value of an attribute. The DOM spec requires it, so we still have
- * to do it in case getFirstChild() is called for instance. The reason
- * attribute values are stored as a list of nodes is so that they can carry
- * more than a simple string. They can also contain EntityReference nodes.
- * However, most of the times people only have a single string that they only
- * set and get through Element.set/getAttribute or Attr.set/getValue. In this
- * new version, the Attr node has a value pointer which can either be the
- * String directly or a pointer to the first ChildNode. A flag tells which one
- * it currently is. Note that while we try to stick with the direct String as
- * much as possible once we've switched to a node there is no going back. This
- * is because we have no way to know whether the application keeps referring to
- * the node we once returned.
- * <p> The gain in memory varies on the density of attributes in the document.
- * But in the tests I've run I've seen up to 12% of memory gain. And the good
- * thing is that it also leads to a slight gain in speed because we allocate
- * fewer objects! I mean, that's until we have to actually create the node...
- * <p>
- * To avoid too much duplicated code, I got rid of ParentNode and renamed
- * ChildAndParentNode, which I never really liked, to ParentNode for
- * simplicity, this doesn't make much of a difference in memory usage because
- * there are only very few objects that are only a Parent. This is only true
- * now because AttrImpl now inherits directly from NodeImpl and has its own
- * implementation of the ParentNode's node behavior. So there is still some
- * duplicated code there.
- * <p>
- * This class doesn't directly support mutation events, however, it notifies
- * the document when mutations are performed so that the document class do so.
+ * <p>If the attribute has not been explicitly assigned a value, but has been declared in the DTD,
+ * it will exist and have that default. Only if neither the document nor the DTD specifies a value
+ * will the Attribute really be considered absent and have no value; in that case, querying the
+ * attribute will return null.
  *
- * <p><b>WARNING</b>: Some of the code here is partially duplicated in
- * ParentNode, be careful to keep these two classes in sync!
+ * <p>Attributes may have multiple children that contain their data. (XML allows attributes to
+ * contain entity references, and tokenized attribute types such as NMTOKENS may have a child for
+ * each token.) For convenience, the Attribute object's getValue() method returns the string version
+ * of the attribute's value.
+ *
+ * <p>Attributes are not children of the Elements they belong to, in the usual sense, and have no
+ * valid Parent reference. However, the spec says they _do_ belong to a specific Element, and an
+ * INUSE exception is to be thrown if the user attempts to explicitly share them between elements.
+ *
+ * <p>Note that Elements do not permit attributes to appear to be shared (see the INUSE exception),
+ * so this object's mutability is officially not an issue.
+ *
+ * <p>Note: The ownerNode attribute is used to store the Element the Attr node is associated with.
+ * Attr nodes do not have parent nodes. Besides, the getOwnerElement() method can be used to get the
+ * element node this attribute is associated with.
+ *
+ * <p>AttrImpl does not support Namespaces. AttrNSImpl, which inherits from it, does.
+ *
+ * <p>AttrImpl used to inherit from ParentNode. It now directly inherits from NodeImpl and provide
+ * its own implementation of the ParentNode's behavior. The reason is that we now try and avoid to
+ * always create a Text node to hold the value of an attribute. The DOM spec requires it, so we
+ * still have to do it in case getFirstChild() is called for instance. The reason attribute values
+ * are stored as a list of nodes is so that they can carry more than a simple string. They can also
+ * contain EntityReference nodes. However, most of the times people only have a single string that
+ * they only set and get through Element.set/getAttribute or Attr.set/getValue. In this new version,
+ * the Attr node has a value pointer which can either be the String directly or a pointer to the
+ * first ChildNode. A flag tells which one it currently is. Note that while we try to stick with the
+ * direct String as much as possible once we've switched to a node there is no going back. This is
+ * because we have no way to know whether the application keeps referring to the node we once
+ * returned.
+ *
+ * <p>The gain in memory varies on the density of attributes in the document. But in the tests I've
+ * run I've seen up to 12% of memory gain. And the good thing is that it also leads to a slight gain
+ * in speed because we allocate fewer objects! I mean, that's until we have to actually create the
+ * node...
+ *
+ * <p>To avoid too much duplicated code, I got rid of ParentNode and renamed ChildAndParentNode,
+ * which I never really liked, to ParentNode for simplicity, this doesn't make much of a difference
+ * in memory usage because there are only very few objects that are only a Parent. This is only true
+ * now because AttrImpl now inherits directly from NodeImpl and has its own implementation of the
+ * ParentNode's node behavior. So there is still some duplicated code there.
+ *
+ * <p>This class doesn't directly support mutation events, however, it notifies the document when
+ * mutations are performed so that the document class do so.
+ *
+ * <p><b>WARNING</b>: Some of the code here is partially duplicated in ParentNode, be careful to
+ * keep these two classes in sync!
  *
  * @xerces.internal
- *
  * @see AttrNSImpl
- *
- * @author Arnaud  Le Hors, IBM
+ * @author Arnaud Le Hors, IBM
  * @author Joe Kesselman, IBM
  * @author Andy Clark, IBM
  * @version $Id: AttrImpl.java,v 1.5 2008/06/10 00:59:32 joehw Exp $
  * @since PR-DOM-Level-1-19980818.
- *
  */
-public class AttrImpl
-    extends NodeImpl
-    implements Attr, TypeInfo{
+public class AttrImpl extends NodeImpl implements Attr, TypeInfo {
 
     //
     // Constants
@@ -124,7 +107,7 @@ public class AttrImpl
     /** Serialization version. */
     static final long serialVersionUID = 7277707688218972102L;
 
-    /** DTD namespace. **/
+    /** DTD namespace. * */
     static final String DTD_URI = "http://www.w3.org/TR/REC-xml";
 
     //
@@ -147,10 +130,7 @@ public class AttrImpl
     // Constructors
     //
 
-    /**
-     * Attribute has no public constructor. Please use the factory
-     * method in the Document class.
-     */
+    /** Attribute has no public constructor. Please use the factory method in the Document class. */
     protected AttrImpl(CoreDocumentImpl ownerDocument, String name) {
         super(ownerDocument);
         this.name = name;
@@ -177,8 +157,7 @@ public class AttrImpl
     protected void makeChildNode() {
         if (hasStringValue()) {
             if (value != null) {
-                TextImpl text =
-                    (TextImpl) ownerDocument().createTextNode((String) value);
+                TextImpl text = (TextImpl) ownerDocument().createTextNode((String) value);
                 value = text;
                 text.isFirstChild(true);
                 text.previousSibling = text;
@@ -189,18 +168,14 @@ public class AttrImpl
         }
     }
 
-    /**
-     * NON-DOM
-     * set the ownerDocument of this node and its children
-     */
+    /** NON-DOM set the ownerDocument of this node and its children */
     void setOwnerDocument(CoreDocumentImpl doc) {
         if (needsSyncChildren()) {
             synchronizeChildren();
         }
         super.setOwnerDocument(doc);
         if (!hasStringValue()) {
-            for (ChildNode child = (ChildNode) value;
-                 child != null; child = child.nextSibling) {
+            for (ChildNode child = (ChildNode) value; child != null; child = child.nextSibling) {
                 child.setOwnerDocument(doc);
             }
         }
@@ -211,19 +186,18 @@ public class AttrImpl
      *
      * @param id
      */
-    public void setIdAttribute(boolean id){
+    public void setIdAttribute(boolean id) {
         if (needsSyncData()) {
             synchronizeData();
         }
         isIdAttribute(id);
     }
-    /** DOM Level 3: isId*/
-    public boolean isId(){
+    /** DOM Level 3: isId */
+    public boolean isId() {
         // REVISIT: should an attribute that is not in the tree return
         // isID true?
         return isIdAttribute();
     }
-
 
     //
     // Node methods
@@ -245,9 +219,8 @@ public class AttrImpl
             // Cloning an Attribute always clones its children,
             // since they represent its value, no matter whether this
             // is a deep clone or not
-            for (Node child = (Node) value; child != null;
-                 child = child.getNextSibling()) {
-                 clone.appendChild(child.cloneNode(true));
+            for (Node child = (Node) value; child != null; child = child.getNextSibling()) {
+                clone.appendChild(child.cloneNode(true));
             }
         }
         clone.isSpecified(true);
@@ -255,16 +228,14 @@ public class AttrImpl
     }
 
     /**
-     * A short integer indicating what type of node this is. The named
-     * constants for this value are defined in the org.w3c.dom.Node interface.
+     * A short integer indicating what type of node this is. The named constants for this value are
+     * defined in the org.w3c.dom.Node interface.
      */
     public short getNodeType() {
         return Node.ATTRIBUTE_NODE;
     }
 
-    /**
-     * Returns the attribute name
-     */
+    /** Returns the attribute name */
     public String getNodeName() {
         if (needsSyncData()) {
             synchronizeData();
@@ -273,10 +244,9 @@ public class AttrImpl
     }
 
     /**
-     * Implicit in the rerouting of getNodeValue to getValue is the
-     * need to redefine setNodeValue, for symmetry's sake.  Note that
-     * since we're explicitly providing a value, Specified should be set
-     * true.... even if that value equals the default.
+     * Implicit in the rerouting of getNodeValue to getValue is the need to redefine setNodeValue,
+     * for symmetry's sake. Note that since we're explicitly providing a value, Specified should be
+     * set true.... even if that value equals the default.
      */
     public void setNodeValue(String value) throws DOMException {
         setValue(value);
@@ -286,7 +256,7 @@ public class AttrImpl
      * @see org.w3c.dom.TypeInfo#getTypeName()
      */
     public String getTypeName() {
-        return (String)type;
+        return (String) type;
     }
 
     /**
@@ -301,15 +271,15 @@ public class AttrImpl
 
     /**
      * Method getSchemaTypeInfo.
+     *
      * @return TypeInfo
      */
-    public TypeInfo getSchemaTypeInfo(){
-      return this;
+    public TypeInfo getSchemaTypeInfo() {
+        return this;
     }
 
     /**
-     * In Attribute objects, NodeValue is considered a synonym for
-     * Value.
+     * In Attribute objects, NodeValue is considered a synonym for Value.
      *
      * @see #getValue()
      */
@@ -321,30 +291,27 @@ public class AttrImpl
     // Attr methods
     //
 
-    /**
-     * In Attributes, NodeName is considered a synonym for the
-     * attribute's Name
-     */
+    /** In Attributes, NodeName is considered a synonym for the attribute's Name */
     public String getName() {
 
         if (needsSyncData()) {
             synchronizeData();
         }
         return name;
-
     } // getName():String
 
     /**
-     * The DOM doesn't clearly define what setValue(null) means. I've taken it
-     * as "remove all children", which from outside should appear
-     * similar to setting it to the empty string.
+     * The DOM doesn't clearly define what setValue(null) means. I've taken it as "remove all
+     * children", which from outside should appear similar to setting it to the empty string.
      */
     public void setValue(String newvalue) {
 
         CoreDocumentImpl ownerDocument = ownerDocument();
 
         if (ownerDocument.errorChecking && isReadOnly()) {
-            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null);
+            String msg =
+                    DOMMessageFormatter.formatMessage(
+                            DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null);
             throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);
         }
 
@@ -365,10 +332,8 @@ public class AttrImpl
                     // create an actual text node as our child so
                     // that we can use it in the event
                     if (textNode == null) {
-                        textNode = (TextImpl)
-                            ownerDocument.createTextNode((String) value);
-                    }
-                    else {
+                        textNode = (TextImpl) ownerDocument.createTextNode((String) value);
+                    } else {
                         textNode.data = (String) value;
                     }
                     value = textNode;
@@ -378,19 +343,16 @@ public class AttrImpl
                     textNode.isOwned(true);
                     hasStringValue(false);
                     internalRemoveChild(textNode, true);
-                }
-                else {
+                } else {
                     oldvalue = getValue();
                     while (value != null) {
                         internalRemoveChild((Node) value, true);
                     }
                 }
-            }
-            else {
+            } else {
                 if (hasStringValue()) {
                     oldvalue = (String) value;
-                }
-                else {
+                } else {
                     // simply discard children if any
                     oldvalue = getValue();
                     // remove ref from first child to last child
@@ -416,8 +378,7 @@ public class AttrImpl
         isSpecified(true);
         if (ownerDocument.getMutationEvents()) {
             // if there are any event handlers create a real node
-            internalInsertBefore(ownerDocument.createTextNode(newvalue),
-                                 null, true);
+            internalInsertBefore(ownerDocument.createTextNode(newvalue), null, true);
             hasStringValue(false);
             // notify document
             ownerDocument.modifiedAttrValue(this, oldvalue);
@@ -430,12 +391,11 @@ public class AttrImpl
         if (isIdAttribute() && ownerElement != null) {
             ownerDocument.putIdentifier(newvalue, ownerElement);
         }
-
     } // setValue(String)
 
     /**
-     * The "string value" of an Attribute is its text representation,
-     * which in turn is a concatenation of the string values of its children.
+     * The "string value" of an Attribute is its text representation, which in turn is a
+     * concatenation of the string values of its children.
      */
     public String getValue() {
 
@@ -455,44 +415,37 @@ public class AttrImpl
         ChildNode firstChild = ((ChildNode) value);
 
         String data = null;
-        if (firstChild.getNodeType() == Node.ENTITY_REFERENCE_NODE){
-                data = ((EntityReferenceImpl)firstChild).getEntityRefValue();
-        }
-        else {
-                data =  firstChild.getNodeValue();
+        if (firstChild.getNodeType() == Node.ENTITY_REFERENCE_NODE) {
+            data = ((EntityReferenceImpl) firstChild).getEntityRefValue();
+        } else {
+            data = firstChild.getNodeValue();
         }
 
         ChildNode node = firstChild.nextSibling;
 
-        if (node == null || data == null)  return (data == null)?"":data;
+        if (node == null || data == null) return (data == null) ? "" : data;
 
         StringBuffer value = new StringBuffer(data);
         while (node != null) {
-            if (node.getNodeType()  == Node.ENTITY_REFERENCE_NODE){
-                data = ((EntityReferenceImpl)node).getEntityRefValue();
+            if (node.getNodeType() == Node.ENTITY_REFERENCE_NODE) {
+                data = ((EntityReferenceImpl) node).getEntityRefValue();
                 if (data == null) return "";
                 value.append(data);
-            }
-            else {
+            } else {
                 value.append(node.getNodeValue());
             }
             node = node.nextSibling;
         }
         return value.toString();
-
     } // getValue():String
 
-
     /**
-     * The "specified" flag is true if and only if this attribute's
-     * value was explicitly specified in the original document. Note that
-     * the implementation, not the user, is in charge of this
-     * property. If the user asserts an Attribute value (even if it ends
-     * up having the same value as the default), it is considered a
-     * specified attribute. If you really want to revert to the default,
-     * delete the attribute from the Element, and the Implementation will
-     * re-assert the default (if any) in its place, with the appropriate
-     * specified=false setting.
+     * The "specified" flag is true if and only if this attribute's value was explicitly specified
+     * in the original document. Note that the implementation, not the user, is in charge of this
+     * property. If the user asserts an Attribute value (even if it ends up having the same value as
+     * the default), it is considered a specified attribute. If you really want to revert to the
+     * default, delete the attribute from the Element, and the Implementation will re-assert the
+     * default (if any) in its place, with the appropriate specified=false setting.
      */
     public boolean getSpecified() {
 
@@ -500,7 +453,6 @@ public class AttrImpl
             synchronizeData();
         }
         return isSpecified();
-
     } // getSpecified():boolean
 
     //
@@ -508,13 +460,11 @@ public class AttrImpl
     //
 
     /**
-     * Returns the element node that this attribute is associated with,
-     * or null if the attribute has not been added to an element.
+     * Returns the element node that this attribute is associated with, or null if the attribute has
+     * not been added to an element.
      *
      * @see #getOwnerElement
-     *
-     * @deprecated Previous working draft of DOM Level 2. New method
-     *             is <tt>getOwnerElement()</tt>.
+     * @deprecated Previous working draft of DOM Level 2. New method is <tt>getOwnerElement()</tt>.
      */
     public Element getElement() {
         // if we have an owner, ownerNode is our ownerElement, otherwise it's
@@ -523,8 +473,8 @@ public class AttrImpl
     }
 
     /**
-     * Returns the element node that this attribute is associated with,
-     * or null if the attribute has not been added to an element.
+     * Returns the element node that this attribute is associated with, or null if the attribute has
+     * not been added to an element.
      *
      * @since WD-DOM-Level-2-19990719
      */
@@ -538,11 +488,10 @@ public class AttrImpl
 
         // No need to normalize if already normalized or
         // if value is kept as a String.
-        if (isNormalized() || hasStringValue())
-            return;
+        if (isNormalized() || hasStringValue()) return;
 
         Node kid, next;
-        ChildNode firstChild = (ChildNode)value;
+        ChildNode firstChild = (ChildNode) value;
         for (kid = firstChild; kid != null; kid = next) {
             next = kid.getNextSibling();
 
@@ -551,20 +500,16 @@ public class AttrImpl
             //   1) There is an adjacent text node
             //   2) There is no adjacent text node, but kid is
             //      an empty text node.
-            if ( kid.getNodeType() == Node.TEXT_NODE )
-            {
+            if (kid.getNodeType() == Node.TEXT_NODE) {
                 // If an adjacent text node, merge it with kid
-                if ( next!=null && next.getNodeType() == Node.TEXT_NODE )
-                {
-                    ((Text)kid).appendData(next.getNodeValue());
-                    removeChild( next );
+                if (next != null && next.getNodeType() == Node.TEXT_NODE) {
+                    ((Text) kid).appendData(next.getNodeValue());
+                    removeChild(next);
                     next = kid; // Don't advance; there might be another.
-                }
-                else
-                {
+                } else {
                     // If kid is empty, remove it
-                    if ( kid.getNodeValue() == null || kid.getNodeValue().length() == 0 ) {
-                        removeChild( kid );
+                    if (kid.getNodeValue() == null || kid.getNodeValue().length() == 0) {
+                        removeChild(kid);
                     }
                 }
             }
@@ -584,14 +529,14 @@ public class AttrImpl
             synchronizeData();
         }
         isSpecified(arg);
-
     } // setSpecified(boolean)
 
-        /**
-         * NON-DOM: used by the parser
-         * @param type
-         */
-    public void setType (Object type){
+    /**
+     * NON-DOM: used by the parser
+     *
+     * @param type
+     */
+    public void setType(Object type) {
         this.type = type;
     }
 
@@ -605,8 +550,8 @@ public class AttrImpl
     }
 
     /**
-     * Test whether this node has any children. Convenience shorthand
-     * for (Node.getFirstChild()!=null)
+     * Test whether this node has any children. Convenience shorthand for
+     * (Node.getFirstChild()!=null)
      */
     public boolean hasChildNodes() {
         if (needsSyncChildren()) {
@@ -616,17 +561,15 @@ public class AttrImpl
     }
 
     /**
-     * Obtain a NodeList enumerating all children of this node. If there
-     * are none, an (initially) empty NodeList is returned.
-     * <p>
-     * NodeLists are "live"; as children are added/removed the NodeList
-     * will immediately reflect those changes. Also, the NodeList refers
-     * to the actual nodes, so changes to those nodes made via the DOM tree
-     * will be reflected in the NodeList and vice versa.
-     * <p>
-     * In this implementation, Nodes implement the NodeList interface and
-     * provide their own getChildNodes() support. Other DOMs may solve this
-     * differently.
+     * Obtain a NodeList enumerating all children of this node. If there are none, an (initially)
+     * empty NodeList is returned.
+     *
+     * <p>NodeLists are "live"; as children are added/removed the NodeList will immediately reflect
+     * those changes. Also, the NodeList refers to the actual nodes, so changes to those nodes made
+     * via the DOM tree will be reflected in the NodeList and vice versa.
+     *
+     * <p>In this implementation, Nodes implement the NodeList interface and provide their own
+     * getChildNodes() support. Other DOMs may solve this differently.
      */
     public NodeList getChildNodes() {
         // JKESS: KNOWN ISSUE HERE
@@ -635,7 +578,6 @@ public class AttrImpl
             synchronizeChildren();
         }
         return this;
-
     } // getChildNodes():NodeList
 
     /** The first child of this Node, or null if none. */
@@ -646,8 +588,7 @@ public class AttrImpl
         }
         makeChildNode();
         return (Node) value;
-
-    }   // getFirstChild():Node
+    } // getFirstChild():Node
 
     /** The last child of this Node, or null if none. */
     public Node getLastChild() {
@@ -656,7 +597,6 @@ public class AttrImpl
             synchronizeChildren();
         }
         return lastChild();
-
     } // getLastChild():Node
 
     final ChildNode lastChild() {
@@ -673,46 +613,32 @@ public class AttrImpl
     }
 
     /**
-     * Move one or more node(s) to our list of children. Note that this
-     * implicitly removes them from their previous parent.
+     * Move one or more node(s) to our list of children. Note that this implicitly removes them from
+     * their previous parent.
      *
-     * @param newChild The Node to be moved to our subtree. As a
-     * convenience feature, inserting a DocumentNode will instead insert
-     * all its children.
-     *
-     * @param refChild Current child which newChild should be placed
-     * immediately before. If refChild is null, the insertion occurs
-     * after all existing Nodes, like appendChild().
-     *
-     * @return newChild, in its new state (relocated, or emptied in the case of
-     * DocumentNode.)
-     *
-     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a
-     * type that shouldn't be a child of this node, or if newChild is an
-     * ancestor of this node.
-     *
-     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a
-     * different owner document than we do.
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if refChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @param newChild The Node to be moved to our subtree. As a convenience feature, inserting a
+     *     DocumentNode will instead insert all its children.
+     * @param refChild Current child which newChild should be placed immediately before. If refChild
+     *     is null, the insertion occurs after all existing Nodes, like appendChild().
+     * @return newChild, in its new state (relocated, or emptied in the case of DocumentNode.)
+     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a type that shouldn't be a
+     *     child of this node, or if newChild is an ancestor of this node.
+     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a different owner document than we
+     *     do.
+     * @throws DOMException(NOT_FOUND_ERR) if refChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node insertBefore(Node newChild, Node refChild)
-        throws DOMException {
+    public Node insertBefore(Node newChild, Node refChild) throws DOMException {
         // Tail-call; optimizer should be able to do good things with.
         return internalInsertBefore(newChild, refChild, false);
     } // insertBefore(Node,Node):Node
 
-    /** NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able
-     * to control which mutation events are spawned. This version of the
-     * insertBefore operation allows us to do so. It is not intended
-     * for use by application programs.
+    /**
+     * NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able to control which mutation
+     * events are spawned. This version of the insertBefore operation allows us to do so. It is not
+     * intended for use by application programs.
      */
-    Node internalInsertBefore(Node newChild, Node refChild, boolean replace)
-        throws DOMException {
+    Node internalInsertBefore(Node newChild, Node refChild, boolean replace) throws DOMException {
 
         CoreDocumentImpl ownerDocument = ownerDocument();
         boolean errorChecking = ownerDocument.errorChecking;
@@ -737,10 +663,15 @@ public class AttrImpl
             // they wouldn't be kids of that DocFrag.
             if (errorChecking) {
                 for (Node kid = newChild.getFirstChild(); // Prescan
-                     kid != null; kid = kid.getNextSibling()) {
+                        kid != null;
+                        kid = kid.getNextSibling()) {
 
                     if (!ownerDocument.isKidOK(this, kid)) {
-                        String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
+                        String msg =
+                                DOMMessageFormatter.formatMessage(
+                                        DOMMessageFormatter.DOM_DOMAIN,
+                                        "HIERARCHY_REQUEST_ERR",
+                                        null);
                         throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, msg);
                     }
                 }
@@ -766,20 +697,30 @@ public class AttrImpl
 
         if (errorChecking) {
             if (isReadOnly()) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN,
+                                "NO_MODIFICATION_ALLOWED_ERR",
+                                null);
                 throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);
             }
             if (newChild.getOwnerDocument() != ownerDocument) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "WRONG_DOCUMENT_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "WRONG_DOCUMENT_ERR", null);
                 throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, msg);
             }
             if (!ownerDocument.isKidOK(this, newChild)) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
                 throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, msg);
             }
             // refChild must be a child of this node (or null)
             if (refChild != null && refChild.getParentNode() != this) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
                 throw new DOMException(DOMException.NOT_FOUND_ERR, msg);
             }
 
@@ -787,12 +728,13 @@ public class AttrImpl
             // newChild cannot be ancestor of this Node,
             // and actually cannot be this
             boolean treeSafe = true;
-            for (NodeImpl a = this; treeSafe && a != null; a = a.parentNode())
-            {
+            for (NodeImpl a = this; treeSafe && a != null; a = a.parentNode()) {
                 treeSafe = newChild != a;
             }
             if (!treeSafe) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
                 throw new DOMException(DOMException.HIERARCHY_REQUEST_ERR, msg);
             }
         }
@@ -803,7 +745,7 @@ public class AttrImpl
         ownerDocument.insertingNode(this, replace);
 
         // Convert to internal type, to avoid repeated casting
-        ChildNode newInternal = (ChildNode)newChild;
+        ChildNode newInternal = (ChildNode) newChild;
 
         Node oldparent = newInternal.parentNode();
         if (oldparent != null) {
@@ -825,16 +767,14 @@ public class AttrImpl
             value = newInternal; // firstchild = newInternal;
             newInternal.isFirstChild(true);
             newInternal.previousSibling = newInternal;
-        }
-        else {
+        } else {
             if (refInternal == null) {
                 // this is an append
                 ChildNode lastChild = firstChild.previousSibling;
                 lastChild.nextSibling = newInternal;
                 newInternal.previousSibling = lastChild;
                 firstChild.previousSibling = newInternal;
-            }
-            else {
+            } else {
                 // this is an insert
                 if (refChild == firstChild) {
                     // at the head of the list
@@ -844,8 +784,7 @@ public class AttrImpl
                     firstChild.previousSibling = newInternal;
                     value = newInternal; // firstChild = newInternal;
                     newInternal.isFirstChild(true);
-                }
-                else {
+                } else {
                     // somewhere in the middle
                     ChildNode prev = refInternal.previousSibling;
                     newInternal.nextSibling = refInternal;
@@ -864,48 +803,49 @@ public class AttrImpl
         checkNormalizationAfterInsert(newInternal);
 
         return newChild;
-
     } // internalInsertBefore(Node,Node,int):Node
 
     /**
-     * Remove a child from this Node. The removed child's subtree
-     * remains intact so it may be re-inserted elsewhere.
+     * Remove a child from this Node. The removed child's subtree remains intact so it may be
+     * re-inserted elsewhere.
      *
      * @return oldChild, in its new state (removed).
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node removeChild(Node oldChild)
-        throws DOMException {
+    public Node removeChild(Node oldChild) throws DOMException {
         // Tail-call, should be optimizable
         if (hasStringValue()) {
             // we don't have any child per say so it can't be one of them!
-            String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
+            String msg =
+                    DOMMessageFormatter.formatMessage(
+                            DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
             throw new DOMException(DOMException.NOT_FOUND_ERR, msg);
         }
         return internalRemoveChild(oldChild, false);
     } // removeChild(Node) :Node
 
-    /** NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able
-     * to control which mutation events are spawned. This version of the
-     * removeChild operation allows us to do so. It is not intended
-     * for use by application programs.
+    /**
+     * NON-DOM INTERNAL: Within DOM actions,we sometimes need to be able to control which mutation
+     * events are spawned. This version of the removeChild operation allows us to do so. It is not
+     * intended for use by application programs.
      */
-    Node internalRemoveChild(Node oldChild, boolean replace)
-        throws DOMException {
+    Node internalRemoveChild(Node oldChild, boolean replace) throws DOMException {
 
         CoreDocumentImpl ownerDocument = ownerDocument();
         if (ownerDocument.errorChecking) {
             if (isReadOnly()) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NO_MODIFICATION_ALLOWED_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN,
+                                "NO_MODIFICATION_ALLOWED_ERR",
+                                null);
                 throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR, msg);
             }
             if (oldChild != null && oldChild.getParentNode() != this) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "NOT_FOUND_ERR", null);
                 throw new DOMException(DOMException.NOT_FOUND_ERR, msg);
             }
         }
@@ -945,9 +885,9 @@ public class AttrImpl
         ChildNode oldPreviousSibling = oldInternal.previousSibling();
 
         // Remove oldInternal's references to tree
-        oldInternal.ownerNode       = ownerDocument;
+        oldInternal.ownerNode = ownerDocument;
         oldInternal.isOwned(false);
-        oldInternal.nextSibling     = null;
+        oldInternal.nextSibling = null;
         oldInternal.previousSibling = null;
 
         changed();
@@ -958,32 +898,22 @@ public class AttrImpl
         checkNormalizationAfterRemove(oldPreviousSibling);
 
         return oldInternal;
-
     } // internalRemoveChild(Node,int):Node
 
     /**
-     * Make newChild occupy the location that oldChild used to
-     * have. Note that newChild will first be removed from its previous
-     * parent, if any. Equivalent to inserting newChild before oldChild,
-     * then removing oldChild.
+     * Make newChild occupy the location that oldChild used to have. Note that newChild will first
+     * be removed from its previous parent, if any. Equivalent to inserting newChild before
+     * oldChild, then removing oldChild.
      *
      * @return oldChild, in its new state (removed).
-     *
-     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a
-     * type that shouldn't be a child of this node, or if newChild is
-     * one of our ancestors.
-     *
-     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a
-     * different owner document than we do.
-     *
-     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of
-     * this node.
-     *
-     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is
-     * read-only.
+     * @throws DOMException(HIERARCHY_REQUEST_ERR) if newChild is of a type that shouldn't be a
+     *     child of this node, or if newChild is one of our ancestors.
+     * @throws DOMException(WRONG_DOCUMENT_ERR) if newChild has a different owner document than we
+     *     do.
+     * @throws DOMException(NOT_FOUND_ERR) if oldChild is not a child of this node.
+     * @throws DOMException(NO_MODIFICATION_ALLOWED_ERR) if this node is read-only.
      */
-    public Node replaceChild(Node newChild, Node oldChild)
-        throws DOMException {
+    public Node replaceChild(Node newChild, Node oldChild) throws DOMException {
 
         makeChildNode();
 
@@ -1014,6 +944,7 @@ public class AttrImpl
 
     /**
      * NodeList method: Count the immediate children of this node
+     *
      * @return int
      */
     public int getLength() {
@@ -1027,12 +958,12 @@ public class AttrImpl
             length++;
         }
         return length;
-
     } // getLength():int
 
     /**
-     * NodeList method: Return the Nth immediate child of this node, or
-     * null if the index is out of bounds.
+     * NodeList method: Return the Nth immediate child of this node, or null if the index is out of
+     * bounds.
+     *
      * @return org.w3c.dom.Node
      * @param Index int
      */
@@ -1041,8 +972,7 @@ public class AttrImpl
         if (hasStringValue()) {
             if (index != 0 || value == null) {
                 return null;
-            }
-            else {
+            } else {
                 makeChildNode();
                 return (Node) value;
             }
@@ -1055,7 +985,6 @@ public class AttrImpl
             node = node.nextSibling;
         }
         return node;
-
     } // item(int):Node
 
     //
@@ -1063,48 +992,40 @@ public class AttrImpl
     //
 
     /**
-     * DOM Level 3 WD- Experimental.
-     * Override inherited behavior from ParentNode to support deep equal.
-     * isEqualNode is always deep on Attr nodes.
+     * DOM Level 3 WD- Experimental. Override inherited behavior from ParentNode to support deep
+     * equal. isEqualNode is always deep on Attr nodes.
      */
     public boolean isEqualNode(Node arg) {
         return super.isEqualNode(arg);
     }
 
     /**
-     * Introduced in DOM Level 3. <p>
-     * Checks if a type is derived from another by restriction. See:
+     * Introduced in DOM Level 3.
+     *
+     * <p>Checks if a type is derived from another by restriction. See:
      * http://www.w3.org/TR/DOM-Level-3-Core/core.html#TypeInfo-isDerivedFrom
      *
-     * @param ancestorNS
-     *        The namspace of the ancestor type declaration
-     * @param ancestorName
-     *        The name of the ancestor type declaration
-     * @param type
-     *        The reference type definition
-     *
-     * @return boolean True if the type is derived by restriciton for the
-     *         reference type
+     * @param ancestorNS The namspace of the ancestor type declaration
+     * @param ancestorName The name of the ancestor type declaration
+     * @param type The reference type definition
+     * @return boolean True if the type is derived by restriciton for the reference type
      */
-    public boolean isDerivedFrom(String typeNamespaceArg,
-                                 String typeNameArg,
-                                 int derivationMethod) {
+    public boolean isDerivedFrom(
+            String typeNamespaceArg, String typeNameArg, int derivationMethod) {
 
         return false;
     }
-
 
     //
     // Public methods
     //
 
     /**
-     * Override default behavior so that if deep is true, children are also
-     * toggled.
+     * Override default behavior so that if deep is true, children are also toggled.
+     *
      * @see Node
-     * <P>
-     * Note: this will not change the state of an EntityReference or its
-     * children, which are always read-only.
+     *     <p>Note: this will not change the state of an EntityReference or its children, which are
+     *     always read-only.
      */
     public void setReadOnly(boolean readOnly, boolean deep) {
 
@@ -1120,11 +1041,9 @@ public class AttrImpl
                 return;
             }
             // Recursively set kids
-            for (ChildNode mykid = (ChildNode) value;
-                 mykid != null;
-                 mykid = mykid.nextSibling) {
+            for (ChildNode mykid = (ChildNode) value; mykid != null; mykid = mykid.nextSibling) {
                 if (mykid.getNodeType() != Node.ENTITY_REFERENCE_NODE) {
-                    mykid.setReadOnly(readOnly,true);
+                    mykid.setReadOnly(readOnly, true);
                 }
             }
         }
@@ -1134,28 +1053,23 @@ public class AttrImpl
     // Protected methods
     //
 
-    /**
-     * Override this method in subclass to hook in efficient
-     * internal data structure.
-     */
+    /** Override this method in subclass to hook in efficient internal data structure. */
     protected void synchronizeChildren() {
         // By default just change the flag to avoid calling this method again
         needsSyncChildren(false);
     }
 
     /**
-     * Checks the normalized state of this node after inserting a child.
-     * If the inserted child causes this node to be unnormalized, then this
-     * node is flagged accordingly.
-     * The conditions for changing the normalized state are:
+     * Checks the normalized state of this node after inserting a child. If the inserted child
+     * causes this node to be unnormalized, then this node is flagged accordingly. The conditions
+     * for changing the normalized state are:
+     *
      * <ul>
-     * <li>The inserted child is a text node and one of its adjacent siblings
-     * is also a text node.
-     * <li>The inserted child is is itself unnormalized.
+     *   <li>The inserted child is a text node and one of its adjacent siblings is also a text node.
+     *   <li>The inserted child is is itself unnormalized.
      * </ul>
      *
      * @param insertedChild the child node that was inserted into this node
-     *
      * @throws NullPointerException if the inserted child is <code>null</code>
      */
     void checkNormalizationAfterInsert(ChildNode insertedChild) {
@@ -1165,12 +1079,11 @@ public class AttrImpl
             ChildNode next = insertedChild.nextSibling;
             // If an adjacent sibling of the new child is a text node,
             // flag this node as unnormalized.
-            if ((prev != null && prev.getNodeType() == Node.TEXT_NODE) ||
-                (next != null && next.getNodeType() == Node.TEXT_NODE)) {
+            if ((prev != null && prev.getNodeType() == Node.TEXT_NODE)
+                    || (next != null && next.getNodeType() == Node.TEXT_NODE)) {
                 isNormalized(false);
             }
-        }
-        else {
+        } else {
             // If the new child is not normalized,
             // then this node is inherently not normalized.
             if (!insertedChild.isNormalized()) {
@@ -1180,23 +1093,21 @@ public class AttrImpl
     } // checkNormalizationAfterInsert(ChildNode)
 
     /**
-     * Checks the normalized of this node after removing a child.
-     * If the removed child causes this node to be unnormalized, then this
-     * node is flagged accordingly.
-     * The conditions for changing the normalized state are:
+     * Checks the normalized of this node after removing a child. If the removed child causes this
+     * node to be unnormalized, then this node is flagged accordingly. The conditions for changing
+     * the normalized state are:
+     *
      * <ul>
-     * <li>The removed child had two adjacent siblings that were text nodes.
+     *   <li>The removed child had two adjacent siblings that were text nodes.
      * </ul>
      *
-     * @param previousSibling the previous sibling of the removed child, or
-     * <code>null</code>
+     * @param previousSibling the previous sibling of the removed child, or <code>null</code>
      */
     void checkNormalizationAfterRemove(ChildNode previousSibling) {
         // See if removal caused this node to be unnormalized.
         // If the adjacent siblings of the removed child were both text nodes,
         // flag this node as unnormalized.
-        if (previousSibling != null &&
-            previousSibling.getNodeType() == Node.TEXT_NODE) {
+        if (previousSibling != null && previousSibling.getNodeType() == Node.TEXT_NODE) {
 
             ChildNode next = previousSibling.nextSibling;
             if (next != null && next.getNodeType() == Node.TEXT_NODE) {
@@ -1218,12 +1129,10 @@ public class AttrImpl
         }
         // write object
         out.defaultWriteObject();
-
     } // writeObject(ObjectOutputStream)
 
     /** Deserialize object. */
-    private void readObject(ObjectInputStream ois)
-        throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
 
         // perform default deseralization
         ois.defaultReadObject();
@@ -1232,8 +1141,5 @@ public class AttrImpl
         // it does not make any sense to try to synchildren when we just
         // deserialize object.
         needsSyncChildren(false);
-
     } // readObject(ObjectInputStream)
-
-
 } // class AttrImpl

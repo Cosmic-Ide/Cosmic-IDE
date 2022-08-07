@@ -20,63 +20,62 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs;
 
-import org.openjdk.javax.xml.datatype.DatatypeConstants;
-import org.openjdk.javax.xml.datatype.XMLGregorianCalendar;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+import org.openjdk.javax.xml.datatype.DatatypeConstants;
+import org.openjdk.javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Validator for &lt;gYearMonth&gt; datatype (W3C Schema Datatypes)
  *
  * @xerces.internal
- *
  * @author Elena Litani
  * @author Gopal Sharma, SUN Microsystem Inc.
- *
  * @version $Id: YearMonthDV.java,v 1.7 2010-11-01 04:39:47 joehw Exp $
  */
-public class YearMonthDV extends AbstractDateTimeDV{
+public class YearMonthDV extends AbstractDateTimeDV {
 
     /**
      * Convert a string to a compiled form
      *
-     * @param  content The lexical representation of gYearMonth
+     * @param content The lexical representation of gYearMonth
      * @return a valid and normalized gYearMonth object
      */
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException{
-        try{
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
+        try {
             return parse(content);
-        } catch(Exception ex){
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "gYearMonth"});
+        } catch (Exception ex) {
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "gYearMonth"});
         }
     }
 
     /**
      * Parses, validates and computes normalized version of gYearMonth object
      *
-     * @param str    The lexical representation of gYearMonth object CCYY-MM
-     *               with possible time zone Z or (-),(+)hh:mm
+     * @param str The lexical representation of gYearMonth object CCYY-MM with possible time zone Z
+     *     or (-),(+)hh:mm
      * @return normalized date representation
      * @exception SchemaDateTimeException Invalid lexical representation
      */
-    protected DateTimeData parse(String str) throws SchemaDateTimeException{
+    protected DateTimeData parse(String str) throws SchemaDateTimeException {
         DateTimeData date = new DateTimeData(str, this);
         int len = str.length();
 
         // get date
         int end = getYearMonth(str, 0, len, date);
         date.day = DAY;
-        parseTimeZone (str, end, len, date);
+        parseTimeZone(str, end, len, date);
 
-        //validate and normalize
+        // validate and normalize
 
         validateDateTime(date);
 
-        //save unnormalized values
+        // save unnormalized values
         saveUnnormalized(date);
 
-        if ( date.utc!=0 && date.utc!='Z' ) {
+        if (date.utc != 0 && date.utc != 'Z') {
             normalize(date);
         }
         date.position = 0;
@@ -88,14 +87,21 @@ public class YearMonthDV extends AbstractDateTimeDV{
         append(message, date.year, 4);
         message.append('-');
         append(message, date.month, 2);
-        append(message, (char)date.utc, 0);
+        append(message, (char) date.utc, 0);
         return message.toString();
     }
 
     protected XMLGregorianCalendar getXMLGregorianCalendar(DateTimeData date) {
-        return datatypeFactory.newXMLGregorianCalendar(date.unNormYear, date.unNormMonth, DatatypeConstants.FIELD_UNDEFINED,
-                DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                date.hasTimeZone() ? date.timezoneHr * 60 + date.timezoneMin : DatatypeConstants.FIELD_UNDEFINED);
+        return datatypeFactory.newXMLGregorianCalendar(
+                date.unNormYear,
+                date.unNormMonth,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                date.hasTimeZone()
+                        ? date.timezoneHr * 60 + date.timezoneMin
+                        : DatatypeConstants.FIELD_UNDEFINED);
     }
 }

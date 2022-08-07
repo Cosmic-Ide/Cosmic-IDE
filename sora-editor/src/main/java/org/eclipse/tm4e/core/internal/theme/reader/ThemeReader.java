@@ -29,36 +29,32 @@ import org.eclipse.tm4e.core.theme.IRawTheme;
 
 import java.io.InputStream;
 
-/**
- * TextMate Theme reader utilities.
- *
- */
+/** TextMate Theme reader utilities. */
 public class ThemeReader {
 
-    public static final IThemeParser XML_PARSER = new IThemeParser() {
+    public static final IThemeParser XML_PARSER =
+            new IThemeParser() {
 
-        private final XMLPListParser<IRawTheme> parser = new XMLPListParser<>(true);
+                private final XMLPListParser<IRawTheme> parser = new XMLPListParser<>(true);
 
-        @Override
-        public IRawTheme parse(InputStream contents) throws Exception {
-            return parser.parse(contents);
-        }
-    };
-    public static final IThemeParser JSON_PARSER = new IThemeParser() {
+                @Override
+                public IRawTheme parse(InputStream contents) throws Exception {
+                    return parser.parse(contents);
+                }
+            };
+    public static final IThemeParser JSON_PARSER =
+            new IThemeParser() {
 
-        private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
+                private final JSONPListParser<IRawTheme> parser = new JSONPListParser<>(true);
 
-        @Override
-        public IRawTheme parse(InputStream contents) throws Exception {
-            return parser.parse(contents);
-        }
-    };
+                @Override
+                public IRawTheme parse(InputStream contents) throws Exception {
+                    return parser.parse(contents);
+                }
+            };
 
-    /**
-     * Helper class, use methods statically
-     */
-    private ThemeReader() {
-    }
+    /** Helper class, use methods statically */
+    private ThemeReader() {}
 
     public static IRawTheme readThemeSync(String filePath, InputStream in) throws Exception {
         SyncThemeReader reader = new SyncThemeReader(in, getThemeParser(filePath));

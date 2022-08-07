@@ -25,15 +25,15 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDes
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
 
 /**
- * <p>Implementation of Schema for W3C XML Schemas which
- * contains schema components from one target namespace.</p>
+ * Implementation of Schema for W3C XML Schemas which contains schema components from one target
+ * namespace.
  *
  * @author Michael Glavassevich, IBM
  */
 final class SimpleXMLSchema extends AbstractXMLSchema implements XMLGrammarPool {
 
     /** Zero length grammar array. */
-    private static final Grammar [] ZERO_LENGTH_GRAMMAR_ARRAY = new Grammar [0];
+    private static final Grammar[] ZERO_LENGTH_GRAMMAR_ARRAY = new Grammar[0];
 
     private Grammar fGrammar;
     private Grammar[] fGrammars;
@@ -50,8 +50,9 @@ final class SimpleXMLSchema extends AbstractXMLSchema implements XMLGrammarPool 
      */
 
     public Grammar[] retrieveInitialGrammarSet(String grammarType) {
-        return XMLGrammarDescription.XML_SCHEMA.equals(grammarType) ?
-                (Grammar[]) fGrammars.clone() : ZERO_LENGTH_GRAMMAR_ARRAY;
+        return XMLGrammarDescription.XML_SCHEMA.equals(grammarType)
+                ? (Grammar[]) fGrammars.clone()
+                : ZERO_LENGTH_GRAMMAR_ARRAY;
     }
 
     public void cacheGrammars(String grammarType, Grammar[] grammars) {}
@@ -77,5 +78,4 @@ final class SimpleXMLSchema extends AbstractXMLSchema implements XMLGrammarPool 
     public boolean isFullyComposed() {
         return true;
     }
-
 } // SimpleXMLSchema

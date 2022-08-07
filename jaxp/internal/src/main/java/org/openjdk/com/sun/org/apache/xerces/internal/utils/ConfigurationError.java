@@ -20,11 +20,8 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.utils;
 
-/**
- * A configuration error. This was an internal class in ObjectFactory previously
- */
-public final class ConfigurationError
-    extends Error {
+/** A configuration error. This was an internal class in ObjectFactory previously */
+public final class ConfigurationError extends Error {
 
     //
     // Data
@@ -37,10 +34,7 @@ public final class ConfigurationError
     // Constructors
     //
 
-    /**
-     * Construct a new instance with the specified detail string and
-     * exception.
-     */
+    /** Construct a new instance with the specified detail string and exception. */
     ConfigurationError(String msg, Exception x) {
         super(msg);
         this.exception = x;
@@ -54,5 +48,4 @@ public final class ConfigurationError
     public Exception getException() {
         return exception;
     } // getException():Exception
-
 } // class ConfigurationError

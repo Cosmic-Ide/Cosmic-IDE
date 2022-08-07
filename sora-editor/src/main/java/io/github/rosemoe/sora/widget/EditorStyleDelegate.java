@@ -28,8 +28,6 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.ref.WeakReference;
-
 import io.github.rosemoe.sora.event.SelectionChangeEvent;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.analysis.StyleReceiver;
@@ -37,6 +35,8 @@ import io.github.rosemoe.sora.lang.brackets.BracketsProvider;
 import io.github.rosemoe.sora.lang.brackets.PairedBracket;
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer;
 import io.github.rosemoe.sora.lang.styling.Styles;
+
+import java.lang.ref.WeakReference;
 
 public class EditorStyleDelegate implements StyleReceiver {
 
@@ -46,28 +46,36 @@ public class EditorStyleDelegate implements StyleReceiver {
 
     EditorStyleDelegate(@NonNull CodeEditor editor) {
         editorRef = new WeakReference<>(editor);
-        editor.subscribeEvent(SelectionChangeEvent.class, (event, __) -> {
-            if (!event.isSelected()) {
-                postUpdateBracketPair();
-            }
-        });
+        editor.subscribeEvent(
+                SelectionChangeEvent.class,
+                (event, __) -> {
+                    if (!event.isSelected()) {
+                        postUpdateBracketPair();
+                    }
+                });
     }
 
     void onTextChange() {
         // Should we do this?
-        //bracketsProvider = null;
-        //foundPair = null;
+        // bracketsProvider = null;
+        // foundPair = null;
     }
 
     void postUpdateBracketPair() {
-        runOnUiThread(() -> {
-            final var provider = bracketsProvider;
-            final var editor = editorRef.get();
-            if (provider != null && editor != null && !editor.getCursor().isSelected() && editor.isHighlightBracketPair()) {
-                foundPair = provider.getPairedBracketAt(editor.getText(), editor.getCursor().getLeft());
-                editor.invalidate();
-            }
-        });
+        runOnUiThread(
+                () -> {
+                    final var provider = bracketsProvider;
+                    final var editor = editorRef.get();
+                    if (provider != null
+                            && editor != null
+                            && !editor.getCursor().isSelected()
+                            && editor.isHighlightBracketPair()) {
+                        foundPair =
+                                provider.getPairedBracketAt(
+                                        editor.getText(), editor.getCursor().getLeft());
+                        editor.invalidate();
+                    }
+                });
     }
 
     @Nullable
@@ -101,7 +109,8 @@ public class EditorStyleDelegate implements StyleReceiver {
     }
 
     @Override
-    public void setDiagnostics(@NonNull AnalyzeManager sourceManager, @Nullable DiagnosticsContainer diagnostics) {
+    public void setDiagnostics(
+            @NonNull AnalyzeManager sourceManager, @Nullable DiagnosticsContainer diagnostics) {
         var editor = editorRef.get();
         if (editor != null && sourceManager == editor.getEditorLanguage().getAnalyzeManager()) {
             runOnUiThread(() -> editor.setDiagnostics(diagnostics));
@@ -109,9 +118,12 @@ public class EditorStyleDelegate implements StyleReceiver {
     }
 
     @Override
-    public void updateBracketProvider(@NonNull AnalyzeManager sourceManager, @Nullable BracketsProvider provider) {
+    public void updateBracketProvider(
+            @NonNull AnalyzeManager sourceManager, @Nullable BracketsProvider provider) {
         var editor = editorRef.get();
-        if (editor != null && sourceManager == editor.getEditorLanguage().getAnalyzeManager() && bracketsProvider != provider) {
+        if (editor != null
+                && sourceManager == editor.getEditorLanguage().getAnalyzeManager()
+                && bracketsProvider != provider) {
             this.bracketsProvider = provider;
             postUpdateBracketPair();
         }

@@ -23,13 +23,8 @@ package org.openjdk.com.sun.org.apache.xerces.internal.xni.parser;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLDTDHandler;
 
 /**
- * Defines a DTD filter that acts as both a receiver and an emitter
- * of DTD events.
+ * Defines a DTD filter that acts as both a receiver and an emitter of DTD events.
  *
  * @author Andy Clark, IBM
- *
  */
-public interface XMLDTDFilter
-    extends XMLDTDHandler, XMLDTDSource {
-
-} // interface XMLDTDFilter
+public interface XMLDTDFilter extends XMLDTDHandler, XMLDTDSource {} // interface XMLDTDFilter

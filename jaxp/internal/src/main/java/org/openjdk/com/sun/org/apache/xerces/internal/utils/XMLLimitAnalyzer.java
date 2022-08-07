@@ -41,6 +41,7 @@ package org.openjdk.com.sun.org.apache.xerces.internal.utils;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.Constants;
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.XMLSecurityManager.Limit;
+
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,17 +50,16 @@ import java.util.Map;
  * A helper for analyzing entity expansion limits
  *
  * @author Joe Wang Oracle Corp.
- *
  */
 public final class XMLLimitAnalyzer {
 
-    /**
-     * Map old property names with the new ones
-     */
+    /** Map old property names with the new ones */
     public static enum NameMap {
-        ENTITY_EXPANSION_LIMIT(Constants.SP_ENTITY_EXPANSION_LIMIT, Constants.ENTITY_EXPANSION_LIMIT),
+        ENTITY_EXPANSION_LIMIT(
+                Constants.SP_ENTITY_EXPANSION_LIMIT, Constants.ENTITY_EXPANSION_LIMIT),
         MAX_OCCUR_NODE_LIMIT(Constants.SP_MAX_OCCUR_LIMIT, Constants.MAX_OCCUR_LIMIT),
-        ELEMENT_ATTRIBUTE_LIMIT(Constants.SP_ELEMENT_ATTRIBUTE_LIMIT, Constants.ELEMENT_ATTRIBUTE_LIMIT);
+        ELEMENT_ATTRIBUTE_LIMIT(
+                Constants.SP_ELEMENT_ATTRIBUTE_LIMIT, Constants.ELEMENT_ATTRIBUTE_LIMIT);
 
         final String newName;
         final String oldName;
@@ -77,29 +77,18 @@ public final class XMLLimitAnalyzer {
         }
     }
 
-    /**
-     * Max value accumulated for each property
-     */
+    /** Max value accumulated for each property */
     private final int[] values;
-    /**
-     * Names of the entities corresponding to their max values
-     */
+    /** Names of the entities corresponding to their max values */
     private final String[] names;
-    /**
-     * Total value of accumulated entities
-     */
+    /** Total value of accumulated entities */
     private final int[] totalValue;
 
-    /**
-     * Maintain values of the top 10 elements in the process of parsing
-     */
+    /** Maintain values of the top 10 elements in the process of parsing */
     private final Map[] caches;
 
     private String entityStart, entityEnd;
-    /**
-     * Default constructor. Establishes default values for known security
-     * vulnerabilities.
-     */
+    /** Default constructor. Establishes default values for known security vulnerabilities. */
     public XMLLimitAnalyzer() {
         values = new int[Limit.values().length];
         totalValue = new int[Limit.values().length];
@@ -108,8 +97,8 @@ public final class XMLLimitAnalyzer {
     }
 
     /**
-     * Add the value to the current max count for the specified property
-     * To find the max value of all entities, set no limit
+     * Add the value to the current max count for the specified property To find the max value of
+     * all entities, set no limit
      *
      * @param limit the type of the property
      * @param entityName the name of the entity
@@ -121,14 +110,15 @@ public final class XMLLimitAnalyzer {
 
     /**
      * Add the value to the current count by the index of the property
+     *
      * @param index the index of the property
      * @param entityName the name of the entity
      * @param value the value of the entity
      */
     public void addValue(int index, String entityName, int value) {
-        if (index == Limit.ENTITY_EXPANSION_LIMIT.ordinal() ||
-                index == Limit.MAX_OCCUR_NODE_LIMIT.ordinal() ||
-                index == Limit.ELEMENT_ATTRIBUTE_LIMIT.ordinal()) {
+        if (index == Limit.ENTITY_EXPANSION_LIMIT.ordinal()
+                || index == Limit.MAX_OCCUR_NODE_LIMIT.ordinal()
+                || index == Limit.ELEMENT_ATTRIBUTE_LIMIT.ordinal()) {
             totalValue[index] += value;
             return;
         }
@@ -154,9 +144,8 @@ public final class XMLLimitAnalyzer {
             names[index] = entityName;
         }
 
-
-        if (index == Limit.GENERAL_ENTITY_SIZE_LIMIT.ordinal() ||
-                index == Limit.PARAMETER_ENTITY_SIZE_LIMIT.ordinal()) {
+        if (index == Limit.GENERAL_ENTITY_SIZE_LIMIT.ordinal()
+                || index == Limit.PARAMETER_ENTITY_SIZE_LIMIT.ordinal()) {
             totalValue[Limit.TOTAL_ENTITY_SIZE_LIMIT.ordinal()] += value;
         }
     }
@@ -189,6 +178,7 @@ public final class XMLLimitAnalyzer {
     }
     /**
      * Return the current max value (count or length) by the index of a property
+     *
      * @param index the index of a property
      * @return count of a property
      */
@@ -208,6 +198,7 @@ public final class XMLLimitAnalyzer {
     }
     /**
      * Stop tracking the entity
+     *
      * @param limit the limit property
      * @param name the name of an entity
      */
@@ -221,17 +212,21 @@ public final class XMLLimitAnalyzer {
 
     public void debugPrint(XMLSecurityManager securityManager) {
         Formatter formatter = new Formatter();
-        System.out.println(formatter.format("%30s %15s %15s %15s %30s",
-                "Property","Limit","Total size","Size","Entity Name"));
+        System.out.println(
+                formatter.format(
+                        "%30s %15s %15s %15s %30s",
+                        "Property", "Limit", "Total size", "Size", "Entity Name"));
 
         for (Limit limit : Limit.values()) {
             formatter = new Formatter();
-            System.out.println(formatter.format("%30s %15d %15d %15d %30s",
-                    limit.name(),
-                    securityManager.getLimit(limit),
-                    totalValue[limit.ordinal()],
-                    values[limit.ordinal()],
-                    names[limit.ordinal()]));
+            System.out.println(
+                    formatter.format(
+                            "%30s %15d %15d %15d %30s",
+                            limit.name(),
+                            securityManager.getLimit(limit),
+                            totalValue[limit.ordinal()],
+                            values[limit.ordinal()],
+                            names[limit.ordinal()]));
         }
     }
 }

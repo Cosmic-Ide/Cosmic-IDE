@@ -18,10 +18,8 @@ import java.util.concurrent.locks.LockSupport;
 
 public final class ReadMostlyRWLock {
 
-    @NonNull
-    final Thread writeThread;
-    @VisibleForTesting
-    volatile boolean writeRequested;
+    @NonNull final Thread writeThread;
+    @VisibleForTesting volatile boolean writeRequested;
     private final AtomicBoolean writeIntent = new AtomicBoolean(false);
     private volatile boolean writeAcquired;
     private final ConcurrentList<Reader> readers = ContainerUtil.createConcurrentList();
@@ -34,8 +32,7 @@ public final class ReadMostlyRWLock {
     }
 
     public static class Reader {
-        @NonNull
-        private final Thread thread;
+        @NonNull private final Thread thread;
         volatile boolean readRequested;
         private volatile boolean blocked;
         private volatile boolean impatientReads;
@@ -46,17 +43,28 @@ public final class ReadMostlyRWLock {
 
         @Override
         public String toString() {
-            return "Reader{" + "thread=" + thread + ", readRequested=" + readRequested + ", " +
-                    "blocked=" + blocked + ", impatientReads=" + impatientReads + '}';
+            return "Reader{"
+                    + "thread="
+                    + thread
+                    + ", readRequested="
+                    + readRequested
+                    + ", "
+                    + "blocked="
+                    + blocked
+                    + ", impatientReads="
+                    + impatientReads
+                    + '}';
         }
     }
 
-    private final ThreadLocal<Reader> R = ThreadLocal.withInitial(() -> {
-        Reader status = new Reader(Thread.currentThread());
-        boolean added = readers.addIfAbsent(status);
-        assert added : readers + "; " + Thread.currentThread();
-        return status;
-    });
+    private final ThreadLocal<Reader> R =
+            ThreadLocal.withInitial(
+                    () -> {
+                        Reader status = new Reader(Thread.currentThread());
+                        boolean added = readers.addIfAbsent(status);
+                        assert added : readers + "; " + Thread.currentThread();
+                        return status;
+                    });
 
     public boolean isWriteThread() {
         return Thread.currentThread() == writeThread;
@@ -81,7 +89,9 @@ public final class ReadMostlyRWLock {
                     break;
                 }
 
-                if (progress != null && progress.isCanceled() && !ProgressManager.getInstance().isInNonCancelableSection()) {
+                if (progress != null
+                        && progress.isCanceled()
+                        && !ProgressManager.getInstance().isInNonCancelableSection()) {
                     throw new ProcessCanceledException();
                 }
                 waitABit(status, iter);
@@ -124,12 +134,13 @@ public final class ReadMostlyRWLock {
         }
     }
 
-    public static class CannotRunReadActionException extends RuntimeException {
-
-    }
+    public static class CannotRunReadActionException extends RuntimeException {}
 
     private void throwIfImpatient(Reader status) throws CannotRunReadActionException {
-        if (status.impatientReads && writeRequested && !ProgressManager.getInstance().isInNonCancelableSection() && CoreProgressManager.ENABLED) {
+        if (status.impatientReads
+                && writeRequested
+                && !ProgressManager.getInstance().isInNonCancelableSection()
+                && CoreProgressManager.ENABLED) {
             throw new CannotRunReadActionException();
         }
     }
@@ -138,7 +149,8 @@ public final class ReadMostlyRWLock {
         return R.get().impatientReads;
     }
 
-    public void executeByImpatientReader(@NonNull Runnable runnable) throws CannotRunReadActionException {
+    public void executeByImpatientReader(@NonNull Runnable runnable)
+            throws CannotRunReadActionException {
         checkReadThreadAccess();
         Reader status = R.get();
         boolean old = status.impatientReads;
@@ -217,7 +229,7 @@ public final class ReadMostlyRWLock {
         try {
             runnable.run();
         } finally {
-            //cancelActionToBeCancelledBeforeWrite();
+            // cancelActionToBeCancelledBeforeWrite();
             writeLock();
             writeSuspended = prev;
         }
@@ -250,14 +262,19 @@ public final class ReadMostlyRWLock {
 
     private void checkWriteThreadAccess() {
         if (Thread.currentThread() != writeThread) {
-            throw new IllegalStateException("Current thread: " + Thread.currentThread() + "; " +
-                    "expected: " + writeThread);
+            throw new IllegalStateException(
+                    "Current thread: "
+                            + Thread.currentThread()
+                            + "; "
+                            + "expected: "
+                            + writeThread);
         }
     }
 
     private void checkReadThreadAccess() {
         if (Thread.currentThread() == writeThread) {
-            throw new IllegalStateException("Must not start read from the write thread: " + Thread.currentThread());
+            throw new IllegalStateException(
+                    "Must not start read from the write thread: " + Thread.currentThread());
         }
     }
 
@@ -276,6 +293,23 @@ public final class ReadMostlyRWLock {
 
     @Override
     public String toString() {
-        return "ReadMostlyRWLock{" + "writeThread=" + writeThread + ", writeRequested=" + writeRequested + ", writeIntent=" + writeIntent + ", writeAcquired=" + writeAcquired + ", readers=" + readers + ", writeSuspended=" + writeSuspended + ", deadReadersGCStamp=" + deadReadersGCStamp + ", R=" + R + '}';
+        return "ReadMostlyRWLock{"
+                + "writeThread="
+                + writeThread
+                + ", writeRequested="
+                + writeRequested
+                + ", writeIntent="
+                + writeIntent
+                + ", writeAcquired="
+                + writeAcquired
+                + ", readers="
+                + readers
+                + ", writeSuspended="
+                + writeSuspended
+                + ", deadReadersGCStamp="
+                + deadReadersGCStamp
+                + ", R="
+                + R
+                + '}';
     }
 }

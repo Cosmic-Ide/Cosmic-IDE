@@ -43,16 +43,12 @@ public class RoughBufferedMeasure {
         return ch == 0xd83c || ch == 0xd83d || ch == 0xd83e;
     }
 
-    /**
-     * Clear caches of font
-     */
+    /** Clear caches of font */
     public void clearCache() {
         Arrays.fill(cache, 0);
     }
 
-    /**
-     * Measure a single character
-     */
+    /** Measure a single character */
     public float measureChar(char ch, Paint p) {
         var rate = 1;
         if (ch == '\t') {
@@ -98,9 +94,7 @@ public class RoughBufferedMeasure {
         return width;
     }
 
-    /**
-     * Measure text
-     */
+    /** Measure text */
     public float measureText(CharSequence str, int start, int end, Paint p) {
         float width = 0f;
         for (int i = start; i < end; i++) {
@@ -127,5 +121,4 @@ public class RoughBufferedMeasure {
         }
         return width;
     }
-
 }

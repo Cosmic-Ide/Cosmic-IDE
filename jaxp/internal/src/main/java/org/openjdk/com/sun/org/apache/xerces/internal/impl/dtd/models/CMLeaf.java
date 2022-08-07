@@ -68,10 +68,8 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.QName;
  * Content model leaf node.
  *
  * @xerces.internal
- *
  */
-public class CMLeaf
-    extends CMNode {
+public class CMLeaf extends CMNode {
 
     //
     // Data
@@ -81,9 +79,8 @@ public class CMLeaf
     private QName fElement = new QName();
 
     /**
-     * Part of the algorithm to convert a regex directly to a DFA
-     * numbers each leaf sequentially. If its -1, that means its an
-     * epsilon node. Zero and greater are non-epsilon positions.
+     * Part of the algorithm to convert a regex directly to a DFA numbers each leaf sequentially. If
+     * its -1, that means its an epsilon node. Zero and greater are non-epsilon positions.
      */
     private int fPosition = -1;
 
@@ -92,7 +89,7 @@ public class CMLeaf
     //
 
     /** Constructs a content model leaf. */
-    public CMLeaf(QName element, int position)  {
+    public CMLeaf(QName element, int position) {
         super(XMLContentSpec.CONTENTSPECNODE_LEAF);
 
         // Store the element index and position
@@ -101,7 +98,7 @@ public class CMLeaf
     }
 
     /** Constructs a content model leaf. */
-    public CMLeaf(QName element)  {
+    public CMLeaf(QName element) {
         super(XMLContentSpec.CONTENTSPECNODE_LEAF);
 
         // Store the element index and position
@@ -112,18 +109,15 @@ public class CMLeaf
     // Package methods
     //
 
-    final QName getElement()
-    {
+    final QName getElement() {
         return fElement;
     }
 
-    final int getPosition()
-    {
+    final int getPosition() {
         return fPosition;
     }
 
-    final void setPosition(int newPosition)
-    {
+    final void setPosition(int newPosition) {
         fPosition = newPosition;
     }
 
@@ -133,54 +127,39 @@ public class CMLeaf
 
     // package
 
-    public boolean isNullable()
-    {
+    public boolean isNullable() {
         // Leaf nodes are never nullable unless its an epsilon node
         return (fPosition == -1);
     }
 
-    public String toString()
-    {
+    public String toString() {
         StringBuffer strRet = new StringBuffer(fElement.toString());
         strRet.append(" (");
         strRet.append(fElement.uri);
         strRet.append(',');
         strRet.append(fElement.localpart);
         strRet.append(')');
-        if (fPosition >= 0)
-        {
-            strRet.append
-            (
-                " (Pos:"
-                + new Integer(fPosition).toString()
-                + ")"
-            );
+        if (fPosition >= 0) {
+            strRet.append(" (Pos:" + new Integer(fPosition).toString() + ")");
         }
         return strRet.toString();
     }
 
     // protected
 
-    protected void calcFirstPos(CMStateSet toSet)
-    {
+    protected void calcFirstPos(CMStateSet toSet) {
         // If we are an epsilon node, then the first pos is an empty set
-        if (fPosition == -1)
-            toSet.zeroBits();
+        if (fPosition == -1) toSet.zeroBits();
 
         // Otherwise, its just the one bit of our position
-        else
-            toSet.setBit(fPosition);
+        else toSet.setBit(fPosition);
     }
 
-    protected void calcLastPos(CMStateSet toSet)
-    {
+    protected void calcLastPos(CMStateSet toSet) {
         // If we are an epsilon node, then the last pos is an empty set
-        if (fPosition == -1)
-            toSet.zeroBits();
+        if (fPosition == -1) toSet.zeroBits();
 
         // Otherwise, its just the one bit of our position
-        else
-            toSet.setBit(fPosition);
+        else toSet.setBit(fPosition);
     }
-
 } // class CMLeaf

@@ -43,14 +43,15 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 /**
- * <p>A validator helper for <code>StAXSource</code>s.</p>
+ * A validator helper for <code>StAXSource</code>s.
  *
  * @author <a href="mailto:Sunitha.Reddy@Sun.com">Sunitha Reddy</a>
  */
 public final class StAXValidatorHelper implements ValidatorHelper {
-    private static final String DEFAULT_TRANSFORMER_IMPL = "org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    private static final String DEFAULT_TRANSFORMER_IMPL =
+            "org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
 
-    /** Component manager. **/
+    /** Component manager. * */
     private XMLSchemaValidatorComponentManager fComponentManager;
 
     private Transformer identityTransformer1 = null;
@@ -62,21 +63,27 @@ public final class StAXValidatorHelper implements ValidatorHelper {
         fComponentManager = componentManager;
     }
 
-    public void validate(Source source, Result result)
-        throws SAXException, IOException {
+    public void validate(Source source, Result result) throws SAXException, IOException {
 
         if (result == null || result instanceof StAXResult) {
 
-            if( identityTransformer1==null ) {
+            if (identityTransformer1 == null) {
                 try {
-                    SAXTransformerFactory tf = fComponentManager.getFeature(Constants.ORACLE_FEATURE_SERVICE_MECHANISM) ?
-                                    (SAXTransformerFactory)SAXTransformerFactory.newInstance()
-                                    : (SAXTransformerFactory) TransformerFactory.newInstance(DEFAULT_TRANSFORMER_IMPL, StAXValidatorHelper.class.getClassLoader());
-                    XMLSecurityManager securityManager = (XMLSecurityManager)fComponentManager.getProperty(Constants.SECURITY_MANAGER);
+                    SAXTransformerFactory tf =
+                            fComponentManager.getFeature(Constants.ORACLE_FEATURE_SERVICE_MECHANISM)
+                                    ? (SAXTransformerFactory) SAXTransformerFactory.newInstance()
+                                    : (SAXTransformerFactory)
+                                            TransformerFactory.newInstance(
+                                                    DEFAULT_TRANSFORMER_IMPL,
+                                                    StAXValidatorHelper.class.getClassLoader());
+                    XMLSecurityManager securityManager =
+                            (XMLSecurityManager)
+                                    fComponentManager.getProperty(Constants.SECURITY_MANAGER);
                     if (securityManager != null) {
                         for (XMLSecurityManager.Limit limit : XMLSecurityManager.Limit.values()) {
-                            if (securityManager.isSet(limit.ordinal())){
-                                tf.setAttribute(limit.apiProperty(),
+                            if (securityManager.isSet(limit.ordinal())) {
+                                tf.setAttribute(
+                                        limit.apiProperty(),
                                         securityManager.getLimitValueAsString(limit));
                             }
                         }
@@ -94,24 +101,25 @@ public final class StAXValidatorHelper implements ValidatorHelper {
             }
 
             handler = new ValidatorHandlerImpl(fComponentManager);
-            if( result!=null ) {
+            if (result != null) {
                 handler.setContentHandler(identityTransformer2);
                 identityTransformer2.setResult(result);
             }
 
             try {
-                identityTransformer1.transform( source, new SAXResult(handler) );
+                identityTransformer1.transform(source, new SAXResult(handler));
             } catch (TransformerException e) {
-                if( e.getException() instanceof SAXException )
-                    throw (SAXException)e.getException();
+                if (e.getException() instanceof SAXException) throw (SAXException) e.getException();
                 throw new SAXException(e);
             } finally {
                 handler.setContentHandler(null);
             }
             return;
         }
-        throw new IllegalArgumentException(JAXPValidationMessageFormatter.formatMessage(fComponentManager.getLocale(),
-                "SourceResultMismatch",
-                new Object [] {source.getClass().getName(), result.getClass().getName()}));
+        throw new IllegalArgumentException(
+                JAXPValidationMessageFormatter.formatMessage(
+                        fComponentManager.getLocale(),
+                        "SourceResultMismatch",
+                        new Object[] {source.getClass().getName(), result.getClass().getName()}));
     }
 }

@@ -30,8 +30,6 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLParseException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
-import java.io.IOException;
-import java.lang.ref.SoftReference;
 import org.openjdk.javax.xml.XMLConstants;
 import org.openjdk.javax.xml.transform.Result;
 import org.openjdk.javax.xml.transform.Source;
@@ -44,8 +42,11 @@ import org.openjdk.javax.xml.transform.stream.StreamResult;
 import org.openjdk.javax.xml.transform.stream.StreamSource;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.lang.ref.SoftReference;
+
 /**
- * <p>A validator helper for <code>StreamSource</code>s.</p>
+ * A validator helper for <code>StreamSource</code>s.
  *
  * @author Michael Glavassevich, IBM
  * @author <a href="mailto:Sunitha.Reddy@Sun.com">Sunitha Reddy</a>
@@ -57,51 +58,52 @@ final class StreamValidatorHelper implements ValidatorHelper {
 
     /** Feature identifier: parser settings. */
     private static final String PARSER_SETTINGS =
-        Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
+            Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
 
     // property identifiers
 
     /** Property identifier: entity resolver. */
     private static final String ENTITY_RESOLVER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_RESOLVER_PROPERTY;
 
     /** Property identifier: error handler. */
     private static final String ERROR_HANDLER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_HANDLER_PROPERTY;
 
     /** Property identifier: error reporter. */
     private static final String ERROR_REPORTER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
 
     /** Property identifier: XML Schema validator. */
     private static final String SCHEMA_VALIDATOR =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_VALIDATOR_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SCHEMA_VALIDATOR_PROPERTY;
 
     /** Property identifier: symbol table. */
     private static final String SYMBOL_TABLE =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
 
     /** Property identifier: validation manager. */
     private static final String VALIDATION_MANAGER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.VALIDATION_MANAGER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.VALIDATION_MANAGER_PROPERTY;
 
-    private static final String DEFAULT_TRANSFORMER_IMPL = "org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
+    private static final String DEFAULT_TRANSFORMER_IMPL =
+            "org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
 
     /** Property id: security manager. */
     private static final String SECURITY_MANAGER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SECURITY_MANAGER_PROPERTY;
 
     //
     // Data
     //
 
-    /** SoftReference to parser configuration. **/
+    /** SoftReference to parser configuration. * */
     private SoftReference fConfiguration = new SoftReference(null);
 
-    /** Schema validator. **/
+    /** Schema validator. * */
     private XMLSchemaValidator fSchemaValidator;
 
-    /** Component manager. **/
+    /** Component manager. * */
     private XMLSchemaValidatorComponentManager fComponentManager;
 
     private ValidatorHandlerImpl handler = null;
@@ -111,17 +113,20 @@ final class StreamValidatorHelper implements ValidatorHelper {
         fSchemaValidator = (XMLSchemaValidator) fComponentManager.getProperty(SCHEMA_VALIDATOR);
     }
 
-    public void validate(Source source, Result result)
-        throws SAXException, IOException {
+    public void validate(Source source, Result result) throws SAXException, IOException {
         if (result == null || result instanceof StreamResult) {
             final StreamSource streamSource = (StreamSource) source;
-            TransformerHandler identityTransformerHandler ;
+            TransformerHandler identityTransformerHandler;
 
-            if( result!=null ) {
+            if (result != null) {
                 try {
-                    SAXTransformerFactory tf = fComponentManager.getFeature(Constants.ORACLE_FEATURE_SERVICE_MECHANISM) ?
-                                    (SAXTransformerFactory)SAXTransformerFactory.newInstance()
-                                    : (SAXTransformerFactory) TransformerFactory.newInstance(DEFAULT_TRANSFORMER_IMPL, StreamValidatorHelper.class.getClassLoader());
+                    SAXTransformerFactory tf =
+                            fComponentManager.getFeature(Constants.ORACLE_FEATURE_SERVICE_MECHANISM)
+                                    ? (SAXTransformerFactory) SAXTransformerFactory.newInstance()
+                                    : (SAXTransformerFactory)
+                                            TransformerFactory.newInstance(
+                                                    DEFAULT_TRANSFORMER_IMPL,
+                                                    StreamValidatorHelper.class.getClassLoader());
                     identityTransformerHandler = tf.newTransformerHandler();
                 } catch (TransformerConfigurationException e) {
                     throw new TransformerFactoryConfigurationError(e);
@@ -132,7 +137,9 @@ final class StreamValidatorHelper implements ValidatorHelper {
                 identityTransformerHandler.setResult(result);
             }
 
-            XMLInputSource input = new XMLInputSource(streamSource.getPublicId(), streamSource.getSystemId(), null);
+            XMLInputSource input =
+                    new XMLInputSource(
+                            streamSource.getPublicId(), streamSource.getSystemId(), null);
             input.setByteStream(streamSource.getInputStream());
             input.setCharacterStream(streamSource.getReader());
 
@@ -142,7 +149,8 @@ final class StreamValidatorHelper implements ValidatorHelper {
             if (config == null) {
                 config = initialize();
             }
-            // If settings have changed on the component manager, refresh the error handler and entity resolver.
+            // If settings have changed on the component manager, refresh the error handler and
+            // entity resolver.
             else if (fComponentManager.getFeature(PARSER_SETTINGS)) {
                 config.setProperty(ENTITY_RESOLVER, fComponentManager.getProperty(ENTITY_RESOLVER));
                 config.setProperty(ERROR_HANDLER, fComponentManager.getProperty(ERROR_HANDLER));
@@ -154,18 +162,18 @@ final class StreamValidatorHelper implements ValidatorHelper {
 
             try {
                 config.parse(input);
-            }
-            catch (XMLParseException e) {
+            } catch (XMLParseException e) {
                 throw Util.toSAXParseException(e);
-            }
-            catch (XNIException e) {
+            } catch (XNIException e) {
                 throw Util.toSAXException(e);
             }
             return;
         }
-        throw new IllegalArgumentException(JAXPValidationMessageFormatter.formatMessage(fComponentManager.getLocale(),
-                "SourceResultMismatch",
-                new Object [] {source.getClass().getName(), result.getClass().getName()}));
+        throw new IllegalArgumentException(
+                JAXPValidationMessageFormatter.formatMessage(
+                        fComponentManager.getLocale(),
+                        "SourceResultMismatch",
+                        new Object[] {source.getClass().getName(), result.getClass().getName()}));
     }
 
     private XMLParserConfiguration initialize() {
@@ -175,7 +183,8 @@ final class StreamValidatorHelper implements ValidatorHelper {
         }
         config.setProperty(ENTITY_RESOLVER, fComponentManager.getProperty(ENTITY_RESOLVER));
         config.setProperty(ERROR_HANDLER, fComponentManager.getProperty(ERROR_HANDLER));
-        XMLErrorReporter errorReporter = (XMLErrorReporter) fComponentManager.getProperty(ERROR_REPORTER);
+        XMLErrorReporter errorReporter =
+                (XMLErrorReporter) fComponentManager.getProperty(ERROR_REPORTER);
         config.setProperty(ERROR_REPORTER, errorReporter);
         // add message formatters
         if (errorReporter.getMessageFormatter(XMLMessageFormatter.XML_DOMAIN) == null) {
@@ -188,12 +197,13 @@ final class StreamValidatorHelper implements ValidatorHelper {
         config.setDocumentHandler(fSchemaValidator);
         config.setDTDHandler(null);
         config.setDTDContentModelHandler(null);
-        config.setProperty(Constants.XML_SECURITY_PROPERTY_MANAGER,
+        config.setProperty(
+                Constants.XML_SECURITY_PROPERTY_MANAGER,
                 fComponentManager.getProperty(Constants.XML_SECURITY_PROPERTY_MANAGER));
-        config.setProperty(Constants.SECURITY_MANAGER,
+        config.setProperty(
+                Constants.SECURITY_MANAGER,
                 fComponentManager.getProperty(Constants.SECURITY_MANAGER));
         fConfiguration = new SoftReference(config);
         return config;
     }
-
 } // StreamValidatorHelper

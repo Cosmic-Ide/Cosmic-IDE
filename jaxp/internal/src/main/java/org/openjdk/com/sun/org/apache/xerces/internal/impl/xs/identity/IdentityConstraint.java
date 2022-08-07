@@ -21,20 +21,19 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.identity;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.XSAnnotationImpl;
-import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSIDCDefinition;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util.StringListImpl;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.StringList;
+import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSConstants;
+import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSIDCDefinition;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSNamespaceItem;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSObject;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSObjectList;
-import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSConstants;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util.StringListImpl;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
 
 /**
  * Base class of Schema identity constraint.
  *
  * @xerces.internal
- *
  * @author Andy Clark, IBM
  */
 public abstract class IdentityConstraint implements XSIDCDefinition {
@@ -102,10 +101,8 @@ public abstract class IdentityConstraint implements XSIDCDefinition {
 
     /** Adds a field. */
     public void addField(Field field) {
-        if (fFields == null)
-            fFields = new Field[4];
-        else if (fFieldCount == fFields.length)
-            fFields = resize(fFields, fFieldCount*2);
+        if (fFields == null) fFields = new Field[4];
+        else if (fFieldCount == fFields.length) fFields = resize(fFields, fFieldCount * 2);
         fFields[fFieldCount++] = field;
     } // addField(Field)
 
@@ -120,7 +117,7 @@ public abstract class IdentityConstraint implements XSIDCDefinition {
     } // getFieldAt(int):Field
 
     // get the name of the owning element
-    public String getElementName () {
+    public String getElementName() {
         return fElementName;
     } // getElementName(): String
 
@@ -147,13 +144,13 @@ public abstract class IdentityConstraint implements XSIDCDefinition {
     // the elenemtName field) are equal.
     public boolean equals(IdentityConstraint id) {
         boolean areEqual = fIdentityConstraintName.equals(id.fIdentityConstraintName);
-        if(!areEqual) return false;
+        if (!areEqual) return false;
         areEqual = fSelector.toString().equals(id.fSelector.toString());
-        if(!areEqual) return false;
+        if (!areEqual) return false;
         areEqual = (fFieldCount == id.fFieldCount);
-        if(!areEqual) return false;
-        for(int i=0; i<fFieldCount; i++)
-            if(!fFields[i].toString().equals(id.fFields[i].toString())) return false;
+        if (!areEqual) return false;
+        for (int i = 0; i < fFieldCount; i++)
+            if (!fFields[i].toString().equals(id.fFields[i].toString())) return false;
         return true;
     } // equals
 
@@ -163,89 +160,74 @@ public abstract class IdentityConstraint implements XSIDCDefinition {
         return newArray;
     }
 
-    /**
-     * Get the type of the object, i.e ELEMENT_DECLARATION.
-     */
+    /** Get the type of the object, i.e ELEMENT_DECLARATION. */
     public short getType() {
         return XSConstants.IDENTITY_CONSTRAINT;
     }
 
     /**
-     * The <code>name</code> of this <code>XSObject</code> depending on the
-     * <code>XSObject</code> type.
+     * The <code>name</code> of this <code>XSObject</code> depending on the <code>XSObject</code>
+     * type.
      */
     public String getName() {
         return fIdentityConstraintName;
     }
 
     /**
-     * The namespace URI of this node, or <code>null</code> if it is
-     * unspecified.  defines how a namespace URI is attached to schema
-     * components.
+     * The namespace URI of this node, or <code>null</code> if it is unspecified. defines how a
+     * namespace URI is attached to schema components.
      */
     public String getNamespace() {
         return fNamespace;
     }
 
-    /**
-     * {identity-constraint category} One of key, keyref or unique.
-     */
+    /** {identity-constraint category} One of key, keyref or unique. */
     public short getCategory() {
         return type;
     }
 
-    /**
-     * {selector} A restricted XPath ([XPath]) expression
-     */
+    /** {selector} A restricted XPath ([XPath]) expression */
     public String getSelectorStr() {
         return (fSelector != null) ? fSelector.toString() : null;
     }
 
-    /**
-     * {fields} A non-empty list of restricted XPath ([XPath]) expressions.
-     */
+    /** {fields} A non-empty list of restricted XPath ([XPath]) expressions. */
     public StringList getFieldStrs() {
         String[] strs = new String[fFieldCount];
-        for (int i = 0; i < fFieldCount; i++)
-            strs[i] = fFields[i].toString();
+        for (int i = 0; i < fFieldCount; i++) strs[i] = fFields[i].toString();
         return new StringListImpl(strs, fFieldCount);
     }
 
     /**
-     * {referenced key} Required if {identity-constraint category} is keyref,
-     * forbidden otherwise. An identity-constraint definition with
-     * {identity-constraint category} equal to key or unique.
+     * {referenced key} Required if {identity-constraint category} is keyref, forbidden otherwise.
+     * An identity-constraint definition with {identity-constraint category} equal to key or unique.
      */
     public XSIDCDefinition getRefKey() {
         return null;
     }
 
-    /**
-     * Optional. Annotation.
-     */
+    /** Optional. Annotation. */
     public XSObjectList getAnnotations() {
         return new XSObjectListImpl(fAnnotations, fNumAnnotations);
     }
 
-        /**
-         * @see XSObject#getNamespaceItem()
-         */
-        public XSNamespaceItem getNamespaceItem() {
+    /**
+     * @see XSObject#getNamespaceItem()
+     */
+    public XSNamespaceItem getNamespaceItem() {
         // REVISIT: implement
-                return null;
-        }
+        return null;
+    }
 
     public void addAnnotation(XSAnnotationImpl annotation) {
-        if(annotation == null)
-            return;
-        if(fAnnotations == null) {
+        if (annotation == null) return;
+        if (fAnnotations == null) {
             fAnnotations = new XSAnnotationImpl[2];
-        } else if(fNumAnnotations == fAnnotations.length) {
+        } else if (fNumAnnotations == fAnnotations.length) {
             XSAnnotationImpl[] newArray = new XSAnnotationImpl[fNumAnnotations << 1];
             System.arraycopy(fAnnotations, 0, newArray, 0, fNumAnnotations);
             fAnnotations = newArray;
         }
         fAnnotations[fNumAnnotations++] = annotation;
     }
-
 } // class IdentityConstraint

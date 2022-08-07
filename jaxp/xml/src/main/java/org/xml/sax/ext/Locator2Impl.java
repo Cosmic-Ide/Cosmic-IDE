@@ -31,53 +31,48 @@
 package org.xml.sax.ext;
 
 import org.xml.sax.Locator;
-import org.xml.sax.ext.Locator2;
 import org.xml.sax.helpers.LocatorImpl;
 
-
 /**
- * SAX2 extension helper for holding additional Entity information,
- * implementing the {@link org.xml.sax.ext.Locator2} interface.
+ * SAX2 extension helper for holding additional Entity information, implementing the {@link
+ * org.xml.sax.ext.Locator2} interface.
  *
  * <blockquote>
- * <em>This module, both source code and documentation, is in the
- * Public Domain, and comes with <strong>NO WARRANTY</strong>.</em>
+ *
+ * <em>This module, both source code and documentation, is in the Public Domain, and comes with
+ * <strong>NO WARRANTY</strong>.</em>
+ *
  * </blockquote>
  *
- * <p> This is not part of core-only SAX2 distributions.</p>
+ * <p>This is not part of core-only SAX2 distributions.
  *
  * @since SAX 2.0.2
  * @author David Brownell
  */
-public class Locator2Impl extends LocatorImpl implements org.xml.sax.ext.Locator2
-{
-    private String      encoding;
-    private String      version;
-
+public class Locator2Impl extends LocatorImpl implements org.xml.sax.ext.Locator2 {
+    private String encoding;
+    private String version;
 
     /**
-     * Construct a new, empty Locator2Impl object.
-     * This will not normally be useful, since the main purpose
-     * of this class is to make a snapshot of an existing Locator.
+     * Construct a new, empty Locator2Impl object. This will not normally be useful, since the main
+     * purpose of this class is to make a snapshot of an existing Locator.
      */
-    public Locator2Impl () { }
+    public Locator2Impl() {}
 
     /**
-     * Copy an existing Locator or Locator2 object.
-     * If the object implements Locator2, values of the
-     * <em>encoding</em> and <em>version</em>strings are copied,
-     * otherwise they set to <em>null</em>.
+     * Copy an existing Locator or Locator2 object. If the object implements Locator2, values of the
+     * <em>encoding</em> and <em>version</em>strings are copied, otherwise they set to
+     * <em>null</em>.
      *
      * @param locator The existing Locator object.
      */
-    public Locator2Impl (Locator locator)
-    {
-        super (locator);
+    public Locator2Impl(Locator locator) {
+        super(locator);
         if (locator instanceof org.xml.sax.ext.Locator2) {
             org.xml.sax.ext.Locator2 l2 = (Locator2) locator;
 
-            version = l2.getXMLVersion ();
-            encoding = l2.getEncoding ();
+            version = l2.getXMLVersion();
+            encoding = l2.getEncoding();
         }
     }
 
@@ -90,17 +85,18 @@ public class Locator2Impl extends LocatorImpl implements org.xml.sax.ext.Locator
      *
      * @see #setXMLVersion
      */
-    public String getXMLVersion ()
-        { return version; }
+    public String getXMLVersion() {
+        return version;
+    }
 
     /**
      * Returns the current value of the encoding property.
      *
      * @see #setEncoding
      */
-    public String getEncoding ()
-        { return encoding; }
-
+    public String getEncoding() {
+        return encoding;
+    }
 
     ////////////////////////////////////////////////////////////////////
     // Setters
@@ -112,8 +108,9 @@ public class Locator2Impl extends LocatorImpl implements org.xml.sax.ext.Locator
      * @param version the new "version" value
      * @see #getXMLVersion
      */
-    public void setXMLVersion (String version)
-        { this.version = version; }
+    public void setXMLVersion(String version) {
+        this.version = version;
+    }
 
     /**
      * Assigns the current value of the encoding property.
@@ -121,6 +118,7 @@ public class Locator2Impl extends LocatorImpl implements org.xml.sax.ext.Locator
      * @param encoding the new "encoding" value
      * @see #getEncoding
      */
-    public void setEncoding (String encoding)
-        { this.encoding = encoding; }
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 }

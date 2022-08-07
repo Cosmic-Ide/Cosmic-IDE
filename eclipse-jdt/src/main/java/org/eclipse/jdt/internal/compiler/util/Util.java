@@ -465,9 +465,8 @@ public class Util implements SuffixConstants {
     }
 
     /**
-     * This method has been modified to work on android.
-     * Returns the given input stream's contents as a byte array. All bytes in the stream are
-     * returned. Note this doesn't close the stream.
+     * This method has been modified to work on android. Returns the given input stream's contents
+     * as a byte array. All bytes in the stream are returned. Note this doesn't close the stream.
      *
      * @throws IOException if a problem occurred reading the stream.
      */
@@ -484,8 +483,8 @@ public class Util implements SuffixConstants {
     }
 
     /**
-     * This method has been modified to work on android
-     * Returns the given input stream's first bytes as array. Note this doesn't close the stream.
+     * This method has been modified to work on android Returns the given input stream's first bytes
+     * as array. Note this doesn't close the stream.
      *
      * @throws IOException if a problem occurred reading the stream.
      */

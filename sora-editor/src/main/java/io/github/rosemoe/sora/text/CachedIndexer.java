@@ -25,15 +25,14 @@ package io.github.rosemoe.sora.text;
 
 import androidx.annotation.NonNull;
 
+import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
-
 /**
- * Indexer Impl for Content
- * With cache
+ * Indexer Impl for Content With cache
  *
  * @author Rose
  */
@@ -58,8 +57,7 @@ public class CachedIndexer implements Indexer, ContentListener {
     }
 
     /**
-     * If the querying index is larger than the switch
-     * We will add its result to cache
+     * If the querying index is larger than the switch We will add its result to cache
      *
      * @param s Switch
      */
@@ -67,9 +65,7 @@ public class CachedIndexer implements Indexer, ContentListener {
         mSwitchIndex = s;
     }
 
-    /**
-     * Update the end position
-     */
+    /** Update the end position */
     private void updateEnd() {
         mEndPoint.index = mContent.length();
         mEndPoint.line = mContent.getLineCount() - 1;
@@ -144,14 +140,16 @@ public class CachedIndexer implements Indexer, ContentListener {
      * @param start Given position
      * @param index Querying index
      */
-    private void findIndexForward(@NonNull CharPosition start, int index, @NonNull CharPosition dest) {
+    private void findIndexForward(
+            @NonNull CharPosition start, int index, @NonNull CharPosition dest) {
         if (start.index > index) {
-            throw new IllegalArgumentException("Unable to find backward from method findIndexForward()");
+            throw new IllegalArgumentException(
+                    "Unable to find backward from method findIndexForward()");
         }
         int workLine = start.line;
         int workColumn = start.column;
         int workIndex = start.index;
-        //Move the column to the line end
+        // Move the column to the line end
         {
             int column = mContent.getColumnCountUnchecked(workLine);
             workIndex += column - workColumn;
@@ -178,7 +176,8 @@ public class CachedIndexer implements Indexer, ContentListener {
      */
     private void findIndexBackward(CharPosition start, int index, CharPosition dest) {
         if (start.index < index) {
-            throw new IllegalArgumentException("Unable to find forward from method findIndexBackward()");
+            throw new IllegalArgumentException(
+                    "Unable to find forward from method findIndexBackward()");
         }
         int workLine = start.line;
         int workColumn = start.column;
@@ -189,7 +188,8 @@ public class CachedIndexer implements Indexer, ContentListener {
             if (workLine != -1) {
                 workColumn = mContent.getColumnCountUnchecked(workLine);
             } else {
-                // Reached the start of text,we have to use findIndexForward() as this method can not handle it
+                // Reached the start of text,we have to use findIndexForward() as this method can
+                // not handle it
                 findIndexForward(mZeroPoint, index, dest);
                 return;
             }
@@ -207,8 +207,8 @@ public class CachedIndexer implements Indexer, ContentListener {
     /**
      * From the given position to find forward in text
      *
-     * @param start  Given position
-     * @param line   Querying line
+     * @param start Given position
+     * @param line Querying line
      * @param column Querying column
      */
     private void findLiCoForward(CharPosition start, int line, int column, CharPosition dest) {
@@ -218,7 +218,7 @@ public class CachedIndexer implements Indexer, ContentListener {
         int workLine = start.line;
         int workIndex = start.index;
         {
-            //Make index to left of line
+            // Make index to left of line
             workIndex = workIndex - start.column;
         }
         while (workLine < line) {
@@ -234,8 +234,8 @@ public class CachedIndexer implements Indexer, ContentListener {
     /**
      * From the given position to find backward in text
      *
-     * @param start  Given position
-     * @param line   Querying line
+     * @param start Given position
+     * @param line Querying line
      * @param column Querying column
      */
     private void findLiCoBackward(CharPosition start, int line, int column, CharPosition dest) {
@@ -245,7 +245,7 @@ public class CachedIndexer implements Indexer, ContentListener {
         int workLine = start.line;
         int workIndex = start.index;
         {
-            //Make index to the left of line
+            // Make index to the left of line
             workIndex = workIndex - start.column;
         }
         while (workLine > line) {
@@ -261,8 +261,8 @@ public class CachedIndexer implements Indexer, ContentListener {
     /**
      * From the given position to find in this line
      *
-     * @param pos    Given position
-     * @param line   Querying line
+     * @param pos Given position
+     * @param line Querying line
      * @param column Querying column
      */
     private void findInLine(CharPosition pos, int line, int column) {
@@ -386,13 +386,18 @@ public class CachedIndexer implements Indexer, ContentListener {
     @Override
     @UnsupportedUserUsage
     public void beforeReplace(Content content) {
-        //Do nothing
+        // Do nothing
     }
 
     @Override
     @UnsupportedUserUsage
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn,
-                            CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         for (var pos : mCachePositions) {
             if (pos.line == startLine) {
                 if (pos.column >= startColumn) {
@@ -410,13 +415,17 @@ public class CachedIndexer implements Indexer, ContentListener {
 
     @Override
     @UnsupportedUserUsage
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn,
-                            CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         List<CharPosition> garbage = new ArrayList<>();
         for (CharPosition pos : mCachePositions) {
             if (pos.line == startLine) {
-                if (pos.column >= startColumn)
-                    garbage.add(pos);
+                if (pos.column >= startColumn) garbage.add(pos);
             } else if (pos.line > startLine) {
                 if (pos.line < endLine) {
                     garbage.add(pos);
@@ -431,6 +440,4 @@ public class CachedIndexer implements Indexer, ContentListener {
         mCachePositions.removeAll(garbage);
         updateEnd();
     }
-
 }
-

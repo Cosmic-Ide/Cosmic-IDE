@@ -21,8 +21,8 @@
 package org.openjdk.com.sun.xml.internal.stream.dtd.nonvalidating;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.QName;
-/**
- */
+
+/** */
 public class XMLElementDecl {
 
     /** TYPE_ANY */
@@ -40,7 +40,6 @@ public class XMLElementDecl {
     /** TYPE_SIMPLE */
     public static final short TYPE_SIMPLE = 4;
 
-
     /** name */
     public final QName name = new QName();
 
@@ -49,7 +48,6 @@ public class XMLElementDecl {
 
     /** type */
     public short type = -1;
-
 
     /** simpleType */
     public final XMLSimpleType simpleType = new XMLSimpleType();
@@ -65,19 +63,16 @@ public class XMLElementDecl {
      */
     public void setValues(QName name, int scope, short type, XMLSimpleType simpleType) {
         this.name.setValues(name);
-        this.scope                 = scope;
-        this.type                  = type;
+        this.scope = scope;
+        this.type = type;
         this.simpleType.setValues(simpleType);
     } // setValues
 
-    /**
-     * clear
-     */
+    /** clear */
     public void clear() {
         this.name.clear();
-        this.type          = -1;
-        this.scope         = -1;
+        this.type = -1;
+        this.scope = -1;
         this.simpleType.clear();
     } // clear
-
 } // class XMLElementDecl

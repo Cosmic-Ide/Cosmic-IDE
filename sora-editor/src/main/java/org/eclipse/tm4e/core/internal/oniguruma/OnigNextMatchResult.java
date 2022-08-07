@@ -34,12 +34,15 @@ class OnigNextMatchResult implements IOnigNextMatchResult {
         this.captureIndices = captureIndicesForMatch(result, source);
     }
 
-    private static IOnigCaptureIndex[] captureIndicesForMatch(OnigResult result, OnigString source) {
+    private static IOnigCaptureIndex[] captureIndicesForMatch(
+            OnigResult result, OnigString source) {
         int resultCount = result.count();
         IOnigCaptureIndex[] captures = new IOnigCaptureIndex[resultCount];
         for (int index = 0; index < resultCount; index++) {
             int captureStart = source.convertUtf8OffsetToUtf16(result.locationAt(index));
-            int captureEnd = source.convertUtf8OffsetToUtf16(result.locationAt(index) + result.lengthAt(index));
+            int captureEnd =
+                    source.convertUtf8OffsetToUtf16(
+                            result.locationAt(index) + result.lengthAt(index));
             captures[index] = new OnigCaptureIndex(index, captureStart, captureEnd);
         }
         return captures;
@@ -125,5 +128,4 @@ class OnigNextMatchResult implements IOnigNextMatchResult {
             return result.toString();
         }
     }
-
 }

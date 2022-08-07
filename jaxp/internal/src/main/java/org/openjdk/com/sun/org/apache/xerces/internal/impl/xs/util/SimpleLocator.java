@@ -27,7 +27,6 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
  * An XMLLocator implementation used for schema error reporting.
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
  */
 public class SimpleLocator implements XMLLocator {
@@ -36,8 +35,7 @@ public class SimpleLocator implements XMLLocator {
     int line, column;
     int charOffset;
 
-    public SimpleLocator() {
-    }
+    public SimpleLocator() {}
 
     public SimpleLocator(String lsid, String esid, int line, int column) {
         this(lsid, esid, line, column, -1);
@@ -132,11 +130,10 @@ public class SimpleLocator implements XMLLocator {
      */
     public void setPublicId(String publicId) {}
 
-    /** Returns the encoding of the current entity.
-     * Since these locators are used in the construction of
-     * XMLParseExceptions, which know nothing about encodings, there is
-     * no point in having this object deal intelligently
-     * with encoding information.
+    /**
+     * Returns the encoding of the current entity. Since these locators are used in the construction
+     * of XMLParseExceptions, which know nothing about encodings, there is no point in having this
+     * object deal intelligently with encoding information.
      */
     public String getEncoding() {
         return null;

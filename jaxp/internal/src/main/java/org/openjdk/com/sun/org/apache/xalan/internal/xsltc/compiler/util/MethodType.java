@@ -42,8 +42,7 @@ public final class MethodType extends Type {
         if (arg1 != Void) {
             _argsType = new Vector();
             _argsType.addElement(arg1);
-        }
-        else {
+        } else {
             _argsType = null;
         }
         _resultType = resultType;
@@ -73,12 +72,11 @@ public final class MethodType extends Type {
         StringBuffer result = new StringBuffer("method{");
         if (_argsType != null) {
             final int count = _argsType.size();
-            for (int i=0; i<count; i++) {
+            for (int i = 0; i < count; i++) {
                 result.append(_argsType.elementAt(i));
-                if (i != (count-1)) result.append(',');
+                if (i != (count - 1)) result.append(',');
             }
-        }
-        else {
+        } else {
             result.append("void");
         }
         result.append('}');
@@ -90,8 +88,8 @@ public final class MethodType extends Type {
     }
 
     /**
-     * Returns the signature of this method that results by adding
-     * <code>lastArgSig</code> to the end of the argument list.
+     * Returns the signature of this method that results by adding <code>lastArgSig</code> to the
+     * end of the argument list.
      */
     public String toSignature(String lastArgSig) {
         final StringBuffer buffer = new StringBuffer();
@@ -99,18 +97,14 @@ public final class MethodType extends Type {
         if (_argsType != null) {
             final int n = _argsType.size();
             for (int i = 0; i < n; i++) {
-                buffer.append(((Type)_argsType.elementAt(i)).toSignature());
+                buffer.append(((Type) _argsType.elementAt(i)).toSignature());
             }
         }
-        return buffer
-            .append(lastArgSig)
-            .append(')')
-            .append(_resultType.toSignature())
-            .toString();
+        return buffer.append(lastArgSig).append(')').append(_resultType.toSignature()).toString();
     }
 
     public org.openjdk.com.sun.org.apache.bcel.internal.generic.Type toJCType() {
-        return null;    // should never be called
+        return null; // should never be called
     }
 
     public boolean identicalTo(Type other) {
@@ -121,8 +115,8 @@ public final class MethodType extends Type {
                 final int len = argsCount();
                 result = len == temp.argsCount();
                 for (int i = 0; i < len && result; i++) {
-                    final Type arg1 = (Type)_argsType.elementAt(i);
-                    final Type arg2 = (Type)temp._argsType.elementAt(i);
+                    final Type arg1 = (Type) _argsType.elementAt(i);
+                    final Type arg2 = (Type) temp._argsType.elementAt(i);
                     result = arg1.identicalTo(arg2);
                 }
             }
@@ -143,17 +137,15 @@ public final class MethodType extends Type {
                         Type arg2 = (Type) mtype._argsType.elementAt(i);
                         final int temp = arg1.distanceTo(arg2);
                         if (temp == Integer.MAX_VALUE) {
-                            result = temp;  // return MAX_VALUE
+                            result = temp; // return MAX_VALUE
                             break;
-                        }
-                        else {
+                        } else {
                             result += arg1.distanceTo(arg2);
                         }
                     }
                 }
-            }
-            else if (mtype._argsType == null) {
-                result = 0;   // both methods have no args
+            } else if (mtype._argsType == null) {
+                result = 0; // both methods have no args
             }
         }
         return result;

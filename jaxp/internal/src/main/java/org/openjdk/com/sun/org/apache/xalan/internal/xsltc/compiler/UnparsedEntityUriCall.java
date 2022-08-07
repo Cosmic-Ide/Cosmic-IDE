@@ -23,8 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
@@ -33,6 +31,8 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodG
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -63,10 +63,10 @@ final class UnparsedEntityUriCall extends FunctionCall {
         // ...then the entity name...
         _entity.translate(classGen, methodGen);
         // ...to get the URI from the DOM object.
-        il.append(new INVOKEINTERFACE(
-                         cpg.addInterfaceMethodref(DOM_INTF,
-                                                   GET_UNPARSED_ENTITY_URI,
-                                                   GET_UNPARSED_ENTITY_URI_SIG),
-                         2));
+        il.append(
+                new INVOKEINTERFACE(
+                        cpg.addInterfaceMethodref(
+                                DOM_INTF, GET_UNPARSED_ENTITY_URI, GET_UNPARSED_ENTITY_URI_SIG),
+                        2));
     }
 }

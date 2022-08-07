@@ -27,30 +27,30 @@ package org.openjdk.com.sun.org.apache.xalan.internal.utils;
 
 import org.openjdk.com.sun.org.apache.xalan.internal.XalanConstants;
 
-
 /**
- * This class is not the same as that in Xerces. It is used to manage the
- * state of corresponding Xerces properties and pass the values over to
- * the Xerces Security Manager.
+ * This class is not the same as that in Xerces. It is used to manage the state of corresponding
+ * Xerces properties and pass the values over to the Xerces Security Manager.
  *
  * @author Joe Wang Oracle Corp.
- *
  */
 public final class XMLSecurityManager {
 
     /**
-     * States of the settings of a property, in the order: default value, value
-     * set by FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system
-     * properties, and jaxp api properties
+     * States of the settings of a property, in the order: default value, value set by
+     * FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system properties, and jaxp api
+     * properties
      */
     public static enum State {
-        //this order reflects the overriding order
+        // this order reflects the overriding order
 
-        DEFAULT("default"), FSP("FEATURE_SECURE_PROCESSING"),
-        JAXPDOTPROPERTIES("jaxp.properties"), SYSTEMPROPERTY("system property"),
+        DEFAULT("default"),
+        FSP("FEATURE_SECURE_PROCESSING"),
+        JAXPDOTPROPERTIES("jaxp.properties"),
+        SYSTEMPROPERTY("system property"),
         APIPROPERTY("property");
 
         final String literal;
+
         State(String literal) {
             this.literal = literal;
         }
@@ -60,23 +60,35 @@ public final class XMLSecurityManager {
         }
     }
 
-    /**
-     * Limits managed by the security manager
-     */
+    /** Limits managed by the security manager */
     public static enum Limit {
-
-        ENTITY_EXPANSION_LIMIT(XalanConstants.JDK_ENTITY_EXPANSION_LIMIT,
-                XalanConstants.SP_ENTITY_EXPANSION_LIMIT, 0, 64000),
-        MAX_OCCUR_NODE_LIMIT(XalanConstants.JDK_MAX_OCCUR_LIMIT,
-                XalanConstants.SP_MAX_OCCUR_LIMIT, 0, 5000),
-        ELEMENT_ATTRIBUTE_LIMIT(XalanConstants.JDK_ELEMENT_ATTRIBUTE_LIMIT,
-                XalanConstants.SP_ELEMENT_ATTRIBUTE_LIMIT, 0, 10000),
-        TOTAL_ENTITY_SIZE_LIMIT(XalanConstants.JDK_TOTAL_ENTITY_SIZE_LIMIT,
-                XalanConstants.SP_TOTAL_ENTITY_SIZE_LIMIT, 0, 50000000),
-        GENERAL_ENTITY_SIZE_LIMIT(XalanConstants.JDK_GENERAL_ENTITY_SIZE_LIMIT,
-                XalanConstants.SP_GENERAL_ENTITY_SIZE_LIMIT, 0, 0),
-        PARAMETER_ENTITY_SIZE_LIMIT(XalanConstants.JDK_PARAMETER_ENTITY_SIZE_LIMIT,
-                XalanConstants.SP_PARAMETER_ENTITY_SIZE_LIMIT, 0, 1000000);
+        ENTITY_EXPANSION_LIMIT(
+                XalanConstants.JDK_ENTITY_EXPANSION_LIMIT,
+                XalanConstants.SP_ENTITY_EXPANSION_LIMIT,
+                0,
+                64000),
+        MAX_OCCUR_NODE_LIMIT(
+                XalanConstants.JDK_MAX_OCCUR_LIMIT, XalanConstants.SP_MAX_OCCUR_LIMIT, 0, 5000),
+        ELEMENT_ATTRIBUTE_LIMIT(
+                XalanConstants.JDK_ELEMENT_ATTRIBUTE_LIMIT,
+                XalanConstants.SP_ELEMENT_ATTRIBUTE_LIMIT,
+                0,
+                10000),
+        TOTAL_ENTITY_SIZE_LIMIT(
+                XalanConstants.JDK_TOTAL_ENTITY_SIZE_LIMIT,
+                XalanConstants.SP_TOTAL_ENTITY_SIZE_LIMIT,
+                0,
+                50000000),
+        GENERAL_ENTITY_SIZE_LIMIT(
+                XalanConstants.JDK_GENERAL_ENTITY_SIZE_LIMIT,
+                XalanConstants.SP_GENERAL_ENTITY_SIZE_LIMIT,
+                0,
+                0),
+        PARAMETER_ENTITY_SIZE_LIMIT(
+                XalanConstants.JDK_PARAMETER_ENTITY_SIZE_LIMIT,
+                XalanConstants.SP_PARAMETER_ENTITY_SIZE_LIMIT,
+                0,
+                1000000);
 
         final String apiProperty;
         final String systemProperty;
@@ -115,17 +127,13 @@ public final class XMLSecurityManager {
         }
     }
 
-    /**
-     * Map old property names with the new ones
-     */
+    /** Map old property names with the new ones */
     public static enum NameMap {
-
-        ENTITY_EXPANSION_LIMIT(XalanConstants.SP_ENTITY_EXPANSION_LIMIT,
-                XalanConstants.ENTITY_EXPANSION_LIMIT),
-        MAX_OCCUR_NODE_LIMIT(XalanConstants.SP_MAX_OCCUR_LIMIT,
-                XalanConstants.MAX_OCCUR_LIMIT),
-        ELEMENT_ATTRIBUTE_LIMIT(XalanConstants.SP_ELEMENT_ATTRIBUTE_LIMIT,
-                XalanConstants.ELEMENT_ATTRIBUTE_LIMIT);
+        ENTITY_EXPANSION_LIMIT(
+                XalanConstants.SP_ENTITY_EXPANSION_LIMIT, XalanConstants.ENTITY_EXPANSION_LIMIT),
+        MAX_OCCUR_NODE_LIMIT(XalanConstants.SP_MAX_OCCUR_LIMIT, XalanConstants.MAX_OCCUR_LIMIT),
+        ELEMENT_ATTRIBUTE_LIMIT(
+                XalanConstants.SP_ELEMENT_ATTRIBUTE_LIMIT, XalanConstants.ELEMENT_ATTRIBUTE_LIMIT);
         final String newName;
         final String oldName;
 
@@ -141,37 +149,26 @@ public final class XMLSecurityManager {
             return null;
         }
     }
-    /**
-     * Values of the properties
-     */
+    /** Values of the properties */
     private final int[] values;
-    /**
-     * States of the settings for each property
-     */
+    /** States of the settings for each property */
     private State[] states;
-    /**
-     * States that determine if properties are set explicitly
-     */
+    /** States that determine if properties are set explicitly */
     private boolean[] isSet;
 
-
-    /**
-     * Index of the special entityCountInfo property
-     */
+    /** Index of the special entityCountInfo property */
     private int indexEntityCountInfo = 10000;
+
     private String printEntityCountInfo = "";
 
-    /**
-     * Default constructor. Establishes default values for known security
-     * vulnerabilities.
-     */
+    /** Default constructor. Establishes default values for known security vulnerabilities. */
     public XMLSecurityManager() {
         this(false);
     }
 
     /**
-     * Instantiate Security Manager in accordance with the status of
-     * secure processing
+     * Instantiate Security Manager in accordance with the status of secure processing
+     *
      * @param secureProcessing
      */
     public XMLSecurityManager(boolean secureProcessing) {
@@ -187,13 +184,11 @@ public final class XMLSecurityManager {
                 states[limit.ordinal()] = State.DEFAULT;
             }
         }
-        //read system properties or jaxp.properties
+        // read system properties or jaxp.properties
         readSystemProperties();
     }
 
-    /**
-     * Setting FEATURE_SECURE_PROCESSING explicitly
-     */
+    /** Setting FEATURE_SECURE_PROCESSING explicitly */
     public void setSecureProcessing(boolean secure) {
         for (Limit limit : Limit.values()) {
             if (secure) {
@@ -206,11 +201,11 @@ public final class XMLSecurityManager {
 
     /**
      * Set limit by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the security manager; false
-     *              if otherwise.
+     * @return true if the property is managed by the security manager; false if otherwise.
      */
     public boolean setLimit(String propertyName, State state, Object value) {
         int index = getIndex(propertyName);
@@ -241,8 +236,8 @@ public final class XMLSecurityManager {
      */
     public void setLimit(int index, State state, Object value) {
         if (index == indexEntityCountInfo) {
-            //if it's explicitly set, it's treated as yes no matter the value
-            printEntityCountInfo = (String)value;
+            // if it's explicitly set, it's treated as yes no matter the value
+            printEntityCountInfo = (String) value;
         } else {
             int temp = 0;
             try {
@@ -250,8 +245,10 @@ public final class XMLSecurityManager {
                 if (temp < 0) {
                     temp = 0;
                 }
-            } catch (NumberFormatException e) {}
-            setLimit(index, state, temp);        }
+            } catch (NumberFormatException e) {
+            }
+            setLimit(index, state, temp);
+        }
     }
 
     /**
@@ -263,10 +260,10 @@ public final class XMLSecurityManager {
      */
     public void setLimit(int index, State state, int value) {
         if (index == indexEntityCountInfo) {
-            //if it's explicitly set, it's treated as yes no matter the value
+            // if it's explicitly set, it's treated as yes no matter the value
             printEntityCountInfo = XalanConstants.JDK_YES;
         } else {
-            //only update if it shall override
+            // only update if it shall override
             if (state.compareTo(states[index]) >= 0) {
                 values[index] = value;
                 states[index] = state;
@@ -275,13 +272,12 @@ public final class XMLSecurityManager {
         }
     }
 
-
     /**
      * Return the value of the specified property.
      *
      * @param propertyName the property name
-     * @return the value of the property as a string. If a property is managed
-     * by this manager, its value shall not be null.
+     * @return the value of the property as a string. If a property is managed by this manager, its
+     *     value shall not be null.
      */
     public String getLimitAsString(String propertyName) {
         int index = getIndex(propertyName);
@@ -363,11 +359,11 @@ public final class XMLSecurityManager {
     public int getIndex(String propertyName) {
         for (Limit limit : Limit.values()) {
             if (limit.equalsAPIPropertyName(propertyName)) {
-                //internally, ordinal is used as index
+                // internally, ordinal is used as index
                 return limit.ordinal();
             }
         }
-        //special property to return entity count info
+        // special property to return entity count info
         if (propertyName.equals(XalanConstants.JDK_ENTITY_COUNT_INFO)) {
             return indexEntityCountInfo;
         }
@@ -376,6 +372,7 @@ public final class XMLSecurityManager {
 
     /**
      * Indicate if a property is set explicitly
+     *
      * @param index
      * @return
      */
@@ -386,14 +383,12 @@ public final class XMLSecurityManager {
     public boolean printEntityCountInfo() {
         return printEntityCountInfo.equals(XalanConstants.JDK_YES);
     }
-    /**
-     * Read from system properties, or those in jaxp.properties
-     */
+    /** Read from system properties, or those in jaxp.properties */
     private void readSystemProperties() {
 
         for (Limit limit : Limit.values()) {
             if (!getSystemProperty(limit, limit.systemProperty())) {
-                //if system property is not found, try the older form if any
+                // if system property is not found, try the older form if any
                 for (NameMap nameMap : NameMap.values()) {
                     String oldName = nameMap.getOldName(limit.systemProperty());
                     if (oldName != null) {
@@ -402,7 +397,6 @@ public final class XMLSecurityManager {
                 }
             }
         }
-
     }
 
     /**
@@ -427,8 +421,9 @@ public final class XMLSecurityManager {
                 return true;
             }
         } catch (NumberFormatException e) {
-            //invalid setting
-            throw new NumberFormatException("Invalid setting for system property: " + limit.systemProperty());
+            // invalid setting
+            throw new NumberFormatException(
+                    "Invalid setting for system property: " + limit.systemProperty());
         }
         return false;
     }

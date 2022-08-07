@@ -43,21 +43,16 @@ import java.util.Vector;
  */
 final class CallTemplate extends Instruction {
 
-    /**
-     * Name of template to call.
-     */
+    /** Name of template to call. */
     private QName _name;
 
     /**
-     * The array of effective parameters in this CallTemplate. An object in
-     * this array can be either a WithParam or a Param if no WithParam
-     * exists for a particular parameter.
+     * The array of effective parameters in this CallTemplate. An object in this array can be either
+     * a WithParam or a Param if no WithParam exists for a particular parameter.
      */
     private Object[] _parameters = null;
 
-    /**
-     * The corresponding template which this CallTemplate calls.
-     */
+    /** The corresponding template which this CallTemplate calls. */
     private Template _calleeTemplate = null;
 
     public void display(int indent) {
@@ -79,23 +74,19 @@ final class CallTemplate extends Instruction {
                 parser.reportError(ERROR, err);
             }
             _name = parser.getQNameIgnoreDefaultNs(name);
-        }
-        else {
+        } else {
             reportError(this, parser, ErrorMsg.REQUIRED_ATTR_ERR, "name");
         }
         parseChildren(parser);
     }
 
-    /**
-     * Verify that a template with this name exists.
-     */
+    /** Verify that a template with this name exists. */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         final Template template = stable.lookupTemplate(_name);
         if (template != null) {
             typeCheckContents(stable);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.TEMPLATE_UNDEF_ERR,_name,this);
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.TEMPLATE_UNDEF_ERR, _name, this);
             throw new TypeCheckError(err);
         }
         return Type.Void;
@@ -118,9 +109,8 @@ final class CallTemplate extends Instruction {
             // a simple named template.
             else {
                 // Push parameter frame
-                final int push = cpg.addMethodref(TRANSLET_CLASS,
-                                                  PUSH_PARAM_FRAME,
-                                                  PUSH_PARAM_FRAME_SIG);
+                final int push =
+                        cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
                 il.append(classGen.loadTranslet());
                 il.append(new INVOKEVIRTUAL(push));
                 translateContents(classGen, methodGen);
@@ -139,8 +129,9 @@ final class CallTemplate extends Instruction {
         il.append(methodGen.loadCurrentNode());
 
         // Initialize prefix of method signature
-        StringBuffer methodSig = new StringBuffer("(" + DOM_INTF_SIG
-            + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + NODE_SIG);
+        StringBuffer methodSig =
+                new StringBuffer(
+                        "(" + DOM_INTF_SIG + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + NODE_SIG);
 
         // If calling a simply named template, push actual arguments
         if (_calleeTemplate != null) {
@@ -148,14 +139,13 @@ final class CallTemplate extends Instruction {
             int numParams = _parameters.length;
 
             for (int i = 0; i < numParams; i++) {
-                SyntaxTreeNode node = (SyntaxTreeNode)_parameters[i];
-                methodSig.append(OBJECT_SIG);   // append Object to signature
+                SyntaxTreeNode node = (SyntaxTreeNode) _parameters[i];
+                methodSig.append(OBJECT_SIG); // append Object to signature
 
                 // Push 'null' if Param to indicate no actual parameter specified
                 if (node instanceof Param) {
                     il.append(ACONST_NULL);
-                }
-                else {  // translate WithParam
+                } else { // translate WithParam
                     node.translate(classGen, methodGen);
                 }
             }
@@ -163,39 +153,32 @@ final class CallTemplate extends Instruction {
 
         // Complete signature and generate invokevirtual call
         methodSig.append(")V");
-        il.append(new INVOKEVIRTUAL(cpg.addMethodref(className,
-                                                     methodName,
-                                                     methodSig.toString())));
+        il.append(new INVOKEVIRTUAL(cpg.addMethodref(className, methodName, methodSig.toString())));
 
         // Do not need to call Translet.popParamFrame() if we are
         // calling a simple named template.
         if (_calleeTemplate == null && (stylesheet.hasLocalParams() || hasContents())) {
             // Pop parameter frame
-            final int pop = cpg.addMethodref(TRANSLET_CLASS,
-                                             POP_PARAM_FRAME,
-                                             POP_PARAM_FRAME_SIG);
+            final int pop = cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
             il.append(classGen.loadTranslet());
             il.append(new INVOKEVIRTUAL(pop));
         }
     }
 
     /**
-     * Return the simple named template which this CallTemplate calls.
-     * Return false if there is no matched template or the matched
-     * template is not a simple named template.
+     * Return the simple named template which this CallTemplate calls. Return false if there is no
+     * matched template or the matched template is not a simple named template.
      */
     public Template getCalleeTemplate() {
-        Template foundTemplate
-            = getXSLTC().getParser().getSymbolTable().lookupTemplate(_name);
+        Template foundTemplate = getXSLTC().getParser().getSymbolTable().lookupTemplate(_name);
 
         return foundTemplate.isSimpleNamedTemplate() ? foundTemplate : null;
     }
 
     /**
-     * Build the list of effective parameters in this CallTemplate.
-     * The parameters of the called template are put into the array first.
-     * Then we visit the WithParam children of this CallTemplate and replace
-     * the Param with a corresponding WithParam having the same name.
+     * Build the list of effective parameters in this CallTemplate. The parameters of the called
+     * template are put into the array first. Then we visit the WithParam children of this
+     * CallTemplate and replace the Param with a corresponding WithParam having the same name.
      */
     private void buildParameterList() {
         // Put the parameters from the called template into the array first.
@@ -214,20 +197,18 @@ final class CallTemplate extends Instruction {
 
             // Ignore if not WithParam
             if (node instanceof WithParam) {
-                WithParam withParam = (WithParam)node;
+                WithParam withParam = (WithParam) node;
                 QName name = withParam.getName();
 
                 // Search for a Param with the same name
                 for (int k = 0; k < numParams; k++) {
                     Object object = _parameters[k];
-                    if (object instanceof Param
-                        && ((Param)object).getName().equals(name)) {
+                    if (object instanceof Param && ((Param) object).getName().equals(name)) {
                         withParam.setDoParameterOptimization(true);
                         _parameters[k] = withParam;
                         break;
-                    }
-                    else if (object instanceof WithParam
-                        && ((WithParam)object).getName().equals(name)) {
+                    } else if (object instanceof WithParam
+                            && ((WithParam) object).getName().equals(name)) {
                         withParam.setDoParameterOptimization(true);
                         _parameters[k] = withParam;
                         break;
@@ -235,5 +216,5 @@ final class CallTemplate extends Instruction {
                 }
             }
         }
-     }
+    }
 }

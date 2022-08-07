@@ -25,29 +25,27 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.util;
 
-import java.util.Vector;
 import org.openjdk.javax.xml.namespace.NamespaceContext;
 
+import java.util.Vector;
+
 /**
- * Writing a wrapper to re-use most of the namespace functionality
- * already provided by NamespaceSupport, which implements NamespaceContext
- * from XNI. It would be good if we can change the XNI NamespaceContext
- * interface to implement the JAXP NamespaceContext interface.
+ * Writing a wrapper to re-use most of the namespace functionality already provided by
+ * NamespaceSupport, which implements NamespaceContext from XNI. It would be good if we can change
+ * the XNI NamespaceContext interface to implement the JAXP NamespaceContext interface.
  *
- * Note that NamespaceSupport assumes the use of symbols. Since this class
- * can be exposed to the application, we must intern all Strings before
- * calling NamespaceSupport methods.
+ * <p>Note that NamespaceSupport assumes the use of symbols. Since this class can be exposed to the
+ * application, we must intern all Strings before calling NamespaceSupport methods.
  *
- * @author  Neeraj Bajaj, Sun Microsystems, inc.
+ * @author Neeraj Bajaj, Sun Microsystems, inc.
  * @author Santiago.PericasGeertsen@sun.com
- *
  */
 public class NamespaceContextWrapper implements NamespaceContext {
 
     private org.openjdk.com.sun.org.apache.xerces.internal.xni.NamespaceContext fNamespaceContext;
 
     public NamespaceContextWrapper(NamespaceSupport namespaceContext) {
-        fNamespaceContext = namespaceContext ;
+        fNamespaceContext = namespaceContext;
     }
 
     public String getNamespaceURI(String prefix) {
@@ -65,25 +63,21 @@ public class NamespaceContextWrapper implements NamespaceContext {
     }
 
     /**
-     * TODO: Namespace doesn't give information giving multiple prefixes for
-     * the same namespaceURI.
+     * TODO: Namespace doesn't give information giving multiple prefixes for the same namespaceURI.
      */
     public java.util.Iterator getPrefixes(String namespaceURI) {
         if (namespaceURI == null) {
             throw new IllegalArgumentException("URI can't be null.");
-        }
-        else {
+        } else {
             Vector vector =
-                ((NamespaceSupport) fNamespaceContext).getPrefixes(namespaceURI.intern());
+                    ((NamespaceSupport) fNamespaceContext).getPrefixes(namespaceURI.intern());
             return vector.iterator();
         }
     }
 
-    /**
-     * This method supports all functions in the NamespaceContext utility class
-     */
-    public org.openjdk.com.sun.org.apache.xerces.internal.xni.NamespaceContext getNamespaceContext() {
+    /** This method supports all functions in the NamespaceContext utility class */
+    public org.openjdk.com.sun.org.apache.xerces.internal.xni.NamespaceContext
+            getNamespaceContext() {
         return fNamespaceContext;
     }
-
 }

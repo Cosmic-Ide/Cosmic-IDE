@@ -23,11 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
@@ -40,48 +35,47 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodG
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 final class AttributeValueTemplate extends AttributeValue {
 
-    final static int OUT_EXPR = 0;
-    final static int IN_EXPR  = 1;
-    final static int IN_EXPR_SQUOTES = 2;
-    final static int IN_EXPR_DQUOTES = 3;
-    final static String DELIMITER = "\uFFFE";      // A Unicode nonchar
+    static final int OUT_EXPR = 0;
+    static final int IN_EXPR = 1;
+    static final int IN_EXPR_SQUOTES = 2;
+    static final int IN_EXPR_DQUOTES = 3;
+    static final String DELIMITER = "\uFFFE"; // A Unicode nonchar
 
-    public AttributeValueTemplate(String value, Parser parser,
-        SyntaxTreeNode parent)
-    {
+    public AttributeValueTemplate(String value, Parser parser, SyntaxTreeNode parent) {
         setParent(parent);
         setParser(parser);
 
         try {
             parseAVTemplate(value, parser);
-        }
-        catch (NoSuchElementException e) {
-            reportError(parent, parser,
-                        ErrorMsg.ATTR_VAL_TEMPLATE_ERR, value);
+        } catch (NoSuchElementException e) {
+            reportError(parent, parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, value);
         }
     }
 
     /**
-     * Two-pass parsing of ATVs. In the first pass, double curly braces are
-     * replaced by one, and expressions are delimited using DELIMITER. The
-     * second pass splits up the resulting buffer into literal and non-literal
-     * expressions. Errors are reported during the first pass.
+     * Two-pass parsing of ATVs. In the first pass, double curly braces are replaced by one, and
+     * expressions are delimited using DELIMITER. The second pass splits up the resulting buffer
+     * into literal and non-literal expressions. Errors are reported during the first pass.
      */
     private void parseAVTemplate(String text, Parser parser) {
-        StringTokenizer tokenizer =
-            new StringTokenizer(text, "{}\"\'", true);
+        StringTokenizer tokenizer = new StringTokenizer(text, "{}\"\'", true);
 
         /*
-          * First pass: replace double curly braces and delimit expressions
-          * Simple automaton to parse ATVs, delimit expressions and report
-          * errors.
-          */
+         * First pass: replace double curly braces and delimit expressions
+         * Simple automaton to parse ATVs, delimit expressions and report
+         * errors.
+         */
         String t = null;
         String lookahead = null;
         StringBuffer buffer = new StringBuffer();
@@ -92,8 +86,7 @@ final class AttributeValueTemplate extends AttributeValue {
             if (lookahead != null) {
                 t = lookahead;
                 lookahead = null;
-            }
-            else {
+            } else {
                 t = tokenizer.nextToken();
             }
 
@@ -104,10 +97,9 @@ final class AttributeValueTemplate extends AttributeValue {
                             case OUT_EXPR:
                                 lookahead = tokenizer.nextToken();
                                 if (lookahead.equals("{")) {
-                                    buffer.append(lookahead);    // replace {{ by {
+                                    buffer.append(lookahead); // replace {{ by {
                                     lookahead = null;
-                                }
-                                else {
+                                } else {
                                     buffer.append(DELIMITER);
                                     state = IN_EXPR;
                                 }
@@ -115,8 +107,8 @@ final class AttributeValueTemplate extends AttributeValue {
                             case IN_EXPR:
                             case IN_EXPR_SQUOTES:
                             case IN_EXPR_DQUOTES:
-                                reportError(getParent(), parser,
-                                            ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+                                reportError(
+                                        getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
                                 break;
                         }
                         break;
@@ -125,12 +117,14 @@ final class AttributeValueTemplate extends AttributeValue {
                             case OUT_EXPR:
                                 lookahead = tokenizer.nextToken();
                                 if (lookahead.equals("}")) {
-                                    buffer.append(lookahead);    // replace }} by }
+                                    buffer.append(lookahead); // replace }} by }
                                     lookahead = null;
-                                }
-                                else {
-                                    reportError(getParent(), parser,
-                                            ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+                                } else {
+                                    reportError(
+                                            getParent(),
+                                            parser,
+                                            ErrorMsg.ATTR_VAL_TEMPLATE_ERR,
+                                            text);
                                 }
                                 break;
                             case IN_EXPR:
@@ -175,21 +169,19 @@ final class AttributeValueTemplate extends AttributeValue {
                         buffer.append(t);
                         break;
                 }
-            }
-            else {
+            } else {
                 buffer.append(t);
             }
         }
 
         // Must be in OUT_EXPR at the end of parsing
         if (state != OUT_EXPR) {
-            reportError(getParent(), parser,
-                        ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
+            reportError(getParent(), parser, ErrorMsg.ATTR_VAL_TEMPLATE_ERR, text);
         }
 
         /*
-          * Second pass: split up buffer into literal and non-literal expressions.
-          */
+         * Second pass: split up buffer into literal and non-literal expressions.
+         */
         tokenizer = new StringTokenizer(buffer.toString(), DELIMITER, true);
 
         while (tokenizer.hasMoreTokens()) {
@@ -197,9 +189,8 @@ final class AttributeValueTemplate extends AttributeValue {
 
             if (t.equals(DELIMITER)) {
                 addElement(parser.parseExpression(this, tokenizer.nextToken()));
-                tokenizer.nextToken();      // consume other delimiter
-            }
-            else {
+                tokenizer.nextToken(); // consume other delimiter
+            } else {
                 addElement(new LiteralExpr(t));
             }
         }
@@ -209,7 +200,7 @@ final class AttributeValueTemplate extends AttributeValue {
         final Vector contents = getContents();
         final int n = contents.size();
         for (int i = 0; i < n; i++) {
-            final Expression exp = (Expression)contents.elementAt(i);
+            final Expression exp = (Expression) contents.elementAt(i);
             if (!exp.typeCheck(stable).identicalTo(Type.String)) {
                 contents.setElementAt(new CastExpr(exp, Type.String), i);
             }
@@ -222,38 +213,35 @@ final class AttributeValueTemplate extends AttributeValue {
         final int count = elementCount();
         for (int i = 0; i < count; i++) {
             buffer.append(elementAt(i).toString());
-            if (i < count - 1)
-                buffer.append(' ');
+            if (i < count - 1) buffer.append(' ');
         }
         return buffer.append(']').toString();
     }
 
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         if (elementCount() == 1) {
-            final Expression exp = (Expression)elementAt(0);
+            final Expression exp = (Expression) elementAt(0);
             exp.translate(classGen, methodGen);
-        }
-        else {
+        } else {
             final ConstantPoolGen cpg = classGen.getConstantPool();
             final InstructionList il = methodGen.getInstructionList();
-            final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                    "<init>", "()V");
+            final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS, "<init>", "()V");
             final Instruction append =
-                new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                   "append",
-                                                   "(" + STRING_SIG + ")"
-                                                   + STRING_BUFFER_SIG));
+                    new INVOKEVIRTUAL(
+                            cpg.addMethodref(
+                                    STRING_BUFFER_CLASS,
+                                    "append",
+                                    "(" + STRING_SIG + ")" + STRING_BUFFER_SIG));
 
-            final int toString = cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                  "toString",
-                                                  "()"+STRING_SIG);
+            final int toString =
+                    cpg.addMethodref(STRING_BUFFER_CLASS, "toString", "()" + STRING_SIG);
             il.append(new NEW(cpg.addClass(STRING_BUFFER_CLASS)));
             il.append(DUP);
             il.append(new INVOKESPECIAL(initBuffer));
             // StringBuffer is on the stack
             final Enumeration elements = elements();
             while (elements.hasMoreElements()) {
-                final Expression exp = (Expression)elements.nextElement();
+                final Expression exp = (Expression) elements.nextElement();
                 exp.translate(classGen, methodGen);
                 il.append(append);
             }

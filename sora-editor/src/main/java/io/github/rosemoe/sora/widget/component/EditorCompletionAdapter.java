@@ -29,10 +29,10 @@ import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.BaseAdapter;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.completion.CompletionItem;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+import java.util.List;
 
 /**
  * A class to make custom adapter for auto-completion window
@@ -45,9 +45,7 @@ public abstract class EditorCompletionAdapter extends BaseAdapter implements Ada
     private EditorAutoCompletion mWindow;
     private List<CompletionItem> mItems;
 
-    /**
-     * Called by {@link EditorAutoCompletion} to attach some arguments
-     */
+    /** Called by {@link EditorAutoCompletion} to attach some arguments */
     public void attachValues(EditorAutoCompletion window, List<CompletionItem> items) {
         mWindow = window;
         mItems = items;
@@ -73,9 +71,7 @@ public abstract class EditorCompletionAdapter extends BaseAdapter implements Ada
         return getView(position, convertView, parent, position == mWindow.getCurrentPosition());
     }
 
-    /**
-     * Get color scheme in editor
-     */
+    /** Get color scheme in editor */
     protected EditorColorScheme getColorScheme() {
         return mWindow.getEditor().getColorScheme();
     }
@@ -90,17 +86,15 @@ public abstract class EditorCompletionAdapter extends BaseAdapter implements Ada
         return getColorScheme().getColor(type);
     }
 
-    /**
-     * Get context from editor
-     */
+    /** Get context from editor */
     protected Context getContext() {
         return mWindow.getContext();
     }
 
     /**
      * Implementation of this class should provide exact height of its item
-     * <p>
-     * The value will be used to calculate the height of completion window
+     *
+     * <p>The value will be used to calculate the height of completion window
      */
     public abstract int getItemHeight();
 
@@ -108,6 +102,6 @@ public abstract class EditorCompletionAdapter extends BaseAdapter implements Ada
      * @param isCurrentCursorPosition Is the {@param position} currently selected
      * @see BaseAdapter#getView(int, View, ViewGroup)
      */
-    protected abstract View getView(int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition);
-
+    protected abstract View getView(
+            int position, View convertView, ViewGroup parent, boolean isCurrentCursorPosition);
 }

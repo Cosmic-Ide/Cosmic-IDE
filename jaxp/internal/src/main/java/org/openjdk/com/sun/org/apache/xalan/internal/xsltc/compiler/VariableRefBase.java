@@ -34,14 +34,12 @@ import java.util.Objects;
  */
 class VariableRefBase extends Expression {
 
-    /**
-     * A reference to the associated variable.
-     */
+    /** A reference to the associated variable. */
     protected VariableBase _variable;
 
     /**
-     * A reference to the enclosing expression/instruction for which a
-     * closure is needed (Predicate, Number or Sort).
+     * A reference to the enclosing expression/instruction for which a closure is needed (Predicate,
+     * Number or Sort).
      */
     protected Closure _closure = null;
 
@@ -54,24 +52,19 @@ class VariableRefBase extends Expression {
         _variable = null;
     }
 
-    /**
-     * Returns a reference to the associated variable
-     */
+    /** Returns a reference to the associated variable */
     public VariableBase getVariable() {
         return _variable;
     }
 
     /**
-     * If this variable reference is in a top-level element like
-     * another variable, param or key, add a dependency between
-     * that top-level element and the referenced variable. For
-     * example,
+     * If this variable reference is in a top-level element like another variable, param or key, add
+     * a dependency between that top-level element and the referenced variable. For example,
      *
-     *   <xsl:variable name="x" .../>
-     *   <xsl:variable name="y" select="$x + 1"/>
+     * <p><xsl:variable name="x" .../> <xsl:variable name="y" select="$x + 1"/>
      *
-     * and assuming this class represents "$x", add a reference
-     * between variable y and variable x.
+     * <p>and assuming this class represents "$x", add a reference between variable y and variable
+     * x.
      */
     public void addParentDependency() {
         SyntaxTreeNode node = this;
@@ -84,8 +77,7 @@ class VariableRefBase extends Expression {
             VariableBase var = _variable;
             if (_variable._ignore) {
                 if (_variable instanceof Variable) {
-                    var = parent.getSymbolTable()
-                                .lookupVariable(_variable._name);
+                    var = parent.getSymbolTable().lookupVariable(_variable._name);
                 } else if (_variable instanceof Param) {
                     var = parent.getSymbolTable().lookupParam(_variable._name);
                 }
@@ -95,14 +87,12 @@ class VariableRefBase extends Expression {
         }
     }
 
-    /**
-     * Two variable references are deemed equal if they refer to the
-     * same variable.
-     */
+    /** Two variable references are deemed equal if they refer to the same variable. */
     @Override
     public boolean equals(Object obj) {
-        return obj == this || (obj instanceof VariableRefBase)
-            && (_variable == ((VariableRefBase) obj)._variable);
+        return obj == this
+                || (obj instanceof VariableRefBase)
+                        && (_variable == ((VariableRefBase) obj)._variable);
     }
 
     @Override
@@ -111,19 +101,18 @@ class VariableRefBase extends Expression {
     }
 
     /**
-     * Returns a string representation of this variable reference on the
-     * format 'variable-ref(<var-name>)'.
+     * Returns a string representation of this variable reference on the format
+     * 'variable-ref(<var-name>)'.
+     *
      * @return Variable reference description
      */
     @Override
     public String toString() {
-        return "variable-ref("+_variable.getName()+'/'+_variable.getType()+')';
+        return "variable-ref(" + _variable.getName() + '/' + _variable.getType() + ')';
     }
 
     @Override
-    public Type typeCheck(SymbolTable stable)
-        throws TypeCheckError
-    {
+    public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         // Returned cached type if available
         if (_type != null) return _type;
 
@@ -136,7 +125,7 @@ class VariableRefBase extends Expression {
                     break;
                 }
                 if (node instanceof TopLevelElement) {
-                    break;      // way up in the tree
+                    break; // way up in the tree
                 }
                 node = node.getParent();
             } while (node != null);
@@ -162,5 +151,4 @@ class VariableRefBase extends Expression {
         // Return the type of the referenced variable
         return _type;
     }
-
 }

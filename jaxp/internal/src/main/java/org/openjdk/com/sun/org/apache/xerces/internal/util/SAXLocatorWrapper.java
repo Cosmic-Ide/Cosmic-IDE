@@ -20,17 +20,15 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.util;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
 import org.xml.sax.Locator;
 import org.xml.sax.ext.Locator2;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
-
 /**
- * <p>A light wrapper around a SAX locator. This is useful
- * when bridging between SAX and XNI components.</p>
+ * A light wrapper around a SAX locator. This is useful when bridging between SAX and XNI
+ * components.
  *
  * @author Michael Glavassevich, IBM
- *
  */
 public final class SAXLocatorWrapper implements XMLLocator {
 
@@ -107,5 +105,4 @@ public final class SAXLocatorWrapper implements XMLLocator {
         }
         return null;
     }
-
 } // SAXLocatorWrapper

@@ -23,13 +23,11 @@ package org.openjdk.com.sun.org.apache.xerces.internal.xni.parser;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLDTDContentModelHandler;
 
 /**
- * Defines a DTD content model filter that acts as both a receiver and
- * an emitter of DTD content model events.
+ * Defines a DTD content model filter that acts as both a receiver and an emitter of DTD content
+ * model events.
  *
  * @author Andy Clark, IBM
- *
  */
 public interface XMLDTDContentModelFilter
-    extends XMLDTDContentModelHandler, XMLDTDContentModelSource {
-
-} // interface XMLDTDContentModelFilter
+        extends XMLDTDContentModelHandler,
+                XMLDTDContentModelSource {} // interface XMLDTDContentModelFilter

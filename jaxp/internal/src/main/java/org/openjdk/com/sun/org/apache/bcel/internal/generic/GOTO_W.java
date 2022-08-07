@@ -57,59 +57,56 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.*;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 import org.openjdk.com.sun.org.apache.bcel.internal.util.ByteSequence;
+
+import java.io.*;
 
 /**
  * GOTO_W - Branch always (to relative offset, not absolute address)
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class GOTO_W extends GotoInstruction {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  GOTO_W() {}
+    /**
+     * Empty constructor needed for the Class.newInstance() statement in
+     * Instruction.readInstruction(). Not to be used otherwise.
+     */
+    GOTO_W() {}
 
-  public GOTO_W(InstructionHandle target) {
-    super(Constants.GOTO_W, target);
-    length = 5;
-  }
+    public GOTO_W(InstructionHandle target) {
+        super(Constants.GOTO_W, target);
+        length = 5;
+    }
 
-  /**
-   * Dump instruction as byte code to stream out.
-   * @param out Output stream
-   */
-  public void dump(DataOutputStream out) throws IOException {
-    index = getTargetOffset();
-    out.writeByte(opcode);
-    out.writeInt(index);
-  }
+    /**
+     * Dump instruction as byte code to stream out.
+     *
+     * @param out Output stream
+     */
+    public void dump(DataOutputStream out) throws IOException {
+        index = getTargetOffset();
+        out.writeByte(opcode);
+        out.writeInt(index);
+    }
 
-  /**
-   * Read needed data (e.g. index) from file.
-   */
-  protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException
-  {
-    index  = bytes.readInt();
-    length = 5;
-  }
+    /** Read needed data (e.g. index) from file. */
+    protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException {
+        index = bytes.readInt();
+        length = 5;
+    }
 
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitUnconditionalBranch(this);
-    v.visitBranchInstruction(this);
-    v.visitGotoInstruction(this);
-    v.visitGOTO_W(this);
-  }
+    /**
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
+     * i.e., the most specific visitXXX() call comes last.
+     *
+     * @param v Visitor object
+     */
+    public void accept(Visitor v) {
+        v.visitUnconditionalBranch(this);
+        v.visitBranchInstruction(this);
+        v.visitGotoInstruction(this);
+        v.visitGOTO_W(this);
+    }
 }

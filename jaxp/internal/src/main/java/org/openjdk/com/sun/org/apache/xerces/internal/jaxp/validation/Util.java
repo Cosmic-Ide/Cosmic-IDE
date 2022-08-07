@@ -20,16 +20,15 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.jaxp.validation;
 
-import org.openjdk.javax.xml.transform.stream.StreamSource;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLParseException;
+import org.openjdk.javax.xml.transform.stream.StreamSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * <p>Static utility methods for the Validation API implementation.</p>
+ * Static utility methods for the Validation API implementation.
  *
  * @author Kohsuke Kawaguchi (kohsuke.kawaguchi@sun.com)
  */
@@ -40,38 +39,37 @@ final class Util {
      *
      * @return always return non-null valid object.
      */
-    public static final XMLInputSource toXMLInputSource( StreamSource in ) {
-        if( in.getReader()!=null )
+    public static final XMLInputSource toXMLInputSource(StreamSource in) {
+        if (in.getReader() != null)
             return new XMLInputSource(
-            in.getPublicId(), in.getSystemId(), in.getSystemId(),
-            in.getReader(), null );
-        if( in.getInputStream()!=null )
+                    in.getPublicId(), in.getSystemId(), in.getSystemId(), in.getReader(), null);
+        if (in.getInputStream() != null)
             return new XMLInputSource(
-            in.getPublicId(), in.getSystemId(), in.getSystemId(),
-            in.getInputStream(), null );
+                    in.getPublicId(),
+                    in.getSystemId(),
+                    in.getSystemId(),
+                    in.getInputStream(),
+                    null);
 
-        return new XMLInputSource(
-        in.getPublicId(), in.getSystemId(), in.getSystemId() );
+        return new XMLInputSource(in.getPublicId(), in.getSystemId(), in.getSystemId());
     }
 
-    /**
-     * Reconstructs {@link SAXException} from XNIException.
-     */
+    /** Reconstructs {@link SAXException} from XNIException. */
     public static SAXException toSAXException(XNIException e) {
-        if(e instanceof XMLParseException)
-            return toSAXParseException((XMLParseException)e);
-        if( e.getException() instanceof SAXException )
-            return (SAXException)e.getException();
-        return new SAXException(e.getMessage(),e.getException());
+        if (e instanceof XMLParseException) return toSAXParseException((XMLParseException) e);
+        if (e.getException() instanceof SAXException) return (SAXException) e.getException();
+        return new SAXException(e.getMessage(), e.getException());
     }
 
-    public static SAXParseException toSAXParseException( XMLParseException e ) {
-        if( e.getException() instanceof SAXParseException )
-            return (SAXParseException)e.getException();
-        return new SAXParseException( e.getMessage(),
-        e.getPublicId(), e.getExpandedSystemId(),
-        e.getLineNumber(), e.getColumnNumber(),
-        e.getException() );
+    public static SAXParseException toSAXParseException(XMLParseException e) {
+        if (e.getException() instanceof SAXParseException)
+            return (SAXParseException) e.getException();
+        return new SAXParseException(
+                e.getMessage(),
+                e.getPublicId(),
+                e.getExpandedSystemId(),
+                e.getLineNumber(),
+                e.getColumnNumber(),
+                e.getException());
     }
-
 } // Util

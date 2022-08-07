@@ -20,10 +20,9 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.xs.datatypes;
 
 /**
- * <p>Interface to expose value of the float datatype.</p>
+ * Interface to expose value of the float datatype.
  *
  * @author Ankit Pasricha, IBM
- *
  */
 public interface XSFloat {
 
@@ -31,5 +30,4 @@ public interface XSFloat {
      * @return a float value
      */
     public float getValue();
-
 }

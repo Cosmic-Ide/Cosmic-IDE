@@ -48,26 +48,21 @@ final class ProcessingInstructionPattern extends StepPattern {
     private String _name = null;
     private boolean _typeChecked = false;
 
-    /**
-     * Handles calls with no parameter (current node is implicit parameter).
-     */
+    /** Handles calls with no parameter (current node is implicit parameter). */
     public ProcessingInstructionPattern(String name) {
         super(Axis.CHILD, DTM.PROCESSING_INSTRUCTION_NODE, null);
         _name = name;
-        //if (_name.equals("*")) _typeChecked = true; no wildcard allowed!
+        // if (_name.equals("*")) _typeChecked = true; no wildcard allowed!
     }
 
-    /**
-     *
-     */
-     public double getDefaultPriority() {
+    /** */
+    public double getDefaultPriority() {
         return (_name != null) ? 0.0 : -0.5;
-     }
+    }
+
     public String toString() {
-        if (_predicates == null)
-            return "processing-instruction("+_name+")";
-        else
-            return "processing-instruction("+_name+")"+_predicates;
+        if (_predicates == null) return "processing-instruction(" + _name + ")";
+        else return "processing-instruction(" + _name + ")" + _predicates;
     }
 
     public void reduceKernelPattern() {
@@ -83,7 +78,7 @@ final class ProcessingInstructionPattern extends StepPattern {
             // Type check all the predicates (e -> position() = e)
             final int n = _predicates.size();
             for (int i = 0; i < n; i++) {
-                final Predicate pred = (Predicate)_predicates.elementAt(i);
+                final Predicate pred = (Predicate) _predicates.elementAt(i);
                 pred.typeCheck(stable);
             }
         }
@@ -95,11 +90,8 @@ final class ProcessingInstructionPattern extends StepPattern {
         final InstructionList il = methodGen.getInstructionList();
 
         // context node is on the stack
-        int gname = cpg.addInterfaceMethodref(DOM_INTF,
-                                              "getNodeName",
-                                              "(I)Ljava/lang/String;");
-        int cmp = cpg.addMethodref(STRING_CLASS,
-                                   "equals", "(Ljava/lang/Object;)Z");
+        int gname = cpg.addInterfaceMethodref(DOM_INTF, "getNodeName", "(I)Ljava/lang/String;");
+        int cmp = cpg.addMethodref(STRING_CLASS, "equals", "(Ljava/lang/Object;)Z");
 
         // Push current node on the stack
         il.append(methodGen.loadCurrentNode());
@@ -111,9 +103,7 @@ final class ProcessingInstructionPattern extends StepPattern {
         // If pattern not reduced then check kernel
         if (!_typeChecked) {
             il.append(methodGen.loadCurrentNode());
-            final int getType = cpg.addInterfaceMethodref(DOM_INTF,
-                                                          "getExpandedTypeID",
-                                                          "(I)I");
+            final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
             il.append(methodGen.loadDOM());
             il.append(methodGen.loadCurrentNode());
             il.append(new INVOKEINTERFACE(getType, 2));
@@ -135,7 +125,7 @@ final class ProcessingInstructionPattern extends StepPattern {
         if (hasPredicates()) {
             final int n = _predicates.size();
             for (int i = 0; i < n; i++) {
-                Predicate pred = (Predicate)_predicates.elementAt(i);
+                Predicate pred = (Predicate) _predicates.elementAt(i);
                 Expression exp = pred.getExpr();
                 exp.translateDesynthesized(classGen, methodGen);
                 _trueList.append(exp._trueList);

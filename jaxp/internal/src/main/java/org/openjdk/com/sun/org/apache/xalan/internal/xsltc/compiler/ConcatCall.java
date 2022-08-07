@@ -23,8 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
@@ -36,6 +34,8 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGe
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -63,35 +63,34 @@ final class ConcatCall extends FunctionCall {
         final int nArgs = argumentCount();
 
         switch (nArgs) {
-        case 0:
-            il.append(new PUSH(cpg, EMPTYSTRING));
-            break;
+            case 0:
+                il.append(new PUSH(cpg, EMPTYSTRING));
+                break;
 
-        case 1:
-            argument().translate(classGen, methodGen);
-            break;
+            case 1:
+                argument().translate(classGen, methodGen);
+                break;
 
-        default:
-            final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                    "<init>", "()V");
-            final Instruction append =
-                new INVOKEVIRTUAL(cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                   "append",
-                                                   "("+STRING_SIG+")"
-                                                   +STRING_BUFFER_SIG));
+            default:
+                final int initBuffer = cpg.addMethodref(STRING_BUFFER_CLASS, "<init>", "()V");
+                final Instruction append =
+                        new INVOKEVIRTUAL(
+                                cpg.addMethodref(
+                                        STRING_BUFFER_CLASS,
+                                        "append",
+                                        "(" + STRING_SIG + ")" + STRING_BUFFER_SIG));
 
-            final int toString = cpg.addMethodref(STRING_BUFFER_CLASS,
-                                                  "toString",
-                                                  "()"+STRING_SIG);
+                final int toString =
+                        cpg.addMethodref(STRING_BUFFER_CLASS, "toString", "()" + STRING_SIG);
 
-            il.append(new NEW(cpg.addClass(STRING_BUFFER_CLASS)));
-            il.append(DUP);
-            il.append(new INVOKESPECIAL(initBuffer));
-            for (int i = 0; i < nArgs; i++) {
-                argument(i).translate(classGen, methodGen);
-                il.append(append);
-            }
-            il.append(new INVOKEVIRTUAL(toString));
+                il.append(new NEW(cpg.addClass(STRING_BUFFER_CLASS)));
+                il.append(DUP);
+                il.append(new INVOKESPECIAL(initBuffer));
+                for (int i = 0; i < nArgs; i++) {
+                    argument(i).translate(classGen, methodGen);
+                    il.append(append);
+                }
+                il.append(new INVOKEVIRTUAL(toString));
         }
     }
 }

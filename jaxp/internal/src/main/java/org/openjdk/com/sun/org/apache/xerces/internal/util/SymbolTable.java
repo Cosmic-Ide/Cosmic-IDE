@@ -21,32 +21,24 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.util;
 
 /**
- * This class is a symbol table implementation that guarantees that
- * strings used as identifiers are unique references. Multiple calls
- * to <code>addSymbol</code> will always return the same string
+ * This class is a symbol table implementation that guarantees that strings used as identifiers are
+ * unique references. Multiple calls to <code>addSymbol</code> will always return the same string
  * reference.
- * <p>
- * The symbol table performs the same task as <code>String.intern()</code>
- * with the following differences:
+ *
+ * <p>The symbol table performs the same task as <code>String.intern()</code> with the following
+ * differences:
+ *
  * <ul>
- *  <li>
- *   A new string object does not need to be created in order to
- *   retrieve a unique reference. Symbols can be added by using
- *   a series of characters in a character array.
- *  </li>
- *  <li>
- *   Users of the symbol table can provide their own symbol hashing
- *   implementation. For example, a simple string hashing algorithm
- *   may fail to produce a balanced set of hashcodes for symbols
- *   that are <em>mostly</em> unique. Strings with similar leading
- *   characters are especially prone to this poor hashing behavior.
- *  </li>
+ *   <li>A new string object does not need to be created in order to retrieve a unique reference.
+ *       Symbols can be added by using a series of characters in a character array.
+ *   <li>Users of the symbol table can provide their own symbol hashing implementation. For example,
+ *       a simple string hashing algorithm may fail to produce a balanced set of hashcodes for
+ *       symbols that are <em>mostly</em> unique. Strings with similar leading characters are
+ *       especially prone to this poor hashing behavior.
  * </ul>
  *
  * @see SymbolHash
- *
  * @author Andy Clark
- *
  */
 public class SymbolTable {
 
@@ -56,7 +48,6 @@ public class SymbolTable {
 
     /** Default table size. */
     protected static final int TABLE_SIZE = 173;
-
 
     /** Buckets. */
     protected Entry[] fBuckets = null;
@@ -84,9 +75,8 @@ public class SymbolTable {
     //
 
     /**
-     * Adds the specified symbol to the symbol table and returns a
-     * reference to the unique symbol. If the symbol already exists,
-     * the previous symbol reference is returned instead, in order
+     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol.
+     * If the symbol already exists, the previous symbol reference is returned instead, in order
      * guarantee that symbol references remain unique.
      *
      * @param symbol The new symbol.
@@ -97,22 +87,17 @@ public class SymbolTable {
         final int hash = hash(symbol);
         final int bucket = hash % fTableSize;
         final int length = symbol.length();
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
+        OUTER:
+        for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
             if (length == entry.characters.length && hash == entry.hashCode) {
-                if(symbol.regionMatches(0,entry.symbol,0,length)){
+                if (symbol.regionMatches(0, entry.symbol, 0, length)) {
                     return entry.symbol;
-                }
-                else{
+                } else {
                     continue OUTER;
                 }
                 /**
-                for (int i = 0; i < length; i++) {
-                    if (symbol.charAt(i) != entry.characters[i]) {
-                        continue OUTER;
-                    }
-                }
-                symbolAsArray = entry.characters;
-                return entry.symbol;
+                 * for (int i = 0; i < length; i++) { if (symbol.charAt(i) != entry.characters[i]) {
+                 * continue OUTER; } } symbolAsArray = entry.characters; return entry.symbol;
                  */
             }
         }
@@ -122,13 +107,11 @@ public class SymbolTable {
         entry.hashCode = hash;
         fBuckets[bucket] = entry;
         return entry.symbol;
-
     } // addSymbol(String):String
 
     /**
-     * Adds the specified symbol to the symbol table and returns a
-     * reference to the unique symbol. If the symbol already exists,
-     * the previous symbol reference is returned instead, in order
+     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol.
+     * If the symbol already exists, the previous symbol reference is returned instead, in order
      * guarantee that symbol references remain unique.
      *
      * @param buffer The buffer containing the new symbol.
@@ -139,8 +122,9 @@ public class SymbolTable {
         // search for identical symbol
         int hash = hash(buffer, offset, length);
         int bucket = hash % fTableSize;
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (length == entry.characters.length && hash ==entry.hashCode) {
+        OUTER:
+        for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
+            if (length == entry.characters.length && hash == entry.hashCode) {
                 for (int i = 0; i < length; i++) {
                     if (buffer[offset + i] != entry.characters[i]) {
                         continue OUTER;
@@ -155,13 +139,11 @@ public class SymbolTable {
         fBuckets[bucket] = entry;
         entry.hashCode = hash;
         return entry.symbol;
-
     } // addSymbol(char[],int,int):String
 
     /**
-     * Returns a hashcode value for the specified symbol. The value
-     * returned by this method must be identical to the value returned
-     * by the <code>hash(char[],int,int)</code> method when called
+     * Returns a hashcode value for the specified symbol. The value returned by this method must be
+     * identical to the value returned by the <code>hash(char[],int,int)</code> method when called
      * with the character array that comprises the symbol string.
      *
      * @param symbol The symbol to hash.
@@ -174,18 +156,15 @@ public class SymbolTable {
             code = code * 37 + symbol.charAt(i);
         }
         return code & 0x7FFFFFFF;
-
     } // hash(String):int
 
     /**
-     * Returns a hashcode value for the specified symbol information.
-     * The value returned by this method must be identical to the value
-     * returned by the <code>hash(String)</code> method when called
-     * with the string object created from the symbol information.
+     * Returns a hashcode value for the specified symbol information. The value returned by this
+     * method must be identical to the value returned by the <code>hash(String)</code> method when
+     * called with the string object created from the symbol information.
      *
      * @param buffer The character buffer containing the symbol.
-     * @param offset The offset into the character buffer of the start
-     *               of the symbol.
+     * @param offset The offset into the character buffer of the start of the symbol.
      * @param length The length of the symbol.
      */
     public int hash(char[] buffer, int offset, int length) {
@@ -195,12 +174,10 @@ public class SymbolTable {
             code = code * 37 + buffer[offset + i];
         }
         return code & 0x7FFFFFFF;
-
     } // hash(char[],int,int):int
 
     /**
-     * Returns true if the symbol table already contains the specified
-     * symbol.
+     * Returns true if the symbol table already contains the specified symbol.
      *
      * @param symbol The symbol to look for.
      */
@@ -210,32 +187,26 @@ public class SymbolTable {
         int hash = hash(symbol);
         int bucket = hash % fTableSize;
         int length = symbol.length();
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
+        OUTER:
+        for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
             if (length == entry.characters.length && hash == entry.hashCode) {
-                if(symbol.regionMatches(0,entry.symbol,0,length)){
+                if (symbol.regionMatches(0, entry.symbol, 0, length)) {
                     return true;
-                }
-                else {
+                } else {
                     continue OUTER;
                 }
                 /**
-                for (int i = 0; i < length; i++) {
-                    if (symbol.charAt(i) != entry.characters[i]) {
-                        continue OUTER;
-                    }
-                }
-                 return true;
+                 * for (int i = 0; i < length; i++) { if (symbol.charAt(i) != entry.characters[i]) {
+                 * continue OUTER; } } return true;
                  */
             }
         }
 
         return false;
-
     } // containsSymbol(String):boolean
 
     /**
-     * Returns true if the symbol table already contains the specified
-     * symbol.
+     * Returns true if the symbol table already contains the specified symbol.
      *
      * @param buffer The buffer containing the symbol to look for.
      * @param offset The offset into the buffer.
@@ -244,9 +215,10 @@ public class SymbolTable {
     public boolean containsSymbol(char[] buffer, int offset, int length) {
 
         // search for identical symbol
-        int hash = hash(buffer, offset, length) ;
+        int hash = hash(buffer, offset, length);
         int bucket = hash % fTableSize;
-        OUTER: for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
+        OUTER:
+        for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
             if (length == entry.characters.length && hash == entry.hashCode) {
                 for (int i = 0; i < length; i++) {
                     if (buffer[offset + i] != entry.characters[i]) {
@@ -258,18 +230,13 @@ public class SymbolTable {
         }
 
         return false;
-
     } // containsSymbol(char[],int,int):boolean
-
 
     //
     // Classes
     //
 
-    /**
-     * This class is a symbol table entry. Each entry acts as a node
-     * in a linked list.
-     */
+    /** This class is a symbol table entry. Each entry acts as a node in a linked list. */
     protected static final class Entry {
 
         //
@@ -278,12 +245,10 @@ public class SymbolTable {
 
         /** Symbol. */
         public String symbol;
+
         int hashCode = 0;
 
-        /**
-         * Symbol characters. This information is duplicated here for
-         * comparison performance.
-         */
+        /** Symbol characters. This information is duplicated here for comparison performance. */
         public char[] characters;
 
         /** The next entry. */
@@ -293,10 +258,7 @@ public class SymbolTable {
         // Constructors
         //
 
-        /**
-         * Constructs a new entry from the specified symbol and next entry
-         * reference.
-         */
+        /** Constructs a new entry from the specified symbol and next entry reference. */
         public Entry(String symbol, Entry next) {
             this.symbol = symbol.intern();
             characters = new char[symbol.length()];
@@ -305,8 +267,7 @@ public class SymbolTable {
         }
 
         /**
-         * Constructs a new entry from the specified symbol information and
-         * next entry reference.
+         * Constructs a new entry from the specified symbol information and next entry reference.
          */
         public Entry(char[] ch, int offset, int length, Entry next) {
             characters = new char[length];
@@ -314,7 +275,5 @@ public class SymbolTable {
             symbol = new String(characters).intern();
             this.next = next;
         }
-
     } // class Entry
-
 } // class SymbolTable

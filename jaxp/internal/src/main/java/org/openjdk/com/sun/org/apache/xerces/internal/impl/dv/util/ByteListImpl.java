@@ -19,18 +19,16 @@
  */
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.util;
 
-import java.util.AbstractList;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.datatypes.ByteList;
+
+import java.util.AbstractList;
 
 /**
  * Implementation of <code>com.sun.org.apache.xerces.internal.xs.datatypes.ByteList</code>.
  *
  * @xerces.internal
- *
  * @author Ankit Pasricha, IBM
- *
  * @version $Id: ByteListImpl.java,v 1.7 2010-11-01 04:39:46 joehw Exp $
  */
 public class ByteListImpl extends AbstractList implements ByteList {
@@ -46,20 +44,18 @@ public class ByteListImpl extends AbstractList implements ByteList {
     }
 
     /**
-     * The number of <code>byte</code>s in the list. The range of
-     * valid child object indices is 0 to <code>length-1</code> inclusive.
+     * The number of <code>byte</code>s in the list. The range of valid child object indices is 0 to
+     * <code>length-1</code> inclusive.
      */
     public int getLength() {
         return data.length;
     }
 
     /**
-     * Checks if the <code>byte</code> <code>item</code> is a
-     * member of this list.
-     * @param item  <code>byte</code> whose presence in this list
-     *   is to be tested.
-     * @return  True if this list contains the <code>byte</code>
-     *   <code>item</code>.
+     * Checks if the <code>byte</code> <code>item</code> is a member of this list.
+     *
+     * @param item <code>byte</code> whose presence in this list is to be tested.
+     * @return True if this list contains the <code>byte</code> <code>item</code>.
      */
     public boolean contains(byte item) {
         for (int i = 0; i < data.length; ++i) {
@@ -71,19 +67,17 @@ public class ByteListImpl extends AbstractList implements ByteList {
     }
 
     /**
-     * Returns the <code>index</code>th item in the collection. The index
-     * starts at 0.
-     * @param index  index into the collection.
-     * @return  The <code>byte</code> at the <code>index</code>th
-     *   position in the <code>ByteList</code>.
-     * @exception XSException
-     *   INDEX_SIZE_ERR: if <code>index</code> is greater than or equal to the
-     *   number of objects in the list.
+     * Returns the <code>index</code>th item in the collection. The index starts at 0.
+     *
+     * @param index index into the collection.
+     * @return The <code>byte</code> at the <code>index</code>th position in the <code>ByteList
+     *     </code>.
+     * @exception XSException INDEX_SIZE_ERR: if <code>index</code> is greater than or equal to the
+     *     number of objects in the list.
      */
-    public byte item(int index)
-        throws XSException {
+    public byte item(int index) throws XSException {
 
-        if(index < 0 || index > data.length - 1) {
+        if (index < 0 || index > data.length - 1) {
             throw new XSException(XSException.INDEX_SIZE_ERR, null);
         }
         return data[index];

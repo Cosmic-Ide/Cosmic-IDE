@@ -19,24 +19,20 @@
  */
 package org.openjdk.com.sun.org.apache.xerces.internal.xinclude;
 
-import java.io.IOException;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.util.XML11Char;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 
+import java.io.IOException;
+
 /**
- * This class is used for reading resources requested in &lt;include&gt; elements in
- * XML 1.1 entities, when the parse attribute of the &lt;include&gt; element is "text".
- * Using this class will open the location, detect the encoding, and discard the
- * byte order mark, if applicable.
+ * This class is used for reading resources requested in &lt;include&gt; elements in XML 1.1
+ * entities, when the parse attribute of the &lt;include&gt; element is "text". Using this class
+ * will open the location, detect the encoding, and discard the byte order mark, if applicable.
  *
  * @author Michael Glavassevich, IBM
- *
- *
  * @see XIncludeHandler
  */
-public class XInclude11TextReader
-    extends XIncludeTextReader {
+public class XInclude11TextReader extends XIncludeTextReader {
 
     /**
      * Construct the XIncludeReader using the XMLInputSource and XIncludeHandler.
@@ -46,13 +42,12 @@ public class XInclude11TextReader
      * @param bufferSize The size of this text reader's buffer.
      */
     public XInclude11TextReader(XMLInputSource source, XIncludeHandler handler, int bufferSize)
-        throws IOException {
+            throws IOException {
         super(source, handler, bufferSize);
     }
 
     /**
-     * Returns true if the specified character is a valid XML character
-     * as per the rules of XML 1.1.
+     * Returns true if the specified character is a valid XML character as per the rules of XML 1.1.
      *
      * @param ch The character to check.
      */

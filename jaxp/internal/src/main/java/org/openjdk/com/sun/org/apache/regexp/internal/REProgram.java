@@ -23,67 +23,63 @@ package org.openjdk.com.sun.org.apache.regexp.internal;
 import java.io.Serializable;
 
 /**
- * A class that holds compiled regular expressions.  This is exposed mainly
- * for use by the recompile utility (which helps you produce precompiled
- * REProgram objects). You should not otherwise need to work directly with
- * this class.
-*
+ * A class that holds compiled regular expressions. This is exposed mainly for use by the recompile
+ * utility (which helps you produce precompiled REProgram objects). You should not otherwise need to
+ * work directly with this class.
+ *
  * @see RE
  * @see RECompiler
- *
  * @author <a href="mailto:jonl@muppetlabs.com">Jonathan Locke</a>
  */
-public class REProgram implements Serializable
-{
+public class REProgram implements Serializable {
     static final int OPT_HASBACKREFS = 1;
 
-    char[] instruction;         // The compiled regular expression 'program'
-    int lenInstruction;         // The amount of the instruction buffer in use
-    char[] prefix;              // Prefix string optimization
-    int flags;                  // Optimization flags (REProgram.OPT_*)
+    char[] instruction; // The compiled regular expression 'program'
+    int lenInstruction; // The amount of the instruction buffer in use
+    char[] prefix; // Prefix string optimization
+    int flags; // Optimization flags (REProgram.OPT_*)
     int maxParens = -1;
 
     /**
      * Constructs a program object from a character array
+     *
      * @param instruction Character array with RE opcode instructions in it
      */
-    public REProgram(char[] instruction)
-    {
+    public REProgram(char[] instruction) {
         this(instruction, instruction.length);
     }
 
     /**
      * Constructs a program object from a character array
+     *
      * @param parens Count of parens in the program
      * @param instruction Character array with RE opcode instructions in it
      */
-    public REProgram(int parens, char[] instruction)
-    {
+    public REProgram(int parens, char[] instruction) {
         this(instruction, instruction.length);
         this.maxParens = parens;
     }
 
     /**
      * Constructs a program object from a character array
+     *
      * @param instruction Character array with RE opcode instructions in it
      * @param lenInstruction Amount of instruction array in use
      */
-    public REProgram(char[] instruction, int lenInstruction)
-    {
+    public REProgram(char[] instruction, int lenInstruction) {
         setInstructions(instruction, lenInstruction);
     }
 
     /**
-     * Returns a copy of the current regular expression program in a character
-     * array that is exactly the right length to hold the program.  If there is
-     * no program compiled yet, getInstructions() will return null.
+     * Returns a copy of the current regular expression program in a character array that is exactly
+     * the right length to hold the program. If there is no program compiled yet, getInstructions()
+     * will return null.
+     *
      * @return A copy of the current compiled RE program
      */
-    public char[] getInstructions()
-    {
+    public char[] getInstructions() {
         // Ensure program has been compiled!
-        if (lenInstruction != 0)
-        {
+        if (lenInstruction != 0) {
             // Return copy of program
             char[] ret = new char[lenInstruction];
             System.arraycopy(instruction, 0, ret, 0, lenInstruction);
@@ -93,17 +89,16 @@ public class REProgram implements Serializable
     }
 
     /**
-     * Sets a new regular expression program to run.  It is this method which
-     * performs any special compile-time search optimizations.  Currently only
-     * two optimizations are in place - one which checks for backreferences
-     * (so that they can be lazily allocated) and another which attempts to
-     * find an prefix anchor string so that substantial amounts of input can
-     * potentially be skipped without running the actual program.
+     * Sets a new regular expression program to run. It is this method which performs any special
+     * compile-time search optimizations. Currently only two optimizations are in place - one which
+     * checks for backreferences (so that they can be lazily allocated) and another which attempts
+     * to find an prefix anchor string so that substantial amounts of input can potentially be
+     * skipped without running the actual program.
+     *
      * @param instruction Program instruction buffer
      * @param lenInstruction Length of instruction buffer in use
      */
-    public void setInstructions(char[] instruction, int lenInstruction)
-    {
+    public void setInstructions(char[] instruction, int lenInstruction) {
         // Save reference to instruction array
         this.instruction = instruction;
         this.lenInstruction = lenInstruction;
@@ -113,18 +108,15 @@ public class REProgram implements Serializable
         prefix = null;
 
         // Try various compile-time optimizations if there's a program
-        if (instruction != null && lenInstruction != 0)
-        {
+        if (instruction != null && lenInstruction != 0) {
             // If the first node is a branch
-            if (lenInstruction >= RE.nodeSize && instruction[0 + RE.offsetOpcode] == RE.OP_BRANCH)
-            {
+            if (lenInstruction >= RE.nodeSize && instruction[0 + RE.offsetOpcode] == RE.OP_BRANCH) {
                 // to the end node
                 int next = instruction[0 + RE.offsetNext];
-                if (instruction[next + RE.offsetOpcode] == RE.OP_END)
-                {
+                if (instruction[next + RE.offsetOpcode] == RE.OP_END) {
                     // and the branch starts with an atom
-                    if (lenInstruction >= (RE.nodeSize * 2) && instruction[RE.nodeSize + RE.offsetOpcode] == RE.OP_ATOM)
-                    {
+                    if (lenInstruction >= (RE.nodeSize * 2)
+                            && instruction[RE.nodeSize + RE.offsetOpcode] == RE.OP_ATOM) {
                         // then get that atom as an prefix because there's no other choice
                         int lenAtom = instruction[RE.nodeSize + RE.offsetOpdata];
                         prefix = new char[lenAtom];
@@ -136,10 +128,8 @@ public class REProgram implements Serializable
             BackrefScanLoop:
 
             // Check for backreferences
-            for (int i = 0; i < lenInstruction; i += RE.nodeSize)
-            {
-                switch (instruction[i + RE.offsetOpcode])
-                {
+            for (int i = 0; i < lenInstruction; i += RE.nodeSize) {
+                switch (instruction[i + RE.offsetOpcode]) {
                     case RE.OP_ANYOF:
                         i += (instruction[i + RE.offsetOpdata] * 2);
                         break;

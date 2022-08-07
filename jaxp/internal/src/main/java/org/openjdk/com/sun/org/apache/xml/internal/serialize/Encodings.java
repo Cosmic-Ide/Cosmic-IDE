@@ -18,32 +18,24 @@
  * limitations under the License.
  */
 
-
 package org.openjdk.com.sun.org.apache.xml.internal.serialize;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.util.EncodingMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 import java.util.Locale;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.util.EncodingMap;
-
-
 /**
- * Provides information about encodings. Depends on the Java runtime
- * to provides writers for the different encodings, but can be used
- * to override encoding names and provide the last printable character
- * for each encoding.
+ * Provides information about encodings. Depends on the Java runtime to provides writers for the
+ * different encodings, but can be used to override encoding names and provide the last printable
+ * character for each encoding.
  *
  * @author <a href="mailto:arkin@intalio.com">Assaf Arkin</a>
  */
-public class Encodings
-{
+public class Encodings {
 
-
-    /**
-     * The last printable character for unknown encodings.
-     */
+    /** The last printable character for unknown encodings. */
     static final int DEFAULT_LAST_PRINTABLE = 0x7F;
 
     // last printable character for Unicode-compatible encodings
@@ -63,34 +55,45 @@ public class Encodings
     /**
      * @param encoding a MIME charset name, or null.
      */
-    static EncodingInfo getEncodingInfo(String encoding, boolean allowJavaNames) throws UnsupportedEncodingException {
+    static EncodingInfo getEncodingInfo(String encoding, boolean allowJavaNames)
+            throws UnsupportedEncodingException {
         EncodingInfo eInfo = null;
         if (encoding == null) {
-            if((eInfo = (EncodingInfo)_encodings.get(DEFAULT_ENCODING)) != null)
-                return eInfo;
-            eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(DEFAULT_ENCODING), DEFAULT_ENCODING, LAST_PRINTABLE_UNICODE);
+            if ((eInfo = (EncodingInfo) _encodings.get(DEFAULT_ENCODING)) != null) return eInfo;
+            eInfo =
+                    new EncodingInfo(
+                            EncodingMap.getJava2IANAMapping(DEFAULT_ENCODING),
+                            DEFAULT_ENCODING,
+                            LAST_PRINTABLE_UNICODE);
             _encodings.put(DEFAULT_ENCODING, eInfo);
             return eInfo;
         }
         // need to convert it to upper case:
         encoding = encoding.toUpperCase(Locale.ENGLISH);
         String jName = EncodingMap.getIANA2JavaMapping(encoding);
-        if(jName == null) {
+        if (jName == null) {
             // see if the encoding passed in is a Java encoding name.
-            if(allowJavaNames ) {
+            if (allowJavaNames) {
                 EncodingInfo.testJavaEncodingName(encoding);
-                if((eInfo = (EncodingInfo)_encodings.get(encoding)) != null)
-                    return eInfo;
+                if ((eInfo = (EncodingInfo) _encodings.get(encoding)) != null) return eInfo;
                 // is it known to be unicode-compliant?
-                int i=0;
-                for(; i<UNICODE_ENCODINGS.length; i++) {
-                    if(UNICODE_ENCODINGS[i].equalsIgnoreCase(encoding)) {
-                        eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(encoding), encoding, LAST_PRINTABLE_UNICODE);
+                int i = 0;
+                for (; i < UNICODE_ENCODINGS.length; i++) {
+                    if (UNICODE_ENCODINGS[i].equalsIgnoreCase(encoding)) {
+                        eInfo =
+                                new EncodingInfo(
+                                        EncodingMap.getJava2IANAMapping(encoding),
+                                        encoding,
+                                        LAST_PRINTABLE_UNICODE);
                         break;
                     }
                 }
-                if(i == UNICODE_ENCODINGS.length) {
-                    eInfo = new EncodingInfo(EncodingMap.getJava2IANAMapping(encoding), encoding, DEFAULT_LAST_PRINTABLE);
+                if (i == UNICODE_ENCODINGS.length) {
+                    eInfo =
+                            new EncodingInfo(
+                                    EncodingMap.getJava2IANAMapping(encoding),
+                                    encoding,
+                                    DEFAULT_LAST_PRINTABLE);
                 }
                 _encodings.put(encoding, eInfo);
                 return eInfo;
@@ -98,27 +101,25 @@ public class Encodings
                 throw new UnsupportedEncodingException(encoding);
             }
         }
-        if ((eInfo = (EncodingInfo)_encodings.get(jName)) != null)
-            return eInfo;
+        if ((eInfo = (EncodingInfo) _encodings.get(jName)) != null) return eInfo;
         // have to create one...
         // is it known to be unicode-compliant?
-        int i=0;
-        for(; i<UNICODE_ENCODINGS.length; i++) {
-            if(UNICODE_ENCODINGS[i].equalsIgnoreCase(jName)) {
+        int i = 0;
+        for (; i < UNICODE_ENCODINGS.length; i++) {
+            if (UNICODE_ENCODINGS[i].equalsIgnoreCase(jName)) {
                 eInfo = new EncodingInfo(encoding, jName, LAST_PRINTABLE_UNICODE);
                 break;
             }
         }
-        if(i == UNICODE_ENCODINGS.length) {
+        if (i == UNICODE_ENCODINGS.length) {
             eInfo = new EncodingInfo(encoding, jName, DEFAULT_LAST_PRINTABLE);
         }
         _encodings.put(jName, eInfo);
         return eInfo;
     }
 
-    static final String JIS_DANGER_CHARS
-    = "\\\u007e\u007f\u00a2\u00a3\u00a5\u00ac"
-    +"\u2014\u2015\u2016\u2026\u203e\u203e\u2225\u222f\u301c"
-    +"\uff3c\uff5e\uffe0\uffe1\uffe2\uffe3";
-
+    static final String JIS_DANGER_CHARS =
+            "\\\u007e\u007f\u00a2\u00a3\u00a5\u00ac"
+                    + "\u2014\u2015\u2016\u2026\u203e\u203e\u2225\u222f\u301c"
+                    + "\uff3c\uff5e\uffe0\uffe1\uffe2\uffe3";
 }

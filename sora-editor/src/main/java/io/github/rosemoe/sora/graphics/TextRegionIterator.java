@@ -26,9 +26,9 @@ package io.github.rosemoe.sora.graphics;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.styling.Span;
+
+import java.util.List;
 
 /**
  * Helper class for {@link GraphicTextRow} to iterate text regions
@@ -71,11 +71,12 @@ class TextRegionIterator {
         if (startIndex != 0) {
             throw new IllegalStateException();
         }
-        while (pointerSpan < spans.size() &&  spans.get(pointerSpan).column <= index) {
+        while (pointerSpan < spans.size() && spans.get(pointerSpan).column <= index) {
             pointerSpan++;
         }
         if (softBreaks != null) {
-            while (pointerSoftBreak < softBreaks.size() && softBreaks.get(pointerSoftBreak) <= index) {
+            while (pointerSoftBreak < softBreaks.size()
+                    && softBreaks.get(pointerSoftBreak) <= index) {
                 pointerSoftBreak++;
             }
         }
@@ -96,8 +97,12 @@ class TextRegionIterator {
             pointerSpan++;
         } else {
             startIndex = endIndex;
-            var nextIndexSpan = pointerSpan >= spans.size() ? length : spans.get(pointerSpan).column;
-            var nextIndexSoftBreak = pointerSoftBreak >= softBreaks.size() ? length : softBreaks.get(pointerSoftBreak);
+            var nextIndexSpan =
+                    pointerSpan >= spans.size() ? length : spans.get(pointerSpan).column;
+            var nextIndexSoftBreak =
+                    pointerSoftBreak >= softBreaks.size()
+                            ? length
+                            : softBreaks.get(pointerSoftBreak);
             nextIndexSpan = Math.min(length, nextIndexSpan);
             nextIndexSoftBreak = Math.min(length, nextIndexSoftBreak);
             if (nextIndexSpan < nextIndexSoftBreak) {

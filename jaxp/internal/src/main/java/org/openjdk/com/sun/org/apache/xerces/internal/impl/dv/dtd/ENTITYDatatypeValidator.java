@@ -21,52 +21,40 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.dtd;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.*;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
 
 /**
- * <P>ENTITYDatatypeValidator implements the
- * DatattypeValidator interface.
- * This validator embodies the ENTITY attribute type
- * from XML1.0 recommendation.
- * The Value space of ENTITY is the set of all strings
- * that match the NCName production and have been
- * declared as an unparsed entity in a document
- * type definition.
- * The Lexical space of Entity is the set of all
- * strings that match the NCName production.
- * The value space of ENTITY is scoped to a specific
- * instance document.</P>
+ * ENTITYDatatypeValidator implements the DatattypeValidator interface. This validator embodies the
+ * ENTITY attribute type from XML1.0 recommendation. The Value space of ENTITY is the set of all
+ * strings that match the NCName production and have been declared as an unparsed entity in a
+ * document type definition. The Lexical space of Entity is the set of all strings that match the
+ * NCName production. The value space of ENTITY is scoped to a specific instance document.
  *
  * @xerces.internal
- *
  * @author Jeffrey Rodriguez, IBM
  * @author Sandy Gao, IBM
- *
  */
 public class ENTITYDatatypeValidator implements DatatypeValidator {
 
     // construct an ENTITY datatype validator
-    public ENTITYDatatypeValidator() {
-    }
+    public ENTITYDatatypeValidator() {}
 
     /**
-     * Checks that "content" string is valid ID value.
-     * If invalid a Datatype validation exception is thrown.
+     * Checks that "content" string is valid ID value. If invalid a Datatype validation exception is
+     * thrown.
      *
-     * @param content       the string value that needs to be validated
-     * @param context       the validation context
-     * @throws InvalidDatatypeException if the content is
-     *         invalid according to the rules for the validators
+     * @param content the string value that needs to be validated
+     * @param context the validation context
+     * @throws InvalidDatatypeException if the content is invalid according to the rules for the
+     *     validators
      * @see InvalidDatatypeValueException
      */
-    public void validate(String content, ValidationContext context) throws InvalidDatatypeValueException {
+    public void validate(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
 
         if (!context.isEntityUnparsed(content))
-            throw new InvalidDatatypeValueException("ENTITYNotUnparsed", new Object[]{content});
-
+            throw new InvalidDatatypeValueException("ENTITYNotUnparsed", new Object[] {content});
     }
-
 }

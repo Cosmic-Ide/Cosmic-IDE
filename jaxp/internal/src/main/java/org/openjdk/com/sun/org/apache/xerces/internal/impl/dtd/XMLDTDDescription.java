@@ -61,19 +61,18 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.util.XMLResourceIdentifierImpl;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDescription;
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+
 import java.util.ArrayList;
 import java.util.Vector;
-
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDescription;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
-import org.openjdk.com.sun.org.apache.xerces.internal.util.XMLResourceIdentifierImpl;
 
 /**
  * All information specific to DTD grammars.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
  * @version $Id: XMLDTDDescription.java,v 1.4 2010/08/11 07:18:38 joehw Exp $
  */
@@ -92,29 +91,31 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
 
     // Constructors:
     public XMLDTDDescription(XMLResourceIdentifier id, String rootName) {
-        this.setValues(id.getPublicId(), id.getLiteralSystemId(),
-                id.getBaseSystemId(), id.getExpandedSystemId());
+        this.setValues(
+                id.getPublicId(),
+                id.getLiteralSystemId(),
+                id.getBaseSystemId(),
+                id.getExpandedSystemId());
         this.fRootName = rootName;
         this.fPossibleRoots = null;
     } // init(XMLResourceIdentifier, String)
 
-    public XMLDTDDescription(String publicId, String literalId,
-                String baseId, String expandedId, String rootName) {
+    public XMLDTDDescription(
+            String publicId, String literalId, String baseId, String expandedId, String rootName) {
         this.setValues(publicId, literalId, baseId, expandedId);
         this.fRootName = rootName;
         this.fPossibleRoots = null;
     } // init(String, String, String, String, String)
 
     public XMLDTDDescription(XMLInputSource source) {
-        this.setValues(source.getPublicId(), null,
-                source.getBaseSystemId(), source.getSystemId());
+        this.setValues(source.getPublicId(), null, source.getBaseSystemId(), source.getSystemId());
         this.fRootName = null;
         this.fPossibleRoots = null;
     } // init(XMLInputSource)
 
     // XMLGrammarDescription methods
 
-    public String getGrammarType () {
+    public String getGrammarType() {
         return XMLGrammarDescription.XML_DTD;
     } // getGrammarType():  String
 
@@ -125,60 +126,53 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
         return fRootName;
     } // getRootName():  String
 
-    /** Set the root name **/
+    /** Set the root name * */
     public void setRootName(String rootName) {
         fRootName = rootName;
         fPossibleRoots = null;
     }
 
-    /** Set possible roots **/
+    /** Set possible roots * */
     public void setPossibleRoots(ArrayList possibleRoots) {
         fPossibleRoots = possibleRoots;
     }
 
-    /** Set possible roots **/
+    /** Set possible roots * */
     public void setPossibleRoots(Vector possibleRoots) {
         fPossibleRoots = (possibleRoots != null) ? new ArrayList(possibleRoots) : null;
     }
 
     /**
-     * Compares this grammar with the given grammar. Currently, we compare
-     * as follows:
-     * - if grammar type not equal return false immediately
-     * - try and find a common root name:
-     *    - if both have roots, use them
-     *    - else if one has a root, examine other's possible root's for a match;
-     *    - else try all combinations
-     *  - test fExpandedSystemId and fPublicId as above
+     * Compares this grammar with the given grammar. Currently, we compare as follows: - if grammar
+     * type not equal return false immediately - try and find a common root name: - if both have
+     * roots, use them - else if one has a root, examine other's possible root's for a match; - else
+     * try all combinations - test fExpandedSystemId and fPublicId as above
      *
      * @param desc The description of the grammar to be compared with
-     * @return     True if they are equal, else false
+     * @return True if they are equal, else false
      */
     public boolean equals(Object desc) {
         if (!(desc instanceof XMLGrammarDescription)) return false;
-        if (!getGrammarType().equals(((XMLGrammarDescription)desc).getGrammarType())) {
+        if (!getGrammarType().equals(((XMLGrammarDescription) desc).getGrammarType())) {
             return false;
         }
         // assume it's a DTDDescription
-        XMLDTDDescription dtdDesc = (XMLDTDDescription)desc;
+        XMLDTDDescription dtdDesc = (XMLDTDDescription) desc;
         if (fRootName != null) {
             if ((dtdDesc.fRootName) != null && !dtdDesc.fRootName.equals(fRootName)) {
                 return false;
-            }
-            else if (dtdDesc.fPossibleRoots != null && !dtdDesc.fPossibleRoots.contains(fRootName)) {
+            } else if (dtdDesc.fPossibleRoots != null
+                    && !dtdDesc.fPossibleRoots.contains(fRootName)) {
                 return false;
             }
-        }
-        else if (fPossibleRoots != null) {
+        } else if (fPossibleRoots != null) {
             if (dtdDesc.fRootName != null) {
                 if (!fPossibleRoots.contains(dtdDesc.fRootName)) {
                     return false;
                 }
-            }
-            else if (dtdDesc.fPossibleRoots == null) {
+            } else if (dtdDesc.fPossibleRoots == null) {
                 return false;
-            }
-            else {
+            } else {
                 boolean found = false;
                 final int size = fPossibleRoots.size();
                 for (int i = 0; i < size; ++i) {
@@ -195,25 +189,23 @@ public class XMLDTDDescription extends XMLResourceIdentifierImpl
             if (!fExpandedSystemId.equals(dtdDesc.fExpandedSystemId)) {
                 return false;
             }
-        }
-        else if (dtdDesc.fExpandedSystemId != null) {
+        } else if (dtdDesc.fExpandedSystemId != null) {
             return false;
         }
         if (fPublicId != null) {
             if (!fPublicId.equals(dtdDesc.fPublicId)) {
                 return false;
             }
-        }
-        else if (dtdDesc.fPublicId != null) {
+        } else if (dtdDesc.fPublicId != null) {
             return false;
         }
         return true;
     }
 
     /**
-     * Returns the hash code of this grammar
-     * Because our .equals method is so complex, we just return a very
-     * simple hash that might avoid calls to the equals method a bit...
+     * Returns the hash code of this grammar Because our .equals method is so complex, we just
+     * return a very simple hash that might avoid calls to the equals method a bit...
+     *
      * @return The hash code
      */
     public int hashCode() {

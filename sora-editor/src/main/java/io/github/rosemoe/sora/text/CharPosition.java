@@ -23,12 +23,11 @@
  */
 package io.github.rosemoe.sora.text;
 
-
 import androidx.annotation.NonNull;
 
-import java.util.Objects;
-
 import io.github.rosemoe.sora.util.IntPair;
+
+import java.util.Objects;
 
 /**
  * This a data class of a character position in {@link Content}
@@ -84,9 +83,7 @@ public final class CharPosition {
     public boolean equals(Object another) {
         if (another instanceof CharPosition) {
             CharPosition a = (CharPosition) another;
-            return a.column == column &&
-                    a.line == line &&
-                    a.index == index;
+            return a.column == column && a.line == line && a.index == index;
         }
         return false;
     }
@@ -98,8 +95,8 @@ public final class CharPosition {
 
     /**
      * Convert {@link CharPosition#line} and {@link CharPosition#column} to a Long number
-     * <p>
-     * First integer is line and second integer is column
+     *
+     * <p>First integer is line and second integer is column
      *
      * @return A Long integer describing the position
      */
@@ -119,9 +116,7 @@ public final class CharPosition {
         return pos;
     }
 
-    /**
-     * Set this {@link CharPosition} object's data the same as {@code another}
-     */
+    /** Set this {@link CharPosition} object's data the same as {@code another} */
     public void set(@NonNull CharPosition another) {
         index = another.index;
         line = another.line;
@@ -133,5 +128,4 @@ public final class CharPosition {
     public String toString() {
         return "CharPosition(line = " + line + ",column = " + column + ",index = " + index + ")";
     }
-
 }

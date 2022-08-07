@@ -18,9 +18,10 @@
  * limitations under the License.
  */
 
-
 package org.openjdk.com.sun.org.apache.xerces.internal.dom;
+
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -29,7 +30,6 @@ import java.util.ResourceBundle;
  * Used to format DOM error messages, using the system locale.
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
  * @version $Id: DOMMessageFormatter.java,v 1.6 2010-11-01 04:39:38 joehw Exp $
  */
@@ -43,33 +43,27 @@ public class DOMMessageFormatter {
     private static ResourceBundle serResourceBundle = null;
     private static Locale locale = null;
 
-
-    DOMMessageFormatter(){
+    DOMMessageFormatter() {
         locale = Locale.getDefault();
     }
     /**
-     * Formats a message with the specified arguments using the given
-     * locale information.
+     * Formats a message with the specified arguments using the given locale information.
      *
-     * @param domain    domain from which error string is to come.
-     * @param key       The message key.
-     * @param arguments The message replacement text arguments. The order
-     *                  of the arguments must match that of the placeholders
-     *                  in the actual message.
-     *
-     * @return          the formatted message.
-     *
-     * @throws MissingResourceException Thrown if the message with the
-     *                                  specified key cannot be found.
+     * @param domain domain from which error string is to come.
+     * @param key The message key.
+     * @param arguments The message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
+     * @return the formatted message.
+     * @throws MissingResourceException Thrown if the message with the specified key cannot be
+     *     found.
      */
-    public static String formatMessage(String domain,
-    String key, Object[] arguments)
-    throws MissingResourceException {
+    public static String formatMessage(String domain, String key, Object[] arguments)
+            throws MissingResourceException {
         ResourceBundle resourceBundle = getResourceBundle(domain);
-        if(resourceBundle == null){
+        if (resourceBundle == null) {
             init();
             resourceBundle = getResourceBundle(domain);
-            if(resourceBundle == null)
+            if (resourceBundle == null)
                 throw new MissingResourceException("Unknown domain" + domain, null, key);
         }
         // format message
@@ -79,8 +73,7 @@ public class DOMMessageFormatter {
             if (arguments != null) {
                 try {
                     msg = java.text.MessageFormat.format(msg, arguments);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     msg = resourceBundle.getString("FormatFailed");
                     msg += " " + resourceBundle.getString(key);
                 }
@@ -109,35 +102,47 @@ public class DOMMessageFormatter {
         return msg;
     }
 
-    static ResourceBundle getResourceBundle(String domain){
-        if(domain == DOM_DOMAIN || domain.equals(DOM_DOMAIN))
-            return domResourceBundle;
-        else if( domain == XML_DOMAIN || domain.equals(XML_DOMAIN))
-            return xmlResourceBundle;
-        else if(domain == SERIALIZER_DOMAIN || domain.equals(SERIALIZER_DOMAIN))
+    static ResourceBundle getResourceBundle(String domain) {
+        if (domain == DOM_DOMAIN || domain.equals(DOM_DOMAIN)) return domResourceBundle;
+        else if (domain == XML_DOMAIN || domain.equals(XML_DOMAIN)) return xmlResourceBundle;
+        else if (domain == SERIALIZER_DOMAIN || domain.equals(SERIALIZER_DOMAIN))
             return serResourceBundle;
         return null;
     }
-    /**
-     * Initialize Message Formatter.
-     */
-    public static void init(){
+    /** Initialize Message Formatter. */
+    public static void init() {
         if (locale != null) {
-            domResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.DOMMessages", locale);
-            serResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSerializerMessages", locale);
-            xmlResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessages", locale);
-        }else{
-            domResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.DOMMessages");
-            serResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSerializerMessages");
-            xmlResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessages");
+            domResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.DOMMessages",
+                            locale);
+            serResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSerializerMessages",
+                            locale);
+            xmlResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessages",
+                            locale);
+        } else {
+            domResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.DOMMessages");
+            serResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSerializerMessages");
+            xmlResourceBundle =
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessages");
         }
     }
 
     /**
      * setLocale to be used by the formatter.
+     *
      * @param locale
      */
-    public static void setLocale(Locale dlocale){
+    public static void setLocale(Locale dlocale) {
         locale = dlocale;
     }
 }

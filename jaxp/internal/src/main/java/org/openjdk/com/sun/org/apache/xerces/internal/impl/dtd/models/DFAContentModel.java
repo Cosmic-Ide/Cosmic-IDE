@@ -61,31 +61,24 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd.models;
 
-import java.util.HashMap;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd.XMLContentSpec;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.QName;
 
-/**
+import java.util.HashMap;
 
- * @version $Id: DFAContentModel.java,v 1.4 2010/08/06 23:49:43 joehw Exp $
- * DFAContentModel is the derivative of ContentModel that does
- * all of the non-trivial element content validation. This class does
- * the conversion from the regular expression to the DFA that
- * it then uses in its validation algorithm.
- * <p>
- * <b>Note:</b> Upstream work insures that this class will never see
- * a content model with PCDATA in it. Any model with PCDATA is 'mixed'
- * and is handled via the MixedContentModel class since mixed models
- * are very constrained in form and easily handled via a special case.
- * This also makes implementation of this class much easier.
- *
+/**
+ * @version $Id: DFAContentModel.java,v 1.4 2010/08/06 23:49:43 joehw Exp $ DFAContentModel is the
+ *     derivative of ContentModel that does all of the non-trivial element content validation. This
+ *     class does the conversion from the regular expression to the DFA that it then uses in its
+ *     validation algorithm.
+ *     <p><b>Note:</b> Upstream work insures that this class will never see a content model with
+ *     PCDATA in it. Any model with PCDATA is 'mixed' and is handled via the MixedContentModel class
+ *     since mixed models are very constrained in form and easily handled via a special case. This
+ *     also makes implementation of this class much easier.
  * @xerces.internal
- *
  * @version $Id: DFAContentModel.java,v 1.4 2010/08/06 23:49:43 joehw Exp $
  */
-public class DFAContentModel
-    implements ContentModelValidator {
+public class DFAContentModel implements ContentModelValidator {
 
     //
     // Constants
@@ -98,7 +91,7 @@ public class DFAContentModel
     /** End-of-content string. */
     private static String fEOCString = "<<CMNODE_EOC>>";
 
-    /** initializing static members **/
+    /** initializing static members * */
     static {
         fEpsilonString = fEpsilonString.intern();
         fEOCString = fEOCString.intern();
@@ -114,20 +107,16 @@ public class DFAContentModel
     //
 
     /* this is the EquivClassComparator object */
-    //private EquivClassComparator comparator = null;
+    // private EquivClassComparator comparator = null;
 
     /**
-     * This is the map of unique input symbol elements to indices into
-     * each state's per-input symbol transition table entry. This is part
-     * of the built DFA information that must be kept around to do the
-     * actual validation.
+     * This is the map of unique input symbol elements to indices into each state's per-input symbol
+     * transition table entry. This is part of the built DFA information that must be kept around to
+     * do the actual validation.
      */
     private QName fElemMap[] = null;
 
-    /**
-     * This is a map of whether the element map contains information
-     * related to ANY models.
-     */
+    /** This is a map of whether the element map contains information related to ANY models. */
     private int fElemMapType[] = null;
 
     /** The element map size. */
@@ -137,81 +126,72 @@ public class DFAContentModel
     private boolean fMixed;
 
     /**
-     * The NFA position of the special EOC (end of content) node. This
-     * is saved away since it's used during the DFA build.
+     * The NFA position of the special EOC (end of content) node. This is saved away since it's used
+     * during the DFA build.
      */
     private int fEOCPos = 0;
 
-
     /**
-     * This is an array of booleans, one per state (there are
-     * fTransTableSize states in the DFA) that indicates whether that
-     * state is a final state.
+     * This is an array of booleans, one per state (there are fTransTableSize states in the DFA)
+     * that indicates whether that state is a final state.
      */
     private boolean fFinalStateFlags[] = null;
 
     /**
-     * The list of follow positions for each NFA position (i.e. for each
-     * non-epsilon leaf node.) This is only used during the building of
-     * the DFA, and is let go afterwards.
+     * The list of follow positions for each NFA position (i.e. for each non-epsilon leaf node.)
+     * This is only used during the building of the DFA, and is let go afterwards.
      */
     private CMStateSet fFollowList[] = null;
 
     /**
-     * This is the head node of our intermediate representation. It is
-     * only non-null during the building of the DFA (just so that it
-     * does not have to be passed all around.) Once the DFA is built,
-     * this is no longer required so its nulled out.
+     * This is the head node of our intermediate representation. It is only non-null during the
+     * building of the DFA (just so that it does not have to be passed all around.) Once the DFA is
+     * built, this is no longer required so its nulled out.
      */
     private CMNode fHeadNode = null;
 
     /**
-     * The count of leaf nodes. This is an important number that set some
-     * limits on the sizes of data structures in the DFA process.
+     * The count of leaf nodes. This is an important number that set some limits on the sizes of
+     * data structures in the DFA process.
      */
     private int fLeafCount = 0;
 
     /**
-     * An array of non-epsilon leaf nodes, which is used during the DFA
-     * build operation, then dropped.
+     * An array of non-epsilon leaf nodes, which is used during the DFA build operation, then
+     * dropped.
      */
     private CMLeaf fLeafList[] = null;
 
     /** Array mapping ANY types to the leaf list. */
     private int fLeafListType[] = null;
 
-    //private ContentLeafNameTypeVector fLeafNameTypeVector = null;
+    // private ContentLeafNameTypeVector fLeafNameTypeVector = null;
+
+    /** The string pool of our parser session. This is set during construction and kept around. */
+    // private StringPool fStringPool = null;
 
     /**
-     * The string pool of our parser session. This is set during construction
-     * and kept around.
-     */
-    //private StringPool fStringPool = null;
-
-    /**
-     * This is the transition table that is the main by product of all
-     * of the effort here. It is an array of arrays of ints. The first
-     * dimension is the number of states we end up with in the DFA. The
-     * second dimensions is the number of unique elements in the content
-     * model (fElemMapSize). Each entry in the second dimension indicates
-     * the new state given that input for the first dimension's start
-     * state.
-     * <p>
-     * The fElemMap array handles mapping from element indexes to
-     * positions in the second dimension of the transition table.
+     * This is the transition table that is the main by product of all of the effort here. It is an
+     * array of arrays of ints. The first dimension is the number of states we end up with in the
+     * DFA. The second dimensions is the number of unique elements in the content model
+     * (fElemMapSize). Each entry in the second dimension indicates the new state given that input
+     * for the first dimension's start state.
+     *
+     * <p>The fElemMap array handles mapping from element indexes to positions in the second
+     * dimension of the transition table.
      */
     private int fTransTable[][] = null;
 
     /**
-     * The number of valid entries in the transition table, and in the other
-     * related tables such as fFinalStateFlags.
+     * The number of valid entries in the transition table, and in the other related tables such as
+     * fFinalStateFlags.
      */
     private int fTransTableSize = 0;
 
     /**
-     * Flag that indicates that even though we have a "complicated"
-     * content model, it is valid to have no content. In other words,
-     * all parts of the content model are optional. For example:
+     * Flag that indicates that even though we have a "complicated" content model, it is valid to
+     * have no content. In other words, all parts of the content model are optional. For example:
+     *
      * <pre>
      *      &lt;!ELEMENT AllOptional (Optional*,NotRequired?)&gt;
      * </pre>
@@ -227,7 +207,6 @@ public class DFAContentModel
     // Constructors
     //
 
-
     //
     // Constructors
     //
@@ -235,16 +214,14 @@ public class DFAContentModel
     /**
      * Constructs a DFA content model.
      *
-     * @param syntaxTree    The syntax tree of the content model.
-     * @param leafCount     The number of leaves.
+     * @param syntaxTree The syntax tree of the content model.
+     * @param leafCount The number of leaves.
      * @param mixed
-     *
      */
     public DFAContentModel(CMNode syntaxTree, int leafCount, boolean mixed) {
         // Store away our index and pools in members
-        //fStringPool = stringPool;
+        // fStringPool = stringPool;
         fLeafCount = leafCount;
-
 
         // this is for Schema Mixed Content
         fMixed = mixed;
@@ -266,32 +243,25 @@ public class DFAContentModel
     //
 
     /**
-     * Check that the specified content is valid according to this
-     * content model. This method can also be called to do 'what if'
-     * testing of content models just to see if they would be valid.
-     * <p>
-     * A value of -1 in the children array indicates a PCDATA node. All other
-     * indexes will be positive and represent child elements. The count can be
-     * zero, since some elements have the EMPTY content model and that must be
-     * confirmed.
+     * Check that the specified content is valid according to this content model. This method can
+     * also be called to do 'what if' testing of content models just to see if they would be valid.
      *
-     * @param children The children of this element.  Each integer is an index within
-     *                 the <code>StringPool</code> of the child element name.  An index
-     *                 of -1 is used to indicate an occurrence of non-whitespace character
-     *                 data.
+     * <p>A value of -1 in the children array indicates a PCDATA node. All other indexes will be
+     * positive and represent child elements. The count can be zero, since some elements have the
+     * EMPTY content model and that must be confirmed.
+     *
+     * @param children The children of this element. Each integer is an index within the <code>
+     *     StringPool</code> of the child element name. An index of -1 is used to indicate an
+     *     occurrence of non-whitespace character data.
      * @param offset Offset into the array where the children starts.
      * @param length The number of entries in the <code>children</code> array.
-     *
-     * @return The value -1 if fully valid, else the 0 based index of the child
-     *         that first failed. If the value returned is equal to the number
-     *         of children, then the specified children are valid but additional
-     *         content is required to reach a valid ending state.
-     *
+     * @return The value -1 if fully valid, else the 0 based index of the child that first failed.
+     *     If the value returned is equal to the number of children, then the specified children are
+     *     valid but additional content is required to reach a valid ending state.
      */
     public int validate(QName[] children, int offset, int length) {
 
-        if (DEBUG_VALIDATE_CONTENT)
-            System.out.println("DFAContentModel#validateContent");
+        if (DEBUG_VALIDATE_CONTENT) System.out.println("DFAContentModel#validateContent");
 
         //
         // A DFA content model must *always* have at least 1 child
@@ -309,23 +279,28 @@ public class DFAContentModel
         if (length == 0) {
             if (DEBUG_VALIDATE_CONTENT) {
                 System.out.println("!!! no children");
-                System.out.println("elemMap="+fElemMap);
+                System.out.println("elemMap=" + fElemMap);
                 for (int i = 0; i < fElemMap.length; i++) {
                     String uri = fElemMap[i].uri;
                     String localpart = fElemMap[i].localpart;
 
-                    System.out.println("fElemMap["+i+"]="+uri+","+
-                                       localpart+" ("+
-                                       uri+", "+
-                                       localpart+
-                                       ')');
-
+                    System.out.println(
+                            "fElemMap["
+                                    + i
+                                    + "]="
+                                    + uri
+                                    + ","
+                                    + localpart
+                                    + " ("
+                                    + uri
+                                    + ", "
+                                    + localpart
+                                    + ')');
                 }
-                System.out.println("EOCIndex="+fEOCString);
+                System.out.println("EOCIndex=" + fEOCString);
             }
 
             return fEmptyContentIsValid ? -1 : 0;
-
         } // if child count == 0
 
         //
@@ -334,8 +309,7 @@ public class DFAContentModel
         //  an element index to a state index.
         //
         int curState = 0;
-        for (int childIndex = 0; childIndex < length; childIndex++)
-        {
+        for (int childIndex = 0; childIndex < length; childIndex++) {
             // Get the current element index out
             final QName curElem = children[offset + childIndex];
             // ignore mixed text
@@ -345,27 +319,23 @@ public class DFAContentModel
 
             // Look up this child in our element map
             int elemIndex = 0;
-            for (; elemIndex < fElemMapSize; elemIndex++)
-            {
-                int type = fElemMapType[elemIndex] & 0x0f ;
+            for (; elemIndex < fElemMapSize; elemIndex++) {
+                int type = fElemMapType[elemIndex] & 0x0f;
                 if (type == XMLContentSpec.CONTENTSPECNODE_LEAF) {
-                    //System.out.println("fElemMap["+elemIndex+"]: "+fElemMap[elemIndex]);
+                    // System.out.println("fElemMap["+elemIndex+"]: "+fElemMap[elemIndex]);
                     if (fElemMap[elemIndex].rawname == curElem.rawname) {
                         break;
                     }
-                }
-                else if (type == XMLContentSpec.CONTENTSPECNODE_ANY) {
+                } else if (type == XMLContentSpec.CONTENTSPECNODE_ANY) {
                     String uri = fElemMap[elemIndex].uri;
                     if (uri == null || uri == curElem.uri) {
                         break;
                     }
-                }
-                else if (type == XMLContentSpec.CONTENTSPECNODE_ANY_LOCAL) {
+                } else if (type == XMLContentSpec.CONTENTSPECNODE_ANY_LOCAL) {
                     if (curElem.uri == null) {
                         break;
                     }
-                }
-                else if (type == XMLContentSpec.CONTENTSPECNODE_ANY_OTHER) {
+                } else if (type == XMLContentSpec.CONTENTSPECNODE_ANY_OTHER) {
                     if (fElemMap[elemIndex].uri != curElem.uri) {
                         break;
                     }
@@ -377,10 +347,10 @@ public class DFAContentModel
                 if (DEBUG_VALIDATE_CONTENT) {
                     System.out.println("!!! didn't find it");
 
-                    System.out.println("curElem : " +curElem );
-                    for (int i=0; i<fElemMapSize; i++) {
-                        System.out.println("fElemMap["+i+"] = " +fElemMap[i] );
-                        System.out.println("fElemMapType["+i+"] = " +fElemMapType[i] );
+                    System.out.println("curElem : " + curElem);
+                    for (int i = 0; i < fElemMapSize; i++) {
+                        System.out.println("fElemMap[" + i + "] = " + fElemMap[i]);
+                        System.out.println("fElemMapType[" + i + "] = " + fElemMapType[i]);
                     }
                 }
 
@@ -395,8 +365,7 @@ public class DFAContentModel
 
             // If its not a legal transition, then invalid
             if (curState == -1) {
-                if (DEBUG_VALIDATE_CONTENT)
-                    System.out.println("!!! not a legal transition");
+                if (DEBUG_VALIDATE_CONTENT) System.out.println("!!! not a legal transition");
                 return childIndex;
             }
         }
@@ -407,14 +376,12 @@ public class DFAContentModel
         //  our ending state is a final state.
         //
         if (DEBUG_VALIDATE_CONTENT)
-            System.out.println("curState="+curState+", childCount="+length);
-        if (!fFinalStateFlags[curState])
-            return length;
+            System.out.println("curState=" + curState + ", childCount=" + length);
+        if (!fFinalStateFlags[curState]) return length;
 
         // success!
         return -1;
     } // validate
-
 
     //
     // Private methods
@@ -424,11 +391,9 @@ public class DFAContentModel
      * Builds the internal DFA transition table from the given syntax tree.
      *
      * @param syntaxTree The syntax tree.
-     *
      * @exception CMException Thrown if DFA cannot be built.
      */
-    private void buildDFA(CMNode syntaxTree)
-    {
+    private void buildDFA(CMNode syntaxTree) {
         //
         //  The first step we need to take is to rewrite the content model
         //  using our CMNode objects, and in the process get rid of any
@@ -472,12 +437,7 @@ public class DFAContentModel
 
         fQName.setValues(null, fEOCString, fEOCString, null);
         CMLeaf nodeEOC = new CMLeaf(fQName);
-        fHeadNode = new CMBinOp
-        (
-            XMLContentSpec.CONTENTSPECNODE_SEQ
-            , syntaxTree
-            , nodeEOC
-        );
+        fHeadNode = new CMBinOp(XMLContentSpec.CONTENTSPECNODE_SEQ, syntaxTree, nodeEOC);
 
         //
         //  And handle specially the EOC node, which also must be numbered
@@ -530,25 +490,23 @@ public class DFAContentModel
         fElemMap = new QName[fLeafCount];
         fElemMapType = new int[fLeafCount];
         fElemMapSize = 0;
-        for (int outIndex = 0; outIndex < fLeafCount; outIndex++)
-        {
+        for (int outIndex = 0; outIndex < fLeafCount; outIndex++) {
             fElemMap[outIndex] = new QName();
 
             /****
-            if ( (fLeafListType[outIndex] & 0x0f) != 0 ) {
-                if (fLeafNameTypeVector == null) {
-                    fLeafNameTypeVector = new ContentLeafNameTypeVector();
-                }
-            }
-            /****/
+             * if ( (fLeafListType[outIndex] & 0x0f) != 0 ) {
+             * if (fLeafNameTypeVector == null) {
+             * fLeafNameTypeVector = new ContentLeafNameTypeVector();
+             * }
+             * }
+             * /****/
 
             // Get the current leaf's element index
             final QName element = fLeafList[outIndex].getElement();
 
             // See if the current leaf node's element index is in the list
             int inIndex = 0;
-            for (; inIndex < fElemMapSize; inIndex++)
-            {
+            for (; inIndex < fElemMapSize; inIndex++) {
                 if (fElemMap[inIndex].rawname == element.rawname) {
                     break;
                 }
@@ -563,26 +521,26 @@ public class DFAContentModel
         }
         // set up the fLeafNameTypeVector object if there is one.
         /*****
-        if (fLeafNameTypeVector != null) {
-            fLeafNameTypeVector.setValues(fElemMap, fElemMapType, fElemMapSize);
-        }
-
-        /***
-        * Optimization(Jan, 2001); We sort fLeafList according to
-        * elemIndex which is *uniquely* associated to each leaf.
-        * We are *assuming* that each element appears in at least one leaf.
-        **/
+         * if (fLeafNameTypeVector != null) {
+         * fLeafNameTypeVector.setValues(fElemMap, fElemMapType, fElemMapSize);
+         * }
+         *
+         * /***
+         * Optimization(Jan, 2001); We sort fLeafList according to
+         * elemIndex which is *uniquely* associated to each leaf.
+         * We are *assuming* that each element appears in at least one leaf.
+         **/
 
         int[] fLeafSorter = new int[fLeafCount + fElemMapSize];
         int fSortCount = 0;
 
         for (int elemIndex = 0; elemIndex < fElemMapSize; elemIndex++) {
             for (int leafIndex = 0; leafIndex < fLeafCount; leafIndex++) {
-                    final QName leaf = fLeafList[leafIndex].getElement();
-                    final QName element = fElemMap[elemIndex];
-                    if (leaf.rawname == element.rawname) {
-                            fLeafSorter[fSortCount++] = leafIndex;
-                    }
+                final QName leaf = fLeafList[leafIndex].getElement();
+                final QName element = fElemMap[elemIndex];
+                if (leaf.rawname == element.rawname) {
+                    fLeafSorter[fSortCount++] = leafIndex;
+                }
             }
             fLeafSorter[fSortCount++] = -1;
         }
@@ -633,21 +591,20 @@ public class DFAContentModel
         statesToDo[curState] = setT;
         curState++;
 
-            /* Optimization(Jan, 2001); This is faster for
-             * a large content model such as, "(t001+|t002+|.... |t500+)".
-             */
+        /* Optimization(Jan, 2001); This is faster for
+         * a large content model such as, "(t001+|t002+|.... |t500+)".
+         */
 
         HashMap stateTable = new HashMap();
 
-            /* Optimization(Jan, 2001) */
+        /* Optimization(Jan, 2001) */
 
         //
         //  Ok, almost done with the algorithm... We now enter the
         //  loop where we go until the states done counter catches up with
         //  the states to do counter.
         //
-        while (unmarkedState < curState)
-        {
+        while (unmarkedState < curState) {
             //
             //  Get the first unmarked state out of the list of states to do.
             //  And get the associated transition table entry.
@@ -666,57 +623,51 @@ public class DFAContentModel
             /* Optimization(Jan, 2001) */
             int sorterIndex = 0;
             /* Optimization(Jan, 2001) */
-            for (int elemIndex = 0; elemIndex < fElemMapSize; elemIndex++)
-            {
+            for (int elemIndex = 0; elemIndex < fElemMapSize; elemIndex++) {
                 //
                 //  Build up a set of states which is the union of all of
                 //  the follow sets of DFA positions that are in the current
                 //  state. If we gave away the new set last time through then
                 //  create a new one. Otherwise, zero out the existing one.
                 //
-                if (newSet == null)
-                    newSet = new CMStateSet(fLeafCount);
-                else
-                    newSet.zeroBits();
+                if (newSet == null) newSet = new CMStateSet(fLeafCount);
+                else newSet.zeroBits();
 
-            /* Optimization(Jan, 2001) */
+                /* Optimization(Jan, 2001) */
                 int leafIndex = fLeafSorter[sorterIndex++];
 
                 while (leafIndex != -1) {
-                // If this leaf index (DFA position) is in the current set...
-                    if (setT.getBit(leafIndex))
-                    {
+                    // If this leaf index (DFA position) is in the current set...
+                    if (setT.getBit(leafIndex)) {
                         //
                         //  If this leaf is the current input symbol, then we
                         //  want to add its follow list to the set of states to
                         //  transition to from the current state.
                         //
-                                newSet.union(fFollowList[leafIndex]);
-                            }
+                        newSet.union(fFollowList[leafIndex]);
+                    }
 
-                   leafIndex = fLeafSorter[sorterIndex++];
-        }
-            /* Optimization(Jan, 2001) */
+                    leafIndex = fLeafSorter[sorterIndex++];
+                }
+                /* Optimization(Jan, 2001) */
 
                 //
                 //  If this new set is not empty, then see if its in the list
                 //  of states to do. If not, then add it.
                 //
-                if (!newSet.isEmpty())
-                {
+                if (!newSet.isEmpty()) {
                     //
                     //  Search the 'states to do' list to see if this new
                     //  state set is already in there.
                     //
 
-            /* Optimization(Jan, 2001) */
-            Integer stateObj = (Integer)stateTable.get(newSet);
-            int stateIndex = (stateObj == null ? curState : stateObj.intValue());
-            /* Optimization(Jan, 2001) */
+                    /* Optimization(Jan, 2001) */
+                    Integer stateObj = (Integer) stateTable.get(newSet);
+                    int stateIndex = (stateObj == null ? curState : stateObj.intValue());
+                    /* Optimization(Jan, 2001) */
 
                     // If we did not find it, then add it
-                    if (stateIndex == curState)
-                    {
+                    if (stateIndex == curState) {
                         //
                         //  Put this new state into the states to do and init
                         //  a new entry at the same index in the transition
@@ -725,9 +676,9 @@ public class DFAContentModel
                         statesToDo[curState] = newSet;
                         fTransTable[curState] = makeDefStateList();
 
-            /* Optimization(Jan, 2001) */
+                        /* Optimization(Jan, 2001) */
                         stateTable.put(newSet, new Integer(curState));
-            /* Optimization(Jan, 2001) */
+                        /* Optimization(Jan, 2001) */
 
                         // We now have a new state to do so bump the count
                         curState++;
@@ -749,14 +700,13 @@ public class DFAContentModel
                     transEntry[elemIndex] = stateIndex;
 
                     // Expand the arrays if we're full
-                    if (curState == curArraySize)
-                    {
+                    if (curState == curArraySize) {
                         //
                         //  Yikes, we overflowed the initial array size, so
                         //  we've got to expand all of these arrays. So adjust
                         //  up the size by 50% and allocate new arrays.
                         //
-                        final int newSize = (int)(curArraySize * 1.5);
+                        final int newSize = (int) (curArraySize * 1.5);
                         CMStateSet[] newToDo = new CMStateSet[newSize];
                         boolean[] newFinalFlags = new boolean[newSize];
                         int[][] newTransTable = new int[newSize][];
@@ -777,257 +727,212 @@ public class DFAContentModel
         }
 
         // Check to see if we can set the fEmptyContentIsValid flag.
-        fEmptyContentIsValid = ((CMBinOp)fHeadNode).getLeft().isNullable();
+        fEmptyContentIsValid = ((CMBinOp) fHeadNode).getLeft().isNullable();
 
         //
         //  And now we can say bye bye to the temp representation since we've
         //  built the DFA.
         //
-        if (DEBUG_VALIDATE_CONTENT)
-            dumpTree(fHeadNode, 0);
+        if (DEBUG_VALIDATE_CONTENT) dumpTree(fHeadNode, 0);
         fHeadNode = null;
         fLeafList = null;
         fFollowList = null;
-
     }
 
     /**
      * Calculates the follow list of the current node.
      *
      * @param nodeCur The curent node.
-     *
      * @exception CMException Thrown if follow list cannot be calculated.
      */
-    private void calcFollowList(CMNode nodeCur)
-    {
+    private void calcFollowList(CMNode nodeCur) {
         // Recurse as required
-        if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_CHOICE)
-        {
+        if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_CHOICE) {
             // Recurse only
-            calcFollowList(((CMBinOp)nodeCur).getLeft());
-            calcFollowList(((CMBinOp)nodeCur).getRight());
-        }
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_SEQ)
-        {
+            calcFollowList(((CMBinOp) nodeCur).getLeft());
+            calcFollowList(((CMBinOp) nodeCur).getRight());
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_SEQ) {
             // Recurse first
-            calcFollowList(((CMBinOp)nodeCur).getLeft());
-            calcFollowList(((CMBinOp)nodeCur).getRight());
+            calcFollowList(((CMBinOp) nodeCur).getLeft());
+            calcFollowList(((CMBinOp) nodeCur).getRight());
 
             //
             //  Now handle our level. We use our left child's last pos
             //  set and our right child's first pos set, so go ahead and
             //  get them ahead of time.
             //
-            final CMStateSet last  = ((CMBinOp)nodeCur).getLeft().lastPos();
-            final CMStateSet first = ((CMBinOp)nodeCur).getRight().firstPos();
+            final CMStateSet last = ((CMBinOp) nodeCur).getLeft().lastPos();
+            final CMStateSet first = ((CMBinOp) nodeCur).getRight().firstPos();
 
             //
             //  Now, for every position which is in our left child's last set
             //  add all of the states in our right child's first set to the
             //  follow set for that position.
             //
-            for (int index = 0; index < fLeafCount; index++)
-            {
-                if (last.getBit(index))
-                    fFollowList[index].union(first);
+            for (int index = 0; index < fLeafCount; index++) {
+                if (last.getBit(index)) fFollowList[index].union(first);
             }
         }
-         /***
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE)
-        {
+        /***
+         * else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE)
+         * {
+         * // Recurse first
+         * calcFollowList(((CMUniOp)nodeCur).getChild());
+         *
+         * //
+         * //  Now handle our level. We use our own first and last position
+         * //  sets, so get them up front.
+         * //
+         * final CMStateSet first = nodeCur.firstPos();
+         * final CMStateSet last  = nodeCur.lastPos();
+         *
+         * //
+         * //  For every position which is in our last position set, add all
+         * //  of our first position states to the follow set for that
+         * //  position.
+         * //
+         * for (int index = 0; index < fLeafCount; index++)
+         * {
+         * if (last.getBit(index))
+         * fFollowList[index].union(first);
+         * }
+         * }
+         * else if ((nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE)
+         * ||  (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE))
+         * {
+         * throw new RuntimeException("ImplementationMessages.VAL_NIICM");
+         * }
+         * /***/
+        else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE
+                || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE) {
             // Recurse first
-            calcFollowList(((CMUniOp)nodeCur).getChild());
+            calcFollowList(((CMUniOp) nodeCur).getChild());
 
             //
             //  Now handle our level. We use our own first and last position
             //  sets, so get them up front.
             //
             final CMStateSet first = nodeCur.firstPos();
-            final CMStateSet last  = nodeCur.lastPos();
+            final CMStateSet last = nodeCur.lastPos();
 
             //
             //  For every position which is in our last position set, add all
             //  of our first position states to the follow set for that
             //  position.
             //
-            for (int index = 0; index < fLeafCount; index++)
-            {
-                if (last.getBit(index))
-                    fFollowList[index].union(first);
+            for (int index = 0; index < fLeafCount; index++) {
+                if (last.getBit(index)) fFollowList[index].union(first);
             }
-        }
-         else if ((nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE)
-              ||  (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE))
-        {
-            throw new RuntimeException("ImplementationMessages.VAL_NIICM");
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE) {
+            // Recurse only
+            calcFollowList(((CMUniOp) nodeCur).getChild());
         }
         /***/
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE
-            || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE)
-        {
-            // Recurse first
-            calcFollowList(((CMUniOp)nodeCur).getChild());
-
-            //
-            //  Now handle our level. We use our own first and last position
-            //  sets, so get them up front.
-            //
-            final CMStateSet first = nodeCur.firstPos();
-            final CMStateSet last  = nodeCur.lastPos();
-
-            //
-            //  For every position which is in our last position set, add all
-            //  of our first position states to the follow set for that
-            //  position.
-            //
-            for (int index = 0; index < fLeafCount; index++)
-            {
-                if (last.getBit(index))
-                    fFollowList[index].union(first);
-            }
-        }
-
-        else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE) {
-            // Recurse only
-            calcFollowList(((CMUniOp)nodeCur).getChild());
-        }
-         /***/
     }
 
     /**
      * Dumps the tree of the current node to standard output.
      *
      * @param nodeCur The current node.
-     * @param level   The maximum levels to output.
-     *
+     * @param level The maximum levels to output.
      * @exception CMException Thrown on error.
      */
-    private void dumpTree(CMNode nodeCur, int level)
-    {
-        for (int index = 0; index < level; index++)
-            System.out.print("   ");
+    private void dumpTree(CMNode nodeCur, int level) {
+        for (int index = 0; index < level; index++) System.out.print("   ");
 
         int type = nodeCur.type();
         if ((type == XMLContentSpec.CONTENTSPECNODE_CHOICE)
-        ||  (type == XMLContentSpec.CONTENTSPECNODE_SEQ))
-        {
-            if (type == XMLContentSpec.CONTENTSPECNODE_CHOICE)
-                System.out.print("Choice Node ");
-            else
-                System.out.print("Seq Node ");
+                || (type == XMLContentSpec.CONTENTSPECNODE_SEQ)) {
+            if (type == XMLContentSpec.CONTENTSPECNODE_CHOICE) System.out.print("Choice Node ");
+            else System.out.print("Seq Node ");
 
-            if (nodeCur.isNullable())
-                System.out.print("Nullable ");
+            if (nodeCur.isNullable()) System.out.print("Nullable ");
 
             System.out.print("firstPos=");
             System.out.print(nodeCur.firstPos().toString());
             System.out.print(" lastPos=");
             System.out.println(nodeCur.lastPos().toString());
 
-            dumpTree(((CMBinOp)nodeCur).getLeft(), level+1);
-            dumpTree(((CMBinOp)nodeCur).getRight(), level+1);
-        }
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE)
-        {
+            dumpTree(((CMBinOp) nodeCur).getLeft(), level + 1);
+            dumpTree(((CMBinOp) nodeCur).getRight(), level + 1);
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE) {
             System.out.print("Rep Node ");
 
-            if (nodeCur.isNullable())
-                System.out.print("Nullable ");
+            if (nodeCur.isNullable()) System.out.print("Nullable ");
 
             System.out.print("firstPos=");
             System.out.print(nodeCur.firstPos().toString());
             System.out.print(" lastPos=");
             System.out.println(nodeCur.lastPos().toString());
 
-            dumpTree(((CMUniOp)nodeCur).getChild(), level+1);
-        }
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_LEAF)
-        {
-            System.out.print
-            (
-                "Leaf: (pos="
-                + ((CMLeaf)nodeCur).getPosition()
-                + "), "
-                + ((CMLeaf)nodeCur).getElement()
-                + "(elemIndex="
-                + ((CMLeaf)nodeCur).getElement()
-                + ") "
-            );
+            dumpTree(((CMUniOp) nodeCur).getChild(), level + 1);
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_LEAF) {
+            System.out.print(
+                    "Leaf: (pos="
+                            + ((CMLeaf) nodeCur).getPosition()
+                            + "), "
+                            + ((CMLeaf) nodeCur).getElement()
+                            + "(elemIndex="
+                            + ((CMLeaf) nodeCur).getElement()
+                            + ") ");
 
-            if (nodeCur.isNullable())
-                System.out.print(" Nullable ");
+            if (nodeCur.isNullable()) System.out.print(" Nullable ");
 
             System.out.print("firstPos=");
             System.out.print(nodeCur.firstPos().toString());
             System.out.print(" lastPos=");
             System.out.println(nodeCur.lastPos().toString());
-        }
-         else
-        {
+        } else {
             throw new RuntimeException("ImplementationMessages.VAL_NIICM");
         }
     }
 
-
     /**
-     * -1 is used to represent bad transitions in the transition table
-     * entry for each state. So each entry is initialized to an all -1
-     * array. This method creates a new entry and initializes it.
+     * -1 is used to represent bad transitions in the transition table entry for each state. So each
+     * entry is initialized to an all -1 array. This method creates a new entry and initializes it.
      */
-    private int[] makeDefStateList()
-    {
+    private int[] makeDefStateList() {
         int[] retArray = new int[fElemMapSize];
-        for (int index = 0; index < fElemMapSize; index++)
-            retArray[index] = -1;
+        for (int index = 0; index < fElemMapSize; index++) retArray[index] = -1;
         return retArray;
     }
 
     /** Post tree build initialization. */
-    private int postTreeBuildInit(CMNode nodeCur, int curIndex)
-    {
+    private int postTreeBuildInit(CMNode nodeCur, int curIndex) {
         // Set the maximum states on this node
         nodeCur.setMaxStates(fLeafCount);
 
         // Recurse as required
-        if ((nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY ||
-            (nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY_LOCAL ||
-            (nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY_OTHER) {
+        if ((nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY
+                || (nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY_LOCAL
+                || (nodeCur.type() & 0x0f) == XMLContentSpec.CONTENTSPECNODE_ANY_OTHER) {
             // REVISIT: Don't waste these structures.
-            QName qname = new QName(null, null, null, ((CMAny)nodeCur).getURI());
-            fLeafList[curIndex] = new CMLeaf(qname, ((CMAny)nodeCur).getPosition());
+            QName qname = new QName(null, null, null, ((CMAny) nodeCur).getURI());
+            fLeafList[curIndex] = new CMLeaf(qname, ((CMAny) nodeCur).getPosition());
             fLeafListType[curIndex] = nodeCur.type();
             curIndex++;
-        }
-        else if ((nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_CHOICE)
-        ||  (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_SEQ))
-        {
-            curIndex = postTreeBuildInit(((CMBinOp)nodeCur).getLeft(), curIndex);
-            curIndex = postTreeBuildInit(((CMBinOp)nodeCur).getRight(), curIndex);
-        }
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE
-             || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE
-             || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE)
-        {
-            curIndex = postTreeBuildInit(((CMUniOp)nodeCur).getChild(), curIndex);
-        }
-         else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_LEAF)
-        {
+        } else if ((nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_CHOICE)
+                || (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_SEQ)) {
+            curIndex = postTreeBuildInit(((CMBinOp) nodeCur).getLeft(), curIndex);
+            curIndex = postTreeBuildInit(((CMBinOp) nodeCur).getRight(), curIndex);
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_MORE
+                || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ONE_OR_MORE
+                || nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_ZERO_OR_ONE) {
+            curIndex = postTreeBuildInit(((CMUniOp) nodeCur).getChild(), curIndex);
+        } else if (nodeCur.type() == XMLContentSpec.CONTENTSPECNODE_LEAF) {
             //
             //  Put this node in the leaf list at the current index if its
             //  a non-epsilon leaf.
             //
-             final QName node = ((CMLeaf)nodeCur).getElement();
+            final QName node = ((CMLeaf) nodeCur).getElement();
             if (node.localpart != fEpsilonString) {
-                fLeafList[curIndex] = (CMLeaf)nodeCur;
+                fLeafList[curIndex] = (CMLeaf) nodeCur;
                 fLeafListType[curIndex] = XMLContentSpec.CONTENTSPECNODE_LEAF;
                 curIndex++;
             }
-        }
-         else
-        {
-            throw new RuntimeException("ImplementationMessages.VAL_NIICM: type="+nodeCur.type());
+        } else {
+            throw new RuntimeException("ImplementationMessages.VAL_NIICM: type=" + nodeCur.type());
         }
         return curIndex;
     }
-
 } // class DFAContentModel

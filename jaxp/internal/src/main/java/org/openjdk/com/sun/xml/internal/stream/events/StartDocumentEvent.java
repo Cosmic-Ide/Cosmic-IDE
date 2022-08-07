@@ -25,19 +25,17 @@
 
 package org.openjdk.com.sun.xml.internal.stream.events;
 
-import org.openjdk.javax.xml.stream.events.StartDocument;
 import org.openjdk.javax.xml.stream.Location;
 import org.openjdk.javax.xml.stream.XMLStreamConstants;
+import org.openjdk.javax.xml.stream.events.StartDocument;
 
-/** Implementation of StartDocumentEvent.
+/**
+ * Implementation of StartDocumentEvent.
  *
  * @author Neeraj Bajaj Sun Microsystems,Inc.
  * @author K.Venugopal Sun Microsystems,Inc.
- *
  */
-
-public class StartDocumentEvent extends DummyEvent
-implements StartDocument {
+public class StartDocumentEvent extends DummyEvent implements StartDocument {
 
     protected String fSystemId;
     protected String fEncodingScheam;
@@ -48,33 +46,33 @@ implements StartDocument {
     private boolean nestedCall = false;
 
     public StartDocumentEvent() {
-        init("UTF-8","1.0",true,null);
+        init("UTF-8", "1.0", true, null);
     }
 
-    public StartDocumentEvent(String encoding){
-        init(encoding,"1.0",true,null);
+    public StartDocumentEvent(String encoding) {
+        init(encoding, "1.0", true, null);
     }
 
-    public StartDocumentEvent(String encoding, String version){
-        init(encoding,version,true,null);
+    public StartDocumentEvent(String encoding, String version) {
+        init(encoding, version, true, null);
     }
 
-    public StartDocumentEvent(String encoding, String version, boolean standalone){
+    public StartDocumentEvent(String encoding, String version, boolean standalone) {
         this.fStandaloneSet = true;
-        init(encoding,version,standalone,null);
+        init(encoding, version, standalone, null);
     }
 
-    public StartDocumentEvent(String encoding, String version, boolean standalone,Location loc){
+    public StartDocumentEvent(String encoding, String version, boolean standalone, Location loc) {
         this.fStandaloneSet = true;
         init(encoding, version, standalone, loc);
     }
-    protected void init(String encoding, String version, boolean standalone,Location loc) {
+
+    protected void init(String encoding, String version, boolean standalone, Location loc) {
         setEventType(XMLStreamConstants.START_DOCUMENT);
         this.fEncodingScheam = encoding;
         this.fVersion = version;
         this.fStandalone = standalone;
-        if (encoding != null && !encoding.equals(""))
-            this.fEncodingSchemeSet = true;
+        if (encoding != null && !encoding.equals("")) this.fEncodingSchemeSet = true;
         else {
             this.fEncodingSchemeSet = false;
             this.fEncodingScheam = "UTF-8";
@@ -83,12 +81,9 @@ implements StartDocument {
     }
 
     public String getSystemId() {
-        if(fLocation == null )
-            return "";
-        else
-            return fLocation.getSystemId();
+        if (fLocation == null) return "";
+        else return fLocation.getSystemId();
     }
-
 
     public String getCharacterEncodingScheme() {
         return fEncodingScheam;
@@ -109,14 +104,12 @@ implements StartDocument {
 
     public void setStandalone(String s) {
         fStandaloneSet = true;
-        if(s == null) {
+        if (s == null) {
             fStandalone = true;
             return;
         }
-        if(s.equals("yes"))
-            fStandalone = true;
-        else
-            fStandalone = false;
+        if (s.equals("yes")) fStandalone = true;
+        else fStandalone = false;
     }
 
     public boolean encodingSet() {
@@ -131,7 +124,7 @@ implements StartDocument {
         fEncodingScheam = encoding;
     }
 
-    void setDeclaredEncoding(boolean value){
+    void setDeclaredEncoding(boolean value) {
         fEncodingSchemeSet = value;
     }
 
@@ -150,11 +143,9 @@ implements StartDocument {
     public String toString() {
         String s = "<?xml version=\"" + fVersion + "\"";
         s = s + " encoding='" + fEncodingScheam + "'";
-        if(fStandaloneSet) {
-            if(fStandalone)
-                s = s + " standalone='yes'?>";
-            else
-                s = s + " standalone='no'?>";
+        if (fStandaloneSet) {
+            if (fStandalone) s = s + " standalone='yes'?>";
+            else s = s + " standalone='no'?>";
         } else {
             s = s + "?>";
         }
@@ -165,9 +156,7 @@ implements StartDocument {
         return true;
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write(toString());
     }
 }

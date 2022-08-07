@@ -21,21 +21,20 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
-import org.openjdk.com.sun.org.apache.xerces.internal.util.URI;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+import org.openjdk.com.sun.org.apache.xerces.internal.util.URI;
 
 /**
  * Represent the schema type "anyURI"
  *
  * @xerces.internal
- *
  * @author Neeraj Bajaj, Sun Microsystems, inc.
  * @author Sandy Gao, IBM
- *
  */
 public class AnyURIDV extends TypeValidator {
 
     private static final URI BASE_URI;
+
     static {
         URI uri = null;
         try {
@@ -45,25 +44,32 @@ public class AnyURIDV extends TypeValidator {
         BASE_URI = uri;
     }
 
-    public short getAllowedFacets(){
-        return (XSSimpleTypeDecl.FACET_LENGTH | XSSimpleTypeDecl.FACET_MINLENGTH | XSSimpleTypeDecl.FACET_MAXLENGTH | XSSimpleTypeDecl.FACET_PATTERN | XSSimpleTypeDecl.FACET_ENUMERATION | XSSimpleTypeDecl.FACET_WHITESPACE );
+    public short getAllowedFacets() {
+        return (XSSimpleTypeDecl.FACET_LENGTH
+                | XSSimpleTypeDecl.FACET_MINLENGTH
+                | XSSimpleTypeDecl.FACET_MAXLENGTH
+                | XSSimpleTypeDecl.FACET_PATTERN
+                | XSSimpleTypeDecl.FACET_ENUMERATION
+                | XSSimpleTypeDecl.FACET_WHITESPACE);
     }
 
     // before we return string we have to make sure it is correct URI as per spec.
     // for some types (string and derived), they just return the string itself
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException {
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
         // check 3.2.17.c0 must: URI (rfc 2396/2723)
         try {
-            if( content.length() != 0 ) {
+            if (content.length() != 0) {
                 // encode special characters using XLink 5.4 algorithm
                 final String encoded = encode(content);
                 // Support for relative URLs
                 // According to Java 1.1: URLs may also be specified with a
                 // String and the URL object that it is related to.
-                new URI(BASE_URI, encoded );
+                new URI(BASE_URI, encoded);
             }
         } catch (URI.MalformedURIException ex) {
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "anyURI"});
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "anyURI"});
         }
 
         // REVISIT: do we need to return the new URI object?
@@ -76,8 +82,10 @@ public class AnyURIDV extends TypeValidator {
     private static char gAfterEscaping1[] = new char[128];
     // the second hex character if a character needs to be escaped
     private static char gAfterEscaping2[] = new char[128];
-    private static char[] gHexChs = {'0', '1', '2', '3', '4', '5', '6', '7',
-                                     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static char[] gHexChs = {
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
     // initialize the above 3 arrays
     static {
         for (int i = 0; i <= 0x1f; i++) {
@@ -88,8 +96,7 @@ public class AnyURIDV extends TypeValidator {
         gNeedEscaping[0x7f] = true;
         gAfterEscaping1[0x7f] = '7';
         gAfterEscaping2[0x7f] = 'F';
-        char[] escChs = {' ', '<', '>', '"', '{', '}',
-                         '|', '\\', '^', '~', '`'};
+        char[] escChs = {' ', '<', '>', '"', '{', '}', '|', '\\', '^', '~', '`'};
         int len = escChs.length;
         char ch;
         for (int i = 0; i < len; i++) {
@@ -103,24 +110,22 @@ public class AnyURIDV extends TypeValidator {
     // To encode special characters in anyURI, by using %HH to represent
     // special ASCII characters: 0x00~0x1F, 0x7F, ' ', '<', '>', etc.
     // and non-ASCII characters (whose value >= 128).
-    private static String encode(String anyURI){
+    private static String encode(String anyURI) {
         int len = anyURI.length(), ch;
-        StringBuffer buffer = new StringBuffer(len*3);
+        StringBuffer buffer = new StringBuffer(len * 3);
 
         // for each character in the anyURI
         int i = 0;
         for (; i < len; i++) {
             ch = anyURI.charAt(i);
             // if it's not an ASCII character, break here, and use UTF-8 encoding
-            if (ch >= 128)
-                break;
+            if (ch >= 128) break;
             if (gNeedEscaping[ch]) {
                 buffer.append('%');
                 buffer.append(gAfterEscaping1[ch]);
                 buffer.append(gAfterEscaping2[ch]);
-            }
-            else {
-                buffer.append((char)ch);
+            } else {
+                buffer.append((char) ch);
             }
         }
 
@@ -146,14 +151,12 @@ public class AnyURIDV extends TypeValidator {
                     buffer.append('%');
                     buffer.append(gHexChs[ch >> 4]);
                     buffer.append(gHexChs[ch & 0xf]);
-                }
-                else if (gNeedEscaping[b]) {
+                } else if (gNeedEscaping[b]) {
                     buffer.append('%');
                     buffer.append(gAfterEscaping1[b]);
                     buffer.append(gAfterEscaping2[b]);
-                }
-                else {
-                    buffer.append((char)b);
+                } else {
+                    buffer.append((char) b);
                 }
             }
         }
@@ -162,10 +165,8 @@ public class AnyURIDV extends TypeValidator {
         // otherwise, return the orginal one.
         if (buffer.length() != len) {
             return buffer.toString();
-        }
-        else {
+        } else {
             return anyURI;
         }
     }
-
 } // class AnyURIDV

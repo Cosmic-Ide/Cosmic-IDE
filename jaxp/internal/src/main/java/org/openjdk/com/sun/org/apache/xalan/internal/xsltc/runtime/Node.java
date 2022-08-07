@@ -24,8 +24,9 @@
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime;
 
 /**
- * This class is used as "wrapper" for dom nodes. Wrappers are needed when
- * a node is passed as a parameter to a template.
+ * This class is used as "wrapper" for dom nodes. Wrappers are needed when a node is passed as a
+ * parameter to a template.
+ *
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */

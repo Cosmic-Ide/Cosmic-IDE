@@ -30,5 +30,4 @@ public interface FoldingHelper {
     OnigResult getResultFor(int line);
 
     int getIndentFor(int line);
-
 }

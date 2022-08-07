@@ -20,22 +20,22 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
+import org.cosmic.ide.common.util.FileUtil;
+import org.cosmic.ide.project.JavaTemplate;
 import org.cosmic.ide.ui.treeview.TreeNode;
-import org.cosmic.ide.ui.treeview.TreeView;
 import org.cosmic.ide.ui.treeview.TreeUtil;
+import org.cosmic.ide.ui.treeview.TreeView;
 import org.cosmic.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import org.cosmic.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
 import org.cosmic.ide.ui.treeview.model.TreeFolder;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
-import org.cosmic.ide.project.JavaTemplate;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,18 +78,21 @@ public class TreeViewDrawer extends Fragment {
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         TreeNode<TreeFile> currentNode = treeView.getRoot();
-        if(currentNode != null) {
+        if (currentNode != null) {
             partialRefresh();
         } else {
-            TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
+            TreeNode<TreeFile> node =
+                    TreeNode.root(
+                            TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
             treeView.refreshTreeView(node);
         }
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(() -> {
-            partialRefresh();
-            refreshLayout.setRefreshing(false);
-        });
+        refreshLayout.setOnRefreshListener(
+                () -> {
+                    partialRefresh();
+                    refreshLayout.setRefreshing(false);
+                });
 
         /* Finally - set adapter for TreeView and assign a listener to it */
         treeView.setAdapter(
@@ -101,12 +104,14 @@ public class TreeViewDrawer extends Fragment {
                                 if (treeNode.isLeaf() && treeNode.getValue().getFile().isFile()) {
                                     try {
                                         activity.loadFileToEditor(
-                                            treeNode.getValue().getFile().getPath());
-                                        if (activity.binding.drawer.isDrawerOpen(GravityCompat.START)) {
+                                                treeNode.getValue().getFile().getPath());
+                                        if (activity.binding.drawer.isDrawerOpen(
+                                                GravityCompat.START)) {
                                             activity.binding.drawer.close();
                                         }
                                     } catch (Exception e) {
-                                        activity.dialog("Failed to read file", e.getMessage(), true);
+                                        activity.dialog(
+                                                "Failed to read file", e.getMessage(), true);
                                     }
                                 }
                             }
@@ -129,7 +134,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private void partialRefresh() {
-        if(!treeView.getAllNodes().isEmpty()) {
+        if (!treeView.getAllNodes().isEmpty()) {
             TreeNode<TreeFile> node = treeView.getAllNodes().get(0);
             TreeUtil.updateNode(node);
             treeView.refreshTreeView();
@@ -142,7 +147,8 @@ public class TreeViewDrawer extends Fragment {
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
 
-        if (node.getContent().getFile().getName().equals(activity.getProject().getProjectName()) && node.getLevel() == 0) {
+        if (node.getContent().getFile().getName().equals(activity.getProject().getProjectName())
+                && node.getLevel() == 0) {
             /* Disable Option to delete the root folder  */
             popup.getMenu().getItem(2).setVisible(false);
         }
@@ -153,21 +159,22 @@ public class TreeViewDrawer extends Fragment {
             popup.getMenu().getItem(2).setVisible(false);
         }
 
-        popup.setOnMenuItemClickListener(item -> {
-            var id = item.getItemId();
-            if (id == R.id.create_kotlin_class_menu_bttn) {
-                showCreateNewKotlinFileDialog(node);
-            } else if (id == R.id.create_java_class_menu_bttn) {
-                showCreateNewJavaFileDialog(node);
-            } else if (id == R.id.create_directory_bttn) {
-                showCreateNewDirectoryDialog(node);
-            } else if (id == R.id.delete_menu_bttn) {
-                showConfirmDeleteDialog(node);
-            } else if (id == R.id.rename_menu_bttn) {
-                showRenameFileDialog(node);
-            }
-            return false;
-        });
+        popup.setOnMenuItemClickListener(
+                item -> {
+                    var id = item.getItemId();
+                    if (id == R.id.create_kotlin_class_menu_bttn) {
+                        showCreateNewKotlinFileDialog(node);
+                    } else if (id == R.id.create_java_class_menu_bttn) {
+                        showCreateNewJavaFileDialog(node);
+                    } else if (id == R.id.create_directory_bttn) {
+                        showCreateNewDirectoryDialog(node);
+                    } else if (id == R.id.delete_menu_bttn) {
+                        showConfirmDeleteDialog(node);
+                    } else if (id == R.id.rename_menu_bttn) {
+                        showRenameFileDialog(node);
+                    }
+                    return false;
+                });
     }
 
     private String getPackageName(final File file) {
@@ -235,9 +242,7 @@ public class TreeViewDrawer extends Fragment {
 
                         if (!fileNameString.isEmpty()) {
                             try {
-                                var path =
-                                        Paths.get(
-                                                node.getContent().getFile().getPath());
+                                var path = Paths.get(node.getContent().getFile().getPath());
                                 Files.move(path, path.resolveSibling(fileNameString));
                                 partialRefresh();
 
@@ -254,7 +259,8 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewFileDialog.isShowing()) {
             createNewFileDialog.show();
 
-            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout)).setSuffixText(getString(R.string.java_file_suffix));
+            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
+                    .setSuffixText(getString(R.string.java_file_suffix));
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
@@ -273,15 +279,20 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".java");
 
                                 FileUtil.writeFileFromString(
-                                        node.getContent().getFile().getPath() + 
-                                        "/" + 
-                                        fileNameString +
-                                        ".java", JavaTemplate.getClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
+                                        node.getContent().getFile().getPath()
+                                                + "/"
+                                                + fileNameString
+                                                + ".java",
+                                        JavaTemplate.getClassTemplate(
+                                                getPackageName(node.getContent().getFile()),
+                                                fileNameString,
+                                                false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel() + 1); // Get Level of parent so it will have
+                                                node.getLevel()
+                                                        + 1); // Get Level of parent so it will have
                                 node.addChild(newDir);
                                 treeView.refreshTreeView();
                                 fileName.setText("");
@@ -298,7 +309,8 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewFileDialog.isShowing()) {
             createNewFileDialog.show();
 
-            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout)).setSuffixText(getString(R.string.kotlin_file_suffix));
+            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
+                    .setSuffixText(getString(R.string.kotlin_file_suffix));
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
@@ -317,15 +329,20 @@ public class TreeViewDrawer extends Fragment {
                                                         + ".kt");
 
                                 FileUtil.writeFileFromString(
-                                        node.getContent().getFile().getPath() + 
-                                        "/" + 
-                                        fileNameString +
-                                        ".kt", JavaTemplate.getKotlinClassTemplate(getPackageName(node.getContent().getFile()), fileNameString, false));
+                                        node.getContent().getFile().getPath()
+                                                + "/"
+                                                + fileNameString
+                                                + ".kt",
+                                        JavaTemplate.getKotlinClassTemplate(
+                                                getPackageName(node.getContent().getFile()),
+                                                fileNameString,
+                                                false));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
                                                 new TreeFile(filePth),
-                                                node.getLevel() + 1); // Get Level of parent so it will have
+                                                node.getLevel()
+                                                        + 1); // Get Level of parent so it will have
                                 node.addChild(newDir);
                                 treeView.refreshTreeView();
                                 fileName.setText("");
@@ -398,5 +415,4 @@ public class TreeViewDrawer extends Fragment {
             cancelBttn.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         }
     }
-
 }

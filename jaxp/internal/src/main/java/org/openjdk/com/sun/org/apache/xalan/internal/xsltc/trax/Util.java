@@ -24,31 +24,22 @@
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax;
 
 import org.openjdk.com.sun.org.apache.xalan.internal.XalanConstants;
-import java.io.InputStream;
-import java.io.Reader;
-
-import org.openjdk.javax.xml.XMLConstants;
-import org.openjdk.javax.xml.parsers.ParserConfigurationException;
-import org.openjdk.javax.xml.parsers.SAXParserFactory;
-
-import org.openjdk.javax.xml.stream.XMLEventReader;
-import org.openjdk.javax.xml.stream.XMLStreamReader;
-
-import org.openjdk.javax.xml.transform.Source;
-import org.openjdk.javax.xml.transform.TransformerConfigurationException;
-import org.openjdk.javax.xml.transform.dom.DOMSource;
-import org.openjdk.javax.xml.transform.sax.SAXSource;
-import org.openjdk.javax.xml.transform.stax.StAXResult;
-import org.openjdk.javax.xml.transform.stax.StAXSource;
-import org.openjdk.javax.xml.transform.stream.StreamSource;
-
 import org.openjdk.com.sun.org.apache.xalan.internal.utils.FactoryImpl;
 import org.openjdk.com.sun.org.apache.xalan.internal.utils.XMLSecurityManager;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.XSLTC;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
-
+import org.openjdk.javax.xml.XMLConstants;
+import org.openjdk.javax.xml.parsers.ParserConfigurationException;
+import org.openjdk.javax.xml.parsers.SAXParserFactory;
+import org.openjdk.javax.xml.stream.XMLEventReader;
+import org.openjdk.javax.xml.stream.XMLStreamReader;
+import org.openjdk.javax.xml.transform.Source;
+import org.openjdk.javax.xml.transform.TransformerConfigurationException;
+import org.openjdk.javax.xml.transform.dom.DOMSource;
+import org.openjdk.javax.xml.transform.sax.SAXSource;
+import org.openjdk.javax.xml.transform.stax.StAXSource;
+import org.openjdk.javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Document;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
@@ -56,32 +47,32 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import java.io.InputStream;
+import java.io.Reader;
+
 /**
  * @author Santiago Pericas-Geertsen
  */
 public final class Util {
 
     public static String baseName(String name) {
-        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.baseName(name);
+        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.baseName(
+                name);
     }
 
     public static String noExtName(String name) {
-        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.noExtName(name);
+        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.noExtName(
+                name);
     }
 
     public static String toJavaName(String name) {
-        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.toJavaName(name);
+        return org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.toJavaName(
+                name);
     }
 
-
-
-
-    /**
-     * Creates a SAX2 InputSource object from a TrAX Source object
-     */
+    /** Creates a SAX2 InputSource object from a TrAX Source object */
     public static InputSource getInputSource(XSLTC xsltc, Source source)
-        throws TransformerConfigurationException
-    {
+            throws TransformerConfigurationException {
         InputSource input = null;
 
         String systemId = source.getSystemId();
@@ -89,115 +80,122 @@ public final class Util {
         try {
             // Try to get InputSource from SAXSource input
             if (source instanceof SAXSource) {
-                final SAXSource sax = (SAXSource)source;
+                final SAXSource sax = (SAXSource) source;
                 input = sax.getInputSource();
                 // Pass the SAX parser to the compiler
                 try {
                     XMLReader reader = sax.getXMLReader();
 
-                     /*
-                      * Fix for bug 24695
-                      * According to JAXP 1.2 specification if a SAXSource
-                      * is created using a SAX InputSource the Transformer or
-                      * TransformerFactory creates a reader via the
-                      * XMLReaderFactory if setXMLReader is not used
-                      */
+                    /*
+                     * Fix for bug 24695
+                     * According to JAXP 1.2 specification if a SAXSource
+                     * is created using a SAX InputSource the Transformer or
+                     * TransformerFactory creates a reader via the
+                     * XMLReaderFactory if setXMLReader is not used
+                     */
 
                     if (reader == null) {
-                       try {
-                           reader= XMLReaderFactory.createXMLReader();
-                           try {
-                                reader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
-                                            xsltc.isSecureProcessing());
-                           } catch (SAXNotRecognizedException e) {
-                                System.err.println("Warning:  " + reader.getClass().getName() + ": "
-                                        + e.getMessage());
-                           }
-                       } catch (Exception e ) {
-                           try {
+                        try {
+                            reader = XMLReaderFactory.createXMLReader();
+                            try {
+                                reader.setFeature(
+                                        XMLConstants.FEATURE_SECURE_PROCESSING,
+                                        xsltc.isSecureProcessing());
+                            } catch (SAXNotRecognizedException e) {
+                                System.err.println(
+                                        "Warning:  "
+                                                + reader.getClass().getName()
+                                                + ": "
+                                                + e.getMessage());
+                            }
+                        } catch (Exception e) {
+                            try {
 
-                               //Incase there is an exception thrown
-                               // resort to JAXP
-                               SAXParserFactory parserFactory = FactoryImpl.getSAXFactory(xsltc.useServicesMechnism());
-                               parserFactory.setNamespaceAware(true);
+                                // Incase there is an exception thrown
+                                // resort to JAXP
+                                SAXParserFactory parserFactory =
+                                        FactoryImpl.getSAXFactory(xsltc.useServicesMechnism());
+                                parserFactory.setNamespaceAware(true);
 
-                               if (xsltc.isSecureProcessing()) {
-                                  try {
-                                      parserFactory.setFeature(
-                                          XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                                  }
-                                  catch (org.xml.sax.SAXException se) {}
-                               }
+                                if (xsltc.isSecureProcessing()) {
+                                    try {
+                                        parserFactory.setFeature(
+                                                XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                                    } catch (org.xml.sax.SAXException se) {
+                                    }
+                                }
 
-                               reader = parserFactory.newSAXParser()
-                                     .getXMLReader();
+                                reader = parserFactory.newSAXParser().getXMLReader();
 
-
-                           } catch (ParserConfigurationException pce ) {
-                               throw new TransformerConfigurationException
-                                 ("ParserConfigurationException" ,pce);
-                           }
-                       }
+                            } catch (ParserConfigurationException pce) {
+                                throw new TransformerConfigurationException(
+                                        "ParserConfigurationException", pce);
+                            }
+                        }
                     }
-                    reader.setFeature
-                        ("http://xml.org/sax/features/namespaces",true);
-                    reader.setFeature
-                        ("http://xml.org/sax/features/namespace-prefixes",false);
+                    reader.setFeature("http://xml.org/sax/features/namespaces", true);
+                    reader.setFeature("http://xml.org/sax/features/namespace-prefixes", false);
 
                     try {
-                        reader.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD,
-                                   xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_DTD));
+                        reader.setProperty(
+                                XMLConstants.ACCESS_EXTERNAL_DTD,
+                                xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_DTD));
                     } catch (SAXNotRecognizedException e) {
-                        System.err.println("Warning:  " + reader.getClass().getName() + ": "
-                                + e.getMessage());
+                        System.err.println(
+                                "Warning:  " + reader.getClass().getName() + ": " + e.getMessage());
                     }
 
                     try {
                         XMLSecurityManager securityManager =
-                                (XMLSecurityManager)xsltc.getProperty(XalanConstants.SECURITY_MANAGER);
+                                (XMLSecurityManager)
+                                        xsltc.getProperty(XalanConstants.SECURITY_MANAGER);
                         if (securityManager != null) {
-                            for (XMLSecurityManager.Limit limit : XMLSecurityManager.Limit.values()) {
-                                reader.setProperty(limit.apiProperty(),
+                            for (XMLSecurityManager.Limit limit :
+                                    XMLSecurityManager.Limit.values()) {
+                                reader.setProperty(
+                                        limit.apiProperty(),
                                         securityManager.getLimitValueAsString(limit));
                             }
                             if (securityManager.printEntityCountInfo()) {
-                                reader.setProperty(XalanConstants.JDK_ENTITY_COUNT_INFO, XalanConstants.JDK_YES);
+                                reader.setProperty(
+                                        XalanConstants.JDK_ENTITY_COUNT_INFO,
+                                        XalanConstants.JDK_YES);
                             }
                         }
                     } catch (SAXException se) {
-                        System.err.println("Warning:  " + reader.getClass().getName() + ": "
-                                    + se.getMessage());
+                        System.err.println(
+                                "Warning:  "
+                                        + reader.getClass().getName()
+                                        + ": "
+                                        + se.getMessage());
                     }
                     xsltc.setXMLReader(reader);
-                }catch (SAXNotRecognizedException snre ) {
-                  throw new TransformerConfigurationException
-                       ("SAXNotRecognizedException ",snre);
-                }catch (SAXNotSupportedException snse ) {
-                  throw new TransformerConfigurationException
-                       ("SAXNotSupportedException ",snse);
-                }catch (SAXException se ) {
-                  throw new TransformerConfigurationException
-                       ("SAXException ",se);
+                } catch (SAXNotRecognizedException snre) {
+                    throw new TransformerConfigurationException("SAXNotRecognizedException ", snre);
+                } catch (SAXNotSupportedException snse) {
+                    throw new TransformerConfigurationException("SAXNotSupportedException ", snse);
+                } catch (SAXException se) {
+                    throw new TransformerConfigurationException("SAXException ", se);
                 }
 
             }
             // handle  DOMSource
             else if (source instanceof DOMSource) {
-                final DOMSource domsrc = (DOMSource)source;
-                final Document dom = (Document)domsrc.getNode();
+                final DOMSource domsrc = (DOMSource) source;
+                final Document dom = (Document) domsrc.getNode();
                 final DOM2SAX dom2sax = new DOM2SAX(dom);
                 xsltc.setXMLReader(dom2sax);
 
                 // Try to get SAX InputSource from DOM Source.
                 input = SAXSource.sourceToInputSource(source);
-                if (input == null){
+                if (input == null) {
                     input = new InputSource(domsrc.getSystemId());
                 }
             }
 
             // handle StAXSource
             else if (source instanceof StAXSource) {
-                final StAXSource staxSource = (StAXSource)source;
+                final StAXSource staxSource = (StAXSource) source;
                 StAXEvent2SAX staxevent2sax = null;
                 StAXStream2SAX staxStream2SAX = null;
                 if (staxSource.getXMLEventReader() != null) {
@@ -212,45 +210,39 @@ public final class Util {
 
                 // get sax InputSource from StAXSource
                 input = SAXSource.sourceToInputSource(source);
-                if (input == null){
+                if (input == null) {
                     input = new InputSource(staxSource.getSystemId());
                 }
             }
 
             // Try to get InputStream or Reader from StreamSource
             else if (source instanceof StreamSource) {
-                final StreamSource stream = (StreamSource)source;
+                final StreamSource stream = (StreamSource) source;
                 final InputStream istream = stream.getInputStream();
                 final Reader reader = stream.getReader();
-                xsltc.setXMLReader(null);     // Clear old XML reader
+                xsltc.setXMLReader(null); // Clear old XML reader
 
                 // Create InputSource from Reader or InputStream in Source
                 if (istream != null) {
                     input = new InputSource(istream);
-                }
-                else if (reader != null) {
+                } else if (reader != null) {
                     input = new InputSource(reader);
-                }
-                else {
+                } else {
                     input = new InputSource(systemId);
                 }
-            }
-            else {
+            } else {
                 ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_UNKNOWN_SOURCE_ERR);
                 throw new TransformerConfigurationException(err.toString());
             }
             input.setSystemId(systemId);
-        }
-        catch (NullPointerException e) {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.JAXP_NO_SOURCE_ERR,
-                                        "TransformerFactory.newTemplates()");
+        } catch (NullPointerException e) {
+            ErrorMsg err =
+                    new ErrorMsg(ErrorMsg.JAXP_NO_SOURCE_ERR, "TransformerFactory.newTemplates()");
             throw new TransformerConfigurationException(err.toString());
-        }
-        catch (SecurityException e) {
+        } catch (SecurityException e) {
             ErrorMsg err = new ErrorMsg(ErrorMsg.FILE_ACCESS_ERR, systemId);
             throw new TransformerConfigurationException(err.toString());
         }
         return input;
     }
-
 }

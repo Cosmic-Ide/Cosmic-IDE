@@ -25,20 +25,17 @@
 
 package org.openjdk.com.sun.xml.internal.stream.util;
 /**
- *
  * @author K.Venugopal ,Neeraj Bajaj Sun Microsystems.
  */
-
 import java.util.Iterator;
 
 public class ReadOnlyIterator implements Iterator {
 
     Iterator iterator = null;
 
-    public ReadOnlyIterator(){
-    }
+    public ReadOnlyIterator() {}
 
-    public ReadOnlyIterator(Iterator itr){
+    public ReadOnlyIterator(Iterator itr) {
         iterator = itr;
     }
 
@@ -46,8 +43,7 @@ public class ReadOnlyIterator implements Iterator {
      * @return
      */
     public boolean hasNext() {
-        if(iterator  != null)
-            return iterator.hasNext();
+        if (iterator != null) return iterator.hasNext();
         return false;
     }
 
@@ -55,13 +51,11 @@ public class ReadOnlyIterator implements Iterator {
      * @return
      */
     public Object next() {
-        if(iterator  != null)
-            return iterator.next();
+        if (iterator != null) return iterator.next();
         return null;
     }
 
     public void remove() {
-        throw new  UnsupportedOperationException("Remove operation is not supported");
+        throw new UnsupportedOperationException("Remove operation is not supported");
     }
-
 }

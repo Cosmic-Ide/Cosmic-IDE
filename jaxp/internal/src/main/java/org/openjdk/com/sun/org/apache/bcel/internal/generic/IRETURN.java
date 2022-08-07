@@ -61,32 +61,30 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 
 /**
- * IRETURN -  Return int from method
+ * IRETURN - Return int from method
+ *
  * <PRE>Stack: ..., value -&gt; &lt;empty&gt;</PRE>
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class IRETURN extends ReturnInstruction {
-  /** Return int from method
-   */
-  public IRETURN() {
-    super(Constants.IRETURN);
-  }
+    /** Return int from method */
+    public IRETURN() {
+        super(Constants.IRETURN);
+    }
 
-
-  /**
-   * Call corresponding visitor method(s). The order is:
-   * Call visitor methods of implemented interfaces first, then
-   * call methods according to the class hierarchy in descending order,
-   * i.e., the most specific visitXXX() call comes last.
-   *
-   * @param v Visitor object
-   */
-  public void accept(Visitor v) {
-    v.visitExceptionThrower(this);
-    v.visitTypedInstruction(this);
-    v.visitStackConsumer(this);
-    v.visitReturnInstruction(this);
-    v.visitIRETURN(this);
-  }
+    /**
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
+     * i.e., the most specific visitXXX() call comes last.
+     *
+     * @param v Visitor object
+     */
+    public void accept(Visitor v) {
+        v.visitExceptionThrower(this);
+        v.visitTypedInstruction(this);
+        v.visitStackConsumer(this);
+        v.visitReturnInstruction(this);
+        v.visitIRETURN(this);
+    }
 }

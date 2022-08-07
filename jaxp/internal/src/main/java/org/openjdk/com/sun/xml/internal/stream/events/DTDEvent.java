@@ -29,11 +29,9 @@ import org.openjdk.javax.xml.stream.events.DTD;
 import org.openjdk.javax.xml.stream.events.XMLEvent;
 
 /**
- *
- * @author  Neeraj Bajaj, Sun Microsystesm.
- *
+ * @author Neeraj Bajaj, Sun Microsystesm.
  */
-public class DTDEvent extends DummyEvent implements DTD{
+public class DTDEvent extends DummyEvent implements DTD {
 
     private String fDoctypeDeclaration;
     private java.util.List fNotations;
@@ -44,12 +42,12 @@ public class DTDEvent extends DummyEvent implements DTD{
         init();
     }
 
-    public DTDEvent(String doctypeDeclaration){
+    public DTDEvent(String doctypeDeclaration) {
         init();
         fDoctypeDeclaration = doctypeDeclaration;
     }
 
-    public void setDocumentTypeDeclaration(String doctypeDeclaration){
+    public void setDocumentTypeDeclaration(String doctypeDeclaration) {
         fDoctypeDeclaration = doctypeDeclaration;
     }
 
@@ -57,10 +55,12 @@ public class DTDEvent extends DummyEvent implements DTD{
         return fDoctypeDeclaration;
     }
 
-    //xxx: we can change the signature if the implementation doesn't store the entities in List Datatype.
-    //and then convert that DT to list format here. That way callee dont need to bother about conversion
+    // xxx: we can change the signature if the implementation doesn't store the entities in List
+    // Datatype.
+    // and then convert that DT to list format here. That way callee dont need to bother about
+    // conversion
 
-    public void setEntities(java.util.List entites){
+    public void setEntities(java.util.List entites) {
         fEntities = entites;
     }
 
@@ -68,10 +68,12 @@ public class DTDEvent extends DummyEvent implements DTD{
         return fEntities;
     }
 
-    //xxx: we can change the signature if the implementation doesn't store the entities in List Datatype.
-    //and then convert that DT to list format here. That way callee dont need to bother about conversion
+    // xxx: we can change the signature if the implementation doesn't store the entities in List
+    // Datatype.
+    // and then convert that DT to list format here. That way callee dont need to bother about
+    // conversion
 
-    public void setNotations(java.util.List notations){
+    public void setNotations(java.util.List notations) {
         fNotations = notations;
     }
 
@@ -80,25 +82,22 @@ public class DTDEvent extends DummyEvent implements DTD{
     }
 
     /**
-     *Returns an implementation defined representation of the DTD.
-     * This method may return null if no representation is available.
-     *
+     * Returns an implementation defined representation of the DTD. This method may return null if
+     * no representation is available.
      */
     public Object getProcessedDTD() {
         return null;
     }
 
-    protected void init(){
+    protected void init() {
         setEventType(XMLEvent.DTD);
     }
 
-    public String toString(){
-        return fDoctypeDeclaration ;
+    public String toString() {
+        return fDoctypeDeclaration;
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write(fDoctypeDeclaration);
     }
 }

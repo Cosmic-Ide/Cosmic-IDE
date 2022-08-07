@@ -62,22 +62,19 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDescription;
+
 import java.util.Hashtable;
 
 /**
- * This very simple class is the skeleton of what the DTDValidator could use
- * to store various grammars that it gets from the GrammarPool.  As in the
- * case of XSGrammarBucket, one thinks of this object as being closely
- * associated with its validator; when fully mature, this class will be
- * filled from the GrammarPool when the DTDValidator is invoked on a
- * document, and, if a new DTD grammar is parsed, the new set will be
- * offered back to the GrammarPool for possible inclusion.
+ * This very simple class is the skeleton of what the DTDValidator could use to store various
+ * grammars that it gets from the GrammarPool. As in the case of XSGrammarBucket, one thinks of this
+ * object as being closely associated with its validator; when fully mature, this class will be
+ * filled from the GrammarPool when the DTDValidator is invoked on a document, and, if a new DTD
+ * grammar is parsed, the new set will be offered back to the GrammarPool for possible inclusion.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
- *
-*/
+ */
 public class DTDGrammarBucket {
 
     // REVISIT:  make this class smarter and *way* more complete!
@@ -110,19 +107,19 @@ public class DTDGrammarBucket {
     //
 
     /**
-     * Puts the specified grammar into the grammar pool and associate it to
-     * a root element name (this being internal, the lack of generality is irrelevant).
+     * Puts the specified grammar into the grammar pool and associate it to a root element name
+     * (this being internal, the lack of generality is irrelevant).
      *
-     * @param grammar     The grammar.
+     * @param grammar The grammar.
      */
     public void putGrammar(DTDGrammar grammar) {
-        XMLDTDDescription desc = (XMLDTDDescription)grammar.getGrammarDescription();
+        XMLDTDDescription desc = (XMLDTDDescription) grammar.getGrammarDescription();
         fGrammars.put(desc, grammar);
     } // putGrammar(DTDGrammar)
 
     // retrieve a DTDGrammar given an XMLDTDDescription
     public DTDGrammar getGrammar(XMLGrammarDescription desc) {
-        return (DTDGrammar)(fGrammars.get((XMLDTDDescription)desc));
+        return (DTDGrammar) (fGrammars.get((XMLDTDDescription) desc));
     } // putGrammar(DTDGrammar)
 
     public void clear() {
@@ -143,10 +140,11 @@ public class DTDGrammarBucket {
     }
 
     // set the "active" grammar:
-    void setActiveGrammar (DTDGrammar grammar) {
+    void setActiveGrammar(DTDGrammar grammar) {
         fActiveGrammar = grammar;
     }
-    DTDGrammar getActiveGrammar () {
+
+    DTDGrammar getActiveGrammar() {
         return fActiveGrammar;
     }
 } // class DTDGrammarBucket

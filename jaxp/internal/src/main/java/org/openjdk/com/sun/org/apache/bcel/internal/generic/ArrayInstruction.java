@@ -64,49 +64,59 @@ import org.openjdk.com.sun.org.apache.bcel.internal.ExceptionConstants;
 /**
  * Super class for instructions dealing with array access such as IALOAD.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public abstract class ArrayInstruction extends Instruction
-  implements ExceptionThrower, TypedInstruction {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  ArrayInstruction() {}
+        implements ExceptionThrower, TypedInstruction {
+    /**
+     * Empty constructor needed for the Class.newInstance() statement in
+     * Instruction.readInstruction(). Not to be used otherwise.
+     */
+    ArrayInstruction() {}
 
-  /**
-   * @param opcode of instruction
-   */
-  protected ArrayInstruction(short opcode) {
-    super(opcode, (short)1);
-  }
-
-  public Class[] getExceptions() {
-    return ExceptionConstants.EXCS_ARRAY_EXCEPTION;
-  }
-
-  /** @return type associated with the instruction
-   */
-  public Type getType(ConstantPoolGen cp) {
-    switch(opcode) {
-    case Constants.IALOAD: case Constants.IASTORE:
-      return Type.INT;
-    case Constants.CALOAD: case Constants.CASTORE:
-      return Type.CHAR;
-    case Constants.BALOAD: case Constants.BASTORE:
-      return Type.BYTE;
-    case Constants.SALOAD: case Constants.SASTORE:
-      return Type.SHORT;
-    case Constants.LALOAD: case Constants.LASTORE:
-      return Type.LONG;
-    case Constants.DALOAD: case Constants.DASTORE:
-      return Type.DOUBLE;
-    case Constants.FALOAD: case Constants.FASTORE:
-      return Type.FLOAT;
-    case Constants.AALOAD: case Constants.AASTORE:
-      return Type.OBJECT;
-
-    default: throw new ClassGenException("Oops: unknown case in switch" + opcode);
+    /**
+     * @param opcode of instruction
+     */
+    protected ArrayInstruction(short opcode) {
+        super(opcode, (short) 1);
     }
-  }
+
+    public Class[] getExceptions() {
+        return ExceptionConstants.EXCS_ARRAY_EXCEPTION;
+    }
+
+    /**
+     * @return type associated with the instruction
+     */
+    public Type getType(ConstantPoolGen cp) {
+        switch (opcode) {
+            case Constants.IALOAD:
+            case Constants.IASTORE:
+                return Type.INT;
+            case Constants.CALOAD:
+            case Constants.CASTORE:
+                return Type.CHAR;
+            case Constants.BALOAD:
+            case Constants.BASTORE:
+                return Type.BYTE;
+            case Constants.SALOAD:
+            case Constants.SASTORE:
+                return Type.SHORT;
+            case Constants.LALOAD:
+            case Constants.LASTORE:
+                return Type.LONG;
+            case Constants.DALOAD:
+            case Constants.DASTORE:
+                return Type.DOUBLE;
+            case Constants.FALOAD:
+            case Constants.FASTORE:
+                return Type.FLOAT;
+            case Constants.AALOAD:
+            case Constants.AASTORE:
+                return Type.OBJECT;
+
+            default:
+                throw new ClassGenException("Oops: unknown case in switch" + opcode);
+        }
+    }
 }

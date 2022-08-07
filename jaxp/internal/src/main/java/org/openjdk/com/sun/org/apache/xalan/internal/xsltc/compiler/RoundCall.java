@@ -23,13 +23,13 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKESTATIC;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
+
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -47,7 +47,6 @@ final class RoundCall extends FunctionCall {
 
         // Get two copies of the argument on the stack
         argument().translate(classGen, methodGen);
-                il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
-                                                            "roundF", "(D)D")));
+        il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS, "roundF", "(D)D")));
     }
 }

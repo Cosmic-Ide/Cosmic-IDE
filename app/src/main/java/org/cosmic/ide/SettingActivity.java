@@ -6,8 +6,8 @@ import android.widget.AutoCompleteTextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.cosmic.ide.ui.utils.UiUtilsKt;
 import org.cosmic.ide.databinding.ActivitySettingBinding;
+import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public class SettingActivity extends BaseActivity {
 
@@ -27,11 +27,15 @@ public class SettingActivity extends BaseActivity {
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
         if (!compiler_settings.getString("classpath", "").equals("")) {
-            binding.tilClassPath.getEditText().setText(compiler_settings.getString("classpath", ""));
+            binding.tilClassPath
+                    .getEditText()
+                    .setText(compiler_settings.getString("classpath", ""));
         }
 
         if (!compiler_settings.getString("program_arguments", "").equals("")) {
-            binding.tilProgramArguments.getEditText().setText(compiler_settings.getString("program_arguments", ""));
+            binding.tilProgramArguments
+                    .getEditText()
+                    .setText(compiler_settings.getString("program_arguments", ""));
         }
 
         binding.etThemes.setAdapter(
@@ -69,8 +73,7 @@ public class SettingActivity extends BaseActivity {
         for (var theme : themes) {
             if (theme.equals(currentTheme)) {
                 binding.etThemes.setListSelection(count);
-                binding.etThemes.setText(
-                    getSelectedItem(count, binding.etThemes), false);
+                binding.etThemes.setText(getSelectedItem(count, binding.etThemes), false);
                 break;
             }
             count++;
@@ -82,7 +85,7 @@ public class SettingActivity extends BaseActivity {
             if (vers.equals(version)) {
                 binding.etJavaVersions.setListSelection(count);
                 binding.etJavaVersions.setText(
-                    getSelectedItem(count, binding.etJavaVersions), false);
+                        getSelectedItem(count, binding.etJavaVersions), false);
                 break;
             }
             count++;
@@ -94,7 +97,7 @@ public class SettingActivity extends BaseActivity {
             if (comp.equals(compiler)) {
                 binding.etJavaCompilers.setListSelection(count);
                 binding.etJavaCompilers.setText(
-                    getSelectedItem(count, binding.etJavaCompilers), false);
+                        getSelectedItem(count, binding.etJavaCompilers), false);
                 break;
             }
             count++;
@@ -106,7 +109,7 @@ public class SettingActivity extends BaseActivity {
             if (form.equals(formatter)) {
                 binding.etJavaFormatters.setListSelection(count);
                 binding.etJavaFormatters.setText(
-                    getSelectedItem(count, binding.etJavaFormatters), false);
+                        getSelectedItem(count, binding.etJavaFormatters), false);
                 break;
             }
             count++;
@@ -118,30 +121,31 @@ public class SettingActivity extends BaseActivity {
             if (dis.equals(disassembler)) {
                 binding.etJavaDisassemblers.setListSelection(count);
                 binding.etJavaDisassemblers.setText(
-                    getSelectedItem(count, binding.etJavaDisassemblers), false);
+                        getSelectedItem(count, binding.etJavaDisassemblers), false);
                 break;
             }
             count++;
         }
 
         binding.etThemes.setOnItemClickListener(
-            (parent, view, pos, id) -> setCurrentTheme(themes[pos])
-        );
+                (parent, view, pos, id) -> setCurrentTheme(themes[pos]));
 
         binding.etJavaVersions.setOnItemClickListener(
                 (parent, view, pos, id) -> {
-                        if (javaVersions[pos].equals("18")
-                                && compiler_settings.getString("compiler", javaCompilers[0]).equals(javaCompilers[0])) {
-                            new MaterialAlertDialogBuilder(SettingActivity.this)
-                                    .setTitle("Notice")
-                                    .setMessage(
-                                            "Please note that currently only ECJ supports Java 18."
+                    if (javaVersions[pos].equals("18")
+                            && compiler_settings
+                                    .getString("compiler", javaCompilers[0])
+                                    .equals(javaCompilers[0])) {
+                        new MaterialAlertDialogBuilder(SettingActivity.this)
+                                .setTitle("Notice")
+                                .setMessage(
+                                        "Please note that currently only ECJ supports Java 18."
                                                 + " Javac with Java 18 is not currently supported.")
-                                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
-                                    .show();
-                            return;
-                        }
-                        compiler_settings.edit().putString("version", javaVersions[pos]).apply();
+                                .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
+                                .show();
+                        return;
+                    }
+                    compiler_settings.edit().putString("version", javaVersions[pos]).apply();
                 });
 
         binding.etJavaCompilers.setOnItemClickListener(
@@ -156,7 +160,10 @@ public class SettingActivity extends BaseActivity {
 
         binding.etJavaDisassemblers.setOnItemClickListener(
                 (parent, view, pos, id) -> {
-                    compiler_settings.edit().putString("disassembler", javaDisassemblers[pos]).apply();
+                    compiler_settings
+                            .edit()
+                            .putString("disassembler", javaDisassemblers[pos])
+                            .apply();
                 });
     }
 
@@ -166,8 +173,16 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        compiler_settings.edit().putString("classpath", binding.tilClassPath.getEditText().getText().toString()).apply();
-        compiler_settings.edit().putString("program_arguments", binding.tilProgramArguments.getEditText().getText().toString()).apply();
+        compiler_settings
+                .edit()
+                .putString("classpath", binding.tilClassPath.getEditText().getText().toString())
+                .apply();
+        compiler_settings
+                .edit()
+                .putString(
+                        "program_arguments",
+                        binding.tilProgramArguments.getEditText().getText().toString())
+                .apply();
         super.onDestroy();
     }
 }

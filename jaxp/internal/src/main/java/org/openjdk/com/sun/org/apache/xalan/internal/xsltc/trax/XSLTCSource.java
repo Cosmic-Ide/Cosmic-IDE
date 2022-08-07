@@ -24,9 +24,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.trax;
 
-import org.openjdk.javax.xml.transform.Source;
-import org.openjdk.javax.xml.transform.stream.StreamSource;
-
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.DOM;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.StripFilter;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
@@ -34,7 +31,8 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.dom.DOMWSFilter;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.dom.SAXImpl;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.dom.XSLTCDTMManager;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;
-
+import org.openjdk.javax.xml.transform.Source;
+import org.openjdk.javax.xml.transform.stream.StreamSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -42,32 +40,26 @@ import org.xml.sax.SAXException;
  */
 public final class XSLTCSource implements Source {
 
-    private String     _systemId = null;
-    private Source     _source   = null;
-    private ThreadLocal _dom     = new ThreadLocal();
+    private String _systemId = null;
+    private Source _source = null;
+    private ThreadLocal _dom = new ThreadLocal();
 
-    /**
-     * Create a new XSLTC-specific source from a system ID
-     */
-    public XSLTCSource(String systemId)
-    {
+    /** Create a new XSLTC-specific source from a system ID */
+    public XSLTCSource(String systemId) {
         _systemId = systemId;
     }
 
-    /**
-     * Create a new XSLTC-specific source from a JAXP Source
-     */
-    public XSLTCSource(Source source)
-    {
+    /** Create a new XSLTC-specific source from a JAXP Source */
+    public XSLTCSource(Source source) {
         _source = source;
     }
 
     /**
-     * Implements org.openjdk.javax.xml.transform.Source.setSystemId()
-     * Set the system identifier for this Source.
-     * This Source can get its input either directly from a file (in this case
-     * it will instanciate and use a JAXP parser) or it can receive it through
-     * ContentHandler/LexicalHandler interfaces.
+     * Implements org.openjdk.javax.xml.transform.Source.setSystemId() Set the system identifier for
+     * this Source. This Source can get its input either directly from a file (in this case it will
+     * instanciate and use a JAXP parser) or it can receive it through ContentHandler/LexicalHandler
+     * interfaces.
+     *
      * @param systemId The system Id for this Source
      */
     public void setSystemId(String systemId) {
@@ -78,40 +70,35 @@ public final class XSLTCSource implements Source {
     }
 
     /**
-     * Implements org.openjdk.javax.xml.transform.Source.getSystemId()
-     * Get the system identifier that was set with setSystemId.
-     * @return The system identifier that was set with setSystemId,
-     *         or null if setSystemId was not called.
+     * Implements org.openjdk.javax.xml.transform.Source.getSystemId() Get the system identifier
+     * that was set with setSystemId.
+     *
+     * @return The system identifier that was set with setSystemId, or null if setSystemId was not
+     *     called.
      */
     public String getSystemId() {
         if (_source != null) {
             return _source.getSystemId();
-        }
-        else {
-            return(_systemId);
+        } else {
+            return (_systemId);
         }
     }
 
-    /**
-     * Internal interface which returns a DOM for a given DTMManager and translet.
-     */
+    /** Internal interface which returns a DOM for a given DTMManager and translet. */
     protected DOM getDOM(XSLTCDTMManager dtmManager, AbstractTranslet translet)
-        throws SAXException
-    {
-        SAXImpl idom = (SAXImpl)_dom.get();
+            throws SAXException {
+        SAXImpl idom = (SAXImpl) _dom.get();
 
         if (idom != null) {
             if (dtmManager != null) {
                 idom.migrateTo(dtmManager);
             }
-        }
-        else {
+        } else {
             Source source = _source;
             if (source == null) {
                 if (_systemId != null && _systemId.length() > 0) {
                     source = new StreamSource(_systemId);
-                }
-                else {
+                } else {
                     ErrorMsg err = new ErrorMsg(ErrorMsg.XSLTC_SOURCE_ERR);
                     throw new SAXException(err.toString());
                 }
@@ -128,7 +115,7 @@ public final class XSLTCSource implements Source {
                 dtmManager = XSLTCDTMManager.newInstance();
             }
 
-            idom = (SAXImpl)dtmManager.getDTM(source, true, wsfilter, false, false, hasIdCall);
+            idom = (SAXImpl) dtmManager.getDTM(source, true, wsfilter, false, false, hasIdCall);
 
             String systemId = getSystemId();
             if (systemId != null) {
@@ -138,5 +125,4 @@ public final class XSLTCSource implements Source {
         }
         return idom;
     }
-
 }

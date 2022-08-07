@@ -44,17 +44,15 @@ final class TransletOutput extends Instruction {
     private Expression _filename;
     private boolean _append;
 
-    /**
-     * Displays the contents of this <xsltc:output> element.
-     */
+    /** Displays the contents of this <xsltc:output> element. */
     public void display(int indent) {
         indent(indent);
         Util.println("TransletOutput: " + _filename);
     }
 
     /**
-     * Parse the contents of this <xsltc:output> element. The only attribute
-     * we recognise is the 'file' attribute that contains teh output filename.
+     * Parse the contents of this <xsltc:output> element. The only attribute we recognise is the
+     * 'file' attribute that contains teh output filename.
      */
     public void parseContents(Parser parser) {
         // Get the output filename from the 'file' attribute
@@ -62,7 +60,7 @@ final class TransletOutput extends Instruction {
 
         // If the 'append' attribute is set to "yes" or "true",
         // the output is appended to the file.
-        String append   = getAttribute("append");
+        String append = getAttribute("append");
 
         // Verify that the filename is in fact set
         if ((filename == null) || (filename.equals(EMPTYSTRING))) {
@@ -72,19 +70,15 @@ final class TransletOutput extends Instruction {
         // Save filename as an attribute value template
         _filename = AttributeValue.create(this, filename, parser);
 
-        if (append != null && (append.toLowerCase().equals("yes") ||
-            append.toLowerCase().equals("true"))) {
-          _append = true;
-        }
-        else
-          _append = false;
+        if (append != null
+                && (append.toLowerCase().equals("yes") || append.toLowerCase().equals("true"))) {
+            _append = true;
+        } else _append = false;
 
         parseChildren(parser);
     }
 
-    /**
-     * Type checks the 'file' attribute (must be able to convert it to a str).
-     */
+    /** Type checks the 'file' attribute (must be able to convert it to a str). */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         final Type type = _filename.typeCheck(stable);
         if (type instanceof StringType == false) {
@@ -95,19 +89,20 @@ final class TransletOutput extends Instruction {
     }
 
     /**
-     * Compile code that opens the give file for output, dumps the contents of
-     * the element to the file, then closes the file.
+     * Compile code that opens the give file for output, dumps the contents of the element to the
+     * file, then closes the file.
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
-        final boolean isSecureProcessing = classGen.getParser().getXSLTC()
-                                           .isSecureProcessing();
+        final boolean isSecureProcessing = classGen.getParser().getXSLTC().isSecureProcessing();
 
         if (isSecureProcessing) {
-            int index = cpg.addMethodref(BASIS_LIBRARY_CLASS,
-                                         "unallowed_extension_elementF",
-                                         "(Ljava/lang/String;)V");
+            int index =
+                    cpg.addMethodref(
+                            BASIS_LIBRARY_CLASS,
+                            "unallowed_extension_elementF",
+                            "(Ljava/lang/String;)V");
             il.append(new PUSH(cpg, "redirect"));
             il.append(new INVOKESTATIC(index));
             return;
@@ -116,14 +111,15 @@ final class TransletOutput extends Instruction {
         // Save the current output handler on the stack
         il.append(methodGen.loadHandler());
 
-        final int open =  cpg.addMethodref(TRANSLET_CLASS,
-                                           "openOutputHandler",
-                                           "(" + STRING_SIG + "Z)" +
-                                           TRANSLET_OUTPUT_SIG);
+        final int open =
+                cpg.addMethodref(
+                        TRANSLET_CLASS,
+                        "openOutputHandler",
+                        "(" + STRING_SIG + "Z)" + TRANSLET_OUTPUT_SIG);
 
-        final int close =  cpg.addMethodref(TRANSLET_CLASS,
-                                            "closeOutputHandler",
-                                            "("+TRANSLET_OUTPUT_SIG+")V");
+        final int close =
+                cpg.addMethodref(
+                        TRANSLET_CLASS, "closeOutputHandler", "(" + TRANSLET_OUTPUT_SIG + ")V");
 
         // Create the new output handler (leave it on stack)
         il.append(classGen.loadTranslet());

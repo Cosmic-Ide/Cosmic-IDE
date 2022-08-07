@@ -33,8 +33,8 @@ import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.Instruction;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.PUSH;
-import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 import org.openjdk.com.sun.org.apache.xalan.internal.utils.ObjectFactory;
+import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 
 /**
  * @author Todd Miller
@@ -43,21 +43,20 @@ import org.openjdk.com.sun.org.apache.xalan.internal.utils.ObjectFactory;
 public final class ObjectType extends Type {
 
     private String _javaClassName = "java.lang.Object";
-    private Class  _clazz = java.lang.Object.class;
+    private Class _clazz = java.lang.Object.class;
 
     /**
-     * Used to represent a Java Class type such is required to support
-     * non-static java functions.
+     * Used to represent a Java Class type such is required to support non-static java functions.
+     *
      * @param javaClassName name of the class such as 'com.foo.Processor'
      */
     protected ObjectType(String javaClassName) {
         _javaClassName = javaClassName;
 
         try {
-          _clazz = ObjectFactory.findProviderClass(javaClassName, true);
-        }
-        catch (ClassNotFoundException e) {
-          _clazz = null;
+            _clazz = ObjectFactory.findProviderClass(javaClassName, true);
+        } catch (ClassNotFoundException e) {
+            _clazz = null;
         }
     }
 
@@ -67,8 +66,8 @@ public final class ObjectType extends Type {
     }
 
     /**
-     * Must return the same value for all ObjectType instances. This is
-     * needed in CastExpr to ensure the mapping table is used correctly.
+     * Must return the same value for all ObjectType instances. This is needed in CastExpr to ensure
+     * the mapping table is used correctly.
      */
     public int hashCode() {
         return java.lang.Object.class.hashCode();
@@ -105,40 +104,34 @@ public final class ObjectType extends Type {
     }
 
     /**
-     * Translates a void into an object of internal type <code>type</code>.
-     * This translation is needed when calling external functions
-     * that return void.
+     * Translates a void into an object of internal type <code>type</code>. This translation is
+     * needed when calling external functions that return void.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Type type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
         if (type == String) {
             translateTo(classGen, methodGen, (StringType) type);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), type.toString());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
 
     /**
-     * Expects an integer on the stack and pushes its string value by calling
-     * <code>Integer.toString(int i)</code>.
+     * Expects an integer on the stack and pushes its string value by calling <code>
+     * Integer.toString(int i)</code>.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            StringType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, StringType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
         il.append(DUP);
         final BranchHandle ifNull = il.append(new IFNULL(null));
-        il.append(new INVOKEVIRTUAL(cpg.addMethodref(_javaClassName,
-                                                    "toString",
-                                                    "()" + STRING_SIG)));
+        il.append(
+                new INVOKEVIRTUAL(cpg.addMethodref(_javaClassName, "toString", "()" + STRING_SIG)));
         final BranchHandle gotobh = il.append(new GOTO(null));
         ifNull.setTarget(il.append(POP));
         il.append(new PUSH(cpg, ""));
@@ -146,26 +139,21 @@ public final class ObjectType extends Type {
     }
 
     /**
-     * Translates an object of this type to the external (Java) type denoted
-     * by <code>clazz</code>. This method is used to translate parameters
-     * when external functions are called.
+     * Translates an object of this type to the external (Java) type denoted by <code>clazz</code>.
+     * This method is used to translate parameters when external functions are called.
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Class clazz) {
-        if (clazz.isAssignableFrom(_clazz))
-            methodGen.getInstructionList().append(NOP);
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
+        if (clazz.isAssignableFrom(_clazz)) methodGen.getInstructionList().append(NOP);
         else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                               toString(), clazz.getClass().toString());
+            ErrorMsg err =
+                    new ErrorMsg(
+                            ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getClass().toString());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
 
-    /**
-     * Translates an external Java type into an Object type
-     */
-    public void translateFrom(ClassGenerator classGen,
-                              MethodGenerator methodGen, Class clazz) {
+    /** Translates an external Java type into an Object type */
+    public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
         methodGen.getInstructionList().append(NOP);
     }
 

@@ -36,7 +36,7 @@ import org.openjdk.javax.xml.stream.events.XMLEvent;
 public class CommentEvent extends DummyEvent implements Comment {
 
     /* String data for this event */
-    private String fText ;
+    private String fText;
 
     public CommentEvent() {
         init();
@@ -58,19 +58,16 @@ public class CommentEvent extends DummyEvent implements Comment {
         return "<!--" + getText() + "-->";
     }
 
-
-    /** Return the string data of the comment, returns empty string if it
-     * does not exist
+    /**
+     * Return the string data of the comment, returns empty string if it does not exist
+     *
      * @return String
      */
     public String getText() {
-        return fText ;
+        return fText;
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write("<!--" + getText() + "-->");
     }
-
 }

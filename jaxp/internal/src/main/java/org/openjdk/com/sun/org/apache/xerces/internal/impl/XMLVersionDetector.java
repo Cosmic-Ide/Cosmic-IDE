@@ -61,9 +61,6 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl;
 
-import java.io.EOFException;
-import java.io.IOException;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
 import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLString;
@@ -72,13 +69,14 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLConfiguratio
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.openjdk.com.sun.xml.internal.stream.Entity.ScannedEntity;
 
+import java.io.EOFException;
+import java.io.IOException;
+
 /**
- * This class scans the version of the document to determine
- * which scanner to use: XML 1.1 or XML 1.0.
- * The version is scanned using XML 1.1. scanner.
+ * This class scans the version of the document to determine which scanner to use: XML 1.1 or XML
+ * 1.0. The version is scanned using XML 1.1. scanner.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
  * @author Elena Litani, IBM
  */
@@ -88,29 +86,28 @@ public class XMLVersionDetector {
     // Constants
     //
 
-    private final static char[] XML11_VERSION = new char[]{'1', '.', '1'};
-
+    private static final char[] XML11_VERSION = new char[] {'1', '.', '1'};
 
     // property identifiers
 
     /** Property identifier: symbol table. */
     protected static final String SYMBOL_TABLE =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
 
     /** Property identifier: error reporter. */
     protected static final String ERROR_REPORTER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ERROR_REPORTER_PROPERTY;
 
     /** Property identifier: entity manager. */
     protected static final String ENTITY_MANAGER =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_MANAGER_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.ENTITY_MANAGER_PROPERTY;
 
     //
     // Data
     //
 
     /** Symbol: "version". */
-    protected final static String fVersionSymbol = "version".intern();
+    protected static final String fVersionSymbol = "version".intern();
 
     // symbol:  [xml]:
     protected static final String fXMLSymbol = "[xml]".intern();
@@ -128,40 +125,36 @@ public class XMLVersionDetector {
 
     private XMLString fVersionNum = new XMLString();
 
-    private final char [] fExpectedVersionString = {'<', '?', 'x', 'm', 'l', ' ', 'v', 'e', 'r', 's',
-                    'i', 'o', 'n', '=', ' ', ' ', ' ', ' ', ' '};
+    private final char[] fExpectedVersionString = {
+        '<', '?', 'x', 'm', 'l', ' ', 'v', 'e', 'r', 's', 'i', 'o', 'n', '=', ' ', ' ', ' ', ' ',
+        ' '
+    };
 
     /**
-     *
-     *
      * @param componentManager The component manager.
-     *
-     * @throws SAXException Throws exception if required features and
-     *                      properties cannot be found.
+     * @throws SAXException Throws exception if required features and properties cannot be found.
      */
-    public void reset(XMLComponentManager componentManager)
-        throws XMLConfigurationException {
+    public void reset(XMLComponentManager componentManager) throws XMLConfigurationException {
 
         // Xerces properties
-        fSymbolTable = (SymbolTable)componentManager.getProperty(SYMBOL_TABLE);
-        fErrorReporter = (XMLErrorReporter)componentManager.getProperty(ERROR_REPORTER);
-        fEntityManager = (XMLEntityManager)componentManager.getProperty(ENTITY_MANAGER);
-        for(int i=14; i<fExpectedVersionString.length; i++ )
-            fExpectedVersionString[i] = ' ';
+        fSymbolTable = (SymbolTable) componentManager.getProperty(SYMBOL_TABLE);
+        fErrorReporter = (XMLErrorReporter) componentManager.getProperty(ERROR_REPORTER);
+        fEntityManager = (XMLEntityManager) componentManager.getProperty(ENTITY_MANAGER);
+        for (int i = 14; i < fExpectedVersionString.length; i++) fExpectedVersionString[i] = ' ';
     } // reset(XMLComponentManager)
 
     /**
-     * Reset the reference to the appropriate scanner given the version of the
-     * document and start document scanning.
+     * Reset the reference to the appropriate scanner given the version of the document and start
+     * document scanning.
+     *
      * @param scanner - the scanner to use
      * @param version - the version of the document (XML 1.1 or XML 1.0).
      */
-    public void startDocumentParsing(XMLEntityHandler scanner, short version){
+    public void startDocumentParsing(XMLEntityHandler scanner, short version) {
 
-        if (version == Constants.XML_VERSION_1_0){
+        if (version == Constants.XML_VERSION_1_0) {
             fEntityManager.setScannerVersion(Constants.XML_VERSION_1_0);
-        }
-        else {
+        } else {
             fEntityManager.setScannerVersion(Constants.XML_VERSION_1_1);
         }
         // Make sure the locator used by the error reporter is the current entity scanner.
@@ -172,17 +165,17 @@ public class XMLVersionDetector {
         //
         fEntityManager.setEntityHandler(scanner);
 
-        scanner.startEntity(fXMLSymbol, fEntityManager.getCurrentResourceIdentifier(), fEncoding, null);
+        scanner.startEntity(
+                fXMLSymbol, fEntityManager.getCurrentResourceIdentifier(), fEncoding, null);
     }
 
-
     /**
-     * This methods scans the XML declaration to find out the version
-     * (and provisional encoding)  of the document.
-     * The scanning is doing using XML 1.1 scanner.
+     * This methods scans the XML declaration to find out the version (and provisional encoding) of
+     * the document. The scanning is doing using XML 1.1 scanner.
+     *
      * @param inputSource
-     * @return short - Constants.XML_VERSION_1_1 if document version 1.1,
-     *                  otherwise Constants.XML_VERSION_1_0
+     * @return short - Constants.XML_VERSION_1_1 if document version 1.1, otherwise
+     *     Constants.XML_VERSION_1_0
      * @throws IOException
      */
     public short determineDocVersion(XMLInputSource inputSource) throws IOException {
@@ -223,45 +216,43 @@ public class XMLVersionDetector {
             fixupCurrentEntity(fEntityManager, fExpectedVersionString, 19);
             int matched = 0;
             for (; matched < XML11_VERSION.length; matched++) {
-                if (fExpectedVersionString[15 + matched] != XML11_VERSION[matched])
-                    break;
+                if (fExpectedVersionString[15 + matched] != XML11_VERSION[matched]) break;
             }
-            if (matched == XML11_VERSION.length)
-                return Constants.XML_VERSION_1_1;
+            if (matched == XML11_VERSION.length) return Constants.XML_VERSION_1_1;
             return Constants.XML_VERSION_1_0;
             // premature end of file
-        }
-        catch (EOFException e) {
+        } catch (EOFException e) {
             fErrorReporter.reportError(
-                XMLMessageFormatter.XML_DOMAIN,
-                "PrematureEOF",
-                null,
-                XMLErrorReporter.SEVERITY_FATAL_ERROR);
+                    XMLMessageFormatter.XML_DOMAIN,
+                    "PrematureEOF",
+                    null,
+                    XMLErrorReporter.SEVERITY_FATAL_ERROR);
             return Constants.XML_VERSION_1_0;
-
         }
-
     }
 
     // This method prepends "length" chars from the char array,
     // from offset 0, to the manager's fCurrentEntity.ch.
-    private void fixupCurrentEntity(XMLEntityManager manager,
-                char [] scannedChars, int length) {
+    private void fixupCurrentEntity(XMLEntityManager manager, char[] scannedChars, int length) {
         ScannedEntity currentEntity = manager.getCurrentEntity();
-        if(currentEntity.count-currentEntity.position+length > currentEntity.ch.length) {
-            //resize array; this case is hard to imagine...
+        if (currentEntity.count - currentEntity.position + length > currentEntity.ch.length) {
+            // resize array; this case is hard to imagine...
             char[] tempCh = currentEntity.ch;
-            currentEntity.ch = new char[length+currentEntity.count-currentEntity.position+1];
+            currentEntity.ch = new char[length + currentEntity.count - currentEntity.position + 1];
             System.arraycopy(tempCh, 0, currentEntity.ch, 0, tempCh.length);
         }
-        if(currentEntity.position < length) {
+        if (currentEntity.position < length) {
             // have to move sensitive stuff out of the way...
-            System.arraycopy(currentEntity.ch, currentEntity.position, currentEntity.ch, length, currentEntity.count-currentEntity.position);
-            currentEntity.count += length-currentEntity.position;
+            System.arraycopy(
+                    currentEntity.ch,
+                    currentEntity.position,
+                    currentEntity.ch,
+                    length,
+                    currentEntity.count - currentEntity.position);
+            currentEntity.count += length - currentEntity.position;
         } else {
             // have to reintroduce some whitespace so this parses:
-            for(int i=length; i<currentEntity.position; i++)
-                currentEntity.ch[i]=' ';
+            for (int i = length; i < currentEntity.position; i++) currentEntity.ch[i] = ' ';
         }
         // prepend contents...
         System.arraycopy(scannedChars, 0, currentEntity.ch, 0, length);
@@ -270,5 +261,4 @@ public class XMLVersionDetector {
         currentEntity.startPosition = 0;
         currentEntity.columnNumber = currentEntity.lineNumber = 1;
     }
-
 } // class XMLVersionDetector

@@ -58,10 +58,8 @@ package org.openjdk.com.sun.org.apache.bcel.internal.util;
  * <http://www.apache.org/>.
  */
 
-import java.io.*;
-
-import org.openjdk.com.sun.org.apache.bcel.internal.classfile.*;
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
+import org.openjdk.com.sun.org.apache.bcel.internal.classfile.*;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.Attribute;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.ClassParser;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.ConstantPool;
@@ -69,204 +67,233 @@ import org.openjdk.com.sun.org.apache.bcel.internal.classfile.JavaClass;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.Method;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.Utility;
 
+import java.io.*;
+
 /**
  * Read class file(s) and convert them into HTML files.
  *
- * Given a JavaClass object "class" that is in package "package" five files
- * will be created in the specified directory.
+ * <p>Given a JavaClass object "class" that is in package "package" five files will be created in
+ * the specified directory.
  *
  * <OL>
- * <LI> "package"."class".html as the main file which defines the frames for
- * the following subfiles.
- * <LI>  "package"."class"_attributes.html contains all (known) attributes found in the file
- * <LI>  "package"."class"_cp.html contains the constant pool
- * <LI>  "package"."class"_code.html contains the byte code
- * <LI>  "package"."class"_methods.html contains references to all methods and fields of the class
+ *   <LI>"package"."class".html as the main file which defines the frames for the following
+ *       subfiles.
+ *   <LI>"package"."class"_attributes.html contains all (known) attributes found in the file
+ *   <LI>"package"."class"_cp.html contains the constant pool
+ *   <LI>"package"."class"_code.html contains the byte code
+ *   <LI>"package"."class"_methods.html contains references to all methods and fields of the class
  * </OL>
  *
- * All subfiles reference each other appropiately, e.g. clicking on a
- * method in the Method's frame will jump to the appropiate method in
- * the Code frame.
+ * All subfiles reference each other appropiately, e.g. clicking on a method in the Method's frame
+ * will jump to the appropiate method in the Code frame.
  *
  * @version $Id: Class2HTML.java,v 1.3 2007-07-19 04:34:52 ofung Exp $
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
-*/
-public class Class2HTML implements Constants
-{
-  private JavaClass java_class;     // current class object
-  private String    dir;
+ */
+public class Class2HTML implements Constants {
+    private JavaClass java_class; // current class object
+    private String dir;
 
-  private static String       class_package;  // name of package, unclean to make it static, but ...
-  private static String       class_name;     // name of current class, dito
-  private static ConstantPool constant_pool;
+    private static String class_package; // name of package, unclean to make it static, but ...
+    private static String class_name; // name of current class, dito
+    private static ConstantPool constant_pool;
 
-  /**
-   * Write contents of the given JavaClass into HTML files.
-   *
-   * @param java_class The class to write
-   * @param dir The directory to put the files in
-   */
-  public Class2HTML(JavaClass java_class, String dir) throws IOException {
-    Method[]     methods       = java_class.getMethods();
-
-    this.java_class = java_class;
-    this.dir        = dir;
-    class_name      = java_class.getClassName();     // Remember full name
-    constant_pool   = java_class.getConstantPool();
-
-    // Get package name by tacking off everything after the last `.'
-    int index = class_name.lastIndexOf('.');
-    if(index > -1)
-      class_package = class_name.substring(0, index);
-    else
-      class_package = ""; // default package
-
-    ConstantHTML constant_html = new ConstantHTML(dir, class_name, class_package, methods,
-                                                  constant_pool);
-
-    /* Attributes can't be written in one step, so we just open a file
-     * which will be written consequently.
+    /**
+     * Write contents of the given JavaClass into HTML files.
+     *
+     * @param java_class The class to write
+     * @param dir The directory to put the files in
      */
-    AttributeHTML attribute_html = new AttributeHTML(dir, class_name, constant_pool, constant_html);
+    public Class2HTML(JavaClass java_class, String dir) throws IOException {
+        Method[] methods = java_class.getMethods();
 
-    MethodHTML method_html = new MethodHTML(dir, class_name, methods, java_class.getFields(),
-                                            constant_html, attribute_html);
-    // Write main file (with frames, yuk)
-    writeMainHTML(attribute_html);
-    new CodeHTML(dir, class_name, methods, constant_pool, constant_html);
-    attribute_html.close();
-  }
+        this.java_class = java_class;
+        this.dir = dir;
+        class_name = java_class.getClassName(); // Remember full name
+        constant_pool = java_class.getConstantPool();
 
-  public static void _main(String argv[])
-  {
-    String[]    file_name = new String[argv.length];
-    int         files=0;
-    ClassParser parser=null;
-    JavaClass   java_class=null;
-    String      zip_file = null;
-    char        sep = SecuritySupport.getSystemProperty("file.separator").toCharArray()[0];
-    String      dir = "." + sep; // Where to store HTML files
+        // Get package name by tacking off everything after the last `.'
+        int index = class_name.lastIndexOf('.');
+        if (index > -1) class_package = class_name.substring(0, index);
+        else class_package = ""; // default package
 
-    try {
-      /* Parse command line arguments.
-       */
-      for(int i=0; i < argv.length; i++) {
-        if(argv[i].charAt(0) == '-') {  // command line switch
-          if(argv[i].equals("-d")) {   // Specify target directory, default '.'
-            dir = argv[++i];
+        ConstantHTML constant_html =
+                new ConstantHTML(dir, class_name, class_package, methods, constant_pool);
 
-            if(!dir.endsWith("" + sep))
-              dir = dir + sep;
+        /* Attributes can't be written in one step, so we just open a file
+         * which will be written consequently.
+         */
+        AttributeHTML attribute_html =
+                new AttributeHTML(dir, class_name, constant_pool, constant_html);
 
-            new File(dir).mkdirs(); // Create target directory if necessary
-          }
-          else if(argv[i].equals("-zip"))
-            zip_file = argv[++i];
-          else
-            System.out.println("Unknown option " + argv[i]);
-        }
-        else // add file name to list */
-          file_name[files++] = argv[i];
-      }
-
-      if(files == 0)
-        System.err.println("Class2HTML: No input files specified.");
-      else { // Loop through files ...
-        for(int i=0; i < files; i++) {
-          System.out.print("Processing " + file_name[i] + "...");
-          if(zip_file == null)
-            parser = new ClassParser(file_name[i]); // Create parser object from file
-          else
-            parser = new ClassParser(zip_file, file_name[i]); // Create parser object from zip file
-
-          java_class = parser.parse();
-          new Class2HTML(java_class, dir);
-          System.out.println("Done.");
-        }
-      }
-    } catch(Exception e) {
-      System.out.println(e);
-      e.printStackTrace(System.out);
+        MethodHTML method_html =
+                new MethodHTML(
+                        dir,
+                        class_name,
+                        methods,
+                        java_class.getFields(),
+                        constant_html,
+                        attribute_html);
+        // Write main file (with frames, yuk)
+        writeMainHTML(attribute_html);
+        new CodeHTML(dir, class_name, methods, constant_pool, constant_html);
+        attribute_html.close();
     }
-  }
 
-  /**
-   * Utility method that converts a class reference in the constant pool,
-   * i.e., an index to a string.
-   */
-  static String referenceClass(int index) {
-    String str = constant_pool.getConstantString(index, CONSTANT_Class);
-    str = Utility.compactClassName(str);
-    str = Utility.compactClassName(str, class_package + ".", true);
+    public static void _main(String argv[]) {
+        String[] file_name = new String[argv.length];
+        int files = 0;
+        ClassParser parser = null;
+        JavaClass java_class = null;
+        String zip_file = null;
+        char sep = SecuritySupport.getSystemProperty("file.separator").toCharArray()[0];
+        String dir = "." + sep; // Where to store HTML files
 
-    return "<A HREF=\"" + class_name + "_cp.html#cp" + index +
-      "\" TARGET=ConstantPool>" + str + "</A>";
-  }
+        try {
+            /* Parse command line arguments.
+             */
+            for (int i = 0; i < argv.length; i++) {
+                if (argv[i].charAt(0) == '-') { // command line switch
+                    if (argv[i].equals("-d")) { // Specify target directory, default '.'
+                        dir = argv[++i];
 
-  static final String referenceType(String type) {
-    String short_type = Utility.compactClassName(type);
-    short_type = Utility.compactClassName(short_type, class_package + ".", true);
+                        if (!dir.endsWith("" + sep)) dir = dir + sep;
 
-    int index = type.indexOf('['); // Type is an array?
-    if(index > -1)
-      type = type.substring(0, index); // Tack of the `['
+                        new File(dir).mkdirs(); // Create target directory if necessary
+                    } else if (argv[i].equals("-zip")) zip_file = argv[++i];
+                    else System.out.println("Unknown option " + argv[i]);
+                } else // add file name to list */
+                file_name[files++] = argv[i];
+            }
 
-    // test for basic type
-    if(type.equals("int")  || type.equals("short") || type.equals("boolean") || type.equals("void")   ||
-       type.equals("char") || type.equals("byte")  || type.equals("long")    || type.equals("double") ||
-       type.equals("float"))
-      return "<FONT COLOR=\"#00FF00\">" + type + "</FONT>";
-    else
-      return "<A HREF=\"" + type + ".html\" TARGET=_top>" + short_type + "</A>";
-  }
+            if (files == 0) System.err.println("Class2HTML: No input files specified.");
+            else { // Loop through files ...
+                for (int i = 0; i < files; i++) {
+                    System.out.print("Processing " + file_name[i] + "...");
+                    if (zip_file == null)
+                        parser = new ClassParser(file_name[i]); // Create parser object from file
+                    else
+                        parser =
+                                new ClassParser(
+                                        zip_file,
+                                        file_name[i]); // Create parser object from zip file
 
-  static String toHTML(String str) {
-    StringBuffer buf = new StringBuffer();
-
-    try { // Filter any characters HTML doesn't like such as < and > in particular
-      for(int i=0; i < str.length(); i++) {
-        char ch;
-
-        switch(ch=str.charAt(i)) {
-        case '<': buf.append("&lt;"); break;
-        case '>': buf.append("&gt;"); break;
-        case '\n': buf.append("\\n"); break;
-        case '\r': buf.append("\\r"); break;
-        default:  buf.append(ch);
+                    java_class = parser.parse();
+                    new Class2HTML(java_class, dir);
+                    System.out.println("Done.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace(System.out);
         }
-      }
-    } catch(StringIndexOutOfBoundsException e) {} // Never occurs
+    }
 
-    return buf.toString();
-  }
+    /**
+     * Utility method that converts a class reference in the constant pool, i.e., an index to a
+     * string.
+     */
+    static String referenceClass(int index) {
+        String str = constant_pool.getConstantString(index, CONSTANT_Class);
+        str = Utility.compactClassName(str);
+        str = Utility.compactClassName(str, class_package + ".", true);
 
-  private void writeMainHTML(AttributeHTML attribute_html) throws IOException {
-    PrintWriter file       = new PrintWriter(new FileOutputStream(dir + class_name + ".html"));
-    Attribute[] attributes = java_class.getAttributes();
+        return "<A HREF=\""
+                + class_name
+                + "_cp.html#cp"
+                + index
+                + "\" TARGET=ConstantPool>"
+                + str
+                + "</A>";
+    }
 
-    file.println("<HTML>\n" + "<HEAD><TITLE>Documentation for " + class_name + "</TITLE>" +
-                 "</HEAD>\n" +
-                 "<FRAMESET BORDER=1 cols=\"30%,*\">\n" +
-                 "<FRAMESET BORDER=1 rows=\"80%,*\">\n" +
+    static final String referenceType(String type) {
+        String short_type = Utility.compactClassName(type);
+        short_type = Utility.compactClassName(short_type, class_package + ".", true);
 
-                 "<FRAME NAME=\"ConstantPool\" SRC=\"" + class_name + "_cp.html" + "\"\n MARGINWIDTH=\"0\" " +
-                 "MARGINHEIGHT=\"0\" FRAMEBORDER=\"1\" SCROLLING=\"AUTO\">\n" +
-                 "<FRAME NAME=\"Attributes\" SRC=\"" + class_name + "_attributes.html" +
-                 "\"\n MARGINWIDTH=\"0\" " +
-                 "MARGINHEIGHT=\"0\" FRAMEBORDER=\"1\" SCROLLING=\"AUTO\">\n" +
-                 "</FRAMESET>\n" +
+        int index = type.indexOf('['); // Type is an array?
+        if (index > -1) type = type.substring(0, index); // Tack of the `['
 
-                 "<FRAMESET BORDER=1 rows=\"80%,*\">\n" +
-                 "<FRAME NAME=\"Code\" SRC=\"" + class_name + "_code.html\"\n MARGINWIDTH=0 " +
-                 "MARGINHEIGHT=0 FRAMEBORDER=1 SCROLLING=\"AUTO\">\n" +
-                 "<FRAME NAME=\"Methods\" SRC=\"" + class_name + "_methods.html\"\n MARGINWIDTH=0 " +
-                 "MARGINHEIGHT=0 FRAMEBORDER=1 SCROLLING=\"AUTO\">\n" +
-                 "</FRAMESET></FRAMESET></HTML>"
-                 );
+        // test for basic type
+        if (type.equals("int")
+                || type.equals("short")
+                || type.equals("boolean")
+                || type.equals("void")
+                || type.equals("char")
+                || type.equals("byte")
+                || type.equals("long")
+                || type.equals("double")
+                || type.equals("float")) return "<FONT COLOR=\"#00FF00\">" + type + "</FONT>";
+        else return "<A HREF=\"" + type + ".html\" TARGET=_top>" + short_type + "</A>";
+    }
 
-    file.close();
+    static String toHTML(String str) {
+        StringBuffer buf = new StringBuffer();
 
-    for(int i=0; i < attributes.length; i++)
-      attribute_html.writeAttribute(attributes[i], "class" + i);
-  }
+        try { // Filter any characters HTML doesn't like such as < and > in particular
+            for (int i = 0; i < str.length(); i++) {
+                char ch;
+
+                switch (ch = str.charAt(i)) {
+                    case '<':
+                        buf.append("&lt;");
+                        break;
+                    case '>':
+                        buf.append("&gt;");
+                        break;
+                    case '\n':
+                        buf.append("\\n");
+                        break;
+                    case '\r':
+                        buf.append("\\r");
+                        break;
+                    default:
+                        buf.append(ch);
+                }
+            }
+        } catch (StringIndexOutOfBoundsException e) {
+        } // Never occurs
+
+        return buf.toString();
+    }
+
+    private void writeMainHTML(AttributeHTML attribute_html) throws IOException {
+        PrintWriter file = new PrintWriter(new FileOutputStream(dir + class_name + ".html"));
+        Attribute[] attributes = java_class.getAttributes();
+
+        file.println(
+                "<HTML>\n"
+                        + "<HEAD><TITLE>Documentation for "
+                        + class_name
+                        + "</TITLE>"
+                        + "</HEAD>\n"
+                        + "<FRAMESET BORDER=1 cols=\"30%,*\">\n"
+                        + "<FRAMESET BORDER=1 rows=\"80%,*\">\n"
+                        + "<FRAME NAME=\"ConstantPool\" SRC=\""
+                        + class_name
+                        + "_cp.html"
+                        + "\"\n MARGINWIDTH=\"0\" "
+                        + "MARGINHEIGHT=\"0\" FRAMEBORDER=\"1\" SCROLLING=\"AUTO\">\n"
+                        + "<FRAME NAME=\"Attributes\" SRC=\""
+                        + class_name
+                        + "_attributes.html"
+                        + "\"\n MARGINWIDTH=\"0\" "
+                        + "MARGINHEIGHT=\"0\" FRAMEBORDER=\"1\" SCROLLING=\"AUTO\">\n"
+                        + "</FRAMESET>\n"
+                        + "<FRAMESET BORDER=1 rows=\"80%,*\">\n"
+                        + "<FRAME NAME=\"Code\" SRC=\""
+                        + class_name
+                        + "_code.html\"\n MARGINWIDTH=0 "
+                        + "MARGINHEIGHT=0 FRAMEBORDER=1 SCROLLING=\"AUTO\">\n"
+                        + "<FRAME NAME=\"Methods\" SRC=\""
+                        + class_name
+                        + "_methods.html\"\n MARGINWIDTH=0 "
+                        + "MARGINHEIGHT=0 FRAMEBORDER=1 SCROLLING=\"AUTO\">\n"
+                        + "</FRAMESET></FRAMESET></HTML>");
+
+        file.close();
+
+        for (int i = 0; i < attributes.length; i++)
+            attribute_html.writeAttribute(attributes[i], "class" + i);
+    }
 }

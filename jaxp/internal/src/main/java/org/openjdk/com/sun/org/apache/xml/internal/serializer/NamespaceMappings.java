@@ -22,19 +22,20 @@
  */
 package org.openjdk.com.sun.org.apache.xml.internal.serializer;
 
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 /**
- * This class keeps track of the currently defined namespaces. Conceptually the
- * prefix/uri/depth triplets are pushed on a stack pushed on a stack. The depth
- * indicates the nesting depth of the element for which the mapping was made.
+ * This class keeps track of the currently defined namespaces. Conceptually the prefix/uri/depth
+ * triplets are pushed on a stack pushed on a stack. The depth indicates the nesting depth of the
+ * element for which the mapping was made.
  *
  * <p>For example:
+ *
  * <pre>
  * <chapter xmlns:p1="def">
  *   <paragraph xmlns:p2="ghi">
@@ -46,53 +47,42 @@ import org.xml.sax.SAXException;
  * </chapter>
  * </pre>
  *
- * When the <chapter> element is encounted the prefix "p1" associated with uri
- * "def" is pushed on the stack with depth 1.
- * When the first <paragraph> is encountered "p2" and "ghi" are pushed with
- * depth 2.
- * When the <sentance> is encountered "p3" and "jkl" are pushed with depth 3.
- * When </sentance> occurs the popNamespaces(3) will pop "p3"/"jkl" off the
- * stack.  Of course popNamespaces(2) would pop anything with depth 2 or
- * greater.
+ * When the <chapter> element is encounted the prefix "p1" associated with uri "def" is pushed on
+ * the stack with depth 1. When the first <paragraph> is encountered "p2" and "ghi" are pushed with
+ * depth 2. When the <sentance> is encountered "p3" and "jkl" are pushed with depth 3. When
+ * </sentance> occurs the popNamespaces(3) will pop "p3"/"jkl" off the stack. Of course
+ * popNamespaces(2) would pop anything with depth 2 or greater.
  *
- * So prefix/uri pairs are pushed and poped off the stack as elements are
- * processed.  At any given moment of processing the currently visible prefixes
- * are on the stack and a prefix can be found given a uri, or a uri can be found
- * given a prefix.
+ * <p>So prefix/uri pairs are pushed and poped off the stack as elements are processed. At any given
+ * moment of processing the currently visible prefixes are on the stack and a prefix can be found
+ * given a uri, or a uri can be found given a prefix.
  *
- * This class is public only because it is used by Xalan. It is not a public API
+ * <p>This class is public only because it is used by Xalan. It is not a public API
  *
  * @xsl.usage internal
  */
-public class NamespaceMappings
-{
+public class NamespaceMappings {
     /**
-     * This member is continually incremented when new prefixes need to be
-     * generated. ("ns0"  "ns1" ...)
+     * This member is continually incremented when new prefixes need to be generated. ("ns0" "ns1"
+     * ...)
      */
     private int count;
 
     /**
-     * Each entry (prefix) in this hashmap points to a Stack of URIs
-     * This maps a prefix (String) to a Stack of prefix mappings.
-     * All mappings in that retrieved stack have the same prefix,
-     * though possibly different URI's or depths. Such a stack must have
-     * mappings at deeper depths push later on such a stack.  Mappings pushed
-     * earlier on the stack will have smaller values for MappingRecord.m_declarationDepth.
+     * Each entry (prefix) in this hashmap points to a Stack of URIs This maps a prefix (String) to
+     * a Stack of prefix mappings. All mappings in that retrieved stack have the same prefix, though
+     * possibly different URI's or depths. Such a stack must have mappings at deeper depths push
+     * later on such a stack. Mappings pushed earlier on the stack will have smaller values for
+     * MappingRecord.m_declarationDepth.
      */
     private HashMap m_namespaces = new HashMap();
 
     /**
-     * The top of this stack contains the MapRecord
-     * of the last declared a namespace.
-     * Used to know how many prefix mappings to pop when leaving
-     * the current element depth.
-     * For every prefix mapping the current element depth is
-     * pushed on this stack.
-     * That way all prefixes pushed at the current depth can be
-     * removed at the same time.
-     * Used to ensure prefix/uri map scopes are closed correctly
-     *
+     * The top of this stack contains the MapRecord of the last declared a namespace. Used to know
+     * how many prefix mappings to pop when leaving the current element depth. For every prefix
+     * mapping the current element depth is pushed on this stack. That way all prefixes pushed at
+     * the current depth can be removed at the same time. Used to ensure prefix/uri map scopes are
+     * closed correctly
      */
     private Stack m_nodeStack = new Stack();
 
@@ -101,32 +91,28 @@ public class NamespaceMappings
 
     /**
      * Default constructor
+     *
      * @see java.lang.Object#Object()
      */
-    public NamespaceMappings()
-    {
+    public NamespaceMappings() {
         initNamespaces();
     }
 
     /**
-     * This method initializes the namespace object with appropriate stacks
-     * and predefines a few prefix/uri pairs which always exist.
+     * This method initializes the namespace object with appropriate stacks and predefines a few
+     * prefix/uri pairs which always exist.
      */
-    private void initNamespaces()
-    {
-
+    private void initNamespaces() {
 
         // Define the default namespace (initially maps to "" uri)
         Stack stack;
         m_namespaces.put(EMPTYSTRING, stack = new Stack());
-        stack.push(new MappingRecord(EMPTYSTRING,EMPTYSTRING,0));
+        stack.push(new MappingRecord(EMPTYSTRING, EMPTYSTRING, 0));
 
         m_namespaces.put(XML_PREFIX, stack = new Stack());
-        stack.push(new MappingRecord( XML_PREFIX,
-            "http://www.w3.org/XML/1998/namespace",0));
+        stack.push(new MappingRecord(XML_PREFIX, "http://www.w3.org/XML/1998/namespace", 0));
 
-        m_nodeStack.push(new MappingRecord(null,null,-1));
-
+        m_nodeStack.push(new MappingRecord(null, null, -1));
     }
 
     /**
@@ -135,36 +121,31 @@ public class NamespaceMappings
      * @param prefix String the prefix of the namespace
      * @return the URI corresponding to the prefix
      */
-    public String lookupNamespace(String prefix)
-    {
+    public String lookupNamespace(String prefix) {
         final Stack stack = (Stack) m_namespaces.get(prefix);
-        return stack != null && !stack.isEmpty() ?
-            ((MappingRecord) stack.peek()).m_uri : null;
+        return stack != null && !stack.isEmpty() ? ((MappingRecord) stack.peek()).m_uri : null;
     }
 
     MappingRecord getMappingFromPrefix(String prefix) {
         final Stack stack = (Stack) m_namespaces.get(prefix);
-        return stack != null && !stack.isEmpty() ?
-            ((MappingRecord) stack.peek()) : null;
+        return stack != null && !stack.isEmpty() ? ((MappingRecord) stack.peek()) : null;
     }
 
     /**
-     * Given a namespace uri, and the namespaces mappings for the
-     * current element, return the current prefix for that uri.
+     * Given a namespace uri, and the namespaces mappings for the current element, return the
+     * current prefix for that uri.
      *
      * @param uri the namespace URI to be search for
-     * @return an existing prefix that maps to the given URI, null if no prefix
-     * maps to the given namespace URI.
+     * @return an existing prefix that maps to the given URI, null if no prefix maps to the given
+     *     namespace URI.
      */
-    public String lookupPrefix(String uri)
-    {
+    public String lookupPrefix(String uri) {
         String foundPrefix = null;
         Iterator<String> itr = m_namespaces.keySet().iterator();
         while (itr.hasNext()) {
             String prefix = itr.next();
             String uri2 = lookupNamespace(prefix);
-            if (uri2 != null && uri2.equals(uri))
-            {
+            if (uri2 != null && uri2.equals(uri)) {
                 foundPrefix = prefix;
                 break;
             }
@@ -172,16 +153,13 @@ public class NamespaceMappings
         return foundPrefix;
     }
 
-    MappingRecord getMappingFromURI(String uri)
-    {
+    MappingRecord getMappingFromURI(String uri) {
         MappingRecord foundMap = null;
         Iterator<String> itr = m_namespaces.keySet().iterator();
-        while (itr.hasNext())
-        {
+        while (itr.hasNext()) {
             String prefix = itr.next();
             MappingRecord map2 = getMappingFromPrefix(prefix);
-            if (map2 != null && (map2.m_uri).equals(uri))
-            {
+            if (map2 != null && (map2.m_uri).equals(uri)) {
                 foundMap = map2;
                 break;
             }
@@ -189,20 +167,15 @@ public class NamespaceMappings
         return foundMap;
     }
 
-    /**
-     * Undeclare the namespace that is currently pointed to by a given prefix
-     */
-    boolean popNamespace(String prefix)
-    {
+    /** Undeclare the namespace that is currently pointed to by a given prefix */
+    boolean popNamespace(String prefix) {
         // Prefixes "xml" and "xmlns" cannot be redefined
-        if (prefix.startsWith(XML_PREFIX))
-        {
+        if (prefix.startsWith(XML_PREFIX)) {
             return false;
         }
 
         Stack stack;
-        if ((stack = (Stack) m_namespaces.get(prefix)) != null)
-        {
+        if ((stack = (Stack) m_namespaces.get(prefix)) != null) {
             stack.pop();
             return true;
         }
@@ -211,53 +184,47 @@ public class NamespaceMappings
 
     /**
      * Declare a mapping of a prefix to namespace URI at the given element depth.
+     *
      * @param prefix a String with the prefix for a qualified name
      * @param uri a String with the uri to which the prefix is to map
      * @param elemDepth the depth of current declaration
      */
-    boolean pushNamespace(String prefix, String uri, int elemDepth)
-    {
+    boolean pushNamespace(String prefix, String uri, int elemDepth) {
         // Prefixes "xml" and "xmlns" cannot be redefined
-        if (prefix.startsWith(XML_PREFIX))
-        {
+        if (prefix.startsWith(XML_PREFIX)) {
             return false;
         }
 
         Stack stack;
         // Get the stack that contains URIs for the specified prefix
-        if ((stack = (Stack) m_namespaces.get(prefix)) == null)
-        {
+        if ((stack = (Stack) m_namespaces.get(prefix)) == null) {
             m_namespaces.put(prefix, stack = new Stack());
         }
 
-        if (!stack.empty() && uri.equals(((MappingRecord)stack.peek()).m_uri))
-        {
+        if (!stack.empty() && uri.equals(((MappingRecord) stack.peek()).m_uri)) {
             return false;
         }
-        MappingRecord map = new MappingRecord(prefix,uri,elemDepth);
+        MappingRecord map = new MappingRecord(prefix, uri, elemDepth);
         stack.push(map);
         m_nodeStack.push(map);
         return true;
     }
 
     /**
-     * Pop, or undeclare all namespace definitions that are currently
-     * declared at the given element depth, or deepter.
-     * @param elemDepth the element depth for which mappings declared at this
-     * depth or deeper will no longer be valid
-     * @param saxHandler The ContentHandler to notify of any endPrefixMapping()
-     * calls.  This parameter can be null.
+     * Pop, or undeclare all namespace definitions that are currently declared at the given element
+     * depth, or deepter.
+     *
+     * @param elemDepth the element depth for which mappings declared at this depth or deeper will
+     *     no longer be valid
+     * @param saxHandler The ContentHandler to notify of any endPrefixMapping() calls. This
+     *     parameter can be null.
      */
-    void popNamespaces(int elemDepth, ContentHandler saxHandler)
-    {
-        while (true)
-        {
-            if (m_nodeStack.isEmpty())
-                return;
-            MappingRecord map = (MappingRecord)(m_nodeStack.peek());
+    void popNamespaces(int elemDepth, ContentHandler saxHandler) {
+        while (true) {
+            if (m_nodeStack.isEmpty()) return;
+            MappingRecord map = (MappingRecord) (m_nodeStack.peek());
             int depth = map.m_declarationDepth;
-            if (depth < elemDepth)
-                return;
+            if (depth < elemDepth) return;
             /* the depth of the declared mapping is elemDepth or deeper
              * so get rid of it
              */
@@ -265,46 +232,35 @@ public class NamespaceMappings
             map = (MappingRecord) m_nodeStack.pop();
             final String prefix = map.m_prefix;
             popNamespace(prefix);
-            if (saxHandler != null)
-            {
-                try
-                {
+            if (saxHandler != null) {
+                try {
                     saxHandler.endPrefixMapping(prefix);
-                }
-                catch (SAXException e)
-                {
+                } catch (SAXException e) {
                     // not much we can do if they aren't willing to listen
                 }
             }
-
         }
     }
 
     /**
      * Generate a new namespace prefix ( ns0, ns1 ...) not used before
+     *
      * @return String a new namespace prefix ( ns0, ns1, ns2 ...)
      */
-    public String generateNextPrefix()
-    {
+    public String generateNextPrefix() {
         return "ns" + (count++);
     }
 
-
-    /**
-     * This method makes a clone of this object.
-     *
-     */
+    /** This method makes a clone of this object. */
     public Object clone() throws CloneNotSupportedException {
         NamespaceMappings clone = new NamespaceMappings();
         clone.m_nodeStack = (Stack) m_nodeStack.clone();
         clone.m_namespaces = (HashMap) m_namespaces.clone();
         clone.count = count;
         return clone;
-
     }
 
-    final void reset()
-    {
+    final void reset() {
         this.count = 0;
         this.m_namespaces.clear();
         this.m_nodeStack.clear();
@@ -312,16 +268,15 @@ public class NamespaceMappings
     }
 
     class MappingRecord {
-        final String m_prefix;  // the prefix
-        final String m_uri;     // the uri
+        final String m_prefix; // the prefix
+        final String m_uri; // the uri
         // the depth of the element where declartion was made
         final int m_declarationDepth;
+
         MappingRecord(String prefix, String uri, int depth) {
             m_prefix = prefix;
             m_uri = uri;
             m_declarationDepth = depth;
-
         }
     }
-
 }

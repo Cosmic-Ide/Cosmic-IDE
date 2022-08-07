@@ -28,17 +28,18 @@ package org.openjdk.com.sun.xml.internal.stream.events;
 import org.openjdk.javax.xml.stream.Location;
 
 /**
- *Implementation of Location interface to be used by
- *event readers.
- *@author Neeraj.bajaj@sun.com,k.venugopal@sun.com
+ * Implementation of Location interface to be used by event readers.
+ *
+ * @author Neeraj.bajaj@sun.com,k.venugopal@sun.com
  */
-public class LocationImpl implements Location{
+public class LocationImpl implements Location {
     String systemId;
     String publicId;
     int colNo;
     int lineNo;
     int charOffset;
-    LocationImpl(Location loc){
+
+    LocationImpl(Location loc) {
         systemId = loc.getSystemId();
         publicId = loc.getPublicId();
         lineNo = loc.getLineNumber();
@@ -46,7 +47,7 @@ public class LocationImpl implements Location{
         charOffset = loc.getCharacterOffset();
     }
 
-    public int getCharacterOffset(){
+    public int getCharacterOffset() {
         return charOffset;
     }
 
@@ -54,31 +55,30 @@ public class LocationImpl implements Location{
         return colNo;
     }
 
-    public int getLineNumber(){
+    public int getLineNumber() {
         return lineNo;
     }
 
-    public String getPublicId(){
+    public String getPublicId() {
         return publicId;
     }
 
-    public String getSystemId(){
+    public String getSystemId() {
         return systemId;
     }
 
-    public String toString(){
-        StringBuffer sbuffer = new StringBuffer() ;
+    public String toString() {
+        StringBuffer sbuffer = new StringBuffer();
         sbuffer.append("Line number = " + getLineNumber());
-        sbuffer.append("\n") ;
+        sbuffer.append("\n");
         sbuffer.append("Column number = " + getColumnNumber());
-        sbuffer.append("\n") ;
+        sbuffer.append("\n");
         sbuffer.append("System Id = " + getSystemId());
-        sbuffer.append("\n") ;
+        sbuffer.append("\n");
         sbuffer.append("Public Id = " + getPublicId());
-        sbuffer.append("\n") ;
+        sbuffer.append("\n");
         sbuffer.append("CharacterOffset = " + getCharacterOffset());
-        sbuffer.append("\n") ;
+        sbuffer.append("\n");
         return sbuffer.toString();
     }
-
 }

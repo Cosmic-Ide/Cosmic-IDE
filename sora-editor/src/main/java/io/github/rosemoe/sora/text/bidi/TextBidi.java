@@ -25,10 +25,10 @@ package io.github.rosemoe.sora.text.bidi;
 
 import android.text.TextUtils;
 
-import java.text.Bidi;
-
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.TemporaryCharBuffer;
+
+import java.text.Bidi;
 
 public class TextBidi {
 
@@ -38,11 +38,11 @@ public class TextBidi {
         TextUtils.getChars(text, 0, len, chars, 0);
         if (doesNotNeedBidi(chars, 0, len)) {
             TemporaryCharBuffer.recycle(chars);
-            return new Directions(new long[]{IntPair.pack(0, 0)}, len);
+            return new Directions(new long[] {IntPair.pack(0, 0)}, len);
         }
         var bidi = new Bidi(chars, 0, null, 0, text.length(), Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
         var runs = new long[bidi.getRunCount()];
-        for (int i = 0;i < runs.length;i++) {
+        for (int i = 0; i < runs.length; i++) {
             runs[i] = IntPair.pack(bidi.getRunStart(i), bidi.getRunLevel(i));
         }
         TemporaryCharBuffer.recycle(chars);
@@ -50,14 +50,21 @@ public class TextBidi {
     }
 
     static boolean couldAffectRtl(char c) {
-        return (0x0590 <= c && c <= 0x08FF) ||  // RTL scripts
-                c == 0x200E ||  // Bidi format character
-                c == 0x200F ||  // Bidi format character
-                (0x202A <= c && c <= 0x202E) ||  // Bidi format characters
-                (0x2066 <= c && c <= 0x2069) ||  // Bidi format characters
-                (0xD800 <= c && c <= 0xDFFF) ||  // Surrogate pairs
-                (0xFB1D <= c && c <= 0xFDFF) ||  // Hebrew and Arabic presentation forms
-                (0xFE70 <= c && c <= 0xFEFE);  // Arabic presentation forms
+        return (0x0590 <= c && c <= 0x08FF)
+                || // RTL scripts
+                c == 0x200E
+                || // Bidi format character
+                c == 0x200F
+                || // Bidi format character
+                (0x202A <= c && c <= 0x202E)
+                || // Bidi format characters
+                (0x2066 <= c && c <= 0x2069)
+                || // Bidi format characters
+                (0xD800 <= c && c <= 0xDFFF)
+                || // Surrogate pairs
+                (0xFB1D <= c && c <= 0xFDFF)
+                || // Hebrew and Arabic presentation forms
+                (0xFE70 <= c && c <= 0xFEFE); // Arabic presentation forms
     }
 
     // Returns true if there is no character present that may potentially affect RTL layout.
@@ -74,5 +81,4 @@ public class TextBidi {
         }
         return true;
     }
-
 }

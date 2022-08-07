@@ -21,21 +21,16 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.xni;
 
 /**
- * This exception is the base exception of all XNI exceptions. It
- * can be constructed with an error message or used to wrap another
- * exception object.
- * <p>
- * <strong>Note:</strong> By extending the Java
- * <code>RuntimeException</code>, XNI handlers and components are
- * not required to catch XNI exceptions but may explicitly catch
- * them, if so desired.
+ * This exception is the base exception of all XNI exceptions. It can be constructed with an error
+ * message or used to wrap another exception object.
+ *
+ * <p><strong>Note:</strong> By extending the Java <code>RuntimeException</code>, XNI handlers and
+ * components are not required to catch XNI exceptions but may explicitly catch them, if so desired.
  *
  * @author Andy Clark, IBM
- *
  * @version $Id: XNIException.java,v 1.6 2010-11-01 04:40:19 joehw Exp $
  */
-public class XNIException
-    extends RuntimeException {
+public class XNIException extends RuntimeException {
 
     /** Serialization version. */
     static final long serialVersionUID = 9019819772686063775L;
@@ -91,6 +86,6 @@ public class XNIException
     } // getException():Exception
 
     public Throwable getCause() {
-       return fException;
+        return fException;
     }
 } // class QName

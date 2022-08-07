@@ -25,27 +25,20 @@ package org.openjdk.com.sun.org.apache.xpath.internal.operations;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XBoolean;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XObject;
 
-/**
- * The '!=' operation expression executer.
- */
-public class NotEquals extends Operation
-{
+/** The '!=' operation expression executer. */
+public class NotEquals extends Operation {
     static final long serialVersionUID = -7869072863070586900L;
 
-  /**
-   * Apply the operation to two operands, and return the result.
-   *
-   *
-   * @param left non-null reference to the evaluated left operand.
-   * @param right non-null reference to the evaluated right operand.
-   *
-   * @return non-null reference to the XObject that represents the result of the operation.
-   *
-   * @throws org.openjdk.javax.xml.transform.TransformerException
-   */
-  public XObject operate(XObject left, XObject right)
-          throws org.openjdk.javax.xml.transform.TransformerException
-  {
-    return (left.notEquals(right)) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
-  }
+    /**
+     * Apply the operation to two operands, and return the result.
+     *
+     * @param left non-null reference to the evaluated left operand.
+     * @param right non-null reference to the evaluated right operand.
+     * @return non-null reference to the XObject that represents the result of the operation.
+     * @throws org.openjdk.javax.xml.transform.TransformerException
+     */
+    public XObject operate(XObject left, XObject right)
+            throws org.openjdk.javax.xml.transform.TransformerException {
+        return (left.notEquals(right)) ? XBoolean.S_TRUE : XBoolean.S_FALSE;
+    }
 }

@@ -31,11 +31,8 @@ import org.xml.sax.SAXParseException;
  */
 final class DraconianErrorHandler implements ErrorHandler {
 
-    /**
-     * Singleton instance.
-     */
-    private static final DraconianErrorHandler ERROR_HANDLER_INSTANCE
-        = new DraconianErrorHandler();
+    /** Singleton instance. */
+    private static final DraconianErrorHandler ERROR_HANDLER_INSTANCE = new DraconianErrorHandler();
 
     private DraconianErrorHandler() {}
 
@@ -58,5 +55,4 @@ final class DraconianErrorHandler implements ErrorHandler {
     public void fatalError(SAXParseException e) throws SAXException {
         throw e;
     }
-
 } // DraconianErrorHandler

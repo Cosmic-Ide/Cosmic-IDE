@@ -62,5 +62,4 @@ public class OnigSearcher {
         }
         return bestResult;
     }
-
 }

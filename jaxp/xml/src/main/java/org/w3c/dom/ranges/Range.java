@@ -31,19 +31,17 @@ public interface Range {
     public void setEndAfter(Node refNode) throws RangeException, DOMException;
 
     public void collapse(boolean toStart) throws DOMException;
-    
+
     public void selectNode(Node node) throws RangeException, DOMException;
 
     public void selectNodeContents(Node node) throws RangeException, DOMException;
 
-    public static final short START_TO_START            = 0;
-    public static final short START_TO_END              = 1;
-    public static final short END_TO_END                = 2;
-    public static final short END_TO_START              = 3;
+    public static final short START_TO_START = 0;
+    public static final short START_TO_END = 1;
+    public static final short END_TO_END = 2;
+    public static final short END_TO_START = 3;
 
-    public short compareBoundaryPoints(short how,
-                                         Range sourceRange)
-                                         throws DOMException;
+    public short compareBoundaryPoints(short how, Range sourceRange) throws DOMException;
 
     public void deleteContents() throws DOMException;
 

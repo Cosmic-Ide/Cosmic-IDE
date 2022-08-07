@@ -29,5 +29,4 @@ public abstract class BaseActionRunnable2<T> {
         mySilentExecution = true;
         return execute();
     }
-
 }

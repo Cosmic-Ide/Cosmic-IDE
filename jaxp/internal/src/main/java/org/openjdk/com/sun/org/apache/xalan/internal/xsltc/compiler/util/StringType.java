@@ -66,29 +66,22 @@ public class StringType extends Type {
     }
 
     /**
-     * Translates a string into an object of internal type <code>type</code>.
-     * The translation to int is undefined since strings are always converted
-     * to reals in arithmetic expressions.
+     * Translates a string into an object of internal type <code>type</code>. The translation to int
+     * is undefined since strings are always converted to reals in arithmetic expressions.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Type type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Type type) {
         if (type == Boolean) {
             translateTo(classGen, methodGen, (BooleanType) type);
-        }
-        else if (type == Real) {
+        } else if (type == Real) {
             translateTo(classGen, methodGen, (RealType) type);
-        }
-        else if (type == Reference) {
+        } else if (type == Reference) {
             translateTo(classGen, methodGen, (ReferenceType) type);
-        }
-        else if (type == ObjectString) {
+        } else if (type == ObjectString) {
             // NOP -> same representation
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), type.toString());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), type.toString());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
@@ -96,10 +89,9 @@ public class StringType extends Type {
     /**
      * Translates a string into a synthesized boolean.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            BooleanType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final InstructionList il = methodGen.getInstructionList();
         FlowList falsel = translateToDesynthesized(classGen, methodGen, type);
         il.append(ICONST_1);
@@ -109,64 +101,55 @@ public class StringType extends Type {
     }
 
     /**
-     * Translates a string into a real by calling stringToReal() from the
-     * basis library.
+     * Translates a string into a real by calling stringToReal() from the basis library.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            RealType type) {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, RealType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
-        il.append(new INVOKESTATIC(cpg.addMethodref(BASIS_LIBRARY_CLASS,
-                                                    STRING_TO_REAL,
-                                                    STRING_TO_REAL_SIG)));
+        il.append(
+                new INVOKESTATIC(
+                        cpg.addMethodref(BASIS_LIBRARY_CLASS, STRING_TO_REAL, STRING_TO_REAL_SIG)));
     }
 
     /**
-     * Translates a string into a non-synthesized boolean. It does not push a
-     * 0 or a 1 but instead returns branchhandle list to be appended to the
-     * false list.
+     * Translates a string into a non-synthesized boolean. It does not push a 0 or a 1 but instead
+     * returns branchhandle list to be appended to the false list.
      *
-     * @see     Type#translateToDesynthesized
+     * @see Type#translateToDesynthesized
      */
-    public FlowList translateToDesynthesized(ClassGenerator classGen,
-                                             MethodGenerator methodGen,
-                                             BooleanType type) {
+    public FlowList translateToDesynthesized(
+            ClassGenerator classGen, MethodGenerator methodGen, BooleanType type) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
-        il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS,
-                                                     "length", "()I")));
+        il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_CLASS, "length", "()I")));
         return new FlowList(il.append(new IFEQ(null)));
     }
 
     /**
-     * Expects a string on the stack and pushes a boxed string.
-     * Strings are already boxed so the translation is just a NOP.
+     * Expects a string on the stack and pushes a boxed string. Strings are already boxed so the
+     * translation is just a NOP.
      *
-     * @see     Type#translateTo
+     * @see Type#translateTo
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            ReferenceType type) {
+    public void translateTo(
+            ClassGenerator classGen, MethodGenerator methodGen, ReferenceType type) {
         methodGen.getInstructionList().append(NOP);
     }
 
     /**
      * Translates a internal string into an external (Java) string.
      *
-     * @see     Type#translateFrom
+     * @see Type#translateFrom
      */
-    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen,
-                            Class clazz)
-    {
+    public void translateTo(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
         // Is String <: clazz? I.e. clazz in { String, Object }
         if (clazz.isAssignableFrom(java.lang.String.class)) {
             methodGen.getInstructionList().append(NOP);
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), clazz.getName());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
@@ -174,11 +157,9 @@ public class StringType extends Type {
     /**
      * Translates an external (primitive) Java type into a string.
      *
-     * @see     Type#translateFrom
+     * @see Type#translateFrom
      */
-    public void translateFrom(ClassGenerator classGen,
-        MethodGenerator methodGen, Class clazz)
-    {
+    public void translateFrom(ClassGenerator classGen, MethodGenerator methodGen, Class clazz) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
@@ -189,37 +170,26 @@ public class StringType extends Type {
             il.append(POP);
             il.append(new PUSH(cpg, ""));
             ifNonNull.setTarget(il.append(NOP));
-        }
-        else {
-            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR,
-                                        toString(), clazz.getName());
+        } else {
+            ErrorMsg err = new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, toString(), clazz.getName());
             classGen.getParser().reportError(Constants.FATAL, err);
         }
     }
 
-    /**
-     * Translates an object of this type to its boxed representation.
-     */
-    public void translateBox(ClassGenerator classGen,
-                             MethodGenerator methodGen) {
+    /** Translates an object of this type to its boxed representation. */
+    public void translateBox(ClassGenerator classGen, MethodGenerator methodGen) {
         translateTo(classGen, methodGen, Reference);
     }
 
-    /**
-     * Translates an object of this type to its unboxed representation.
-     */
-    public void translateUnBox(ClassGenerator classGen,
-                               MethodGenerator methodGen) {
+    /** Translates an object of this type to its unboxed representation. */
+    public void translateUnBox(ClassGenerator classGen, MethodGenerator methodGen) {
         methodGen.getInstructionList().append(NOP);
     }
 
-    /**
-     * Returns the class name of an internal type's external representation.
-     */
+    /** Returns the class name of an internal type's external representation. */
     public String getClassName() {
-        return(STRING_CLASS);
+        return (STRING_CLASS);
     }
-
 
     public Instruction LOAD(int slot) {
         return new ALOAD(slot);

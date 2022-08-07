@@ -42,7 +42,8 @@ public class FeatureState {
     public static final FeatureState UNKNOWN = new FeatureState(Status.UNKNOWN, false);
     public static final FeatureState RECOGNIZED = new FeatureState(Status.RECOGNIZED, false);
     public static final FeatureState NOT_SUPPORTED = new FeatureState(Status.NOT_SUPPORTED, false);
-    public static final FeatureState NOT_RECOGNIZED = new FeatureState(Status.NOT_RECOGNIZED, false);
+    public static final FeatureState NOT_RECOGNIZED =
+            new FeatureState(Status.NOT_RECOGNIZED, false);
     public static final FeatureState NOT_ALLOWED = new FeatureState(Status.NOT_ALLOWED, false);
 
     public FeatureState(Status status, boolean state) {

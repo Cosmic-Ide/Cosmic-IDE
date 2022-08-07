@@ -32,15 +32,12 @@ import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
  * @author Santiago Pericas-Geertsen
  */
 public abstract class AnyNodeCounter extends NodeCounter {
-    public AnyNodeCounter(Translet translet,
-                          DOM document, DTMAxisIterator iterator) {
+    public AnyNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
         super(translet, document, iterator);
     }
 
-    public AnyNodeCounter(Translet translet,
-                          DOM document,
-                          DTMAxisIterator iterator,
-                          boolean hasFrom) {
+    public AnyNodeCounter(
+            Translet translet, DOM document, DTMAxisIterator iterator, boolean hasFrom) {
         super(translet, document, iterator, hasFrom);
     }
 
@@ -53,14 +50,13 @@ public abstract class AnyNodeCounter extends NodeCounter {
     public String getCounter() {
         int result;
         if (_value != Integer.MIN_VALUE) {
-            //See Errata E24
+            // See Errata E24
             if (_value == 0) return "0";
             else if (Double.isNaN(_value)) return "NaN";
             else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
             else if (Double.isInfinite(_value)) return "Infinity";
-            else return formatNumbers((int)_value);
-        }
-        else {
+            else return formatNumbers((int) _value);
+        } else {
             int next = _node;
             final int root = _document.getDocument();
             result = 0;
@@ -69,8 +65,8 @@ public abstract class AnyNodeCounter extends NodeCounter {
                     ++result;
                 }
                 next--;
-//%HZ%:  Is this the best way of finding the root?  Is it better to check
-//%HZ%:  parent(next)?
+                // %HZ%:  Is this the best way of finding the root?  Is it better to check
+                // %HZ%:  parent(next)?
                 /*
                 if (next == root) {
                     break;
@@ -84,29 +80,26 @@ public abstract class AnyNodeCounter extends NodeCounter {
         return formatNumbers(result);
     }
 
-    public static NodeCounter getDefaultNodeCounter(Translet translet,
-                                                    DOM document,
-                                                    DTMAxisIterator iterator) {
+    public static NodeCounter getDefaultNodeCounter(
+            Translet translet, DOM document, DTMAxisIterator iterator) {
         return new DefaultAnyNodeCounter(translet, document, iterator);
     }
 
     static class DefaultAnyNodeCounter extends AnyNodeCounter {
-        public DefaultAnyNodeCounter(Translet translet,
-                                     DOM document, DTMAxisIterator iterator) {
+        public DefaultAnyNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
             super(translet, document, iterator);
         }
 
         public String getCounter() {
             int result;
             if (_value != Integer.MIN_VALUE) {
-                    //See Errata E24
-                    if (_value == 0) return "0";
-                    else if (Double.isNaN(_value)) return "NaN";
-                    else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
-                    else if (Double.isInfinite(_value)) return "Infinity";
-                    else result = (int) _value;
-            }
-            else {
+                // See Errata E24
+                if (_value == 0) return "0";
+                else if (Double.isNaN(_value)) return "NaN";
+                else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
+                else if (Double.isInfinite(_value)) return "Infinity";
+                else result = (int) _value;
+            } else {
                 int next = _node;
                 result = 0;
                 final int ntype = _document.getExpandedTypeID(_node);
@@ -115,12 +108,11 @@ public abstract class AnyNodeCounter extends NodeCounter {
                     if (ntype == _document.getExpandedTypeID(next)) {
                         result++;
                     }
-//%HZ%:  Is this the best way of finding the root?  Is it better to check
-//%HZ%:  parent(next)?
+                    // %HZ%:  Is this the best way of finding the root?  Is it better to check
+                    // %HZ%:  parent(next)?
                     if (next == root) {
                         break;
-                    }
-                    else {
+                    } else {
                         --next;
                     }
                 }

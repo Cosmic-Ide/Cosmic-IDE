@@ -30,9 +30,6 @@ package io.github.rosemoe.sora.graphics;
  */
 public class GraphicsConstants {
 
-    /**
-     * Text skew X applied in editor
-     */
-    public final static float TEXT_SKEW_X = -0.2f;
-
+    /** Text skew X applied in editor */
+    public static final float TEXT_SKEW_X = -0.2f;
 }

@@ -19,6 +19,9 @@ import org.jetbrains.kotlin.org.jdom.filter.Filter;
 import org.jetbrains.kotlin.org.jdom.output.Format;
 import org.jetbrains.kotlin.org.jdom.output.Format.TextMode;
 import org.jetbrains.kotlin.org.jdom.output.XMLOutputter;
+import org.openjdk.javax.xml.stream.XMLInputFactory;
+import org.openjdk.javax.xml.stream.XMLStreamException;
+import org.openjdk.javax.xml.stream.XMLStreamReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -36,13 +39,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.openjdk.javax.xml.stream.XMLInputFactory;
-import org.openjdk.javax.xml.stream.XMLStreamException;
-import org.openjdk.javax.xml.stream.XMLStreamReader;
-
 public final class JDOMUtil {
     public static final Pattern XPOINTER_PATTERN = Pattern.compile("xpointer\\((.*)\\)");
-    public static final Namespace XINCLUDE_NAMESPACE = Namespace.getNamespace("xi", "http://www.w3.org/2001/XInclude");
+    public static final Namespace XINCLUDE_NAMESPACE =
+            Namespace.getNamespace("xi", "http://www.w3.org/2001/XInclude");
     public static final Pattern CHILDREN_PATTERN = Pattern.compile("/([^/]*)(/[^/]*)?/\\*");
     private static volatile XMLInputFactory XML_INPUT_FACTORY;
     private static final JDOMUtil.EmptyTextFilter CONTENT_FILTER = new JDOMUtil.EmptyTextFilter();
@@ -53,12 +53,15 @@ public final class JDOMUtil {
             return factory;
         } else {
             Class var1 = JDOMUtil.class;
-            synchronized(JDOMUtil.class) {
+            synchronized (JDOMUtil.class) {
                 factory = XML_INPUT_FACTORY;
                 if (factory != null) {
                     return factory;
                 } else {
-                    String property = System.setProperty("javax.xml.stream.XMLInputFactory", "org.openjdk.com.sun.xml.internal.stream.XMLInputFactoryImpl");
+                    String property =
+                            System.setProperty(
+                                    "javax.xml.stream.XMLInputFactory",
+                                    "org.openjdk.com.sun.xml.internal.stream.XMLInputFactoryImpl");
 
                     try {
                         factory = XMLInputFactory.newFactory();
@@ -68,14 +71,19 @@ public final class JDOMUtil {
                         } else {
                             System.clearProperty("javax.xml.stream.XMLInputFactory");
                         }
-
                     }
 
                     if (!SystemInfo.isIbmJvm) {
                         try {
-                            factory.setProperty("http://java.sun.com/xml/stream/properties/report-cdata-event", true);
+                            factory.setProperty(
+                                    "http://java.sun.com/xml/stream/properties/report-cdata-event",
+                                    true);
                         } catch (Exception var8) {
-                            getLogger().error("cannot set \"report-cdata-event\" property for XMLInputFactory", var8);
+                            getLogger()
+                                    .error(
+                                            "cannot set \"report-cdata-event\" property for"
+                                                + " XMLInputFactory",
+                                            var8);
                         }
                     }
 
@@ -89,24 +97,25 @@ public final class JDOMUtil {
         }
     }
 
-    private JDOMUtil() {
-    }
+    private JDOMUtil() {}
 
     private static Logger getLogger() {
         return JDOMUtil.LoggerHolder.ourLogger;
     }
 
-
-    private static Element loadUsingStaX( Reader reader,  SafeJdomFactory factory) throws JDOMException, IOException {
+    private static Element loadUsingStaX(Reader reader, SafeJdomFactory factory)
+            throws JDOMException, IOException {
         Element var3;
         try {
             XMLStreamReader xmlStreamReader = getXmlInputFactory().createXMLStreamReader(reader);
 
-            
             try {
-                var3 = SafeStAXStreamBuilderWrapper.build(xmlStreamReader,
-                        true, true,
-                        factory == null ? SafeStAXStreamBuilderWrapper.FACTORY : factory);
+                var3 =
+                        SafeStAXStreamBuilderWrapper.build(
+                                xmlStreamReader,
+                                true,
+                                true,
+                                factory == null ? SafeStAXStreamBuilderWrapper.FACTORY : factory);
             } finally {
                 xmlStreamReader.close();
             }
@@ -119,48 +128,63 @@ public final class JDOMUtil {
         return var3;
     }
 
-   // @Internal
+    // @Internal
 
-    public static Element load( Path file,  SafeJdomFactory factory) throws JDOMException, IOException {
-        if (file == null) { ;
+    public static Element load(Path file, SafeJdomFactory factory)
+            throws JDOMException, IOException {
+        if (file == null) {
+            ;
         }
 
         try {
-            return loadUsingStaX(new InputStreamReader(CharsetToolkit.inputStreamSkippingBOM(new BufferedInputStream(Files.newInputStream(file))), StandardCharsets.UTF_8), factory);
+            return loadUsingStaX(
+                    new InputStreamReader(
+                            CharsetToolkit.inputStreamSkippingBOM(
+                                    new BufferedInputStream(Files.newInputStream(file))),
+                            StandardCharsets.UTF_8),
+                    factory);
         } catch (ClosedFileSystemException var3) {
             throw new IOException("Cannot read file from closed file system: " + file, var3);
         }
     }
 
-    //@Contract("null -> null; !null -> !null")
+    // @Contract("null -> null; !null -> !null")
     public static Element load(InputStream stream) throws JDOMException, IOException {
-        return stream == null ? null : load((InputStream)stream, (SafeJdomFactory)null);
+        return stream == null ? null : load((InputStream) stream, (SafeJdomFactory) null);
     }
 
-   // @Internal
+    // @Internal
 
-    public static Element load( InputStream stream,  SafeJdomFactory factory) throws JDOMException, IOException {
-        if (stream == null) { ;
+    public static Element load(InputStream stream, SafeJdomFactory factory)
+            throws JDOMException, IOException {
+        if (stream == null) {
+            ;
         }
 
         return loadUsingStaX(new InputStreamReader(stream, StandardCharsets.UTF_8), factory);
     }
 
-    public static void writeElement( Element element, Writer writer, String lineSeparator) throws IOException {
-        if (element == null) { ;
+    public static void writeElement(Element element, Writer writer, String lineSeparator)
+            throws IOException {
+        if (element == null) {
+            ;
         }
 
         writeElement(element, writer, createOutputter(lineSeparator));
     }
 
-    public static void writeElement( Element element,  Writer writer,  XMLOutputter xmlOutputter) throws IOException {
-        if (element == null) { ;
+    public static void writeElement(Element element, Writer writer, XMLOutputter xmlOutputter)
+            throws IOException {
+        if (element == null) {
+            ;
         }
 
-        if (writer == null) { ;
+        if (writer == null) {
+            ;
         }
 
-        if (xmlOutputter == null) { ;
+        if (xmlOutputter == null) {
+            ;
         }
 
         try {
@@ -169,54 +193,60 @@ public final class JDOMUtil {
             getLogger().error(var4);
             printDiagnostics(element, "");
         }
-
     }
 
-
-    public static String writeElement( Element element) {
-        if (element == null) { ;
+    public static String writeElement(Element element) {
+        if (element == null) {
+            ;
         }
 
         return writeElement(element, "\n");
     }
 
-
-    public static String writeElement( Element element, String lineSeparator) {
-        if (element == null) { ;
+    public static String writeElement(Element element, String lineSeparator) {
+        if (element == null) {
+            ;
         }
 
         String var10000;
         try {
             StringWriter writer = new StringWriter();
-            writeElement(element, writer, (String)lineSeparator);
+            writeElement(element, writer, (String) lineSeparator);
             var10000 = writer.toString();
         } catch (IOException var3) {
             throw new RuntimeException(var3);
         }
 
-        if (var10000 == null) { ;
+        if (var10000 == null) {
+            ;
         }
 
         return var10000;
     }
 
-
-    public static Format createFormat( String lineSeparator) {
-        Format var10000 = Format.getCompactFormat().setIndent("  ").setTextMode(TextMode.TRIM).setEncoding("UTF-8").setOmitEncoding(false).setOmitDeclaration(false).setLineSeparator(lineSeparator);
-        if (var10000 == null) { ;
+    public static Format createFormat(String lineSeparator) {
+        Format var10000 =
+                Format.getCompactFormat()
+                        .setIndent("  ")
+                        .setTextMode(TextMode.TRIM)
+                        .setEncoding("UTF-8")
+                        .setOmitEncoding(false)
+                        .setOmitDeclaration(false)
+                        .setLineSeparator(lineSeparator);
+        if (var10000 == null) {
+            ;
         }
 
         return var10000;
     }
-
 
     public static XMLOutputter createOutputter(String lineSeparator) {
         return new JDOMUtil.MyXMLOutputter(createFormat(lineSeparator));
     }
 
-
-    private static String escapeChar(char c, boolean escapeApostrophes, boolean escapeSpaces, boolean escapeLineEnds) {
-        switch(c) {
+    private static String escapeChar(
+            char c, boolean escapeApostrophes, boolean escapeSpaces, boolean escapeLineEnds) {
+        switch (c) {
             case '\t':
                 return escapeLineEnds ? "&#9;" : null;
             case '\n':
@@ -240,36 +270,39 @@ public final class JDOMUtil {
         }
     }
 
-
-    public static String escapeText( String text, boolean escapeSpaces, boolean escapeLineEnds) {
-        if (text == null) { ;
+    public static String escapeText(String text, boolean escapeSpaces, boolean escapeLineEnds) {
+        if (text == null) {
+            ;
         }
 
         return escapeText(text, false, escapeSpaces, escapeLineEnds);
     }
 
-
-    public static String escapeText( String text, boolean escapeApostrophes, boolean escapeSpaces, boolean escapeLineEnds) {
-        if (text == null) { ;
+    public static String escapeText(
+            String text, boolean escapeApostrophes, boolean escapeSpaces, boolean escapeLineEnds) {
+        if (text == null) {
+            ;
         }
 
         StringBuilder buffer = null;
 
-        for(int i = 0; i < text.length(); ++i) {
+        for (int i = 0; i < text.length(); ++i) {
             char ch = text.charAt(i);
             String quotation = escapeChar(ch, escapeApostrophes, escapeSpaces, escapeLineEnds);
             buffer = XmlStringUtil.appendEscapedSymbol(text, buffer, i, quotation, ch);
         }
 
         String var10000 = buffer == null ? text : buffer.toString();
-        if (var10000 == null) { ;
+        if (var10000 == null) {
+            ;
         }
 
         return var10000;
     }
 
-    private static void printDiagnostics( Element element, String prefix) {
-        if (element == null) { ;
+    private static void printDiagnostics(Element element, String prefix) {
+        if (element == null) {
+            ;
         }
 
         JDOMUtil.ElementInfo info = getElementInfo(element);
@@ -280,16 +313,15 @@ public final class JDOMUtil {
 
         Iterator var3 = element.getChildren().iterator();
 
-        while(var3.hasNext()) {
-            Element child = (Element)var3.next();
+        while (var3.hasNext()) {
+            Element child = (Element) var3.next();
             printDiagnostics(child, prefix);
         }
-
     }
 
-
-    private static JDOMUtil.ElementInfo getElementInfo( Element element) {
-        if (element == null) { ;
+    private static JDOMUtil.ElementInfo getElementInfo(Element element) {
+        if (element == null) {
+            ;
         }
 
         boolean hasNullAttributes = false;
@@ -299,8 +331,8 @@ public final class JDOMUtil {
         if (length > 0) {
             buf.append("[");
 
-            for(int idx = 0; idx < length; ++idx) {
-                Attribute attr = (Attribute)attributes.get(idx);
+            for (int idx = 0; idx < length; ++idx) {
+                Attribute attr = (Attribute) attributes.get(idx);
                 if (idx != 0) {
                     buf.append(";");
                 }
@@ -319,17 +351,18 @@ public final class JDOMUtil {
         return new JDOMUtil.ElementInfo(buf, hasNullAttributes);
     }
 
-    public static boolean isEmpty( Element element) {
+    public static boolean isEmpty(Element element) {
         return element == null || !element.hasAttributes() && element.getContent().isEmpty();
     }
 
-
-    public static List<Attribute> getAttributes( Element e) {
-        if (e == null) { ;
+    public static List<Attribute> getAttributes(Element e) {
+        if (e == null) {
+            ;
         }
 
         List var10000 = e.hasAttributes() ? e.getAttributes() : Collections.emptyList();
-        if (var10000 == null) { ;
+        if (var10000 == null) {
+            ;
         }
 
         return var10000;
@@ -340,48 +373,42 @@ public final class JDOMUtil {
         final CharSequence name;
         final boolean hasNullAttributes;
 
-        private ElementInfo( CharSequence name, boolean attributes) {
+        private ElementInfo(CharSequence name, boolean attributes) {
             this.name = name;
             this.hasNullAttributes = attributes;
         }
     }
 
     private static final class MyXMLOutputter extends XMLOutputter {
-        MyXMLOutputter( Format format) {
+        MyXMLOutputter(Format format) {
             super(format);
         }
 
-
-        public String escapeAttributeEntities( String str) {
-            if (str == null) {
-            }
+        public String escapeAttributeEntities(String str) {
+            if (str == null) {}
 
             String var10000 = JDOMUtil.escapeText(str, false, true);
-            if (var10000 == null) {
-            }
+            if (var10000 == null) {}
 
             return var10000;
         }
 
-
-        public String escapeElementEntities( String str) {
-            if (str == null) {
-            }
+        public String escapeElementEntities(String str) {
+            if (str == null) {}
 
             String var10000 = JDOMUtil.escapeText(str, false, false);
-            if (var10000 == null) {
-            }
+            if (var10000 == null) {}
 
             return var10000;
         }
     }
 
     private static final class EmptyTextFilter implements Filter<Content> {
-        private EmptyTextFilter() {
-        }
+        private EmptyTextFilter() {}
 
         public boolean matches(Object obj) {
-            return !(obj instanceof Text) || !CharArrayUtil.containsOnlyWhiteSpaces(((Text)obj).getText());
+            return !(obj instanceof Text)
+                    || !CharArrayUtil.containsOnlyWhiteSpaces(((Text) obj).getText());
         }
     }
 

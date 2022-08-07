@@ -23,16 +23,14 @@
  */
 package io.github.rosemoe.sora.lang.smartEnter;
 
-/**
- * Perform text processing when user enters '\n' and selection size is 0
- */
+/** Perform text processing when user enters '\n' and selection size is 0 */
 public interface NewlineHandler {
 
     /**
      * Checks whether the given input matches the requirement to invoke this handler
      *
      * @param beforeText Text of line before cursor
-     * @param afterText  Text of line after cursor
+     * @param afterText Text of line after cursor
      * @return Whether this handler should be called
      */
     boolean matchesRequirement(String beforeText, String afterText);
@@ -41,9 +39,8 @@ public interface NewlineHandler {
      * Handle newline and return processed content to insert
      *
      * @param beforeText Text of line before cursor
-     * @param afterText  Text of line after cursor
+     * @param afterText Text of line after cursor
      * @return Actual content to insert
      */
     NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize);
-
 }

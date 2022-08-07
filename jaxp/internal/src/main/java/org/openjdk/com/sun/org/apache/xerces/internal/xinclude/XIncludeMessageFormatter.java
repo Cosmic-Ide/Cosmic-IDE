@@ -22,6 +22,7 @@ package org.openjdk.com.sun.org.apache.xerces.internal.xinclude;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.util.MessageFormatter;
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -31,43 +32,43 @@ import java.util.ResourceBundle;
  * XIncludeMessageFormatter provides error messages for the XInclude 1.0 Candidate Recommendation
  *
  * @author Peter McCracken, IBM
- *
  * @version $Id: XIncludeMessageFormatter.java,v 1.7 2010-11-01 04:40:18 joehw Exp $
  */
 public class XIncludeMessageFormatter implements MessageFormatter {
 
     public static final String XINCLUDE_DOMAIN = "http://www.w3.org/TR/xinclude";
 
-     // private objects to cache the locale and resource bundle
+    // private objects to cache the locale and resource bundle
     private Locale fLocale = null;
     private ResourceBundle fResourceBundle = null;
 
     /**
-     * Formats a message with the specified arguments using the given
-     * locale information.
+     * Formats a message with the specified arguments using the given locale information.
      *
-     * @param locale    The locale of the message.
-     * @param key       The message key.
-     * @param arguments The message replacement text arguments. The order
-     *                  of the arguments must match that of the placeholders
-     *                  in the actual message.
-     *
+     * @param locale The locale of the message.
+     * @param key The message key.
+     * @param arguments The message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @return Returns the formatted message.
-     *
-     * @throws MissingResourceException Thrown if the message with the
-     *                                  specified key cannot be found.
+     * @throws MissingResourceException Thrown if the message with the specified key cannot be
+     *     found.
      */
-     public String formatMessage(Locale locale, String key, Object[] arguments)
-        throws MissingResourceException {
+    public String formatMessage(Locale locale, String key, Object[] arguments)
+            throws MissingResourceException {
 
         if (fResourceBundle == null || locale != fLocale) {
             if (locale != null) {
-                fResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages", locale);
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages",
+                                locale);
                 // memorize the most-recent locale
                 fLocale = locale;
             }
             if (fResourceBundle == null)
-                fResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages");
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages");
         }
 
         String msg = fResourceBundle.getString(key);
@@ -82,7 +83,10 @@ public class XIncludeMessageFormatter implements MessageFormatter {
 
         if (msg == null) {
             msg = fResourceBundle.getString("BadMessageKey");
-            throw new MissingResourceException(msg, "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages", key);
+            throw new MissingResourceException(
+                    msg,
+                    "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XIncludeMessages",
+                    key);
         }
 
         return msg;

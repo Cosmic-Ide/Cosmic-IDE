@@ -37,9 +37,7 @@ public class DiagnosticsContainer {
     private final List<DiagnosticRegion> regions = new ArrayList<>();
     private final boolean shiftEnabled;
 
-    /**
-     * Create a new DiagnosticsContainer, with auto-shifting enabled
-     */
+    /** Create a new DiagnosticsContainer, with auto-shifting enabled */
     public DiagnosticsContainer() {
         this(true);
     }
@@ -53,16 +51,12 @@ public class DiagnosticsContainer {
         this.shiftEnabled = shiftEnabled;
     }
 
-    /**
-     * Add multiple diagnostics
-     */
+    /** Add multiple diagnostics */
     public synchronized void addDiagnostics(Collection<DiagnosticRegion> regions) {
         this.regions.addAll(regions);
     }
 
-    /**
-     * Add single diagnostic item
-     */
+    /** Add single diagnostic item */
     public synchronized void addDiagnostic(DiagnosticRegion diagnostic) {
         regions.add(diagnostic);
     }
@@ -70,11 +64,12 @@ public class DiagnosticsContainer {
     /**
      * Query diagnostics that can be displayed either partly or fully in the given region
      *
-     * @param result     Destination of result
+     * @param result Destination of result
      * @param startIndex Start index of query
-     * @param endIndex   End index of query
+     * @param endIndex End index of query
      */
-    public synchronized void queryInRegion(List<DiagnosticRegion> result, int startIndex, int endIndex) {
+    public synchronized void queryInRegion(
+            List<DiagnosticRegion> result, int startIndex, int endIndex) {
         for (var region : regions) {
             if (region.endIndex > startIndex && region.startIndex <= endIndex) {
                 result.add(region);
@@ -136,11 +131,8 @@ public class DiagnosticsContainer {
         regions.removeAll(garbage);
     }
 
-    /**
-     * Remove all items
-     */
+    /** Remove all items */
     public synchronized void reset() {
         regions.clear();
     }
-
 }

@@ -23,24 +23,20 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 abstract class AttributeValue extends Expression {
 
-    public static final AttributeValue create(SyntaxTreeNode parent,
-                                              String text, Parser parser) {
+    public static final AttributeValue create(SyntaxTreeNode parent, String text, Parser parser) {
 
         AttributeValue result;
         if (text.indexOf('{') != -1) {
             result = new AttributeValueTemplate(text, parser, parent);
-        }
-        else if (text.indexOf('}') != -1) {
+        } else if (text.indexOf('}') != -1) {
             result = new AttributeValueTemplate(text, parser, parent);
-        }
-        else {
+        } else {
             result = new SimpleAttributeValue(text);
             result.setParser(parser);
             result.setParent(parent);

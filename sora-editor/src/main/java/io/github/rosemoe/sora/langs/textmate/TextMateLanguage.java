@@ -27,9 +27,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import java.io.InputStream;
-import java.io.Reader;
-
 import io.github.rosemoe.sora.annotations.Experimental;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
@@ -43,6 +40,9 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
 import org.eclipse.tm4e.core.theme.IRawTheme;
 
+import java.io.InputStream;
+import java.io.Reader;
+
 @Experimental
 public class TextMateLanguage extends EmptyLanguage {
 
@@ -52,14 +52,21 @@ public class TextMateLanguage extends EmptyLanguage {
     boolean autoCompleteEnabled;
     final boolean createIdentifiers;
 
-    private TextMateLanguage(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme, boolean createIdentifiers) {
+    private TextMateLanguage(
+            String grammarName,
+            InputStream grammarIns,
+            Reader languageConfiguration,
+            IRawTheme theme,
+            boolean createIdentifiers) {
         if (grammarName.startsWith("java")) {
             autoComplete = new IdentifierAutoComplete(javaKeywords);
         } else if (grammarName.startsWith("kotlin")) {
             autoComplete = new IdentifierAutoComplete(kotlinKeywords);
         }
         try {
-            textMateAnalyzer = new TextMateAnalyzer(this, grammarName, grammarIns, languageConfiguration, theme);
+            textMateAnalyzer =
+                    new TextMateAnalyzer(
+                            this, grammarName, grammarIns, languageConfiguration, theme);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,24 +74,35 @@ public class TextMateLanguage extends EmptyLanguage {
         autoCompleteEnabled = true;
     }
 
-    public static TextMateLanguage create(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
+    public static TextMateLanguage create(
+            String grammarName,
+            InputStream grammarIns,
+            Reader languageConfiguration,
+            IRawTheme theme) {
         return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, true);
     }
 
-    public static TextMateLanguage create(String grammarName, InputStream grammarIns, IRawTheme theme) {
+    public static TextMateLanguage create(
+            String grammarName, InputStream grammarIns, IRawTheme theme) {
         return new TextMateLanguage(grammarName, grammarIns, null, theme, true);
     }
 
-    public static TextMateLanguage createNoCompletion(String grammarName, InputStream grammarIns, Reader languageConfiguration, IRawTheme theme) {
+    public static TextMateLanguage createNoCompletion(
+            String grammarName,
+            InputStream grammarIns,
+            Reader languageConfiguration,
+            IRawTheme theme) {
         return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, false);
     }
 
-    public static TextMateLanguage createNoCompletion(String grammarName, InputStream grammarIns, IRawTheme theme) {
+    public static TextMateLanguage createNoCompletion(
+            String grammarName, InputStream grammarIns, IRawTheme theme) {
         return new TextMateLanguage(grammarName, grammarIns, null, theme, false);
     }
 
     /**
-     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the updates here
+     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the
+     * updates here
      *
      * @param theme IRawTheme creates from file
      */
@@ -108,9 +126,7 @@ public class TextMateLanguage extends EmptyLanguage {
         super.destroy();
     }
 
-    /**
-     * Set tab size. The tab size is used to compute code blocks.
-     */
+    /** Set tab size. The tab size is used to compute code blocks. */
     public void setTabSize(int tabSize) {
         this.tabSize = tabSize;
     }
@@ -133,11 +149,17 @@ public class TextMateLanguage extends EmptyLanguage {
     }
 
     @Override
-    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
+    public void requireAutoComplete(
+            @NonNull ContentReference content,
+            @NonNull CharPosition position,
+            @NonNull CompletionPublisher publisher,
+            @NonNull Bundle extraArguments) {
         if (!autoCompleteEnabled) {
             return;
         }
-        var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
+        var prefix =
+                CompletionHelper.computePrefix(
+                        content, position, MyCharacter::isJavaIdentifierPart);
         final var idt = textMateAnalyzer.syncIdentifiers;
         autoComplete.requireAutoComplete(prefix, publisher, idt);
     }
@@ -147,32 +169,142 @@ public class TextMateLanguage extends EmptyLanguage {
     }
 
     private final String[] javaKeywords = {
-        "assert", "abstract", "boolean", "byte", "char", "class", "do",
-        "double", "final", "float", "for", "if", "int", "long", "new",
-        "public", "private", "protected", "package", "return", "static",
-        "short", "super", "switch", "else", "volatile", "synchronized",
-        "strictfp", "goto", "continue", "break", "transient", "void",
-        "try", "catch", "finally", "while", "case", "default", "const",
-        "enum", "extends", "implements", "import", "instanceof", 
-        "interface", "native", "this", "throw", "throws", "true", 
-        "false", "null", "var", "sealed", "permits"
-    };
-    
-    private final String[] kotlinKeywords = {
-        "as", "as?", "break", "class", "continue", "do", "else",
-        "false", "for", "fun", "if", "in", "interface", "is",
-        "null", "object", "package", "return", "super",
-        "this", "throw", "true", "try", "typealias", "typeof", "val",
-        "var", "when", "while", "by", "catch", "constructor",
-        "delegate", "dynamic", "field", "file", "finally", "get",
-        "import", "init", "param", "property", "reciever", "set",
-        "setparam", "value", "where", "abstract", "actual",
-        "annotation", "companion", "const", "crossinline", "data",
-        "enum", "expect", "external", "final", "infix", "inline",
-        "inner", "internal", "lateinit", "noinline", "open",
-        "operator", "out", "override", "private", "protected",
-        "public", "reified", "sealed", "suspend", "tailrec", "vararg", 
-        "field", "it"
+        "assert",
+        "abstract",
+        "boolean",
+        "byte",
+        "char",
+        "class",
+        "do",
+        "double",
+        "final",
+        "float",
+        "for",
+        "if",
+        "int",
+        "long",
+        "new",
+        "public",
+        "private",
+        "protected",
+        "package",
+        "return",
+        "static",
+        "short",
+        "super",
+        "switch",
+        "else",
+        "volatile",
+        "synchronized",
+        "strictfp",
+        "goto",
+        "continue",
+        "break",
+        "transient",
+        "void",
+        "try",
+        "catch",
+        "finally",
+        "while",
+        "case",
+        "default",
+        "const",
+        "enum",
+        "extends",
+        "implements",
+        "import",
+        "instanceof",
+        "interface",
+        "native",
+        "this",
+        "throw",
+        "throws",
+        "true",
+        "false",
+        "null",
+        "var",
+        "sealed",
+        "permits"
     };
 
+    private final String[] kotlinKeywords = {
+        "as",
+        "as?",
+        "break",
+        "class",
+        "continue",
+        "do",
+        "else",
+        "false",
+        "for",
+        "fun",
+        "if",
+        "in",
+        "interface",
+        "is",
+        "null",
+        "object",
+        "package",
+        "return",
+        "super",
+        "this",
+        "throw",
+        "true",
+        "try",
+        "typealias",
+        "typeof",
+        "val",
+        "var",
+        "when",
+        "while",
+        "by",
+        "catch",
+        "constructor",
+        "delegate",
+        "dynamic",
+        "field",
+        "file",
+        "finally",
+        "get",
+        "import",
+        "init",
+        "param",
+        "property",
+        "reciever",
+        "set",
+        "setparam",
+        "value",
+        "where",
+        "abstract",
+        "actual",
+        "annotation",
+        "companion",
+        "const",
+        "crossinline",
+        "data",
+        "enum",
+        "expect",
+        "external",
+        "final",
+        "infix",
+        "inline",
+        "inner",
+        "internal",
+        "lateinit",
+        "noinline",
+        "open",
+        "operator",
+        "out",
+        "override",
+        "private",
+        "protected",
+        "public",
+        "reified",
+        "sealed",
+        "suspend",
+        "tailrec",
+        "vararg",
+        "field",
+        "it"
+    };
 }

@@ -57,26 +57,35 @@ package org.openjdk.com.sun.org.apache.bcel.internal.util;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.util.ArrayList;
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.JavaClass;
 
+import java.util.ArrayList;
+
 /**
- * Utility class implementing a (typesafe) collection of JavaClass
- * objects. Contains the most important methods of a Vector.
+ * Utility class implementing a (typesafe) collection of JavaClass objects. Contains the most
+ * important methods of a Vector.
  *
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  * @see ClassQueue
-*/
+ */
 public class ClassVector implements java.io.Serializable {
-  protected ArrayList vec = new ArrayList();
+    protected ArrayList vec = new ArrayList();
 
-  public void      addElement(JavaClass clazz) { vec.add(clazz); }
-  public JavaClass elementAt(int index)        { return (JavaClass)vec.get(index); }
-  public void      removeElementAt(int index)  { vec.remove(index); }
+    public void addElement(JavaClass clazz) {
+        vec.add(clazz);
+    }
 
-  public JavaClass[] toArray() {
-    JavaClass[] classes = new JavaClass[vec.size()];
-    vec.toArray(classes);
-    return classes;
-  }
+    public JavaClass elementAt(int index) {
+        return (JavaClass) vec.get(index);
+    }
+
+    public void removeElementAt(int index) {
+        vec.remove(index);
+    }
+
+    public JavaClass[] toArray() {
+        JavaClass[] classes = new JavaClass[vec.size()];
+        vec.toArray(classes);
+        return classes;
+    }
 }

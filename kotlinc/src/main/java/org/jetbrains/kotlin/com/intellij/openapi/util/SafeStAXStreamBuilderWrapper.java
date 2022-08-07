@@ -19,10 +19,12 @@ public class SafeStAXStreamBuilderWrapper {
 
     public static final SafeJdomFactory FACTORY = new SafeJdomFactory.BaseSafeJdomFactory();
 
-    public static Element build(XMLStreamReader stream,
-                                boolean isIgnoreBoundaryWhitespace,
-                                boolean isNsSupported,
-                                SafeJdomFactory factory) throws XMLStreamException {
+    public static Element build(
+            XMLStreamReader stream,
+            boolean isIgnoreBoundaryWhitespace,
+            boolean isNsSupported,
+            SafeJdomFactory factory)
+            throws XMLStreamException {
         int state = stream.getEventType();
         if (state != START_DOCUMENT) {
             throw new XMLStreamException("beginning");
@@ -60,25 +62,33 @@ public class SafeStAXStreamBuilderWrapper {
         return rootElement;
     }
 
-    public static Element processElement(XMLStreamReader reader,
-                                         boolean isNsSupported,
-                                         SafeJdomFactory factory) {
-        Element element = factory.element(reader.getLocalName(), isNsSupported
-                ? Namespace.getNamespace(reader.getPrefix(), reader.getNamespaceURI())
-                : Namespace.NO_NAMESPACE);
+    public static Element processElement(
+            XMLStreamReader reader, boolean isNsSupported, SafeJdomFactory factory) {
+        Element element =
+                factory.element(
+                        reader.getLocalName(),
+                        isNsSupported
+                                ? Namespace.getNamespace(
+                                        reader.getPrefix(), reader.getNamespaceURI())
+                                : Namespace.NO_NAMESPACE);
         // handle attributes
         for (int i = 0, len = reader.getAttributeCount(); i < len; i++) {
-            element.setAttribute(factory.attribute(
-                    reader.getAttributeLocalName(i),
-                    reader.getAttributeValue(i),
-                    AttributeType.valueOf(reader.getAttributeType(i)),
-                    isNsSupported ? Namespace.getNamespace(reader.getAttributePrefix(i), reader.getNamespaceURI()) : Namespace.NO_NAMESPACE
-            ));
+            element.setAttribute(
+                    factory.attribute(
+                            reader.getAttributeLocalName(i),
+                            reader.getAttributeValue(i),
+                            AttributeType.valueOf(reader.getAttributeType(i)),
+                            isNsSupported
+                                    ? Namespace.getNamespace(
+                                            reader.getAttributePrefix(i), reader.getNamespaceURI())
+                                    : Namespace.NO_NAMESPACE));
         }
 
         if (isNsSupported) {
             for (int i = 0, len = reader.getNamespaceCount(); i < len; i++) {
-                element.addNamespaceDeclaration(Namespace.getNamespace(reader.getAttributePrefix(i), reader.getNamespaceURI(i)));
+                element.addNamespaceDeclaration(
+                        Namespace.getNamespace(
+                                reader.getAttributePrefix(i), reader.getNamespaceURI(i)));
             }
         }
 

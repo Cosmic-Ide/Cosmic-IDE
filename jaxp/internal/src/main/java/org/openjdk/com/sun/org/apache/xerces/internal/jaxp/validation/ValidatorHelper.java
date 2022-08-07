@@ -20,21 +20,18 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.jaxp.validation;
 
-import java.io.IOException;
-
 import org.openjdk.javax.xml.transform.Result;
 import org.openjdk.javax.xml.transform.Source;
-
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+
 /**
- * <p>Instances of ValidatorHelper are able to validate
- * specific source and result types.</p>
+ * Instances of ValidatorHelper are able to validate specific source and result types.
  *
  * @author Michael Glavassevich, IBM
  */
 interface ValidatorHelper {
 
-    public void validate(Source source, Result result)
-        throws SAXException, IOException;
+    public void validate(Source source, Result result) throws SAXException, IOException;
 }

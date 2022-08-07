@@ -24,8 +24,7 @@
 package io.github.rosemoe.sora.util;
 
 /**
- * @author Rose
- * TrieTree to query values quickly
+ * @author Rose TrieTree to query values quickly
  */
 public class TrieTree<T> {
 
@@ -89,7 +88,6 @@ public class TrieTree<T> {
         public Node() {
             this.map = new HashCharMap<>();
         }
-
     }
 
     /**
@@ -99,7 +97,7 @@ public class TrieTree<T> {
      */
     public static class HashCharMap<V> {
 
-        private final static int CAPACITY = 64;
+        private static final int CAPACITY = 64;
         private final LinkedPair<V>[] columns;
         private final LinkedPair<V>[] ends;
 
@@ -108,7 +106,6 @@ public class TrieTree<T> {
             columns = new LinkedPair[CAPACITY];
             ends = new LinkedPair[CAPACITY];
         }
-
 
         private static int position(int first) {
             return Math.abs(first ^ (first << 6) * ((first & 1) != 0 ? 3 : 1)) % CAPACITY;
@@ -153,8 +150,6 @@ public class TrieTree<T> {
             p.first = first;
             p.second = second;
         }
-
-
     }
 
     /**
@@ -169,8 +164,5 @@ public class TrieTree<T> {
         public char first;
 
         public V second;
-
     }
-
 }
-

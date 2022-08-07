@@ -22,19 +22,19 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.dtd;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.DTDDVFactory;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
+
 import java.util.Hashtable;
 
 /**
  * the factory to create/return built-in schema DVs and create user-defined DVs
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
- *
  */
 public class DTDDVFactoryImpl extends DTDDVFactory {
 
     static Hashtable fBuiltInTypes = new Hashtable();
+
     static {
         createBuiltInTypes();
     }
@@ -42,20 +42,20 @@ public class DTDDVFactoryImpl extends DTDDVFactory {
     /**
      * return a dtd type of the given name
      *
-     * @param name  the name of the datatype
-     * @return      the datatype validator of the given name
+     * @param name the name of the datatype
+     * @return the datatype validator of the given name
      */
     public DatatypeValidator getBuiltInDV(String name) {
-        return (DatatypeValidator)fBuiltInTypes.get(name);
+        return (DatatypeValidator) fBuiltInTypes.get(name);
     }
 
     /**
      * get all built-in DVs, which are stored in a hashtable keyed by the name
      *
-     * @return      a hashtable which contains all datatypes
+     * @return a hashtable which contains all datatypes
      */
     public Hashtable getBuiltInTypes() {
-        return (Hashtable)fBuiltInTypes.clone();
+        return (Hashtable) fBuiltInTypes.clone();
     }
 
     // create all built-in types
@@ -75,7 +75,5 @@ public class DTDDVFactoryImpl extends DTDDVFactory {
         dvTemp = new NMTOKENDatatypeValidator();
         fBuiltInTypes.put("NMTOKEN", dvTemp);
         fBuiltInTypes.put("NMTOKENS", new ListDatatypeValidator(dvTemp));
-
-    }//createBuiltInTypes()
-
-}// DTDDVFactoryImpl
+    } // createBuiltInTypes()
+} // DTDDVFactoryImpl

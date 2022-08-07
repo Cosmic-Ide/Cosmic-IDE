@@ -33,5 +33,4 @@ public class ThemeUtils {
         context.getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
         return typedValue.data;
     }
-
 }

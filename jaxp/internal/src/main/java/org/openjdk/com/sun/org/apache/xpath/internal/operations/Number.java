@@ -26,46 +26,34 @@ import org.openjdk.com.sun.org.apache.xpath.internal.XPathContext;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XNumber;
 import org.openjdk.com.sun.org.apache.xpath.internal.objects.XObject;
 
-/**
- * The 'number()' operation expression executer.
- */
-public class Number extends UnaryOperation
-{
+/** The 'number()' operation expression executer. */
+public class Number extends UnaryOperation {
     static final long serialVersionUID = 7196954482871619765L;
 
-  /**
-   * Apply the operation to two operands, and return the result.
-   *
-   *
-   * @param right non-null reference to the evaluated right operand.
-   *
-   * @return non-null reference to the XObject that represents the result of the operation.
-   *
-   * @throws org.openjdk.javax.xml.transform.TransformerException
-   */
-  public XObject operate(XObject right) throws org.openjdk.javax.xml.transform.TransformerException
-  {
+    /**
+     * Apply the operation to two operands, and return the result.
+     *
+     * @param right non-null reference to the evaluated right operand.
+     * @return non-null reference to the XObject that represents the result of the operation.
+     * @throws org.openjdk.javax.xml.transform.TransformerException
+     */
+    public XObject operate(XObject right)
+            throws org.openjdk.javax.xml.transform.TransformerException {
 
-    if (XObject.CLASS_NUMBER == right.getType())
-      return right;
-    else
-      return new XNumber(right.num());
-  }
+        if (XObject.CLASS_NUMBER == right.getType()) return right;
+        else return new XNumber(right.num());
+    }
 
-  /**
-   * Evaluate this operation directly to a double.
-   *
-   * @param xctxt The runtime execution context.
-   *
-   * @return The result of the operation as a double.
-   *
-   * @throws org.openjdk.javax.xml.transform.TransformerException
-   */
-  public double num(XPathContext xctxt)
-          throws org.openjdk.javax.xml.transform.TransformerException
-  {
+    /**
+     * Evaluate this operation directly to a double.
+     *
+     * @param xctxt The runtime execution context.
+     * @return The result of the operation as a double.
+     * @throws org.openjdk.javax.xml.transform.TransformerException
+     */
+    public double num(XPathContext xctxt)
+            throws org.openjdk.javax.xml.transform.TransformerException {
 
-    return m_right.num(xctxt);
-  }
-
+        return m_right.num(xctxt);
+    }
 }

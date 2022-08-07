@@ -27,10 +27,7 @@ import org.eclipse.tm4e.core.theme.IRawTheme;
 
 import java.io.InputStream;
 
-/**
- * TextMate Theme parser.
- *
- */
+/** TextMate Theme parser. */
 @FunctionalInterface
 public interface IThemeParser {
 

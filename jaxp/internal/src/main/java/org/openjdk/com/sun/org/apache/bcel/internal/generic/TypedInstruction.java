@@ -59,11 +59,11 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Get the type associated with an instruction, int for ILOAD, or the type
- * of the field of a PUTFIELD instruction, e.g..
+ * Get the type associated with an instruction, int for ILOAD, or the type of the field of a
+ * PUTFIELD instruction, e.g..
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface TypedInstruction {
-  public Type getType(ConstantPoolGen cpg);
+    public Type getType(ConstantPoolGen cpg);
 }

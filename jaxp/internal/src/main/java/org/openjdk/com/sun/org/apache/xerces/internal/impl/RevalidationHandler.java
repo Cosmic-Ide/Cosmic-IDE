@@ -63,6 +63,7 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.Augmentations;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentFilter;
+
 /**
  * DOM Revalidation handler adds additional functionality to XMLDocumentHandler
  *
@@ -74,11 +75,9 @@ public interface RevalidationHandler extends XMLDocumentFilter {
     /**
      * Character content.
      *
-     * @param data   The character data.
-     * @param augs   Augmentations
+     * @param data The character data.
+     * @param augs Augmentations
      * @return True if data is whitespace only
      */
     public boolean characterData(String data, Augmentations augs);
-
-
 } // interface DOMRevalidationHandler

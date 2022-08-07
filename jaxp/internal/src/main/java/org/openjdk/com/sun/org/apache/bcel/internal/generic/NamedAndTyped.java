@@ -59,15 +59,16 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Denote entity that has both name and type. This is true for local variables,
- * methods and fields.
+ * Denote entity that has both name and type. This is true for local variables, methods and fields.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface NamedAndTyped {
-  public String getName();
-  public Type   getType();
-  public void   setName(String name);
-  public void   setType(Type type);
+    public String getName();
 
+    public Type getType();
+
+    public void setName(String name);
+
+    public void setType(Type type);
 }

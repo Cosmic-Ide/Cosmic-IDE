@@ -21,12 +21,13 @@
 package org.openjdk.com.sun.org.apache.xerces.internal.jaxp.validation;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * <p>Used to format JAXP Validation API error messages using a specified locale.</p>
+ * Used to format JAXP Validation API error messages using a specified locale.
  *
  * @author Michael Glavassevich, IBM
  * @version $Id: JAXPValidationMessageFormatter.java,v 1.5 2010-11-01 04:40:08 joehw Exp $
@@ -34,32 +35,29 @@ import java.util.ResourceBundle;
 final class JAXPValidationMessageFormatter {
 
     /**
-     * Formats a message with the specified arguments using the given
-     * locale information.
+     * Formats a message with the specified arguments using the given locale information.
      *
-     * @param locale    The locale of the message.
-     * @param key       The message key.
-     * @param arguments The message replacement text arguments. The order
-     *                  of the arguments must match that of the placeholders
-     *                  in the actual message.
-     *
-     * @return          the formatted message.
-     *
-     * @throws MissingResourceException Thrown if the message with the
-     *                                  specified key cannot be found.
+     * @param locale The locale of the message.
+     * @param key The message key.
+     * @param arguments The message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
+     * @return the formatted message.
+     * @throws MissingResourceException Thrown if the message with the specified key cannot be
+     *     found.
      */
-    public static String formatMessage(Locale locale,
-        String key, Object[] arguments)
-        throws MissingResourceException {
+    public static String formatMessage(Locale locale, String key, Object[] arguments)
+            throws MissingResourceException {
 
         ResourceBundle resourceBundle = null;
         if (locale != null) {
             resourceBundle =
-                SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.JAXPValidationMessages", locale);
-        }
-        else {
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.JAXPValidationMessages",
+                            locale);
+        } else {
             resourceBundle =
-                SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.JAXPValidationMessages");
+                    SecuritySupport.getResourceBundle(
+                            "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.JAXPValidationMessages");
         }
 
         // format message
@@ -69,8 +67,7 @@ final class JAXPValidationMessageFormatter {
             if (arguments != null) {
                 try {
                     msg = java.text.MessageFormat.format(msg, arguments);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     msg = resourceBundle.getString("FormatFailed");
                     msg += " " + resourceBundle.getString(key);
                 }

@@ -22,30 +22,27 @@
  */
 package org.openjdk.com.sun.org.apache.xml.internal.dtm;
 
+import org.openjdk.com.sun.org.apache.xml.internal.res.XMLErrorResources;
+import org.openjdk.com.sun.org.apache.xml.internal.res.XMLMessages;
+import org.openjdk.javax.xml.transform.SourceLocator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.openjdk.javax.xml.transform.SourceLocator;
-
-import org.openjdk.com.sun.org.apache.xml.internal.res.XMLErrorResources;
-import org.openjdk.com.sun.org.apache.xml.internal.res.XMLMessages;
-
-
-/**
- * This class specifies an exceptional condition that occured
- * in the DTM module.
- */
+/** This class specifies an exceptional condition that occured in the DTM module. */
 public class DTMException extends RuntimeException {
     static final long serialVersionUID = -775576419181334734L;
 
-    /** Field locator specifies where the error occured.
-     *  @serial */
+    /**
+     * Field locator specifies where the error occured.
+     *
+     * @serial
+     */
     SourceLocator locator;
 
     /**
-     * Method getLocator retrieves an instance of a SourceLocator
-     * object that specifies where an error occured.
+     * Method getLocator retrieves an instance of a SourceLocator object that specifies where an
+     * error occured.
      *
      * @return A SourceLocator object, or null if none was specified.
      */
@@ -54,8 +51,8 @@ public class DTMException extends RuntimeException {
     }
 
     /**
-     * Method setLocator sets an instance of a SourceLocator
-     * object that specifies where an error occured.
+     * Method setLocator sets an instance of a SourceLocator object that specifies where an error
+     * occured.
      *
      * @param location A SourceLocator object, or null to clear the location.
      */
@@ -63,8 +60,11 @@ public class DTMException extends RuntimeException {
         locator = location;
     }
 
-    /** Field containedException specifies a wrapped exception.  May be null.
-     *  @serial */
+    /**
+     * Field containedException specifies a wrapped exception. May be null.
+     *
+     * @serial
+     */
     Throwable containedException;
 
     /**
@@ -78,50 +78,47 @@ public class DTMException extends RuntimeException {
     }
 
     /**
-     * Returns the cause of this throwable or <code>null</code> if the
-     * cause is nonexistent or unknown.  (The cause is the throwable that
-     * caused this throwable to get thrown.)
+     * Returns the cause of this throwable or <code>null</code> if the cause is nonexistent or
+     * unknown. (The cause is the throwable that caused this throwable to get thrown.)
      */
     public Throwable getCause() {
 
-        return ((containedException == this)
-                ? null
-                : containedException);
+        return ((containedException == this) ? null : containedException);
     }
 
     /**
-     * Initializes the <i>cause</i> of this throwable to the specified value.
-     * (The cause is the throwable that caused this throwable to get thrown.)
+     * Initializes the <i>cause</i> of this throwable to the specified value. (The cause is the
+     * throwable that caused this throwable to get thrown.)
      *
-     * <p>This method can be called at most once.  It is generally called from
-     * within the constructor, or immediately after creating the
-     * throwable.  If this throwable was created
-     * with {@link #DTMException(Throwable)} or
-     * {@link #DTMException(String,Throwable)}, this method cannot be called
-     * even once.
+     * <p>This method can be called at most once. It is generally called from within the
+     * constructor, or immediately after creating the throwable. If this throwable was created with
+     * {@link #DTMException(Throwable)} or {@link #DTMException(String,Throwable)}, this method
+     * cannot be called even once.
      *
-     * @param  cause the cause (which is saved for later retrieval by the
-     *         {@link #getCause()} method).  (A <tt>null</tt> value is
-     *         permitted, and indicates that the cause is nonexistent or
-     *         unknown.)
-     * @return  a reference to this <code>Throwable</code> instance.
-     * @throws IllegalArgumentException if <code>cause</code> is this
-     *         throwable.  (A throwable cannot
-     *         be its own cause.)
-     * @throws IllegalStateException if this throwable was
-     *         created with {@link #DTMException(Throwable)} or
-     *         {@link #DTMException(String,Throwable)}, or this method has already
-     *         been called on this throwable.
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()}
+     *     method). (A <tt>null</tt> value is permitted, and indicates that the cause is nonexistent
+     *     or unknown.)
+     * @return a reference to this <code>Throwable</code> instance.
+     * @throws IllegalArgumentException if <code>cause</code> is this throwable. (A throwable cannot
+     *     be its own cause.)
+     * @throws IllegalStateException if this throwable was created with {@link
+     *     #DTMException(Throwable)} or {@link #DTMException(String,Throwable)}, or this method has
+     *     already been called on this throwable.
      */
     public synchronized Throwable initCause(Throwable cause) {
 
         if ((this.containedException == null) && (cause != null)) {
-            throw new IllegalStateException(XMLMessages.createXMLMessage(XMLErrorResources.ER_CANNOT_OVERWRITE_CAUSE, null)); //"Can't overwrite cause");
+            throw new IllegalStateException(
+                    XMLMessages.createXMLMessage(
+                            XMLErrorResources.ER_CANNOT_OVERWRITE_CAUSE,
+                            null)); // "Can't overwrite cause");
         }
 
         if (cause == this) {
             throw new IllegalArgumentException(
-                XMLMessages.createXMLMessage(XMLErrorResources.ER_SELF_CAUSATION_NOT_PERMITTED, null)); //"Self-causation not permitted");
+                    XMLMessages.createXMLMessage(
+                            XMLErrorResources.ER_SELF_CAUSATION_NOT_PERMITTED,
+                            null)); // "Self-causation not permitted");
         }
 
         this.containedException = cause;
@@ -139,7 +136,7 @@ public class DTMException extends RuntimeException {
         super(message);
 
         this.containedException = null;
-        this.locator            = null;
+        this.locator = null;
     }
 
     /**
@@ -152,35 +149,31 @@ public class DTMException extends RuntimeException {
         super(e.getMessage());
 
         this.containedException = e;
-        this.locator            = null;
+        this.locator = null;
     }
 
     /**
      * Wrap an existing exception in a DTMException.
      *
-     * <p>This is used for throwing processor exceptions before
-     * the processing has started.</p>
+     * <p>This is used for throwing processor exceptions before the processing has started.
      *
-     * @param message The error or warning message, or null to
-     *                use the message from the embedded exception.
+     * @param message The error or warning message, or null to use the message from the embedded
+     *     exception.
      * @param e Any exception
      */
     public DTMException(String message, Throwable e) {
 
-        super(((message == null) || (message.length() == 0))
-              ? e.getMessage()
-              : message);
+        super(((message == null) || (message.length() == 0)) ? e.getMessage() : message);
 
         this.containedException = e;
-        this.locator            = null;
+        this.locator = null;
     }
 
     /**
      * Create a new DTMException from a message and a Locator.
      *
-     * <p>This constructor is especially useful when an application is
-     * creating its own exception from within a DocumentHandler
-     * callback.</p>
+     * <p>This constructor is especially useful when an application is creating its own exception
+     * from within a DocumentHandler callback.
      *
      * @param message The error or warning message.
      * @param locator The locator object for the error or warning.
@@ -190,34 +183,30 @@ public class DTMException extends RuntimeException {
         super(message);
 
         this.containedException = null;
-        this.locator            = locator;
+        this.locator = locator;
     }
 
     /**
      * Wrap an existing exception in a DTMException.
      *
-     * @param message The error or warning message, or null to
-     *                use the message from the embedded exception.
+     * @param message The error or warning message, or null to use the message from the embedded
+     *     exception.
      * @param locator The locator object for the error or warning.
      * @param e Any exception
      */
-    public DTMException(String message, SourceLocator locator,
-                                Throwable e) {
+    public DTMException(String message, SourceLocator locator, Throwable e) {
 
         super(message);
 
         this.containedException = e;
-        this.locator            = locator;
+        this.locator = locator;
     }
 
-    /**
-     * Get the error message with location information
-     * appended.
-     */
+    /** Get the error message with location information appended. */
     public String getMessageAndLocation() {
 
         StringBuffer sbuffer = new StringBuffer();
-        String       message = super.getMessage();
+        String message = super.getMessage();
 
         if (null != message) {
             sbuffer.append(message);
@@ -225,8 +214,8 @@ public class DTMException extends RuntimeException {
 
         if (null != locator) {
             String systemID = locator.getSystemId();
-            int    line     = locator.getLineNumber();
-            int    column   = locator.getColumnNumber();
+            int line = locator.getLineNumber();
+            int column = locator.getColumnNumber();
 
             if (null != systemID) {
                 sbuffer.append("; SystemID: ");
@@ -250,16 +239,15 @@ public class DTMException extends RuntimeException {
     /**
      * Get the location information as a string.
      *
-     * @return A string with location info, or null
-     * if there is no location information.
+     * @return A string with location info, or null if there is no location information.
      */
     public String getLocationAsString() {
 
         if (null != locator) {
-            StringBuffer sbuffer  = new StringBuffer();
-            String       systemID = locator.getSystemId();
-            int          line     = locator.getLineNumber();
-            int          column   = locator.getColumnNumber();
+            StringBuffer sbuffer = new StringBuffer();
+            String systemID = locator.getSystemId();
+            int line = locator.getLineNumber();
+            int column = locator.getColumnNumber();
 
             if (null != systemID) {
                 sbuffer.append("; SystemID: ");
@@ -283,18 +271,17 @@ public class DTMException extends RuntimeException {
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
      */
     public void printStackTrace() {
         printStackTrace(new java.io.PrintWriter(System.err, true));
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
+     *
      * @param s The stream where the dump will be sent to.
      */
     public void printStackTrace(java.io.PrintStream s) {
@@ -302,9 +289,9 @@ public class DTMException extends RuntimeException {
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
+     *
      * @param s The writer where the dump will be sent to.
      */
     public void printStackTrace(java.io.PrintWriter s) {
@@ -321,7 +308,8 @@ public class DTMException extends RuntimeException {
             }
 
             super.printStackTrace(s);
-        } catch (Throwable e) {}
+        } catch (Throwable e) {
+        }
 
         boolean isJdk14OrHigher = false;
         try {
@@ -342,9 +330,7 @@ public class DTMException extends RuntimeException {
 
                 try {
                     if (exception instanceof DTMException) {
-                        String locInfo =
-                            ((DTMException) exception)
-                                .getLocationAsString();
+                        String locInfo = ((DTMException) exception).getLocationAsString();
 
                         if (null != locInfo) {
                             s.println(locInfo);
@@ -358,8 +344,9 @@ public class DTMException extends RuntimeException {
 
                 try {
                     Method meth =
-                        ((Object) exception).getClass().getMethod("getException",
-                            (Class[]) null);
+                            ((Object) exception)
+                                    .getClass()
+                                    .getMethod("getException", (Class[]) null);
 
                     if (null != meth) {
                         Throwable prev = exception;

@@ -32,6 +32,11 @@ import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
  * @author Morten Jorgensen
  */
 public interface CurrentNodeListFilter {
-    public abstract boolean test(int node, int position, int last, int current,
-                                 AbstractTranslet translet, DTMAxisIterator iter);
+    public abstract boolean test(
+            int node,
+            int position,
+            int last,
+            int current,
+            AbstractTranslet translet,
+            DTMAxisIterator iter);
 }

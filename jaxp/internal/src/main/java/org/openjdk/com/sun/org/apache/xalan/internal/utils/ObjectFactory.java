@@ -24,13 +24,11 @@
 package org.openjdk.com.sun.org.apache.xalan.internal.utils;
 
 /**
- * This class is duplicated for each JAXP subpackage so keep it in sync.
- * It is package private and therefore is not exposed as part of the JAXP
- * API.
- * <p>
- * This class was moved from the <code>org.openjdk.javax.xml.parsers.ObjectFactory</code>
- * class and modified to be used as a general utility for creating objects
- * dynamically.
+ * This class is duplicated for each JAXP subpackage so keep it in sync. It is package private and
+ * therefore is not exposed as part of the JAXP API.
+ *
+ * <p>This class was moved from the <code>org.openjdk.javax.xml.parsers.ObjectFactory</code> class
+ * and modified to be used as a general utility for creating objects dynamically.
  *
  * @version $Id: ObjectFactory.java,v 1.11 2010-11-01 04:34:25 joehw Exp $
  */
@@ -39,12 +37,11 @@ public class ObjectFactory {
     //
     // Constants
     //
-     private static final String XALAN_INTERNAL = "org.openjdk.com.sun.org.apache.xalan.internal";
-     private static final String XERCES_INTERNAL = "org.openjdk.com.sun.org.apache.xerces.internal";
+    private static final String XALAN_INTERNAL = "org.openjdk.com.sun.org.apache.xalan.internal";
+    private static final String XERCES_INTERNAL = "org.openjdk.com.sun.org.apache.xerces.internal";
 
     /** Set to true for debugging */
     private static final boolean DEBUG = false;
-
 
     /** Prints a message to standard error if debugging is enabled. */
     private static void debugPrintln(String msg) {
@@ -53,14 +50,10 @@ public class ObjectFactory {
         }
     } // debugPrintln(String)
 
-    /**
-     * Figure out which ClassLoader to use.  For JDK 1.2 and later use
-     * the context ClassLoader.
-     */
-    public static ClassLoader findClassLoader()
-    {
-        if (System.getSecurityManager()!=null) {
-            //this will ensure bootclassloader is used
+    /** Figure out which ClassLoader to use. For JDK 1.2 and later use the context ClassLoader. */
+    public static ClassLoader findClassLoader() {
+        if (System.getSecurityManager() != null) {
+            // this will ensure bootclassloader is used
             return null;
         }
 
@@ -116,73 +109,59 @@ public class ObjectFactory {
     } // findClassLoader():ClassLoader
 
     /**
-     * Create an instance of a class using the same class loader for the ObjectFactory by default
-     * or boot class loader when Security Manager is in place
+     * Create an instance of a class using the same class loader for the ObjectFactory by default or
+     * boot class loader when Security Manager is in place
      */
     public static Object newInstance(String className, boolean doFallback)
-        throws ConfigurationError
-    {
-        if (System.getSecurityManager()!=null) {
+            throws ConfigurationError {
+        if (System.getSecurityManager() != null) {
             return newInstance(className, null, doFallback);
         } else {
-            return newInstance(className,
-                findClassLoader (), doFallback);
+            return newInstance(className, findClassLoader(), doFallback);
         }
     }
 
-    /**
-     * Create an instance of a class using the specified ClassLoader
-     */
-    static Object newInstance(String className, ClassLoader cl,
-                                      boolean doFallback)
-        throws ConfigurationError
-    {
+    /** Create an instance of a class using the specified ClassLoader */
+    static Object newInstance(String className, ClassLoader cl, boolean doFallback)
+            throws ConfigurationError {
         // assert(className != null);
-        try{
+        try {
             Class providerClass = findProviderClass(className, cl, doFallback);
             Object instance = providerClass.newInstance();
-            if (DEBUG) debugPrintln("created new instance of " + providerClass +
-                   " using ClassLoader: " + cl);
+            if (DEBUG)
+                debugPrintln(
+                        "created new instance of " + providerClass + " using ClassLoader: " + cl);
             return instance;
         } catch (ClassNotFoundException x) {
-            throw new ConfigurationError(
-                "Provider " + className + " not found", x);
+            throw new ConfigurationError("Provider " + className + " not found", x);
         } catch (Exception x) {
             throw new ConfigurationError(
-                "Provider " + className + " could not be instantiated: " + x,
-                x);
+                    "Provider " + className + " could not be instantiated: " + x, x);
         }
     }
 
     /**
-     * Find a Class using the same class loader for the ObjectFactory by default
-     * or boot class loader when Security Manager is in place
+     * Find a Class using the same class loader for the ObjectFactory by default or boot class
+     * loader when Security Manager is in place
      */
     public static Class<?> findProviderClass(String className, boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        if (System.getSecurityManager()!=null) {
+            throws ClassNotFoundException, ConfigurationError {
+        if (System.getSecurityManager() != null) {
             return Class.forName(className);
         } else {
-            return findProviderClass (className,
-                findClassLoader (), doFallback);
+            return findProviderClass(className, findClassLoader(), doFallback);
         }
     }
 
-    /**
-     * Find a Class using the specified ClassLoader
-     */
-    private static Class<?> findProviderClass(String className, ClassLoader cl,
-                                           boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        //throw security exception if the calling thread is not allowed to access the
-        //class. Restrict the access to the package classes as specified in java.security policy.
+    /** Find a Class using the specified ClassLoader */
+    private static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
+            throws ClassNotFoundException, ConfigurationError {
+        // throw security exception if the calling thread is not allowed to access the
+        // class. Restrict the access to the package classes as specified in java.security policy.
         SecurityManager security = System.getSecurityManager();
-        try{
-            if (security != null){
-                if (className.startsWith(XALAN_INTERNAL) ||
-                    className.startsWith(XERCES_INTERNAL)) {
+        try {
+            if (security != null) {
+                if (className.startsWith(XALAN_INTERNAL) || className.startsWith(XERCES_INTERNAL)) {
                     cl = null;
                 } else {
                     final int lastDot = className.lastIndexOf(".");
@@ -190,8 +169,8 @@ public class ObjectFactory {
                     if (lastDot != -1) packageName = className.substring(0, lastDot);
                     security.checkPackageAccess(packageName);
                 }
-             }
-        }catch(SecurityException e){
+            }
+        } catch (SecurityException e) {
             throw e;
         }
 
@@ -230,5 +209,4 @@ public class ObjectFactory {
 
         return providerClass;
     }
-
 } // class ObjectFactory

@@ -25,61 +25,57 @@
 
 package org.openjdk.com.sun.xml.internal.stream;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.openjdk.javax.xml.stream.XMLEventReader;
 import org.openjdk.javax.xml.stream.XMLStreamReader;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 
 /**
- *
- * @author  Neeraj
- *
- * This class wraps XMLInputSource and is also capable of telling wether application
- * returned XMLStreamReader or not when XMLResolver.resolveEnity
- * was called.
+ * @author Neeraj
+ *     <p>This class wraps XMLInputSource and is also capable of telling wether application returned
+ *     XMLStreamReader or not when XMLResolver.resolveEnity was called.
  */
 public class StaxXMLInputSource {
 
-    XMLStreamReader fStreamReader ;
-    XMLEventReader fEventReader ;
-    XMLInputSource fInputSource ;
+    XMLStreamReader fStreamReader;
+    XMLEventReader fEventReader;
+    XMLInputSource fInputSource;
 
-    //indicate if the source is resolved by a resolver
+    // indicate if the source is resolved by a resolver
     boolean fHasResolver = false;
 
     /** Creates a new instance of StaxXMLInputSource */
     public StaxXMLInputSource(XMLStreamReader streamReader) {
-        fStreamReader = streamReader ;
+        fStreamReader = streamReader;
     }
 
     /** Creates a new instance of StaxXMLInputSource */
     public StaxXMLInputSource(XMLEventReader eventReader) {
-        fEventReader = eventReader ;
+        fEventReader = eventReader;
     }
 
-    public StaxXMLInputSource(XMLInputSource inputSource){
-        fInputSource = inputSource ;
-
+    public StaxXMLInputSource(XMLInputSource inputSource) {
+        fInputSource = inputSource;
     }
 
-    public StaxXMLInputSource(XMLInputSource inputSource, boolean hasResolver){
-        fInputSource = inputSource ;
+    public StaxXMLInputSource(XMLInputSource inputSource, boolean hasResolver) {
+        fInputSource = inputSource;
         fHasResolver = hasResolver;
     }
 
-    public XMLStreamReader getXMLStreamReader(){
-        return fStreamReader ;
+    public XMLStreamReader getXMLStreamReader() {
+        return fStreamReader;
     }
 
-    public XMLEventReader getXMLEventReader(){
-        return fEventReader ;
+    public XMLEventReader getXMLEventReader() {
+        return fEventReader;
     }
 
-    public XMLInputSource getXMLInputSource(){
-        return fInputSource ;
+    public XMLInputSource getXMLInputSource() {
+        return fInputSource;
     }
 
-    public boolean hasXMLStreamOrXMLEventReader(){
-        return (fStreamReader == null) && (fEventReader == null) ? false : true ;
+    public boolean hasXMLStreamOrXMLEventReader() {
+        return (fStreamReader == null) && (fEventReader == null) ? false : true;
     }
 
     public boolean hasResolver() {

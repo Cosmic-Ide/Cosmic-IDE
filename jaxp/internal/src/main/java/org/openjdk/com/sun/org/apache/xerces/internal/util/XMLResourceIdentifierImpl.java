@@ -23,15 +23,12 @@ package org.openjdk.com.sun.org.apache.xerces.internal.util;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 
 /**
- * The XMLResourceIdentifierImpl class is an implementation of the
- * XMLResourceIdentifier interface which defines the location identity
- * of a resource.
+ * The XMLResourceIdentifierImpl class is an implementation of the XMLResourceIdentifier interface
+ * which defines the location identity of a resource.
  *
  * @author Andy Clark
- *
  */
-public class XMLResourceIdentifierImpl
-    implements XMLResourceIdentifier {
+public class XMLResourceIdentifierImpl implements XMLResourceIdentifier {
 
     //
     // Data
@@ -67,11 +64,9 @@ public class XMLResourceIdentifierImpl
      * @param baseSystemId The base system identifier.
      * @param expandedSystemId The expanded system identifier.
      */
-    public XMLResourceIdentifierImpl(String publicId,
-                                     String literalSystemId, String baseSystemId,
-                                     String expandedSystemId) {
-        setValues(publicId, literalSystemId, baseSystemId,
-                  expandedSystemId, null);
+    public XMLResourceIdentifierImpl(
+            String publicId, String literalSystemId, String baseSystemId, String expandedSystemId) {
+        setValues(publicId, literalSystemId, baseSystemId, expandedSystemId, null);
     } // <init>(String,String,String,String)
 
     /**
@@ -83,11 +78,13 @@ public class XMLResourceIdentifierImpl
      * @param expandedSystemId The expanded system identifier.
      * @param namespace The namespace.
      */
-    public XMLResourceIdentifierImpl(String publicId, String literalSystemId,
-                                     String baseSystemId, String expandedSystemId,
-                                     String namespace) {
-        setValues(publicId, literalSystemId, baseSystemId,
-                  expandedSystemId, namespace);
+    public XMLResourceIdentifierImpl(
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId,
+            String namespace) {
+        setValues(publicId, literalSystemId, baseSystemId, expandedSystemId, namespace);
     } // <init>(String,String,String,String,String)
 
     //
@@ -95,16 +92,18 @@ public class XMLResourceIdentifierImpl
     //
 
     /** Sets the values of the resource identifier. */
-    public void setValues(String publicId, String literalSystemId,
-                          String baseSystemId, String expandedSystemId) {
-        setValues(publicId, literalSystemId, baseSystemId,
-                  expandedSystemId, null);
+    public void setValues(
+            String publicId, String literalSystemId, String baseSystemId, String expandedSystemId) {
+        setValues(publicId, literalSystemId, baseSystemId, expandedSystemId, null);
     } // setValues(String,String,String,String)
 
     /** Sets the values of the resource identifier. */
-    public void setValues(String publicId, String literalSystemId,
-                          String baseSystemId, String expandedSystemId,
-                          String namespace) {
+    public void setValues(
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId,
+            String namespace) {
         fPublicId = publicId;
         fLiteralSystemId = literalSystemId;
         fBaseSystemId = baseSystemId;
@@ -160,9 +159,7 @@ public class XMLResourceIdentifierImpl
         return fLiteralSystemId;
     } // getLiteralSystemId():String
 
-    /**
-     * Returns the base URI against which the literal SystemId is to be resolved.
-     */
+    /** Returns the base URI against which the literal SystemId is to be resolved. */
     public String getBaseSystemId() {
         return fBaseSystemId;
     } // getBaseSystemId():String
@@ -226,5 +223,4 @@ public class XMLResourceIdentifierImpl
         }
         return str.toString();
     } // toString():String
-
 } // class XMLResourceIdentifierImpl

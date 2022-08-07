@@ -24,15 +24,12 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
 
 /**
- * A parsing exception. This exception is different from the standard
- * XNI exception in that it stores the location in the document (or
- * its entities) where the exception occurred.
+ * A parsing exception. This exception is different from the standard XNI exception in that it
+ * stores the location in the document (or its entities) where the exception occurred.
  *
  * @author Andy Clark, IBM
- *
  */
-public class XMLParseException
-    extends XNIException {
+public class XMLParseException extends XNIException {
 
     /** Serialization version. */
     static final long serialVersionUID = 1732959359448549967L;
@@ -81,8 +78,7 @@ public class XMLParseException
     } // <init>(XMLLocator,String)
 
     /** Constructs a parse exception. */
-    public XMLParseException(XMLLocator locator,
-                             String message, Exception exception) {
+    public XMLParseException(XMLLocator locator, String message, Exception exception) {
         super(message, exception);
         if (locator != null) {
             fPublicId = locator.getPublicId();
@@ -175,7 +171,5 @@ public class XMLParseException
             str.append(message);
         }
         return str.toString();
-
     } // toString():String
-
 } // XMLParseException

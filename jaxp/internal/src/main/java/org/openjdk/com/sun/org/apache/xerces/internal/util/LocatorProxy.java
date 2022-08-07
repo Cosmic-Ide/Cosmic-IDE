@@ -29,7 +29,6 @@ import org.xml.sax.ext.Locator2;
  *
  * @author Arnaud Le Hors, IBM
  * @author Andy Clark, IBM
- *
  */
 public class LocatorProxy implements Locator2 {
 
@@ -84,5 +83,4 @@ public class LocatorProxy implements Locator2 {
     public String getEncoding() {
         return fLocator.getEncoding();
     }
-
 }

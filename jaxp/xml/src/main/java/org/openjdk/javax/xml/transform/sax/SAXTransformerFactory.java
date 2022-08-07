@@ -26,125 +26,111 @@
 package org.openjdk.javax.xml.transform.sax;
 
 import org.openjdk.javax.xml.transform.TransformerConfigurationException;
-
 import org.xml.sax.XMLFilter;
 
 /**
- * This class extends TransformerFactory to provide SAX-specific
- * factory methods.  It provides two types of ContentHandlers,
- * one for creating Transformers, the other for creating Templates
+ * This class extends TransformerFactory to provide SAX-specific factory methods. It provides two
+ * types of ContentHandlers, one for creating Transformers, the other for creating Templates
  * objects.
  *
- * <p>If an application wants to set the ErrorHandler or EntityResolver
- * for an XMLReader used during a transformation, it should use a URIResolver
- * to return the SAXSource which provides (with getXMLReader) a reference to
- * the XMLReader.</p>
+ * <p>If an application wants to set the ErrorHandler or EntityResolver for an XMLReader used during
+ * a transformation, it should use a URIResolver to return the SAXSource which provides (with
+ * getXMLReader) a reference to the XMLReader.
  */
-public abstract class SAXTransformerFactory extends org.openjdk.javax.xml.transform.TransformerFactory {
-
-    /** If {@link org.openjdk.javax.xml.transform.TransformerFactory#getFeature}
-     * returns true when passed this value as an argument,
-     * the TransformerFactory returned from
-     * {@link org.openjdk.javax.xml.transform.TransformerFactory#newInstance} may
-     * be safely cast to a SAXTransformerFactory.
-     */
-    public static final String FEATURE =
-        "http://javax.xml.transform.sax.SAXTransformerFactory/feature";
-
-    /** If {@link org.openjdk.javax.xml.transform.TransformerFactory#getFeature}
-     * returns true when passed this value as an argument,
-     * the {@link #newXMLFilter(org.openjdk.javax.xml.transform.Source src)}
-     * and {@link #newXMLFilter(org.openjdk.javax.xml.transform.Templates templates)} methods are supported.
-     */
-    public static final String FEATURE_XMLFILTER =
-        "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter";
+public abstract class SAXTransformerFactory
+        extends org.openjdk.javax.xml.transform.TransformerFactory {
 
     /**
-     * The default constructor is protected on purpose.
+     * If {@link org.openjdk.javax.xml.transform.TransformerFactory#getFeature} returns true when
+     * passed this value as an argument, the TransformerFactory returned from {@link
+     * org.openjdk.javax.xml.transform.TransformerFactory#newInstance} may be safely cast to a
+     * SAXTransformerFactory.
      */
+    public static final String FEATURE =
+            "http://javax.xml.transform.sax.SAXTransformerFactory/feature";
+
+    /**
+     * If {@link org.openjdk.javax.xml.transform.TransformerFactory#getFeature} returns true when
+     * passed this value as an argument, the {@link
+     * #newXMLFilter(org.openjdk.javax.xml.transform.Source src)} and {@link
+     * #newXMLFilter(org.openjdk.javax.xml.transform.Templates templates)} methods are supported.
+     */
+    public static final String FEATURE_XMLFILTER =
+            "http://javax.xml.transform.sax.SAXTransformerFactory/feature/xmlfilter";
+
+    /** The default constructor is protected on purpose. */
     protected SAXTransformerFactory() {}
 
     /**
-     * Get a TransformerHandler object that can process SAX
-     * ContentHandler events into a Result, based on the transformation
-     * instructions specified by the argument.
+     * Get a TransformerHandler object that can process SAX ContentHandler events into a Result,
+     * based on the transformation instructions specified by the argument.
      *
      * @param src The Source of the transformation instructions.
-     *
      * @return TransformerHandler ready to transform SAX events.
-     *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TransformerHandler can not be created.
-     */
-    public abstract TransformerHandler newTransformerHandler(org.openjdk.javax.xml.transform.Source src)
-        throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
-
-    /**
-     * Get a TransformerHandler object that can process SAX
-     * ContentHandler events into a Result, based on the Templates argument.
-     *
-     * @param templates The compiled transformation instructions.
-     *
-     * @return TransformerHandler ready to transform SAX events.
-     *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TransformerHandler can not be created.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TransformerHandler can not be created.
      */
     public abstract TransformerHandler newTransformerHandler(
-        org.openjdk.javax.xml.transform.Templates templates) throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
+            org.openjdk.javax.xml.transform.Source src)
+            throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
 
     /**
-     * Get a TransformerHandler object that can process SAX
-     * ContentHandler events into a Result. The transformation
-     * is defined as an identity (or copy) transformation, for example
-     * to copy a series of SAX parse events into a DOM tree.
+     * Get a TransformerHandler object that can process SAX ContentHandler events into a Result,
+     * based on the Templates argument.
      *
-     * @return A non-null reference to a TransformerHandler, that may
-     * be used as a ContentHandler for SAX parse events.
+     * @param templates The compiled transformation instructions.
+     * @return TransformerHandler ready to transform SAX events.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TransformerHandler can not be created.
+     */
+    public abstract TransformerHandler newTransformerHandler(
+            org.openjdk.javax.xml.transform.Templates templates)
+            throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
+
+    /**
+     * Get a TransformerHandler object that can process SAX ContentHandler events into a Result. The
+     * transformation is defined as an identity (or copy) transformation, for example to copy a
+     * series of SAX parse events into a DOM tree.
      *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TransformerHandler cannot be created.
+     * @return A non-null reference to a TransformerHandler, that may be used as a ContentHandler
+     *     for SAX parse events.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TransformerHandler cannot be created.
      */
     public abstract TransformerHandler newTransformerHandler()
-        throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
+            throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
 
     /**
-     * Get a TemplatesHandler object that can process SAX
-     * ContentHandler events into a Templates object.
+     * Get a TemplatesHandler object that can process SAX ContentHandler events into a Templates
+     * object.
      *
-     * @return A non-null reference to a TransformerHandler, that may
-     * be used as a ContentHandler for SAX parse events.
-     *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TemplatesHandler cannot be created.
+     * @return A non-null reference to a TransformerHandler, that may be used as a ContentHandler
+     *     for SAX parse events.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TemplatesHandler cannot be created.
      */
     public abstract TemplatesHandler newTemplatesHandler()
-        throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
+            throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
 
     /**
-     * Create an XMLFilter that uses the given Source as the
-     * transformation instructions.
+     * Create an XMLFilter that uses the given Source as the transformation instructions.
      *
      * @param src The Source of the transformation instructions.
-     *
      * @return An XMLFilter object, or null if this feature is not supported.
-     *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TemplatesHandler cannot be created.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TemplatesHandler cannot be created.
      */
     public abstract XMLFilter newXMLFilter(org.openjdk.javax.xml.transform.Source src)
-        throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
+            throws org.openjdk.javax.xml.transform.TransformerConfigurationException;
 
     /**
      * Create an XMLFilter, based on the Templates argument..
      *
      * @param templates The compiled transformation instructions.
-     *
      * @return An XMLFilter object, or null if this feature is not supported.
-     *
-     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason the
-     * TemplatesHandler cannot be created.
+     * @throws org.openjdk.javax.xml.transform.TransformerConfigurationException If for some reason
+     *     the TemplatesHandler cannot be created.
      */
     public abstract XMLFilter newXMLFilter(org.openjdk.javax.xml.transform.Templates templates)
-        throws TransformerConfigurationException;
+            throws TransformerConfigurationException;
 }

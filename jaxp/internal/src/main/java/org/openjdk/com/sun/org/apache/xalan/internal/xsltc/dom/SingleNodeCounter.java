@@ -25,49 +25,43 @@ package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.dom;
 
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.DOM;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.Translet;
-import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 import org.openjdk.com.sun.org.apache.xml.internal.dtm.Axis;
-
+import org.openjdk.com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 public abstract class SingleNodeCounter extends NodeCounter {
-    static private final int[] EmptyArray = new int[] { };
+    private static final int[] EmptyArray = new int[] {};
     DTMAxisIterator _countSiblings = null;
 
-    public SingleNodeCounter(Translet translet,
-                             DOM document,
-                             DTMAxisIterator iterator) {
+    public SingleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
         super(translet, document, iterator);
     }
 
-    public SingleNodeCounter(Translet translet,
-                             DOM document,
-                             DTMAxisIterator iterator,
-                             boolean hasFrom) {
+    public SingleNodeCounter(
+            Translet translet, DOM document, DTMAxisIterator iterator, boolean hasFrom) {
         super(translet, document, iterator, hasFrom);
     }
 
     public NodeCounter setStartNode(int node) {
         _node = node;
         _nodeType = _document.getExpandedTypeID(node);
-    _countSiblings = _document.getAxisIterator(Axis.PRECEDINGSIBLING);
+        _countSiblings = _document.getAxisIterator(Axis.PRECEDINGSIBLING);
         return this;
     }
 
     public String getCounter() {
         int result;
         if (_value != Integer.MIN_VALUE) {
-                //See Errata E24
-                if (_value == 0) return "0";
-                else if (Double.isNaN(_value)) return "NaN";
-                else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
-                else if (Double.isInfinite(_value)) return "Infinity";
-                else result = (int) _value;
-        }
-        else {
+            // See Errata E24
+            if (_value == 0) return "0";
+            else if (Double.isNaN(_value)) return "NaN";
+            else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
+            else if (Double.isInfinite(_value)) return "Infinity";
+            else result = (int) _value;
+        } else {
             int next = _node;
             result = 0;
             boolean matchesCount = matchesCount(next);
@@ -75,11 +69,11 @@ public abstract class SingleNodeCounter extends NodeCounter {
             if (!matchesCount) {
                 while ((next = _document.getParent(next)) > END) {
                     if (matchesCount(next)) {
-                        break;          // found target
+                        break; // found target
                     }
                     if (matchesFrom(next)) {
                         next = END;
-                        break;          // no target found
+                        break; // no target found
                     }
                 }
             }
@@ -91,7 +85,7 @@ public abstract class SingleNodeCounter extends NodeCounter {
                     // Target found, but need to check if ancestor matches from
                     while ((from = _document.getParent(from)) > END) {
                         if (matchesFrom(from)) {
-                            break;          // found from
+                            break; // found from
                         }
                     }
                 }
@@ -113,15 +107,13 @@ public abstract class SingleNodeCounter extends NodeCounter {
         return formatNumbers(result);
     }
 
-    public static NodeCounter getDefaultNodeCounter(Translet translet,
-                                                    DOM document,
-                                                    DTMAxisIterator iterator) {
+    public static NodeCounter getDefaultNodeCounter(
+            Translet translet, DOM document, DTMAxisIterator iterator) {
         return new DefaultSingleNodeCounter(translet, document, iterator);
     }
 
     static class DefaultSingleNodeCounter extends SingleNodeCounter {
-        public DefaultSingleNodeCounter(Translet translet,
-                                        DOM document, DTMAxisIterator iterator) {
+        public DefaultSingleNodeCounter(Translet translet, DOM document, DTMAxisIterator iterator) {
             super(translet, document, iterator);
         }
 
@@ -129,22 +121,21 @@ public abstract class SingleNodeCounter extends NodeCounter {
             _node = node;
             _nodeType = _document.getExpandedTypeID(node);
             _countSiblings =
-        _document.getTypedAxisIterator(Axis.PRECEDINGSIBLING,
-                                               _document.getExpandedTypeID(node));
+                    _document.getTypedAxisIterator(
+                            Axis.PRECEDINGSIBLING, _document.getExpandedTypeID(node));
             return this;
         }
 
         public String getCounter() {
             int result;
             if (_value != Integer.MIN_VALUE) {
-                //See Errata E24
+                // See Errata E24
                 if (_value == 0) return "0";
                 else if (Double.isNaN(_value)) return "NaN";
                 else if (_value < 0 && Double.isInfinite(_value)) return "-Infinity";
                 else if (Double.isInfinite(_value)) return "Infinity";
                 else result = (int) _value;
-            }
-            else {
+            } else {
                 int next;
                 result = 1;
                 _countSiblings.setStartNode(_node);

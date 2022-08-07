@@ -23,20 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.dom;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.util.Date;
-import java.util.Hashtable;
-
-import org.openjdk.javax.xml.parsers.ParserConfigurationException;
-import org.openjdk.javax.xml.parsers.SAXParser;
-import org.openjdk.javax.xml.parsers.SAXParserFactory;
-import org.openjdk.javax.xml.transform.TransformerException;
-import org.openjdk.javax.xml.transform.sax.SAXSource;
-
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.DOM;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.DOMCache;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.DOMEnhancedForDTM;
@@ -45,21 +31,33 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTrans
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.runtime.Constants;
 import org.openjdk.com.sun.org.apache.xml.internal.utils.SystemIDResolver;
-
+import org.openjdk.javax.xml.parsers.ParserConfigurationException;
+import org.openjdk.javax.xml.parsers.SAXParser;
+import org.openjdk.javax.xml.parsers.SAXParserFactory;
+import org.openjdk.javax.xml.transform.TransformerException;
+import org.openjdk.javax.xml.transform.sax.SAXSource;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.Date;
+import java.util.Hashtable;
 
 /**
  * @author Morten Jorgensen
  */
 public final class DocumentCache implements DOMCache {
 
-    private int       _size;
+    private int _size;
     private Hashtable _references;
-    private String[]  _URIs;
-    private int       _count;
-    private int       _current;
+    private String[] _URIs;
+    private int _count;
+    private int _current;
     private SAXParser _parser;
     private XMLReader _reader;
     private XSLTCDTMManager _dtmManager;
@@ -82,77 +80,90 @@ public final class DocumentCache implements DOMCache {
         // DOM and DTD handler references
         private DOMEnhancedForDTM _dom = null;
 
-        /**
-         * Constructor - load document and initialise statistics
-         */
+        /** Constructor - load document and initialise statistics */
         public CachedDocument(String uri) {
             // Initialise statistics variables
             final long stamp = System.currentTimeMillis();
             _firstReferenced = stamp;
-            _lastReferenced  = stamp;
-            _accessCount     = 0;
+            _lastReferenced = stamp;
+            _accessCount = 0;
             loadDocument(uri);
 
             _buildTime = System.currentTimeMillis() - stamp;
         }
 
-        /**
-         * Loads the document and updates build-time (latency) statistics
-         */
+        /** Loads the document and updates build-time (latency) statistics */
         public void loadDocument(String uri) {
 
             try {
                 final long stamp = System.currentTimeMillis();
-                _dom = (DOMEnhancedForDTM)_dtmManager.getDTM(
-                                 new SAXSource(_reader, new InputSource(uri)),
-                                 false, null, true, false);
+                _dom =
+                        (DOMEnhancedForDTM)
+                                _dtmManager.getDTM(
+                                        new SAXSource(_reader, new InputSource(uri)),
+                                        false,
+                                        null,
+                                        true,
+                                        false);
                 _dom.setDocumentURI(uri);
 
                 // The build time can be used for statistics for a better
                 // priority algorithm (currently round robin).
                 final long thisTime = System.currentTimeMillis() - stamp;
-                if (_buildTime > 0)
-                    _buildTime = (_buildTime + thisTime) >>> 1;
-                else
-                    _buildTime = thisTime;
-            }
-            catch (Exception e) {
+                if (_buildTime > 0) _buildTime = (_buildTime + thisTime) >>> 1;
+                else _buildTime = thisTime;
+            } catch (Exception e) {
                 _dom = null;
             }
         }
 
-        public DOM getDocument()       { return(_dom); }
-
-        public long getFirstReferenced()   { return(_firstReferenced); }
-
-        public long getLastReferenced()    { return(_lastReferenced); }
-
-        public long getAccessCount()       { return(_accessCount); }
-
-        public void incAccessCount()       { _accessCount++; }
-
-        public long getLastModified()      { return(_lastModified); }
-
-        public void setLastModified(long t){ _lastModified = t; }
-
-        public long getLatency()           { return(_buildTime); }
-
-        public long getLastChecked()       { return(_lastChecked); }
-
-        public void setLastChecked(long t) { _lastChecked = t; }
-
-        public long getEstimatedSize() {
-            if (_dom != null)
-                return(_dom.getSize() << 5); // ???
-            else
-                return(0);
+        public DOM getDocument() {
+            return (_dom);
         }
 
+        public long getFirstReferenced() {
+            return (_firstReferenced);
+        }
+
+        public long getLastReferenced() {
+            return (_lastReferenced);
+        }
+
+        public long getAccessCount() {
+            return (_accessCount);
+        }
+
+        public void incAccessCount() {
+            _accessCount++;
+        }
+
+        public long getLastModified() {
+            return (_lastModified);
+        }
+
+        public void setLastModified(long t) {
+            _lastModified = t;
+        }
+
+        public long getLatency() {
+            return (_buildTime);
+        }
+
+        public long getLastChecked() {
+            return (_lastChecked);
+        }
+
+        public void setLastChecked(long t) {
+            _lastChecked = t;
+        }
+
+        public long getEstimatedSize() {
+            if (_dom != null) return (_dom.getSize() << 5); // ???
+            else return (0);
+        }
     }
 
-    /**
-     * DocumentCache constructor
-     */
+    /** DocumentCache constructor */
     public DocumentCache(int size) throws SAXException {
         this(size, null);
         try {
@@ -162,74 +173,63 @@ public final class DocumentCache implements DOMCache {
         }
     }
 
-    /**
-     * DocumentCache constructor
-     */
+    /** DocumentCache constructor */
     public DocumentCache(int size, XSLTCDTMManager dtmManager) throws SAXException {
         _dtmManager = dtmManager;
         _count = 0;
         _current = 0;
-        _size  = size;
-        _references = new Hashtable(_size+2);
+        _size = size;
+        _references = new Hashtable(_size + 2);
         _URIs = new String[_size];
 
         try {
             // Create a SAX parser and get the XMLReader object it uses
             final SAXParserFactory factory = SAXParserFactory.newInstance();
             try {
-                factory.setFeature(Constants.NAMESPACE_FEATURE,true);
-            }
-            catch (Exception e) {
+                factory.setFeature(Constants.NAMESPACE_FEATURE, true);
+            } catch (Exception e) {
                 factory.setNamespaceAware(true);
             }
             _parser = factory.newSAXParser();
             _reader = _parser.getXMLReader();
-        }
-        catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             BasisLibrary.runTimeError(BasisLibrary.NAMESPACES_SUPPORT_ERR);
         }
     }
 
-    /**
-     * Returns the time-stamp for a document's last update
-     */
+    /** Returns the time-stamp for a document's last update */
     private final long getLastModified(String uri) {
         try {
             URL url = new URL(uri);
             URLConnection connection = url.openConnection();
             long timestamp = connection.getLastModified();
             // Check for a "file:" URI (courtesy of Brian Ewins)
-            if (timestamp == 0){ // get 0 for local URI
-                if ("file".equals(url.getProtocol())){
+            if (timestamp == 0) { // get 0 for local URI
+                if ("file".equals(url.getProtocol())) {
                     File localfile = new File(URLDecoder.decode(url.getFile()));
                     timestamp = localfile.lastModified();
                 }
             }
-            return(timestamp);
+            return (timestamp);
         }
         // Brutal handling of all exceptions
         catch (Exception e) {
-            return(System.currentTimeMillis());
+            return (System.currentTimeMillis());
         }
     }
 
-    /**
-     *
-     */
+    /** */
     private CachedDocument lookupDocument(String uri) {
-        return((CachedDocument)_references.get(uri));
+        return ((CachedDocument) _references.get(uri));
     }
 
-    /**
-     *
-     */
+    /** */
     private synchronized void insertDocument(String uri, CachedDocument doc) {
         if (_count < _size) {
             // Insert out URI in circular buffer
             _URIs[_count++] = uri;
             _current = 0;
-        }
-        else {
+        } else {
             // Remove oldest URI from reference Hashtable
             _references.remove(_URIs[_current]);
             // Insert our URI in circular buffer
@@ -239,33 +239,29 @@ public final class DocumentCache implements DOMCache {
         _references.put(uri, doc);
     }
 
-    /**
-     *
-     */
+    /** */
     private synchronized void replaceDocument(String uri, CachedDocument doc) {
-        CachedDocument old = (CachedDocument)_references.get(uri);
-        if (doc == null)
-            insertDocument(uri, doc);
-        else
-            _references.put(uri, doc);
+        CachedDocument old = (CachedDocument) _references.get(uri);
+        if (doc == null) insertDocument(uri, doc);
+        else _references.put(uri, doc);
     }
 
     /**
-     * Returns a document either by finding it in the cache or
-     * downloading it and putting it in the cache.
+     * Returns a document either by finding it in the cache or downloading it and putting it in the
+     * cache.
      */
     @Override
     public DOM retrieveDocument(String baseURI, String href, Translet trs) {
         CachedDocument doc;
 
-    String uri = href;
-    if (baseURI != null && !baseURI.equals("")) {
-        try {
-            uri = SystemIDResolver.getAbsoluteURI(uri, baseURI);
-        } catch (TransformerException te) {
-            // ignore
+        String uri = href;
+        if (baseURI != null && !baseURI.equals("")) {
+            try {
+                uri = SystemIDResolver.getAbsoluteURI(uri, baseURI);
+            } catch (TransformerException te) {
+                // ignore
+            }
         }
-    }
 
         // Try to get the document from the cache first
         if ((doc = lookupDocument(uri)) == null) {
@@ -291,7 +287,6 @@ public final class DocumentCache implements DOMCache {
                     replaceDocument(uri, doc);
                 }
             }
-
         }
 
         // Get the references to the actual DOM and DTD handler
@@ -303,36 +298,38 @@ public final class DocumentCache implements DOMCache {
 
         doc.incAccessCount(); // For statistics
 
-        final AbstractTranslet translet = (AbstractTranslet)trs;
+        final AbstractTranslet translet = (AbstractTranslet) trs;
 
         // Give the translet an early opportunity to extract any
         // information from the DOM object that it would like.
         translet.prepassDocument(dom);
 
-        return(doc.getDocument());
+        return (doc.getDocument());
     }
 
-    /**
-     * Outputs the cache statistics
-     */
+    /** Outputs the cache statistics */
     public void getStatistics(PrintWriter out) {
-        out.println("<h2>DOM cache statistics</h2><center><table border=\"2\">"+
-                    "<tr><td><b>Document URI</b></td>"+
-                    "<td><center><b>Build time</b></center></td>"+
-                    "<td><center><b>Access count</b></center></td>"+
-                    "<td><center><b>Last accessed</b></center></td>"+
-                    "<td><center><b>Last modified</b></center></td></tr>");
+        out.println(
+                "<h2>DOM cache statistics</h2><center><table border=\"2\">"
+                        + "<tr><td><b>Document URI</b></td>"
+                        + "<td><center><b>Build time</b></center></td>"
+                        + "<td><center><b>Access count</b></center></td>"
+                        + "<td><center><b>Last accessed</b></center></td>"
+                        + "<td><center><b>Last modified</b></center></td></tr>");
 
-        for (int i=0; i<_count; i++) {
-            CachedDocument doc = (CachedDocument)_references.get(_URIs[i]);
-            out.print("<tr><td><a href=\""+_URIs[i]+"\">"+
-                      "<font size=-1>"+_URIs[i]+"</font></a></td>");
-            out.print("<td><center>"+doc.getLatency()+"ms</center></td>");
-            out.print("<td><center>"+doc.getAccessCount()+"</center></td>");
-            out.print("<td><center>"+(new Date(doc.getLastReferenced()))+
-                      "</center></td>");
-            out.print("<td><center>"+(new Date(doc.getLastModified()))+
-                      "</center></td>");
+        for (int i = 0; i < _count; i++) {
+            CachedDocument doc = (CachedDocument) _references.get(_URIs[i]);
+            out.print(
+                    "<tr><td><a href=\""
+                            + _URIs[i]
+                            + "\">"
+                            + "<font size=-1>"
+                            + _URIs[i]
+                            + "</font></a></td>");
+            out.print("<td><center>" + doc.getLatency() + "ms</center></td>");
+            out.print("<td><center>" + doc.getAccessCount() + "</center></td>");
+            out.print("<td><center>" + (new Date(doc.getLastReferenced())) + "</center></td>");
+            out.print("<td><center>" + (new Date(doc.getLastModified())) + "</center></td>");
             out.println("</tr>");
         }
 

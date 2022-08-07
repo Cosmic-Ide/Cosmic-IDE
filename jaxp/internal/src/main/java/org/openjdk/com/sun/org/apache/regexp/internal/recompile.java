@@ -21,9 +21,9 @@
 package org.openjdk.com.sun.org.apache.regexp.internal;
 
 /**
- * 'recompile' is a command line tool that pre-compiles one or more regular expressions
- * for use with the regular expression matcher class 'RE'.  For example, the command
- * "java recompile a*b" produces output like this:
+ * 'recompile' is a command line tool that pre-compiles one or more regular expressions for use with
+ * the regular expression matcher class 'RE'. For example, the command "java recompile a*b" produces
+ * output like this:
  *
  * <pre>
  *
@@ -41,9 +41,9 @@ package org.openjdk.com.sun.org.apache.regexp.internal;
  *
  * </pre>
  *
- * By pasting this output into your code, you can construct a regular expression matcher
- * (RE) object directly from the pre-compiled data (the character array re1), thus avoiding
- * the overhead of compiling the expression at runtime.  For example:
+ * By pasting this output into your code, you can construct a regular expression matcher (RE) object
+ * directly from the pre-compiled data (the character array re1), thus avoiding the overhead of
+ * compiling the expression at runtime. For example:
  *
  * <pre>
  *
@@ -53,40 +53,40 @@ package org.openjdk.com.sun.org.apache.regexp.internal;
  *
  * @see RE
  * @see RECompiler
- *
  * @author <a href="mailto:jonl@muppetlabs.com">Jonathan Locke</a>
  */
-public class recompile
-{
+public class recompile {
     /**
      * Main application entrypoint.
+     *
      * @param arg Command line arguments
      */
-    static public void main(String[] arg)
-    {
+    public static void main(String[] arg) {
         // Create a compiler object
         RECompiler r = new RECompiler();
 
         // Print usage if arguments are incorrect
-        if (arg.length <= 0 || arg.length % 2 != 0)
-        {
+        if (arg.length <= 0 || arg.length % 2 != 0) {
             System.out.println("Usage: recompile <patternname> <pattern>");
             System.exit(0);
         }
 
         // Loop through arguments, compiling each
-        for (int i = 0; i < arg.length; i += 2)
-        {
-            try
-            {
+        for (int i = 0; i < arg.length; i += 2) {
+            try {
                 // Compile regular expression
-                String name         = arg[i];
-                String pattern      = arg[i+1];
+                String name = arg[i];
+                String pattern = arg[i + 1];
                 String instructions = name + "PatternInstructions";
 
                 // Output program as a nice, formatted character array
-                System.out.print("\n    // Pre-compiled regular expression '" + pattern + "'\n"
-                                 + "    private static char[] " + instructions + " = \n    {");
+                System.out.print(
+                        "\n    // Pre-compiled regular expression '"
+                                + pattern
+                                + "'\n"
+                                + "    private static char[] "
+                                + instructions
+                                + " = \n    {");
 
                 // Compile program for pattern
                 REProgram program = r.compile(pattern);
@@ -96,18 +96,15 @@ public class recompile
 
                 // Loop through program
                 char[] p = program.getInstructions();
-                for (int j = 0; j < p.length; j++)
-                {
+                for (int j = 0; j < p.length; j++) {
                     // End of column?
-                    if ((j % numColumns) == 0)
-                    {
+                    if ((j % numColumns) == 0) {
                         System.out.print("\n        ");
                     }
 
                     // Print character as padded hex number
                     String hex = Integer.toHexString(p[j]);
-                    while (hex.length() < 4)
-                    {
+                    while (hex.length() < 4) {
                         hex = "0" + hex;
                     }
                     System.out.print("0x" + hex + ", ");
@@ -115,18 +112,18 @@ public class recompile
 
                 // End of program block
                 System.out.println("\n    };");
-                System.out.println("\n    private static RE " + name + "Pattern = new RE(new REProgram(" + instructions + "));");
-            }
-            catch (RESyntaxException e)
-            {
-                System.out.println("Syntax error in expression \"" + arg[i] + "\": " + e.toString());
-            }
-            catch (Exception e)
-            {
+                System.out.println(
+                        "\n    private static RE "
+                                + name
+                                + "Pattern = new RE(new REProgram("
+                                + instructions
+                                + "));");
+            } catch (RESyntaxException e) {
+                System.out.println(
+                        "Syntax error in expression \"" + arg[i] + "\": " + e.toString());
+            } catch (Exception e) {
                 System.out.println("Unexpected exception: " + e.toString());
-            }
-            catch (Error e)
-            {
+            } catch (Error e) {
                 System.out.println("Internal error: " + e.toString());
             }
         }

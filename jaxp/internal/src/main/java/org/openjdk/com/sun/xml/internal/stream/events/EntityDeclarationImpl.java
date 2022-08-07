@@ -25,20 +25,19 @@
 
 package org.openjdk.com.sun.xml.internal.stream.events;
 
+import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 import org.openjdk.javax.xml.stream.events.EntityDeclaration;
 import org.openjdk.javax.xml.stream.events.XMLEvent;
-import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 
 /**
+ * This class store all the information for a particular EntityDeclaration. EntityDeclaration
+ * interface has various get* functiosn to retirve information about a particular EntityDeclaration.
  *
- * This class store all the information for a particular EntityDeclaration. EntityDeclaration interface
- * has various get* functiosn to retirve information about a particular EntityDeclaration.
- *
- * @author  Neeraj Bajaj, Sun Microsystems.
+ * @author Neeraj Bajaj, Sun Microsystems.
  */
 public class EntityDeclarationImpl extends DummyEvent implements EntityDeclaration {
 
-    private XMLResourceIdentifier fXMLResourceIdentifier ;
+    private XMLResourceIdentifier fXMLResourceIdentifier;
     private String fEntityName;
     private String fReplacementText;
     private String fNotationName;
@@ -48,58 +47,55 @@ public class EntityDeclarationImpl extends DummyEvent implements EntityDeclarati
         init();
     }
 
-    public EntityDeclarationImpl(String entityName , String replacementText){
-        this(entityName,replacementText,null);
-
+    public EntityDeclarationImpl(String entityName, String replacementText) {
+        this(entityName, replacementText, null);
     }
 
-    public EntityDeclarationImpl(String entityName, String replacementText, XMLResourceIdentifier resourceIdentifier){
+    public EntityDeclarationImpl(
+            String entityName, String replacementText, XMLResourceIdentifier resourceIdentifier) {
         init();
         fEntityName = entityName;
         fReplacementText = replacementText;
         fXMLResourceIdentifier = resourceIdentifier;
     }
 
-    public void setEntityName(String entityName){
+    public void setEntityName(String entityName) {
         fEntityName = entityName;
     }
 
-    public String getEntityName(){
+    public String getEntityName() {
         return fEntityName;
     }
 
-    public void setEntityReplacementText(String replacementText){
+    public void setEntityReplacementText(String replacementText) {
         fReplacementText = replacementText;
     }
 
-    public void setXMLResourceIdentifier(XMLResourceIdentifier resourceIdentifier){
-        fXMLResourceIdentifier = resourceIdentifier ;
+    public void setXMLResourceIdentifier(XMLResourceIdentifier resourceIdentifier) {
+        fXMLResourceIdentifier = resourceIdentifier;
     }
 
-    public XMLResourceIdentifier getXMLResourceIdentifier(){
+    public XMLResourceIdentifier getXMLResourceIdentifier() {
         return fXMLResourceIdentifier;
     }
 
-    public String getSystemId(){
-        if(fXMLResourceIdentifier != null)
-            return fXMLResourceIdentifier.getLiteralSystemId();
+    public String getSystemId() {
+        if (fXMLResourceIdentifier != null) return fXMLResourceIdentifier.getLiteralSystemId();
         return null;
     }
 
-    public String getPublicId(){
-        if(fXMLResourceIdentifier != null)
-            return fXMLResourceIdentifier.getPublicId();
+    public String getPublicId() {
+        if (fXMLResourceIdentifier != null) return fXMLResourceIdentifier.getPublicId();
 
         return null;
     }
 
     public String getBaseURI() {
-        if(fXMLResourceIdentifier != null)
-            return fXMLResourceIdentifier.getBaseSystemId();
+        if (fXMLResourceIdentifier != null) return fXMLResourceIdentifier.getBaseSystemId();
         return null;
     }
 
-    public String getName(){
+    public String getName() {
         return fEntityName;
     }
 
@@ -107,7 +103,7 @@ public class EntityDeclarationImpl extends DummyEvent implements EntityDeclarati
         return fNotationName;
     }
 
-    public void setNotationName(String notationName){
+    public void setNotationName(String notationName) {
         fNotationName = notationName;
     }
 
@@ -115,22 +111,20 @@ public class EntityDeclarationImpl extends DummyEvent implements EntityDeclarati
         return fReplacementText;
     }
 
-    protected void init(){
+    protected void init() {
         setEventType(XMLEvent.ENTITY_DECLARATION);
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write("<!ENTITY ");
         writer.write(fEntityName);
         if (fReplacementText != null) {
-            //internal entity
-            //escape quotes, lt and amps
+            // internal entity
+            // escape quotes, lt and amps
             writer.write(" \"");
             charEncode(writer, fReplacementText);
         } else {
-            //external entity
+            // external entity
             String pubId = getPublicId();
             if (pubId != null) {
                 writer.write(" PUBLIC \"");

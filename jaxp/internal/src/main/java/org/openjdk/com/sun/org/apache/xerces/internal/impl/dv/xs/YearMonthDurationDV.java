@@ -19,43 +19,45 @@
  */
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs;
 
-import java.math.BigInteger;
-
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
+import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
 import org.openjdk.javax.xml.datatype.DatatypeConstants;
 import org.openjdk.javax.xml.datatype.Duration;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
-import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+import java.math.BigInteger;
 
 /**
  * Used to validate the <yearMonthDuration> type
  *
  * @xerces.internal
- *
  * @author Ankit Pasricha, IBM
- *
  * @version $Id: YearMonthDurationDV.java,v 1.6 2010-11-01 04:39:47 joehw Exp $
  */
 class YearMonthDurationDV extends DurationDV {
 
     public Object getActualValue(String content, ValidationContext context)
-        throws InvalidDatatypeValueException {
+            throws InvalidDatatypeValueException {
         try {
             return parse(content, YEARMONTHDURATION_TYPE);
-        }
-        catch (Exception ex) {
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "yearMonthDuration"});
+        } catch (Exception ex) {
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "yearMonthDuration"});
         }
     }
 
     protected Duration getDuration(DateTimeData date) {
         int sign = 1;
-        if ( date.year<0 || date.month<0) {
+        if (date.year < 0 || date.month < 0) {
             sign = -1;
         }
-        return datatypeFactory.newDuration(sign == 1,
-                date.year != DatatypeConstants.FIELD_UNDEFINED?BigInteger.valueOf(sign*date.year):null,
-                date.month != DatatypeConstants.FIELD_UNDEFINED?BigInteger.valueOf(sign*date.month):null,
+        return datatypeFactory.newDuration(
+                sign == 1,
+                date.year != DatatypeConstants.FIELD_UNDEFINED
+                        ? BigInteger.valueOf(sign * date.year)
+                        : null,
+                date.month != DatatypeConstants.FIELD_UNDEFINED
+                        ? BigInteger.valueOf(sign * date.month)
+                        : null,
                 null,
                 null,
                 null,

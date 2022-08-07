@@ -20,30 +20,29 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.jaxp.validation;
 
-import java.util.HashMap;
-
 import org.openjdk.javax.xml.validation.Schema;
 import org.openjdk.javax.xml.validation.Validator;
 import org.openjdk.javax.xml.validation.ValidatorHandler;
 
+import java.util.HashMap;
+
 /**
- * <p>Abstract implementation of Schema for W3C XML Schemas.</p>
+ * Abstract implementation of Schema for W3C XML Schemas.
  *
  * @author Michael Glavassevich, IBM
  * @version $Id: AbstractXMLSchema.java,v 1.6 2010-11-01 04:40:07 joehw Exp $
  */
-abstract class AbstractXMLSchema extends Schema implements
-        XSGrammarPoolContainer {
+abstract class AbstractXMLSchema extends Schema implements XSGrammarPoolContainer {
 
     /**
-     * Map containing the initial values of features for
-     * validators created using this grammar pool container.
+     * Map containing the initial values of features for validators created using this grammar pool
+     * container.
      */
     private final HashMap fFeatures;
 
     /**
-     * Map containing the initial values of properties for
-     * validators created using this grammar pool container.
+     * Map containing the initial values of properties for validators created using this grammar
+     * pool container.
      */
     private final HashMap fProperties;
 
@@ -75,9 +74,8 @@ abstract class AbstractXMLSchema extends Schema implements
      */
 
     /**
-     * Returns the initial value of a feature for validators created
-     * using this grammar pool container or null if the validators
-     * should use the default value.
+     * Returns the initial value of a feature for validators created using this grammar pool
+     * container or null if the validators should use the default value.
      */
     public final Boolean getFeature(String featureId) {
         return (Boolean) fFeatures.get(featureId);
@@ -91,9 +89,8 @@ abstract class AbstractXMLSchema extends Schema implements
     }
 
     /**
-     * Returns the initial value of a property for validators created
-     * using this grammar pool container or null if the validators
-     * should use the default value.
+     * Returns the initial value of a property for validators created using this grammar pool
+     * container or null if the validators should use the default value.
      */
     public final Object getProperty(String propertyId) {
         return fProperties.get(propertyId);
@@ -105,5 +102,4 @@ abstract class AbstractXMLSchema extends Schema implements
     public final void setProperty(String propertyId, Object state) {
         fProperties.put(propertyId, state);
     }
-
 } // AbstractXMLSchema

@@ -25,67 +25,54 @@
 
 package org.openjdk.javax.xml.transform.stax;
 
-import org.openjdk.javax.xml.transform.Transformer;
-import org.openjdk.javax.xml.transform.TransformerFactory;
-import org.openjdk.javax.xml.validation.Validator;
 import org.openjdk.javax.xml.stream.XMLEventWriter;
 import org.openjdk.javax.xml.stream.XMLStreamWriter;
 import org.openjdk.javax.xml.transform.Result;
+import org.openjdk.javax.xml.transform.Transformer;
+import org.openjdk.javax.xml.transform.TransformerFactory;
+import org.openjdk.javax.xml.validation.Validator;
 
 /**
- * <p>Acts as a holder for an XML {@link Result} in the
- * form of a StAX writer,i.e.
- * {@link XMLStreamWriter} or {@link XMLEventWriter}.
- * <code>StAXResult</code> can be used in all cases that accept
- * a <code>Result</code>, e.g. {@link Transformer},
- * {@link Validator} which accept
- * <code>Result</code> as input.
+ * Acts as a holder for an XML {@link Result} in the form of a StAX writer,i.e. {@link
+ * XMLStreamWriter} or {@link XMLEventWriter}. <code>StAXResult</code> can be used in all cases that
+ * accept a <code>Result</code>, e.g. {@link Transformer}, {@link Validator} which accept <code>
+ * Result</code> as input.
  *
  * @author <a href="mailto:Neeraj.Bajaj@Sun.com">Neeraj Bajaj</a>
  * @author <a href="mailto:Jeff.Suttor@Sun.com">Jeff Suttor</a>
- *
- * @see <a href="http://jcp.org/en/jsr/detail?id=173">
- *  JSR 173: Streaming API for XML</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=173">JSR 173: Streaming API for XML</a>
  * @see XMLStreamWriter
  * @see XMLEventWriter
- *
  * @since 1.6
  */
 public class StAXResult implements Result {
-    /** If {@link TransformerFactory#getFeature(String name)}
-     * returns true when passed this value as an argument,
-     * the Transformer supports Result output of this type.
-     */
-    public static final String FEATURE =
-        "http://javax.xml.transform.stax.StAXResult/feature";
-
     /**
-     * <p><code>XMLEventWriter</code> to be used for
-     * <code>Result</code> output.</p>
+     * If {@link TransformerFactory#getFeature(String name)} returns true when passed this value as
+     * an argument, the Transformer supports Result output of this type.
      */
+    public static final String FEATURE = "http://javax.xml.transform.stax.StAXResult/feature";
+
+    /** <code>XMLEventWriter</code> to be used for <code>Result</code> output. */
     private XMLEventWriter xmlEventWriter = null;
 
-    /**
-     * <p><code>XMLStreamWriter</code> to be used for
-     * <code>Result</code> output.</p>
-     */
+    /** <code>XMLStreamWriter</code> to be used for <code>Result</code> output. */
     private XMLStreamWriter xmlStreamWriter = null;
 
-    /** <p>System identifier for this <code>StAXResult</code>.<p> */
+    /**
+     * System identifier for this <code>StAXResult</code>.
+     *
+     * <p>
+     */
     private String systemId = null;
 
     /**
-     * <p>Creates a new instance of a <code>StAXResult</code>
-     * by supplying an {@link XMLEventWriter}.</p>
+     * Creates a new instance of a <code>StAXResult</code> by supplying an {@link XMLEventWriter}.
      *
-     * <p><code>XMLEventWriter</code> must be a
-     * non-<code>null</code> reference.</p>
+     * <p><code>XMLEventWriter</code> must be a non-<code>null</code> reference.
      *
-     * @param xmlEventWriter <code>XMLEventWriter</code> used to create
-     *   this <code>StAXResult</code>.
-     *
-     * @throws IllegalArgumentException If <code>xmlEventWriter</code> ==
-     *   <code>null</code>.
+     * @param xmlEventWriter <code>XMLEventWriter</code> used to create this <code>StAXResult</code>
+     *     .
+     * @throws IllegalArgumentException If <code>xmlEventWriter</code> == <code>null</code>.
      */
     public StAXResult(final XMLEventWriter xmlEventWriter) {
 
@@ -98,17 +85,13 @@ public class StAXResult implements Result {
     }
 
     /**
-     * <p>Creates a new instance of a <code>StAXResult</code>
-     * by supplying an {@link XMLStreamWriter}.</p>
+     * Creates a new instance of a <code>StAXResult</code> by supplying an {@link XMLStreamWriter}.
      *
-     * <p><code>XMLStreamWriter</code> must be a
-     * non-<code>null</code> reference.</p>
+     * <p><code>XMLStreamWriter</code> must be a non-<code>null</code> reference.
      *
-     * @param xmlStreamWriter <code>XMLStreamWriter</code> used to create
-     *   this <code>StAXResult</code>.
-     *
-     * @throws IllegalArgumentException If <code>xmlStreamWriter</code> ==
-     *   <code>null</code>.
+     * @param xmlStreamWriter <code>XMLStreamWriter</code> used to create this <code>StAXResult
+     *     </code>.
+     * @throws IllegalArgumentException If <code>xmlStreamWriter</code> == <code>null</code>.
      */
     public StAXResult(final XMLStreamWriter xmlStreamWriter) {
 
@@ -121,15 +104,12 @@ public class StAXResult implements Result {
     }
 
     /**
-     * <p>Get the <code>XMLEventWriter</code> used by this
-     * <code>StAXResult</code>.</p>
+     * Get the <code>XMLEventWriter</code> used by this <code>StAXResult</code>.
      *
-     * <p><code>XMLEventWriter</code> will be <code>null</code>
-     * if this <code>StAXResult</code> was created with a
-     * <code>XMLStreamWriter</code>.</p>
+     * <p><code>XMLEventWriter</code> will be <code>null</code> if this <code>StAXResult</code> was
+     * created with a <code>XMLStreamWriter</code>.
      *
-     * @return <code>XMLEventWriter</code> used by this
-     *   <code>StAXResult</code>.
+     * @return <code>XMLEventWriter</code> used by this <code>StAXResult</code>.
      */
     public XMLEventWriter getXMLEventWriter() {
 
@@ -137,15 +117,12 @@ public class StAXResult implements Result {
     }
 
     /**
-     * <p>Get the <code>XMLStreamWriter</code> used by this
-     * <code>StAXResult</code>.</p>
+     * Get the <code>XMLStreamWriter</code> used by this <code>StAXResult</code>.
      *
-     * <p><code>XMLStreamWriter</code> will be <code>null</code>
-     * if this <code>StAXResult</code> was created with a
-     * <code>XMLEventWriter</code>.</p>
+     * <p><code>XMLStreamWriter</code> will be <code>null</code> if this <code>StAXResult</code> was
+     * created with a <code>XMLEventWriter</code>.
      *
-     * @return <code>XMLStreamWriter</code> used by this
-     *   <code>StAXResult</code>.
+     * @return <code>XMLStreamWriter</code> used by this <code>StAXResult</code>.
      */
     public XMLStreamWriter getXMLStreamWriter() {
 
@@ -153,29 +130,24 @@ public class StAXResult implements Result {
     }
 
     /**
-     * <p>In the context of a <code>StAXResult</code>, it is not appropriate
-     * to explicitly set the system identifier.
-     * The <code>XMLEventWriter</code> or <code>XMLStreamWriter</code>
-     * used to construct this <code>StAXResult</code> determines the
-     * system identifier of the XML result.</p>
+     * In the context of a <code>StAXResult</code>, it is not appropriate to explicitly set the
+     * system identifier. The <code>XMLEventWriter</code> or <code>XMLStreamWriter</code> used to
+     * construct this <code>StAXResult</code> determines the system identifier of the XML result.
      *
-     * <p>An {@link UnsupportedOperationException} is <strong>always</strong>
-     * thrown by this method.</p>
+     * <p>An {@link UnsupportedOperationException} is <strong>always</strong> thrown by this method.
      *
      * @param systemId Ignored.
-     *
-     * @throws UnsupportedOperationException Is <strong>always</strong>
-     *   thrown by this method.
+     * @throws UnsupportedOperationException Is <strong>always</strong> thrown by this method.
      */
     public void setSystemId(final String systemId) {
 
         throw new UnsupportedOperationException(
                 "StAXResult#setSystemId(systemId) cannot set the "
-                + "system identifier for a StAXResult");
+                        + "system identifier for a StAXResult");
     }
 
     /**
-     * <p>The returned system identifier is always <code>null</code>.</p>
+     * The returned system identifier is always <code>null</code>.
      *
      * @return The returned system identifier is always <code>null</code>.
      */

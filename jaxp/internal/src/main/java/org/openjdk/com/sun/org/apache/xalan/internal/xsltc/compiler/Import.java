@@ -31,11 +31,11 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodG
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import org.openjdk.com.sun.org.apache.xml.internal.utils.SystemIDResolver;
-
-import java.util.Enumeration;
 import org.openjdk.javax.xml.XMLConstants;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import java.util.Enumeration;
 
 /**
  * @author Jacek Ambroziak
@@ -58,8 +58,7 @@ final class Import extends TopLevelElement {
         try {
             String docToLoad = getAttribute("href");
             if (context.checkForLoop(docToLoad)) {
-                final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR,
-                                                  docToLoad, this);
+                final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
                 parser.reportError(FATAL, msg);
                 return;
             }
@@ -83,14 +82,19 @@ final class Import extends TopLevelElement {
             // No SourceLoader or not resolved by SourceLoader
             if (input == null) {
                 docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
-                String accessError = SecuritySupport.checkAccess(docToLoad,
-                        (String)xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET),
-                        XalanConstants.ACCESS_EXTERNAL_ALL);
+                String accessError =
+                        SecuritySupport.checkAccess(
+                                docToLoad,
+                                (String) xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET),
+                                XalanConstants.ACCESS_EXTERNAL_ALL);
 
                 if (accessError != null) {
-                    final ErrorMsg msg = new ErrorMsg(ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
-                                        SecuritySupport.sanitizePath(docToLoad), accessError,
-                                        this);
+                    final ErrorMsg msg =
+                            new ErrorMsg(
+                                    ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
+                                    SecuritySupport.sanitizePath(docToLoad),
+                                    accessError,
+                                    this);
                     parser.reportError(FATAL, msg);
                     return;
                 }
@@ -99,17 +103,15 @@ final class Import extends TopLevelElement {
 
             // Return if we could not resolve the URL
             if (input == null) {
-                final ErrorMsg msg =
-                    new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
+                final ErrorMsg msg = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
                 parser.reportError(FATAL, msg);
                 return;
             }
 
             final SyntaxTreeNode root;
             if (reader != null) {
-                root = parser.parse(reader,input);
-            }
-            else {
+                root = parser.parse(reader, input);
+            } else {
                 root = parser.parse(input);
             }
 
@@ -121,7 +123,7 @@ final class Import extends TopLevelElement {
             _imported.setSystemId(docToLoad);
             _imported.setParentStylesheet(context);
             _imported.setImportingStylesheet(context);
-        _imported.setTemplateInlining(context.getTemplateInlining());
+            _imported.setTemplateInlining(context.getTemplateInlining());
 
             // precedence for the including stylesheet
             final int currPrecedence = parser.getCurrentImportPrecedence();
@@ -138,20 +140,16 @@ final class Import extends TopLevelElement {
                 if (element instanceof TopLevelElement) {
                     if (element instanceof Variable) {
                         topStylesheet.addVariable((Variable) element);
-                    }
-                    else if (element instanceof Param) {
+                    } else if (element instanceof Param) {
                         topStylesheet.addParam((Param) element);
-                    }
-                    else {
+                    } else {
                         topStylesheet.addElement((TopLevelElement) element);
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             parser.setCurrentStylesheet(context);
         }
     }

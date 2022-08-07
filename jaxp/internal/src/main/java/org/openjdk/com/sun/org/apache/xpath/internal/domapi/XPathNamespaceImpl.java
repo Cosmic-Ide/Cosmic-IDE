@@ -21,7 +21,6 @@
  * $Id: XPathNamespaceImpl.java,v 1.2.4.1 2005/09/10 04:10:02 jeffsuttor Exp $
  */
 
-
 package org.openjdk.com.sun.org.apache.xpath.internal.domapi;
 
 import org.w3c.dom.Attr;
@@ -31,56 +30,52 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.UserDataHandler;
 import org.w3c.dom.xpath.XPathNamespace;
 
-import org.w3c.dom.UserDataHandler;
-
 /**
+ * The <code>XPathNamespace</code> interface is returned by <code>XPathResult</code> interfaces to
+ * represent the XPath namespace node type that DOM lacks. There is no public constructor for this
+ * node type. Attempts to place it into a hierarchy or a NamedNodeMap result in a <code>DOMException
+ * </code> with the code <code>HIERARCHY_REQUEST_ERR</code> . This node is read only, so methods or
+ * setting of attributes that would mutate the node result in a DOMException with the code <code>
+ * NO_MODIFICATION_ALLOWED_ERR</code>.
  *
+ * <p>The core specification describes attributes of the <code>Node</code> interface that are
+ * different for different node node types but does not describe <code>XPATH_NAMESPACE_NODE</code>,
+ * so here is a description of those attributes for this node type. All attributes of <code>Node
+ * </code> not described in this section have a <code>null</code> or <code>false</code> value.
  *
- * The <code>XPathNamespace</code> interface is returned by
- * <code>XPathResult</code> interfaces to represent the XPath namespace node
- * type that DOM lacks. There is no public constructor for this node type.
- * Attempts to place it into a hierarchy or a NamedNodeMap result in a
- * <code>DOMException</code> with the code <code>HIERARCHY_REQUEST_ERR</code>
- * . This node is read only, so methods or setting of attributes that would
- * mutate the node result in a DOMException with the code
- * <code>NO_MODIFICATION_ALLOWED_ERR</code>.
- * <p>The core specification describes attributes of the <code>Node</code>
- * interface that are different for different node node types but does not
- * describe <code>XPATH_NAMESPACE_NODE</code>, so here is a description of
- * those attributes for this node type. All attributes of <code>Node</code>
- * not described in this section have a <code>null</code> or
- * <code>false</code> value.
- * <p><code>ownerDocument</code> matches the <code>ownerDocument</code> of the
- * <code>ownerElement</code> even if the element is later adopted.
- * <p><code>prefix</code> is the prefix of the namespace represented by the
- * node.
+ * <p><code>ownerDocument</code> matches the <code>ownerDocument</code> of the <code>ownerElement
+ * </code> even if the element is later adopted.
+ *
+ * <p><code>prefix</code> is the prefix of the namespace represented by the node.
+ *
  * <p><code>nodeName</code> is the same as <code>prefix</code>.
- * <p><code>nodeType</code> is equal to <code>XPATH_NAMESPACE_NODE</code>.
- * <p><code>namespaceURI</code> is the namespace URI of the namespace
- * represented by the node.
- * <p><code>adoptNode</code>, <code>cloneNode</code>, and
- * <code>importNode</code> fail on this node type by raising a
- * <code>DOMException</code> with the code <code>NOT_SUPPORTED_ERR</code>.In
- * future versions of the XPath specification, the definition of a namespace
- * node may be changed incomatibly, in which case incompatible changes to
- * field values may be required to implement versions beyond XPath 1.0.
- * <p>See also the <a href='http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226'>Document Object Model (DOM) Level 3 XPath Specification</a>.
  *
- * This implementation wraps the DOM attribute node that contained the
- * namespace declaration.
+ * <p><code>nodeType</code> is equal to <code>XPATH_NAMESPACE_NODE</code>.
+ *
+ * <p><code>namespaceURI</code> is the namespace URI of the namespace represented by the node.
+ *
+ * <p><code>adoptNode</code>, <code>cloneNode</code>, and <code>importNode</code> fail on this node
+ * type by raising a <code>DOMException</code> with the code <code>NOT_SUPPORTED_ERR</code>.In
+ * future versions of the XPath specification, the definition of a namespace node may be changed
+ * incomatibly, in which case incompatible changes to field values may be required to implement
+ * versions beyond XPath 1.0.
+ *
+ * <p>See also the <a href='http://www.w3.org/TR/2004/NOTE-DOM-Level-3-XPath-20040226'>Document
+ * Object Model (DOM) Level 3 XPath Specification</a>.
+ *
+ * <p>This implementation wraps the DOM attribute node that contained the namespace declaration.
+ *
  * @xsl.usage internal
  */
-
 class XPathNamespaceImpl implements XPathNamespace {
 
     // Node that XPathNamespaceImpl wraps
-    final private Node m_attributeNode;
+    private final Node m_attributeNode;
 
-    /**
-     * Constructor for XPathNamespaceImpl.
-     */
+    /** Constructor for XPathNamespaceImpl. */
     XPathNamespaceImpl(Node node) {
         m_attributeNode = node;
     }
@@ -89,7 +84,7 @@ class XPathNamespaceImpl implements XPathNamespace {
      * @see com.sun.org.apache.xalan.internal.dom3.xpath.XPathNamespace#getOwnerElement()
      */
     public Element getOwnerElement() {
-        return ((Attr)m_attributeNode).getOwnerElement();
+        return ((Attr) m_attributeNode).getOwnerElement();
     }
 
     /**
@@ -109,8 +104,7 @@ class XPathNamespaceImpl implements XPathNamespace {
     /**
      * @see org.w3c.dom.Node#setNodeValue(String)
      */
-    public void setNodeValue(String arg0) throws DOMException {
-    }
+    public void setNodeValue(String arg0) throws DOMException {}
 
     /**
      * @see org.w3c.dom.Node#getNodeType()
@@ -214,7 +208,7 @@ class XPathNamespaceImpl implements XPathNamespace {
      * @see org.w3c.dom.Node#cloneNode(boolean)
      */
     public Node cloneNode(boolean arg0) {
-        throw new DOMException(DOMException.NOT_SUPPORTED_ERR,null);
+        throw new DOMException(DOMException.NOT_SUPPORTED_ERR, null);
     }
 
     /**
@@ -251,8 +245,7 @@ class XPathNamespaceImpl implements XPathNamespace {
     /**
      * @see org.w3c.dom.Node#setPrefix(String)
      */
-    public void setPrefix(String arg0) throws DOMException {
-    }
+    public void setPrefix(String arg0) throws DOMException {}
 
     /**
      * @see org.w3c.dom.Node#getLocalName()
@@ -270,7 +263,7 @@ class XPathNamespaceImpl implements XPathNamespace {
         return m_attributeNode.hasAttributes();
     }
 
-    public String getBaseURI ( ) {
+    public String getBaseURI() {
         return null;
     }
 
@@ -293,7 +286,7 @@ class XPathNamespaceImpl implements XPathNamespace {
     }
 
     public String lookupPrefix(String namespaceURI) {
-        return ""; //PENDING
+        return ""; // PENDING
     }
 
     public boolean isDefaultNamespace(String namespaceURI) {
@@ -309,13 +302,11 @@ class XPathNamespaceImpl implements XPathNamespace {
     }
 
     public Object getFeature(String feature, String version) {
-        return null; //PENDING
+        return null; // PENDING
     }
 
-    public Object setUserData(String key,
-                              Object data,
-                              UserDataHandler handler) {
-        return null; //PENDING
+    public Object setUserData(String key, Object data, UserDataHandler handler) {
+        return null; // PENDING
     }
 
     public Object getUserData(String key) {

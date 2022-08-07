@@ -22,57 +22,54 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs;
 
 import org.openjdk.com.sun.org.apache.xerces.internal.util.MessageFormatter;
 import org.openjdk.com.sun.org.apache.xerces.internal.utils.SecuritySupport;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-
 /**
- * SchemaMessageProvider implements an XMLMessageProvider that
- * provides localizable error messages for the W3C XML Schema Language
+ * SchemaMessageProvider implements an XMLMessageProvider that provides localizable error messages
+ * for the W3C XML Schema Language
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  * @version $Id: XSMessageFormatter.java,v 1.6 2010-11-01 04:39:55 joehw Exp $
  */
 public class XSMessageFormatter implements MessageFormatter {
-    /**
-     * The domain of messages concerning the XML Schema: Structures specification.
-     */
+    /** The domain of messages concerning the XML Schema: Structures specification. */
     public static final String SCHEMA_DOMAIN = "http://www.w3.org/TR/xml-schema-1";
-
 
     // private objects to cache the locale and resource bundle
     private Locale fLocale = null;
     private ResourceBundle fResourceBundle = null;
 
     /**
-     * Formats a message with the specified arguments using the given
-     * locale information.
+     * Formats a message with the specified arguments using the given locale information.
      *
-     * @param locale    The locale of the message.
-     * @param key       The message key.
-     * @param arguments The message replacement text arguments. The order
-     *                  of the arguments must match that of the placeholders
-     *                  in the actual message.
-     *
+     * @param locale The locale of the message.
+     * @param key The message key.
+     * @param arguments The message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @return Returns the formatted message.
-     *
-     * @throws MissingResourceException Thrown if the message with the
-     *                                  specified key cannot be found.
+     * @throws MissingResourceException Thrown if the message with the specified key cannot be
+     *     found.
      */
-     public String formatMessage(Locale locale, String key, Object[] arguments)
-        throws MissingResourceException {
+    public String formatMessage(Locale locale, String key, Object[] arguments)
+            throws MissingResourceException {
 
         if (fResourceBundle == null || locale != fLocale) {
             if (locale != null) {
-                fResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages", locale);
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages",
+                                locale);
                 // memorize the most-recent locale
                 fLocale = locale;
             }
             if (fResourceBundle == null)
-                fResourceBundle = SecuritySupport.getResourceBundle("org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages");
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.XMLSchemaMessages");
         }
 
         String msg = fResourceBundle.getString(key);
@@ -87,7 +84,10 @@ public class XSMessageFormatter implements MessageFormatter {
 
         if (msg == null) {
             msg = fResourceBundle.getString("BadMessageKey");
-            throw new MissingResourceException(msg, "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.SchemaMessages", key);
+            throw new MissingResourceException(
+                    msg,
+                    "org.openjdk.com.sun.org.apache.xerces.internal.impl.msg.SchemaMessages",
+                    key);
         }
 
         return msg;

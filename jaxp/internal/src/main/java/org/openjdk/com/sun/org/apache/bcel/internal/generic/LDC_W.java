@@ -57,37 +57,33 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
-import java.io.IOException;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
 import org.openjdk.com.sun.org.apache.bcel.internal.util.ByteSequence;
+
+import java.io.IOException;
 
 /**
  * LDC_W - Push item from constant pool (wide index)
  *
  * <PRE>Stack: ... -&gt; ..., item.word1, item.word2</PRE>
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public class LDC_W extends LDC {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  LDC_W() {}
+    /**
+     * Empty constructor needed for the Class.newInstance() statement in
+     * Instruction.readInstruction(). Not to be used otherwise.
+     */
+    LDC_W() {}
 
-  public LDC_W(int index) {
-    super(index);
-  }
+    public LDC_W(int index) {
+        super(index);
+    }
 
-  /**
-   * Read needed data (i.e., index) from file.
-   */
-  protected void initFromFile(ByteSequence bytes, boolean wide)
-       throws IOException
-  {
-    setIndex(bytes.readUnsignedShort());
-    // Override just in case it has been changed
-    opcode = Constants.LDC_W;
-  }
+    /** Read needed data (i.e., index) from file. */
+    protected void initFromFile(ByteSequence bytes, boolean wide) throws IOException {
+        setIndex(bytes.readUnsignedShort());
+        // Override just in case it has been changed
+        opcode = Constants.LDC_W;
+    }
 }

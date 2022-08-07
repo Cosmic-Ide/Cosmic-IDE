@@ -59,59 +59,62 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 import org.openjdk.com.sun.org.apache.bcel.internal.Constants;
-import org.openjdk.com.sun.org.apache.bcel.internal.classfile.ConstantPool;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.classfile.*;
+import org.openjdk.com.sun.org.apache.bcel.internal.classfile.ConstantPool;
 
 /**
  * Super class for the GET/PUTxxx family of instructions.
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
-public abstract class FieldInstruction extends FieldOrMethod
-  implements TypedInstruction {
-  /**
-   * Empty constructor needed for the Class.newInstance() statement in
-   * Instruction.readInstruction(). Not to be used otherwise.
-   */
-  FieldInstruction() {}
+public abstract class FieldInstruction extends FieldOrMethod implements TypedInstruction {
+    /**
+     * Empty constructor needed for the Class.newInstance() statement in
+     * Instruction.readInstruction(). Not to be used otherwise.
+     */
+    FieldInstruction() {}
 
-  /**
-   * @param index to constant pool
-   */
-  protected FieldInstruction(short opcode, int index) {
-    super(opcode, index);
-  }
+    /**
+     * @param index to constant pool
+     */
+    protected FieldInstruction(short opcode, int index) {
+        super(opcode, index);
+    }
 
-  /**
-   * @return mnemonic for instruction with symbolic references resolved
-   */
-  public String toString(ConstantPool cp) {
-    return Constants.OPCODE_NAMES[opcode] + " " +
-      cp.constantToString(index, Constants.CONSTANT_Fieldref);
-  }
+    /**
+     * @return mnemonic for instruction with symbolic references resolved
+     */
+    public String toString(ConstantPool cp) {
+        return Constants.OPCODE_NAMES[opcode]
+                + " "
+                + cp.constantToString(index, Constants.CONSTANT_Fieldref);
+    }
 
-  /** @return size of field (1 or 2)
-   */
-  protected int getFieldSize(ConstantPoolGen cpg) {
-    return getType(cpg).getSize();
-  }
+    /**
+     * @return size of field (1 or 2)
+     */
+    protected int getFieldSize(ConstantPoolGen cpg) {
+        return getType(cpg).getSize();
+    }
 
-  /** @return return type of referenced field
-   */
-  public Type getType(ConstantPoolGen cpg) {
-    return getFieldType(cpg);
-  }
+    /**
+     * @return return type of referenced field
+     */
+    public Type getType(ConstantPoolGen cpg) {
+        return getFieldType(cpg);
+    }
 
-  /** @return type of field
-   */
-  public Type getFieldType(ConstantPoolGen cpg) {
-    return Type.getType(getSignature(cpg));
-  }
+    /**
+     * @return type of field
+     */
+    public Type getFieldType(ConstantPoolGen cpg) {
+        return Type.getType(getSignature(cpg));
+    }
 
-  /** @return name of referenced field.
-   */
-  public String getFieldName(ConstantPoolGen cpg) {
-    return getName(cpg);
-  }
+    /**
+     * @return name of referenced field.
+     */
+    public String getFieldName(ConstantPoolGen cpg) {
+        return getName(cpg);
+    }
 }

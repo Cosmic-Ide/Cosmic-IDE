@@ -23,12 +23,12 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util;
 
-import java.util.StringTokenizer;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.Type;
 import org.openjdk.com.sun.org.apache.xalan.internal.utils.SecuritySupport;
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 import org.openjdk.com.sun.org.apache.xml.internal.utils.XML11Char;
+
+import java.util.StringTokenizer;
 
 /**
  * @author Jacek Ambroziak
@@ -47,31 +47,22 @@ public final class Util {
         return name.substring(0, index >= 0 ? index : name.length());
     }
 
-    /**
-     * Search for both slashes in order to support URLs and
-     * files.
-     */
+    /** Search for both slashes in order to support URLs and files. */
     public static String baseName(String name) {
         int index = name.lastIndexOf('\\');
         if (index < 0) {
             index = name.lastIndexOf('/');
         }
 
-        if (index >= 0)
-            return name.substring(index + 1);
+        if (index >= 0) return name.substring(index + 1);
         else {
             int lastColonIndex = name.lastIndexOf(':');
-            if (lastColonIndex > 0)
-                return name.substring(lastColonIndex + 1);
-            else
-                return name;
+            if (lastColonIndex > 0) return name.substring(lastColonIndex + 1);
+            else return name;
         }
     }
 
-    /**
-     * Search for both slashes in order to support URLs and
-     * files.
-     */
+    /** Search for both slashes in order to support URLs and files. */
     public static String pathName(String name) {
         int index = name.lastIndexOf('/');
         if (index < 0) {
@@ -80,9 +71,7 @@ public final class Util {
         return name.substring(0, index + 1);
     }
 
-    /**
-     * Replace all illegal Java chars by '_'.
-     */
+    /** Replace all illegal Java chars by '_'. */
     public static String toJavaName(String name) {
         if (name.length() > 0) {
             final StringBuffer result = new StringBuffer();
@@ -93,7 +82,7 @@ public final class Util {
             final int n = name.length();
             for (int i = 1; i < n; i++) {
                 ch = name.charAt(i);
-                result.append(Character.isJavaIdentifierPart(ch)  ? ch : '_');
+                result.append(Character.isJavaIdentifierPart(ch) ? ch : '_');
             }
             return result.toString();
         }
@@ -128,12 +117,11 @@ public final class Util {
         System.out.println("TRACE3");
     }
 
-    /**
-     * Replace a certain character in a string with a new substring.
-     */
+    /** Replace a certain character in a string with a new substring. */
     public static String replace(String base, char ch, String str) {
-        return (base.indexOf(ch) < 0) ? base :
-            replace(base, String.valueOf(ch), new String[] { str });
+        return (base.indexOf(ch) < 0)
+                ? base
+                : replace(base, String.valueOf(ch), new String[] {str});
     }
 
     public static String replace(String base, String delim, String[] str) {
@@ -146,20 +134,16 @@ public final class Util {
 
             if (k >= 0) {
                 result.append(str[k]);
-            }
-            else {
+            } else {
                 result.append(ch);
             }
         }
         return result.toString();
     }
 
-    /**
-     * Replace occurances of '.', '-', '/' and ':'
-     */
+    /** Replace occurances of '.', '-', '/' and ':' */
     public static String escape(String input) {
-        return replace(input, ".-/:",
-            new String[] { "$dot$", "$dash$", "$slash$", "$colon$" });
+        return replace(input, ".-/:", new String[] {"$dot$", "$dash$", "$slash$", "$colon$"});
     }
 
     public static String getLocalName(String qname) {
@@ -169,13 +153,10 @@ public final class Util {
 
     public static String getPrefix(String qname) {
         final int index = qname.lastIndexOf(":");
-        return (index > 0) ? qname.substring(0, index) :
-            Constants.EMPTYSTRING;
+        return (index > 0) ? qname.substring(0, index) : Constants.EMPTYSTRING;
     }
 
-    /**
-     * Checks if the string is a literal (i.e. not an AVT) or not.
-     */
+    /** Checks if the string is a literal (i.e. not an AVT) or not. */
     public static boolean isLiteral(String str) {
         final int length = str.length();
         for (int i = 0; i < length - 1; i++) {
@@ -186,9 +167,7 @@ public final class Util {
         return true;
     }
 
-    /**
-     * Checks if the string is valid list of qnames
-     */
+    /** Checks if the string is valid list of qnames */
     public static boolean isValidQNames(String str) {
         if ((str != null) && (!str.equals(Constants.EMPTYSTRING))) {
             final StringTokenizer tokens = new StringTokenizer(str);
@@ -200,5 +179,4 @@ public final class Util {
         }
         return true;
     }
-
 }

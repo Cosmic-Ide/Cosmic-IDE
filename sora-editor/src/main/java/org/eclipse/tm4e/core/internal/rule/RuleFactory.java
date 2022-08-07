@@ -34,71 +34,103 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
  * @see https://github.com/Microsoft/vscode-textmate/blob/master/src/rule.ts
- *
  */
 public class RuleFactory {
 
-    public static CaptureRule createCaptureRule(IRuleFactoryHelper helper, final String name, final String contentName,
-                                                final Integer retokenizeCapturedWithRuleId) {
-        return (CaptureRule) helper.registerRule(id -> new CaptureRule(id, name, contentName, retokenizeCapturedWithRuleId));
+    public static CaptureRule createCaptureRule(
+            IRuleFactoryHelper helper,
+            final String name,
+            final String contentName,
+            final Integer retokenizeCapturedWithRuleId) {
+        return (CaptureRule)
+                helper.registerRule(
+                        id -> new CaptureRule(id, name, contentName, retokenizeCapturedWithRuleId));
     }
 
-    public static int getCompiledRuleId(final IRawRule desc, final IRuleFactoryHelper helper,
-                                        final IRawRepository repository) {
+    public static int getCompiledRuleId(
+            final IRawRule desc, final IRuleFactoryHelper helper, final IRawRepository repository) {
         if (desc.getId() == null) {
 
-            helper.registerRule(id -> {
-                desc.setId(id);
+            helper.registerRule(
+                    id -> {
+                        desc.setId(id);
 
-                if (desc.getMatch() != null) {
-                    return new MatchRule(desc.getId(), desc.getName(), desc.getMatch(),
-                            RuleFactory.compileCaptures(desc.getCaptures(), helper, repository));
-                }
+                        if (desc.getMatch() != null) {
+                            return new MatchRule(
+                                    desc.getId(),
+                                    desc.getName(),
+                                    desc.getMatch(),
+                                    RuleFactory.compileCaptures(
+                                            desc.getCaptures(), helper, repository));
+                        }
 
-                if (desc.getBegin() == null) {
-                    IRawRepository r = repository;
-                    if (desc.getRepository() != null) {
-                        r = CloneUtils.mergeObjects(repository, desc.getRepository());
-                    }
-                    return new IncludeOnlyRule(desc.getId(), desc.getName(), desc.getContentName(),
-                            RuleFactory._compilePatterns(desc.getPatterns(), helper, r));
-                }
+                        if (desc.getBegin() == null) {
+                            IRawRepository r = repository;
+                            if (desc.getRepository() != null) {
+                                r = CloneUtils.mergeObjects(repository, desc.getRepository());
+                            }
+                            return new IncludeOnlyRule(
+                                    desc.getId(),
+                                    desc.getName(),
+                                    desc.getContentName(),
+                                    RuleFactory._compilePatterns(desc.getPatterns(), helper, r));
+                        }
 
-                String ruleWhile = desc.getWhile();
-                if (ruleWhile != null) {
-                    return new BeginWhileRule(
-                            /* desc.$vscodeTextmateLocation, */
-                            desc.getId(), desc.getName(), desc.getContentName(), desc.getBegin(),
-                            RuleFactory.compileCaptures(
-                                    desc.getBeginCaptures() != null ? desc.getBeginCaptures() : desc.getCaptures(),
-                                    helper, repository),
-                            ruleWhile,
-                            RuleFactory.compileCaptures(
-                                    desc.getWhileCaptures() != null ? desc.getWhileCaptures() : desc.getCaptures(),
-                                    helper, repository),
-                            RuleFactory._compilePatterns(desc.getPatterns(), helper, repository));
-                }
+                        String ruleWhile = desc.getWhile();
+                        if (ruleWhile != null) {
+                            return new BeginWhileRule(
+                                    /* desc.$vscodeTextmateLocation, */
+                                    desc.getId(),
+                                    desc.getName(),
+                                    desc.getContentName(),
+                                    desc.getBegin(),
+                                    RuleFactory.compileCaptures(
+                                            desc.getBeginCaptures() != null
+                                                    ? desc.getBeginCaptures()
+                                                    : desc.getCaptures(),
+                                            helper,
+                                            repository),
+                                    ruleWhile,
+                                    RuleFactory.compileCaptures(
+                                            desc.getWhileCaptures() != null
+                                                    ? desc.getWhileCaptures()
+                                                    : desc.getCaptures(),
+                                            helper,
+                                            repository),
+                                    RuleFactory._compilePatterns(
+                                            desc.getPatterns(), helper, repository));
+                        }
 
-                return new BeginEndRule(desc.getId(), desc.getName(), desc.getContentName(), desc.getBegin(),
-                        RuleFactory.compileCaptures(
-                                desc.getBeginCaptures() != null ? desc.getBeginCaptures() : desc.getCaptures(),
-                                helper, repository),
-                        desc.getEnd(),
-                        RuleFactory.compileCaptures(
-                                desc.getEndCaptures() != null ? desc.getEndCaptures() : desc.getCaptures(), helper,
-                                repository),
-                        desc.isApplyEndPatternLast(),
-                        RuleFactory._compilePatterns(desc.getPatterns(), helper, repository));
-            });
+                        return new BeginEndRule(
+                                desc.getId(),
+                                desc.getName(),
+                                desc.getContentName(),
+                                desc.getBegin(),
+                                RuleFactory.compileCaptures(
+                                        desc.getBeginCaptures() != null
+                                                ? desc.getBeginCaptures()
+                                                : desc.getCaptures(),
+                                        helper,
+                                        repository),
+                                desc.getEnd(),
+                                RuleFactory.compileCaptures(
+                                        desc.getEndCaptures() != null
+                                                ? desc.getEndCaptures()
+                                                : desc.getCaptures(),
+                                        helper,
+                                        repository),
+                                desc.isApplyEndPatternLast(),
+                                RuleFactory._compilePatterns(
+                                        desc.getPatterns(), helper, repository));
+                    });
         }
 
         return desc.getId();
     }
 
-    private static List<CaptureRule> compileCaptures(IRawCaptures captures, IRuleFactoryHelper helper,
-                                                     IRawRepository repository) {
+    private static List<CaptureRule> compileCaptures(
+            IRawCaptures captures, IRuleFactoryHelper helper, IRawRepository repository) {
         List<CaptureRule> r = new ArrayList<>();
         int numericCaptureId;
         int maximumCaptureId;
@@ -125,11 +157,17 @@ public class RuleFactory {
                 Integer retokenizeCapturedWithRuleId = null;
                 IRawRule rule = captures.getCapture(captureId);
                 if (rule.getPatterns() != null) {
-                    retokenizeCapturedWithRuleId = RuleFactory.getCompiledRuleId(captures.getCapture(captureId), helper,
-                            repository);
+                    retokenizeCapturedWithRuleId =
+                            RuleFactory.getCompiledRuleId(
+                                    captures.getCapture(captureId), helper, repository);
                 }
-                r.set(numericCaptureId, RuleFactory.createCaptureRule(helper, rule.getName(), rule.getContentName(),
-                        retokenizeCapturedWithRuleId));
+                r.set(
+                        numericCaptureId,
+                        RuleFactory.createCaptureRule(
+                                helper,
+                                rule.getName(),
+                                rule.getContentName(),
+                                retokenizeCapturedWithRuleId));
             }
         }
 
@@ -144,8 +182,8 @@ public class RuleFactory {
         }
     }
 
-    private static ICompilePatternsResult _compilePatterns(Collection<IRawRule> patterns, IRuleFactoryHelper helper,
-                                                           IRawRepository repository) {
+    private static ICompilePatternsResult _compilePatterns(
+            Collection<IRawRule> patterns, IRuleFactoryHelper helper, IRawRepository repository) {
         Collection<Integer> r = new ArrayList<Integer>();
         int i;
         int len;
@@ -161,18 +199,25 @@ public class RuleFactory {
                 if (pattern.getInclude() != null) {
                     if (pattern.getInclude().charAt(0) == '#') {
                         // Local include found in `repository`
-                        IRawRule localIncludedRule = repository.getProp(pattern.getInclude().substring(1));
+                        IRawRule localIncludedRule =
+                                repository.getProp(pattern.getInclude().substring(1));
                         if (localIncludedRule != null) {
-                            patternId = RuleFactory.getCompiledRuleId(localIncludedRule, helper, repository);
+                            patternId =
+                                    RuleFactory.getCompiledRuleId(
+                                            localIncludedRule, helper, repository);
                         } else {
                             // console.warn('CANNOT find rule for scopeName: ' +
                             // pattern.include + ', I am: ',
                             // repository['$base'].name);
                         }
-                    } else if (pattern.getInclude().equals("$base") || pattern.getInclude().equals("$self")) {
+                    } else if (pattern.getInclude().equals("$base")
+                            || pattern.getInclude().equals("$self")) {
                         // Special include also found in `repository`
-                        patternId = RuleFactory.getCompiledRuleId(repository.getProp(pattern.getInclude()), helper,
-                                repository);
+                        patternId =
+                                RuleFactory.getCompiledRuleId(
+                                        repository.getProp(pattern.getInclude()),
+                                        helper,
+                                        repository);
                     } else {
                         String externalGrammarName = null, externalGrammarInclude = null;
                         int sharpIndex = pattern.getInclude().indexOf('#');
@@ -183,30 +228,38 @@ public class RuleFactory {
                             externalGrammarName = pattern.getInclude();
                         }
                         // External include
-                        externalGrammar = helper.getExternalGrammar(externalGrammarName, repository);
+                        externalGrammar =
+                                helper.getExternalGrammar(externalGrammarName, repository);
 
                         if (externalGrammar != null) {
                             if (externalGrammarInclude != null) {
-                                IRawRule externalIncludedRule = externalGrammar.getRepository()
-                                        .getProp(externalGrammarInclude);
+                                IRawRule externalIncludedRule =
+                                        externalGrammar
+                                                .getRepository()
+                                                .getProp(externalGrammarInclude);
                                 if (externalIncludedRule != null) {
-                                    patternId = RuleFactory.getCompiledRuleId(externalIncludedRule, helper,
-                                            externalGrammar.getRepository());
+                                    patternId =
+                                            RuleFactory.getCompiledRuleId(
+                                                    externalIncludedRule,
+                                                    helper,
+                                                    externalGrammar.getRepository());
                                 } else {
                                     // console.warn('CANNOT find rule for
                                     // scopeName: ' + pattern.include + ', I am:
                                     // ', repository['$base'].name);
                                 }
                             } else {
-                                patternId = RuleFactory.getCompiledRuleId(externalGrammar.getRepository().getSelf(),
-                                        helper, externalGrammar.getRepository());
+                                patternId =
+                                        RuleFactory.getCompiledRuleId(
+                                                externalGrammar.getRepository().getSelf(),
+                                                helper,
+                                                externalGrammar.getRepository());
                             }
                         } else {
                             // console.warn('CANNOT find grammar for scopeName:
                             // ' + pattern.include + ', I am: ',
                             // repository['$base'].name);
                         }
-
                     }
                 } else {
                     patternId = RuleFactory.getCompiledRuleId(pattern, helper, repository);
@@ -245,7 +298,7 @@ public class RuleFactory {
             }
         }
 
-        return new ICompilePatternsResult(r, ((patterns != null ? patterns.size() : 0) != r.size()));
+        return new ICompilePatternsResult(
+                r, ((patterns != null ? patterns.size() : 0) != r.size()));
     }
-
 }

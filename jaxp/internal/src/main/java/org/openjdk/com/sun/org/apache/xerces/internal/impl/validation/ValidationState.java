@@ -20,19 +20,18 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.validation;
 
-import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
-
+import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * Implementation of ValidationContext inteface. Used to establish an
- * environment for simple type validation.
+ * Implementation of ValidationContext inteface. Used to establish an environment for simple type
+ * validation.
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  * @version $Id: ValidationState.java,v 1.7 2010-11-01 04:39:53 joehw Exp $
  */
@@ -41,15 +40,15 @@ public class ValidationState implements ValidationContext {
     //
     // private data
     //
-    private boolean fExtraChecking              = true;
-    private boolean fFacetChecking              = true;
-    private boolean fNormalize                  = true;
-    private boolean fNamespaces                 = true;
+    private boolean fExtraChecking = true;
+    private boolean fFacetChecking = true;
+    private boolean fNormalize = true;
+    private boolean fNamespaces = true;
 
-    private EntityState fEntityState            = null;
-    private NamespaceContext fNamespaceContext  = null;
-    private SymbolTable fSymbolTable            = null;
-    private Locale fLocale                      = null;
+    private EntityState fEntityState = null;
+    private NamespaceContext fNamespaceContext = null;
+    private SymbolTable fSymbolTable = null;
+    private Locale fLocale = null;
 
     private ArrayList<String> fIdList;
     private ArrayList<String> fIdRefList;
@@ -65,12 +64,12 @@ public class ValidationState implements ValidationContext {
         fFacetChecking = newValue;
     }
 
-    public void setNormalizationRequired (boolean newValue) {
-          fNormalize = newValue;
+    public void setNormalizationRequired(boolean newValue) {
+        fNormalize = newValue;
     }
 
-    public void setUsingNamespaces (boolean newValue) {
-          fNamespaces = newValue;
+    public void setUsingNamespaces(boolean newValue) {
+        fNamespaces = newValue;
     }
 
     public void setEntityState(EntityState state) {
@@ -86,10 +85,10 @@ public class ValidationState implements ValidationContext {
     }
 
     /**
-     * return null if all IDREF values have a corresponding ID value;
-     * otherwise return the first IDREF value without a matching ID value.
+     * return null if all IDREF values have a corresponding ID value; otherwise return the first
+     * IDREF value without a matching ID value.
      */
-    public String checkIDRefID () {
+    public String checkIDRefID() {
         if (fIdList == null) {
             if (fIdRefList != null) {
                 return fIdRefList.get(0);
@@ -101,14 +100,14 @@ public class ValidationState implements ValidationContext {
             for (int i = 0; i < fIdRefList.size(); i++) {
                 key = fIdRefList.get(i);
                 if (!fIdList.contains(key)) {
-                      return key;
+                    return key;
                 }
             }
         }
         return null;
     }
 
-    public void reset () {
+    public void reset() {
         fExtraChecking = true;
         fFacetChecking = true;
         fNamespaces = true;
@@ -120,10 +119,9 @@ public class ValidationState implements ValidationContext {
     }
 
     /**
-     * The same validation state can be used to validate more than one (schema)
-     * validation roots. Entity/Namespace/Symbol are shared, but each validation
-     * root needs its own id/idref tables. So we need this method to reset only
-     * the two tables.
+     * The same validation state can be used to validate more than one (schema) validation roots.
+     * Entity/Namespace/Symbol are shared, but each validation root needs its own id/idref tables.
+     * So we need this method to reset only the two tables.
      */
     public void resetIDTables() {
         fIdList = null;
@@ -144,7 +142,7 @@ public class ValidationState implements ValidationContext {
         return fFacetChecking;
     }
 
-    public boolean needToNormalize (){
+    public boolean needToNormalize() {
         return fNormalize;
     }
 
@@ -153,14 +151,15 @@ public class ValidationState implements ValidationContext {
     }
 
     // entity
-    public boolean isEntityDeclared (String name) {
-        if (fEntityState !=null) {
+    public boolean isEntityDeclared(String name) {
+        if (fEntityState != null) {
             return fEntityState.isEntityDeclared(getSymbol(name));
         }
         return false;
     }
-    public boolean isEntityUnparsed (String name) {
-        if (fEntityState !=null) {
+
+    public boolean isEntityUnparsed(String name) {
+        if (fEntityState != null) {
             return fEntityState.isEntityUnparsed(getSymbol(name));
         }
         return false;
@@ -171,6 +170,7 @@ public class ValidationState implements ValidationContext {
         if (fIdList == null) return false;
         return fIdList.contains(name);
     }
+
     public void addId(String name) {
         if (fIdList == null) fIdList = new ArrayList();
         fIdList.add(name);
@@ -183,9 +183,8 @@ public class ValidationState implements ValidationContext {
     }
     // get symbols
 
-    public String getSymbol (String symbol) {
-        if (fSymbolTable != null)
-            return fSymbolTable.addSymbol(symbol);
+    public String getSymbol(String symbol) {
+        if (fSymbolTable != null) return fSymbolTable.addSymbol(symbol);
         // if there is no symbol table, we return java-internalized string,
         // because symbol table strings are also java-internalzied.
         // this guarantees that the returned string from this method can be
@@ -194,7 +193,7 @@ public class ValidationState implements ValidationContext {
     }
     // qname, notation
     public String getURI(String prefix) {
-        if (fNamespaceContext !=null) {
+        if (fNamespaceContext != null) {
             return fNamespaceContext.getURI(prefix);
         }
         return null;

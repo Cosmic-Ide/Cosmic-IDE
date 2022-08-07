@@ -32,10 +32,10 @@ import java.util.Vector;
  */
 public final class MultiHashtable extends Hashtable {
     static final long serialVersionUID = -6151608290510033572L;
+
     public Object put(Object key, Object value) {
-        Vector vector = (Vector)get(key);
-        if (vector == null)
-            super.put(key, vector = new Vector());
+        Vector vector = (Vector) get(key);
+        if (vector == null) super.put(key, vector = new Vector());
         vector.add(value);
         return vector;
     }

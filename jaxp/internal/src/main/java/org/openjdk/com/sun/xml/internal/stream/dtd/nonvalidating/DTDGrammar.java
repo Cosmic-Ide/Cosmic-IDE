@@ -20,14 +20,10 @@
 
 package org.openjdk.com.sun.xml.internal.stream.dtd.nonvalidating;
 
-import java.util.Hashtable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openjdk.com.sun.org.apache.xerces.internal.util.SymbolTable;
+import org.openjdk.com.sun.org.apache.xerces.internal.util.XMLSymbols;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.Augmentations;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.QName;
-import org.openjdk.com.sun.org.apache.xerces.internal.util.XMLSymbols;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLLocator;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.XMLString;
@@ -35,19 +31,20 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.XNIException;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDTDContentModelSource;
 import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 /**
- * A DTD grammar. This class implements the XNI handler interfaces
- * for DTD information so that it can build the approprate validation
- * structures automatically from the callbacks.
+ * A DTD grammar. This class implements the XNI handler interfaces for DTD information so that it
+ * can build the approprate validation structures automatically from the callbacks.
  *
  * @author Eric Ye, IBM
  * @author Jeffrey Rodriguez, IBM
  * @author Andy Clark, IBM
  * @author Neil Graham, IBM
- *
  */
 public class DTDGrammar {
-
 
     /** Top level scope (-1). */
     public static final int TOP_LEVEL_SCOPE = -1;
@@ -95,6 +92,7 @@ public class DTDGrammar {
 
     /** Symbol table. */
     private SymbolTable fSymbolTable;
+
     private ArrayList notationDecls = new ArrayList();
 
     // element declarations
@@ -107,10 +105,10 @@ public class DTDGrammar {
 
     /**
      * Element declaration type.
+     *
      * @see XMLElementDecl
      */
     private short fElementDeclType[][] = new short[INITIAL_CHUNK_COUNT][];
-
 
     /** First attribute declaration of an element declaration. */
     private int fElementDeclFirstAttributeDeclIndex[][] = new int[INITIAL_CHUNK_COUNT][];
@@ -121,19 +119,21 @@ public class DTDGrammar {
     // attribute declarations
 
     /** Number of attribute declarations. */
-    private int fAttributeDeclCount = 0 ;
+    private int fAttributeDeclCount = 0;
 
     /** Attribute declaration name. */
     private QName fAttributeDeclName[][] = new QName[INITIAL_CHUNK_COUNT][];
 
     /**
      * Attribute declaration type.
+     *
      * @see XMLAttributeDecl
      */
     private short fAttributeDeclType[][] = new short[INITIAL_CHUNK_COUNT][];
 
     /** Attribute declaration enumeration values. */
     private String[] fAttributeDeclEnumeration[][] = new String[INITIAL_CHUNK_COUNT][][];
+
     private short fAttributeDeclDefaultType[][] = new short[INITIAL_CHUNK_COUNT][];
     private String fAttributeDeclDefaultValue[][] = new String[INITIAL_CHUNK_COUNT][];
     private String fAttributeDeclNonNormalizedDefaultValue[][] = new String[INITIAL_CHUNK_COUNT][];
@@ -154,9 +154,8 @@ public class DTDGrammar {
     /** Simple type. */
     private XMLSimpleType fSimpleType = new XMLSimpleType();
 
-
-    /** table of XMLElementDecl   */
-    Hashtable   fElementDeclTab     = new Hashtable();
+    /** table of XMLElementDecl */
+    Hashtable fElementDeclTab = new Hashtable();
 
     /** Default constructor. */
     public DTDGrammar(SymbolTable symbolTable) {
@@ -172,7 +171,7 @@ public class DTDGrammar {
             getAttributeDecl(attDefIndex, fAttributeDecl);
 
             if (fAttributeDecl.name.rawname == attributeDeclName
-            || attributeDeclName.equals(fAttributeDecl.name.rawname) ) {
+                    || attributeDeclName.equals(fAttributeDecl.name.rawname)) {
                 return attDefIndex;
             }
             attDefIndex = getNextAttributeDeclIndex(attDefIndex);
@@ -183,19 +182,14 @@ public class DTDGrammar {
     /**
      * The start of the DTD.
      *
-     * @param locator  The document locator, or null if the document
-     *                 location cannot be reported during the parsing of
-     *                 the document DTD. However, it is <em>strongly</em>
-     *                 recommended that a locator be supplied that can
-     *                 at least report the base system identifier of the
-     *                 DTD.
-     *
-     * @param augs Additional information that may include infoset
-     *                      augmentations.
+     * @param locator The document locator, or null if the document location cannot be reported
+     *     during the parsing of the document DTD. However, it is <em>strongly</em> recommended that
+     *     a locator be supplied that can at least report the base system identifier of the DTD.
+     * @param augs Additional information that may include infoset augmentations.
      * @throws XNIException Thrown by handler to signal an error.
      */
-    public void startDTD(XMLLocator locator, Augmentations augs) throws XNIException {
-    } // startDTD(XMLLocator)
+    public void startDTD(XMLLocator locator, Augmentations augs)
+            throws XNIException {} // startDTD(XMLLocator)
 
     // startExternalSubset(Augmentations)
 
@@ -204,62 +198,54 @@ public class DTDGrammar {
     /**
      * An element declaration.
      *
-     * @param name         The name of the element.
+     * @param name The name of the element.
      * @param contentModel The element content model.
-     * @param augs Additional information that may include infoset
-     *                      augmentations.
+     * @param augs Additional information that may include infoset augmentations.
      * @throws XNIException Thrown by handler to signal an error.
      */
     public void elementDecl(String name, String contentModel, Augmentations augs)
-    throws XNIException {
+            throws XNIException {
 
-        XMLElementDecl tmpElementDecl = (XMLElementDecl) fElementDeclTab.get(name) ;
-        if ( tmpElementDecl != null ) {
+        XMLElementDecl tmpElementDecl = (XMLElementDecl) fElementDeclTab.get(name);
+        if (tmpElementDecl != null) {
             if (tmpElementDecl.type == -1) {
                 fCurrentElementIndex = getElementDeclIndex(name);
-            }
-            else {
+            } else {
                 // duplicate element, ignored.
                 return;
             }
-        }
-        else {
-            fCurrentElementIndex = createElementDecl();//create element decl
+        } else {
+            fCurrentElementIndex = createElementDecl(); // create element decl
         }
 
-        XMLElementDecl elementDecl       = new XMLElementDecl();
-        QName          elementName       = new QName(null, name, name, null);
+        XMLElementDecl elementDecl = new XMLElementDecl();
+        QName elementName = new QName(null, name, name, null);
 
         elementDecl.name.setValues(elementName);
-        elementDecl.scope= -1;
+        elementDecl.scope = -1;
         if (contentModel.equals("EMPTY")) {
             elementDecl.type = XMLElementDecl.TYPE_EMPTY;
-        }
-        else if (contentModel.equals("ANY")) {
+        } else if (contentModel.equals("ANY")) {
             elementDecl.type = XMLElementDecl.TYPE_ANY;
-        }
-        else if (contentModel.startsWith("(") ) {
-            if (contentModel.indexOf("#PCDATA") > 0 ) {
+        } else if (contentModel.startsWith("(")) {
+            if (contentModel.indexOf("#PCDATA") > 0) {
                 elementDecl.type = XMLElementDecl.TYPE_MIXED;
-            }
-            else {
+            } else {
                 elementDecl.type = XMLElementDecl.TYPE_CHILDREN;
             }
         }
 
-
-        //add(or set) this elementDecl to the local cache
-        this.fElementDeclTab.put(name, elementDecl );
+        // add(or set) this elementDecl to the local cache
+        this.fElementDeclTab.put(name, elementDecl);
 
         fElementDecl = elementDecl;
 
-
-        if ( DEBUG ) {
-            System.out.println(  "name = " + fElementDecl.name.localpart );
-            System.out.println(  "Type = " + fElementDecl.type );
+        if (DEBUG) {
+            System.out.println("name = " + fElementDecl.name.localpart);
+            System.out.println("Type = " + fElementDecl.type);
         }
 
-        setElementDecl(fCurrentElementIndex, fElementDecl );//set internal structure
+        setElementDecl(fCurrentElementIndex, fElementDecl); // set internal structure
 
         int chunk = fCurrentElementIndex >> CHUNK_SHIFT;
         ensureElementDeclCapacity(chunk);
@@ -268,127 +254,119 @@ public class DTDGrammar {
     /**
      * An attribute declaration.
      *
-     * @param elementName   The name of the element that this attribute
-     *                      is associated with.
+     * @param elementName The name of the element that this attribute is associated with.
      * @param attributeName The name of the attribute.
-     * @param type          The attribute type. This value will be one of
-     *                      the following: "CDATA", "ENTITY", "ENTITIES",
-     *                      "ENUMERATION", "ID", "IDREF", "IDREFS",
-     *                      "NMTOKEN", "NMTOKENS", or "NOTATION".
-     * @param enumeration   If the type has the value "ENUMERATION", this
-     *                      array holds the allowed attribute values;
-     *                      otherwise, this array is null.
-     * @param defaultType   The attribute default type. This value will be
-     *                      one of the following: "#FIXED", "#IMPLIED",
-     *                      "#REQUIRED", or null.
-     * @param defaultValue  The attribute default value, or null if no
-     *                      default value is specified.
-     * @param nonNormalizedDefaultValue  The attribute default value with no normalization
-     *                      performed, or null if no default value is specified.
-     *
-     * @param augs Additional information that may include infoset
-     *                      augmentations.
+     * @param type The attribute type. This value will be one of the following: "CDATA", "ENTITY",
+     *     "ENTITIES", "ENUMERATION", "ID", "IDREF", "IDREFS", "NMTOKEN", "NMTOKENS", or "NOTATION".
+     * @param enumeration If the type has the value "ENUMERATION", this array holds the allowed
+     *     attribute values; otherwise, this array is null.
+     * @param defaultType The attribute default type. This value will be one of the following:
+     *     "#FIXED", "#IMPLIED", "#REQUIRED", or null.
+     * @param defaultValue The attribute default value, or null if no default value is specified.
+     * @param nonNormalizedDefaultValue The attribute default value with no normalization performed,
+     *     or null if no default value is specified.
+     * @param augs Additional information that may include infoset augmentations.
      * @throws XNIException Thrown by handler to signal an error.
      */
-    public void attributeDecl(String elementName, String attributeName,
-    String type, String[] enumeration,
-    String defaultType, XMLString defaultValue,
-    XMLString nonNormalizedDefaultValue, Augmentations augs) throws XNIException {
+    public void attributeDecl(
+            String elementName,
+            String attributeName,
+            String type,
+            String[] enumeration,
+            String defaultType,
+            XMLString defaultValue,
+            XMLString nonNormalizedDefaultValue,
+            Augmentations augs)
+            throws XNIException {
 
         if (type != XMLSymbols.fCDATASymbol && defaultValue != null) {
             normalizeDefaultAttrValue(defaultValue);
         }
 
-        if ( this.fElementDeclTab.containsKey( (String) elementName) ) {
-            //if ElementDecl has already being created in the Grammar then remove from table,
-            //this.fElementDeclTab.remove( (String) elementName );
+        if (this.fElementDeclTab.containsKey((String) elementName)) {
+            // if ElementDecl has already being created in the Grammar then remove from table,
+            // this.fElementDeclTab.remove( (String) elementName );
         }
         // then it is forward reference to a element decl, create the elementDecl first.
         else {
-            fCurrentElementIndex = createElementDecl();//create element decl
+            fCurrentElementIndex = createElementDecl(); // create element decl
 
-            XMLElementDecl elementDecl       = new XMLElementDecl();
+            XMLElementDecl elementDecl = new XMLElementDecl();
             elementDecl.name.setValues(null, elementName, elementName, null);
 
-            elementDecl.scope= -1;
+            elementDecl.scope = -1;
 
-            //add(or set) this elementDecl to the local cache
-            this.fElementDeclTab.put(elementName, elementDecl );
+            // add(or set) this elementDecl to the local cache
+            this.fElementDeclTab.put(elementName, elementDecl);
 
-            //set internal structure
-            setElementDecl(fCurrentElementIndex, elementDecl );
+            // set internal structure
+            setElementDecl(fCurrentElementIndex, elementDecl);
         }
 
-        //Get Grammar index to grammar array
-        int elementIndex       = getElementDeclIndex(elementName);
+        // Get Grammar index to grammar array
+        int elementIndex = getElementDeclIndex(elementName);
 
-        //return, when more than one definition is provided for the same attribute of given element type
-        //only the first declaration is binding and later declarations are ignored
+        // return, when more than one definition is provided for the same attribute of given element
+        // type
+        // only the first declaration is binding and later declarations are ignored
         if (getAttributeDeclIndex(elementIndex, attributeName) != -1) {
             return;
         }
 
-        fCurrentAttributeIndex = createAttributeDecl();// Create current Attribute Decl
+        fCurrentAttributeIndex = createAttributeDecl(); // Create current Attribute Decl
 
         fSimpleType.clear();
-        if ( defaultType != null ) {
-            if ( defaultType.equals( "#FIXED") ) {
+        if (defaultType != null) {
+            if (defaultType.equals("#FIXED")) {
                 fSimpleType.defaultType = fSimpleType.DEFAULT_TYPE_FIXED;
-            } else if ( defaultType.equals( "#IMPLIED") ) {
+            } else if (defaultType.equals("#IMPLIED")) {
                 fSimpleType.defaultType = fSimpleType.DEFAULT_TYPE_IMPLIED;
-            } else if ( defaultType.equals( "#REQUIRED") ) {
+            } else if (defaultType.equals("#REQUIRED")) {
                 fSimpleType.defaultType = fSimpleType.DEFAULT_TYPE_REQUIRED;
             }
         }
-        if ( DEBUG ) {
-            System.out.println("defaultvalue = " + defaultValue.toString() );
+        if (DEBUG) {
+            System.out.println("defaultvalue = " + defaultValue.toString());
         }
-        fSimpleType.defaultValue      = defaultValue!=null ?  defaultValue.toString() : null;
-        fSimpleType.nonNormalizedDefaultValue      = nonNormalizedDefaultValue!=null ?  nonNormalizedDefaultValue.toString() : null;
-        fSimpleType.enumeration       = enumeration;
+        fSimpleType.defaultValue = defaultValue != null ? defaultValue.toString() : null;
+        fSimpleType.nonNormalizedDefaultValue =
+                nonNormalizedDefaultValue != null ? nonNormalizedDefaultValue.toString() : null;
+        fSimpleType.enumeration = enumeration;
 
         if (type.equals("CDATA")) {
             fSimpleType.type = XMLSimpleType.TYPE_CDATA;
-        }
-        else if ( type.equals("ID") ) {
+        } else if (type.equals("ID")) {
             fSimpleType.type = XMLSimpleType.TYPE_ID;
-        }
-        else if ( type.startsWith("IDREF") ) {
+        } else if (type.startsWith("IDREF")) {
             fSimpleType.type = XMLSimpleType.TYPE_IDREF;
             if (type.indexOf("S") > 0) {
                 fSimpleType.list = true;
             }
-        }
-        else if (type.equals("ENTITIES")) {
+        } else if (type.equals("ENTITIES")) {
             fSimpleType.type = XMLSimpleType.TYPE_ENTITY;
             fSimpleType.list = true;
-        }
-        else if (type.equals("ENTITY")) {
+        } else if (type.equals("ENTITY")) {
             fSimpleType.type = XMLSimpleType.TYPE_ENTITY;
-        }
-        else if (type.equals("NMTOKENS")) {
+        } else if (type.equals("NMTOKENS")) {
             fSimpleType.type = XMLSimpleType.TYPE_NMTOKEN;
             fSimpleType.list = true;
-        }
-        else if (type.equals("NMTOKEN")) {
+        } else if (type.equals("NMTOKEN")) {
             fSimpleType.type = XMLSimpleType.TYPE_NMTOKEN;
-        }
-        else if (type.startsWith("NOTATION") ) {
+        } else if (type.startsWith("NOTATION")) {
             fSimpleType.type = XMLSimpleType.TYPE_NOTATION;
-        }
-        else if (type.startsWith("ENUMERATION") ) {
+        } else if (type.startsWith("ENUMERATION")) {
             fSimpleType.type = XMLSimpleType.TYPE_ENUMERATION;
-        }
-        else {
+        } else {
             // REVISIT: Report error message. -Ac
-            System.err.println("!!! unknown attribute type "+type);
+            System.err.println("!!! unknown attribute type " + type);
         }
         // REVISIT: The datatype should be stored with the attribute value
         //          and not special-cased in the XMLValidator. -Ac
-        //fSimpleType.datatypeValidator = fDatatypeValidatorFactory.createDatatypeValidator(type, null, facets, fSimpleType.list);
+        // fSimpleType.datatypeValidator = fDatatypeValidatorFactory.createDatatypeValidator(type,
+        // null, facets, fSimpleType.list);
 
         fQName.setValues(null, attributeName, attributeName, null);
-        fAttributeDecl.setValues( fQName, fSimpleType, false );
+        fAttributeDecl.setValues(fQName, fSimpleType, false);
 
         setAttributeDecl(elementIndex, fCurrentAttributeIndex, fAttributeDecl);
 
@@ -402,8 +380,8 @@ public class DTDGrammar {
     } // getSymbolTable():SymbolTable
 
     /**
-     * Returns the index of the first element declaration. This index
-     * is then used to query more information about the element declaration.
+     * Returns the index of the first element declaration. This index is then used to query more
+     * information about the element declaration.
      *
      * @see #getNextElementDeclIndex
      * @see #getElementDecl
@@ -413,52 +391,51 @@ public class DTDGrammar {
     } // getFirstElementDeclIndex():int
 
     /**
-     * Returns the next index of the element declaration following the
-     * specified element declaration.
+     * Returns the next index of the element declaration following the specified element
+     * declaration.
      *
      * @param elementDeclIndex The element declaration index.
      */
     public int getNextElementDeclIndex(int elementDeclIndex) {
-        return elementDeclIndex < fElementDeclCount - 1
-        ? elementDeclIndex + 1 : -1;
+        return elementDeclIndex < fElementDeclCount - 1 ? elementDeclIndex + 1 : -1;
     } // getNextElementDeclIndex(int):int
 
     /**
      * getElementDeclIndex
      *
      * @param elementDeclName
-     *
      * @return index of the elementDeclName in scope
      */
     public int getElementDeclIndex(String elementDeclName) {
         int mapping = fElementIndexMap.get(elementDeclName);
-        //System.out.println("getElementDeclIndex("+elementDeclName+") -> "+mapping);
+        // System.out.println("getElementDeclIndex("+elementDeclName+") -> "+mapping);
         return mapping;
     } // getElementDeclIndex(String):int
 
-    /** Returns the element decl index.
+    /**
+     * Returns the element decl index.
+     *
      * @param elementDeclQName qualilfied name of the element
      */
     public int getElementDeclIndex(QName elementDeclQName) {
         return getElementDeclIndex(elementDeclQName.rawname);
     } // getElementDeclIndex(QName):int
 
-    /** make separate function for getting contentSpecType of element.
-     * we can avoid setting of the element values.
+    /**
+     * make separate function for getting contentSpecType of element. we can avoid setting of the
+     * element values.
      */
-
-    public short getContentSpecType(int elementIndex){
+    public short getContentSpecType(int elementIndex) {
         if (elementIndex < 0 || elementIndex >= fElementDeclCount) {
-            return -1 ;
+            return -1;
         }
 
         int chunk = elementIndex >> CHUNK_SHIFT;
-        int index = elementIndex &  CHUNK_MASK;
+        int index = elementIndex & CHUNK_MASK;
 
-        if(fElementDeclType[chunk][index] == -1){
-            return -1 ;
-        }
-        else{
+        if (fElementDeclType[chunk][index] == -1) {
+            return -1;
+        } else {
             return (short) (fElementDeclType[chunk][index] & LIST_MASK);
         }
     }
@@ -468,33 +445,30 @@ public class DTDGrammar {
      *
      * @param elementDeclIndex
      * @param elementDecl The values of this structure are set by this call.
-     *
      * @return True if find the element, False otherwise.
      */
-    public boolean getElementDecl(int elementDeclIndex,
-    XMLElementDecl elementDecl) {
+    public boolean getElementDecl(int elementDeclIndex, XMLElementDecl elementDecl) {
 
         if (elementDeclIndex < 0 || elementDeclIndex >= fElementDeclCount) {
             return false;
         }
 
         int chunk = elementDeclIndex >> CHUNK_SHIFT;
-        int index = elementDeclIndex &  CHUNK_MASK;
+        int index = elementDeclIndex & CHUNK_MASK;
 
         elementDecl.name.setValues(fElementDeclName[chunk][index]);
 
         if (fElementDeclType[chunk][index] == -1) {
-            elementDecl.type                    = -1;
+            elementDecl.type = -1;
             elementDecl.simpleType.list = false;
         } else {
-            elementDecl.type            = (short) (fElementDeclType[chunk][index] & LIST_MASK);
+            elementDecl.type = (short) (fElementDeclType[chunk][index] & LIST_MASK);
             elementDecl.simpleType.list = (fElementDeclType[chunk][index] & LIST_FLAG) != 0;
         }
 
-        elementDecl.simpleType.defaultType       = -1;
-        elementDecl.simpleType.defaultValue      = null;
+        elementDecl.simpleType.defaultType = -1;
+        elementDecl.simpleType.defaultValue = null;
         return true;
-
     }
 
     // REVISIT: Make this getAttributeDeclCount/getAttributeDeclAt. -Ac
@@ -503,26 +477,24 @@ public class DTDGrammar {
      * getFirstAttributeDeclIndex
      *
      * @param elementDeclIndex
-     *
      * @return index of the first attribute for element declaration elementDeclIndex
      */
     public int getFirstAttributeDeclIndex(int elementDeclIndex) {
         int chunk = elementDeclIndex >> CHUNK_SHIFT;
-        int index = elementDeclIndex &  CHUNK_MASK;
+        int index = elementDeclIndex & CHUNK_MASK;
 
-        return  fElementDeclFirstAttributeDeclIndex[chunk][index];
+        return fElementDeclFirstAttributeDeclIndex[chunk][index];
     } // getFirstAttributeDeclIndex
 
     /**
      * getNextAttributeDeclIndex
      *
      * @param attributeDeclIndex
-     *
      * @return index of the next attribute of the attribute at attributeDeclIndex
      */
     public int getNextAttributeDeclIndex(int attributeDeclIndex) {
         int chunk = attributeDeclIndex >> CHUNK_SHIFT;
-        int index = attributeDeclIndex &  CHUNK_MASK;
+        int index = attributeDeclIndex & CHUNK_MASK;
 
         return fAttributeDeclNextAttributeDeclIndex[chunk][index];
     }
@@ -532,7 +504,6 @@ public class DTDGrammar {
      *
      * @param attributeDeclIndex
      * @param attributeDecl The values of this structure are set by this call.
-     *
      * @return true if getAttributeDecl was able to fill in the value of attributeDecl
      */
     public boolean getAttributeDecl(int attributeDeclIndex, XMLAttributeDecl attributeDecl) {
@@ -555,43 +526,40 @@ public class DTDGrammar {
             attributeType = (short) (fAttributeDeclType[chunk][index] & LIST_MASK);
             isList = (fAttributeDeclType[chunk][index] & LIST_FLAG) != 0;
         }
-        attributeDecl.simpleType.setValues(attributeType,fAttributeDeclName[chunk][index].localpart,
-        fAttributeDeclEnumeration[chunk][index],
-        isList, fAttributeDeclDefaultType[chunk][index],
-        fAttributeDeclDefaultValue[chunk][index],
-        fAttributeDeclNonNormalizedDefaultValue[chunk][index]);
+        attributeDecl.simpleType.setValues(
+                attributeType,
+                fAttributeDeclName[chunk][index].localpart,
+                fAttributeDeclEnumeration[chunk][index],
+                isList,
+                fAttributeDeclDefaultType[chunk][index],
+                fAttributeDeclDefaultValue[chunk][index],
+                fAttributeDeclNonNormalizedDefaultValue[chunk][index]);
         return true;
-
     } // getAttributeDecl
-
 
     /**
      * Returns whether the given attribute is of type CDATA or not
      *
      * @param elName The element name.
      * @param atName The attribute name.
-     *
      * @return true if the attribute is of type CDATA
      */
     public boolean isCDATAAttribute(QName elName, QName atName) {
         int elDeclIdx = getElementDeclIndex(elName);
         if (getAttributeDecl(elDeclIdx, fAttributeDecl)
-        && fAttributeDecl.simpleType.type != XMLSimpleType.TYPE_CDATA){
+                && fAttributeDecl.simpleType.type != XMLSimpleType.TYPE_CDATA) {
             return false;
         }
         return true;
     }
 
-
-
-    public void printElements(  ) {
+    public void printElements() {
         int elementDeclIndex = 0;
         XMLElementDecl elementDecl = new XMLElementDecl();
         while (getElementDecl(elementDeclIndex++, elementDecl)) {
 
-            System.out.println("element decl: "+elementDecl.name+
-            ", "+ elementDecl.name.rawname  );
-
+            System.out.println(
+                    "element decl: " + elementDecl.name + ", " + elementDecl.name.rawname);
         }
     }
 
@@ -611,15 +579,14 @@ public class DTDGrammar {
         System.out.println(" ]");
     }
 
-
     protected int createElementDecl() {
         int chunk = fElementDeclCount >> CHUNK_SHIFT;
         int index = fElementDeclCount & CHUNK_MASK;
         ensureElementDeclCapacity(chunk);
-        fElementDeclName[chunk][index]                    = new QName();
-        fElementDeclType[chunk][index]                    = -1;
+        fElementDeclName[chunk][index] = new QName();
+        fElementDeclType[chunk][index] = -1;
         fElementDeclFirstAttributeDeclIndex[chunk][index] = -1;
-        fElementDeclLastAttributeDeclIndex[chunk][index]  = -1;
+        fElementDeclLastAttributeDeclIndex[chunk][index] = -1;
         return fElementDeclCount++;
     }
 
@@ -627,75 +594,68 @@ public class DTDGrammar {
         if (elementDeclIndex < 0 || elementDeclIndex >= fElementDeclCount) {
             return;
         }
-        int     chunk       = elementDeclIndex >> CHUNK_SHIFT;
-        int     index       = elementDeclIndex &  CHUNK_MASK;
+        int chunk = elementDeclIndex >> CHUNK_SHIFT;
+        int index = elementDeclIndex & CHUNK_MASK;
 
-        int     scope       = elementDecl.scope;
-
+        int scope = elementDecl.scope;
 
         fElementDeclName[chunk][index].setValues(elementDecl.name);
-        fElementDeclType[chunk][index]                  = elementDecl.type;
+        fElementDeclType[chunk][index] = elementDecl.type;
 
-
-
-        if (elementDecl.simpleType.list  == true ) {
+        if (elementDecl.simpleType.list == true) {
             fElementDeclType[chunk][index] |= LIST_FLAG;
         }
 
         fElementIndexMap.put(elementDecl.name.rawname, elementDeclIndex);
     }
 
-
-
-
-    protected void setFirstAttributeDeclIndex(int elementDeclIndex, int newFirstAttrIndex){
+    protected void setFirstAttributeDeclIndex(int elementDeclIndex, int newFirstAttrIndex) {
 
         if (elementDeclIndex < 0 || elementDeclIndex >= fElementDeclCount) {
             return;
         }
 
         int chunk = elementDeclIndex >> CHUNK_SHIFT;
-        int index = elementDeclIndex &  CHUNK_MASK;
+        int index = elementDeclIndex & CHUNK_MASK;
 
         fElementDeclFirstAttributeDeclIndex[chunk][index] = newFirstAttrIndex;
     }
-
 
     protected int createAttributeDecl() {
         int chunk = fAttributeDeclCount >> CHUNK_SHIFT;
         int index = fAttributeDeclCount & CHUNK_MASK;
 
         ensureAttributeDeclCapacity(chunk);
-        fAttributeDeclName[chunk][index]                    = new QName();
-        fAttributeDeclType[chunk][index]                    = -1;
-        fAttributeDeclEnumeration[chunk][index]             = null;
-        fAttributeDeclDefaultType[chunk][index]             = XMLSimpleType.DEFAULT_TYPE_IMPLIED;
-        fAttributeDeclDefaultValue[chunk][index]            = null;
-        fAttributeDeclNonNormalizedDefaultValue[chunk][index]            = null;
-        fAttributeDeclNextAttributeDeclIndex[chunk][index]  = -1;
+        fAttributeDeclName[chunk][index] = new QName();
+        fAttributeDeclType[chunk][index] = -1;
+        fAttributeDeclEnumeration[chunk][index] = null;
+        fAttributeDeclDefaultType[chunk][index] = XMLSimpleType.DEFAULT_TYPE_IMPLIED;
+        fAttributeDeclDefaultValue[chunk][index] = null;
+        fAttributeDeclNonNormalizedDefaultValue[chunk][index] = null;
+        fAttributeDeclNextAttributeDeclIndex[chunk][index] = -1;
         return fAttributeDeclCount++;
     }
 
-
-    protected void setAttributeDecl(int elementDeclIndex, int attributeDeclIndex,
-    XMLAttributeDecl attributeDecl) {
+    protected void setAttributeDecl(
+            int elementDeclIndex, int attributeDeclIndex, XMLAttributeDecl attributeDecl) {
         int attrChunk = attributeDeclIndex >> CHUNK_SHIFT;
-        int attrIndex = attributeDeclIndex &  CHUNK_MASK;
+        int attrIndex = attributeDeclIndex & CHUNK_MASK;
         fAttributeDeclName[attrChunk][attrIndex].setValues(attributeDecl.name);
-        fAttributeDeclType[attrChunk][attrIndex]  =  attributeDecl.simpleType.type;
+        fAttributeDeclType[attrChunk][attrIndex] = attributeDecl.simpleType.type;
 
         if (attributeDecl.simpleType.list) {
             fAttributeDeclType[attrChunk][attrIndex] |= LIST_FLAG;
         }
-        fAttributeDeclEnumeration[attrChunk][attrIndex]  =  attributeDecl.simpleType.enumeration;
-        fAttributeDeclDefaultType[attrChunk][attrIndex]  =  attributeDecl.simpleType.defaultType;
+        fAttributeDeclEnumeration[attrChunk][attrIndex] = attributeDecl.simpleType.enumeration;
+        fAttributeDeclDefaultType[attrChunk][attrIndex] = attributeDecl.simpleType.defaultType;
 
         fAttributeDeclDefaultValue[attrChunk][attrIndex] = attributeDecl.simpleType.defaultValue;
-        fAttributeDeclNonNormalizedDefaultValue[attrChunk][attrIndex] = attributeDecl.simpleType.nonNormalizedDefaultValue;
+        fAttributeDeclNonNormalizedDefaultValue[attrChunk][attrIndex] =
+                attributeDecl.simpleType.nonNormalizedDefaultValue;
 
-        int elemChunk     = elementDeclIndex >> CHUNK_SHIFT;
-        int elemIndex     = elementDeclIndex &  CHUNK_MASK;
-        int index         = fElementDeclFirstAttributeDeclIndex[elemChunk][elemIndex];
+        int elemChunk = elementDeclIndex >> CHUNK_SHIFT;
+        int elemIndex = elementDeclIndex & CHUNK_MASK;
+        int index = fElementDeclFirstAttributeDeclIndex[elemChunk][elemIndex];
         while (index != -1) {
             if (index == attributeDeclIndex) {
                 break;
@@ -717,17 +677,19 @@ public class DTDGrammar {
         }
     }
 
-    public void notationDecl(String name, XMLResourceIdentifier identifier,
-    Augmentations augs) throws XNIException {
+    public void notationDecl(String name, XMLResourceIdentifier identifier, Augmentations augs)
+            throws XNIException {
 
-
-        XMLNotationDecl  notationDecl = new XMLNotationDecl();
-        notationDecl.setValues(name,identifier.getPublicId(),identifier.getLiteralSystemId(),
-        identifier.getBaseSystemId());
+        XMLNotationDecl notationDecl = new XMLNotationDecl();
+        notationDecl.setValues(
+                name,
+                identifier.getPublicId(),
+                identifier.getLiteralSystemId(),
+                identifier.getBaseSystemId());
         notationDecls.add(notationDecl);
     }
 
-    public List getNotationDecls(){
+    public List getNotationDecls() {
         return notationDecls;
     }
 
@@ -742,20 +704,22 @@ public class DTDGrammar {
             System.out.print(attributeDecl.name.localpart);
             System.out.print(" }");
         }
-
     } // printAttribute(int)
-
-
 
     private void ensureElementDeclCapacity(int chunk) {
         if (chunk >= fElementDeclName.length) {
 
             fElementDeclName = resize(fElementDeclName, fElementDeclName.length * 2);
             fElementDeclType = resize(fElementDeclType, fElementDeclType.length * 2);
-            fElementDeclFirstAttributeDeclIndex = resize(fElementDeclFirstAttributeDeclIndex, fElementDeclFirstAttributeDeclIndex.length * 2);
-            fElementDeclLastAttributeDeclIndex = resize(fElementDeclLastAttributeDeclIndex, fElementDeclLastAttributeDeclIndex.length * 2);
-        }
-        else if (fElementDeclName[chunk] != null) {
+            fElementDeclFirstAttributeDeclIndex =
+                    resize(
+                            fElementDeclFirstAttributeDeclIndex,
+                            fElementDeclFirstAttributeDeclIndex.length * 2);
+            fElementDeclLastAttributeDeclIndex =
+                    resize(
+                            fElementDeclLastAttributeDeclIndex,
+                            fElementDeclLastAttributeDeclIndex.length * 2);
+        } else if (fElementDeclName[chunk] != null) {
             return;
         }
 
@@ -771,13 +735,21 @@ public class DTDGrammar {
         if (chunk >= fAttributeDeclName.length) {
             fAttributeDeclName = resize(fAttributeDeclName, fAttributeDeclName.length * 2);
             fAttributeDeclType = resize(fAttributeDeclType, fAttributeDeclType.length * 2);
-            fAttributeDeclEnumeration = resize(fAttributeDeclEnumeration, fAttributeDeclEnumeration.length * 2);
-            fAttributeDeclDefaultType = resize(fAttributeDeclDefaultType, fAttributeDeclDefaultType.length * 2);
-            fAttributeDeclDefaultValue = resize(fAttributeDeclDefaultValue, fAttributeDeclDefaultValue.length * 2);
-            fAttributeDeclNonNormalizedDefaultValue = resize(fAttributeDeclNonNormalizedDefaultValue, fAttributeDeclNonNormalizedDefaultValue.length * 2);
-            fAttributeDeclNextAttributeDeclIndex = resize(fAttributeDeclNextAttributeDeclIndex, fAttributeDeclNextAttributeDeclIndex.length * 2);
-        }
-        else if (fAttributeDeclName[chunk] != null) {
+            fAttributeDeclEnumeration =
+                    resize(fAttributeDeclEnumeration, fAttributeDeclEnumeration.length * 2);
+            fAttributeDeclDefaultType =
+                    resize(fAttributeDeclDefaultType, fAttributeDeclDefaultType.length * 2);
+            fAttributeDeclDefaultValue =
+                    resize(fAttributeDeclDefaultValue, fAttributeDeclDefaultValue.length * 2);
+            fAttributeDeclNonNormalizedDefaultValue =
+                    resize(
+                            fAttributeDeclNonNormalizedDefaultValue,
+                            fAttributeDeclNonNormalizedDefaultValue.length * 2);
+            fAttributeDeclNextAttributeDeclIndex =
+                    resize(
+                            fAttributeDeclNextAttributeDeclIndex,
+                            fAttributeDeclNextAttributeDeclIndex.length * 2);
+        } else if (fAttributeDeclName[chunk] != null) {
             return;
         }
 
@@ -790,7 +762,6 @@ public class DTDGrammar {
         fAttributeDeclNextAttributeDeclIndex[chunk] = new int[CHUNK_SIZE];
         return;
     }
-
 
     // resize chunks
 
@@ -819,7 +790,7 @@ public class DTDGrammar {
     }
 
     private static String[][][] resize(String array[][][], int newsize) {
-        String newarray[][][] = new String[newsize] [][];
+        String newarray[][][] = new String[newsize][][];
         System.arraycopy(array, 0, newarray, 0, array.length);
         return newarray;
     }
@@ -828,10 +799,9 @@ public class DTDGrammar {
     // Classes
     //
 
-
     /**
-     * A simple Hashtable implementation that takes a tuple (String, String)
-     * as the key and a int as value.
+     * A simple Hashtable implementation that takes a tuple (String, String) as the key and a int as
+     * value.
      *
      * @author Eric Ye, IBM
      * @author Andy Clark, IBM
@@ -863,66 +833,64 @@ public class DTDGrammar {
         public void put(String key, int value) {
 
             // REVISIT: Why +2? -Ac
-            int hash = (hash(key)+2) % HASHTABLE_SIZE;
+            int hash = (hash(key) + 2) % HASHTABLE_SIZE;
             Object[] bucket = fHashTable[hash];
 
             if (bucket == null) {
-                bucket = new Object[1 + 2*INITIAL_BUCKET_SIZE];
-                bucket[0] = new int[]{1};
+                bucket = new Object[1 + 2 * INITIAL_BUCKET_SIZE];
+                bucket[0] = new int[] {1};
                 bucket[1] = key;
-                bucket[2] = new int[]{value};
+                bucket[2] = new int[] {value};
                 fHashTable[hash] = bucket;
             } else {
-                int count = ((int[])bucket[0])[0];
-                int offset = 1 + 2*count;
+                int count = ((int[]) bucket[0])[0];
+                int offset = 1 + 2 * count;
                 if (offset == bucket.length) {
                     int newSize = count + INITIAL_BUCKET_SIZE;
-                    Object[] newBucket = new Object[1 + 2*newSize];
+                    Object[] newBucket = new Object[1 + 2 * newSize];
                     System.arraycopy(bucket, 0, newBucket, 0, offset);
                     bucket = newBucket;
                     fHashTable[hash] = bucket;
                 }
                 boolean found = false;
-                int j=1;
-                for (int i=0; i<count; i++){
-                    if ((String)bucket[j] == key) {
-                        ((int[])bucket[j+1])[0] = value;
+                int j = 1;
+                for (int i = 0; i < count; i++) {
+                    if ((String) bucket[j] == key) {
+                        ((int[]) bucket[j + 1])[0] = value;
                         found = true;
                         break;
                     }
                     j += 2;
                 }
-                if (! found) {
+                if (!found) {
                     bucket[offset++] = key;
-                    bucket[offset]= new int[]{value};
-                    ((int[])bucket[0])[0] = ++count;
+                    bucket[offset] = new int[] {value};
+                    ((int[]) bucket[0])[0] = ++count;
                 }
-
             }
-            //System.out.println("put("+key+" -> "+value+')');
-            //System.out.println("get("+key+") -> "+get(key));
+            // System.out.println("put("+key+" -> "+value+')');
+            // System.out.println("get("+key+") -> "+get(key));
 
         } // put(int,String,String,int)
 
         /** Returns the value associated with the specified key tuple. */
         public int get(String key) {
-            int hash = (hash(key)+2) % HASHTABLE_SIZE;
+            int hash = (hash(key) + 2) % HASHTABLE_SIZE;
             Object[] bucket = fHashTable[hash];
 
             if (bucket == null) {
                 return -1;
             }
-            int count = ((int[])bucket[0])[0];
+            int count = ((int[]) bucket[0])[0];
 
-            int j=1;
-            for (int i=0; i<count; i++){
-                if ((String)bucket[j] == key) {
-                    return ((int[])bucket[j+1])[0];
+            int j = 1;
+            for (int i = 0; i < count; i++) {
+                if ((String) bucket[j] == key) {
+                    return ((int[]) bucket[j + 1])[0];
                 }
                 j += 2;
             }
             return -1;
-
         } // get(int,String,String)
 
         //
@@ -941,13 +909,11 @@ public class DTDGrammar {
                 code = code * 37 + symbol.charAt(i);
             }
             return code & 0x7FFFFFF;
-
         } // hash(String):int
-
-    }  // class QNameHashtable
+    } // class QNameHashtable
     /**
-     * Normalize the attribute value of a non CDATA default attribute
-     * collapsing sequences of space characters (x20)
+     * Normalize the attribute value of a non CDATA default attribute collapsing sequences of space
+     * characters (x20)
      *
      * @param value The value to normalize
      * @return Whether the value was changed or not.
@@ -965,12 +931,10 @@ public class DTDGrammar {
                     // take the first whitespace as a space and skip the others
                     value.ch[current++] = ' ';
                     skipSpace = true;
-                }
-                else {
+                } else {
                     // just skip it.
                 }
-            }
-            else {
+            } else {
                 // simply shift non space chars if needed
                 if (current != i) {
                     value.ch[current] = value.ch[i];
@@ -990,7 +954,6 @@ public class DTDGrammar {
         }
         return false;
     }
-    public void endDTD(Augmentations augs) throws XNIException {
 
-    }
+    public void endDTD(Augmentations augs) throws XNIException {}
 }

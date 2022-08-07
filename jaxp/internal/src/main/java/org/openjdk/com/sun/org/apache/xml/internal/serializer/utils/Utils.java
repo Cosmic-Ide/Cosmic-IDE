@@ -25,19 +25,17 @@ package org.openjdk.com.sun.org.apache.xml.internal.serializer.utils;
 /**
  * This class contains utilities used by the serializer.
  *
- * This class is not a public API, it is only public because it is
- * used by com.sun.org.apache.xml.internal.serializer.
+ * <p>This class is not a public API, it is only public because it is used by
+ * com.sun.org.apache.xml.internal.serializer.
  *
  * @xsl.usage internal
  */
-public final class Utils
-{
+public final class Utils {
     /**
-     * A singleton Messages object is used to load the
-     * given resource bundle just once, it is
-     * used by multiple transformations as long as the JVM stays up.
+     * A singleton Messages object is used to load the given resource bundle just once, it is used
+     * by multiple transformations as long as the JVM stays up.
      */
-    public static final Messages messages=
-        new Messages(
-            "org.openjdk.com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages");
+    public static final Messages messages =
+            new Messages(
+                    "org.openjdk.com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages");
 }

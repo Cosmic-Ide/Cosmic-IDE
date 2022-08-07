@@ -2,7 +2,8 @@ package org.jetbrains.kotlin.com.intellij.diagnostic;
 
 public class PluginProblemReporterImpl implements PluginProblemReporter {
     @Override
-    public PluginException createPluginExceptionByClass(String s, Throwable throwable, Class aClass) {
+    public PluginException createPluginExceptionByClass(
+            String s, Throwable throwable, Class aClass) {
         return new PluginException(s, throwable, null);
     }
 

@@ -25,12 +25,12 @@ package io.github.rosemoe.sora.text.bidi;
 
 import androidx.annotation.NonNull;
 
+import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.text.ContentListener;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import io.github.rosemoe.sora.text.Content;
-import io.github.rosemoe.sora.text.ContentListener;
 
 public class ContentBidi implements ContentListener {
 
@@ -57,7 +57,13 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         var itr = entries.iterator();
         var delta = endLine - startLine;
         while (itr.hasNext()) {
@@ -73,7 +79,13 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         var itr = entries.iterator();
         var delta = endLine - startLine;
         while (itr.hasNext()) {
@@ -87,9 +99,7 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public void beforeReplace(Content content) {
-
-    }
+    public void beforeReplace(Content content) {}
 
     public void destroy() {
         text.removeContentListener(this);
@@ -107,5 +117,4 @@ public class ContentBidi implements ContentListener {
             this.line = line;
         }
     }
-
 }

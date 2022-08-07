@@ -61,8 +61,7 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.dtd;
 
-/**
- */
+/** */
 public class XMLNotationDecl {
 
     //
@@ -93,20 +92,17 @@ public class XMLNotationDecl {
      * @param systemId
      */
     public void setValues(String name, String publicId, String systemId, String baseSystemId) {
-        this.name     =   name;
+        this.name = name;
         this.publicId = publicId;
         this.systemId = systemId;
         this.baseSystemId = baseSystemId;
     } // setValues
 
-    /**
-     * clear
-     */
+    /** clear */
     public void clear() {
-        this.name     = null;
+        this.name = null;
         this.publicId = null;
         this.systemId = null;
         this.baseSystemId = null;
     } // clear
-
 } // class XMLNotationDecl

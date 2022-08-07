@@ -59,13 +59,13 @@ package org.openjdk.com.sun.org.apache.bcel.internal.generic;
  */
 
 /**
- * Denote an instruction that may produce a value on top of the stack
- * (this excludes DUP_X1, e.g.)
+ * Denote an instruction that may produce a value on top of the stack (this excludes DUP_X1, e.g.)
  *
- * @author  <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
+ * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public interface StackProducer {
-  /** @return how many words are produced on stack
-   */
-  public int produceStack(ConstantPoolGen cpg);
+    /**
+     * @return how many words are produced on stack
+     */
+    public int produceStack(ConstantPoolGen cpg);
 }

@@ -23,14 +23,12 @@ package org.openjdk.com.sun.org.apache.xerces.internal.impl.validation;
 import java.util.Vector;
 
 /**
- * ValidationManager is a coordinator property for validators in the
- * pipeline. Each validator must know how to interact with
- * this property. Validators are not required to know what kind of
- * other validators present in the pipeline, but should understand
- * that there are others and that some coordination is required.
+ * ValidationManager is a coordinator property for validators in the pipeline. Each validator must
+ * know how to interact with this property. Validators are not required to know what kind of other
+ * validators present in the pipeline, but should understand that there are others and that some
+ * coordination is required.
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  */
 public class ValidationManager {
@@ -44,27 +42,25 @@ public class ValidationManager {
     protected boolean fCachedDTD = false;
 
     /**
-     * Each validator should call this method to add its ValidationState into
-     * the validation manager.
+     * Each validator should call this method to add its ValidationState into the validation
+     * manager.
      */
     public final void addValidationState(ValidationState vs) {
         fVSs.addElement(vs);
     }
 
-    /**
-     * Set the information required to validate entity values.
-     */
+    /** Set the information required to validate entity values. */
     public final void setEntityState(EntityState state) {
-        for (int i = fVSs.size()-1; i >= 0; i--) {
-            ((ValidationState)fVSs.elementAt(i)).setEntityState(state);
+        for (int i = fVSs.size() - 1; i >= 0; i--) {
+            ((ValidationState) fVSs.elementAt(i)).setEntityState(state);
         }
     }
 
-    public final void setGrammarFound(boolean grammar){
+    public final void setGrammarFound(boolean grammar) {
         fGrammarFound = grammar;
     }
 
-    public final boolean isGrammarFound(){
+    public final boolean isGrammarFound() {
         return fGrammarFound;
     }
 
@@ -76,8 +72,7 @@ public class ValidationManager {
         return fCachedDTD;
     } // isCachedDTD():  boolean
 
-
-    public final void reset (){
+    public final void reset() {
         fVSs.removeAllElements();
         fGrammarFound = false;
         fCachedDTD = false;

@@ -23,10 +23,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * <p>Interface to expose the value of 'decimal' and related datatypes.</p>
+ * Interface to expose the value of 'decimal' and related datatypes.
  *
  * @author Naela Nissar, IBM
- *
  */
 public interface XSDecimal {
 
@@ -37,7 +36,8 @@ public interface XSDecimal {
 
     /**
      * @return the <code>BigInteger</code> representation of this object
-     * @exception NumberFormatException if the value cannot be represented as a <code>BigInteger</code>
+     * @exception NumberFormatException if the value cannot be represented as a <code>BigInteger
+     *     </code>
      */
     public BigInteger getBigInteger() throws NumberFormatException;
 

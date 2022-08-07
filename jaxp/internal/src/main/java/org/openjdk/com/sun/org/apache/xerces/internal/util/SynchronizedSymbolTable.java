@@ -23,14 +23,12 @@ package org.openjdk.com.sun.org.apache.xerces.internal.util;
 /**
  * Synchronized symbol table.
  *
- * This class moved into the util package since it's needed by multiple
- * other classes (CachingParserPool, XMLGrammarCachingConfiguration).
+ * <p>This class moved into the util package since it's needed by multiple other classes
+ * (CachingParserPool, XMLGrammarCachingConfiguration).
  *
  * @author Andy Clark, IBM
  */
-
-public final class SynchronizedSymbolTable
-    extends SymbolTable {
+public final class SynchronizedSymbolTable extends SymbolTable {
 
     //
     // Data
@@ -63,9 +61,8 @@ public final class SynchronizedSymbolTable
     //
 
     /**
-     * Adds the specified symbol to the symbol table and returns a
-     * reference to the unique symbol. If the symbol already exists,
-     * the previous symbol reference is returned instead, in order
+     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol.
+     * If the symbol already exists, the previous symbol reference is returned instead, in order
      * guarantee that symbol references remain unique.
      *
      * @param symbol The new symbol.
@@ -75,13 +72,11 @@ public final class SynchronizedSymbolTable
         synchronized (fSymbolTable) {
             return fSymbolTable.addSymbol(symbol);
         }
-
     } // addSymbol(String)
 
     /**
-     * Adds the specified symbol to the symbol table and returns a
-     * reference to the unique symbol. If the symbol already exists,
-     * the previous symbol reference is returned instead, in order
+     * Adds the specified symbol to the symbol table and returns a reference to the unique symbol.
+     * If the symbol already exists, the previous symbol reference is returned instead, in order
      * guarantee that symbol references remain unique.
      *
      * @param buffer The buffer containing the new symbol.
@@ -93,12 +88,10 @@ public final class SynchronizedSymbolTable
         synchronized (fSymbolTable) {
             return fSymbolTable.addSymbol(buffer, offset, length);
         }
-
     } // addSymbol(char[],int,int):String
 
     /**
-     * Returns true if the symbol table already contains the specified
-     * symbol.
+     * Returns true if the symbol table already contains the specified symbol.
      *
      * @param symbol The symbol to look for.
      */
@@ -107,12 +100,10 @@ public final class SynchronizedSymbolTable
         synchronized (fSymbolTable) {
             return fSymbolTable.containsSymbol(symbol);
         }
-
     } // containsSymbol(String):boolean
 
     /**
-     * Returns true if the symbol table already contains the specified
-     * symbol.
+     * Returns true if the symbol table already contains the specified symbol.
      *
      * @param buffer The buffer containing the symbol to look for.
      * @param offset The offset into the buffer.
@@ -123,7 +114,5 @@ public final class SynchronizedSymbolTable
         synchronized (fSymbolTable) {
             return fSymbolTable.containsSymbol(buffer, offset, length);
         }
-
     } // containsSymbol(char[],int,int):boolean
-
 } // class SynchronizedSymbolTable

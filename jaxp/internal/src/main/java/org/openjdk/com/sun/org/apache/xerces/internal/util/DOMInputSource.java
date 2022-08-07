@@ -24,8 +24,8 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import org.w3c.dom.Node;
 
 /**
- * <p>An <code>XMLInputSource</code> analogue to <code>org.openjdk.javax.xml.transform.dom.DOMSource</code>.</p>
- *
+ * An <code>XMLInputSource</code> analogue to <code>org.openjdk.javax.xml.transform.dom.DOMSource
+ * </code>.
  */
 public final class DOMInputSource extends XMLInputSource {
 
@@ -72,5 +72,4 @@ public final class DOMInputSource extends XMLInputSource {
         }
         return null;
     }
-
 } // DOMInputSource

@@ -37,13 +37,25 @@ public class HandleStyleSideDrop extends HandleStyleDrop {
 
     public HandleStyleSideDrop(Context context) {
         super(context);
-        size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 22f, context.getResources().getDisplayMetrics());
+        size =
+                (int)
+                        TypedValue.applyDimension(
+                                TypedValue.COMPLEX_UNIT_DIP,
+                                22f,
+                                context.getResources().getDisplayMetrics());
         paint = new Paint();
         paint.setAntiAlias(true);
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas, int handleType, float x, float y, int rowHeight, int color, @NonNull HandleDescriptor descriptor) {
+    public void draw(
+            @NonNull Canvas canvas,
+            int handleType,
+            float x,
+            float y,
+            int rowHeight,
+            int color,
+            @NonNull HandleDescriptor descriptor) {
         float radius = size / 2f;
         paint.setColor(color);
         if (handleType == HANDLE_TYPE_INSERT || handleType == HANDLE_TYPE_UNDEFINED) {
@@ -53,7 +65,8 @@ public class HandleStyleSideDrop extends HandleStyleDrop {
             float cx = type ? x - radius : x + radius;
             canvas.drawCircle(cx, y + radius, radius, paint);
             canvas.drawRect(type ? cx : cx - radius, y, type ? cx + radius : cx, y + radius, paint);
-            descriptor.set(cx - radius, y, cx + radius, y + 2 * radius, type ? ALIGN_LEFT : ALIGN_RIGHT);
+            descriptor.set(
+                    cx - radius, y, cx + radius, y + 2 * radius, type ? ALIGN_LEFT : ALIGN_RIGHT);
         }
     }
 }

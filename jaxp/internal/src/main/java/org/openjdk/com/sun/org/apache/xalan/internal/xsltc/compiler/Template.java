@@ -23,8 +23,6 @@
 
 package org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Vector;
-
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
 import org.openjdk.com.sun.org.apache.bcel.internal.generic.InstructionList;
@@ -37,6 +35,7 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeChe
 import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import org.openjdk.com.sun.org.apache.xml.internal.utils.XML11Char;
 
+import java.util.Vector;
 
 /**
  * @author Jacek Ambroziak
@@ -46,13 +45,13 @@ import org.openjdk.com.sun.org.apache.xml.internal.utils.XML11Char;
  */
 public final class Template extends TopLevelElement {
 
-    private QName   _name;     // The name of the template (if any)
-    private QName   _mode;     // Mode in which this template is instantiated.
-    private Pattern _pattern;  // Matching pattern defined for this template.
-    private double  _priority; // Matching priority of this template.
-    private int     _position; // Position within stylesheet (prio. resolution)
+    private QName _name; // The name of the template (if any)
+    private QName _mode; // Mode in which this template is instantiated.
+    private Pattern _pattern; // Matching pattern defined for this template.
+    private double _priority; // Matching priority of this template.
+    private int _position; // Position within stylesheet (prio. resolution)
     private boolean _disabled = false;
-    private boolean _compiled = false;//make sure it is compiled only once
+    private boolean _compiled = false; // make sure it is compiled only once
     private boolean _simplified = false;
 
     // True if this is a simple named template. A simple named
@@ -61,14 +60,14 @@ public final class Template extends TopLevelElement {
 
     // The list of parameters in this template. This is only used
     // for simple named templates.
-    private Vector  _parameters = new Vector();
+    private Vector _parameters = new Vector();
 
     public boolean hasParams() {
         return _parameters.size() > 0;
     }
 
     public boolean isSimplified() {
-        return(_simplified);
+        return (_simplified);
     }
 
     public void setSimplified() {
@@ -92,7 +91,7 @@ public final class Template extends TopLevelElement {
     }
 
     public boolean disabled() {
-        return(_disabled);
+        return (_disabled);
     }
 
     public double getPriority() {
@@ -100,7 +99,7 @@ public final class Template extends TopLevelElement {
     }
 
     public int getPosition() {
-        return(_position);
+        return (_position);
     }
 
     public boolean isNamed() {
@@ -123,21 +122,14 @@ public final class Template extends TopLevelElement {
         return _mode;
     }
 
-    /**
-     * Compare this template to another. First checks priority, then position.
-     */
+    /** Compare this template to another. First checks priority, then position. */
     public int compareTo(Object template) {
-        Template other = (Template)template;
-        if (_priority > other._priority)
-            return 1;
-        else if (_priority < other._priority)
-            return -1;
-        else if (_position > other._position)
-            return 1;
-        else if (_position < other._position)
-            return -1;
-        else
-            return 0;
+        Template other = (Template) template;
+        if (_priority > other._priority) return 1;
+        else if (_priority < other._priority) return -1;
+        else if (_position > other._position) return 1;
+        else if (_position < other._position) return -1;
+        else return 0;
     }
 
     public void display(int indent) {
@@ -146,8 +138,7 @@ public final class Template extends TopLevelElement {
         if (_name != null) {
             indent(indent);
             Util.println("name = " + _name);
-        }
-        else if (_pattern != null) {
+        } else if (_pattern != null) {
             indent(indent);
             Util.println("match = " + _pattern.toString());
         }
@@ -170,13 +161,11 @@ public final class Template extends TopLevelElement {
         if (us > them) {
             other.disable();
             return true;
-        }
-        else if (us < them) {
+        } else if (us < them) {
             stable.addTemplate(other);
             this.disable();
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -189,9 +178,9 @@ public final class Template extends TopLevelElement {
 
     public void parseContents(Parser parser) {
 
-        final String name     = getAttribute("name");
-        final String mode     = getAttribute("mode");
-        final String match    = getAttribute("match");
+        final String name = getAttribute("name");
+        final String mode = getAttribute("mode");
+        final String match = getAttribute("match");
         final String priority = getAttribute("priority");
 
         _stylesheet = super.getStylesheet();
@@ -218,12 +207,9 @@ public final class Template extends TopLevelElement {
 
         if (priority.length() > 0) {
             _priority = Double.parseDouble(priority);
-        }
-        else {
-            if (_pattern != null)
-                _priority = _pattern.getPriority();
-            else
-                _priority = Double.NaN;
+        } else {
+            if (_pattern != null) _priority = _pattern.getPriority();
+            else _priority = Double.NaN;
         }
 
         _position = parser.getTemplateIndex();
@@ -232,8 +218,7 @@ public final class Template extends TopLevelElement {
         if (_name != null) {
             Template other = parser.getSymbolTable().addTemplate(this);
             if (!resolveNamedTemplates(other, parser)) {
-                ErrorMsg err =
-                    new ErrorMsg(ErrorMsg.TEMPLATE_REDEF_ERR, _name, this);
+                ErrorMsg err = new ErrorMsg(ErrorMsg.TEMPLATE_REDEF_ERR, _name, this);
                 parser.reportError(ERROR, err);
             }
             // Is this a simple named template?
@@ -243,25 +228,22 @@ public final class Template extends TopLevelElement {
         }
 
         if (_parent instanceof Stylesheet) {
-            ((Stylesheet)_parent).addTemplate(this);
+            ((Stylesheet) _parent).addTemplate(this);
         }
 
-        parser.setTemplate(this);       // set current template
+        parser.setTemplate(this); // set current template
         parseChildren(parser);
-        parser.setTemplate(null);       // clear template
+        parser.setTemplate(null); // clear template
     }
 
     /**
-     * When the parser realises that it is dealign with a simplified stylesheet
-     * it will create an empty Stylesheet object with the root element of the
-     * stylesheet (a LiteralElement object) as its only child. The Stylesheet
-     * object will then create this Template object and invoke this method to
-     * force some specific behaviour. What we need to do is:
-     *  o) create a pattern matching on the root node
-     *  o) add the LRE root node (the only child of the Stylesheet) as our
-     *     only child node
-     *  o) set the empty Stylesheet as our parent
-     *  o) set this template as the Stylesheet's only child
+     * When the parser realises that it is dealign with a simplified stylesheet it will create an
+     * empty Stylesheet object with the root element of the stylesheet (a LiteralElement object) as
+     * its only child. The Stylesheet object will then create this Template object and invoke this
+     * method to force some specific behaviour. What we need to do is: o) create a pattern matching
+     * on the root node o) add the LRE root node (the only child of the Stylesheet) as our only
+     * child node o) set the empty Stylesheet as our parent o) set this template as the Stylesheet's
+     * only child
      */
     public void parseSimplified(Stylesheet stylesheet, Parser parser) {
 
@@ -274,7 +256,7 @@ public final class Template extends TopLevelElement {
         _pattern = parser.parsePattern(this, "/");
 
         final Vector contents = _stylesheet.getContents();
-        final SyntaxTreeNode root = (SyntaxTreeNode)contents.elementAt(0);
+        final SyntaxTreeNode root = (SyntaxTreeNode) contents.elementAt(0);
 
         if (root instanceof LiteralElement) {
             addElement(root);
@@ -302,20 +284,23 @@ public final class Template extends TopLevelElement {
         // bug fix #4433133, add a call to named template from applyTemplates
         String className = classGen.getClassName();
 
-        if (_compiled && isNamed()){
+        if (_compiled && isNamed()) {
             String methodName = Util.escape(_name.toString());
             il.append(classGen.loadTranslet());
             il.append(methodGen.loadDOM());
             il.append(methodGen.loadIterator());
             il.append(methodGen.loadHandler());
             il.append(methodGen.loadCurrentNode());
-            il.append(new INVOKEVIRTUAL(cpg.addMethodref(className,
-                                                         methodName,
-                                                         "("
-                                                         + DOM_INTF_SIG
-                                                         + NODE_ITERATOR_SIG
-                                                         + TRANSLET_OUTPUT_SIG
-                                                         + "I)V")));
+            il.append(
+                    new INVOKEVIRTUAL(
+                            cpg.addMethodref(
+                                    className,
+                                    methodName,
+                                    "("
+                                            + DOM_INTF_SIG
+                                            + NODE_ITERATOR_SIG
+                                            + TRANSLET_OUTPUT_SIG
+                                            + "I)V")));
             return;
         }
 
@@ -325,11 +310,11 @@ public final class Template extends TopLevelElement {
         // %OPT% Special handling for simple named templates.
         if (_isSimpleNamedTemplate && methodGen instanceof NamedMethodGenerator) {
             int numParams = _parameters.size();
-            NamedMethodGenerator namedMethodGen = (NamedMethodGenerator)methodGen;
+            NamedMethodGenerator namedMethodGen = (NamedMethodGenerator) methodGen;
 
             // Update load/store instructions to access Params from the stack
             for (int i = 0; i < numParams; i++) {
-                Param param = (Param)_parameters.elementAt(i);
+                Param param = (Param) _parameters.elementAt(i);
                 param.setLoadInstruction(namedMethodGen.loadParameter(i));
                 param.setStoreInstruction(namedMethodGen.storeParameter(i));
             }
@@ -338,5 +323,4 @@ public final class Template extends TopLevelElement {
         translateContents(classGen, methodGen);
         il.setPositions(true);
     }
-
 }

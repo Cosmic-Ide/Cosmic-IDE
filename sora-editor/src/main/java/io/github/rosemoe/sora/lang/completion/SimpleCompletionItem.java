@@ -29,13 +29,12 @@ import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * SimpleCompletionItem represents a simple replace action for auto-completion.
- * {@code prefixLength} is the length of prefix (text length you want to replace before the
- * auto-completion position).
+ * SimpleCompletionItem represents a simple replace action for auto-completion. {@code prefixLength}
+ * is the length of prefix (text length you want to replace before the auto-completion position).
  * {@code commitText} is the text you want to replace the original text.
- * <p>
- * Note that you must make sure the start position of replacement is on the same line as auto-completion's
- * required position.
+ *
+ * <p>Note that you must make sure the start position of replacement is on the same line as
+ * auto-completion's required position.
  *
  * @see CompletionItem
  */
@@ -52,11 +51,17 @@ public class SimpleCompletionItem extends CompletionItem {
         this(label, null, prefixLength, commitText);
     }
 
-    public SimpleCompletionItem(CharSequence label, CharSequence desc, int prefixLength, String commitText) {
+    public SimpleCompletionItem(
+            CharSequence label, CharSequence desc, int prefixLength, String commitText) {
         this(label, desc, null, prefixLength, commitText);
     }
 
-    public SimpleCompletionItem(CharSequence label, CharSequence desc, Drawable icon, int prefixLength, String commitText) {
+    public SimpleCompletionItem(
+            CharSequence label,
+            CharSequence desc,
+            Drawable icon,
+            int prefixLength,
+            String commitText) {
         super(label, desc, icon);
         this.commitText = commitText;
         this.prefixLength = prefixLength;
@@ -97,5 +102,4 @@ public class SimpleCompletionItem extends CompletionItem {
         }
         text.replace(line, column - prefixLength, line, column, commitText);
     }
-
 }

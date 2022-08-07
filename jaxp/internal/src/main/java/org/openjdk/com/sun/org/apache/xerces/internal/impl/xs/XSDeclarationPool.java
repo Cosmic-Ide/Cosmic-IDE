@@ -24,14 +24,11 @@ import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs.SchemaDVFactory
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
 
 /**
- * This class is pool that enables caching of XML Schema declaration objects.
- * Before a compiled grammar object is garbage collected,
- * the implementation will add all XML Schema component
- * declarations to the pool.
- * Note: The cashing mechanism is not implemented yet.
+ * This class is pool that enables caching of XML Schema declaration objects. Before a compiled
+ * grammar object is garbage collected, the implementation will add all XML Schema component
+ * declarations to the pool. Note: The cashing mechanism is not implemented yet.
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  * @version $Id: XSDeclarationPool.java,v 1.7 2010-11-01 04:39:55 joehw Exp $
  */
@@ -48,42 +45,50 @@ public final class XSDeclarationPool {
     /** Initial chunk count (). */
     private static final int INITIAL_CHUNK_COUNT = (1 << (10 - CHUNK_SHIFT)); // 2^10 = 1k
 
-    /** Element declaration pool*/
+    /** Element declaration pool */
     private XSElementDecl fElementDecl[][] = new XSElementDecl[INITIAL_CHUNK_COUNT][];
+
     private int fElementDeclIndex = 0;
 
     /** Particle declaration pool */
     private XSParticleDecl fParticleDecl[][] = new XSParticleDecl[INITIAL_CHUNK_COUNT][];
+
     private int fParticleDeclIndex = 0;
 
     /** Particle declaration pool */
     private XSModelGroupImpl fModelGroup[][] = new XSModelGroupImpl[INITIAL_CHUNK_COUNT][];
+
     private int fModelGroupIndex = 0;
 
     /** Attribute declaration pool */
     private XSAttributeDecl fAttrDecl[][] = new XSAttributeDecl[INITIAL_CHUNK_COUNT][];
+
     private int fAttrDeclIndex = 0;
 
     /** ComplexType declaration pool */
     private XSComplexTypeDecl fCTDecl[][] = new XSComplexTypeDecl[INITIAL_CHUNK_COUNT][];
+
     private int fCTDeclIndex = 0;
 
     /** SimpleType declaration pool */
     private XSSimpleTypeDecl fSTDecl[][] = new XSSimpleTypeDecl[INITIAL_CHUNK_COUNT][];
+
     private int fSTDeclIndex = 0;
 
     /** AttributeUse declaration pool */
     private XSAttributeUseImpl fAttributeUse[][] = new XSAttributeUseImpl[INITIAL_CHUNK_COUNT][];
+
     private int fAttributeUseIndex = 0;
 
     private SchemaDVFactoryImpl dvFactory;
+
     public void setDVFactory(SchemaDVFactoryImpl dvFactory) {
         this.dvFactory = dvFactory;
     }
 
-    public final  XSElementDecl getElementDecl(){
-        int     chunk       = fElementDeclIndex >> CHUNK_SHIFT;
-        int     index       = fElementDeclIndex &  CHUNK_MASK;
+    public final XSElementDecl getElementDecl() {
+        int chunk = fElementDeclIndex >> CHUNK_SHIFT;
+        int index = fElementDeclIndex & CHUNK_MASK;
         ensureElementDeclCapacity(chunk);
         if (fElementDecl[chunk][index] == null) {
             fElementDecl[chunk][index] = new XSElementDecl();
@@ -94,9 +99,9 @@ public final class XSDeclarationPool {
         return fElementDecl[chunk][index];
     }
 
-    public final XSAttributeDecl getAttributeDecl(){
-        int     chunk       = fAttrDeclIndex >> CHUNK_SHIFT;
-        int     index       = fAttrDeclIndex &  CHUNK_MASK;
+    public final XSAttributeDecl getAttributeDecl() {
+        int chunk = fAttrDeclIndex >> CHUNK_SHIFT;
+        int index = fAttrDeclIndex & CHUNK_MASK;
         ensureAttrDeclCapacity(chunk);
         if (fAttrDecl[chunk][index] == null) {
             fAttrDecl[chunk][index] = new XSAttributeDecl();
@@ -105,12 +110,11 @@ public final class XSDeclarationPool {
         }
         fAttrDeclIndex++;
         return fAttrDecl[chunk][index];
-
     }
 
-    public final XSAttributeUseImpl getAttributeUse(){
-        int     chunk       = fAttributeUseIndex >> CHUNK_SHIFT;
-        int     index       = fAttributeUseIndex &  CHUNK_MASK;
+    public final XSAttributeUseImpl getAttributeUse() {
+        int chunk = fAttributeUseIndex >> CHUNK_SHIFT;
+        int index = fAttributeUseIndex & CHUNK_MASK;
         ensureAttributeUseCapacity(chunk);
         if (fAttributeUse[chunk][index] == null) {
             fAttributeUse[chunk][index] = new XSAttributeUseImpl();
@@ -119,12 +123,11 @@ public final class XSDeclarationPool {
         }
         fAttributeUseIndex++;
         return fAttributeUse[chunk][index];
-
     }
 
-    public final XSComplexTypeDecl getComplexTypeDecl(){
-        int     chunk       = fCTDeclIndex >> CHUNK_SHIFT;
-        int     index       = fCTDeclIndex &  CHUNK_MASK;
+    public final XSComplexTypeDecl getComplexTypeDecl() {
+        int chunk = fCTDeclIndex >> CHUNK_SHIFT;
+        int index = fCTDeclIndex & CHUNK_MASK;
         ensureCTDeclCapacity(chunk);
         if (fCTDecl[chunk][index] == null) {
 
@@ -136,9 +139,9 @@ public final class XSDeclarationPool {
         return fCTDecl[chunk][index];
     }
 
-    public final XSSimpleTypeDecl getSimpleTypeDecl(){
-        int     chunk       = fSTDeclIndex >> CHUNK_SHIFT;
-        int     index       = fSTDeclIndex &  CHUNK_MASK;
+    public final XSSimpleTypeDecl getSimpleTypeDecl() {
+        int chunk = fSTDeclIndex >> CHUNK_SHIFT;
+        int index = fSTDeclIndex & CHUNK_MASK;
         ensureSTDeclCapacity(chunk);
         if (fSTDecl[chunk][index] == null) {
             fSTDecl[chunk][index] = dvFactory.newXSSimpleTypeDecl();
@@ -147,12 +150,11 @@ public final class XSDeclarationPool {
         }
         fSTDeclIndex++;
         return fSTDecl[chunk][index];
-
     }
 
-    public final XSParticleDecl getParticleDecl(){
-        int     chunk       = fParticleDeclIndex >> CHUNK_SHIFT;
-        int     index       = fParticleDeclIndex &  CHUNK_MASK;
+    public final XSParticleDecl getParticleDecl() {
+        int chunk = fParticleDeclIndex >> CHUNK_SHIFT;
+        int index = fParticleDeclIndex & CHUNK_MASK;
         ensureParticleDeclCapacity(chunk);
         if (fParticleDecl[chunk][index] == null) {
             fParticleDecl[chunk][index] = new XSParticleDecl();
@@ -163,9 +165,9 @@ public final class XSDeclarationPool {
         return fParticleDecl[chunk][index];
     }
 
-    public final XSModelGroupImpl getModelGroup(){
-        int     chunk       = fModelGroupIndex >> CHUNK_SHIFT;
-        int     index       = fModelGroupIndex &  CHUNK_MASK;
+    public final XSModelGroupImpl getModelGroup() {
+        int chunk = fModelGroupIndex >> CHUNK_SHIFT;
+        int index = fModelGroupIndex & CHUNK_MASK;
         ensureModelGroupCapacity(chunk);
         if (fModelGroup[chunk][index] == null) {
             fModelGroup[chunk][index] = new XSModelGroupImpl();
@@ -288,7 +290,7 @@ public final class XSDeclarationPool {
 
         if (chunk >= fCTDecl.length) {
             fCTDecl = resize(fCTDecl, fCTDecl.length * 2);
-        } else if (fCTDecl[chunk] != null){
+        } else if (fCTDecl[chunk] != null) {
             return false;
         }
 
@@ -302,9 +304,7 @@ public final class XSDeclarationPool {
         return newarray;
     }
 
-
-
-    public void reset(){
+    public void reset() {
         fElementDeclIndex = 0;
         fParticleDeclIndex = 0;
         fModelGroupIndex = 0;
@@ -313,6 +313,4 @@ public final class XSDeclarationPool {
         fAttrDeclIndex = 0;
         fAttributeUseIndex = 0;
     }
-
-
 }

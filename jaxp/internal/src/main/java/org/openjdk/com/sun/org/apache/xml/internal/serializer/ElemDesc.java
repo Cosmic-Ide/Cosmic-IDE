@@ -27,18 +27,16 @@ import org.openjdk.com.sun.org.apache.xml.internal.serializer.utils.StringToIntT
 /**
  * This class has a series of flags (bit values) that describe an HTML element
  *
- * This class is public because XSLTC uses it, it is not a public API.
+ * <p>This class is public because XSLTC uses it, it is not a public API.
  *
  * @xsl.usage internal
  */
-public final class ElemDesc
-{
+public final class ElemDesc {
     /** Bit flags to tell about this element type. */
     private int m_flags;
 
     /**
-     * Table of attribute names to integers, which contain bit flags telling about
-     *  the attributes.
+     * Table of attribute names to integers, which contain bit flags telling about the attributes.
      */
     private StringToIntTable m_attrs = null;
 
@@ -120,24 +118,19 @@ public final class ElemDesc
     /**
      * Construct an ElemDesc from a set of bit flags.
      *
-     *
      * @param flags Bit flags that describe the basic properties of this element type.
      */
-    ElemDesc(int flags)
-    {
+    ElemDesc(int flags) {
         m_flags = flags;
     }
 
     /**
-     * Tell if this element type has the basic bit properties that are passed
-     * as an argument.
+     * Tell if this element type has the basic bit properties that are passed as an argument.
      *
      * @param flags Bit flags that describe the basic properties of interest.
-     *
      * @return true if any of the flag bits are true.
      */
-    private boolean is(int flags)
-    {
+    private boolean is(int flags) {
 
         // int which = (m_flags & flags);
         return (m_flags & flags) != 0;
@@ -150,15 +143,12 @@ public final class ElemDesc
     /**
      * Set an attribute name and it's bit properties.
      *
-     *
      * @param name non-null name of attribute, in upper case.
      * @param flags flag bits.
      */
-    void setAttr(String name, int flags)
-    {
+    void setAttr(String name, int flags) {
 
-        if (null == m_attrs)
-            m_attrs = new StringToIntTable();
+        if (null == m_attrs) m_attrs = new StringToIntTable();
 
         m_attrs.put(name, flags);
     }
@@ -168,13 +158,9 @@ public final class ElemDesc
      *
      * @param name non-null reference to attribute name, in any case.
      * @param flags flag mask.
-     *
      * @return true if any of the flags are set for the named attribute.
      */
-    public boolean isAttrFlagSet(String name, int flags)
-    {
-        return (null != m_attrs)
-            ? ((m_attrs.getIgnoreCase(name) & flags) != 0)
-            : false;
+    public boolean isAttrFlagSet(String name, int flags) {
+        return (null != m_attrs) ? ((m_attrs.getIgnoreCase(name) & flags) != 0) : false;
     }
 }

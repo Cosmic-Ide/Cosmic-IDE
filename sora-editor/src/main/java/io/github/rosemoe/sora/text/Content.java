@@ -33,16 +33,15 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * This class saves the text content for editor and maintains line widths.
- * It is thread-safe by default. Use {@link #Content(CharSequence, boolean)} constructor to
- * create a non thread-safe one.
+ * This class saves the text content for editor and maintains line widths. It is thread-safe by
+ * default. Use {@link #Content(CharSequence, boolean)} constructor to create a non thread-safe one.
  *
  * @author Rose
  */
 public class Content implements CharSequence {
 
-    public final static int DEFAULT_MAX_UNDO_STACK_SIZE = 500;
-    public final static int DEFAULT_LIST_CAPACITY = 1000;
+    public static final int DEFAULT_MAX_UNDO_STACK_SIZE = 500;
+    public static final int DEFAULT_LIST_CAPACITY = 1000;
 
     private static int sInitialListCapacity;
 
@@ -60,16 +59,14 @@ public class Content implements CharSequence {
     private Cursor cursor;
     private LineRemoveListener lineListener;
 
-    /**
-     * This constructor will create a Content object with no text
-     */
+    /** This constructor will create a Content object with no text */
     public Content() {
         this(null);
     }
 
     /**
-     * This constructor will create a Content object with the given source.
-     * If you give us null,it will just create an empty Content object
+     * This constructor will create a Content object with the given source. If you give us null,it
+     * will just create an empty Content object
      *
      * @param src The source of Content
      */
@@ -177,11 +174,10 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Get the character at the given position
-     * If (column == getColumnCount(line)),it returns '\n'
+     * Get the character at the given position If (column == getColumnCount(line)),it returns '\n'
      * IndexOutOfBoundsException is thrown
      *
-     * @param line   The line position of character
+     * @param line The line position of character
      * @param column The column position of character
      * @return The character at the given position
      */
@@ -230,8 +226,7 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Get raw data of line
-     * The result is not expected to be modified
+     * Get raw data of line The result is not expected to be modified
      *
      * @param line Line
      * @return Raw ContentLine used by Content
@@ -255,8 +250,8 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Get how many characters is on the given line
-     * If (line < 0 or line >= getLineCount()),it will throw a IndexOutOfBoundsException
+     * Get how many characters is on the given line If (line < 0 or line >= getLineCount()),it will
+     * throw a IndexOutOfBoundsException
      *
      * @param line The line to get
      * @return Character count on line
@@ -284,7 +279,7 @@ public class Content implements CharSequence {
     /**
      * Get region of the given line
      *
-     * @param dest   Destination of characters
+     * @param dest Destination of characters
      * @param offset Offset in dest to store the chars
      */
     public void getRegionOnLine(int line, int start, int end, char[] dest, int offset) {
@@ -296,18 +291,16 @@ public class Content implements CharSequence {
         }
     }
 
-    /**
-     * Get characters of line
-     */
+    /** Get characters of line */
     public void getLineChars(int line, char[] dest) {
         getRegionOnLine(line, 0, getColumnCount(line), dest, 0);
     }
 
     /**
-     * Transform the (line,column) position to index
-     * This task will usually be completed by {@link Indexer}
+     * Transform the (line,column) position to index This task will usually be completed by {@link
+     * Indexer}
      *
-     * @param line   Line of index
+     * @param line Line of index
      * @param column Column on line of index
      * @return Transformed index for the given arguments
      */
@@ -323,9 +316,9 @@ public class Content implements CharSequence {
     /**
      * Insert content to this object
      *
-     * @param line   The insertion's line position
+     * @param line The insertion's line position
      * @param column The insertion's column position
-     * @param text   The text you want to insert at the position
+     * @param text The text you want to insert at the position
      */
     public void insert(int line, int column, CharSequence text) {
         lock(true);
@@ -342,9 +335,8 @@ public class Content implements CharSequence {
             throw new IllegalArgumentException("text can not be null");
         }
 
-        //-----Notify------
-        if (cursor != null)
-            cursor.beforeInsert(line, column);
+        // -----Notify------
+        if (cursor != null) cursor.beforeInsert(line, column);
         for (var lis : contentListeners) {
             lis.beforeModification(this);
         }
@@ -376,7 +368,13 @@ public class Content implements CharSequence {
                 peekType = helper.forward();
                 fromPeek = true;
 
-                var newLine = new ContentLine(currLine.length() - workIndex + helper.getIndexNext() - helper.getIndex() + 10);
+                var newLine =
+                        new ContentLine(
+                                currLine.length()
+                                        - workIndex
+                                        + helper.getIndexNext()
+                                        - helper.getIndex()
+                                        + 10);
                 newLine.insert(0, currLine, workIndex, currLine.length());
                 currLine.delete(workIndex, currLine.length());
                 workIndex = 0;
@@ -398,7 +396,7 @@ public class Content implements CharSequence {
      * Delete character in [start,end)
      *
      * @param start Start position in content
-     * @param end   End position in content
+     * @param end End position in content
      */
     public void delete(int start, int end) {
         checkIndex(start);
@@ -418,10 +416,10 @@ public class Content implements CharSequence {
     /**
      * Delete text in the given region
      *
-     * @param startLine         The start line position
+     * @param startLine The start line position
      * @param columnOnStartLine The start column position
-     * @param endLine           The end line position
-     * @param columnOnEndLine   The end column position
+     * @param endLine The end line position
+     * @param columnOnEndLine The end column position
      */
     public void delete(int startLine, int columnOnStartLine, int endLine, int columnOnEndLine) {
         lock(true);
@@ -432,7 +430,8 @@ public class Content implements CharSequence {
         }
     }
 
-    private void deleteInternal(int startLine, int columnOnStartLine, int endLine, int columnOnEndLine) {
+    private void deleteInternal(
+            int startLine, int columnOnStartLine, int endLine, int columnOnEndLine) {
         if (startLine == 0 && columnOnStartLine == -1) {
             return;
         }
@@ -450,15 +449,20 @@ public class Content implements CharSequence {
             ContentLine curr = lines.get(startLine);
             int len = curr.length();
             if (beginIdx < 0 || beginIdx > len || columnOnEndLine > len) {
-                throw new StringIndexOutOfBoundsException("column start or column end is out of bounds");
+                throw new StringIndexOutOfBoundsException(
+                        "column start or column end is out of bounds");
             }
 
-            //-----Notify------
+            // -----Notify------
             if (cursor != null) {
                 if (columnOnStartLine != -1) {
                     cursor.beforeDelete(startLine, columnOnStartLine, endLine, columnOnEndLine);
                 } else {
-                    cursor.beforeDelete(startLine == 0 ? 0 : startLine - 1, startLine == 0 ? 0 : getColumnCount(startLine - 1), endLine, columnOnEndLine);
+                    cursor.beforeDelete(
+                            startLine == 0 ? 0 : startLine - 1,
+                            startLine == 0 ? 0 : getColumnCount(startLine - 1),
+                            endLine,
+                            columnOnEndLine);
                 }
             }
             for (var lis : contentListeners) {
@@ -487,7 +491,7 @@ public class Content implements CharSequence {
             checkLineAndColumn(startLine, columnOnStartLine, true);
             checkLineAndColumn(endLine, columnOnEndLine, true);
 
-            //-----Notify------
+            // -----Notify------
             if (cursor != null)
                 cursor.beforeDelete(startLine, columnOnStartLine, endLine, columnOnEndLine);
             for (var lis : contentListeners) {
@@ -524,20 +528,26 @@ public class Content implements CharSequence {
         } else {
             throw new IllegalArgumentException("start line > end line");
         }
-        this.dispatchAfterDelete(startLine, columnOnStartLine, endLine, columnOnEndLine, changedContent);
+        this.dispatchAfterDelete(
+                startLine, columnOnStartLine, endLine, columnOnEndLine, changedContent);
     }
 
     /**
-     * Replace the text in the given region
-     * This action will be completed by calling {@link Content#delete(int, int, int, int)} and {@link Content#insert(int, int, CharSequence)}
+     * Replace the text in the given region This action will be completed by calling {@link
+     * Content#delete(int, int, int, int)} and {@link Content#insert(int, int, CharSequence)}
      *
-     * @param startLine         The start line position
+     * @param startLine The start line position
      * @param columnOnStartLine The start column position
-     * @param endLine           The end line position
-     * @param columnOnEndLine   The end column position
-     * @param text              The text to replace old text
+     * @param endLine The end line position
+     * @param columnOnEndLine The end column position
+     * @param text The text to replace old text
      */
-    public void replace(int startLine, int columnOnStartLine, int endLine, int columnOnEndLine, CharSequence text) {
+    public void replace(
+            int startLine,
+            int columnOnStartLine,
+            int endLine,
+            int columnOnEndLine,
+            CharSequence text) {
         if (text == null) {
             throw new IllegalArgumentException("text can not be null");
         }
@@ -551,9 +561,7 @@ public class Content implements CharSequence {
         }
     }
 
-    /**
-     * Replace text in the given region with the
-     */
+    /** Replace text in the given region with the */
     public void replace(int startIndex, int endIndex, @NonNull CharSequence text) {
         var start = getIndexer().getCharPosition(startIndex);
         var end = getIndexer().getCharPosition(endIndex);
@@ -561,23 +569,19 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Undo the last modification
-     * NOTE:When there are too much modification,old modification will be deleted from UndoManager
+     * Undo the last modification NOTE:When there are too much modification,old modification will be
+     * deleted from UndoManager
      */
     public void undo() {
         undoManager.undo(this);
     }
 
-    /**
-     * Redo the last modification
-     */
+    /** Redo the last modification */
     public void redo() {
         undoManager.redo(this);
     }
 
-    /**
-     * Check whether the {@link UndoManager} is working to undo/redo
-     */
+    /** Check whether the {@link UndoManager} is working to undo/redo */
     public boolean isUndoManagerWorking() {
         return undoManager.isModifyingContent();
     }
@@ -610,9 +614,9 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Set whether enable the UndoManager.
-     * If false,any modification will not be taken down and previous modification that
-     * is already in UndoManager will be removed.Does not make changes to content.
+     * Set whether enable the UndoManager. If false,any modification will not be taken down and
+     * previous modification that is already in UndoManager will be removed.Does not make changes to
+     * content.
      *
      * @param enabled New state for UndoManager
      */
@@ -639,9 +643,8 @@ public class Content implements CharSequence {
     }
 
     /**
-     * A delegate method.
-     * Notify the UndoManager to begin batch edit(enter a new layer).
-     * NOTE: batch edit in Android can be nested.
+     * A delegate method. Notify the UndoManager to begin batch edit(enter a new layer). NOTE: batch
+     * edit in Android can be nested.
      *
      * @return Whether in batch edit
      */
@@ -651,8 +654,7 @@ public class Content implements CharSequence {
     }
 
     /**
-     * A delegate method.
-     * Notify the UndoManager to end batch edit(exit current layer).
+     * A delegate method. Notify the UndoManager to end batch edit(exit current layer).
      *
      * @return Whether in batch edit
      */
@@ -721,10 +723,10 @@ public class Content implements CharSequence {
     /**
      * Quick method to get sub string of this object
      *
-     * @param startLine   The start line position
+     * @param startLine The start line position
      * @param startColumn The start column position
-     * @param endLine     The end line position
-     * @param endColumn   The end column position
+     * @param endLine The end line position
+     * @param endColumn The end column position
      * @return sub-sequence of this Content
      */
     public Content subContent(int startLine, int startColumn, int endLine, int endColumn) {
@@ -742,7 +744,10 @@ public class Content implements CharSequence {
         if (startLine == endLine) {
             c.insert(0, 0, lines.get(startLine).subSequence(startColumn, endColumn));
         } else if (startLine < endLine) {
-            c.insert(0, 0, lines.get(startLine).subSequence(startColumn, lines.get(startLine).length()));
+            c.insert(
+                    0,
+                    0,
+                    lines.get(startLine).subSequence(startColumn, lines.get(startLine).length()));
             for (int i = startLine + 1; i < endLine; i++) {
                 c.lines.add(new ContentLine(lines.get(i)));
                 c.textLength += lines.get(i).length() + 1;
@@ -788,8 +793,8 @@ public class Content implements CharSequence {
 
     /**
      * Get the text in StringBuilder form
-     * <p>
-     * This can improve the speed in char getting for tokenizing
+     *
+     * <p>This can improve the speed in char getting for tokenizing
      *
      * @return StringBuilder form of Content
      */
@@ -799,23 +804,17 @@ public class Content implements CharSequence {
         return sb;
     }
 
-    /**
-     * Get UndoManager instance in use
-     */
+    /** Get UndoManager instance in use */
     public UndoManager getUndoManager() {
         return undoManager;
     }
 
-    /**
-     * Set undo manager. You may use this to recover to a previously saved state of undo stack.
-     */
+    /** Set undo manager. You may use this to recover to a previously saved state of undo stack. */
     public void setUndoManager(UndoManager manager) {
         this.undoManager = manager;
     }
 
-    /**
-     * Append the content to the given {@link StringBuilder}
-     */
+    /** Append the content to the given {@link StringBuilder} */
     public void appendToStringBuilder(StringBuilder sb) {
         sb.ensureCapacity(sb.length() + length());
         boolean first = true;
@@ -843,13 +842,10 @@ public class Content implements CharSequence {
         return cursor;
     }
 
-    /**
-     * Dispatch events to listener before replacement
-     */
+    /** Dispatch events to listener before replacement */
     private void dispatchBeforeReplace() {
         undoManager.beforeReplace(this);
-        if (cursor != null)
-            cursor.beforeReplace();
+        if (cursor != null) cursor.beforeReplace();
         if (indexer instanceof ContentListener) {
             ((ContentListener) indexer).beforeReplace(this);
         }
@@ -869,8 +865,7 @@ public class Content implements CharSequence {
      */
     private void dispatchAfterDelete(int a, int b, int c, int d, CharSequence e) {
         undoManager.afterDelete(this, a, b, c, d, e);
-        if (cursor != null)
-            cursor.afterDelete(a, b, c, d, e);
+        if (cursor != null) cursor.afterDelete(a, b, c, d, e);
         if (indexer instanceof ContentListener) {
             ((ContentListener) indexer).afterDelete(this, a, b, c, d, e);
         }
@@ -890,8 +885,7 @@ public class Content implements CharSequence {
      */
     private void dispatchAfterInsert(int a, int b, int c, int d, CharSequence e) {
         undoManager.afterInsert(this, a, b, c, d, e);
-        if (cursor != null)
-            cursor.afterInsert(a, b, c, d, e);
+        if (cursor != null) cursor.afterInsert(a, b, c, d, e);
         if (indexer instanceof ContentListener) {
             ((ContentListener) indexer).afterInsert(this, a, b, c, d, e);
         }
@@ -907,7 +901,8 @@ public class Content implements CharSequence {
      */
     protected void checkIndex(int index) {
         if (index > length() || index < 0) {
-            throw new StringIndexOutOfBoundsException("Index " + index + " out of bounds. length:" + length());
+            throw new StringIndexOutOfBoundsException(
+                    "Index " + index + " out of bounds. length:" + length());
         }
     }
 
@@ -918,15 +913,16 @@ public class Content implements CharSequence {
      */
     protected void checkLine(int line) {
         if (line >= getLineCount() || line < 0) {
-            throw new StringIndexOutOfBoundsException("Line " + line + " out of bounds. line count:" + getLineCount());
+            throw new StringIndexOutOfBoundsException(
+                    "Line " + line + " out of bounds. line count:" + getLineCount());
         }
     }
 
     /**
      * Check whether the line and column is valid
      *
-     * @param line       The line to check
-     * @param column     The column to check
+     * @param line The line to check
+     * @param column The column to check
      * @param allowEqual Whether allow (column == getColumnCount(line))
      */
     protected void checkLineAndColumn(int line, int column, boolean allowEqual) {
@@ -939,16 +935,16 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Copy text in this Content object.
-     * Returns a new thread-safe Content object with the same text as this object.
+     * Copy text in this Content object. Returns a new thread-safe Content object with the same text
+     * as this object.
      */
     public Content copyText() {
         return copyText(true);
     }
 
     /**
-     * Copy text in this Content object.
-     * Returns a new Content object with the same text as this object.
+     * Copy text in this Content object. Returns a new Content object with the same text as this
+     * object.
      */
     public Content copyText(boolean newContentThreadSafe) {
         lock(false);
@@ -970,13 +966,13 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Read the lines (ordered).
-     * This is for optimizing frequent lock acquiring.
+     * Read the lines (ordered). This is for optimizing frequent lock acquiring.
      *
      * @param startLine inclusive
-     * @param endLine   inclusive
+     * @param endLine inclusive
      */
-    public void runReadActionsOnLines(int startLine, int endLine, @NonNull ContentLineConsumer consumer) {
+    public void runReadActionsOnLines(
+            int startLine, int endLine, @NonNull ContentLineConsumer consumer) {
         lock(false);
         try {
             for (int i = startLine; i <= endLine; i++) {
@@ -988,13 +984,13 @@ public class Content implements CharSequence {
     }
 
     /**
-     * Read the lines (ordered).
-     * This is for optimizing frequent lock acquiring.
+     * Read the lines (ordered). This is for optimizing frequent lock acquiring.
      *
      * @param startLine inclusive
-     * @param endLine   inclusive
+     * @param endLine inclusive
      */
-    public void runReadActionsOnLines(int startLine, int endLine, @NonNull ContentLineConsumer2 consumer) {
+    public void runReadActionsOnLines(
+            int startLine, int endLine, @NonNull ContentLineConsumer2 consumer) {
         lock(false);
         try {
             var flag = new ContentLineConsumer2.AbortFlag();
@@ -1006,11 +1002,9 @@ public class Content implements CharSequence {
         }
     }
 
-
     public interface ContentLineConsumer {
 
         void accept(int lineIndex, @NonNull ContentLine line);
-
     }
 
     public interface ContentLineConsumer2 {
@@ -1020,6 +1014,5 @@ public class Content implements CharSequence {
         class AbortFlag {
             public boolean set = false;
         }
-
     }
 }

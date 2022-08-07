@@ -20,7 +20,6 @@
 
 package org.openjdk.com.sun.org.apache.xerces.internal.impl.xs;
 
-
 import org.openjdk.com.sun.org.apache.xerces.internal.impl.xs.util.XSObjectListImpl;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSAnnotation;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSConstants;
@@ -30,11 +29,10 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSNamespaceItem;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSObjectList;
 
 /**
- * The XML representation for a group declaration
- * schema component is a global <group> element information item
+ * The XML representation for a group declaration schema component is a global <group> element
+ * information item
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
  * @version $Id: XSGroupDecl.java,v 1.7 2010-11-01 04:39:55 joehw Exp $
  */
@@ -52,47 +50,38 @@ public class XSGroupDecl implements XSModelGroupDefinition {
     // of the model group definition, if it is globally declared; or null otherwise.
     private XSNamespaceItem fNamespaceItem = null;
 
-    /**
-     * Get the type of the object, i.e ELEMENT_DECLARATION.
-     */
+    /** Get the type of the object, i.e ELEMENT_DECLARATION. */
     public short getType() {
         return XSConstants.MODEL_GROUP_DEFINITION;
     }
 
     /**
-     * The <code>name</code> of this <code>XSObject</code> depending on the
-     * <code>XSObject</code> type.
+     * The <code>name</code> of this <code>XSObject</code> depending on the <code>XSObject</code>
+     * type.
      */
     public String getName() {
         return fName;
     }
 
     /**
-     * The namespace URI of this node, or <code>null</code> if it is
-     * unspecified.  defines how a namespace URI is attached to schema
-     * components.
+     * The namespace URI of this node, or <code>null</code> if it is unspecified. defines how a
+     * namespace URI is attached to schema components.
      */
     public String getNamespace() {
         return fTargetNamespace;
     }
 
-    /**
-     * {model group} A model group.
-     */
+    /** {model group} A model group. */
     public XSModelGroup getModelGroup() {
         return fModelGroup;
     }
 
-    /**
-     * Optional. Annotation.
-     */
+    /** Optional. Annotation. */
     public XSAnnotation getAnnotation() {
         return (fAnnotations != null) ? (XSAnnotation) fAnnotations.item(0) : null;
     }
 
-    /**
-     * Optional. Annotations.
-     */
+    /** Optional. Annotations. */
     public XSObjectList getAnnotations() {
         return (fAnnotations != null) ? fAnnotations : XSObjectListImpl.EMPTY_LIST;
     }
@@ -107,5 +96,4 @@ public class XSGroupDecl implements XSModelGroupDefinition {
     void setNamespaceItem(XSNamespaceItem namespaceItem) {
         fNamespaceItem = namespaceItem;
     }
-
 } // class XSGroupDecl

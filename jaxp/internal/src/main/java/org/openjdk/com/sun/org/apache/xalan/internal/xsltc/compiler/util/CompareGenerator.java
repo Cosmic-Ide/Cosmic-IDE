@@ -41,11 +41,11 @@ import org.openjdk.com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
  */
 public final class CompareGenerator extends MethodGenerator {
 
-    private static int DOM_INDEX      = 1;
-    private static int CURRENT_INDEX  = 2;
-    private static int LEVEL_INDEX    = 3;
+    private static int DOM_INDEX = 1;
+    private static int CURRENT_INDEX = 2;
+    private static int LEVEL_INDEX = 3;
     private static int TRANSLET_INDEX = 4;
-    private static int LAST_INDEX     = 5;
+    private static int LAST_INDEX = 5;
     private int ITERATOR_INDEX = 6;
 
     private final Instruction _iloadCurrent;
@@ -55,12 +55,16 @@ public final class CompareGenerator extends MethodGenerator {
     private final Instruction _aloadIterator;
     private final Instruction _astoreIterator;
 
-    public CompareGenerator(int access_flags, Type return_type,
-                            Type[] arg_types, String[] arg_names,
-                            String method_name, String class_name,
-                            InstructionList il, ConstantPoolGen cp) {
-        super(access_flags, return_type, arg_types, arg_names, method_name,
-              class_name, il, cp);
+    public CompareGenerator(
+            int access_flags,
+            Type return_type,
+            Type[] arg_types,
+            String[] arg_names,
+            String method_name,
+            String class_name,
+            InstructionList il,
+            ConstantPoolGen cp) {
+        super(access_flags, return_type, arg_types, arg_names, method_name, class_name, il, cp);
 
         _iloadCurrent = new ILOAD(CURRENT_INDEX);
         _istoreCurrent = new ISTORE(CURRENT_INDEX);
@@ -68,9 +72,8 @@ public final class CompareGenerator extends MethodGenerator {
         _iloadLast = new ILOAD(LAST_INDEX);
 
         LocalVariableGen iterator =
-            addLocalVariable("iterator",
-                             Util.getJCRefType(Constants.NODE_ITERATOR_SIG),
-                             null, null);
+                addLocalVariable(
+                        "iterator", Util.getJCRefType(Constants.NODE_ITERATOR_SIG), null, null);
         ITERATOR_INDEX = iterator.getIndex();
         _aloadIterator = new ALOAD(ITERATOR_INDEX);
         _astoreIterator = new ASTORE(ITERATOR_INDEX);
@@ -95,7 +98,7 @@ public final class CompareGenerator extends MethodGenerator {
     }
 
     public int getHandlerIndex() {
-        return INVALID_INDEX;           // not available
+        return INVALID_INDEX; // not available
     }
 
     public int getIteratorIndex() {
@@ -110,7 +113,7 @@ public final class CompareGenerator extends MethodGenerator {
         return _aloadIterator;
     }
 
-    //??? may not be used anymore
+    // ??? may not be used anymore
     public int getLocalIndex(String name) {
         if (name.equals("current")) {
             return CURRENT_INDEX;

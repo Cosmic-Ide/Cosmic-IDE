@@ -36,11 +36,10 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSObjectList;
 import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 /**
- * The XML representation for an element declaration
- * schema component is an <element> element information item
+ * The XML representation for an element declaration schema component is an <element> element
+ * information item
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  * @author Sandy Gao, IBM
  * @version $Id: XSElementDecl.java,v 1.7 2010-11-01 04:39:55 joehw Exp $
@@ -48,9 +47,9 @@ import org.openjdk.com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 public class XSElementDecl implements XSElementDeclaration {
 
     // scopes
-    public final static short     SCOPE_ABSENT        = 0;
-    public final static short     SCOPE_GLOBAL        = 1;
-    public final static short     SCOPE_LOCAL         = 2;
+    public static final short SCOPE_ABSENT = 0;
+    public static final short SCOPE_GLOBAL = 1;
+    public static final short SCOPE_LOCAL = 2;
 
     // name of the element
     public String fName = null;
@@ -83,8 +82,8 @@ public class XSElementDecl implements XSElementDeclaration {
     private XSNamespaceItem fNamespaceItem = null;
 
     private static final short CONSTRAINT_MASK = 3;
-    private static final short NILLABLE        = 4;
-    private static final short ABSTRACT        = 8;
+    private static final short NILLABLE = 4;
+    private static final short ABSTRACT = 8;
 
     // methods to get/set misc flag
     public void setConstraintType(short constraintType) {
@@ -93,15 +92,19 @@ public class XSElementDecl implements XSElementDeclaration {
         // then set the proper one
         fMiscFlags |= (constraintType & CONSTRAINT_MASK);
     }
+
     public void setIsNillable() {
         fMiscFlags |= NILLABLE;
     }
+
     public void setIsAbstract() {
         fMiscFlags |= ABSTRACT;
     }
+
     public void setIsGlobal() {
         fScope = SCOPE_GLOBAL;
     }
+
     public void setIsLocal(XSComplexTypeDecl enclosingCT) {
         fScope = SCOPE_LOCAL;
         fEnclosingCT = enclosingCT;
@@ -109,7 +112,7 @@ public class XSElementDecl implements XSElementDeclaration {
 
     public void addIDConstraint(IdentityConstraint idc) {
         if (fIDCPos == fIDConstraints.length) {
-            fIDConstraints = resize(fIDConstraints, fIDCPos*2);
+            fIDConstraints = resize(fIDConstraints, fIDCPos * 2);
         }
         fIDConstraints[fIDCPos++] = idc;
     }
@@ -130,51 +133,44 @@ public class XSElementDecl implements XSElementDeclaration {
         return newArray;
     }
 
-    /**
-     * get the string description of this element
-     */
+    /** get the string description of this element */
     private String fDescription = null;
+
     public String toString() {
         if (fDescription == null) {
             if (fTargetNamespace != null) {
-                StringBuffer buffer = new StringBuffer(
-                    fTargetNamespace.length() +
-                    ((fName != null) ? fName.length() : 4) + 3);
+                StringBuffer buffer =
+                        new StringBuffer(
+                                fTargetNamespace.length()
+                                        + ((fName != null) ? fName.length() : 4)
+                                        + 3);
                 buffer.append('"');
                 buffer.append(fTargetNamespace);
                 buffer.append('"');
                 buffer.append(':');
                 buffer.append(fName);
                 fDescription = buffer.toString();
-            }
-            else {
+            } else {
                 fDescription = fName;
             }
         }
         return fDescription;
     }
 
-    /**
-     * get the hash code
-     */
+    /** get the hash code */
     public int hashCode() {
         int code = fName.hashCode();
-        if (fTargetNamespace != null)
-            code = (code<<16)+fTargetNamespace.hashCode();
+        if (fTargetNamespace != null) code = (code << 16) + fTargetNamespace.hashCode();
         return code;
     }
 
-    /**
-     * whether two decls are the same
-     */
+    /** whether two decls are the same */
     public boolean equals(Object o) {
         return o == this;
     }
 
-    /**
-      * Reset current element declaration
-      */
-    public void reset(){
+    /** Reset current element declaration */
+    public void reset() {
         fScope = XSConstants.SCOPE_ABSENT;
         fName = null;
         fTargetNamespace = null;
@@ -187,125 +183,101 @@ public class XSElementDecl implements XSElementDeclaration {
         fAnnotations = null;
         fSubGroup = null;
         // reset identity constraints
-        for (int i=0;i<fIDCPos;i++) {
+        for (int i = 0; i < fIDCPos; i++) {
             fIDConstraints[i] = null;
         }
 
         fIDCPos = 0;
     }
 
-    /**
-     * Get the type of the object, i.e ELEMENT_DECLARATION.
-     */
+    /** Get the type of the object, i.e ELEMENT_DECLARATION. */
     public short getType() {
         return XSConstants.ELEMENT_DECLARATION;
     }
 
     /**
-     * The <code>name</code> of this <code>XSObject</code> depending on the
-     * <code>XSObject</code> type.
+     * The <code>name</code> of this <code>XSObject</code> depending on the <code>XSObject</code>
+     * type.
      */
     public String getName() {
         return fName;
     }
 
     /**
-     * The namespace URI of this node, or <code>null</code> if it is
-     * unspecified.  defines how a namespace URI is attached to schema
-     * components.
+     * The namespace URI of this node, or <code>null</code> if it is unspecified. defines how a
+     * namespace URI is attached to schema components.
      */
     public String getNamespace() {
         return fTargetNamespace;
     }
 
-    /**
-     * Either a simple type definition or a complex type definition.
-     */
+    /** Either a simple type definition or a complex type definition. */
     public XSTypeDefinition getTypeDefinition() {
         return fType;
     }
 
     /**
-     * Optional. Either global or a complex type definition (
-     * <code>ctDefinition</code>). This property is absent in the case of
-     * declarations within named model groups: their scope will be
-     * determined when they are used in the construction of complex type
-     * definitions.
+     * Optional. Either global or a complex type definition ( <code>ctDefinition</code>). This
+     * property is absent in the case of declarations within named model groups: their scope will be
+     * determined when they are used in the construction of complex type definitions.
      */
     public short getScope() {
         return fScope;
     }
 
     /**
-     * Locally scoped declarations are available for use only within the
-     * complex type definition identified by the <code>scope</code>
-     * property.
+     * Locally scoped declarations are available for use only within the complex type definition
+     * identified by the <code>scope</code> property.
      */
     public XSComplexTypeDefinition getEnclosingCTDefinition() {
         return fEnclosingCT;
     }
 
-    /**
-     * A value constraint: one of default, fixed.
-     */
+    /** A value constraint: one of default, fixed. */
     public short getConstraintType() {
-        return (short)(fMiscFlags & CONSTRAINT_MASK);
+        return (short) (fMiscFlags & CONSTRAINT_MASK);
     }
 
-    /**
-     * A value constraint: The actual value (with respect to the {type
-     * definition})
-     */
+    /** A value constraint: The actual value (with respect to the {type definition}) */
     public String getConstraintValue() {
         // REVISIT: SCAPI: what's the proper representation
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.stringValue();
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.stringValue();
     }
 
     /**
-     * If {nillable} is true, then an element may also be valid if it carries
-     * the namespace qualified attribute with [local name] nil from
-     * namespace http://www.w3.org/2001/XMLSchema-instance and value true
-     * (see xsi:nil (2.6.2)) even if it has no text or element content
-     * despite a {content type} which would otherwise require content.
+     * If {nillable} is true, then an element may also be valid if it carries the namespace
+     * qualified attribute with [local name] nil from namespace
+     * http://www.w3.org/2001/XMLSchema-instance and value true (see xsi:nil (2.6.2)) even if it has
+     * no text or element content despite a {content type} which would otherwise require content.
      */
     public boolean getNillable() {
         return ((fMiscFlags & NILLABLE) != 0);
     }
 
-    /**
-     * {identity-constraint definitions} A set of constraint definitions.
-     */
+    /** {identity-constraint definitions} A set of constraint definitions. */
     public XSNamedMap getIdentityConstraints() {
         return new XSNamedMapImpl(fIDConstraints, fIDCPos);
     }
 
-    /**
-     * {substitution group affiliation} Optional. A top-level element
-     * definition.
-     */
+    /** {substitution group affiliation} Optional. A top-level element definition. */
     public XSElementDeclaration getSubstitutionGroupAffiliation() {
         return fSubGroup;
     }
 
     /**
-     * Convenience method. Check if <code>exclusion</code> is a substitution
-     * group exclusion for this element declaration.
-     * @param exclusion Extension, restriction or none. Represents final
-     *   set for the element.
-     * @return True if <code>exclusion</code> is a part of the substitution
-     *   group exclusion subset.
+     * Convenience method. Check if <code>exclusion</code> is a substitution group exclusion for
+     * this element declaration.
+     *
+     * @param exclusion Extension, restriction or none. Represents final set for the element.
+     * @return True if <code>exclusion</code> is a part of the substitution group exclusion subset.
      */
     public boolean isSubstitutionGroupExclusion(short exclusion) {
         return (fFinal & exclusion) != 0;
     }
 
     /**
-     * Specifies if this declaration can be nominated as
-     * the {substitution group affiliation} of other
-     * element declarations having the same {type definition}
-     * or types derived therefrom.
+     * Specifies if this declaration can be nominated as the {substitution group affiliation} of
+     * other element declarations having the same {type definition} or types derived therefrom.
      *
      * @return A bit flag representing {extension, restriction} or NONE.
      */
@@ -314,12 +286,12 @@ public class XSElementDecl implements XSElementDeclaration {
     }
 
     /**
-     * Convenience method. Check if <code>disallowed</code> is a disallowed
-     * substitution for this element declaration.
-     * @param disallowed Substitution, extension, restriction or none.
-     *   Represents a block set for the element.
-     * @return True if <code>disallowed</code> is a part of the substitution
-     *   group exclusion subset.
+     * Convenience method. Check if <code>disallowed</code> is a disallowed substitution for this
+     * element declaration.
+     *
+     * @param disallowed Substitution, extension, restriction or none. Represents a block set for
+     *     the element.
+     * @return True if <code>disallowed</code> is a part of the substitution group exclusion subset.
      */
     public boolean isDisallowedSubstitution(short disallowed) {
         return (fBlock & disallowed) != 0;
@@ -334,27 +306,20 @@ public class XSElementDecl implements XSElementDeclaration {
         return fBlock;
     }
 
-    /**
-     * {abstract} A boolean.
-     */
+    /** {abstract} A boolean. */
     public boolean getAbstract() {
         return ((fMiscFlags & ABSTRACT) != 0);
     }
 
-    /**
-     * Optional. Annotation.
-     */
+    /** Optional. Annotation. */
     public XSAnnotation getAnnotation() {
         return (fAnnotations != null) ? (XSAnnotation) fAnnotations.item(0) : null;
     }
 
-    /**
-     * Optional. Annotations.
-     */
+    /** Optional. Annotations. */
     public XSObjectList getAnnotations() {
         return (fAnnotations != null) ? fAnnotations : XSObjectListImpl.EMPTY_LIST;
     }
-
 
     /**
      * @see org.apache.xerces.xs.XSObject#getNamespaceItem()
@@ -368,21 +333,16 @@ public class XSElementDecl implements XSElementDeclaration {
     }
 
     public Object getActualVC() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.actualValue;
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.actualValue;
     }
 
     public short getActualVCType() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               XSConstants.UNAVAILABLE_DT :
-               fDefault.actualValueType;
+        return getConstraintType() == XSConstants.VC_NONE
+                ? XSConstants.UNAVAILABLE_DT
+                : fDefault.actualValueType;
     }
 
     public ShortList getItemValueTypes() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.itemValueTypes;
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.itemValueTypes;
     }
-
 } // class XSElementDecl

@@ -4,7 +4,6 @@ import org.cosmic.ide.common.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List; 
 
 public class JavaProject {
 
@@ -18,10 +17,8 @@ public class JavaProject {
 
     public static JavaProject newProject(String projectName) throws IOException {
         var projectRoot = new File(getRootDirPath() + projectName);
-        if (!projectRoot.exists()) {
-            if (!projectRoot.mkdirs()) {
-                throw new IOException("Unable to create directory");
-            }
+        if (!projectRoot.exists() && !projectRoot.mkdirs()) {
+            throw new IOException("Unable to create directory");
         }
         var project = new JavaProject(projectRoot);
         project.init();

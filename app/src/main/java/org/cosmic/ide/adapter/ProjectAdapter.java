@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import org.cosmic.ide.R;
 import org.cosmic.ide.project.JavaProject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,10 +77,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bind(mProjects.get(position));
         holder.background.setOnClickListener(v -> {
-            if (onProjectSelectedListener != null) {
-                if(position != RecyclerView.NO_POSITION) {
-                    onProjectSelectedListener.onProjectSelect(mProjects.get(position));
-                }
+            if (onProjectSelectedListener != null && position != RecyclerView.NO_POSITION) {
+                onProjectSelectedListener.onProjectSelect(mProjects.get(position));
             }
         });
         holder.background.setOnLongClickListener(v -> {

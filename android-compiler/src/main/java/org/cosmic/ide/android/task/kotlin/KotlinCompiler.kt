@@ -13,7 +13,7 @@ import org.cosmic.ide.android.interfaces.*
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.android.exception.CompilationFailedException
 
-class KotlinCompiler() : Task {
+class KotlinCompiler : Task {
 
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
@@ -99,10 +99,7 @@ class KotlinCompiler() : Task {
     fun getSourceFiles(dir: File): ArrayList<String> {
         val sourceFiles = arrayListOf<String>()
         val files = dir.listFiles()
-        if (files == null) {
-            return arrayListOf<String>()
-        }
-        for (file in files) {
+        for (file in files?) {
             if (file.isFile()) {
                 val path = file.name
                 if (path.endsWith(".java") || path.endsWith(".kt")) {

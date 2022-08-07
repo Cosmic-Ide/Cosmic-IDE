@@ -211,9 +211,9 @@ public class FileUtil {
 
     public static boolean deleteFilesInDirWithFilter(final File dir, final FileFilter filter) {
         if (dir == null || filter == null) return false;
-        // dir doesn't exist then return true
+        // if dir doesn't exist, then return true
         if (!dir.exists()) return true;
-        // dir isn't a directory then return false
+        // dir isn't a directory, then return false
         if (!dir.isDirectory()) return false;
         File[] files = dir.listFiles();
         if (files != null && files.length != 0) {

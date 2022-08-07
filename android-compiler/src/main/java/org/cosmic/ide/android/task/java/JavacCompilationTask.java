@@ -1,6 +1,5 @@
 package org.cosmic.ide.android.task.java;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.cosmic.ide.android.exception.CompilationFailedException;
@@ -138,6 +137,7 @@ public class JavacCompilationTask implements Task {
                         break;
                     default:
                         warns.append(message.toString());
+                        break;
                 }
             }
             var errors = errs.toString();

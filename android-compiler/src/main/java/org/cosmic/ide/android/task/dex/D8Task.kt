@@ -13,7 +13,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.ArrayList
 
-class D8Task() : Task {
+class D8Task : Task {
 
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
@@ -30,15 +30,13 @@ class D8Task() : Task {
         val paths = arrayListOf<Path>()
 
         val files = root.listFiles()
-        if (files != null) {
-            for (f in files) {
-                if (f.isFile()) {
-                    if (f.getName().endsWith(".class")) {
-                        paths.add(f.toPath())
-                    }
-                } else {
-                    paths.addAll(getClassFiles(f))
+        for (f in files?) {
+            if (f.isFile()) {
+                if (f.getName().endsWith(".class")) {
+                    paths.add(f.toPath())
                 }
+            } else {
+                paths.addAll(getClassFiles(f))
             }
         }
         return paths

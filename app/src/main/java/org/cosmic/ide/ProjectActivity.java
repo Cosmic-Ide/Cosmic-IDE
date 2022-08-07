@@ -2,24 +2,18 @@ package org.cosmic.ide;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.WorkerThread;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.adapter.ProjectAdapter;
@@ -91,6 +85,8 @@ public class ProjectActivity extends BaseActivity {
         switch(item.getItemId()) {
             case R.id.settings:
                 startActivity(new Intent(this, SettingActivity.class));
+                break;
+            default:
                 break;
         }
         return super.onOptionsItemSelected(item);

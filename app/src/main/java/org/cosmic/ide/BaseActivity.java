@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
@@ -76,8 +75,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void setCurrentTheme(String theme) {
         if (ui_settings.getString("current_theme", themes[0]) == theme) return;
-        int uiMode = -1;
-        int pos = 0;
+        int uiMode;
+        int pos;
         switch (theme) {
             case "System Default":
                 uiMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
@@ -91,6 +90,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 uiMode = AppCompatDelegate.MODE_NIGHT_YES;
                 pos = 2;
                 break;
+            default:
+                uiMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                pos = 0;
         }
         AppCompatDelegate.setDefaultNightMode(uiMode);
         ui_settings.edit().putString("current_theme", themes[pos]).apply();
@@ -108,8 +110,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             case "Dark":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
         }
-        if(currentTheme != ui_settings.getString("current_theme", themes[0])) recreate();
+        if (currentTheme != ui_settings.getString("current_theme", themes[0])) recreate();
     }
 
     protected static int getColorAttr(Context context, @AttrRes int resId) {

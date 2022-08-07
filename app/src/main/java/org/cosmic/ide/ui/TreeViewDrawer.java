@@ -1,8 +1,6 @@
 package org.cosmic.ide.ui;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -19,10 +17,8 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.android.material.textview.MaterialTextView;
 
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.MainActivity;
@@ -35,15 +31,12 @@ import org.cosmic.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
 import org.cosmic.ide.ui.treeview.model.TreeFolder;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
-import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.JavaTemplate;
 
 import java.io.File;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,17 +98,15 @@ public class TreeViewDrawer extends Fragment {
                             @Override
                             public void onNodeToggled(
                                     @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {
-                                if(treeNode.isLeaf()) {
-                                    if(treeNode.getValue().getFile().isFile()) {
-                                        try {
-                                            activity.loadFileToEditor(
-                                                treeNode.getValue().getFile().getPath());
-                                            if (activity.binding.drawer.isDrawerOpen(GravityCompat.START)) {
-                                                activity.binding.drawer.close();
-                                            }
-                                        } catch (Exception e) {
-                                            activity.dialog("Failed to read file", e.getMessage(), true);
+                                if (treeNode.isLeaf() && treeNode.getValue().getFile().isFile()) {
+                                    try {
+                                        activity.loadFileToEditor(
+                                            treeNode.getValue().getFile().getPath());
+                                        if (activity.binding.drawer.isDrawerOpen(GravityCompat.START)) {
+                                            activity.binding.drawer.close();
                                         }
+                                    } catch (Exception e) {
+                                        activity.dialog("Failed to read file", e.getMessage(), true);
                                     }
                                 }
                             }
@@ -185,8 +176,10 @@ public class TreeViewDrawer extends Fragment {
         if (pkgMatcher.find()) {
             int end = pkgMatcher.end();
             if (end <= 0) return "";
-            String name = file.getAbsolutePath().substring(pkgMatcher.end());
-            if (name.startsWith(File.separator)) name.substring(1);
+            var name = file.getAbsolutePath().substring(pkgMatcher.end());
+            if (name.startsWith(File.separator)) {
+                name = name.substring(1);
+            }
             return name.replace(File.separator, ".");
         }
         return "";

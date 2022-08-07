@@ -16,7 +16,7 @@ import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
-class CustomCompletionLayout() : CompletionLayout {
+class CustomCompletionLayout: CompletionLayout {
 
     private lateinit var mListView: ListView
     private lateinit var mProgressBar: ProgressBar
@@ -70,9 +70,6 @@ class CustomCompletionLayout() : CompletionLayout {
         return mListView
     }
 
-    /**
-     * Perform motion events
-     */
     private fun performScrollList(offset: Int) {
         val adpView = getCompletionList()
 

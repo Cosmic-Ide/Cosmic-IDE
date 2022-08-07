@@ -12,8 +12,7 @@
 
 A next-gen Ide for JVM development on Android!
 
-Overview
----
+## Overview
 
 <img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png" align="right" width="40%" height="40%"></img>
 
@@ -38,16 +37,14 @@ Overview
 </div>
 <p>
 
-Downloads
----
+## Downloads
 
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
 
 You can get the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v0.0.5)
 and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Cosmic-Ide/actions).
 
-Screenshots
----
+## Screenshots
 
 <p align="center">
 
@@ -62,13 +59,11 @@ Screenshots
 
 </p>
 
-TO-DO
----
+## TO-DO
 
 - \[ \] Java auto-complete server
 
-Building
----
+## Building
 
 Clone this repository on your device and compile using Android Studio or by running the command
 
@@ -76,8 +71,7 @@ Clone this repository on your device and compile using Android Studio or by runn
 ./gradlew assembleDebug
 ```
 
-Contribution
----
+## Contribution
 
 We would really appreciate all kinds of contributions.
 If you have any questions, ideas, need help or want to propose a change just open an issue.
@@ -85,8 +79,7 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - Any type of contributions are highly appreciated.
 - Create a pull request and we'll merge it after review.
 
-Special Thanks
----
+## Special Thanks
 
 - [Nonzzzz](https://github.com/Nonzzzz)
 

@@ -24,7 +24,7 @@ import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.common.util.StringSearch;
-import org.cosmic.ide.project.JavaTemplate;
+import org.cosmic.ide.project.CodeTemplate;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
 import org.cosmic.ide.ui.treeview.TreeView;
@@ -267,7 +267,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + "/"
                                                 + fileNameString
                                                 + ".java",
-                                        JavaTemplate.getClassTemplate(
+                                        CodeTemplate.getJavaClassTemplate(
                                                 StringSearch.packageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));
@@ -317,7 +317,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + "/"
                                                 + fileNameString
                                                 + ".kt",
-                                        JavaTemplate.getKotlinClassTemplate(
+                                        CodeTemplate.getKotlinClassTemplate(
                                                 StringSearch.packageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));

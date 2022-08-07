@@ -49,12 +49,12 @@ public final class SecuritySupport {
         return securitySupport;
     }
 
-    static ClassLoader getContextClassLoader() {
-        return (ClassLoader)
+    static java.lang.ClassLoader getContextClassLoader() {
+        return (java.lang.ClassLoader)
                 AccessController.doPrivileged(
                         new PrivilegedAction() {
                             public Object run() {
-                                ClassLoader cl = null;
+                                java.lang.ClassLoader cl = null;
                                 try {
                                     cl = Thread.currentThread().getContextClassLoader();
                                 } catch (SecurityException ex) {
@@ -64,12 +64,12 @@ public final class SecuritySupport {
                         });
     }
 
-    static ClassLoader getSystemClassLoader() {
-        return (ClassLoader)
+    static java.lang.ClassLoader getSystemClassLoader() {
+        return (java.lang.ClassLoader)
                 AccessController.doPrivileged(
                         new PrivilegedAction() {
                             public Object run() {
-                                ClassLoader cl = null;
+                                java.lang.ClassLoader cl = null;
                                 try {
                                     cl = ClassLoader.getSystemClassLoader();
                                 } catch (SecurityException ex) {
@@ -79,12 +79,12 @@ public final class SecuritySupport {
                         });
     }
 
-    static ClassLoader getParentClassLoader(final ClassLoader cl) {
-        return (ClassLoader)
+    static java.lang.ClassLoader getParentClassLoader(final ClassLoader cl) {
+        return (java.lang.ClassLoader)
                 AccessController.doPrivileged(
                         new PrivilegedAction() {
                             public Object run() {
-                                ClassLoader parent = null;
+                                java.lang.ClassLoader parent = null;
                                 try {
                                     parent = cl.getParent();
                                 } catch (SecurityException ex) {
@@ -222,7 +222,7 @@ public final class SecuritySupport {
     }
 
     /** Figure out which ClassLoader to use. */
-    public static ClassLoader findClassLoader() {
+    public static java.lang.ClassLoader findClassLoader() {
         if (System.getSecurityManager() != null) {
             // this will ensure bootclassloader is used
             return null;

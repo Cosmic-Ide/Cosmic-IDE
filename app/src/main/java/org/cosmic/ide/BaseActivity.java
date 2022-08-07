@@ -17,7 +17,7 @@ import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected final String[] themes = {"System Default", "Light", "Dark"};
+    protected final String[] themes = {"Follow System", "Light", "Dark"};
 
     protected final String[] javaVersions = {
         "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
@@ -69,7 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         int uiMode;
         int pos;
         switch (theme) {
-            case "System Default":
+            case "Follow System":
                 uiMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
                 pos = 0;
                 break;
@@ -92,7 +92,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void checkCurrentTheme() {
         switch (ui_settings.getString("current_theme", themes[0])) {
-            case "System Default":
+            case "Follow System":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 break;
             case "Light":

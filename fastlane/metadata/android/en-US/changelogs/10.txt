@@ -1,0 +1,15 @@
+- Rebranding as Cosmic Ide
+- Kotlin Support
+- Incremental Kotlin Compilation with v1.7.20-Beta
+- Support for using external libraries by adding jars in libs folder
+- Overall New And Improved design by @nonzzzz
+- Project System by @nonzzzz
+- Light mode and System based Light/Dark mode by @nonzzzz
+- Use of light-weight kotlin coroutines
+- Java and Kotlin keyword autocompletion
+- Improved editor performance and improved highlighting
+- Replaced old drawables with material icons
+- Fixed treeview padding
+- Support for refreshing treeview
+- Renaming files directly in treeview
+- A lot of performance improvements

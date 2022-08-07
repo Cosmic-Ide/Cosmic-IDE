@@ -361,7 +361,8 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void onSuccess() {
                                 loadingDialog.dismiss();
-                                manager.cancel(id);
+                                mBuilder.setContentText("Success!");
+                                manager.notify(id, mBuilder.build());
                             }
 
                             @Override

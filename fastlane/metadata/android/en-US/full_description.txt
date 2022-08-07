@@ -12,6 +12,7 @@ Cosmic-Ide is a program that aims to solve this issue. It is a completely offlin
 - Javap tool for viewing bytecode instructions
 - Eclipse Compiler for Java
 - Incremental kotlin compilation
+- Support for using external libraries
 - Support for Incremental Compilation
 - Support for running Java Code
 - Google Java Format
@@ -20,12 +21,15 @@ Cosmic-Ide is a program that aims to solve this issue. It is a completely offlin
 - CFR Decompiler
 - D8 tool for compiling JVM bytecode to Dalvik bytecode
 - Dex2Smali tool for viewing Dalvik bytecode for your code
+- High Performance Editor
 - Changing Java Versions
 - Custom classpath
 - Custom program arguments
 - Project System
 - Code Highlighting
 - TreeView for quickly Changing Java files
+- Light Mode
+- Dark Mode
 - Minimal Material Design
 
 Github: <a>https://github.com/Cosmic-Ide/Cosmic-Ide</a>

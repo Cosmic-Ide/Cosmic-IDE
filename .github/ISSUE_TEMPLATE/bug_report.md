@@ -28,7 +28,7 @@ If applicable, add screenshots to help explain your problem.
 
 - Device: \[e.g. Pixel 6]
 - OS: \[e.g. Android 13]
-- Version \[e.g. v0.0.5]
+- Version \[e.g. v1.0.0]
 
 **Additional context**
 Add any other context about the problem here.

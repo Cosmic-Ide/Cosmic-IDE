@@ -160,7 +160,7 @@ public class MainActivity extends BaseActivity {
         if (!stdlib.exists()) {
             try {
                 FileUtil.writeFile(
-                    getAssets().open("kotlin-stdlib-1.7.10.jar"),
+                    getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
                     stdlib.getAbsolutePath());
             } catch (Exception e) {
                 showErr(getString(e));

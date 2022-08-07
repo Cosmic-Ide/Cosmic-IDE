@@ -99,7 +99,7 @@ class KotlinCompiler : Task {
     fun getSourceFiles(dir: File): ArrayList<String> {
         val sourceFiles = arrayListOf<String>()
         val files = dir.listFiles()
-        if (files == null) return
+        if (files == null) return sourceFiles
         for (file in files) {
             if (file.isFile()) {
                 val path = file.name

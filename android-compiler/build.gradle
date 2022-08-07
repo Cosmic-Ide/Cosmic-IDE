@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 android {
-    namespace 'com.pranav.android'
+    namespace 'org.cosmic.ide'
     compileSdk 33
 
     defaultConfig {

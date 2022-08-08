@@ -104,16 +104,21 @@ public class MainActivity extends BaseActivity {
         tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
-        if (((DrawerLayout) binding.root) != null) {
-            var toggle =
-                    new ActionBarDrawerToggle(
-                            this,
-                            (DrawerLayout) binding.root,
-                            binding.toolbar,
-                            R.string.app_name,
-                            R.string.app_name);
-            ((DrawerLayout) binding.root).addDrawerListener(toggle);
-            toggle.syncState();
+        if (binding.root instanceof DrawerLayout) {
+            DrawerLayout drawer = (DrawerLayout) binding.root;
+            if (drawer != null) {
+                var toggle =
+                        new ActionBarDrawerToggle(
+                                this,
+                                drawer,
+                                binding.toolbar,
+                                R.string.app_name,
+                                R.string.app_name);
+                drawer.addDrawerListener(toggle);
+                toggle.syncState();
+            }
+        } else {
+            binding.toolbar.setNavigationIcon(null);
         }
 
         binding.editor.setTypefaceText(

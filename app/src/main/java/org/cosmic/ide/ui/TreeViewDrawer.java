@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -105,9 +106,9 @@ public class TreeViewDrawer extends Fragment {
                                     try {
                                         activity.loadFileToEditor(
                                                 treeNode.getValue().getFile().getPath());
-                                        if (activity.binding.drawer.isDrawerOpen(
+                                        if (((DrawerLayout) activity.binding.root).isDrawerOpen(
                                                 GravityCompat.START)) {
-                                            activity.binding.drawer.close();
+                                            ((DrawerLayout) activity.binding.root).close();
                                         }
                                     } catch (Exception e) {
                                         activity.dialog(

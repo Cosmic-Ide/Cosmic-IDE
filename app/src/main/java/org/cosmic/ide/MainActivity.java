@@ -25,6 +25,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -103,15 +104,17 @@ public class MainActivity extends BaseActivity {
         tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
-        var toggle =
-                new ActionBarDrawerToggle(
-                        this,
-                        binding.drawer,
-                        binding.toolbar,
-                        R.string.app_name,
-                        R.string.app_name);
-        binding.drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        if (((DrawerLayout) binding.root) != null) {
+            var toggle =
+                    new ActionBarDrawerToggle(
+                            this,
+                            (DrawerLayout) binding.root,
+                            binding.toolbar,
+                            R.string.app_name,
+                            R.string.app_name);
+            ((DrawerLayout) binding.root).addDrawerListener(toggle);
+            toggle.syncState();
+        }
 
         binding.editor.setTypefaceText(
                 ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));

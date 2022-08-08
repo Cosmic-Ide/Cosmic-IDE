@@ -1,11 +1,11 @@
 package org.cosmic.ide;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.cosmic.ide.adapter.NonFilterableArrayAdapter;
 import org.cosmic.ide.databinding.ActivitySettingBinding;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 
@@ -39,33 +39,28 @@ public class SettingActivity extends BaseActivity {
         }
 
         binding.etThemes.setAdapter(
-                new ArrayAdapter<>(
+                new NonFilterableArrayAdapter(
                         this,
-                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         themes));
 
         binding.etJavaVersions.setAdapter(
-                new ArrayAdapter<>(
+                new NonFilterableArrayAdapter(
                         this,
-                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         javaVersions));
 
         binding.etJavaCompilers.setAdapter(
-                new ArrayAdapter<>(
+                new NonFilterableArrayAdapter(
                         this,
-                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         javaCompilers));
 
         binding.etJavaFormatters.setAdapter(
-                new ArrayAdapter<>(
+                new NonFilterableArrayAdapter(
                         this,
-                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         javaFormatters));
 
         binding.etJavaDisassemblers.setAdapter(
-                new ArrayAdapter<>(
+                new NonFilterableArrayAdapter(
                         this,
-                        androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                         javaDisassemblers));
 
         var currentTheme = ui_settings.getString("current_theme", themes[0]);

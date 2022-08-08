@@ -23,7 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.project.JavaTemplate;
+import org.cosmic.ide.project.CodeTemplate;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
 import org.cosmic.ide.ui.treeview.TreeView;
@@ -178,7 +178,6 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private String getPackageName(final File file) {
-        // A new way to get the package name, because the previous one didn't work.
         Matcher pkgMatcher = Pattern.compile("src").matcher(file.getAbsolutePath());
         if (pkgMatcher.find()) {
             int end = pkgMatcher.end();
@@ -283,7 +282,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + "/"
                                                 + fileNameString
                                                 + ".java",
-                                        JavaTemplate.getClassTemplate(
+                                        CodeTemplate.getJavaClassTemplate(
                                                 getPackageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));
@@ -333,7 +332,7 @@ public class TreeViewDrawer extends Fragment {
                                                 + "/"
                                                 + fileNameString
                                                 + ".kt",
-                                        JavaTemplate.getKotlinClassTemplate(
+                                        CodeTemplate.getKotlinClassTemplate(
                                                 getPackageName(node.getContent().getFile()),
                                                 fileNameString,
                                                 false));

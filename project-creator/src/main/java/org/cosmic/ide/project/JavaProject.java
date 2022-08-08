@@ -32,7 +32,7 @@ public class JavaProject {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        var classTemplate = JavaTemplate.getKotlinClassTemplate(null, "Main", true);
+        var classTemplate = CodeTemplate.getKotlinClassTemplate(null, "Main", true);
         FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 

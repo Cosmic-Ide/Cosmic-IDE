@@ -34,7 +34,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.langs.java.JavaLanguage;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
@@ -52,11 +51,10 @@ import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.editor.completion.CustomCompletionItemAdapter;
 import org.cosmic.ide.editor.completion.CustomCompletionLayout;
-import org.cosmic.ide.editor.scheme.DarculaScheme;
-import org.cosmic.ide.editor.scheme.LightScheme;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
+import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.jf.baksmali.Baksmali;
 import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
@@ -408,104 +406,43 @@ public class MainActivity extends BaseActivity {
 
     private void setEditorLanguage(int lang) {
         if (lang == LANGUAGE_JAVA) {
-            binding.editor.setColorScheme(getColorScheme(false));
+            binding.editor.setColorScheme(getColorScheme());
             binding.editor.setEditorLanguage(getJavaLanguage());
         } else if (lang == LANGUAGE_KOTLIN) {
-            binding.editor.setColorScheme(getColorScheme(true));
+            binding.editor.setColorScheme(getColorScheme());
             binding.editor.setEditorLanguage(getKotlinLanguage());
         } else {
-            binding.editor.setColorScheme(getColorScheme(false));
+            binding.editor.setColorScheme(getColorScheme());
             binding.editor.setEditorLanguage(new EmptyLanguage());
         }
     }
 
-    private EditorColorScheme getColorScheme(boolean isTextMate) {
-        return isDarkMode() ? getDarculaTheme(isTextMate) : getLightTheme(isTextMate);
-    }
-
-    private EditorColorScheme getDarculaTheme(boolean isTextMate) {
-        if (isTextMate) {
-            try {
-                TextMateColorScheme tmcs =
-                        TextMateColorScheme.create(
-                                ThemeReader.readThemeSync(
-                                        "darcula.json", getAssets().open("textmate/darcula.json")));
-                tmcs.setColor(
-                        EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.LINE_NUMBER_BACKGROUND,
-                        SurfaceColors.SURFACE_0.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.COMPLETION_WND_BACKGROUND,
-                        SurfaceColors.SURFACE_1.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.COMPLETION_WND_CORNER,
-                        MaterialColors.getColor(
-                                this,
-                                com.google.android.material.R.attr.colorOutline,
-                                Color.TRANSPARENT));
-                return tmcs;
-            } catch (Exception e) {
-                Log.e(TAG, e + " while creating a dark scheme for TextMateLanguage");
+    private TextMateColorScheme getColorScheme() {
+        try {
+            IRawTheme rawTheme;
+            if(isDarkMode()) {
+                rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
+            } else {
+                rawTheme = ThemeReader.readThemeSync("light.tmTheme", getAssets().open("textmate/light.tmTheme"));
             }
+            return TextMateColorScheme.create(rawTheme);
+        } catch (Exception e) {
+            throw new Error(e);
         }
-        EditorColorScheme scheme = new DarculaScheme();
-        scheme.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.COMPLETION_WND_BACKGROUND,
-                SurfaceColors.SURFACE_1.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.COMPLETION_WND_CORNER,
-                MaterialColors.getColor(
-                        this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
-        return scheme;
-    }
-
-    private EditorColorScheme getLightTheme(boolean isTextMate) {
-        if (isTextMate) {
-            try {
-                TextMateColorScheme tmcs =
-                        TextMateColorScheme.create(
-                                ThemeReader.readThemeSync(
-                                        "light.tmTheme",
-                                        getAssets().open("textmate/light.tmTheme")));
-                tmcs.setColor(
-                        EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.LINE_NUMBER_BACKGROUND,
-                        SurfaceColors.SURFACE_0.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.COMPLETION_WND_BACKGROUND,
-                        SurfaceColors.SURFACE_1.getColor(this));
-                tmcs.setColor(
-                        EditorColorScheme.COMPLETION_WND_CORNER,
-                        MaterialColors.getColor(
-                                this,
-                                com.google.android.material.R.attr.colorOutline,
-                                Color.TRANSPARENT));
-                return tmcs;
-            } catch (Exception e) {
-                Log.e(TAG, e + " while creating a light scheme for TextMateLanguage");
-            }
-        }
-        EditorColorScheme scheme = new LightScheme();
-        scheme.setColor(EditorColorScheme.WHOLE_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.LINE_NUMBER_BACKGROUND, SurfaceColors.SURFACE_0.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.COMPLETION_WND_BACKGROUND,
-                SurfaceColors.SURFACE_1.getColor(this));
-        scheme.setColor(
-                EditorColorScheme.COMPLETION_WND_CORNER,
-                MaterialColors.getColor(
-                        this, com.google.android.material.R.attr.colorOutline, Color.TRANSPARENT));
-        return scheme;
     }
 
     private Language getJavaLanguage() {
-        return new JavaLanguage();
+        try {
+            return TextMateLanguage.create(
+                    "java.tmLanguage.json",
+                    getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                    new InputStreamReader(
+                            getAssets().open("textmate/java/language-configuration.json")),
+                    getColorScheme().getRawTheme());
+        } catch (IOException e) {
+            Log.e(TAG, e + " while loading kotlin language");
+            return new EmptyLanguage();
+        }
     }
 
     private Language getKotlinLanguage() {
@@ -515,7 +452,7 @@ public class MainActivity extends BaseActivity {
                     getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
                     new InputStreamReader(
                             getAssets().open("textmate/kotlin/language-configuration.json")),
-                    ((TextMateColorScheme) getColorScheme(true)).getRawTheme());
+                    getColorScheme().getRawTheme());
         } catch (IOException e) {
             Log.e(TAG, e + " while loading kotlin language");
             return new EmptyLanguage();
@@ -529,7 +466,7 @@ public class MainActivity extends BaseActivity {
                     getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
                     new InputStreamReader(
                             getAssets().open("textmate/smali/language-configuration.json")),
-                    ((TextMateColorScheme) getColorScheme(true)).getRawTheme());
+                    getColorScheme().getRawTheme());
         } catch (IOException e) {
             Log.e(TAG, e + " while loading smali language");
             return new EmptyLanguage();
@@ -573,7 +510,7 @@ public class MainActivity extends BaseActivity {
                         var edi = new CodeEditor(this);
                         edi.setTypefaceText(
                                 ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-                        edi.setColorScheme(getColorScheme(true));
+                        edi.setColorScheme(getColorScheme());
                         edi.setTextSize(12);
                         edi.setEditorLanguage(getSmaliLanguage());
 
@@ -631,7 +568,7 @@ public class MainActivity extends BaseActivity {
                     var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-                    edi.setColorScheme(getColorScheme(false));
+                    edi.setColorScheme(getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
@@ -662,7 +599,7 @@ public class MainActivity extends BaseActivity {
                     var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-                    edi.setColorScheme(getColorScheme(false));
+                    edi.setColorScheme(getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 

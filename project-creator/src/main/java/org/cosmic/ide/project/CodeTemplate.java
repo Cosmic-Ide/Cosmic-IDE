@@ -1,8 +1,8 @@
 package org.cosmic.ide.project;
 
-public class JavaTemplate {
+public class CodeTemplate {
 
-    public static String getClassTemplate(
+    public static String getJavaClassTemplate(
             String packageName, String className, boolean isCreateMainMethod) {
         var header = "";
         if (!isEmpty(packageName)) {

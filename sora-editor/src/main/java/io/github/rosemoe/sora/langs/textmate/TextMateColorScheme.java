@@ -88,6 +88,16 @@ public class TextMateColorScheme extends EditorColorScheme {
                 setColor(TEXT_NORMAL, Color.parseColor(foreground));
             }
 
+            String completionWindowBackground = (String) themeRaw.get("completionWindowBackground");
+            if (completionWindowBackground != null) {
+                setColor(COMPLETION_WND_BACKGROUND, Color.parseColor(completionWindowBackground));
+            }
+
+            String completionWindowStroke = (String) themeRaw.get("completionWindowStroke");
+            if (completionWindowStroke != null) {
+                setColor(COMPLETION_WND_CORNER, Color.parseColor(completionWindowStroke));
+            }
+
             // TMTheme seems to have no fields to control BLOCK_LINE colors
             int blockLineColor =
                     ((getColor(WHOLE_BACKGROUND) + getColor(TEXT_NORMAL)) / 2) & 0x00FFFFFF

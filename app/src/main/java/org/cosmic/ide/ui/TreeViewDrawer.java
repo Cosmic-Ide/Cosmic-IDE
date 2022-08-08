@@ -222,7 +222,7 @@ public class TreeViewDrawer extends Fragment {
         var builder = new MaterialAlertDialogBuilder(getContext());
         builder.setTitle(getString(R.string.rename));
         builder.setView(R.layout.treeview_rename_dialog);
-        builder.setPositiveButton(getString(R.string.create), null);
+        builder.setPositiveButton(getString(R.string.rename), null);
         builder.setNegativeButton(android.R.string.cancel, null);
         renameFileDialog = builder.create();
     }

@@ -107,7 +107,7 @@ public class TreeViewDrawer extends Fragment {
                                         activity.loadFileToEditor(
                                                 treeNode.getValue().getFile().getPath());
                                         if(activity.binding.root instanceof DrawerLayout) {
-                                            DrawerLayout drawer = (DrawerLayout) binding.root;
+                                            DrawerLayout drawer = (DrawerLayout) activity.binding.root;
                                             if (drawer != null && drawer.isDrawerOpen(
                                                     GravityCompat.START)) {
                                                 drawer.close();

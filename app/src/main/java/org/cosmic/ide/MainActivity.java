@@ -101,9 +101,6 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setHomeButtonEnabled(false);
         getSupportActionBar().setTitle(getProject().getProjectName());
 
-        tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-
         if (binding.root instanceof DrawerLayout) {
             DrawerLayout drawer = (DrawerLayout) binding.root;
             if (drawer != null) {
@@ -117,6 +114,8 @@ public class MainActivity extends BaseActivity {
                 drawer.addDrawerListener(toggle);
                 toggle.syncState();
             }
+            tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
+            UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
         } else {
             binding.toolbar.setNavigationIcon(null);
         }
@@ -346,7 +345,7 @@ public class MainActivity extends BaseActivity {
 
     /* Shows a snackbar indicating that there were problems during compilation */
     public void showErr(final String e) {
-        Snackbar.make(binding.snackbarContainer, "An error occurred", Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", v -> dialog("Failed...", e, true))
                 .show();
     }

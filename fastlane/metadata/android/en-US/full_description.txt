@@ -32,4 +32,4 @@ Cosmic-Ide is a program that aims to solve this issue. It is a completely offlin
 - Dark Mode
 - Minimal Material Design
 
-Github: <a>https://github.com/Cosmic-Ide/Cosmic-Ide</a>
+Github: <a href='https://github.com/Cosmic-Ide/Cosmic-Ide'>https://github.com/Cosmic-Ide/Cosmic-Ide</a>

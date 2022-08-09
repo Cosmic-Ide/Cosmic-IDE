@@ -89,7 +89,7 @@ public class TreeViewDrawer extends Fragment {
         }
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
-        UiUtilsKt.addSystemWindowInsetToMargin(refreshLayout, false, true, false, true);
+        UiUtilsKt.addSystemWindowInsetToPadding(refreshLayout, false, true, false, true); 
         refreshLayout.setOnRefreshListener(
                 () -> {
                     partialRefresh();

@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?actionBarSize"
             android:orientation="vertical"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="false">
 
             <io.github.rosemoe.sora.widget.CodeEditor
                 android:id="@+id/editor"
@@ -33,7 +33,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/bottom_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
                     android:padding="@dimen/spacing_small"
                     android:text="@string/smali2java" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

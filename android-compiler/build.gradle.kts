@@ -3,7 +3,6 @@ import dependencies.Dependencies
 plugins {
     id(BuildPlugins.ANDROID_LIBRARY)
     id(BuildPlugins.KOTLIN_ANDROID)
-    id(BuildPlugins.LINT)
 }
 android {
     namespace = 'org.cosmic.ide.android'

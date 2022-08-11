@@ -18,7 +18,7 @@ dependencies {
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 
-    api("org.jetbrains.intellij.deps:trove4j:1.0.20200330"
+    api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
     api(files("libs/kotlin-compiler-embeddable-1.7.20-Beta.jar"))
 

@@ -1,5 +1,3 @@
-package dependencies
-
 object Dependencies {
     const val CORE_LIBRARY_DESUGARING = "com.android.tools:desugar_jdk_libs:${BuildDependenciesVersions.CORE_LIBRARY_DESUGARING}"
     const val GUAVA = "com.google.guava:guava:${BuildDependenciesVersions.GUAVA}"
@@ -10,4 +8,8 @@ object Dependencies {
     const val DEXLIB2 = "org.smali:dexlib2:${BuildDependenciesVersions.SMALI}"
     const val BAKSMALI = "org.smali:baksmali:${BuildDependenciesVersions.SMALI}"
     const val JAVAC = "io.github.itsaky:nb-javac-android:${BuildDependenciesVersions.JAVAC}"
+    const val R8 = "com.android.tools:r8:${BuildDependenciesVersions.R8}"
+    const val COROUTNES = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${BuildDependenciesVersions.COROUTINES}"
+    const val RECYCLERVIEW = "androidx.recyclerview:recyclerview:${BuildDependenciesVersions.RECYCLERVIEW}"
+    const val SWIPE_REFRESH_LAYOUT = "androidx.swiperefreshlayout:swiperefreshlayout:${BuildDependenciesVersions.SWIPE_REFRESH_LAYOUT}"
 }

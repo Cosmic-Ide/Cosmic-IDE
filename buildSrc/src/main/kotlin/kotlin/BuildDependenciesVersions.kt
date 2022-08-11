@@ -9,4 +9,8 @@ object BuildDependenciesVersions {
     const val PREFERENCE = "1.2.0"
     const val CFR = "0.152"
     const val JAVAC = "17.0.0.1"
+    const val R8 = "3.3.28"
+    const val COROUTINES = "1.6.4"
+    const val RECYCLERVIEW = "1.3.0-beta01"
+    const val SWIPE_REFRESH_LAYOUT = "1.2.0-alpha01"
 }

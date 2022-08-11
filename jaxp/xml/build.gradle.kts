@@ -1,4 +1,6 @@
-apply plugin: BuildPlugins.JAVA_LIBRARY
+plugins {
+    id(BuildPlugins.JAVA_LIBRARY)
+} 
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

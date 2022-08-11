@@ -26,13 +26,6 @@ android {
             keyAlias = "testkey"
             keyPassword = "testkey"
         }
-
-        getByName(BuildType.RELEASE) {
-            storeFile = file("testkey.keystore")
-            storePassword = "testkey"
-            keyAlias = "testkey"
-            keyPassword = "testkey"
-        }
     }
 
     buildTypes {

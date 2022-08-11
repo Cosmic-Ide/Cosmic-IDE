@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Cosmic Ide"
+rootProject.name = "Cosmic-Ide"
 
 include(
     ":app", 

@@ -10,5 +10,5 @@ java {
 
 dependencies {
     implementation(projects.common)
-    compileOnly(files('libs/android-stubs.jar'))
+    compileOnly(files("libs/android-stubs.jar"))
 }

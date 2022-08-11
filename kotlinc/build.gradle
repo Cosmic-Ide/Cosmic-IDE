@@ -1,6 +1,7 @@
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+    id BuildPlugins.JAVA_LIBRARY
+    id BuildPlugins.KOTLIN_JAVA
+    id BuildPlugins.LINT
 }
 
 configurations.implementation {
@@ -11,8 +12,8 @@ dependencies {
     implementation 'com.github.marschall:zipfilesystem-standalone:1.0.1'
     implementation 'androidx.annotation:annotation:1.4.0'
     implementation 'io.github.itsaky:nb-javac-android:17.0.0.1'
-    implementation project(path: ':jaxp:xml')
-    implementation project(path: ':jaxp:internal')
+    implementation projects.jaxp.xml
+    implementation projects.jaxp.internal
 
 
     runtimeOnly ('org.jetbrains.kotlin:kotlin-reflect:1.7.10')

@@ -1,6 +1,6 @@
 plugins {
-    id 'java-library'
-    id 'com.android.lint'
+    id BuildPlugins.JAVA_LIBRARY
+    id BuildPlugins.LINT
 }
 
 java {

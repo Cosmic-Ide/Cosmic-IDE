@@ -5,7 +5,7 @@ plugins {
     id(BuildPlugins.KOTLIN_ANDROID)
 }
 android {
-    namespace = 'org.cosmic.ide.android'
+    namespace = "org.cosmic.ide.android"
     compileSdk = 33
 
     defaultConfig {
@@ -16,7 +16,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled =  true
-            proguardFiles  = getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
@@ -31,12 +31,12 @@ android {
 }
 dependencies {
     // r8 dependency
-    implementation('com.android.tools:r8:3.3.28')
+    implementation("com.android.tools:r8:3.3.28")
     implementation(projects.googleJavaFormat)
     implementation(projects.eclipseJdt)
     implementation(Dependencies.JAVAC)
     implementation(projects.common)
     implementation(projects.projectCreator)
     implementation(projects.kotlinc)
-    compileOnly(files('libs/sora-editor.jar'))
+    compileOnly(files("libs/sora-editor.jar"))
 }

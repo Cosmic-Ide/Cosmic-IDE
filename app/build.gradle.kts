@@ -20,14 +20,14 @@ android {
     }
 
     signingConfigs {
-        debug {
+        getByName(BuildType.DEBUG) {
             storeFile = file("testkey.keystore")
             storePassword = "testkey"
             keyAlias = "testkey"
             keyPassword = "testkey"
         }
 
-        release {
+        getByName(BuildType.RELEASE) {
             storeFile = file("testkey.keystore")
             storePassword = "testkey"
             keyAlias = "testkey"
@@ -65,8 +65,8 @@ android {
     }
 
     lintOptions {
-        abortOnError = false
-        checkDependencies = true
+        isAbortOnError = false
+        isCheckDependencies = true
     }
 
     packagingOptions {
@@ -80,7 +80,7 @@ android {
                 '.api_description',
                 'META-INF/*',
                 'README.md',
-                'SECURITY.md'
+                'SECURITY.md',
                 'about_files/*',
                 'OSGI-INF/*',
                 'ant_tasks/*',
@@ -111,8 +111,8 @@ dependencies {
     implementation(Dependencies.BAKSMALI)
     implementation(Dependencies.GUAVA)
     implementation(Dependencies.APPCOMPAT)
-    implementation 'androidx.recyclerview:recyclerview:1.3.0-beta01'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
+    implementation "androidx.recyclerview:recyclerview:1.3.0-beta01"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
     implementation(Dependencies.MATERIAL)
     implementation(projects.common)
     implementation(projects.soraEditor)

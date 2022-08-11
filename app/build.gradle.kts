@@ -111,8 +111,8 @@ dependencies {
     implementation(Dependencies.BAKSMALI)
     implementation(Dependencies.GUAVA)
     implementation(Dependencies.APPCOMPAT)
-    implementation "androidx.recyclerview:recyclerview:1.3.0-beta01"
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+    implementation("androidx.recyclerview:recyclerview:1.3.0-beta01")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation(Dependencies.MATERIAL)
     implementation(projects.common)
     implementation(projects.soraEditor)

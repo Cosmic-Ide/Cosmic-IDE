@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-    compileOnly Dependencies.GUAVA
+    compileOnly(Dependencies.GUAVA)
     implementation("com.google.auto.value:auto-value-annotations:1.9")
     annotationProcessor("com.google.auto.value:auto-value:1.9")
     implementation(Dependencies.JAVAC)

@@ -1,5 +1,5 @@
 ![CI](https://github.com/Cosmic-Ide/Cosmic-Ide/actions/workflows/android.yml/badge.svg)
-[![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.pranav.java.ide)](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+[![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/org.cosmic.ide)](https://apt.izzysoft.de/fdroid/index/apk/org.cosmic.ide)
 [![Chat on Discord](https://img.shields.io/discord/867985135931383809)](https://discord.gg/8Gu6YCq2eS)
 [![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
 [![CodeFactor](https://www.codefactor.io/repository/github/cosmic-ide/cosmic-ide/badge/main)](https://codefactor.io/repository/github/cosmic-ide/cosmic-ide/overview/main)
@@ -14,7 +14,7 @@ A next-gen Ide for JVM development on Android!
 
 ## Overview
 
-<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png" align="right" width="40%" height="40%"></img>
+<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png" align="right" width="40%" height="40%">
 
 <div style="display:flex;">
 
@@ -39,9 +39,9 @@ A next-gen Ide for JVM development on Android!
 
 ## Downloads
 
-[<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/com.pranav.java.ide)
+[<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/org.cosmic.ide)
 
-You can get the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v0.0.5)
+You can get the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v1.0.0)
 and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Cosmic-Ide/actions).
 
 ## Screenshots

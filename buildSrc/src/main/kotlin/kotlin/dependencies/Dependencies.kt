@@ -9,5 +9,5 @@ object Dependencies {
     const val CFR = "org.benf:cfr:${BuildDependenciesVersions.CFR}"
     const val DEXLIB2 = "org.smali:dexlib2:${BuildDependenciesVersions.SMALI}"
     const val BAKSMALI = "org.smali:baksmali:${BuildDependenciesVersions.SMALI}"
-    const val SUBTITLE_COLLAPSING_TOOLBAR = "com.hendraanggrian.material:collapsingtoolbarlayout-subtitle:${BuildDependenciesVersions.SUBTITLE_COLLAPSING_TOOLBAR}"
+    const val JAVAC = "io.github.itsaky:nb-javac-android:${BuildDependenciesVersions.JAVAC}"
 }

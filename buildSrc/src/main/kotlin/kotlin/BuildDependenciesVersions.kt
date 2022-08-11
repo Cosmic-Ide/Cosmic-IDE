@@ -8,5 +8,5 @@ object BuildDependenciesVersions {
     const val SMALI = "2.5.2"
     const val PREFERENCE = "1.2.0"
     const val CFR = "0.152"
-    const val SUBTITLE_COLLAPSING_TOOLBAR = "1.6.0-SNAPSHOT"
+    const val JAVAC = "17.0.0.1"
 }

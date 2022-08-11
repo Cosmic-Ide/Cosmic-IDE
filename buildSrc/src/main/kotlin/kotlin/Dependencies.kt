@@ -9,7 +9,7 @@ object Dependencies {
     const val BAKSMALI = "org.smali:baksmali:${BuildDependenciesVersions.SMALI}"
     const val JAVAC = "io.github.itsaky:nb-javac-android:${BuildDependenciesVersions.JAVAC}"
     const val R8 = "com.android.tools:r8:${BuildDependenciesVersions.R8}"
-    const val COROUTNES = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${BuildDependenciesVersions.COROUTINES}"
+    const val COROUTINES = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${BuildDependenciesVersions.COROUTINES}"
     const val RECYCLERVIEW = "androidx.recyclerview:recyclerview:${BuildDependenciesVersions.RECYCLERVIEW}"
     const val SWIPE_REFRESH_LAYOUT = "androidx.swiperefreshlayout:swiperefreshlayout:${BuildDependenciesVersions.SWIPE_REFRESH_LAYOUT}"
 }

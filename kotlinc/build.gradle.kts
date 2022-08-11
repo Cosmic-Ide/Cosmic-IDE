@@ -5,7 +5,7 @@ plugins {
 }
 
 configurations.implementation {
-    exclude group: "org.jetbrains", module: "annotations"
+    exclude("org.jetbrains", "annotations")
 }
 
 dependencies {

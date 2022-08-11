@@ -1,8 +1,6 @@
-plugins {
-    id BuildPlugins.JAVA_LIBRARY
-    id BuildPlugins.LINT
-    id BuildPlugins.KOTLIN_JAVA
-}
+apply plugin: BuildPlugins.JAVA_LIBRARY
+apply plugin: BuildPlugins.KOTLIN_JAVA
+apply plugin: BuildPlugins.LINT
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11

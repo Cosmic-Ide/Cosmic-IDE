@@ -15,7 +15,7 @@ object Dependencies {
     const val AUTO_VALUE = "com.google.auto.value:auto-value:${BuildDependenciesVersions.AUTO_VALUE}"
     const val AUTO_VALUE_ANNOTATIONS = "com.google.auto.value:auto-value-annotations:${BuildDependenciesVersions.AUTO_VALUE}"
     const val KOTLIN_REFLECT = "org.jetbrains.kotlin:kotlin-reflect:${BuildDependenciesVersions.KOTLIN}"
-    const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:${BuildDependenciesVersion.ANDROIDX_ANNOTATION}"
+    const val ANDROIDX_ANNOTATION = "androidx.annotation:annotation:${BuildDependenciesVersions.ANDROIDX_ANNOTATION}"
     const val TROVE4J = "org.jetbrains.intellij.deps:trove4j:${BuildDependenciesVersions.TROVE4J}"
     const val GSON = "com.google.code.gson:gson:${BuildDependenciesVersions.GSON}"
     const val JCODINGS = "org.jruby.jcodings:jcodings:${BuildDependenciesVersions.JCODINGS}"

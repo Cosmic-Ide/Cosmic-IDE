@@ -1,17 +1,17 @@
 package org.cosmic.ide.android.task.dex
 
+import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
 
-import org.cosmic.ide.android.interfaces.*
+import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
 
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.ArrayList
 
 class D8Task : Task {
 
@@ -24,23 +24,18 @@ class D8Task : Task {
                             .addProgramFiles(
                                     getClassFiles(File(project.getBinDirPath(), "classes")))
                             .build())
+                            .setMode(CompilationMode.RELEASE)
     }
 
     private fun getClassFiles(root: File) : ArrayList<Path> {
         val paths = arrayListOf<Path>()
 
-        val files = root.listFiles()
-        if (files == null) return paths
-        for (f in files) {
-            if (f.isFile()) {
-                if (f.getName().endsWith(".class")) {
-                    paths.add(f.toPath())
-                }
-            } else {
-                paths.addAll(getClassFiles(f))
+        root.walk().forEach {
+            if (it.isFile() && it.extension == "class") {
+                paths.add(it.toPath())
             }
         }
-        return paths
+        paths
     }
 
     override fun getTaskName() : String {

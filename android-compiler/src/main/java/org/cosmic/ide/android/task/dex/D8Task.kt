@@ -19,10 +19,11 @@ class D8Task : Task {
     override fun doFullTask(project: JavaProject) {
             D8.run(
                     D8Command.builder()
-                            .setOutput(Paths.get(project.getBinDirPath()), OutputMode.DexIndexed)
+                            .setMinApiLevel(26)
                             .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
                             .addProgramFiles(
-                                    getClassFiles(File(project.getBinDirPath(), "classes")))
+                                getClassFiles(File(project.getBinDirPath(), "classes")))
+                            .setOutput(Paths.get(project.getBinDirPath()), OutputMode.DexIndexed)
                             .build())
     }
 

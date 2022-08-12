@@ -19,6 +19,8 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+ 
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -28,11 +30,12 @@ android {
     }
 }
 dependencies {
-    // r8 dependency
+    coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
+ 
     implementation(Dependencies.R8)
-    implementation(projects.googleJavaFormat)
-    implementation(projects.eclipseJdt)
     implementation(Dependencies.JAVAC)
+    implementation(projects.googleJavaFormat)
+    implementation(projects.eclipseJdt) 
     implementation(projects.common)
     implementation(projects.projectCreator)
     implementation(projects.kotlinc)

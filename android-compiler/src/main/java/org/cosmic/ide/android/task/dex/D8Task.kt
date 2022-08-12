@@ -23,7 +23,6 @@ class D8Task : Task {
                             .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
                             .addProgramFiles(
                                     getClassFiles(File(project.getBinDirPath(), "classes")))
-                            .setMode(CompilationMode.RELEASE) 
                             .build())
     }
 

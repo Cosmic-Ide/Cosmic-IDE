@@ -23,8 +23,8 @@ class D8Task : Task {
                             .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
                             .addProgramFiles(
                                     getClassFiles(File(project.getBinDirPath(), "classes")))
+                            .setMode(CompilationMode.RELEASE) 
                             .build())
-                            .setMode(CompilationMode.RELEASE)
     }
 
     private fun getClassFiles(root: File) : ArrayList<Path> {
@@ -35,7 +35,7 @@ class D8Task : Task {
                 paths.add(it.toPath())
             }
         }
-        paths
+        return paths
     }
 
     override fun getTaskName() : String {

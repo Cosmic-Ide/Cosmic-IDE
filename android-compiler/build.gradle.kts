@@ -2,13 +2,14 @@ plugins {
     id(BuildPlugins.ANDROID_LIBRARY)
     id(BuildPlugins.KOTLIN_ANDROID)
 }
+
 android {
     namespace = "org.cosmic.ide.android"
-    compileSdk = 33
+    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdk = 26
-        targetSdk = 33
+        minSdk = BuildAndroidConfig.MIN_SDK_VERSION
+        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     buildTypes {
@@ -29,9 +30,10 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
+
 dependencies {
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
- 
+
     implementation(Dependencies.R8)
     implementation(Dependencies.JAVAC)
     implementation(projects.googleJavaFormat)

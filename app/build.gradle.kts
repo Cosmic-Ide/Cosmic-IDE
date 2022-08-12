@@ -13,7 +13,7 @@ android {
         targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
         versionCode = BuildAndroidConfig.VERSION_CODE
         versionName = BuildAndroidConfig.VERSION_NAME
-        
+
         vectorDrawables.useSupportLibrary = BuildAndroidConfig.SUPPORT_LIBRARY_VECTOR_DRAWABLES
     }
 
@@ -29,13 +29,12 @@ android {
     buildTypes {
         getByName(BuildType.DEBUG) {
             isMinifyEnabled = BuildTypeDebug.isMinifyEnabled
-            isTestCoverageEnabled = BuildTypeDebug.isTestCoverageEnabled
             applicationIdSuffix = BuildTypeDebug.applicationIdSuffix
             versionNameSuffix = BuildTypeDebug.versionNameSuffix
         }
+
         getByName(BuildType.RELEASE) {
             isMinifyEnabled = BuildTypeRelease.isMinifyEnabled
-            isTestCoverageEnabled = BuildTypeRelease.isTestCoverageEnabled
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -52,7 +51,7 @@ android {
     }
 
     kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     lintOptions {
@@ -97,14 +96,14 @@ dependencies {
 
     debugImplementation(Dependencies.LEAK_CANARY)
 
+    implementation(Dependencies.MATERIAL)
+    implementation(Dependencies.APPCOMPAT)
+    implementation(Dependencies.RECYCLERVIEW)
+    implementation(Dependencies.SWIPE_REFRESH_LAYOUT)
     implementation(Dependencies.CFR)
     implementation(Dependencies.DEXLIB2)
     implementation(Dependencies.BAKSMALI)
     implementation(Dependencies.GUAVA)
-    implementation(Dependencies.APPCOMPAT)
-    implementation(Dependencies.RECYCLERVIEW)
-    implementation(Dependencies.SWIPE_REFRESH_LAYOUT)
-    implementation(Dependencies.MATERIAL)
     implementation(projects.common)
     implementation(projects.soraEditor)
     implementation(projects.androidCompiler)

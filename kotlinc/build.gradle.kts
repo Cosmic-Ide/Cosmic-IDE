@@ -15,7 +15,6 @@ dependencies {
     implementation(projects.jaxp.xml)
     implementation(projects.jaxp.internal)
 
-
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")

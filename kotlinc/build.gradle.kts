@@ -9,15 +9,14 @@ configurations.implementation {
 }
 
 dependencies {
-    implementation("com.github.marschall:zipfilesystem-standalone:1.0.1")
-    implementation("androidx.annotation:annotation:1.4.0")
+    implementation(Dependencies.ANDROIDX_ANNOTATION)
     implementation(Dependencies.JAVAC)
     implementation(projects.jaxp.xml)
     implementation(projects.jaxp.internal)
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+    runtimeOnly(Dependencies.KOTLIN_REFLECT)
 
-    api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
+    api(Dependencies.TROVE4J)
 
     api(files("libs/kotlin-compiler-embeddable-1.7.20-Beta.jar"))
 

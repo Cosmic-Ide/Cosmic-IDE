@@ -5,7 +5,7 @@
 
 package org.jetbrains.kotlin.com.intellij.ide.plugins;
 
-import com.github.marschall.com.sun.nio.zipfs.ZipFileSystemProvider;
+import com.itsaky.androidide.zipfs.ZipFileSystemProvider;
 
 import gnu.trove.THashMap;
 
@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * I have modified this class to use {@link com.github.marschall.com.sun.nio.zipfs.ZipFileSystem}
+ * I have modified this class to use {@link com.itsaky.androidide.zipfs.ZipFileSystem}
  * because android doesn't provide a ZipFileSystem
  */
 final class DescriptorLoadingContext implements AutoCloseable {

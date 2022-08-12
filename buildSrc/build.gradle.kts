@@ -1,5 +1,3 @@
-rootProject.name = "buildSrc"
-
 plugins {
     `kotlin-dsl`
 }

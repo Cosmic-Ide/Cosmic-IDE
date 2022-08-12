@@ -34,7 +34,7 @@ public class SerializerMessages_cs extends ListResourceBundle {
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "T\u0159\u00edda serializace ''{0}'' neimplementuje"
-                            + " org.xml.sax.ContentHandler."
+                                + " org.xml.sax.ContentHandler."
                     },
                     {MsgKey.ER_RESOURCE_COULD_NOT_FIND, "Nelze naj\u00edt zdroj [ {0} ].\n {1}"},
                     {
@@ -53,8 +53,8 @@ public class SerializerMessages_cs extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "Nelze p\u0159idat atribut {0} po uzlech potomk\u016f ani p\u0159ed"
-                            + " t\u00edm, ne\u017e je vytvo\u0159en prvek. Atribut bude"
-                            + " ignorov\u00e1n."
+                                + " t\u00edm, ne\u017e je vytvo\u0159en prvek. Atribut bude"
+                                + " ignorov\u00e1n."
                     },
                     {
                         MsgKey.ER_NAMESPACE_PREFIX,
@@ -69,15 +69,15 @@ public class SerializerMessages_cs extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "Nelze zav\u00e9st ''{0}'' (zkontrolujte prom\u011bnnou CLASSPATH), proto"
-                            + " se pou\u017e\u00edvaj\u00ed pouze v\u00fdchoz\u00ed hodnoty"
+                                + " se pou\u017e\u00edvaj\u00ed pouze v\u00fdchoz\u00ed hodnoty"
                     },
 
                     // ER_ILLEGAL_CHARACTER needs translation
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Nelze na\u010d\u00edst soubor vlastnost\u00ed ''{0}'' pro"
-                            + " v\u00fdstupn\u00ed metodu ''{1}'' (zkontrolujte prom\u011bnnou"
-                            + " CLASSPATH)."
+                                + " v\u00fdstupn\u00ed metodu ''{1}'' (zkontrolujte prom\u011bnnou"
+                                + " CLASSPATH)."
                     },
                     {MsgKey.ER_INVALID_PORT, "Neplatn\u00e9 \u010d\u00edslo portu."},
                     {

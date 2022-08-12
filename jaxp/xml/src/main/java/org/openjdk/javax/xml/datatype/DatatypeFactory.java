@@ -1055,8 +1055,8 @@ public abstract class DatatypeFactory {
             if (milliseconds < 0 || milliseconds > 1000) {
                 throw new IllegalArgumentException(
                         "javax.xml.datatype.DatatypeFactory#newXMLGregorianCalendarTime(int hours,"
-                            + " int minutes, int seconds, int milliseconds, int timezone)with"
-                            + " invalid milliseconds: "
+                                + " int minutes, int seconds, int milliseconds, int timezone)with"
+                                + " invalid milliseconds: "
                                 + milliseconds);
             }
 

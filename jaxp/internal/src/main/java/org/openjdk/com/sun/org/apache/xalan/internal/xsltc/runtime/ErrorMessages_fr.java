@@ -197,7 +197,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 BasisLibrary.STRAY_NAMESPACE_ERR,
                 "La d\u00E9claration d''espace de noms ''{0}''=''{1}'' est \u00E0 l''ext\u00E9rieur"
-                    + " de l''\u00E9l\u00E9ment."
+                        + " de l''\u00E9l\u00E9ment."
             },
 
             /*
@@ -208,7 +208,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 BasisLibrary.NAMESPACE_PREFIX_ERR,
                 "L''espace de noms du pr\u00E9fixe ''{0}'' n''a pas \u00E9t\u00E9"
-                    + " d\u00E9clar\u00E9."
+                        + " d\u00E9clar\u00E9."
             },
 
             /*
@@ -229,7 +229,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "L'analyseur SAX que vous utilisez ne g\u00E8re pas les \u00E9v\u00E9nements de"
-                    + " d\u00E9claration DTD."
+                        + " d\u00E9claration DTD."
             },
 
             /*
@@ -306,14 +306,14 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 BasisLibrary.UNALLOWED_EXTENSION_FUNCTION_ERR,
                 "L''utilisation de la fonction d''extension ''{0}'' n''est pas autoris\u00E9e"
-                    + " lorsque la fonctionnalit\u00E9 de traitement s\u00E9curis\u00E9 est"
-                    + " d\u00E9finie sur True."
+                        + " lorsque la fonctionnalit\u00E9 de traitement s\u00E9curis\u00E9 est"
+                        + " d\u00E9finie sur True."
             },
             {
                 BasisLibrary.UNALLOWED_EXTENSION_ELEMENT_ERR,
                 "L''utilisation de l''\u00E9l\u00E9ment d''extension ''{0}'' n''est pas"
-                    + " autoris\u00E9e lorsque la fonctionnalit\u00E9 de traitement"
-                    + " s\u00E9curis\u00E9 est d\u00E9finie sur True."
+                        + " autoris\u00E9e lorsque la fonctionnalit\u00E9 de traitement"
+                        + " s\u00E9curis\u00E9 est d\u00E9finie sur True."
             },
         };
     }

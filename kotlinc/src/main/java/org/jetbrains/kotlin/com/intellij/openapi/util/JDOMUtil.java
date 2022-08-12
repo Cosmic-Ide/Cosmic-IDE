@@ -82,7 +82,7 @@ public final class JDOMUtil {
                             getLogger()
                                     .error(
                                             "cannot set \"report-cdata-event\" property for"
-                                                + " XMLInputFactory",
+                                                    + " XMLInputFactory",
                                             var8);
                         }
                     }

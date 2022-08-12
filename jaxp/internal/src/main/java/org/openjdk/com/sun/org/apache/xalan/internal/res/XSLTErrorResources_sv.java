@@ -457,12 +457,12 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler) {0}-element?? \u00E4r felplacerat Container-elementet"
-                    + " ''component'' saknas"
+                        + " ''component'' saknas"
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
                 "Kan endast skicka utdata till ett Element, ett DocumentFragment, ett Document"
-                    + " eller en PrintWriter."
+                        + " eller en PrintWriter."
             },
             {ER_PROCESS_ERROR, "StylesheetRoot.process-fel"},
             {ER_UNIMPLNODE_ERROR, "UnImplNode-fel: {0}"},
@@ -505,7 +505,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "default-space st\u00F6ds inte l\u00E4ngre! Anv\u00E4nd xsl:strip-space eller"
-                    + " xsl:preserve-space ist\u00E4llet."
+                        + " xsl:preserve-space ist\u00E4llet."
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
@@ -516,7 +516,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort kan endast anv\u00E4ndas med xsl:apply-templates"
-                    + " eller xsl:for-each."
+                        + " eller xsl:for-each."
             },
             {ER_MISPLACED_XSLWHEN, "(StylesheetHandler) felplacerade xsl:when!"},
             {
@@ -539,7 +539,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
                 "(StylesheetHandler) Imports kan endast f\u00F6rekomma som de f\u00F6rsta elementen"
-                    + " i formatmallen!"
+                        + " i formatmallen!"
             },
             {
                 ER_IMPORTING_ITSELF,
@@ -570,7 +570,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_REDIRECT_COULDNT_GET_FILENAME,
                 "Redirect-till\u00E4gg: Hittade inte filnamn - fil eller valattribut m\u00E5ste"
-                    + " returnera giltig str\u00E4ng."
+                        + " returnera giltig str\u00E4ng."
             },
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
@@ -594,12 +594,12 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "Kan inte anv\u00E4nda DTMLiaison till en DOM utdatanod... skicka en"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper ist\u00E4llet!"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper ist\u00E4llet!"
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "Kan inte anv\u00E4nda DTMLiaison till en DOM indatanod... skicka en"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper ist\u00E4llet!"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper ist\u00E4llet!"
             },
             {ER_CALL_TO_EXT_FAILED, "Anrop till till\u00E4ggselement utf\u00F6rdes inte: {0}"},
             {ER_PREFIX_MUST_RESOLVE, "Prefix m\u00E5ste matchas till en namnrymd: {0}"},
@@ -607,7 +607,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_XSLATTRSET_USED_ITSELF,
                 "xsl:attribute-set {0} anv\u00E4nde sig sj\u00E4lvt, vilket kommer att orsaka en"
-                    + " o\u00E4ndlig slinga."
+                        + " o\u00E4ndlig slinga."
             },
             {
                 ER_CANNOT_MIX_XERCESDOM,
@@ -640,7 +640,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_INSTANCE_MTHD_CALL_REQUIRES,
                 "Instansmetodanrop till metod {0} kr\u00E4ver en objektinstans som f\u00F6rsta"
-                    + " argument"
+                        + " argument"
             },
             {ER_INVALID_ELEMENT_NAME, "Ogiltigt elementnamn angivet {0}"},
             {ER_ELEMENT_NAME_METHOD_STATIC, "Elementnamnmetod m\u00E5ste vara statisk {0}"},
@@ -677,7 +677,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_COULD_NOT_LOAD_RESOURCE,
                 "Kunde inte ladda {0} (kontrollera CLASSPATH), anv\u00E4nder nu enbart"
-                    + " standardv\u00E4rden"
+                        + " standardv\u00E4rden"
             },
             {ER_CANNOT_INIT_DEFAULT_TEMPLATES, "Kan inte initiera standardmallar"},
             {ER_RESULT_NULL, "Result borde inte vara null"},
@@ -730,7 +730,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_NUMBER_TOO_BIG,
                 "F\u00F6rs\u00F6ker formatera ett tal som \u00E4r st\u00F6rre \u00E4n det"
-                    + " st\u00F6rsta l\u00E5nga heltalet"
+                        + " st\u00F6rsta l\u00E5nga heltalet"
             },
             {ER_CANNOT_FIND_SAX1_DRIVER, "Hittar inte SAX1-drivrutinen klass {0}"},
             {ER_SAX1_DRIVER_NOT_LOADED, "SAX1-drivrutinen klass {0} hittades, men kan inte laddas"},
@@ -793,7 +793,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "Otill\u00E5tet v\u00E4rde: {1} anv\u00E4nds f\u00F6r CHAR-attributet: {0}. Ett"
-                    + " attribut av CHAR-typ f\u00E5r bara ha 1 tecken!"
+                        + " attribut av CHAR-typ f\u00E5r bara ha 1 tecken!"
             },
 
             // Note to translators:  The following message is used if the value of
@@ -814,7 +814,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 INVALID_ENUM,
                 "Otill\u00E5tet v\u00E4rde: {1} anv\u00E4nds f\u00F6r ENUM-attributet: {0}. Giltiga"
-                    + " v\u00E4rden \u00E4r: {2}."
+                        + " v\u00E4rden \u00E4r: {2}."
             },
 
             // Note to translators:  The following message is used if the value of
@@ -929,12 +929,12 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "Funktionsnamnet kan inte vara null i TransformerFactory.setFeature(namn p\u00E5"
-                    + " str\u00E4ng, booleskt v\u00E4rde)."
+                        + " str\u00E4ng, booleskt v\u00E4rde)."
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
                 "Funktionsnamnet kan inte vara null i TransformerFactory.getFeature(namn p\u00E5"
-                    + " str\u00E4ng)."
+                        + " str\u00E4ng)."
             },
             {
                 ER_UNSUPPORTED_FEATURE,
@@ -943,7 +943,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING,
                 "Anv\u00E4ndning av till\u00E4ggselementet ''{0}'' \u00E4r inte till\u00E5tet"
-                    + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
+                        + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
@@ -961,7 +961,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_COUNT_ATTRIB_MATCHES_NO_ANCESTOR,
                 "Varning: r\u00E4knarattribut matchar inte \u00F6verordnad i xsl:number! Target ="
-                    + " {0}"
+                        + " {0}"
             },
             {
                 WG_EXPR_ATTRIB_CHANGED_TO_SELECT,
@@ -993,7 +993,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_SPECIFICITY_CONFLICTS,
                 "Specifika konflikter hittades: {0} Senast hittade i formatmall kommer att"
-                    + " anv\u00E4ndas."
+                        + " anv\u00E4ndas."
             },
             {WG_PARSING_AND_PREPARING, "========= Tolkar och f\u00F6rbereder {0} =========="},
             {WG_ATTR_TEMPLATE, "Attributmall, {0}"},
@@ -1014,7 +1014,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_XSLDECIMALFORMAT_NAMES_MUST_BE_UNIQUE,
                 "Namn p\u00E5 xsl:decimal-format m\u00E5ste vara unika. Namnet \"{0}\" har blivit"
-                    + " duplicerat."
+                        + " duplicerat."
             },
             {WG_ILLEGAL_ATTRIBUTE, "{0} har ett otill\u00E5tet attribut: {1}"},
             {
@@ -1033,7 +1033,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_EMPTY_SECOND_ARG,
                 "Resulterande nodupps\u00E4ttning fr\u00E5n dokumentfunktionens andra argumentet"
-                    + " \u00E4r tomt. En tom nodupps\u00E4ttning anv\u00E4nds."
+                        + " \u00E4r tomt. En tom nodupps\u00E4ttning anv\u00E4nds."
             },
 
             // Following are the new WARNING keys added in XALAN code base after Jdk 1.4 (Xalan
@@ -1044,7 +1044,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "'name'-attributets v\u00E4rde f\u00F6r xsl:processing-instruction kan inte vara"
-                    + " 'xml'"
+                        + " 'xml'"
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -1053,7 +1053,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "''name''-attributets v\u00E4rde f\u00F6r xsl:processing-instruction m\u00E5ste"
-                    + " vara giltigt NCName: {0}"
+                        + " vara giltigt NCName: {0}"
             },
 
             // Note to translators:  This message is reported if the stylesheet that is
@@ -1063,12 +1063,12 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 WG_ILLEGAL_ATTRIBUTE_POSITION,
                 "Kan inte l\u00E4gga till attributet {0} efter underordnade noder eller innan ett"
-                    + " element har skapats. Attributet ignoreras."
+                        + " element har skapats. Attributet ignoreras."
             },
             {
                 NO_MODIFICATION_ALLOWED_ERR,
                 "F\u00F6rs\u00F6ker \u00E4ndra ett objekt d\u00E4r \u00E4ndringar inte \u00E4r"
-                    + " till\u00E5tna."
+                        + " till\u00E5tna."
             },
 
             // Check: WHY THERE IS A GAP B/W NUMBERS in the XSLTErrorResources properties file?
@@ -1105,7 +1105,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "xslProc_no_input",
                 "Fel: Ingen formatmall eller indata-xml har angetts. K\u00F6r kommandot utan"
-                    + " n\u00E5got alternativ f\u00F6r att visa syntax."
+                        + " n\u00E5got alternativ f\u00F6r att visa syntax."
             },
             {"xslProc_common_options", "-Allm\u00E4nna alternativ-"},
             {"xslProc_xalan_options", "-Alternativ f\u00F6r Xalan-"},
@@ -1134,18 +1134,18 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "optionLF",
                 "   [-LF (Anv\u00E4nd radmatningar endast f\u00F6r utdata {standard \u00E4r"
-                    + " CR/LF})]"
+                        + " CR/LF})]"
             },
             {
                 "optionCR",
                 "   [-CR (Anv\u00E4nd radmatningar endast f\u00F6r utdata {standard \u00E4r"
-                    + " CR/LF})]"
+                        + " CR/LF})]"
             },
             {
                 "optionESCAPE",
                 "   [-ESCAPE (Vilka tecken \u00E4r skiftningstecken {standard \u00E4r <>&\"'\\r"
-                    + "\\n"
-                    + "}]"
+                        + "\\n"
+                        + "}]"
             },
             {
                 "optionINDENT",
@@ -1162,7 +1162,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "optionVALIDATE",
                 "   [-VALIDATE (St\u00E4ll in om validering utf\u00F6rs. Standard \u00E4r att"
-                    + " validering \u00E4r avst\u00E4ngd.)]"
+                        + " validering \u00E4r avst\u00E4ngd.)]"
             },
             {"optionEDUMP", "   [-EDUMP {valfritt filnamn} (G\u00F6r stackdump vid fel.)]"},
             {"optionXML", "   [-XML (Anv\u00E4nd XML-formaterare och l\u00E4gg till XML-huvud.)]"},
@@ -1183,17 +1183,17 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER fullst\u00E4ndigt klassnamn (URIResolver som anv\u00E4nds vid"
-                    + " matchning av URI-er)]"
+                        + " matchning av URI-er)]"
             },
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER fullst\u00E4ndigt klassnamn (EntityResolver som anv\u00E4nds"
-                    + " vid matchning av enheter)]"
+                        + " vid matchning av enheter)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER fullst\u00E4ndigt klassnamn (ContentHandler som anv\u00E4nds"
-                    + " vid serialisering av utdata)]"
+                        + " vid serialisering av utdata)]"
             },
             {"optionLINENUMBERS", "   [-L anv\u00E4nd radnummer i k\u00E4lldokument]"},
             {
@@ -1207,7 +1207,7 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "optionMEDIA",
                 "   [-MEDIA mediaType (anv\u00E4nd medieattribut f\u00F6r att hitta formatmall som"
-                    + " h\u00F6r ihop med dokument.)]"
+                        + " h\u00F6r ihop med dokument.)]"
             },
             {
                 "optionFLAVOR",
@@ -1217,17 +1217,17 @@ public class XSLTErrorResources_sv extends ListResourceBundle {
             {
                 "optionINCREMENTAL",
                 "   [-INCREMENTAL (beg\u00E4r inkrementell DTM-konstruktion genom att ange"
-                    + " http://xml.apache.org/xalan/features/incremental true.)]"
+                        + " http://xml.apache.org/xalan/features/incremental true.)]"
             },
             {
                 "optionNOOPTIMIMIZE",
                 "   [-NOOPTIMIMIZE (beg\u00E4r att ingen formatmallsoptimering utf\u00F6rs genom"
-                    + " att ange http://xml.apache.org/xalan/features/optimize false.)]"
+                        + " att ange http://xml.apache.org/xalan/features/optimize false.)]"
             },
             {
                 "optionRL",
                 "   [-RL rekursionsgr\u00E4ns (verifiera numeriskt gr\u00E4nsv\u00E4rde f\u00F6r"
-                    + " formatmallens rekursionsdjup.)]"
+                        + " formatmallens rekursionsdjup.)]"
             },
             {"optionXO", "   [-XO [transletName] (tilldela namnet till genererad translet)]"},
             {

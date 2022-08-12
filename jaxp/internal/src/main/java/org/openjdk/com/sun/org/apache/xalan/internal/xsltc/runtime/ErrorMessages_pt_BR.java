@@ -230,7 +230,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "O parser SAX que voc\u00EA est\u00E1 usando n\u00E3o trata eventos de"
-                    + " declara\u00E7\u00E3o de DTD."
+                        + " declara\u00E7\u00E3o de DTD."
             },
 
             /*
@@ -242,7 +242,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 BasisLibrary.NAMESPACES_SUPPORT_ERR,
                 "O parser SAX que voc\u00EA est\u00E1 usando n\u00E3o tem suporte para os"
-                    + " Namespaces de XML."
+                        + " Namespaces de XML."
             },
 
             /*
@@ -310,12 +310,12 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 BasisLibrary.UNALLOWED_EXTENSION_FUNCTION_ERR,
                 "O uso da fun\u00E7\u00E3o da extens\u00E3o ''{0}'' n\u00E3o ser\u00E1 permitido"
-                    + " quando o recurso de processamento seguro for definido como verdadeiro."
+                        + " quando o recurso de processamento seguro for definido como verdadeiro."
             },
             {
                 BasisLibrary.UNALLOWED_EXTENSION_ELEMENT_ERR,
                 "O uso do elemento da extens\u00E3o ''{0}'' n\u00E3o ser\u00E1 permitido quando o"
-                    + " recurso de processamento seguro for definido como verdadeiro."
+                        + " recurso de processamento seguro for definido como verdadeiro."
             },
         };
     }

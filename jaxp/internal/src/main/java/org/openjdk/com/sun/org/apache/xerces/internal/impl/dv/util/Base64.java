@@ -258,7 +258,7 @@ public final class Base64 {
                 return tmp;
             } else {
                 return null; // an error  like "3c[Pad]r", "3cdX", "3cXd", "3cXX" where X is non
-                             // data
+                // data
             }
         } else { // No PAD e.g 3cQl
             b3 = base64Alphabet[d3];

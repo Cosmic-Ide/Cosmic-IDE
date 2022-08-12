@@ -638,7 +638,7 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
         if (application.isReadAccessAllowed()) {
             LOG.error(
                     "Don't call commitAndRunReadAction inside ReadAction, it will cause a deadlock."
-                        + " "
+                            + " "
                             + Thread.currentThread());
         }
 
@@ -844,14 +844,14 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
                 PERFORM_ALWAYS_KEY,
                 EmptyRunnable
                         .getInstance()); // to prevent listeners from registering new actions during
-                                         // firing
+        // firing
     }
 
     private void assertWeAreOutsideAfterCommitHandler() {
         if (isInsideCommitHandler()) {
             throw new IncorrectOperationException(
                     "You must not call performWhenAllCommitted()/cancelAndRunWhenCommitted() from"
-                        + " within after-commit handler");
+                            + " within after-commit handler");
         }
     }
 
@@ -1254,7 +1254,7 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
                 "Editor Text tail:("
                         + (documentLength - i)
                         + ")\n"; // + editorText.subSequence(i, Math.min(i + 300, documentLength)) +
-                                 // "\n";
+        // "\n";
         error += "*********************************************" + "\n";
         error += "Psi Text tail:(" + (fileText.length - i) + ")\n";
         error += "*********************************************" + "\n";

@@ -210,7 +210,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_NO_PARSE_CALL_WHILE_PARSING,
                     "syntaktick\u00fd analyz\u00e1tor nem\u00f4\u017ee by\u0165 volan\u00fd"
-                        + " po\u010das vykon\u00e1vania anal\u00fdzy"
+                            + " po\u010das vykon\u00e1vania anal\u00fdzy"
                 },
                 {
                     ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED,
@@ -239,13 +239,13 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_STARTPARSE_WHILE_PARSING,
                     "startParse nem\u00f4\u017ee by\u0165 volan\u00fd po\u010das vykon\u00e1vania"
-                        + " anal\u00fdzy"
+                            + " anal\u00fdzy"
                 },
                 {ER_STARTPARSE_NEEDS_SAXPARSER, "startParse potrebuje nenulov\u00fd SAXParser"},
                 {
                     ER_COULD_NOT_INIT_PARSER,
                     "nebolo mo\u017en\u00e9 inicializova\u0165 syntaktick\u00fd analyz\u00e1tor"
-                        + " pomocou"
+                            + " pomocou"
                 },
                 {
                     ER_EXCEPTION_CREATING_POOL,
@@ -276,7 +276,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_FRAG_FOR_GENERIC_URI,
                     "Fragment m\u00f4\u017ee by\u0165 stanoven\u00fd len pre v\u0161eobecn\u00e9"
-                        + " URI"
+                            + " URI"
                 },
                 {
                     ER_FRAG_WHEN_PATH_NULL,
@@ -290,7 +290,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_CANNOT_CHANGE_WHILE_PARSING,
                     "Nie je mo\u017en\u00e9 zmeni\u0165 {0} {1} po\u010das vykon\u00e1vania"
-                        + " anal\u00fdzy"
+                            + " anal\u00fdzy"
                 },
                 {
                     ER_SELF_CAUSATION_NOT_PERMITTED,
@@ -307,7 +307,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_NO_QUERY_STRING_IN_PATH,
                     "Re\u0165azec dotazu nem\u00f4\u017ee by\u0165 zadan\u00fd v ceste a"
-                        + " re\u0165azci dotazu"
+                            + " re\u0165azci dotazu"
                 },
                 {
                     ER_NO_FRAGMENT_STRING_IN_PATH,
@@ -321,7 +321,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_INCRSAXSRCFILTER_NOT_RESTARTABLE,
                     "IncrementalSAXSource_Filter nie je moment\u00e1lne"
-                        + " re\u0161tartovate\u013en\u00fd"
+                            + " re\u0161tartovate\u013en\u00fd"
                 },
                 {
                     ER_XMLRDR_NOT_BEFORE_STARTPARSE,
@@ -340,7 +340,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_PREFIX_MUST_RESOLVE,
                     "Predpona sa mus\u00ed rozl\u00ed\u0161i\u0165 do n\u00e1zvov\u00e9ho"
-                        + " priestoru: {0}"
+                            + " priestoru: {0}"
                 },
                 {
                     ER_CREATEDOCUMENT_NOT_SUPPORTED,
@@ -353,12 +353,12 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT,
                     "Potomok atrib\u00fatu nem\u00e1 s\u00fa\u010das\u0165 dokumentu"
-                        + " vlastn\u00edka!"
+                            + " vlastn\u00edka!"
                 },
                 {
                     ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
                     "Upozornenie: nemo\u017eno vypusti\u0165 text pred elementom dokumentu! "
-                        + " Ignorovanie..."
+                            + " Ignorovanie..."
                 },
                 {
                     ER_CANT_HAVE_MORE_THAN_ONE_ROOT,
@@ -406,7 +406,7 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_ILLEGAL_ATTRIBUTE_POSITION,
                     "Nie je mo\u017en\u00e9 prida\u0165 atrib\u00fat {0} po uzloch potomka alebo"
-                        + " pred vytvoren\u00edm elementu.  Atrib\u00fat bude ignorovan\u00fd."
+                            + " pred vytvoren\u00edm elementu.  Atrib\u00fat bude ignorovan\u00fd."
                 },
 
                 /*
@@ -436,17 +436,17 @@ public class XMLErrorResources_sk extends ListResourceBundle {
                 {
                     ER_STRAY_NAMESPACE,
                     "Deklar\u00e1cia n\u00e1zvov\u00e9ho priestoru ''{0}''=''{1}'' je mimo"
-                        + " elementu."
+                            + " elementu."
                 },
                 {
                     ER_COULD_NOT_LOAD_RESOURCE,
                     "Nedalo sa na\u010d\u00edta\u0165 ''{0}'' (skontrolujte CLASSPATH),"
-                        + " pou\u017e\u00edvaj\u00fa sa predvolen\u00e9 hodnoty"
+                            + " pou\u017e\u00edvaj\u00fa sa predvolen\u00e9 hodnoty"
                 },
                 {
                     ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                     "Nedal sa na\u010d\u00edta\u0165 s\u00fabor vlastnost\u00ed ''{0}'' pre"
-                        + " v\u00fdstupn\u00fa met\u00f3du ''{1}'' (skontrolujte CLASSPATH)"
+                            + " v\u00fdstupn\u00fa met\u00f3du ''{1}'' (skontrolujte CLASSPATH)"
                 }
             };
 

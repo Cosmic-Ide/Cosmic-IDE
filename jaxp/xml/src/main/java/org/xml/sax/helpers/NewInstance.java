@@ -32,7 +32,6 @@
 
 package org.xml.sax.helpers;
 
-
 /**
  * Create a new instance of a class by name.
  *

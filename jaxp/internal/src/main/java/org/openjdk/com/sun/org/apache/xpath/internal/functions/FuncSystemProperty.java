@@ -95,7 +95,7 @@ public class FuncSystemProperty extends FunctionOneArg {
                         new Object[] {
                             namespace, fullName
                         }); // "Don't currently do anything with namespace "+namespace+" in
-                            // property: "+fullName);
+                // property: "+fullName);
 
                 try {
                     result = SecuritySupport.getSystemProperty(propName);
@@ -112,7 +112,7 @@ public class FuncSystemProperty extends FunctionOneArg {
                             new Object[] {
                                 fullName
                             }); // "SecurityException when trying to access XSL system property:
-                                // "+fullName);
+                    // "+fullName);
 
                     return XString.EMPTYSTRING;
                 }
@@ -133,7 +133,7 @@ public class FuncSystemProperty extends FunctionOneArg {
                         new Object[] {
                             fullName
                         }); // "SecurityException when trying to access XSL system property:
-                            // "+fullName);
+                // "+fullName);
 
                 return XString.EMPTYSTRING;
             }

@@ -76,7 +76,7 @@ public class YearDV extends AbstractDateTimeDV {
         } else if (length > 4 && str.charAt(start) == '0') {
             throw new RuntimeException(
                     "Leading zeros are required if the year value would otherwise have fewer than"
-                        + " four digits; otherwise they are forbidden");
+                            + " four digits; otherwise they are forbidden");
         }
 
         if (sign == -1) {

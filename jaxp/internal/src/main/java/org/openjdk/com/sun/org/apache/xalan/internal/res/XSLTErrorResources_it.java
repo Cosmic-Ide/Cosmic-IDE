@@ -457,12 +457,12 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler) posizione errata dell''elemento {0}. Elemento ''component''"
-                    + " del contenitore mancante."
+                        + " del contenitore mancante."
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
                 "L'output pu\u00F2 essere eseguito solo su Element, DocumentFragment, Document o"
-                    + " PrintWriter."
+                        + " PrintWriter."
             },
             {ER_PROCESS_ERROR, "Errore di StylesheetRoot.process"},
             {ER_UNIMPLNODE_ERROR, "Errore di UnImplNode: {0}"},
@@ -505,7 +505,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "default-space non pi\u00F9 supportato. Utilizzare xsl:strip-space o"
-                    + " xsl:preserve-space."
+                        + " xsl:preserve-space."
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
@@ -516,7 +516,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort pu\u00F2 essere utilizzato solo con"
-                    + " xsl:apply-templates o xsl:for-each."
+                        + " xsl:apply-templates o xsl:for-each."
             },
             {ER_MISPLACED_XSLWHEN, "(StylesheetHandler) posizione errata di xsl:when."},
             {
@@ -539,7 +539,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
                 "(StylesheetHandler) Le importazioni possono essere eseguite solo come primi"
-                    + " elementi nel foglio di stile."
+                        + " elementi nel foglio di stile."
             },
             {
                 ER_IMPORTING_ITSELF,
@@ -567,7 +567,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_REDIRECT_COULDNT_GET_FILENAME,
                 "Estensione di reindirizzamento: impossibile trovare il nome file. L'attributo file"
-                    + " o select deve restituire una stringa valida."
+                        + " o select deve restituire una stringa valida."
             },
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
@@ -591,12 +591,12 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "Impossibile utilizzare DTMLiaison per un nodo DOM di output... Passare"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper."
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper."
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "Impossibile utilizzare DTMLiaison per un nodo DOM di input... Passare"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper."
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper."
             },
             {ER_CALL_TO_EXT_FAILED, "Chiamata all''elemento di estensione non riuscita: {0}"},
             {ER_PREFIX_MUST_RESOLVE, "Il prefisso deve essere risolto in uno spazio di nomi: {0}"},
@@ -604,7 +604,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_XSLATTRSET_USED_ITSELF,
                 "xsl:attribute-set {0} utilizza s\u00E9 stesso, il che pu\u00F2 causare un loop"
-                    + " infinito."
+                        + " infinito."
             },
             {
                 ER_CANNOT_MIX_XERCESDOM,
@@ -637,7 +637,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_INSTANCE_MTHD_CALL_REQUIRES,
                 "La chiamata del metodo di istanza {0} richiede un''istanza di oggetto come primo"
-                    + " argomento"
+                        + " argomento"
             },
             {ER_INVALID_ELEMENT_NAME, "Specificato nome elemento {0} non valido"},
             {ER_ELEMENT_NAME_METHOD_STATIC, "Il metodo di nome elemento deve essere statico {0}"},
@@ -683,7 +683,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_COULD_NOT_LOAD_RESOURCE,
                 "Impossibile caricare {0} (verificare CLASSPATH); verranno utilizzati i valori"
-                    + " predefiniti"
+                        + " predefiniti"
             },
             {ER_CANNOT_INIT_DEFAULT_TEMPLATES, "Impossibile inizializzare i modelli predefiniti"},
             {ER_RESULT_NULL, "Il risultato non deve essere nullo"},
@@ -745,18 +745,18 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_NUMBER_TOO_BIG,
                 "Tentativo di formattare un numero superiore a quello del numero intero di tipo"
-                    + " Long pi\u00F9 grande"
+                        + " Long pi\u00F9 grande"
             },
             {ER_CANNOT_FIND_SAX1_DRIVER, "Impossibile trovare la classe di driver SAX1 {0}"},
             {
                 ER_SAX1_DRIVER_NOT_LOADED,
                 "La classe di driver SAX1 {0} \u00E8 stata trovata, ma non pu\u00F2 essere"
-                    + " caricata."
+                        + " caricata."
             },
             {
                 ER_SAX1_DRIVER_NOT_INSTANTIATED,
                 "La classe di driver SAX1 {0} \u00E8 stata caricata, ma non \u00E8 possibile creare"
-                    + " un''istanza."
+                        + " un''istanza."
             },
             {
                 ER_SAX1_DRIVER_NOT_IMPLEMENT_PARSER,
@@ -786,7 +786,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_ASSERT_NO_TEMPLATE_PARENT,
                 "Errore del programmatore. L'espressione non ha un elemento padre"
-                    + " ElemTemplateElement."
+                        + " ElemTemplateElement."
             },
 
             // Note to translators:  The following message should not normally be displayed
@@ -814,7 +814,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "Valore non valido {1} utilizzato per l''attributo CHAR {0}. Un attributo di tipo"
-                    + " CHAR deve avere un solo carattere."
+                        + " CHAR deve avere un solo carattere."
             },
 
             // Note to translators:  The following message is used if the value of
@@ -925,24 +925,24 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_INVALID_NAMESPACE_URI_VALUE_FOR_RESULT_PREFIX_FOR_DEFAULT,
                 "L'attributo result-prefix di un elemento xsl:namespace-alias ha il valore"
-                    + " '#default', ma non esiste alcuna dichiarazione dello spazio di nomi"
-                    + " predefinito nell'ambito per l'elemento."
+                        + " '#default', ma non esiste alcuna dichiarazione dello spazio di nomi"
+                        + " predefinito nell'ambito per l'elemento."
             },
             {
                 ER_INVALID_NAMESPACE_URI_VALUE_FOR_RESULT_PREFIX,
                 "L''attributo result-prefix di un elemento xsl:namespace-alias ha il valore"
-                    + " ''{0}'', ma non esiste alcuna dichiarazione dello spazio di nomi per il"
-                    + " prefisso ''{0}'' nell''ambito per l''elemento."
+                        + " ''{0}'', ma non esiste alcuna dichiarazione dello spazio di nomi per il"
+                        + " prefisso ''{0}'' nell''ambito per l''elemento."
             },
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "Il nome funzione non pu\u00F2 essere nullo in TransformerFactory.setFeature (nome"
-                    + " stringa, valore booleano)."
+                        + " stringa, valore booleano)."
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
                 "Il nome funzione non pu\u00F2 essere nullo in TransformerFactory.getFeature (nome"
-                    + " stringa)."
+                        + " stringa)."
             },
             {
                 ER_UNSUPPORTED_FEATURE,
@@ -951,7 +951,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING,
                 "Non \u00E8 consentito utilizzare l''elemento di estensione ''{0}'' se la funzione"
-                    + " di elaborazione sicura \u00E8 impostata su true."
+                        + " di elaborazione sicura \u00E8 impostata su true."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
@@ -969,17 +969,17 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_COUNT_ATTRIB_MATCHES_NO_ANCESTOR,
                 "Avvertenza: l''attributo count non corrisponde a un predecessore in xsl:number."
-                    + " Destinazione = {0}"
+                        + " Destinazione = {0}"
             },
             {
                 WG_EXPR_ATTRIB_CHANGED_TO_SELECT,
                 "Sintassi obsoleta: il nome dell'attributo 'expr' \u00E8 stato cambiato in"
-                    + " 'select'."
+                        + " 'select'."
             },
             {
                 WG_NO_LOCALE_IN_FORMATNUMBER,
                 "Xalan non gestisce ancora il nome di impostazioni nazionali nella funzione"
-                    + " format-number."
+                        + " format-number."
             },
             {
                 WG_LOCALE_NOT_FOUND,
@@ -1003,7 +1003,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_SPECIFICITY_CONFLICTS,
                 "Sono stati trovati conflitti di specificit\u00E0: {0}. Verr\u00E0 utilizzato"
-                    + " l''ultimo trovato nel foglio di stile."
+                        + " l''ultimo trovato nel foglio di stile."
             },
             {
                 WG_PARSING_AND_PREPARING,
@@ -1027,7 +1027,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_XSLDECIMALFORMAT_NAMES_MUST_BE_UNIQUE,
                 "I nomi xsl:decimal-format devono essere univoci. Il nome \"{0}\" \u00E8 stato"
-                    + " duplicato."
+                        + " duplicato."
             },
             {WG_ILLEGAL_ATTRIBUTE, "{0} ha un attributo non valido: {1}"},
             {
@@ -1043,7 +1043,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_EMPTY_SECOND_ARG,
                 "Il set di nodi risultante dal secondo argomento della funzione di documento \u00E8"
-                    + " vuoto. Verr\u00E0 restituito un set di nodi vuoto."
+                        + " vuoto. Verr\u00E0 restituito un set di nodi vuoto."
             },
 
             // Following are the new WARNING keys added in XALAN code base after Jdk 1.4 (Xalan
@@ -1054,7 +1054,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "Il valore dell'attributo 'name' del nome xsl:processing-instruction non deve"
-                    + " essere 'xml'"
+                        + " essere 'xml'"
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -1063,7 +1063,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "Il valore dell''attributo ''name'' di xsl:processing-instruction deve essere un"
-                    + " NCName valido: {0}"
+                        + " NCName valido: {0}"
             },
 
             // Note to translators:  This message is reported if the stylesheet that is
@@ -1073,7 +1073,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 WG_ILLEGAL_ATTRIBUTE_POSITION,
                 "Impossibile aggiungere l''attributo {0} dopo i nodi figlio o prima che sia"
-                    + " prodotto un elemento. L''attributo verr\u00E0 ignorato."
+                        + " prodotto un elemento. L''attributo verr\u00E0 ignorato."
             },
             {
                 NO_MODIFICATION_ALLOWED_ERR,
@@ -1108,8 +1108,8 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "xslProc_no_input",
                 "Errore: non \u00E8 stato specificato alcun foglio di stile o XML di input."
-                    + " Eseguire questo comando senza opzioni per visualizzare le istruzioni"
-                    + " sull'uso."
+                        + " Eseguire questo comando senza opzioni per visualizzare le istruzioni"
+                        + " sull'uso."
             },
             {"xslProc_common_options", "-Opzioni comuni-"},
             {"xslProc_xalan_options", "-Opzioni per Xalan-"},
@@ -1138,24 +1138,24 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionLF",
                 "   [-LF (usa avanzamenti riga solo nell'output {il valore predefinito \u00E8"
-                    + " CR/LF})]"
+                        + " CR/LF})]"
             },
             {
                 "optionCR",
                 "   [-CR (usa ritorni a capo solo nell'output {il valore predefinito \u00E8"
-                    + " CR/LF})]"
+                        + " CR/LF})]"
             },
             {
                 "optionESCAPE",
                 "   [-ESCAPE (caratteri da sottoporre a escape {il valore predefinito \u00E8"
-                    + " <>&\"'\\r"
-                    + "\\n"
-                    + "}]"
+                        + " <>&\"'\\r"
+                        + "\\n"
+                        + "}]"
             },
             {
                 "optionINDENT",
                 "   [-INDENT (determina il numero di spazi da indentare {il valore predefinito"
-                    + " \u00E8 0})]"
+                        + " \u00E8 0})]"
             },
             {"optionTT", "   [-TT (tiene traccia dei modelli mentre vengono richiamati.)]"},
             {"optionTG", "   [-TG (tiene traccia di ogni evento di generazione.)]"},
@@ -1163,7 +1163,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionTTC",
                 "   [-TTC (tiene traccia degli elementi secondari di modello mentre vengono"
-                    + " elaborati.)]"
+                        + " elaborati.)]"
             },
             {
                 "optionTCLASS",
@@ -1172,7 +1172,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionVALIDATE",
                 "   [-VALIDATE (imposta se viene eseguita la convalida che, per impostazione"
-                    + " predefinita, \u00E8 disattivata.)]"
+                        + " predefinita, \u00E8 disattivata.)]"
             },
             {
                 "optionEDUMP",
@@ -1191,23 +1191,23 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "noParsermsg4",
                 "Se non \u00E8 disponibile un parser XML di IBM per Java, \u00E8 possibile"
-                    + " scaricarlo da"
+                        + " scaricarlo da"
             },
             {"noParsermsg5", "AlphaWorks di IBM: http://www.alphaworks.ibm.com/formula/xml"},
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER nome classe completo (URIResolver da utilizzare per risolvere gli"
-                    + " URI)]"
+                        + " URI)]"
             },
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER nome classe completo (EntityResolver da utilizzare per"
-                    + " risolvere le entit\u00E0)]"
+                        + " risolvere le entit\u00E0)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER nome classe completo (ContentHandler da utilizzare per"
-                    + " serializzare l'output)]"
+                        + " serializzare l'output)]"
             },
             {"optionLINENUMBERS", "   [-L utilizza i numeri di riga per il documento di origine]"},
             {
@@ -1221,12 +1221,12 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionMEDIA",
                 "   [-MEDIA mediaType (utilizza l'attributo media per trovare il foglio di stile"
-                    + " associato a un documento.)]"
+                        + " associato a un documento.)]"
             },
             {
                 "optionFLAVOR",
                 "   [-FLAVOR flavorName (utilizza esplicitamente s2s=SAX o d2d=DOM per eseguire la"
-                    + " trasformazione.)] "
+                        + " trasformazione.)] "
             }, // Added by sboag/scurcuru; experimental
             {
                 "optionDIAG",
@@ -1235,7 +1235,7 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionINCREMENTAL",
                 "   [-INCREMENTAL (richiede la creazione incrementale di DTM impostando"
-                    + " http://xml.apache.org/xalan/features/incremental su true.)]"
+                        + " http://xml.apache.org/xalan/features/incremental su true.)]"
             },
             {
                 "optionNOOPTIMIMIZE",
@@ -1245,23 +1245,23 @@ public class XSLTErrorResources_it extends ListResourceBundle {
             {
                 "optionRL",
                 "   [-RL recursionlimit (stabilisce un limite numerico sulla profondit\u00E0"
-                    + " ricorsiva dei fogli di stile.)]"
+                        + " ricorsiva dei fogli di stile.)]"
             },
             {"optionXO", "   [-XO [transletName] (assegna un nome al translet creato)]"},
             {
                 "optionXD",
                 "   [-XD destinationDirectory (specifica una directory di destinazione per il"
-                    + " translet)]"
+                        + " translet)]"
             },
             {
                 "optionXJ",
                 "   [-XJ jarfile (crea un package di classi di translet in un file jar denominato"
-                    + " <jarfile>)]"
+                        + " <jarfile>)]"
             },
             {
                 "optionXP",
                 "   [-XP package (specifica un prefisso nome package per tutte le classi di"
-                    + " translet generate)]"
+                        + " translet generate)]"
             },
 
             // AddITIONAL  STRINGS that need L10n

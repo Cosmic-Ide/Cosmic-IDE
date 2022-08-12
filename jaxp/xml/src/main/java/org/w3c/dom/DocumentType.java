@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * Each <code>Document</code> has a <code>doctype</code> attribute whose value is either <code>null
  * </code> or a <code>DocumentType</code> object. The <code>DocumentType</code> interface in the DOM

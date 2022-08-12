@@ -113,7 +113,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
             if (!dispatchThread && application.isReadAccessAllowed()) {
                 LOG.error(
                         "Must not start write action from within read action in the other thread -"
-                            + " deadlock is coming");
+                                + " deadlock is coming");
                 throw new IllegalStateException();
             }
 
@@ -258,7 +258,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         if (!dispatchThread && application.isReadAccessAllowed()) {
             LOG.error(
                     "Must not start write action from within read action in the other thread -"
-                        + " deadlock is coming");
+                            + " deadlock is coming");
             throw new IllegalStateException();
         }
 

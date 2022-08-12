@@ -72,9 +72,8 @@ import java.io.*;
  * @author <A HREF="mailto:markus.dahm@berlin.de">M. Dahm</A>
  */
 public final class INVOKEINTERFACE extends InvokeInstruction {
-    private int
-            nargs; // Number of arguments on stack (number of stack slots), called "count" in
-                   // vmspec2
+    private int nargs; // Number of arguments on stack (number of stack slots), called "count" in
+    // vmspec2
 
     /**
      * Empty constructor needed for the Class.newInstance() statement in

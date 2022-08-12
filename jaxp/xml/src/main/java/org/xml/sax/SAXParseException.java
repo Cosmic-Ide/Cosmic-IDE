@@ -30,7 +30,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Encapsulate an XML parse error or warning.
  *

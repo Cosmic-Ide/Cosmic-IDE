@@ -168,7 +168,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "No s''ha pogut convertir l''argument o tipus de retorn a la crida del m\u00e8tode"
-                    + " ''{0}''"
+                        + " ''{0}''"
             },
 
             /*
@@ -473,7 +473,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "El document d'entrada no \u00e9s un full d'estils (l'espai de noms XSL no s'ha"
-                    + " declarat en l'element arrel)."
+                        + " declarat en l'element arrel)."
             },
 
             /*
@@ -613,7 +613,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "La classe translet s''ha carregat, per\u00f2 no es pot crear la inst\u00e0ncia"
-                    + " translet."
+                        + " translet."
             },
 
             /*
@@ -721,7 +721,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.XSLTC_SOURCE_ERR,
                 "S'ha cridat XSLTCSource.build() sense que s'hagu\u00e9s establert la"
-                    + " identificaci\u00f3 del sistema."
+                        + " identificaci\u00f3 del sistema."
             },
             {ErrorMsg.COMPILE_STDIN_ERR, "L'opci\u00f3 -i s'ha d'utilitzar amb l'opci\u00f3 -o."},
 
@@ -737,33 +737,33 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.COMPILE_USAGE_STR,
                 "RESUM\n"
-                    + "   java com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile [-o"
-                    + " <sortida>]\n"
-                    + "      [-d <directori>] [-j <fitxer_jar>] [-p <paquet>]\n"
-                    + "      [-n] [-x] [-s] [-u] [-v] [-h] { <full_estils> |  -i }\n\n"
-                    + "OPCIONS\n"
-                    + "   -o <sortida>    assigna el nom <sortida> al translet\n"
-                    + " generat. Per defecte, el nom de translet\n"
-                    + " s'obt\u00e9 del nom de <full_estils>. Aquesta opci\u00f3\n"
-                    + " no es t\u00e9 en compte si es compilen diversos fulls d'estils.\n"
-                    + "   -d <directori> especifica un directori de destinaci\u00f3 per al"
-                    + " translet\n"
-                    + "   -j <fitxer_jar>   empaqueta les classes translet en un fitxer jar del"
-                    + " nom\n"
-                    + "                  especificat com a <fitxer_jar>\n"
-                    + "   -p <paquet> especifica un prefix de nom de paquet per a totes les"
-                    + " classes\n"
-                    + "                  translet generades.\n"
-                    + " -n habilita l'inlining (com a mitjana, el funcionament per defecte\n"
-                    + " \u00e9s millor).\n"
-                    + "   -x            habilita la sortida de missatges de depuraci\u00f3"
-                    + " addicionals\n"
-                    + "   -s inhabilita la crida de System.exit\n"
-                    + "   -u             interpreta els arguments <full_estils> com URL\n"
-                    + " -i obliga el compilador a llegir el full d'estils des de l'entrada"
-                    + " est\u00e0ndard\n"
-                    + "   -v imprimeix la versi\u00f3 del compilador\n"
-                    + "   -h             imprimeix aquesta sent\u00e8ncia d'\u00fas.\n"
+                        + "   java com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile [-o"
+                        + " <sortida>]\n"
+                        + "      [-d <directori>] [-j <fitxer_jar>] [-p <paquet>]\n"
+                        + "      [-n] [-x] [-s] [-u] [-v] [-h] { <full_estils> |  -i }\n\n"
+                        + "OPCIONS\n"
+                        + "   -o <sortida>    assigna el nom <sortida> al translet\n"
+                        + " generat. Per defecte, el nom de translet\n"
+                        + " s'obt\u00e9 del nom de <full_estils>. Aquesta opci\u00f3\n"
+                        + " no es t\u00e9 en compte si es compilen diversos fulls d'estils.\n"
+                        + "   -d <directori> especifica un directori de destinaci\u00f3 per al"
+                        + " translet\n"
+                        + "   -j <fitxer_jar>   empaqueta les classes translet en un fitxer jar del"
+                        + " nom\n"
+                        + "                  especificat com a <fitxer_jar>\n"
+                        + "   -p <paquet> especifica un prefix de nom de paquet per a totes les"
+                        + " classes\n"
+                        + "                  translet generades.\n"
+                        + " -n habilita l'inlining (com a mitjana, el funcionament per defecte\n"
+                        + " \u00e9s millor).\n"
+                        + "   -x            habilita la sortida de missatges de depuraci\u00f3"
+                        + " addicionals\n"
+                        + "   -s inhabilita la crida de System.exit\n"
+                        + "   -u             interpreta els arguments <full_estils> com URL\n"
+                        + " -i obliga el compilador a llegir el full d'estils des de l'entrada"
+                        + " est\u00e0ndard\n"
+                        + "   -v imprimeix la versi\u00f3 del compilador\n"
+                        + "   -h             imprimeix aquesta sent\u00e8ncia d'\u00fas.\n"
             },
 
             /*
@@ -841,7 +841,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "El primer argument de la funci\u00f3 Java no static ''{0}'' no \u00e9s una"
-                    + " refer\u00e8ncia d''objecte v\u00e0lida."
+                        + " refer\u00e8ncia d''objecte v\u00e0lida."
             },
 
             /*
@@ -862,7 +862,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.TYPE_CHECK_UNK_LOC_ERR,
                 "S'ha produ\u00eft un error en comprovar el tipus d'expressi\u00f3 en una"
-                    + " ubicaci\u00f3 desconeguda."
+                        + " ubicaci\u00f3 desconeguda."
             },
 
             /*
@@ -977,7 +977,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: Cannot set the feature to false when security manager"
-                    + " is present."
+                        + " is present."
             }
         };
     }

@@ -31,7 +31,6 @@
 
 package org.xml.sax;
 
-
 import java.io.IOException;
 
 /**

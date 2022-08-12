@@ -110,7 +110,7 @@ public class EnvironmentCheck {
                 } else {
                     System.err.println(
                             "# WARNING: -out argument should have a filename, output sent to"
-                                + " console");
+                                    + " console");
                 }
             }
         }
@@ -1074,12 +1074,12 @@ public class EnvironmentCheck {
         jarVersions.put(
                 new Long(113749),
                 "xml-apis.jar from xalan-j_2_4_1 from factoryfinder-build of xml-commons"
-                    + " RIVERCOURT1");
+                        + " RIVERCOURT1");
         jarVersions.put(new Long(124704), "xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons");
         jarVersions.put(
                 new Long(124724),
                 "xml-apis.jar from tck-jaxp-1_2_0 branch of xml-commons, tag:"
-                    + " xml-commons-external_1_2_01");
+                        + " xml-commons-external_1_2_01");
         jarVersions.put(
                 new Long(194205),
                 "xml-apis.jar from head branch of xml-commons, tag: xml-commons-external_1_3_02");

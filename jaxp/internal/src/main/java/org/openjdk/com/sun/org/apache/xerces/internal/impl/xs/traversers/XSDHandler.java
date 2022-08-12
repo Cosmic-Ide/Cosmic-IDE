@@ -1540,7 +1540,7 @@ public class XSDHandler {
                                     new Object[] {
                                         DOMUtil.getLocalName(globalComp),
                                         "(annotation | (simpleType | complexType | group |"
-                                            + " attributeGroup))*",
+                                                + " attributeGroup))*",
                                         redefinedComponentType
                                     },
                                     redefinedComp);
@@ -4358,7 +4358,7 @@ public class XSDHandler {
                     "Internal-Error",
                     new Object[] {
                         "could not handle this particular <redefine>; please submit your schemas"
-                            + " and instance document in a bug report!"
+                                + " and instance document in a bug report!"
                     },
                     child);
         }

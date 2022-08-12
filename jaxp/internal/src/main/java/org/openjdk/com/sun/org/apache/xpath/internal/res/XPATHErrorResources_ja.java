@@ -510,7 +510,7 @@ public class XPATHErrorResources_ja extends ListResourceBundle {
                 {
                     ER_CANNOT_WRITE_TO_EMPTYNODELISTIMPL,
                     "\u30D7\u30ED\u30B0\u30E9\u30DE\u30FB\u30A8\u30E9\u30FC:"
-                        + " EmptyNodeList\u306B\u66F8\u304D\u8FBC\u3081\u307E\u305B\u3093\u3002"
+                            + " EmptyNodeList\u306B\u66F8\u304D\u8FBC\u3081\u307E\u305B\u3093\u3002"
                 },
                 {
                     ER_SETDOMFACTORY_NOT_SUPPORTED,
@@ -586,7 +586,7 @@ public class XPATHErrorResources_ja extends ListResourceBundle {
                 {
                     ER_PROG_ASSERT_UNKNOWN_OPCODE,
                     "\u30D7\u30ED\u30B0\u30E9\u30DE\u306E\u30A2\u30B5\u30FC\u30B7\u30E7\u30F3:"
-                        + " \u4E0D\u660E\u306Aopcode: {0}"
+                            + " \u4E0D\u660E\u306Aopcode: {0}"
                 },
                 {ER_ZERO_OR_ONE, "0\u307E\u305F\u306F1"},
                 {
@@ -873,14 +873,14 @@ public class XPATHErrorResources_ja extends ListResourceBundle {
                 {
                     ER_OBJECT_MODEL_NULL,
                     "{0}#isObjectModelSupported( String objectModel )\u306FobjectModel =="
-                        + " null\u3067\u547C\u3073\u51FA\u305B\u307E\u305B\u3093"
+                            + " null\u3067\u547C\u3073\u51FA\u305B\u307E\u305B\u3093"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_OBJECT_MODEL_EMPTY,
                     "{0}#isObjectModelSupported( String objectModel )\u306FobjectModel =="
-                        + " \"\"\u3067\u547C\u3073\u51FA\u305B\u307E\u305B\u3093"
+                            + " \"\"\u3067\u547C\u3073\u51FA\u305B\u307E\u305B\u3093"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */

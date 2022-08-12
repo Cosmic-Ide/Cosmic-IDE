@@ -225,8 +225,8 @@ public class XMLErrorResources_ja extends ListResourceBundle {
         {
             ER_PARSER_DOTERMINATE_ANSWERS,
             "\n"
-                + "\u4E0D\u660E:"
-                + " \u30D1\u30FC\u30B5\u30FCdoTerminate\u306E\u5FDC\u7B54\u306F{0}\u3067\u3059"
+                    + "\u4E0D\u660E:"
+                    + " \u30D1\u30FC\u30B5\u30FCdoTerminate\u306E\u5FDC\u7B54\u306F{0}\u3067\u3059"
         },
         {
             ER_NO_PARSE_CALL_WHILE_PARSING,
@@ -458,8 +458,8 @@ public class XMLErrorResources_ja extends ListResourceBundle {
         {
             ER_RESOURCE_COULD_NOT_FIND,
             "\u30EA\u30BD\u30FC\u30B9[ {0}"
-                + " ]\u306F\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u3002\n"
-                + " {1}"
+                    + " ]\u306F\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u3002\n"
+                    + " {1}"
         },
         {
             ER_RESOURCE_COULD_NOT_LOAD,

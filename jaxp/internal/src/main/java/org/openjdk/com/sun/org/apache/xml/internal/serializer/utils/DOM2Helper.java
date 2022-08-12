@@ -22,8 +22,6 @@
  */
 package org.openjdk.com.sun.org.apache.xml.internal.serializer.utils;
 
-
-
 import org.w3c.dom.Node;
 
 /**

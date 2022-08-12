@@ -289,7 +289,7 @@ public class XMLErrorResources extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "Cannot add attribute {0} after child nodes or before an element is produced. "
-                + " Attribute will be ignored."
+                    + " Attribute will be ignored."
         },
 
         /*
@@ -321,7 +321,7 @@ public class XMLErrorResources extends ListResourceBundle {
         {
             ER_ILLEGAL_CHARACTER,
             "Attempt to output character of integral value {0} that is not represented in specified"
-                + " output encoding of {1}."
+                    + " output encoding of {1}."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,

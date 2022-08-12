@@ -495,7 +495,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_COULD_NOT_CREATE_TRACELISTENER,
                 "TraceListener\u3092\u4F5C\u6210\u3067\u304D\u307E\u305B\u3093\u3067\u3057\u305F:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_KEY_REQUIRES_NAME_ATTRIB,
@@ -611,7 +611,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_XMLSPACE_ILLEGAL_VALUE,
                 "\u30BD\u30FC\u30B9XML\u306Exml:space\u306E\u5024\u304C\u4E0D\u6B63\u3067\u3059:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_NO_XSLKEY_DECLARATION,
@@ -667,7 +667,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_MISPLACED_XSLOTHERWISE,
                 "(StylesheetHandler)"
-                    + " xsl:otherwise\u306E\u914D\u7F6E\u304C\u4E0D\u6B63\u3067\u3059\u3002"
+                        + " xsl:otherwise\u306E\u914D\u7F6E\u304C\u4E0D\u6B63\u3067\u3059\u3002"
             },
             {
                 ER_XSLOTHERWISE_NOT_PARENTED_BY_XSLCHOOSE,
@@ -861,7 +861,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_ELEMENT_NAME_METHOD_STATIC,
                 "\u8981\u7D20\u540D\u30E1\u30BD\u30C3\u30C9\u306Fstatic"
-                    + " {0}\u3067\u3042\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059"
+                        + " {0}\u3067\u3042\u308B\u5FC5\u8981\u304C\u3042\u308A\u307E\u3059"
             },
             {
                 ER_EXTENSION_FUNC_UNKNOWN,
@@ -928,7 +928,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_ELEM_CONTENT_NOT_ALLOWED,
                 "\u8981\u7D20\u306E\u5185\u5BB9\u306Flang=javaclass"
-                    + " {0}\u306B\u3064\u3044\u3066\u8A31\u53EF\u3055\u308C\u307E\u305B\u3093"
+                        + " {0}\u306B\u3064\u3044\u3066\u8A31\u53EF\u3055\u308C\u307E\u305B\u3093"
             },
             {
                 ER_STYLESHEET_DIRECTED_TERMINATION,
@@ -1304,12 +1304,12 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "\u6A5F\u80FD\u540D\u306FTransformerFactory.setFeature(String name, boolean"
-                    + " value)\u5185\u3067null\u306B\u3067\u304D\u307E\u305B\u3093\u3002"
+                        + " value)\u5185\u3067null\u306B\u3067\u304D\u307E\u305B\u3093\u3002"
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
                 "\u6A5F\u80FD\u540D\u306FTransformerFactory.getFeature(String"
-                    + " name)\u5185\u3067null\u306B\u3067\u304D\u307E\u305B\u3093\u3002"
+                        + " name)\u5185\u3067null\u306B\u3067\u304D\u307E\u305B\u3093\u3002"
             },
             {
                 ER_UNSUPPORTED_FEATURE,
@@ -1652,7 +1652,7 @@ public class XSLTErrorResources_ja extends ListResourceBundle {
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER full class name"
-                    + " (URI\u306E\u89E3\u6C7A\u306B\u4F7F\u7528\u3055\u308C\u308BURIResolver)]"
+                        + " (URI\u306E\u89E3\u6C7A\u306B\u4F7F\u7528\u3055\u308C\u308BURIResolver)]"
             },
             {
                 "optionENTITYRESOLVER",

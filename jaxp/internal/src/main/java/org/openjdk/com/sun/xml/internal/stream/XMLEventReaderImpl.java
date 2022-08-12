@@ -131,7 +131,7 @@ public class XMLEventReaderImpl implements org.openjdk.javax.xml.stream.XMLEvent
             } else if (type == XMLEvent.START_ELEMENT) {
                 throw new XMLStreamException(
                         "elementGetText() function expects text only elment but START_ELEMENT was"
-                            + " encountered.",
+                                + " encountered.",
                         event.getLocation());
             } else if (type == XMLEvent.END_ELEMENT) {
                 return "";
@@ -163,7 +163,7 @@ public class XMLEventReaderImpl implements org.openjdk.javax.xml.stream.XMLEvent
                 } else if (type == XMLEvent.START_ELEMENT) {
                     throw new XMLStreamException(
                             "elementGetText() function expects text only elment but START_ELEMENT"
-                                + " was encountered.",
+                                    + " was encountered.",
                             event.getLocation());
                 } else {
                     throw new XMLStreamException(

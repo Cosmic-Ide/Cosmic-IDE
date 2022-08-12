@@ -30,7 +30,6 @@
 
 package org.xml.sax;
 
-
 import java.io.IOException;
 import java.util.Locale;
 

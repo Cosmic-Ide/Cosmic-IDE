@@ -751,7 +751,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         if (moveOffset != startOffset && startOffset != endOffset && s.length() != 0) {
             throw new IllegalArgumentException(
                     "moveOffset != startOffset for a modification which is neither an insert nor"
-                        + " deletion. startOffset: "
+                            + " deletion. startOffset: "
                             + startOffset
                             + "; endOffset: "
                             + endOffset
@@ -1022,10 +1022,9 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             myTextString = null;
             ImmutableCharSequence prevText = myText;
             myText = newText;
-            sequence
-                    .incrementAndGet(); // increment sequence before firing events so that
-                                        // modification sequence on commit will match this sequence
-                                        // now
+            sequence.incrementAndGet(); // increment sequence before firing events so that
+            // modification sequence on commit will match this sequence
+            // now
             changedUpdate(event, newModificationStamp, prevText, exceptions);
         } finally {
             myChangeInProgress = false;
@@ -1048,7 +1047,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             } else if (myAssertThreading) {
                 LOG.error(
                         "ProcessCanceledException must not be thrown from document listeners for"
-                            + " real document",
+                                + " real document",
                         new Throwable(e));
             }
         }
@@ -1103,8 +1102,8 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
                 && commandProcessor.getCurrentCommand() == null) {
             throw new IncorrectOperationException(
                     "Must not change document outside command or undo-transparent action. See"
-                        + " com.intellij.openapi.command.WriteCommandAction or"
-                        + " com.intellij.openapi.command.CommandProcessor");
+                            + " com.intellij.openapi.command.WriteCommandAction or"
+                            + " com.intellij.openapi.command.CommandProcessor");
         }
     }
 
@@ -1508,7 +1507,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         private UnexpectedBulkUpdateStateException(Throwable enteringTrace) {
             super(
                     "Current operation is not permitted in bulk mode, see Document.setInBulkUpdate"
-                        + " javadoc");
+                            + " javadoc");
             myAttachments =
                     enteringTrace == null
                             ? Attachment.EMPTY_ARRAY

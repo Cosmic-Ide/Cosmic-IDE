@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.com.intellij.util.lang;
 
-
 public final class JavaVersion implements Comparable<JavaVersion> {
     public final int feature;
     public final int minor;

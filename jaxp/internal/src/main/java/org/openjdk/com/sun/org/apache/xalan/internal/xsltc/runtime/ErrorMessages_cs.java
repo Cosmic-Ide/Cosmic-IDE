@@ -103,7 +103,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 BasisLibrary.RUN_TIME_COPY_ERR,
                 "Vnit\u0159n\u00ed b\u011bhov\u00e1 chyba p\u0159i prov\u00e1d\u011bn\u00ed funkce"
-                    + " <xsl:copy>."
+                        + " <xsl:copy>."
             },
 
             /*
@@ -232,7 +232,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "Pou\u017eit\u00fd analyz\u00e1tor SAX nem\u016f\u017ee manipulovat s"
-                    + " deklara\u010dn\u00edmi ud\u00e1lostmi DTD."
+                        + " deklara\u010dn\u00edmi ud\u00e1lostmi DTD."
             },
 
             /*
@@ -244,7 +244,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 BasisLibrary.NAMESPACES_SUPPORT_ERR,
                 "Pou\u017eit\u00fd analyz\u00e1tor SAX nem\u016f\u017ee podporovat obory"
-                    + " n\u00e1zv\u016f pro XML."
+                        + " n\u00e1zv\u016f pro XML."
             },
 
             /*

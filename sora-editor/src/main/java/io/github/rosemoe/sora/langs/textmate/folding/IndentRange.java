@@ -113,7 +113,7 @@ public class IndentRange {
             int indent =
                     helper.getIndentFor(
                             line); // computeIndentLevel(model.getLine(line).getRawData(),
-                                   // model.getColumnCount(line), tabSize);
+            // model.getColumnCount(line), tabSize);
             PreviousRegion previous = previousRegions.get(previousRegions.size() - 1);
             if (indent == -1) {
                 if (offSide) {

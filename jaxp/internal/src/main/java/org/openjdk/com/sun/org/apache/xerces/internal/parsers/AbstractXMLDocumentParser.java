@@ -427,9 +427,8 @@ public abstract class AbstractXMLDocumentParser extends XMLParser
             XMLString defaultValue,
             XMLString nonNormalizedDefaultValue,
             Augmentations augs)
-            throws
-                    XNIException {} // attributeDecl(String,String,String,String[],String,XMLString,
-                                    // XMLString, Augmentations)
+            throws XNIException {} // attributeDecl(String,String,String,String[],String,XMLString,
+    // XMLString, Augmentations)
 
     /**
      * The end of an attribute list.
@@ -466,9 +465,8 @@ public abstract class AbstractXMLDocumentParser extends XMLParser
      */
     public void externalEntityDecl(
             String name, XMLResourceIdentifier identifier, Augmentations augs)
-            throws
-                    XNIException {} // externalEntityDecl(String,XMLResourceIdentifier,
-                                    // Augmentations)
+            throws XNIException {} // externalEntityDecl(String,XMLResourceIdentifier,
+    // Augmentations)
 
     /**
      * An unparsed entity declaration.
@@ -481,9 +479,8 @@ public abstract class AbstractXMLDocumentParser extends XMLParser
      */
     public void unparsedEntityDecl(
             String name, XMLResourceIdentifier identifier, String notation, Augmentations augs)
-            throws
-                    XNIException {} // unparsedEntityDecl(String,XMLResourceIdentifier, String,
-                                    // Augmentations)
+            throws XNIException {} // unparsedEntityDecl(String,XMLResourceIdentifier, String,
+    // Augmentations)
 
     /**
      * A notation declaration

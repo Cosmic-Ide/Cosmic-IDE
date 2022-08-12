@@ -71,12 +71,12 @@ public class SerializerMessages_de extends ListResourceBundle {
                     {
                         MsgKey.BAD_MSGKEY,
                         "Der Nachrichtenschl\u00FCssel \"{0}\" ist nicht in der Nachrichtenklasse"
-                            + " \"{1}\" enthalten"
+                                + " \"{1}\" enthalten"
                     },
                     {
                         MsgKey.BAD_MSGFORMAT,
                         "Das Format der Nachricht \"{0}\" in der Nachrichtenklasse \"{1}\" war"
-                            + " nicht erfolgreich."
+                                + " nicht erfolgreich."
                     },
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
@@ -134,17 +134,17 @@ public class SerializerMessages_de extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "\"{0}\" konnte nicht geladen werden (CLASSPATH pr\u00FCfen). Die"
-                            + " Standardwerte werden verwendet"
+                                + " Standardwerte werden verwendet"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "Versuch, Zeichen mit Integralwert {0} auszugeben, das nicht in der"
-                            + " speziellen Ausgabecodierung von {1} dargestellt wird."
+                                + " speziellen Ausgabecodierung von {1} dargestellt wird."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Property-Datei \"{0}\" konnte f\u00FCr Ausgabemethode \"{1}\" nicht"
-                            + " geladen werden (CLASSPATH pr\u00FCfen)"
+                                + " geladen werden (CLASSPATH pr\u00FCfen)"
                     },
                     {MsgKey.ER_INVALID_PORT, "Ung\u00FCltige Portnummer"},
                     {
@@ -186,7 +186,7 @@ public class SerializerMessages_de extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "Abfragezeichenfolge kann nicht im Pfad und in der Abfragezeichenfolge"
-                            + " angegeben werden"
+                                + " angegeben werden"
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
@@ -195,13 +195,13 @@ public class SerializerMessages_de extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_USERINFO_IF_NO_HOST,
                         "Benutzerinformationen k\u00F6nnen nicht angegeben werden, wenn der Host"
-                            + " nicht angegeben wurde"
+                                + " nicht angegeben wurde"
                     },
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
                         "Warnung: Die Version des Ausgabedokuments soll \"{0}\" sein. Diese Version"
-                            + " von XML wird nicht unterst\u00FCtzt. Die Version des"
-                            + " Ausgabedokuments wird \"1.0\" sein."
+                                + " von XML wird nicht unterst\u00FCtzt. Die Version des"
+                                + " Ausgabedokuments wird \"1.0\" sein."
                     },
                     {MsgKey.ER_SCHEME_REQUIRED, "Schema ist erforderlich."},
 
@@ -213,12 +213,12 @@ public class SerializerMessages_de extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "Das an die SerializerFactory \u00FCbergebene Properties-Objekt"
-                            + " verf\u00FCgt \u00FCber keine Eigenschaft \"{0}\"."
+                                + " verf\u00FCgt \u00FCber keine Eigenschaft \"{0}\"."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,
                         "Warnung: Die Codierung \"{0}\" wird nicht von der Java-Laufzeit"
-                            + " unterst\u00FCtzt."
+                                + " unterst\u00FCtzt."
                     },
                 };
 

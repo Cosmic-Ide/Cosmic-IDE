@@ -264,12 +264,12 @@ public class XMLErrorResources_zh_CN extends ListResourceBundle {
         {
             ER_NO_USERINFO_IF_NO_HOST,
             "\u5982\u679C\u6CA1\u6709\u6307\u5B9A\u4E3B\u673A, \u5219\u4E0D\u53EF\u4EE5\u6307\u5B9A"
-                + " Userinfo"
+                    + " Userinfo"
         },
         {
             ER_NO_PORT_IF_NO_HOST,
             "\u5982\u679C\u6CA1\u6709\u6307\u5B9A\u4E3B\u673A,"
-                + " \u5219\u4E0D\u53EF\u4EE5\u6307\u5B9A\u7AEF\u53E3"
+                    + " \u5219\u4E0D\u53EF\u4EE5\u6307\u5B9A\u7AEF\u53E3"
         },
         {
             ER_NO_QUERY_STRING_IN_PATH,
@@ -389,12 +389,12 @@ public class XMLErrorResources_zh_CN extends ListResourceBundle {
         {
             ER_STRAY_NAMESPACE,
             "\u540D\u79F0\u7A7A\u95F4\u58F0\u660E ''{0}''=''{1}''"
-                + " \u5728\u5143\u7D20\u5916\u90E8\u3002"
+                    + " \u5728\u5143\u7D20\u5916\u90E8\u3002"
         },
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "\u65E0\u6CD5\u52A0\u8F7D ''{0}'' (\u68C0\u67E5 CLASSPATH),"
-                + " \u73B0\u5728\u53EA\u4F7F\u7528\u9ED8\u8BA4\u503C"
+                    + " \u73B0\u5728\u53EA\u4F7F\u7528\u9ED8\u8BA4\u503C"
         },
         {
             ER_ILLEGAL_CHARACTER,
@@ -404,7 +404,7 @@ public class XMLErrorResources_zh_CN extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "\u65E0\u6CD5\u4E3A\u8F93\u51FA\u65B9\u6CD5 ''{1}''"
-                + " \u52A0\u8F7D\u5C5E\u6027\u6587\u4EF6 ''{0}'' (\u68C0\u67E5 CLASSPATH)"
+                    + " \u52A0\u8F7D\u5C5E\u6027\u6587\u4EF6 ''{0}'' (\u68C0\u67E5 CLASSPATH)"
         }
     };
 

@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * This interface represents a notation declared in the DTD. A notation either declares, by name,
  * the format of an unparsed entity (see <a

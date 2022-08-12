@@ -286,7 +286,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.RESULT_TREE_SORT_ERR,
                 "Resultattr\u00E4dfragment kan inte sorteras (<xsl:sort>-element ignoreras). Du"
-                    + " m\u00E5ste sortera noderna n\u00E4r resultattr\u00E4det skapas."
+                        + " m\u00E5ste sortera noderna n\u00E4r resultattr\u00E4det skapas."
             },
 
             /*
@@ -331,7 +331,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.DOCUMENT_ARG_ERR,
                 "Andra argumentet f\u00F6r document()-funktion m\u00E5ste vara en"
-                    + " nodupps\u00E4ttning."
+                        + " nodupps\u00E4ttning."
             },
 
             /*
@@ -376,7 +376,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.WHEN_ELEMENT_ERR,
                 "Endast <xsl:when>- och <xsl:otherwise>-element \u00E4r till\u00E5tna i"
-                    + " <xsl:choose>."
+                        + " <xsl:choose>."
             },
 
             /*
@@ -455,7 +455,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "Indatadokumentet \u00E4r ingen formatmall (XSL-namnrymden har inte deklarerats i"
-                    + " rotelementet)."
+                        + " rotelementet)."
             },
 
             /*
@@ -470,8 +470,8 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
                 "Kunde inte l\u00E4sa formatmallen ''{0}'', eftersom ''{1}''-\u00E5tkomst inte"
-                    + " till\u00E5ts p\u00E5 grund av begr\u00E4nsning som anges av egenskapen"
-                    + " accessExternalStylesheet."
+                        + " till\u00E5ts p\u00E5 grund av begr\u00E4nsning som anges av egenskapen"
+                        + " accessExternalStylesheet."
             },
 
             /*
@@ -527,7 +527,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.ATTRIBSET_UNDEF_ERR,
                 "F\u00F6rs\u00F6ker anv\u00E4nda en icke-befintlig attributupps\u00E4ttning"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -562,7 +562,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.NO_TRANSLET_CLASS_ERR,
                 "Templates inneh\u00E5ller inte n\u00E5gon giltig klassdefinition f\u00F6r"
-                    + " translet."
+                        + " translet."
             },
 
             /*
@@ -681,7 +681,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_UNKNOWN_PROP_ERR,
                 "F\u00F6rs\u00F6ker f\u00E5 \u00E5tkomst till ogiltig Transformer-egenskap,"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -760,19 +760,19 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.TRANSFORM_USAGE_STR,
                 "SYNOPSIS \n"
-                    + "   java com.sun.org.apache.xalan.internal.xsltc.cmdline.Transform [-j"
-                    + " <jarfile>]\n"
-                    + "      [-x] [-n <iterationer>] {-u <dokument_url> | <dokument>}\n"
-                    + "      <klass> [<param1>=<v\u00E4rde1> ...]\n\n"
-                    + "   anv\u00E4nder translet <klass> vid transformering av XML-dokument \n"
-                    + "   angivna som <dokument>. Translet-<klass> finns antingen i\n"
-                    + "   anv\u00E4ndarens CLASSPATH eller i valfritt angiven <jarfile>.\n"
-                    + "ALTERNATIV\n"
-                    + "   -j <jarfile>    anger en jar-fil varifr\u00E5n translet laddas\n"
-                    + "   -x              ger ytterligare fels\u00F6kningsmeddelanden\n"
-                    + "   -n <iterationer> k\u00F6r <iterations>-tider vid transformering och\n"
-                    + "                   visar profileringsinformation\n"
-                    + "   -u <dokument_url> anger XML-indatadokument som URL\n"
+                        + "   java com.sun.org.apache.xalan.internal.xsltc.cmdline.Transform [-j"
+                        + " <jarfile>]\n"
+                        + "      [-x] [-n <iterationer>] {-u <dokument_url> | <dokument>}\n"
+                        + "      <klass> [<param1>=<v\u00E4rde1> ...]\n\n"
+                        + "   anv\u00E4nder translet <klass> vid transformering av XML-dokument \n"
+                        + "   angivna som <dokument>. Translet-<klass> finns antingen i\n"
+                        + "   anv\u00E4ndarens CLASSPATH eller i valfritt angiven <jarfile>.\n"
+                        + "ALTERNATIV\n"
+                        + "   -j <jarfile>    anger en jar-fil varifr\u00E5n translet laddas\n"
+                        + "   -x              ger ytterligare fels\u00F6kningsmeddelanden\n"
+                        + "   -n <iterationer> k\u00F6r <iterations>-tider vid transformering och\n"
+                        + "                   visar profileringsinformation\n"
+                        + "   -u <dokument_url> anger XML-indatadokument som URL\n"
             },
 
             /*
@@ -816,7 +816,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "Det f\u00F6rsta argumentet f\u00F6r den icke-statiska Java-funktionen ''{0}''"
-                    + " \u00E4r inte n\u00E5gon giltig objektreferens."
+                        + " \u00E4r inte n\u00E5gon giltig objektreferens."
             },
 
             /*
@@ -927,8 +927,8 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_NAME_JAVA_CONFLICT,
                 "''{0}'' kunde inte anv\u00E4ndas som namn p\u00E5 transletklassen eftersom det"
-                    + " inneh\u00E5ller otill\u00E5tna tecken f\u00F6r Java-klassnamn. Namnet"
-                    + " ''{1}'' anv\u00E4ndes ist\u00E4llet."
+                        + " inneh\u00E5ller otill\u00E5tna tecken f\u00F6r Java-klassnamn. Namnet"
+                        + " ''{1}'' anv\u00E4ndes ist\u00E4llet."
             },
 
             /*
@@ -963,7 +963,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_QNAME_ERR,
                 "Ett attribut vars v\u00E4rde m\u00E5ste vara ett QName eller en"
-                    + " blankteckenavgr\u00E4nsad lista med QNames hade v\u00E4rdet ''{0}''"
+                        + " blankteckenavgr\u00E4nsad lista med QNames hade v\u00E4rdet ''{0}''"
             },
 
             /*
@@ -990,18 +990,18 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_METHOD_IN_OUTPUT,
                 "Metodattributet f\u00F6r ett <xsl:output>-element hade v\u00E4rdet ''{0}''. Endast"
-                    + " n\u00E5got av f\u00F6ljande v\u00E4rden kan anv\u00E4ndas: ''xml'',"
-                    + " ''html'', ''text'' eller qname-but-not-ncname i XML"
+                        + " n\u00E5got av f\u00F6ljande v\u00E4rden kan anv\u00E4ndas: ''xml'',"
+                        + " ''html'', ''text'' eller qname-but-not-ncname i XML"
             },
             {
                 ErrorMsg.JAXP_GET_FEATURE_NULL_NAME,
                 "Funktionsnamnet kan inte vara null i TransformerFactory.getFeature(namn p\u00E5"
-                    + " str\u00E4ng)."
+                        + " str\u00E4ng)."
             },
             {
                 ErrorMsg.JAXP_SET_FEATURE_NULL_NAME,
                 "Funktionsnamnet kan inte vara null i TransformerFactory.setFeature(namn p\u00E5"
-                    + " str\u00E4ng, booleskt v\u00E4rde)."
+                        + " str\u00E4ng, booleskt v\u00E4rde)."
             },
             {
                 ErrorMsg.JAXP_UNSUPPORTED_FEATURE,
@@ -1010,7 +1010,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: Funktionen kan inte anges till false om"
-                    + " s\u00E4kerhetshanteraren anv\u00E4nds."
+                        + " s\u00E4kerhetshanteraren anv\u00E4nds."
             },
 
             /*
@@ -1023,7 +1023,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_TRY_CATCH,
                 "Internt XSLTC-fel: den genererade bytekoden inneh\u00E5ller ett"
-                    + " try-catch-finally-block och kan inte g\u00F6ras till en disposition."
+                        + " try-catch-finally-block och kan inte g\u00F6ras till en disposition."
             },
 
             /*
@@ -1039,7 +1039,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_UNBALANCED_MARKERS,
                 "Internt XSLTC-fel: mark\u00F6rerna OutlineableChunkStart och OutlineableChunkEnd"
-                    + " m\u00E5ste vara balanserade och korrekt kapslade."
+                        + " m\u00E5ste vara balanserade och korrekt kapslade."
             },
 
             /*
@@ -1055,7 +1055,7 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_DELETED_TARGET,
                 "Internt XSLTC-fel: originalmetoden refererar fortfarande till en instruktion som"
-                    + " var en del av ett bytekodsblock som gjordes till en disposition."
+                        + " var en del av ett bytekodsblock som gjordes till en disposition."
             },
 
             /*
@@ -1067,10 +1067,10 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_METHOD_TOO_BIG,
                 "Internt XSLTC-fel: en metod i transleten \u00F6verstiger Java Virtual Machines"
-                    + " l\u00E4ngdbegr\u00E4nsning f\u00F6r en metod p\u00E5 64 kilobytes.  Det"
-                    + " h\u00E4r orsakas vanligen av mycket stora mallar i en formatmall."
-                    + " F\u00F6rs\u00F6k att omstrukturera formatmallen att anv\u00E4nda mindre"
-                    + " mallar."
+                        + " l\u00E4ngdbegr\u00E4nsning f\u00F6r en metod p\u00E5 64 kilobytes.  Det"
+                        + " h\u00E4r orsakas vanligen av mycket stora mallar i en formatmall."
+                        + " F\u00F6rs\u00F6k att omstrukturera formatmallen att anv\u00E4nda mindre"
+                        + " mallar."
             },
             {
                 ErrorMsg.DESERIALIZE_TRANSLET_ERR,

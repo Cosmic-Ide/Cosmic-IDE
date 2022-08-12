@@ -322,7 +322,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_DOCUMENT_REPLACED,
                     "Implementeringen av funktionen document() har inte ersatts av"
-                        + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument!"
+                            + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument!"
                 },
                 {ER_CONTEXT_HAS_NO_OWNERDOC, "context har inget \u00E4gardokument!"},
                 {ER_LOCALNAME_HAS_TOO_MANY_ARGS, "local-name() har f\u00F6r m\u00E5nga argument."},
@@ -370,12 +370,12 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_EXPECTED_DOUBLE_QUOTE,
                     "Litteral omges av fel sorts citattecken... dubbla citattecken"
-                        + " f\u00F6rv\u00E4ntade!"
+                            + " f\u00F6rv\u00E4ntade!"
                 },
                 {
                     ER_EXPECTED_SINGLE_QUOTE,
                     "Litteral omges av fel sorts citattecken... enkla citattecken"
-                        + " f\u00F6rv\u00E4ntade!"
+                            + " f\u00F6rv\u00E4ntade!"
                 },
                 {ER_EMPTY_EXPRESSION, "Tomt uttryck!"},
                 {ER_EXPECTED_BUT_FOUND, "F\u00F6rv\u00E4ntade {0}, men hittade: {1}"},
@@ -386,7 +386,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_BOOLEAN_ARG_NO_LONGER_OPTIONAL,
                     "Argumentet boolean(...) \u00E4r inte l\u00E4ngre valfritt med 19990709"
-                        + " XPath-utkast."
+                            + " XPath-utkast."
                 },
                 {
                     ER_FOUND_COMMA_BUT_NO_PRECEDING_ARG,
@@ -399,7 +399,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_PREDICATE_ILLEGAL_SYNTAX,
                     "'..[predikat]' eller '.[predikat]' \u00E4r otill\u00E5ten syntax. Anv\u00E4nd"
-                        + " 'self::node()[predikat]' ist\u00E4llet."
+                            + " 'self::node()[predikat]' ist\u00E4llet."
                 },
                 {ER_ILLEGAL_AXIS_NAME, "otill\u00E5tet axelnamn: {0}"},
                 {ER_UNKNOWN_NODETYPE, "Ok\u00E4nd nodtyp: {0}"},
@@ -424,12 +424,12 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_ILLEGAL_VARIABLE_REFERENCE,
                     "VariableReference angiven f\u00F6r variabel som \u00E4r utanf\u00F6r kontext"
-                        + " eller som saknar definition! Namn = {0}"
+                            + " eller som saknar definition! Namn = {0}"
                 },
                 {
                     ER_AXES_NOT_ALLOWED,
                     "Endast underordnade:: och attribut::-axlar \u00E4r till\u00E5tna i"
-                        + " matchningsm\u00F6nster! Regelvidriga axlar = {0}"
+                            + " matchningsm\u00F6nster! Regelvidriga axlar = {0}"
                 },
                 {ER_KEY_HAS_TOO_MANY_ARGS, "key() har felaktigt antal argument."},
                 {ER_COUNT_TAKES_1_ARG, "Funktionen count borde ta emot ett argument!"},
@@ -438,7 +438,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_PROBLEM_IN_DTM_NEXTSIBLING,
                     "Problem intr\u00E4ffade i DTM i getNextSibling... f\u00F6rs\u00F6ker"
-                        + " \u00E5terskapa"
+                            + " \u00E5terskapa"
                 },
                 {
                     ER_CANNOT_WRITE_TO_EMPTYNODELISTIMPL,
@@ -449,7 +449,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_PARSE_NOT_SUPPORTED,
                     "tolkning (InputSource-k\u00E4lla) st\u00F6ds inte i XPathContext! Kan inte"
-                        + " \u00F6ppna {0}"
+                            + " \u00F6ppna {0}"
                 },
                 {ER_SAX_API_NOT_HANDLED, "SAX API-tecken(char ch[]... hanteras inte av DTM!"},
                 {
@@ -538,7 +538,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_NODESETDTM_CANNOT_INDEX,
                     "Detta NodeSetDTM kan inte utf\u00F6ra funktioner som indexerar eller"
-                        + " r\u00E4knar!"
+                            + " r\u00E4knar!"
                 },
                 {
                     ER_NODESET_CANNOT_INDEX,
@@ -560,7 +560,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_EXPECTED_REL_LOC_PATH,
                     "En relativ s\u00F6kv\u00E4g f\u00F6rv\u00E4ntades efter tecknet '/' eller"
-                        + " '//'."
+                            + " '//'."
                 },
 
                 // Note to translators:  A location path is a form of XPath expression.
@@ -569,7 +569,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH,
                     "En s\u00F6kv\u00E4g f\u00F6rv\u00E4ntades, men f\u00F6ljande tecken"
-                        + " p\u00E5tr\u00E4ffades: {0}"
+                            + " p\u00E5tr\u00E4ffades: {0}"
                 },
 
                 // Note to translators:  A location path is a form of XPath expression.
@@ -578,7 +578,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH_AT_END_EXPR,
                     "En s\u00F6kv\u00E4g f\u00F6rv\u00E4ntades, men slutet av XPath-uttrycket"
-                        + " hittades ist\u00E4llet."
+                            + " hittades ist\u00E4llet."
                 },
 
                 // Note to translators:  A location step is part of an XPath expression.
@@ -620,7 +620,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_BOOLEAN,
                     "XPathResult i XPath-uttrycket ''{0}'' inneh\u00E5ller XPathResultType {1} som"
-                        + " inte kan konverteras till booleskt v\u00E4rde."
+                            + " inte kan konverteras till booleskt v\u00E4rde."
                 },
 
                 // Note to translators: Do not translate ANY_UNORDERED_NODE_TYPE and
@@ -628,9 +628,9 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_SINGLENODE,
                     "XPathResult i XPath-uttrycket ''{0}'' inneh\u00E5ller XPathResultType {1} som"
-                        + " inte kan konverteras till enskild nod. Metoden getSingleNodeValue"
-                        + " anv\u00E4nds endast till typ ANY_UNORDERED_NODE_TYPE och"
-                        + " FIRST_ORDERED_NODE_TYPE."
+                            + " inte kan konverteras till enskild nod. Metoden getSingleNodeValue"
+                            + " anv\u00E4nds endast till typ ANY_UNORDERED_NODE_TYPE och"
+                            + " FIRST_ORDERED_NODE_TYPE."
                 },
 
                 // Note to translators: Do not translate UNORDERED_NODE_SNAPSHOT_TYPE and
@@ -645,9 +645,9 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_NON_ITERATOR_TYPE,
                     "Metoden iterateNext kan inte anropas vid XPathResult fr\u00E5n XPath-uttrycket"
-                        + " ''{0}'' eftersom XPathResultType \u00E4r {1}. Metoden anv\u00E4nds"
-                        + " endast till typ UNORDERED_NODE_ITERATOR_TYPE och"
-                        + " ORDERED_NODE_ITERATOR_TYPE."
+                            + " ''{0}'' eftersom XPathResultType \u00E4r {1}. Metoden anv\u00E4nds"
+                            + " endast till typ UNORDERED_NODE_ITERATOR_TYPE och"
+                            + " ORDERED_NODE_ITERATOR_TYPE."
                 },
 
                 // Note to translators: This message indicates that the document being operated
@@ -656,14 +656,14 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_DOC_MUTATED,
                     "Dokumentet har muterats sedan resultatet genererades. Iteratorn \u00E4r"
-                        + " ogiltig."
+                            + " ogiltig."
                 },
                 {ER_INVALID_XPATH_TYPE, "Ogiltigt XPath-typargument: {0}"},
                 {ER_EMPTY_XPATH_RESULT, "Tomt XPath-resultatobjekt"},
                 {
                     ER_INCOMPATIBLE_TYPES,
                     "XPathResult i XPath-uttrycket ''{0}'' inneh\u00E5ller XPathResultType {1} som"
-                        + " inte kan tvingas till angiven XPathResultType {2}."
+                            + " inte kan tvingas till angiven XPathResultType {2}."
                 },
                 {ER_NULL_RESOLVER, "Kan inte matcha prefix med prefixmatchning som \u00E4r null."},
 
@@ -673,7 +673,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_STRING,
                     "XPathResult i XPath-uttrycket ''{0}'' inneh\u00E5ller XPathResultType {1} som"
-                        + " inte kan konverteras till en str\u00E4ng."
+                            + " inte kan konverteras till en str\u00E4ng."
                 },
 
                 // Note to translators: Do not translate snapshotItem,
@@ -693,7 +693,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_WRONG_DOCUMENT,
                     "Kontextnoden tillh\u00F6r inte dokumentet som \u00E4r bundet till denna"
-                        + " XPathEvaluator."
+                            + " XPathEvaluator."
                 },
 
                 // Note to translators:  The XPath expression cannot be evaluated with respect
@@ -703,7 +703,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_XPATHRESULTTYPE_TO_NUMBER,
                     "XPathResult i XPath-uttrycket ''{0}'' inneh\u00E5ller XPathResultType {1} som"
-                        + " inte kan konverteras till ett tal."
+                            + " inte kan konverteras till ett tal."
                 },
 
                 // BEGIN:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -713,7 +713,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_EXTENSION_FUNCTION_CANNOT_BE_INVOKED,
                     "Till\u00E4ggsfunktion: ''{0}'' kan inte anropas om funktionen"
-                        + " XMLConstants.FEATURE_SECURE_PROCESSING anges som true."
+                            + " XMLConstants.FEATURE_SECURE_PROCESSING anges som true."
                 },
 
                 /** Field ER_RESOLVE_VARIABLE_RETURNS_NULL */
@@ -744,14 +744,14 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_OBJECT_MODEL_NULL,
                     "{0}#isObjectModelSupported( String objectModel ) kan inte anropas med"
-                        + " objectModel == null"
+                            + " objectModel == null"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_OBJECT_MODEL_EMPTY,
                     "{0}#isObjectModelSupported( String objectModel ) kan inte anropas med"
-                        + " objectModel == \"\""
+                            + " objectModel == \"\""
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
@@ -776,26 +776,26 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     ER_GETTING_UNKNOWN_FEATURE,
                     "F\u00F6rs\u00F6ker h\u00E4mta en ok\u00E4nd funktion"
-                        + " \"{0}\":{1}#getFeature({0})"
+                            + " \"{0}\":{1}#getFeature({0})"
                 },
                 {
                     ER_SECUREPROCESSING_FEATURE,
                     "FEATURE_SECURE_PROCESSING: Kan inte ange funktionen som false om"
-                        + " s\u00E4kerhetshanteraren anv\u00E4nds: {1}#setFeature({0},{2})"
+                            + " s\u00E4kerhetshanteraren anv\u00E4nds: {1}#setFeature({0},{2})"
                 },
 
                 /** Field ER_NULL_XPATH_FUNCTION_RESOLVER */
                 {
                     ER_NULL_XPATH_FUNCTION_RESOLVER,
                     "F\u00F6rs\u00F6ker ange nullv\u00E4rde f\u00F6r"
-                        + " XPathFunctionResolver:{0}#setXPathFunctionResolver(null)"
+                            + " XPathFunctionResolver:{0}#setXPathFunctionResolver(null)"
                 },
 
                 /** Field ER_NULL_XPATH_VARIABLE_RESOLVER */
                 {
                     ER_NULL_XPATH_VARIABLE_RESOLVER,
                     "F\u00F6rs\u00F6ker ange nullv\u00E4rde f\u00F6r"
-                        + " XPathVariableResolver:{0}#setXPathVariableResolver(null)"
+                            + " XPathVariableResolver:{0}#setXPathVariableResolver(null)"
                 },
 
                 // END:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -811,12 +811,12 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     WG_DONT_DO_ANYTHING_WITH_NS,
                     "G\u00F6r f\u00F6r n\u00E4rvarande inte n\u00E5gonting med namnrymden {0} i"
-                        + " egenskap: {1}"
+                            + " egenskap: {1}"
                 },
                 {
                     WG_SECURITY_EXCEPTION,
                     "SecurityException vid f\u00F6rs\u00F6k att f\u00E5 \u00E5tkomst till"
-                        + " XSL-systemegenskap: {0}"
+                            + " XSL-systemegenskap: {0}"
                 },
                 {
                     WG_QUO_NO_LONGER_DEFINED,
@@ -825,7 +825,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     WG_NEED_DERIVED_OBJECT_TO_IMPLEMENT_NODETEST,
                     "XPath beh\u00F6ver ett h\u00E4rledningsobjekt f\u00F6r att implementera"
-                        + " nodeTest!"
+                            + " nodeTest!"
                 },
                 {WG_FUNCTION_TOKEN_NOT_FOUND, "funktionstecken hittades inte."},
                 {WG_COULDNOT_FIND_FUNCTION, "Hittade inte funktionen: {0}"},
@@ -834,7 +834,7 @@ public class XPATHErrorResources_sv extends ListResourceBundle {
                 {
                     WG_ILLEGAL_VARIABLE_REFERENCE,
                     "VariableReference angiven f\u00F6r variabel som \u00E4r utanf\u00F6r kontext"
-                        + " eller som saknar definition! Namn = {0}"
+                            + " eller som saknar definition! Namn = {0}"
                 },
                 {WG_UNSUPPORTED_ENCODING, "Kodning utan st\u00F6d: {0}"},
 

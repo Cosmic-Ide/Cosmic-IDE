@@ -639,8 +639,8 @@ public class XMLStreamReaderImpl implements org.openjdk.javax.xml.stream.XMLStre
                     if (fDTDDecl == null || fDTDDecl.length() == 0) {
                         fDTDDecl =
                                 "<!-- Exception scanning External DTD Subset.  True contents of DTD"
-                                    + " cannot be determined.  Processing will continue as"
-                                    + " XMLInputFactory.IS_VALIDATING == false. -->";
+                                        + " cannot be determined.  Processing will continue as"
+                                        + " XMLInputFactory.IS_VALIDATING == false. -->";
                     }
                     return XMLEvent.DTD;
                 }
@@ -928,7 +928,7 @@ public class XMLStreamReaderImpl implements org.openjdk.javax.xml.stream.XMLStre
             } else if (eventType == XMLStreamConstants.START_ELEMENT) {
                 throw new XMLStreamException(
                         "elementGetText() function expects text only elment but START_ELEMENT was"
-                            + " encountered.",
+                                + " encountered.",
                         getLocation());
             } else {
                 throw new XMLStreamException("Unexpected event type " + eventType, getLocation());

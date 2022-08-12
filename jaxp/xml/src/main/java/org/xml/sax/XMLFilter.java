@@ -31,7 +31,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Interface for an XML filter.
  *

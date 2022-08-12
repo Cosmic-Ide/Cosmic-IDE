@@ -959,7 +959,7 @@ public class XPathParser {
             error(
                     XPATHErrorResources.ER_BOOLEAN_ARG_NO_LONGER_OPTIONAL,
                     null); // "boolean(...) argument is no longer optional with 19990709 XPath
-                           // draft.");
+            // draft.");
         }
 
         m_ops.setOp(opPos + OpMap.MAPINDEX_LENGTH, opLen);
@@ -1371,7 +1371,7 @@ public class XPathParser {
                 error(
                         XPATHErrorResources.ER_PREDICATE_ILLEGAL_SYNTAX,
                         null); // "'..[predicate]' or '.[predicate]' is illegal syntax.  Use
-                               // 'self::node()[predicate]' instead.");
+                // 'self::node()[predicate]' instead.");
             }
 
             appendOp(4, OpCodes.FROM_SELF);

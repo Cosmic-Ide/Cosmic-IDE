@@ -273,9 +273,9 @@ public class ErrorMessages_de extends ListResourceBundle {
             {
                 BasisLibrary.UNKNOWN_TRANSLET_VERSION_ERR,
                 "Das angegebene Translet \"{0}\" wurde mit einer neueren Version von XSLTC als die"
-                    + " verwendete Version der XSLTC-Laufzeit erstellt. Sie m\u00FCssen das"
-                    + " Stylesheet neu kompilieren oder eine aktuellere Version von XSLTC"
-                    + " verwenden, um dieses Translet auszuf\u00FChren."
+                        + " verwendete Version der XSLTC-Laufzeit erstellt. Sie m\u00FCssen das"
+                        + " Stylesheet neu kompilieren oder eine aktuellere Version von XSLTC"
+                        + " verwenden, um dieses Translet auszuf\u00FChren."
             },
 
             /*
@@ -302,12 +302,12 @@ public class ErrorMessages_de extends ListResourceBundle {
             {
                 BasisLibrary.UNALLOWED_EXTENSION_FUNCTION_ERR,
                 "Verwendung der Erweiterungsfunktion \"{0}\" ist nicht zul\u00E4ssig, wenn das"
-                    + " Feature f\u00FCr die sichere Verarbeitung auf \"true\" gesetzt ist."
+                        + " Feature f\u00FCr die sichere Verarbeitung auf \"true\" gesetzt ist."
             },
             {
                 BasisLibrary.UNALLOWED_EXTENSION_ELEMENT_ERR,
                 "Verwendung des Erweiterungselements \"{0}\" ist nicht zul\u00E4ssig, wenn das"
-                    + " Feature f\u00FCr die sichere Verarbeitung auf \"true\" gesetzt ist."
+                        + " Feature f\u00FCr die sichere Verarbeitung auf \"true\" gesetzt ist."
             },
         };
     }

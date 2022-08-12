@@ -266,7 +266,7 @@ final class URI {
                         Utils.messages.createMessage(
                                 MsgKey.ER_NO_USERINFO_IF_NO_HOST,
                                 null)); // "Userinfo may not be specified if host is not
-                                        // specified!");
+                // specified!");
             }
 
             if (p_port != -1) {
@@ -283,7 +283,7 @@ final class URI {
                         Utils.messages.createMessage(
                                 MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                                 null)); // "Query string cannot be specified in path and query
-                                        // string!");
+                // string!");
             }
 
             if (p_path.indexOf('#') != -1 && p_fragment != null) {
@@ -291,7 +291,7 @@ final class URI {
                         Utils.messages.createMessage(
                                 MsgKey.ER_NO_FRAGMENT_STRING_IN_PATH,
                                 null)); // "Fragment cannot be specified in both the path and
-                                        // fragment!");
+                // fragment!");
             }
         }
 

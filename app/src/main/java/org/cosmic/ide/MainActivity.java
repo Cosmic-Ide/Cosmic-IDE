@@ -25,10 +25,9 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.snackbar.Snackbar;
@@ -39,7 +38,6 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 import org.benf.cfr.reader.Main;
 import org.cosmic.ide.android.code.disassembler.*;
@@ -427,10 +425,14 @@ public class MainActivity extends BaseActivity {
     private TextMateColorScheme getColorScheme() {
         try {
             IRawTheme rawTheme;
-            if(isDarkMode()) {
-                rawTheme = ThemeReader.readThemeSync("darcula.json", getAssets().open("textmate/darcula.json"));
+            if (isDarkMode()) {
+                rawTheme =
+                        ThemeReader.readThemeSync(
+                                "darcula.json", getAssets().open("textmate/darcula.json"));
             } else {
-                rawTheme = ThemeReader.readThemeSync("light.tmTheme", getAssets().open("textmate/light.tmTheme"));
+                rawTheme =
+                        ThemeReader.readThemeSync(
+                                "light.tmTheme", getAssets().open("textmate/light.tmTheme"));
             }
             return TextMateColorScheme.create(rawTheme);
         } catch (Exception e) {

@@ -165,7 +165,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "Impossibile convertire l''argomento o il tipo restituito in una chiamata per il"
-                    + " metodo ''{0}''"
+                        + " metodo ''{0}''"
             },
 
             /*
@@ -277,7 +277,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.CIRCULAR_INCLUDE_ERR,
                 "Importazione/inclusione circolare. Il foglio di stile ''{0}'' \u00E8 gi\u00E0"
-                    + " stato caricato."
+                        + " stato caricato."
             },
 
             /*
@@ -465,7 +465,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "Il documento di input non \u00E8 un foglio di stile (spazio di nomi XSL non"
-                    + " dichiarato nell'elemento radice)."
+                        + " dichiarato nell'elemento radice)."
             },
 
             /*
@@ -483,8 +483,8 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
                 "Impossibile leggere la destinazione del foglio di stile ''{0}''. Accesso ''{1}''"
-                    + " non consentito a causa della limitazione definita dalla propriet\u00E0"
-                    + " accessExternalStylesheet."
+                        + " non consentito a causa della limitazione definita dalla propriet\u00E0"
+                        + " accessExternalStylesheet."
             },
 
             /*
@@ -518,7 +518,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.KEY_USE_ATTR_ERR,
                 "L'attributo di uso <key> deve essere un nodo, un set di nodi, una stringa o un"
-                    + " numero."
+                        + " numero."
             },
 
             /*
@@ -605,7 +605,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "La classe di translet \u00E8 stata caricata, ma non \u00E8 possibile creare"
-                    + " l'istanza del translet."
+                        + " l'istanza del translet."
             },
 
             /*
@@ -811,7 +811,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.STRAY_SORT_ERR,
                 "<xsl:sort> pu\u00F2 essere utilizzato sono in <xsl:for-each> o"
-                    + " <xsl:apply-templates>."
+                        + " <xsl:apply-templates>."
             },
 
             /*
@@ -847,7 +847,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "Il primo argomento per la funzione Java non statica ''{0}'' non \u00E8 un"
-                    + " riferimento di oggetto valido."
+                        + " riferimento di oggetto valido."
             },
 
             /*
@@ -868,7 +868,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.TYPE_CHECK_UNK_LOC_ERR,
                 "Errore durante il controllo del tipo di un''espressione in una posizione"
-                    + " sconosciuta."
+                        + " sconosciuta."
             },
 
             /*
@@ -1001,7 +1001,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_QNAME_ERR,
                 "Un attributo il cui valore deve essere un QName o una lista separata da spazi di"
-                    + " QName contiene il valore ''{0}''"
+                        + " QName contiene il valore ''{0}''"
             },
 
             /*
@@ -1028,17 +1028,17 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_METHOD_IN_OUTPUT,
                 "L''attributo di metodo per un elemento <xsl:output> ha il valore ''{0}'', ma deve"
-                    + " essere uno tra ''xml'', ''html'', ''text'' o qname-but-not-ncname"
+                        + " essere uno tra ''xml'', ''html'', ''text'' o qname-but-not-ncname"
             },
             {
                 ErrorMsg.JAXP_GET_FEATURE_NULL_NAME,
                 "Il nome funzione non pu\u00F2 essere nullo in TransformerFactory.getFeature (nome"
-                    + " stringa)."
+                        + " stringa)."
             },
             {
                 ErrorMsg.JAXP_SET_FEATURE_NULL_NAME,
                 "Il nome funzione non pu\u00F2 essere nullo in TransformerFactory.setFeature (nome"
-                    + " stringa, valore booleano)."
+                        + " stringa, valore booleano)."
             },
             {
                 ErrorMsg.JAXP_UNSUPPORTED_FEATURE,
@@ -1047,7 +1047,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: impossibile impostare la funzione su false se \u00E8"
-                    + " presente Security Manager."
+                        + " presente Security Manager."
             },
 
             /*
@@ -1060,7 +1060,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_TRY_CATCH,
                 "Errore XSLTC interno: il bytecode generato contiene un blocco try-catch-finally e"
-                    + " non pu\u00F2 essere di tipo outlined."
+                        + " non pu\u00F2 essere di tipo outlined."
             },
 
             /*
@@ -1076,7 +1076,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_UNBALANCED_MARKERS,
                 "Errore XSLTC interno: gli indicatori OutlineableChunkStart e OutlineableChunkEnd"
-                    + " devono essere bilanciati e nidificati correttamente."
+                        + " devono essere bilanciati e nidificati correttamente."
             },
 
             /*
@@ -1092,7 +1092,7 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_DELETED_TARGET,
                 "Errore XSLTC interno: a un'istruzione che faceva parte di un blocco di bytecode di"
-                    + " tipo outlined viene ancora fatto riferimento nel metodo originale."
+                        + " tipo outlined viene ancora fatto riferimento nel metodo originale."
             },
 
             /*
@@ -1112,9 +1112,9 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 ErrorMsg.DESERIALIZE_TRANSLET_ERR,
                 "Quando la sicurezza Java \u00E8 abilitata, il supporto per la deserializzazione"
-                    + " TemplatesImpl \u00E8 disabilitato. \u00C8 possibile ignorare questa"
-                    + " condizione impostando su true la propriet\u00E0 di sistema"
-                    + " jdk.xml.enableTemplatesImplDeserialization."
+                        + " TemplatesImpl \u00E8 disabilitato. \u00C8 possibile ignorare questa"
+                        + " condizione impostando su true la propriet\u00E0 di sistema"
+                        + " jdk.xml.enableTemplatesImplDeserialization."
             }
         };
     }

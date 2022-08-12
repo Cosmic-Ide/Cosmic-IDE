@@ -205,7 +205,7 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_TYPED_ITERATOR_AXIS_NOT_IMPLEMENTED,
                     "Hata: {0} ekseni i\u00e7in tip atanm\u0131\u015f yineleyici"
-                        + " ger\u00e7ekle\u015ftirilmedi"
+                            + " ger\u00e7ekle\u015ftirilmedi"
                 },
                 {
                     ER_ITERATOR_AXIS_NOT_IMPLEMENTED,
@@ -222,17 +222,17 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_NODE_NON_NULL,
                     "getDTMHandleFromNode i\u00e7in d\u00fc\u011f\u00fcm bo\u015f de\u011ferli"
-                        + " olmamal\u0131d\u0131r"
+                            + " olmamal\u0131d\u0131r"
                 },
                 {
                     ER_COULD_NOT_RESOLVE_NODE,
                     "D\u00fc\u011f\u00fcm tan\u0131t\u0131c\u0131 de\u011fere"
-                        + " \u00e7\u00f6z\u00fclemedi"
+                            + " \u00e7\u00f6z\u00fclemedi"
                 },
                 {
                     ER_STARTPARSE_WHILE_PARSING,
                     "Ayr\u0131\u015ft\u0131rma s\u0131ras\u0131nda startParse"
-                        + " \u00e7a\u011fr\u0131lamaz"
+                            + " \u00e7a\u011fr\u0131lamaz"
                 },
                 {
                     ER_STARTPARSE_NEEDS_SAXPARSER,
@@ -241,12 +241,12 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_COULD_NOT_INIT_PARSER,
                     "Ayr\u0131\u015ft\u0131r\u0131c\u0131 bununla kullan\u0131ma"
-                        + " haz\u0131rlanamad\u0131"
+                            + " haz\u0131rlanamad\u0131"
                 },
                 {
                     ER_EXCEPTION_CREATING_POOL,
                     "Havuz i\u00e7in yeni \u00f6rnek yarat\u0131l\u0131rken kural"
-                        + " d\u0131\u015f\u0131 durum"
+                            + " d\u0131\u015f\u0131 durum"
                 },
                 {
                     ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
@@ -303,7 +303,7 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_INCRSAXSRCFILTER_NOT_RESTARTABLE,
                     "IncrementalSAXSource_Filter \u015fu an yeniden ba\u015flat\u0131labilir"
-                        + " durumda de\u011fil"
+                            + " durumda de\u011fil"
                 },
                 {
                     ER_XMLRDR_NOT_BEFORE_STARTPARSE,
@@ -338,7 +338,7 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
                     "Uyar\u0131: Belge \u00f6\u011fesinden \u00f6nce metin"
-                        + " \u00e7\u0131k\u0131\u015f\u0131 olamaz!  Yoksay\u0131l\u0131yor..."
+                            + " \u00e7\u0131k\u0131\u015f\u0131 olamaz!  Yoksay\u0131l\u0131yor..."
                 },
                 {
                     ER_CANT_HAVE_MORE_THAN_ONE_ROOT,
@@ -347,7 +347,7 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_ARG_LOCALNAME_NULL,
                     "'localName' ba\u011f\u0131ms\u0131z de\u011fi\u015ftirgesi bo\u015f"
-                        + " de\u011ferli"
+                            + " de\u011ferli"
                 },
 
                 // Note to translators:  A QNAME has the syntactic form [NCName:]NCName
@@ -356,7 +356,7 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_ARG_LOCALNAME_INVALID,
                     "QNAME i\u00e7indeki yerel ad (localname) ge\u00e7erli bir NCName"
-                        + " olmal\u0131d\u0131r"
+                            + " olmal\u0131d\u0131r"
                 },
 
                 // Note to translators:  A QNAME has the syntactic form [NCName:]NCName
@@ -369,19 +369,19 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     "BAD_CODE",
                     "createMessage i\u00e7in kullan\u0131lan de\u011fi\u015ftirge"
-                        + " s\u0131n\u0131rlar\u0131n d\u0131\u015f\u0131nda"
+                            + " s\u0131n\u0131rlar\u0131n d\u0131\u015f\u0131nda"
                 },
                 {
                     "FORMAT_FAILED",
                     "messageFormat \u00e7a\u011fr\u0131s\u0131 s\u0131ras\u0131nda kural"
-                        + " d\u0131\u015f\u0131 durum yay\u0131nland\u0131"
+                            + " d\u0131\u015f\u0131 durum yay\u0131nland\u0131"
                 },
                 {"line", "Sat\u0131r #"},
                 {"column", "Kolon #"},
                 {
                     ER_SERIALIZER_NOT_CONTENTHANDLER,
                     "Diziselle\u015ftirici s\u0131n\u0131f\u0131 ''{0}'' org.xml.sax.ContentHandler"
-                        + " i\u015flevini uygulam\u0131yor."
+                            + " i\u015flevini uygulam\u0131yor."
                 },
                 {ER_RESOURCE_COULD_NOT_FIND, "Kaynak [ {0} ] bulunamad\u0131.\n {1}"},
                 {ER_RESOURCE_COULD_NOT_LOAD, "Kaynak [ {0} ] y\u00fckleyemedi: {1} \n {2} \t {3}"},
@@ -394,8 +394,8 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_ILLEGAL_ATTRIBUTE_POSITION,
                     "Alt d\u00fc\u011f\u00fcmlerden sonra ya da bir \u00f6\u011fe \u00fcretilmeden"
-                        + " \u00f6nce {0} \u00f6zniteli\u011fi eklenemez. \u00d6znitelik"
-                        + " yoksay\u0131lacak."
+                            + " \u00f6nce {0} \u00f6zniteli\u011fi eklenemez. \u00d6znitelik"
+                            + " yoksay\u0131lacak."
                 },
 
                 /*
@@ -428,18 +428,18 @@ public class XMLErrorResources_tr extends ListResourceBundle {
                 {
                     ER_STRAY_NAMESPACE,
                     "''{0}''=''{1}'' ad alan\u0131 bildirimi \u00f6\u011fenin"
-                        + " d\u0131\u015f\u0131nda."
+                            + " d\u0131\u015f\u0131nda."
                 },
                 {
                     ER_COULD_NOT_LOAD_RESOURCE,
                     "''{0}'' y\u00fcklenemedi (CLASSPATH de\u011fi\u015fkeninizi inceleyin),"
-                        + " yaln\u0131zca varsay\u0131lanlar kullan\u0131l\u0131yor"
+                            + " yaln\u0131zca varsay\u0131lanlar kullan\u0131l\u0131yor"
                 },
                 {
                     ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                     "''{1}'' \u00e7\u0131k\u0131\u015f y\u00f6ntemi i\u00e7in ''{0}'' \u00f6zellik"
-                        + " dosyas\u0131 y\u00fcklenemedi (CLASSPATH de\u011fi\u015fkenini"
-                        + " inceleyin)"
+                            + " dosyas\u0131 y\u00fcklenemedi (CLASSPATH de\u011fi\u015fkenini"
+                            + " inceleyin)"
                 }
             };
 

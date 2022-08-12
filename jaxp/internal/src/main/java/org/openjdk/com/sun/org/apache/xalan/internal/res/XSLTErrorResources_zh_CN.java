@@ -416,12 +416,12 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "processing-instruction \u540D\u79F0\u5FC5\u987B\u662F\u6709\u6548\u7684 NCName:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_NEED_MATCH_ATTRIB,
                 "\u5982\u679C{0}\u5177\u6709\u67D0\u79CD\u6A21\u5F0F,"
-                    + " \u5219\u5FC5\u987B\u5177\u6709 match \u5C5E\u6027\u3002"
+                        + " \u5219\u5FC5\u987B\u5177\u6709 match \u5C5E\u6027\u3002"
             },
             {ER_NEED_NAME_OR_MATCH_ATTRIB, "{0}\u9700\u8981 name \u6216 match \u5C5E\u6027\u3002"},
             {
@@ -474,27 +474,27 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_STYLESHEET_INCLUDES_ITSELF,
                 "(StylesheetHandler)"
-                    + " {0}\u76F4\u63A5\u6216\u95F4\u63A5\u5305\u542B\u5176\u81EA\u8EAB!"
+                        + " {0}\u76F4\u63A5\u6216\u95F4\u63A5\u5305\u542B\u5176\u81EA\u8EAB!"
             },
             {ER_PROCESSINCLUDE_ERROR, "StylesheetHandler.processInclude \u9519\u8BEF, {0}"},
             {ER_MISSING_LANG_ATTRIB, "(StylesheetHandler) \u7F3A\u5C11{0}\u5C5E\u6027 ''lang''"},
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler)"
-                    + " {0}\u5143\u7D20\u7684\u653E\u7F6E\u4F4D\u7F6E\u662F\u5426\u9519\u8BEF??"
-                    + " \u7F3A\u5C11\u5BB9\u5668\u5143\u7D20 ''component''"
+                        + " {0}\u5143\u7D20\u7684\u653E\u7F6E\u4F4D\u7F6E\u662F\u5426\u9519\u8BEF??"
+                        + " \u7F3A\u5C11\u5BB9\u5668\u5143\u7D20 ''component''"
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
                 "\u53EA\u80FD\u8F93\u51FA\u5230 Element, DocumentFragment, Document \u6216"
-                    + " PrintWriter\u3002"
+                        + " PrintWriter\u3002"
             },
             {ER_PROCESS_ERROR, "StylesheetRoot.process \u9519\u8BEF"},
             {ER_UNIMPLNODE_ERROR, "UnImplNode \u9519\u8BEF: {0}"},
             {
                 ER_NO_SELECT_EXPRESSION,
                 "\u9519\u8BEF! \u627E\u4E0D\u5230 xpath \u9009\u62E9\u8868\u8FBE\u5F0F"
-                    + " (-select)\u3002"
+                        + " (-select)\u3002"
             },
             {ER_CANNOT_SERIALIZE_XSLPROCESSOR, "\u65E0\u6CD5\u5E8F\u5217\u5316 XSLProcessor!"},
             {ER_NO_INPUT_STYLESHEET, "\u672A\u6307\u5B9A\u6837\u5F0F\u8868\u8F93\u5165!"},
@@ -538,7 +538,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "\u4E0D\u518D\u652F\u6301 default-space! \u8BF7\u6539\u7528 xsl:strip-space \u6216"
-                    + " xsl:preserve-space\u3002"
+                        + " xsl:preserve-space\u3002"
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
@@ -549,7 +549,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort \u53EA\u80FD\u4E0E xsl:apply-templates \u6216"
-                    + " xsl:for-each \u4E00\u8D77\u4F7F\u7528\u3002"
+                        + " xsl:for-each \u4E00\u8D77\u4F7F\u7528\u3002"
             },
             {
                 ER_MISPLACED_XSLWHEN,
@@ -574,7 +574,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_UNKNOWN_EXT_NS_PREFIX,
                 "(StylesheetHandler) {0}\u6269\u5C55\u540D\u79F0\u7A7A\u95F4\u524D\u7F00 {1}"
-                    + " \u672A\u77E5"
+                        + " \u672A\u77E5"
             },
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
@@ -584,7 +584,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_IMPORTING_ITSELF,
                 "(StylesheetHandler)"
-                    + " {0}\u76F4\u63A5\u6216\u95F4\u63A5\u5BFC\u5165\u5176\u81EA\u8EAB!"
+                        + " {0}\u76F4\u63A5\u6216\u95F4\u63A5\u5BFC\u5165\u5176\u81EA\u8EAB!"
             },
             {
                 ER_XMLSPACE_ILLEGAL_VAL,
@@ -617,7 +617,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
                 "\u65E0\u6CD5\u5728\u91CD\u5B9A\u5411\u6269\u5C55\u4E2D\u6784\u5EFA"
-                    + " FormatterListener!"
+                        + " FormatterListener!"
             },
             {
                 ER_INVALID_PREFIX_IN_EXCLUDERESULTPREFIX,
@@ -643,14 +643,14 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "\u65E0\u6CD5\u5C06 DTMLiaison \u7528\u4E8E\u8F93\u51FA DOM \u8282\u70B9..."
-                    + " \u8BF7\u6539\u4E3A\u4F20\u9012"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper!"
+                        + " \u8BF7\u6539\u4E3A\u4F20\u9012"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper!"
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "\u65E0\u6CD5\u5C06 DTMLiaison \u7528\u4E8E\u8F93\u5165 DOM \u8282\u70B9..."
-                    + " \u8BF7\u6539\u4E3A\u4F20\u9012"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper!"
+                        + " \u8BF7\u6539\u4E3A\u4F20\u9012"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper!"
             },
             {ER_CALL_TO_EXT_FAILED, "\u672A\u80FD\u8C03\u7528\u6269\u5C55\u5143\u7D20: {0}"},
             {
@@ -664,12 +664,12 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_XSLATTRSET_USED_ITSELF,
                 "xsl:attribute-set {0} \u4F7F\u7528\u5176\u81EA\u8EAB,"
-                    + " \u8FD9\u5C06\u5BFC\u81F4\u65E0\u9650\u5FAA\u73AF\u3002"
+                        + " \u8FD9\u5C06\u5BFC\u81F4\u65E0\u9650\u5FAA\u73AF\u3002"
             },
             {
                 ER_CANNOT_MIX_XERCESDOM,
                 "\u65E0\u6CD5\u6DF7\u5408\u975E Xerces-DOM \u8F93\u5165\u548C Xerces-DOM"
-                    + " \u8F93\u51FA!"
+                        + " \u8F93\u51FA!"
             },
             {ER_TOO_MANY_LISTENERS, "addTraceListenersToStylesheet - TooManyListenersException"},
             {
@@ -683,7 +683,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_INVALID_KEY_CALL,
                 "\u51FD\u6570\u8C03\u7528\u65E0\u6548: \u4E0D\u5141\u8BB8\u9012\u5F52 key()"
-                    + " \u8C03\u7528"
+                        + " \u8C03\u7528"
             },
             {
                 ER_REFERENCING_ITSELF,
@@ -692,7 +692,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_ILLEGAL_DOMSOURCE_INPUT,
                 "\u5BF9\u4E8E newTemplates \u7684 DOMSource,"
-                    + " \u8F93\u5165\u8282\u70B9\u4E0D\u80FD\u4E3A\u7A7A\u503C!"
+                        + " \u8F93\u5165\u8282\u70B9\u4E0D\u80FD\u4E3A\u7A7A\u503C!"
             },
             {
                 ER_CLASS_NOT_FOUND_FOR_OPTION,
@@ -712,7 +712,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_INSTANCE_MTHD_CALL_REQUIRES,
                 "\u5BF9\u65B9\u6CD5{0}\u7684\u5B9E\u4F8B\u65B9\u6CD5\u8C03\u7528\u9700\u8981\u5C06"
-                    + " Object \u5B9E\u4F8B\u4F5C\u4E3A\u7B2C\u4E00\u4E2A\u53C2\u6570"
+                        + " Object \u5B9E\u4F8B\u4F5C\u4E3A\u7B2C\u4E00\u4E2A\u53C2\u6570"
             },
             {ER_INVALID_ELEMENT_NAME, "\u6307\u5B9A\u7684\u5143\u7D20\u540D\u79F0{0}\u65E0\u6548"},
             {
@@ -759,7 +759,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_NO_NAMESPACE_DECL,
                 "\u524D\u7F00 {0}"
-                    + " \u6CA1\u6709\u5BF9\u5E94\u7684\u540D\u79F0\u7A7A\u95F4\u58F0\u660E"
+                        + " \u6CA1\u6709\u5BF9\u5E94\u7684\u540D\u79F0\u7A7A\u95F4\u58F0\u660E"
             },
             {
                 ER_ELEM_CONTENT_NOT_ALLOWED,
@@ -771,7 +771,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_COULD_NOT_LOAD_RESOURCE,
                 "\u65E0\u6CD5\u52A0\u8F7D{0} (\u68C0\u67E5 CLASSPATH),"
-                    + " \u73B0\u5728\u53EA\u4F7F\u7528\u9ED8\u8BA4\u503C"
+                        + " \u73B0\u5728\u53EA\u4F7F\u7528\u9ED8\u8BA4\u503C"
             },
             {
                 ER_CANNOT_INIT_DEFAULT_TEMPLATES,
@@ -793,7 +793,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_CANNOT_CALL_PARSE,
                 "\u5982\u679C\u5C1A\u672A\u8BBE\u7F6E ContentHandler,"
-                    + " \u5219\u65E0\u6CD5\u8C03\u7528 parse"
+                        + " \u5219\u65E0\u6CD5\u8C03\u7528 parse"
             },
             {ER_NO_PARENT_FOR_FILTER, "\u7B5B\u9009\u5668\u6CA1\u6709\u7236\u7EA7"},
             {
@@ -854,7 +854,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_NULL_URI_NAMESPACE,
                 "\u5C1D\u8BD5\u4F7F\u7528\u7A7A URI"
-                    + " \u751F\u6210\u540D\u79F0\u7A7A\u95F4\u524D\u7F00"
+                        + " \u751F\u6210\u540D\u79F0\u7A7A\u95F4\u524D\u7F00"
             },
             {
                 ER_NUMBER_TOO_BIG,
@@ -867,12 +867,12 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_SAX1_DRIVER_NOT_LOADED,
                 "\u5DF2\u627E\u5230 SAX1 \u9A71\u52A8\u7A0B\u5E8F\u7C7B{0},"
-                    + " \u4F46\u65E0\u6CD5\u8FDB\u884C\u52A0\u8F7D"
+                        + " \u4F46\u65E0\u6CD5\u8FDB\u884C\u52A0\u8F7D"
             },
             {
                 ER_SAX1_DRIVER_NOT_INSTANTIATED,
                 "\u5DF2\u52A0\u8F7D SAX1 \u9A71\u52A8\u7A0B\u5E8F\u7C7B{0},"
-                    + " \u4F46\u65E0\u6CD5\u8FDB\u884C\u5B9E\u4F8B\u5316"
+                        + " \u4F46\u65E0\u6CD5\u8FDB\u884C\u5B9E\u4F8B\u5316"
             },
             {
                 ER_SAX1_DRIVER_NOT_IMPLEMENT_PARSER,
@@ -911,7 +911,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_ASSERT_NO_TEMPLATE_PARENT,
                 "\u7A0B\u5E8F\u5458\u9519\u8BEF! \u8868\u8FBE\u5F0F\u6CA1\u6709 ElemTemplateElement"
-                    + " \u7236\u7EA7!"
+                        + " \u7236\u7EA7!"
             },
 
             // Note to translators:  The following message should not normally be displayed
@@ -939,7 +939,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "CHAR \u5C5E\u6027{0}\u4F7F\u7528\u4E86\u975E\u6CD5\u503C{1}\u3002CHAR"
-                    + " \u7C7B\u578B\u7684\u5C5E\u6027\u53EA\u80FD\u4E3A 1 \u4E2A\u5B57\u7B26!"
+                        + " \u7C7B\u578B\u7684\u5C5E\u6027\u53EA\u80FD\u4E3A 1 \u4E2A\u5B57\u7B26!"
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1043,7 +1043,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_CANT_HAVE_CONTENT_AND_SELECT,
                 "{0}\u5143\u7D20\u4E0D\u80FD\u540C\u65F6\u5177\u6709\u5185\u5BB9\u548C select"
-                    + " \u5C5E\u6027\u3002"
+                        + " \u5C5E\u6027\u3002"
             },
 
             // Note to translators:  This message indicates that the value argument
@@ -1087,7 +1087,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
                 "\u65E0\u6CD5\u83B7\u53D6\u7A7A\u540D\u79F0\u7A7A\u95F4 uri"
-                    + " \u7684\u524D\u7F00\u3002"
+                        + " \u7684\u524D\u7F00\u3002"
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_PREFIX,
@@ -1107,17 +1107,17 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 WG_COUNT_ATTRIB_MATCHES_NO_ANCESTOR,
                 "\u8B66\u544A: count \u5C5E\u6027\u4E0E xsl:number \u4E2D\u7684 ancestor"
-                    + " \u4E0D\u5339\u914D! \u76EE\u6807 = {0}"
+                        + " \u4E0D\u5339\u914D! \u76EE\u6807 = {0}"
             },
             {
                 WG_EXPR_ATTRIB_CHANGED_TO_SELECT,
                 "\u65E7\u8BED\u6CD5: 'expr' \u5C5E\u6027\u7684\u540D\u79F0\u5DF2\u66F4\u6539\u4E3A"
-                    + " 'select'\u3002"
+                        + " 'select'\u3002"
             },
             {
                 WG_NO_LOCALE_IN_FORMATNUMBER,
                 "Xalan \u5C1A\u672A\u5904\u7406 format-number"
-                    + " \u51FD\u6570\u4E2D\u7684\u533A\u57DF\u8BBE\u7F6E\u540D\u79F0\u3002"
+                        + " \u51FD\u6570\u4E2D\u7684\u533A\u57DF\u8BBE\u7F6E\u540D\u79F0\u3002"
             },
             {
                 WG_LOCALE_NOT_FOUND,
@@ -1151,7 +1151,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 WG_CONFLICT_BETWEEN_XSLSTRIPSPACE_AND_XSLPRESERVESPACE,
                 "xsl:strip-space \u548C xsl:preserve-space"
-                    + " \u4E4B\u95F4\u5B58\u5728\u5339\u914D\u51B2\u7A81"
+                        + " \u4E4B\u95F4\u5B58\u5728\u5339\u914D\u51B2\u7A81"
             },
             {WG_ATTRIB_NOT_HANDLED, "Xalan \u5C1A\u672A\u5904\u7406{0}\u5C5E\u6027!"},
             {
@@ -1161,23 +1161,23 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 WG_OLD_XSLT_NS,
                 "\u7F3A\u5C11 XSLT \u540D\u79F0\u7A7A\u95F4\u6216 XSLT"
-                    + " \u540D\u79F0\u7A7A\u95F4\u9519\u8BEF\u3002"
+                        + " \u540D\u79F0\u7A7A\u95F4\u9519\u8BEF\u3002"
             },
             {
                 WG_ONE_DEFAULT_XSLDECIMALFORMAT_ALLOWED,
                 "\u4EC5\u5141\u8BB8\u4F7F\u7528\u4E00\u4E2A\u9ED8\u8BA4\u7684 xsl:decimal-format"
-                    + " \u58F0\u660E\u3002"
+                        + " \u58F0\u660E\u3002"
             },
             {
                 WG_XSLDECIMALFORMAT_NAMES_MUST_BE_UNIQUE,
                 "xsl:decimal-format \u540D\u79F0\u5FC5\u987B\u552F\u4E00\u3002\u540D\u79F0 \"{0}\""
-                    + " \u91CD\u590D\u3002"
+                        + " \u91CD\u590D\u3002"
             },
             {WG_ILLEGAL_ATTRIBUTE, "{0}\u5177\u6709\u975E\u6CD5\u5C5E\u6027: {1}"},
             {
                 WG_COULD_NOT_RESOLVE_PREFIX,
                 "\u65E0\u6CD5\u89E3\u6790\u540D\u79F0\u7A7A\u95F4\u524D\u7F00:"
-                    + " {0}\u3002\u5C06\u5FFD\u7565\u8282\u70B9\u3002"
+                        + " {0}\u3002\u5C06\u5FFD\u7565\u8282\u70B9\u3002"
             },
             {
                 WG_STYLESHEET_REQUIRES_VERSION_ATTRIB,
@@ -1200,7 +1200,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "xsl:processing-instruction \u540D\u79F0\u7684 'name'"
-                    + " \u5C5E\u6027\u7684\u503C\u4E0D\u80FD\u4E3A 'xml'"
+                        + " \u5C5E\u6027\u7684\u503C\u4E0D\u80FD\u4E3A 'xml'"
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -1260,8 +1260,8 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "xslProc_no_input",
                 "\u9519\u8BEF: \u672A\u6307\u5B9A\u6837\u5F0F\u8868\u6216\u8F93\u5165"
-                    + " xml\u3002\u8FD0\u884C\u6B64\u547D\u4EE4\u65F6,"
-                    + " \u7528\u6CD5\u6307\u4EE4\u4E0D\u5E26\u4EFB\u4F55\u9009\u9879\u3002"
+                        + " xml\u3002\u8FD0\u884C\u6B64\u547D\u4EE4\u65F6,"
+                        + " \u7528\u6CD5\u6307\u4EE4\u4E0D\u5E26\u4EFB\u4F55\u9009\u9879\u3002"
             },
             {"xslProc_common_options", "-\u516C\u7528\u9009\u9879-"},
             {"xslProc_xalan_options", "-Xalan \u7684\u9009\u9879-"},
@@ -1287,24 +1287,24 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionLF",
                 "   [-LF (\u4EC5\u5728\u8F93\u51FA\u65F6\u4F7F\u7528\u6362\u884C\u7B26"
-                    + " {\u9ED8\u8BA4\u503C\u4E3A CR/LF})]"
+                        + " {\u9ED8\u8BA4\u503C\u4E3A CR/LF})]"
             },
             {
                 "optionCR",
                 "   [-CR (\u4EC5\u5728\u8F93\u51FA\u65F6\u4F7F\u7528\u56DE\u8F66"
-                    + " {\u9ED8\u8BA4\u503C\u4E3A CR/LF})]"
+                        + " {\u9ED8\u8BA4\u503C\u4E3A CR/LF})]"
             },
             {
                 "optionESCAPE",
                 "   [-ESCAPE (\u8981\u8F6C\u79FB\u7684\u5B57\u7B26 {\u9ED8\u8BA4\u503C\u4E3A"
-                    + " <>&\"'\\r"
-                    + "\\n"
-                    + "}]"
+                        + " <>&\"'\\r"
+                        + "\\n"
+                        + "}]"
             },
             {
                 "optionINDENT",
                 "   [-INDENT (\u63A7\u5236\u8981\u7F29\u8FDB\u7684\u7A7A\u683C\u6570"
-                    + " {\u9ED8\u8BA4\u503C\u4E3A 0})]"
+                        + " {\u9ED8\u8BA4\u503C\u4E3A 0})]"
             },
             {
                 "optionTT",
@@ -1320,7 +1320,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionTCLASS",
                 "   [-TCLASS (\u7528\u4E8E\u8DDF\u8E2A\u6269\u5C55\u7684 TraceListener"
-                    + " \u7C7B\u3002)]"
+                        + " \u7C7B\u3002)]"
             },
             {
                 "optionVALIDATE",
@@ -1331,12 +1331,12 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionEDUMP",
                 "   [-EDUMP {optional filename}"
-                    + " (\u5728\u51FA\u9519\u65F6\u6267\u884C\u5806\u6808\u8F6C\u50A8\u3002)]"
+                        + " (\u5728\u51FA\u9519\u65F6\u6267\u884C\u5806\u6808\u8F6C\u50A8\u3002)]"
             },
             {
                 "optionXML",
                 "   [-XML (\u4F7F\u7528 XML \u683C\u5F0F\u8BBE\u7F6E\u5DE5\u5177\u5E76\u6DFB\u52A0"
-                    + " XML \u6807\u5934\u3002)]"
+                        + " XML \u6807\u5934\u3002)]"
             },
             {
                 "optionTEXT",
@@ -1350,7 +1350,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionPARAM",
                 "   [-PARAM \u540D\u79F0\u8868\u8FBE\u5F0F"
-                    + " (\u8BBE\u7F6E\u6837\u5F0F\u8868\u53C2\u6570)]"
+                        + " (\u8BBE\u7F6E\u6837\u5F0F\u8868\u53C2\u6570)]"
             },
             {"noParsermsg1", "XSL \u8FDB\u7A0B\u672A\u6210\u529F\u3002"},
             {"noParsermsg2", "** \u627E\u4E0D\u5230\u89E3\u6790\u5668 **"},
@@ -1358,27 +1358,27 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "noParsermsg4",
                 "\u5982\u679C\u6CA1\u6709 IBM \u63D0\u4F9B\u7684 XML Parser for Java,"
-                    + " \u5219\u53EF\u4EE5\u4ECE"
+                        + " \u5219\u53EF\u4EE5\u4ECE"
             },
             {
                 "noParsermsg5",
                 "IBM AlphaWorks \u8FDB\u884C\u4E0B\u8F7D, \u7F51\u5740\u4E3A:"
-                    + " http://www.alphaworks.ibm.com/formula/xml"
+                        + " http://www.alphaworks.ibm.com/formula/xml"
             },
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER \u5B8C\u6574\u7C7B\u540D (\u4F7F\u7528 URIResolver \u89E3\u6790"
-                    + " URI)]"
+                        + " URI)]"
             },
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER \u5B8C\u6574\u7C7B\u540D (\u4F7F\u7528 EntityResolver"
-                    + " \u89E3\u6790\u5B9E\u4F53)]"
+                        + " \u89E3\u6790\u5B9E\u4F53)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER \u5B8C\u6574\u7C7B\u540D (\u4F7F\u7528 ContentHandler"
-                    + " \u5E8F\u5217\u5316\u8F93\u51FA)]"
+                        + " \u5E8F\u5217\u5316\u8F93\u51FA)]"
             },
             {"optionLINENUMBERS", "   [-L \u4F7F\u7528\u6E90\u6587\u6863\u7684\u884C\u53F7]"},
             {
@@ -1398,7 +1398,7 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionFLAVOR",
                 "   [-FLAVOR flavorName (\u660E\u786E\u4F7F\u7528 s2s=SAX \u6216 d2d=DOM"
-                    + " \u6267\u884C\u8F6C\u6362\u3002)] "
+                        + " \u6267\u884C\u8F6C\u6362\u3002)] "
             }, // Added by sboag/scurcuru; experimental
             {
                 "optionDIAG",
@@ -1407,9 +1407,9 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionINCREMENTAL",
                 "   [-INCREMENTAL (\u901A\u8FC7\u5C06"
-                    + " http://xml.apache.org/xalan/features/incremental"
-                    + " \u8BBE\u7F6E\u4E3A\u201C\u771F\u201D\u6765\u8BF7\u6C42\u589E\u91CF DTM"
-                    + " \u6784\u5EFA\u3002)]"
+                        + " http://xml.apache.org/xalan/features/incremental"
+                        + " \u8BBE\u7F6E\u4E3A\u201C\u771F\u201D\u6765\u8BF7\u6C42\u589E\u91CF DTM"
+                        + " \u6784\u5EFA\u3002)]"
             },
             {
                 "optionNOOPTIMIMIZE",
@@ -1425,22 +1425,22 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionXO",
                 "   [-XO [transletName] (\u4E3A\u751F\u6210\u7684 translet"
-                    + " \u5206\u914D\u540D\u79F0)]"
+                        + " \u5206\u914D\u540D\u79F0)]"
             },
             {
                 "optionXD",
                 "   [-XD destinationDirectory (\u6307\u5B9A translet"
-                    + " \u7684\u76EE\u6807\u76EE\u5F55)]"
+                        + " \u7684\u76EE\u6807\u76EE\u5F55)]"
             },
             {
                 "optionXJ",
                 "   [-XJ jarfile (\u5C06 translet \u7C7B\u6253\u5305\u5230\u540D\u4E3A <jarfile>"
-                    + " \u7684 jar \u6587\u4EF6\u4E2D)]"
+                        + " \u7684 jar \u6587\u4EF6\u4E2D)]"
             },
             {
                 "optionXP",
                 "   [-XP package (\u4E3A\u751F\u6210\u7684\u6240\u6709 translet"
-                    + " \u7C7B\u6307\u5B9A\u7A0B\u5E8F\u5305\u540D\u79F0\u524D\u7F00)]"
+                        + " \u7C7B\u6307\u5B9A\u7A0B\u5E8F\u5305\u540D\u79F0\u524D\u7F00)]"
             },
 
             // AddITIONAL  STRINGS that need L10n
@@ -1453,12 +1453,12 @@ public class XSLTErrorResources_zh_CN extends ListResourceBundle {
             {
                 "optionXT",
                 "   [-XT (\u5982\u679C\u53EF\u80FD, \u4F7F\u7528 translet"
-                    + " \u8FDB\u884C\u8F6C\u6362)]"
+                        + " \u8FDB\u884C\u8F6C\u6362)]"
             },
             {
                 "diagTiming",
                 " --------- \u901A\u8FC7{1}\u8F6C\u6362{0}\u82B1\u8D39\u4E86 {2}"
-                    + " \u6BEB\u79D2\u7684\u65F6\u95F4"
+                        + " \u6BEB\u79D2\u7684\u65F6\u95F4"
             },
             {
                 "recursionTooDeep",

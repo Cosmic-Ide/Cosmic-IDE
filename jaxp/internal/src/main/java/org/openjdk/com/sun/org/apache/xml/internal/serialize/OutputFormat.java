@@ -595,7 +595,6 @@ public class OutputFormat {
      *
      * @param preserve the preserve flag
      */
-
     public void setPreserveEmptyAttributes(boolean preserve) {
         _preserveEmptyAttributes = preserve;
     }

@@ -826,7 +826,7 @@ class Token implements java.io.Serializable {
                         default:
                             throw new RuntimeException(
                                     "org.apache.xerces.utils.regex.Token#getRange(): Unknown"
-                                        + " Unicode category: "
+                                            + " Unicode category: "
                                             + type);
                     }
                     ranges[type].addRange(i, i);

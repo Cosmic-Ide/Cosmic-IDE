@@ -402,7 +402,7 @@ public class NodeSetDTM extends NodeVector
                     XSLMessages.createXPATHMessage(
                             XPATHErrorResources.ER_NODESETDTM_CANNOT_INDEX,
                             null)); // "This NodeSetDTM can not do indexing or counting
-                                    // functions!");
+        // functions!");
 
         if ((index >= 0) && (m_next < m_firstFree)) m_next = index;
         else m_next = m_firstFree - 1;
@@ -1024,7 +1024,7 @@ public class NodeSetDTM extends NodeVector
                     XSLMessages.createXPATHMessage(
                             XPATHErrorResources.ER_NODESETDTM_CANNOT_INDEX,
                             null)); // "This NodeSetDTM can not do indexing or counting
-                                    // functions!");
+        // functions!");
 
         m_next = i;
     }
@@ -1090,7 +1090,7 @@ public class NodeSetDTM extends NodeVector
                     XSLMessages.createXPATHMessage(
                             XPATHErrorResources.ER_CANNOT_CALL_SETSHOULDCACHENODE,
                             null)); // "Can not call setShouldCacheNodes after nextNode has been
-                                    // called!");
+        // called!");
 
         m_cacheNodes = b;
         m_mutable = true;

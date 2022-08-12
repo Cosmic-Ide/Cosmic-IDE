@@ -104,7 +104,7 @@ public class Process {
         System.out.println(
                 resbundle.getString(
                         "optionEDUMP")); // "   [-EDUMP {optional filename} (Do stackdump on
-                                         // error.)]");
+        // error.)]");
         System.out.println(
                 resbundle.getString(
                         "optionXML")); // "   [-XML (Use XML formatter and add XML header.)]");
@@ -115,7 +115,7 @@ public class Process {
         System.out.println(
                 resbundle.getString(
                         "optionPARAM")); // "   [-PARAM name expression (Set a stylesheet
-                                         // parameter)]");
+        // parameter)]");
 
         System.out.println(resbundle.getString("optionMEDIA"));
         System.out.println(resbundle.getString("optionFLAVOR"));
@@ -123,22 +123,22 @@ public class Process {
         System.out.println(
                 resbundle.getString(
                         "optionURIRESOLVER")); // "   [-URIRESOLVER full class name (URIResolver to
-                                               // be used to resolve URIs)]");
+        // be used to resolve URIs)]");
         System.out.println(
                 resbundle.getString(
                         "optionENTITYRESOLVER")); // "   [-ENTITYRESOLVER full class name
-                                                  // (EntityResolver to be used to resolve
-                                                  // entities)]");
+        // (EntityResolver to be used to resolve
+        // entities)]");
         waitForReturnKey(resbundle);
         System.out.println(
                 resbundle.getString(
                         "optionCONTENTHANDLER")); // "   [-CONTENTHANDLER full class name
-                                                  // (ContentHandler to be used to serialize
-                                                  // output)]");
+        // (ContentHandler to be used to serialize
+        // output)]");
         System.out.println(
                 resbundle.getString(
                         "optionSECUREPROCESSING")); // "   [-SECURE (set the secure processing
-                                                    // feature to true)]");
+        // feature to true)]");
 
         // J2SE does not support Xalan interpretive
         /*

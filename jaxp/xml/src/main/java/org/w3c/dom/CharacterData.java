@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * The <code>CharacterData</code> interface extends Node with a set of attributes and methods for
  * accessing character data in the DOM. For clarity this set is defined here rather than on each

@@ -290,8 +290,8 @@ public class FuncExtFunction extends Function {
                         XPATHErrorResources.ER_INCORRECT_PROGRAMMER_ASSERTION,
                         new Object[] {
                             "Programmer's assertion:  the method"
-                                + " FunctionMultiArgs.reportWrongNumberArgs() should never be"
-                                + " called."
+                                    + " FunctionMultiArgs.reportWrongNumberArgs() should never be"
+                                    + " called."
                         });
 
         throw new RuntimeException(fMsg);

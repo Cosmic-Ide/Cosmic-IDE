@@ -725,7 +725,7 @@ public class NodeSet implements NodeList, NodeIterator, Cloneable, ContextNodeLi
                     XSLMessages.createXPATHMessage(
                             XPATHErrorResources.ER_CANNOT_CALL_SETSHOULDCACHENODE,
                             null)); // "Can not call setShouldCacheNodes after nextNode has been
-                                    // called!");
+        // called!");
 
         m_cacheNodes = b;
         m_mutable = true;

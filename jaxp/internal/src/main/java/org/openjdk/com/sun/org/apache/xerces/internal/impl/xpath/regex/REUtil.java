@@ -218,7 +218,7 @@ public final class REUtil {
             } else {
                 System.err.println(
                         "org.openjdk.com.sun.org.apache.xerces.internal.utils.regex.ParseException:"
-                            + " "
+                                + " "
                                 + pe.getMessage());
                 String indent = "        ";
                 System.err.println(indent + pattern);

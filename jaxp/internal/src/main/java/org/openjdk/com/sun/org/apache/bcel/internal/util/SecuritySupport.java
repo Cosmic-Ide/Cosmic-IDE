@@ -133,7 +133,8 @@ public final class SecuritySupport {
         }
     }
 
-    public static InputStream getResourceAsStream(final java.lang.ClassLoader cl, final String name) {
+    public static InputStream getResourceAsStream(
+            final java.lang.ClassLoader cl, final String name) {
         return (InputStream)
                 AccessController.doPrivileged(
                         new PrivilegedAction() {

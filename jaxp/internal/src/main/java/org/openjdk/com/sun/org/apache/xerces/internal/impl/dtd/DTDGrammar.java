@@ -2371,7 +2371,7 @@ public class DTDGrammar implements XMLDTDHandler, XMLDTDContentModelHandler, Ent
         // error
         throw new RuntimeException(
                 "Invalid content spec type seen in contentSpecTree() method of AbstractDTDGrammar"
-                    + " class : "
+                        + " class : "
                         + contentSpec.type);
     } // contentSpecTree(int,XMLContentSpec,ChildrenList)
 

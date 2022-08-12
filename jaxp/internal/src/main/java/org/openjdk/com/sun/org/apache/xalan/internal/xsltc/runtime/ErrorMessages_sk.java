@@ -231,7 +231,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "Analyz\u00e1tor SAX, ktor\u00fd pou\u017e\u00edvate, nesprac\u00fava udalosti"
-                    + " deklar\u00e1cie DTD."
+                        + " deklar\u00e1cie DTD."
             },
 
             /*
@@ -243,7 +243,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 BasisLibrary.NAMESPACES_SUPPORT_ERR,
                 "Analyz\u00e1tor SAX, ktor\u00fd pou\u017e\u00edvate, nem\u00e1 podporu pre"
-                    + " n\u00e1zvov\u00e9 priestory XML."
+                        + " n\u00e1zvov\u00e9 priestory XML."
             },
 
             /*

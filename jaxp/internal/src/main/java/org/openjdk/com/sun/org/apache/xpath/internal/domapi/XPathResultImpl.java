@@ -146,8 +146,8 @@ class XPathResultImpl implements XPathResult, EventListener {
                 throw new XPathException(
                         XPathException.TYPE_ERR,
                         fmsg); // "The XPathResult of XPath expression {0} has an XPathResultType of
-                               // {1} which cannot be coerced into the specified XPathResultType of
-                               // {2}."},
+                // {1} which cannot be coerced into the specified XPathResultType of
+                // {2}."},
             }
 
             // If user requested ordered nodeset and result is unordered
@@ -175,8 +175,8 @@ class XPathResultImpl implements XPathResult, EventListener {
                 throw new XPathException(
                         XPathException.TYPE_ERR,
                         fmsg); // "The XPathResult of XPath expression {0} has an XPathResultType of
-                               // {1} which cannot be coerced into the specified XPathResultType of
-                               // {2}."},
+                // {1} which cannot be coerced into the specified XPathResultType of
+                // {2}."},
             }
         }
     }

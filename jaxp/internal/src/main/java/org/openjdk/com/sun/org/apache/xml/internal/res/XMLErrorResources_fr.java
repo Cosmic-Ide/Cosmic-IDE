@@ -263,12 +263,12 @@ public class XMLErrorResources_fr extends ListResourceBundle {
         {
             ER_NO_QUERY_STRING_IN_PATH,
             "La cha\u00EEne de requ\u00EAte ne doit pas figurer dans un chemin et une cha\u00EEne"
-                + " de requ\u00EAte"
+                    + " de requ\u00EAte"
         },
         {
             ER_NO_FRAGMENT_STRING_IN_PATH,
             "Le fragment ne doit pas \u00EAtre indiqu\u00E9 \u00E0 la fois dans le chemin et dans"
-                + " le fragment"
+                    + " le fragment"
         },
         {
             ER_CANNOT_INIT_URI_EMPTY_PARMS,
@@ -299,12 +299,12 @@ public class XMLErrorResources_fr extends ListResourceBundle {
         {
             ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT,
             "L'enfant de l'attribut ne poss\u00E8de pas d'\u00E9l\u00E9ment de document"
-                + " propri\u00E9taire."
+                    + " propri\u00E9taire."
         },
         {
             ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
             "Avertissement : impossible de g\u00E9n\u00E9rer une sortie du texte avant"
-                + " l'\u00E9l\u00E9ment de document. Non pris en compte..."
+                    + " l'\u00E9l\u00E9ment de document. Non pris en compte..."
         },
         {ER_CANT_HAVE_MORE_THAN_ONE_ROOT, "Impossible d'avoir plus d'une racine sur un DOM."},
         {ER_ARG_LOCALNAME_NULL, "L'argument \"localName\" est NULL"},
@@ -338,7 +338,7 @@ public class XMLErrorResources_fr extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "Impossible d''ajouter l''attribut {0} apr\u00E8s des noeuds enfant ou avant la"
-                + " production d''un \u00E9l\u00E9ment. L''attribut est ignor\u00E9."
+                    + " production d''un \u00E9l\u00E9ment. L''attribut est ignor\u00E9."
         },
 
         /*
@@ -368,12 +368,12 @@ public class XMLErrorResources_fr extends ListResourceBundle {
         {
             ER_STRAY_NAMESPACE,
             "La d\u00E9claration d''espace de noms ''{0}''=''{1}'' est \u00E0 l''ext\u00E9rieur de"
-                + " l''\u00E9l\u00E9ment."
+                    + " l''\u00E9l\u00E9ment."
         },
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "Impossible de charger ''{0}'' (v\u00E9rifier CLASSPATH), les valeurs par d\u00E9faut"
-                + " sont donc employ\u00E9es"
+                    + " sont donc employ\u00E9es"
         },
         {
             ER_ILLEGAL_CHARACTER,
@@ -383,7 +383,7 @@ public class XMLErrorResources_fr extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "Impossible de charger le fichier de propri\u00E9t\u00E9s ''{0}'' pour la m\u00E9thode"
-                + " de sortie ''{1}'' (v\u00E9rifier CLASSPATH)"
+                    + " de sortie ''{1}'' (v\u00E9rifier CLASSPATH)"
         }
     };
 

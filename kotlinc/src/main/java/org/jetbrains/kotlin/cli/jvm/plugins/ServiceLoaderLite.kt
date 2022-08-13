@@ -8,9 +8,7 @@ import java.io.IOError
 import java.net.URLClassLoader
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.Paths
-import java.util.List
 import java.util.Locale
-import java.util.Set
 import java.util.zip.ZipFile
 
 object ServiceLoaderLite {

@@ -7,4 +7,5 @@ object BuildPlugins {
 
     const val KOTLIN_ANDROID = "org.jetbrains.kotlin.android"
     const val KOTLIN_JAVA = "org.jetbrains.kotlin.jvm"
+    const val KTLINT = "org.jlleitschuh.gradle.ktlint"
 }

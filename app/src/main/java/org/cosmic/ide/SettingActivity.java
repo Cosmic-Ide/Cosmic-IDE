@@ -38,30 +38,16 @@ public class SettingActivity extends BaseActivity {
                     .setText(compiler_settings.getString("program_arguments", ""));
         }
 
-        binding.etThemes.setAdapter(
-                new NonFilterableArrayAdapter(
-                        this,
-                        themes));
+        binding.etThemes.setAdapter(new NonFilterableArrayAdapter(this, themes));
 
-        binding.etJavaVersions.setAdapter(
-                new NonFilterableArrayAdapter(
-                        this,
-                        javaVersions));
+        binding.etJavaVersions.setAdapter(new NonFilterableArrayAdapter(this, javaVersions));
 
-        binding.etJavaCompilers.setAdapter(
-                new NonFilterableArrayAdapter(
-                        this,
-                        javaCompilers));
+        binding.etJavaCompilers.setAdapter(new NonFilterableArrayAdapter(this, javaCompilers));
 
-        binding.etJavaFormatters.setAdapter(
-                new NonFilterableArrayAdapter(
-                        this,
-                        javaFormatters));
+        binding.etJavaFormatters.setAdapter(new NonFilterableArrayAdapter(this, javaFormatters));
 
         binding.etJavaDisassemblers.setAdapter(
-                new NonFilterableArrayAdapter(
-                        this,
-                        javaDisassemblers));
+                new NonFilterableArrayAdapter(this, javaDisassemblers));
 
         var currentTheme = ui_settings.getString("current_theme", themes[0]);
         var count = 0;

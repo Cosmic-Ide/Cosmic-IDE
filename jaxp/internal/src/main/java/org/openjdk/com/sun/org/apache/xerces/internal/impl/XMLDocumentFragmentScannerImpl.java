@@ -2293,7 +2293,7 @@ public class XMLDocumentFragmentScannerImpl extends XMLScanner
                 if (DEBUG_SKIP_ALGORITHM) {
                     System.out.println(
                             "----------ENTERED THE LOOP WHERE WE CHECK FOR MATCHING OF"
-                                + " ELMENT-----");
+                                    + " ELMENT-----");
                     System.out.println(
                             "Depth = "
                                     + fDepth
@@ -2563,9 +2563,8 @@ public class XMLDocumentFragmentScannerImpl extends XMLScanner
             if (fEntityScanner.skipChar('<')) {
                 setScannerState(SCANNER_STATE_START_OF_MARKUP);
             } else if (fEntityScanner.skipChar('&')) {
-                setScannerState(
-                        SCANNER_STATE_REFERENCE); // XMLEvent.ENTITY_REFERENCE );
-                                                  // //SCANNER_STATE_REFERENCE
+                setScannerState(SCANNER_STATE_REFERENCE); // XMLEvent.ENTITY_REFERENCE );
+                // //SCANNER_STATE_REFERENCE
             } else {
                 // element content is there..
                 setScannerState(SCANNER_STATE_CHARACTER_DATA);
@@ -2642,8 +2641,8 @@ public class XMLDocumentFragmentScannerImpl extends XMLScanner
                                     fEntityScanner.scanChar();
                                     setScannerState(
                                             SCANNER_STATE_REFERENCE); // XMLEvent.ENTITY_REFERENCE
-                                                                      // );
-                                                                      // //SCANNER_STATE_REFERENCE
+                                    // );
+                                    // //SCANNER_STATE_REFERENCE
                                     break;
                                 } else {
                                     // element content is there..
@@ -2860,13 +2859,13 @@ public class XMLDocumentFragmentScannerImpl extends XMLScanner
                                         setScannerState(SCANNER_STATE_START_OF_MARKUP);
                                         break;
                                     } // xxx what should be the behavior if entity reference is
-                                      // present in the content ?
+                                    // present in the content ?
                                     else if (c == '&') {
                                         fEntityScanner.scanChar();
                                         setScannerState(SCANNER_STATE_REFERENCE);
                                         break;
                                     } /// xxx since this part is also characters, it should be
-                                      // merged...
+                                    // merged...
                                     else if (c != -1 && isInvalidLiteral(c)) {
                                         if (XMLChar.isHighSurrogate(c)) {
                                             // special case: surrogates

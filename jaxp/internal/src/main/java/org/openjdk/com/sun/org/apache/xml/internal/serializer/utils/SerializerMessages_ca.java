@@ -40,7 +40,7 @@ public class SerializerMessages_ca extends ListResourceBundle {
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "The serializer class ''{0}'' does not implement"
-                            + " org.xml.sax.ContentHandler."
+                                + " org.xml.sax.ContentHandler."
                     },
                     {
                         MsgKey.ER_RESOURCE_COULD_NOT_FIND,
@@ -56,7 +56,7 @@ public class SerializerMessages_ca extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "Cannot add attribute {0} after child nodes or before an element is"
-                            + " produced.  Attribute will be ignored."
+                                + " produced.  Attribute will be ignored."
                     },
                     {
                         MsgKey.ER_NAMESPACE_PREFIX,
@@ -74,12 +74,12 @@ public class SerializerMessages_ca extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "Attempt to output character of integral value {0} that is not represented"
-                            + " in specified output encoding of {1}."
+                                + " in specified output encoding of {1}."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Could not load the propery file ''{0}'' for output method ''{1}'' (check"
-                            + " CLASSPATH)"
+                                + " CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "Invalid port number"},
                     {MsgKey.ER_PORT_WHEN_HOST_NULL, "Port cannot be set when host is null"},

@@ -317,13 +317,13 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_CURRENT_NOT_ALLOWED_IN_MATCH,
                     "La funci\u00F3n current() no est\u00E1 permitida en un patr\u00F3n de"
-                        + " coincidencia."
+                            + " coincidencia."
                 },
                 {ER_CURRENT_TAKES_NO_ARGS, "La funci\u00F3n current() no acepta argumentos."},
                 {
                     ER_DOCUMENT_REPLACED,
                     "La implantaci\u00F3n de la funci\u00F3n document() se ha sustituido por"
-                        + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument!"
+                            + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument!"
                 },
                 {ER_CONTEXT_HAS_NO_OWNERDOC, "El contexto no tiene un documento de propietario."},
                 {ER_LOCALNAME_HAS_TOO_MANY_ARGS, "local-name() tiene demasiados argumentos."},
@@ -353,7 +353,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_INCORRECT_ARG_LENGTH,
                     "La longitud del argumento de la prueba del nodo processing-instruction() es"
-                        + " incorrecta."
+                            + " incorrecta."
                 },
                 {ER_CANT_CONVERT_TO_NUMBER, "No se puede convertir {0} en un n\u00FAmero"},
                 {ER_CANT_CONVERT_TO_NODELIST, "No se puede convertir {0} en una lista de nodos."},
@@ -401,7 +401,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_PREDICATE_ILLEGAL_SYNTAX,
                     "'..[predicate]' o '.[predicate]' es una sintaxis no v\u00E1lida. Utilice"
-                        + " 'self::node()[predicate]' en su lugar."
+                            + " 'self::node()[predicate]' en su lugar."
                 },
                 {ER_ILLEGAL_AXIS_NAME, "nombre de eje no permitido: {0}"},
                 {ER_UNKNOWN_NODETYPE, "Tipo de nodo desconocido: {0}"},
@@ -420,7 +420,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_DIDNOT_FIND_XPATH_SELECT_EXP,
                     "Error. No se ha encontrado la expresi\u00F3n de selecci\u00F3n xpath"
-                        + " (-select)."
+                            + " (-select)."
                 },
                 {
                     ER_COULDNOT_FIND_ENDOP_AFTER_OPLOCATIONPATH,
@@ -430,12 +430,12 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_ILLEGAL_VARIABLE_REFERENCE,
                     "La referencia de variable proporcionada para la variable est\u00E1 fuera de"
-                        + " contexto o no tiene definici\u00F3n. Nombre = {0}"
+                            + " contexto o no tiene definici\u00F3n. Nombre = {0}"
                 },
                 {
                     ER_AXES_NOT_ALLOWED,
                     "S\u00F3lo los ejes child:: y attribute:: est\u00E1n permitidos en los patrones"
-                        + " de coincidencia. Ejes incorrectos = {0}"
+                            + " de coincidencia. Ejes incorrectos = {0}"
                 },
                 {ER_KEY_HAS_TOO_MANY_ARGS, "key() tiene un n\u00FAmero incorrecto de argumentos."},
                 {ER_COUNT_TAKES_1_ARG, "La funci\u00F3n count necesita un argumento."},
@@ -444,7 +444,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_PROBLEM_IN_DTM_NEXTSIBLING,
                     "Se ha producido un problema en DTM en getNextSibling... intentando la"
-                        + " recuperaci\u00F3n"
+                            + " recuperaci\u00F3n"
                 },
                 {
                     ER_CANNOT_WRITE_TO_EMPTYNODELISTIMPL,
@@ -461,7 +461,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_PARSE_NOT_SUPPORTED,
                     "El an\u00E1lisis (origen de InputSource) no est\u00E1 soportado en"
-                        + " XPathContext. No se puede abrir {0}"
+                            + " XPathContext. No se puede abrir {0}"
                 },
                 {
                     ER_SAX_API_NOT_HANDLED,
@@ -497,7 +497,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_PROG_ASSERT_UNKNOWN_OPCODE,
                     "Afirmaci\u00F3n del programador: c\u00F3digo de operaci\u00F3n desconocido:"
-                        + " {0}"
+                            + " {0}"
                 },
                 {ER_ZERO_OR_ONE, "0 o 1"},
                 {
@@ -566,7 +566,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_NODESETDTM_CANNOT_INDEX,
                     "Este DTM de juego de nodos no puede realizar funciones de indexaci\u00F3n o"
-                        + " recuento."
+                            + " recuento."
                 },
                 {
                     ER_NODESET_CANNOT_INDEX,
@@ -575,13 +575,13 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_CANNOT_CALL_SETSHOULDCACHENODE,
                     "No se puede llamar a setShouldCacheNodes despu\u00E9s de haber llamado a"
-                        + " nextNode."
+                            + " nextNode."
                 },
                 {ER_ONLY_ALLOWS, "{0} s\u00F3lo permite {1} argumentos"},
                 {
                     ER_UNKNOWN_STEP,
                     "Afirmaci\u00F3n del programador en getNextStepPos: tipo de paso desconocido:"
-                        + " {0}"
+                            + " {0}"
                 },
 
                 // Note to translators:  A relative location path is a form of XPath expression.
@@ -590,7 +590,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_EXPECTED_REL_LOC_PATH,
                     "Se esperaba una ruta de acceso de ubicaci\u00F3n relativa despu\u00E9s del"
-                        + " token '/' o '//'."
+                            + " token '/' o '//'."
                 },
 
                 // Note to translators:  A location path is a form of XPath expression.
@@ -599,7 +599,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH,
                     "Se esperaba una ruta de acceso de ubicaci\u00F3n, pero se ha encontrado el"
-                        + " siguiente token: {0}"
+                            + " siguiente token: {0}"
                 },
 
                 // Note to translators:  A location path is a form of XPath expression.
@@ -608,7 +608,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH_AT_END_EXPR,
                     "Se esperaba una ruta de acceso de ubicaci\u00F3n, pero se ha encontrado el"
-                        + " final de la expresi\u00F3n XPath en su lugar."
+                            + " final de la expresi\u00F3n XPath en su lugar."
                 },
 
                 // Note to translators:  A location step is part of an XPath expression.
@@ -686,20 +686,20 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_DOC_MUTATED,
                     "Documento mutado debido a que se ha devuelto el resultado. El iterador no es"
-                        + " v\u00E1lido."
+                            + " v\u00E1lido."
                 },
                 {ER_INVALID_XPATH_TYPE, "Argumento de tipo XPath no v\u00E1lido: {0}"},
                 {ER_EMPTY_XPATH_RESULT, "Objeto de resultado XPath vac\u00EDo"},
                 {
                     ER_INCOMPATIBLE_TYPES,
                     "El valor de XPathResult de la expresi\u00F3n XPath ''{0}'' tiene un valor de"
-                        + " XPathResultType de {1} que no se puede forzar en el XPathResultType"
-                        + " especificado de {2}."
+                            + " XPathResultType de {1} que no se puede forzar en el XPathResultType"
+                            + " especificado de {2}."
                 },
                 {
                     ER_NULL_RESOLVER,
                     "No se ha podido resolver el prefijo con el sistema de resoluci\u00F3n de"
-                        + " prefijos nulo."
+                            + " prefijos nulo."
                 },
 
                 // Note to translators:  The substitution text is the name of a data type.  The
@@ -708,7 +708,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_STRING,
                     "El valor de XPathResult de la expresi\u00F3n XPath ''{0}'' tiene un valor de"
-                        + " XPathResultType de {1} que no se puede convertir en una cadena."
+                            + " XPathResultType de {1} que no se puede convertir en una cadena."
                 },
 
                 // Note to translators: Do not translate snapshotItem,
@@ -728,7 +728,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_WRONG_DOCUMENT,
                     "El nodo de contexto no pertenece al documento que est\u00E1 enlazado a este"
-                        + " XPathEvaluator."
+                            + " XPathEvaluator."
                 },
 
                 // Note to translators:  The XPath expression cannot be evaluated with respect
@@ -738,7 +738,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_XPATHRESULTTYPE_TO_NUMBER,
                     "El valor de XPathResult de la expresi\u00F3n XPath ''{0}'' tiene un valor de"
-                        + " XPathResultType de {1} que no se puede convertir en un n\u00FAmero"
+                            + " XPathResultType de {1} que no se puede convertir en un n\u00FAmero"
                 },
 
                 // BEGIN:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -780,21 +780,21 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_OBJECT_MODEL_NULL,
                     "{0}#isObjectModelSupported( Cadena objectModel ) no se puede llamar con"
-                        + " objectModel == null"
+                            + " objectModel == null"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_OBJECT_MODEL_EMPTY,
                     "{0}#isObjectModelSupported( Cadena objectModel ) no se puede llamar con"
-                        + " objectModel == \"\""
+                            + " objectModel == \"\""
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_FEATURE_NAME_NULL,
                     "Intentando definir una funci\u00F3n con un nombre nulo: {0}#setFeature( null,"
-                        + " {1})"
+                            + " {1})"
                 },
 
                 /** Field ER_FEATURE_UNKNOWN */
@@ -817,21 +817,21 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     ER_SECUREPROCESSING_FEATURE,
                     "FEATURE_SECURE_PROCESSING: no se puede definir la funci\u00F3n en false cuando"
-                        + " est\u00E1 presente el gestor de seguridad: {1}#setFeature({0},{2})"
+                            + " est\u00E1 presente el gestor de seguridad: {1}#setFeature({0},{2})"
                 },
 
                 /** Field ER_NULL_XPATH_FUNCTION_RESOLVER */
                 {
                     ER_NULL_XPATH_FUNCTION_RESOLVER,
                     "Se est\u00E1 intentando definir un valor de XPathFunctionResolver"
-                        + " nulo:{0}#setXPathFunctionResolver(null)"
+                            + " nulo:{0}#setXPathFunctionResolver(null)"
                 },
 
                 /** Field ER_NULL_XPATH_VARIABLE_RESOLVER */
                 {
                     ER_NULL_XPATH_VARIABLE_RESOLVER,
                     "Se est\u00E1 intentando definir un valor XPathVariableResolver"
-                        + " nulo:{0}#setXPathVariableResolver(null)"
+                            + " nulo:{0}#setXPathVariableResolver(null)"
                 },
 
                 // END:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -842,18 +842,18 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     WG_LOCALE_NAME_NOT_HANDLED,
                     "El nombre de la configuraci\u00F3n regional en la funci\u00F3n format-number"
-                        + " no se ha manejado a\u00FAn."
+                            + " no se ha manejado a\u00FAn."
                 },
                 {WG_PROPERTY_NOT_SUPPORTED, "Propiedad XSL no soportada: {0}"},
                 {
                     WG_DONT_DO_ANYTHING_WITH_NS,
                     "No realice ninguna acci\u00F3n con el espacio de nombres {0} en la propiedad:"
-                        + " {1}"
+                            + " {1}"
                 },
                 {
                     WG_SECURITY_EXCEPTION,
                     "Excepci\u00F3n de seguridad al intentar acceder a la propiedad del sistema"
-                        + " XSL: {0}"
+                            + " XSL: {0}"
                 },
                 {WG_QUO_NO_LONGER_DEFINED, "Sintaxis anterior: quo(...) ya no se define en XPath."},
                 {
@@ -870,7 +870,7 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     WG_ILLEGAL_VARIABLE_REFERENCE,
                     "La referencia de variable proporcionada para la variable est\u00E1 fuera de"
-                        + " contexto o no tiene definici\u00F3n. Nombre = {0}"
+                            + " contexto o no tiene definici\u00F3n. Nombre = {0}"
                 },
                 {WG_UNSUPPORTED_ENCODING, "Codificaci\u00F3n no soportada: {0}"},
 
@@ -898,12 +898,12 @@ public class XPATHErrorResources_es extends ListResourceBundle {
                 {
                     "optionMatch",
                     "   [-match patr\u00F3n de coincidencia (para diagn\u00F3sticos de"
-                        + " coincidencia)]"
+                            + " coincidencia)]"
                 },
                 {
                     "optionAnyExpr",
                     "O s\u00F3lo una expresi\u00F3n xpath realizar\u00E1 un volcado de"
-                        + " diagn\u00F3stico"
+                            + " diagn\u00F3stico"
                 },
                 {"noParsermsg1", "El proceso XSL no se ha realizado correctamente."},
                 {"noParsermsg2", "** No se ha encontrado el analizador **"},

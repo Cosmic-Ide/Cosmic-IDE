@@ -157,7 +157,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.METHOD_NOT_FOUND_ERR,
                 "N\u00E3o \u00E9 poss\u00EDvel localizar o m\u00E9todo externo ''{0}'' (deve ser"
-                    + " p\u00FAblico)."
+                        + " p\u00FAblico)."
             },
 
             /*
@@ -169,7 +169,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "N\u00E3o \u00E9 poss\u00EDvel converter o argumento/tipo de retorno na chamada"
-                    + " para o m\u00E9todo ''{0}''"
+                        + " para o m\u00E9todo ''{0}''"
             },
 
             /*
@@ -294,8 +294,8 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.RESULT_TREE_SORT_ERR,
                 "Os fragmentos da \u00E1rvore n\u00E3o podem ser classificados (os elementos"
-                    + " <xsl:sort> foram ignorados). Voc\u00EA deve classificar os n\u00F3s ao"
-                    + " criar a \u00E1rvore de resultados."
+                        + " <xsl:sort> foram ignorados). Voc\u00EA deve classificar os n\u00F3s ao"
+                        + " criar a \u00E1rvore de resultados."
             },
 
             /*
@@ -352,7 +352,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.DOCUMENT_ARG_ERR,
                 "O segundo argumento para a fun\u00E7\u00E3o document() deve ser um conjunto de"
-                    + " n\u00F3s."
+                        + " n\u00F3s."
             },
 
             /*
@@ -400,7 +400,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.WHEN_ELEMENT_ERR,
                 "Somente os elementos <xsl:when> e <xsl:otherwise> s\u00E3o permitidos em"
-                    + " <xsl:choose>."
+                        + " <xsl:choose>."
             },
 
             /*
@@ -482,7 +482,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "O documento de entrada n\u00E3o \u00E9 uma folha de estilos (o namespace XSL"
-                    + " n\u00E3o foi declarado no elemento-raiz)."
+                        + " n\u00E3o foi declarado no elemento-raiz)."
             },
 
             /*
@@ -500,8 +500,8 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
                 "N\u00E3o foi poss\u00EDvel ler o alvo ''{0}'' da folha de estilos, porque o acesso"
-                    + " a ''{1}'' n\u00E3o \u00E9 permitido em virtude da restri\u00E7\u00E3o"
-                    + " definida pela propriedade accessExternalStylesheet."
+                        + " a ''{1}'' n\u00E3o \u00E9 permitido em virtude da restri\u00E7\u00E3o"
+                        + " definida pela propriedade accessExternalStylesheet."
             },
 
             /*
@@ -581,7 +581,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.ATTR_VAL_TEMPLATE_ERR,
                 "N\u00E3o \u00E9 poss\u00EDvel fazer parsing do modelo do valor do atributo"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -610,7 +610,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.NO_TRANSLET_CLASS_ERR,
                 "Este Templates n\u00E3o cont\u00E9m uma defini\u00E7\u00E3o de classe translet"
-                    + " v\u00E1lida."
+                        + " v\u00E1lida."
             },
 
             /*
@@ -632,7 +632,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "Classe translet carregada, mas n\u00E3o \u00E9 poss\u00EDvel criar uma"
-                    + " inst\u00E2ncia translet."
+                        + " inst\u00E2ncia translet."
             },
 
             /*
@@ -847,7 +847,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.STRAY_SORT_ERR,
                 "<xsl:sort> s\u00F3 pode ser usado dentro de <xsl:for-each> ou"
-                    + " <xsl:apply-templates>."
+                        + " <xsl:apply-templates>."
             },
 
             /*
@@ -886,7 +886,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "O primeiro argumento para a fun\u00E7\u00E3o Java n\u00E3o static ''{0}'' n\u00E3o"
-                    + " \u00E9 uma refer\u00EAncia de objeto v\u00E1lida."
+                        + " \u00E9 uma refer\u00EAncia de objeto v\u00E1lida."
             },
 
             /*
@@ -904,7 +904,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.TYPE_CHECK_UNK_LOC_ERR,
                 "Erro ao verificar o tipo de uma express\u00E3o em uma localiza\u00E7\u00E3o"
-                    + " desconhecida."
+                        + " desconhecida."
             },
 
             /*
@@ -923,7 +923,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.CMDLINE_OPT_MISSING_ARG_ERR,
                 "A op\u00E7\u00E3o da linha de comandos ''{0}'' n\u00E3o encontrou um argumento"
-                    + " obrigat\u00F3rio."
+                        + " obrigat\u00F3rio."
             },
 
             /*
@@ -990,7 +990,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.COULD_NOT_CREATE_TRANS_FACT,
                 "N\u00E3o foi poss\u00EDvel criar uma inst\u00E2ncia da classe TransformerFactory"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -1039,7 +1039,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_QNAME_ERR,
                 "Um atributo cujo valor deve ser um QName ou uma lista de QNames separada por"
-                    + " espa\u00E7os em branco tinha o valor ''{0}''"
+                        + " espa\u00E7os em branco tinha o valor ''{0}''"
             },
 
             /*
@@ -1072,12 +1072,12 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_GET_FEATURE_NULL_NAME,
                 "O nome do recurso n\u00E3o pode ser nulo em TransformerFactory.getFeature(Nome da"
-                    + " string)."
+                        + " string)."
             },
             {
                 ErrorMsg.JAXP_SET_FEATURE_NULL_NAME,
                 "O nome do recurso n\u00E3o pode ser nulo em TransformerFactory.setFeature(Nome da"
-                    + " string, valor booliano)."
+                        + " string, valor booliano)."
             },
             {
                 ErrorMsg.JAXP_UNSUPPORTED_FEATURE,
@@ -1086,7 +1086,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: N\u00E3o \u00E9 poss\u00EDvel definir o recurso como"
-                    + " falso quando o gerenciador de seguran\u00E7a est\u00E1 presente."
+                        + " falso quando o gerenciador de seguran\u00E7a est\u00E1 presente."
             },
 
             /*
@@ -1099,7 +1099,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_TRY_CATCH,
                 "Erro interno de XSLTC: o byte code gerado cont\u00E9m um bloco try-catch-finally e"
-                    + " n\u00E3o pode ser outlined."
+                        + " n\u00E3o pode ser outlined."
             },
 
             /*
@@ -1115,7 +1115,7 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_UNBALANCED_MARKERS,
                 "Erro interno de XSLTC: os marcadores OutlineableChunkStart e OutlineableChunkEnd"
-                    + " devem ser balanceados e aninhados corretamente."
+                        + " devem ser balanceados e aninhados corretamente."
             },
 
             /*
@@ -1131,8 +1131,8 @@ public class ErrorMessages_pt_BR extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_DELETED_TARGET,
                 "Erro interno de XSLTC: ainda h\u00E1 refer\u00EAncia no m\u00E9todo original a uma"
-                    + " instru\u00E7\u00E3o que fazia parte de um bloco de byte code que foi"
-                    + " outlined."
+                        + " instru\u00E7\u00E3o que fazia parte de um bloco de byte code que foi"
+                        + " outlined."
             },
 
             /*

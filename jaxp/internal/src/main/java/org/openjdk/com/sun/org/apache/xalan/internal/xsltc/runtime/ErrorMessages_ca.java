@@ -155,7 +155,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 BasisLibrary.FORMAT_NUMBER_ERR,
                 "S''ha intentat donar format al n\u00famero ''{0}'' mitjan\u00e7ant el patr\u00f3"
-                    + " ''{1}''."
+                        + " ''{1}''."
             },
 
             /*
@@ -232,7 +232,7 @@ public class ErrorMessages_ca extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "L'analitzador SAX que feu servir no gestiona esdeveniments de declaraci\u00f3 de"
-                    + " DTD."
+                        + " DTD."
             },
 
             /*

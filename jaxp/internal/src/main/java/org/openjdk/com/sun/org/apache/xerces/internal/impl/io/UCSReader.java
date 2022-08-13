@@ -164,7 +164,7 @@ public class UCSReader extends Reader {
                 int charRead = fInputStream.read();
                 if (charRead
                         == -1) { // end of input; something likely went wrong!A  Pad buffer with
-                                 // nulls.
+                    // nulls.
                     for (int j = i; j < numToRead; j++) fBuffer[count + j] = 0;
                     break;
                 } else {
@@ -179,7 +179,7 @@ public class UCSReader extends Reader {
                 int charRead = fInputStream.read();
                 if (charRead
                         == -1) { // end of input; something likely went wrong!A  Pad buffer with
-                                 // nulls.
+                    // nulls.
                     fBuffer[count] = 0;
                 } else {
                     fBuffer[count] = (byte) charRead;

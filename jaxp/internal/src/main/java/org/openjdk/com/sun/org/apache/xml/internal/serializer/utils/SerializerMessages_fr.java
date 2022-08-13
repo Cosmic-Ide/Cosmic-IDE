@@ -71,7 +71,7 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.BAD_MSGKEY,
                         "La cl\u00E9 de message ''{0}'' ne figure pas dans la classe de messages"
-                            + " ''{1}''"
+                                + " ''{1}''"
                     },
                     {
                         MsgKey.BAD_MSGFORMAT,
@@ -80,7 +80,7 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "La classe de serializer ''{0}'' n''impl\u00E9mente pas"
-                            + " org.xml.sax.ContentHandler."
+                                + " org.xml.sax.ContentHandler."
                     },
                     {
                         MsgKey.ER_RESOURCE_COULD_NOT_FIND,
@@ -99,8 +99,8 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "Impossible d''ajouter l''attribut {0} apr\u00E8s des noeuds enfant ou"
-                            + " avant la production d''un \u00E9l\u00E9ment. L''attribut est"
-                            + " ignor\u00E9."
+                                + " avant la production d''un \u00E9l\u00E9ment. L''attribut est"
+                                + " ignor\u00E9."
                     },
 
                     /*
@@ -111,7 +111,7 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_NAMESPACE_PREFIX,
                         "L''espace de noms du pr\u00E9fixe ''{0}'' n''a pas \u00E9t\u00E9"
-                            + " d\u00E9clar\u00E9."
+                                + " d\u00E9clar\u00E9."
                     },
 
                     /*
@@ -135,23 +135,23 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_STRAY_NAMESPACE,
                         "La d\u00E9claration d''espace de noms ''{0}''=''{1}'' est \u00E0"
-                            + " l''ext\u00E9rieur de l''\u00E9l\u00E9ment."
+                                + " l''ext\u00E9rieur de l''\u00E9l\u00E9ment."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "Impossible de charger ''{0}'' (v\u00E9rifier CLASSPATH), les valeurs par"
-                            + " d\u00E9faut sont donc employ\u00E9es"
+                                + " d\u00E9faut sont donc employ\u00E9es"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "Tentative de sortie d''un caract\u00E8re avec une valeur enti\u00E8re {0},"
-                            + " non repr\u00E9sent\u00E9 dans l''encodage de sortie"
-                            + " sp\u00E9cifi\u00E9 pour {1}."
+                                + " non repr\u00E9sent\u00E9 dans l''encodage de sortie"
+                                + " sp\u00E9cifi\u00E9 pour {1}."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Impossible de charger le fichier de propri\u00E9t\u00E9s ''{0}'' pour la"
-                            + " m\u00E9thode de sortie ''{1}'' (v\u00E9rifier CLASSPATH)"
+                                + " m\u00E9thode de sortie ''{1}'' (v\u00E9rifier CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "Num\u00E9ro de port non valide"},
                     {
@@ -166,12 +166,12 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_SCHEME_FROM_NULL_STRING,
                         "Impossible de d\u00E9finir le mod\u00E8le \u00E0 partir de la cha\u00EEne"
-                            + " NULL"
+                                + " NULL"
                     },
                     {
                         MsgKey.ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
                         "Le chemin d'acc\u00E8s contient une s\u00E9quence d'\u00E9chappement non"
-                            + " valide"
+                                + " valide"
                     },
                     {
                         MsgKey.ER_PATH_INVALID_CHAR,
@@ -184,12 +184,12 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_FRAG_WHEN_PATH_NULL,
                         "Impossible de d\u00E9finir le fragment quand le chemin d'acc\u00E8s est"
-                            + " NULL"
+                                + " NULL"
                     },
                     {
                         MsgKey.ER_FRAG_FOR_GENERIC_URI,
                         "Le fragment ne peut \u00EAtre d\u00E9fini que pour un URI"
-                            + " g\u00E9n\u00E9rique"
+                                + " g\u00E9n\u00E9rique"
                     },
                     {MsgKey.ER_NO_SCHEME_IN_URI, "Mod\u00E8le introuvable dans l'URI"},
                     {
@@ -199,28 +199,28 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_FRAGMENT_STRING_IN_PATH,
                         "Le fragment ne doit pas \u00EAtre indiqu\u00E9 \u00E0 la fois dans le"
-                            + " chemin et dans le fragment"
+                                + " chemin et dans le fragment"
                     },
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "La cha\u00EEne de requ\u00EAte ne doit pas figurer dans un chemin et une"
-                            + " cha\u00EEne de requ\u00EAte"
+                                + " cha\u00EEne de requ\u00EAte"
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
                         "Le port peut ne pas \u00EAtre sp\u00E9cifi\u00E9 si l'h\u00F4te ne l'est"
-                            + " pas"
+                                + " pas"
                     },
                     {
                         MsgKey.ER_NO_USERINFO_IF_NO_HOST,
                         "Userinfo peut ne pas \u00EAtre sp\u00E9cifi\u00E9 si l'h\u00F4te ne l'est"
-                            + " pas"
+                                + " pas"
                     },
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
                         "Avertissement : la version du document de sortie doit \u00EAtre ''{0}''."
-                            + " Cette version XML n''est pas prise en charge. La version du"
-                            + " document de sortie sera ''1.0''."
+                                + " Cette version XML n''est pas prise en charge. La version du"
+                                + " document de sortie sera ''1.0''."
                     },
                     {MsgKey.ER_SCHEME_REQUIRED, "Mod\u00E8le obligatoire."},
 
@@ -232,12 +232,12 @@ public class SerializerMessages_fr extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "L''objet de propri\u00E9t\u00E9s transmis \u00E0 SerializerFactory ne"
-                            + " comporte aucune propri\u00E9t\u00E9 ''{0}''."
+                                + " comporte aucune propri\u00E9t\u00E9 ''{0}''."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,
                         "Avertissement : l''encodage ''{0}'' n''est pas pris en charge par"
-                            + " l''ex\u00E9cution Java."
+                                + " l''ex\u00E9cution Java."
                     },
                 };
 

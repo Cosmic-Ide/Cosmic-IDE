@@ -448,7 +448,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler) misplaced {0} element?? Missing container element"
-                    + " ''component''"
+                        + " ''component''"
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
@@ -486,7 +486,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "default-space no longer supported!  Use xsl:strip-space or xsl:preserve-space"
-                    + " instead."
+                        + " instead."
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
@@ -497,7 +497,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort can only be used with xsl:apply-templates or"
-                    + " xsl:for-each."
+                        + " xsl:for-each."
             },
             {ER_MISPLACED_XSLWHEN, "(StylesheetHandler) misplaced xsl:when!"},
             {
@@ -520,7 +520,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
                 "(StylesheetHandler) Imports can only occur as the first elements in the"
-                    + " stylesheet!"
+                        + " stylesheet!"
             },
             {
                 ER_IMPORTING_ITSELF,
@@ -548,7 +548,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_REDIRECT_COULDNT_GET_FILENAME,
                 "Redirect extension: Could not get filename - file or select attribute must return"
-                    + " vald string."
+                        + " vald string."
             },
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
@@ -572,12 +572,12 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "Cannot use a DTMLiaison for an output DOM node... pass a"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper instead!"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper instead!"
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "Cannot use a DTMLiaison for a input DOM node... pass a"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper instead!"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper instead!"
             },
             {ER_CALL_TO_EXT_FAILED, "Call to extension element failed: {0}"},
             {ER_PREFIX_MUST_RESOLVE, "Prefix must resolve to a namespace: {0}"},
@@ -737,7 +737,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "Illegal value: {1} used for CHAR attribute: {0}.  An attribute of type CHAR must"
-                    + " be only 1 character!"
+                        + " be only 1 character!"
             },
 
             // Note to translators:  The following message is used if the value of
@@ -851,7 +851,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "The feature name cannot be null in TransformerFactory.setFeature(String name,"
-                    + " boolean value)."
+                        + " boolean value)."
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
@@ -861,7 +861,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING,
                 "Use of the extension element ''{0}'' is not allowed when the secure processing"
-                    + " feature is set to true."
+                        + " feature is set to true."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
@@ -930,7 +930,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 WG_EMPTY_SECOND_ARG,
                 "Resulting nodeset from second argument of document function is empty. Return an"
-                    + " empty node-set."
+                        + " empty node-set."
             },
 
             // Following are the new WARNING keys added in XALAN code base after Jdk 1.4 (Xalan
@@ -941,7 +941,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "The value of the 'name' attribute of xsl:processing-instruction name must not be"
-                    + " 'xml'"
+                        + " 'xml'"
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -950,7 +950,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "The value of the ''name'' attribute of xsl:processing-instruction must be a valid"
-                    + " NCName: {0}"
+                        + " NCName: {0}"
             },
 
             // Note to translators:  This message is reported if the stylesheet that is
@@ -960,7 +960,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 WG_ILLEGAL_ATTRIBUTE_POSITION,
                 "Cannot add attribute {0} after child nodes or before an element is produced. "
-                    + " Attribute will be ignored."
+                        + " Attribute will be ignored."
             },
             {
                 NO_MODIFICATION_ALLOWED_ERR,
@@ -992,7 +992,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 "xslProc_no_input",
                 "Error: No stylesheet or input xml is specified. Run this command without any"
-                    + " option for usage instructions."
+                        + " option for usage instructions."
             },
             {"xslProc_common_options", "-Common Options-"},
             {"xslProc_xalan_options", "-Options for Xalan-"},
@@ -1048,12 +1048,12 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER full class name (EntityResolver to be used to resolve"
-                    + " entities)]"
+                        + " entities)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER full class name (ContentHandler to be used to serialize"
-                    + " output)]"
+                        + " output)]"
             },
             {"optionLINENUMBERS", "   [-L use line numbers for source document]"},
             {"optionSECUREPROCESSING", "   [-SECURE (set the secure processing feature to true.)]"},
@@ -1064,7 +1064,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 "optionMEDIA",
                 "   [-MEDIA mediaType (use media attribute to find stylesheet associated with a"
-                    + " document.)]"
+                        + " document.)]"
             },
             {
                 "optionFLAVOR",
@@ -1074,12 +1074,12 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 "optionINCREMENTAL",
                 "   [-INCREMENTAL (request incremental DTM construction by setting"
-                    + " http://xml.apache.org/xalan/features/incremental true.)]"
+                        + " http://xml.apache.org/xalan/features/incremental true.)]"
             },
             {
                 "optionNOOPTIMIMIZE",
                 "   [-NOOPTIMIMIZE (request no stylesheet optimization processing by setting"
-                    + " http://xml.apache.org/xalan/features/optimize false.)]"
+                        + " http://xml.apache.org/xalan/features/optimize false.)]"
             },
             {
                 "optionRL",
@@ -1097,7 +1097,7 @@ public class XSLTErrorResources extends ListResourceBundle {
             {
                 "optionXP",
                 "   [-XP package (specifies a package name prefix for all generated translet"
-                    + " classes)]"
+                        + " classes)]"
             },
 
             // AddITIONAL  STRINGS that need L10n

@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * <code>DOMError</code> is an interface that describes an error.
  *

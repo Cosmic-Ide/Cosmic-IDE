@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * The <code>DOMImplementationList</code> interface provides the abstraction of an ordered
  * collection of DOM implementations, without defining or constraining how this collection is

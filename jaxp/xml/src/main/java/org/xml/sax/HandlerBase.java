@@ -30,7 +30,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Default base class for handlers.
  *

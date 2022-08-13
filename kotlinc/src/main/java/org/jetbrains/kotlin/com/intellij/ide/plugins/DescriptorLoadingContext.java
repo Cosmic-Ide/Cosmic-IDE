@@ -16,8 +16,8 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * I have modified this class to use {@link com.itsaky.androidide.zipfs.ZipFileSystem}
- * because android doesn't provide a ZipFileSystem
+ * I have modified this class to use {@link com.itsaky.androidide.zipfs.ZipFileSystem} because
+ * android doesn't provide a ZipFileSystem
  */
 final class DescriptorLoadingContext implements AutoCloseable {
     private final Map<Path, FileSystem> openedFiles = new THashMap<>();

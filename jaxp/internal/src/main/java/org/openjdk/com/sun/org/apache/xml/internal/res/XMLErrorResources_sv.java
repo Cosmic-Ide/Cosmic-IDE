@@ -251,7 +251,7 @@ public class XMLErrorResources_sv extends ListResourceBundle {
         {
             ER_NO_QUERY_STRING_IN_PATH,
             "Fr\u00E5gestr\u00E4ng kan inte anges i b\u00E5de s\u00F6kv\u00E4gen och"
-                + " fr\u00E5gestr\u00E4ngen"
+                    + " fr\u00E5gestr\u00E4ngen"
         },
         {
             ER_NO_FRAGMENT_STRING_IN_PATH,
@@ -311,7 +311,7 @@ public class XMLErrorResources_sv extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "Kan inte l\u00E4gga till attributet {0} efter underordnade noder eller innan ett"
-                + " element har skapats. Attributet ignoreras."
+                    + " element har skapats. Attributet ignoreras."
         },
 
         /*
@@ -339,17 +339,17 @@ public class XMLErrorResources_sv extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "Kunde inte ladda ''{0}'' (kontrollera CLASSPATH), anv\u00E4nder nu enbart"
-                + " standardv\u00E4rden"
+                    + " standardv\u00E4rden"
         },
         {
             ER_ILLEGAL_CHARACTER,
             "F\u00F6rs\u00F6k att skriva utdatatecken med integralv\u00E4rdet {0} som inte \u00E4r"
-                + " representerat i angiven utdatakodning av {1}."
+                    + " representerat i angiven utdatakodning av {1}."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "Kunde inte ladda egenskapsfilen ''{0}'' f\u00F6r utdatametoden ''{1}'' (kontrollera"
-                + " CLASSPATH)"
+                    + " CLASSPATH)"
         }
     };
 

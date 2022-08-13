@@ -168,7 +168,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "Impossible de convertir le type de retour/d''argument dans l''appel de la"
-                    + " m\u00E9thode ''{0}''"
+                        + " m\u00E9thode ''{0}''"
             },
 
             /*
@@ -206,7 +206,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.NAMESPACE_UNDEF_ERR,
                 "Le pr\u00E9fixe de l''espace de noms ''{0}'' n''a pas \u00E9t\u00E9"
-                    + " d\u00E9clar\u00E9."
+                        + " d\u00E9clar\u00E9."
             },
 
             /*
@@ -290,7 +290,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.CIRCULAR_INCLUDE_ERR,
                 "Op\u00E9ration import/include circulaire. La feuille de style ''{0}'' est"
-                    + " d\u00E9j\u00E0 charg\u00E9e."
+                        + " d\u00E9j\u00E0 charg\u00E9e."
             },
 
             /*
@@ -354,7 +354,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.DOCUMENT_ARG_ERR,
                 "Le deuxi\u00E8me argument de la fonction document() doit \u00EAtre un jeu de"
-                    + " noeuds."
+                        + " noeuds."
             },
 
             /*
@@ -405,7 +405,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.WHEN_ELEMENT_ERR,
                 "Seuls les \u00E9l\u00E9ments <xsl:when> et <xsl:otherwise> sont autoris\u00E9s"
-                    + " dans <xsl:choose>."
+                        + " dans <xsl:choose>."
             },
 
             /*
@@ -450,7 +450,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.ILLEGAL_TEXT_NODE_ERR,
                 "Donn\u00E9es texte en dehors de l'\u00E9l\u00E9ment <xsl:stylesheet> de niveau"
-                    + " sup\u00E9rieur."
+                        + " sup\u00E9rieur."
             },
 
             /*
@@ -494,7 +494,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "Le document d'entr\u00E9e n'est pas une feuille de style (l'espace de noms XSL"
-                    + " n'est pas d\u00E9clar\u00E9 dans l'\u00E9l\u00E9ment racine)."
+                        + " n'est pas d\u00E9clar\u00E9 dans l'\u00E9l\u00E9ment racine)."
             },
 
             /*
@@ -615,7 +615,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.NO_TRANSLET_CLASS_ERR,
                 "Cette classe Templates ne contient pas de d\u00E9finition de classe de translet"
-                    + " valide."
+                        + " valide."
             },
 
             /*
@@ -634,7 +634,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "Classe de translet charg\u00E9e, mais impossible de cr\u00E9er une instance de"
-                    + " translet."
+                        + " translet."
             },
 
             /*
@@ -714,7 +714,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_NO_HANDLER_ERR,
                 "Aucun gestionnaire de sortie d\u00E9fini pour le r\u00E9sultat de la"
-                    + " transformation."
+                        + " transformation."
             },
 
             /*
@@ -736,7 +736,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_UNKNOWN_PROP_ERR,
                 "Tentative d''acc\u00E8s \u00E0 la propri\u00E9t\u00E9 Transformer non valide"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -854,7 +854,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.STRAY_SORT_ERR,
                 "<xsl:sort> peut uniquement \u00EAtre utilis\u00E9 dans <xsl:for-each> ou"
-                    + " <xsl:apply-templates>."
+                        + " <xsl:apply-templates>."
             },
 
             /*
@@ -866,7 +866,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.UNSUPPORTED_ENCODING,
                 "L''encodage de sortie ''{0}'' n''est pas pris en charge sur cette Java Virtual"
-                    + " Machine (JVM)."
+                        + " Machine (JVM)."
             },
 
             /*
@@ -891,7 +891,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "Le premier argument pour la fonction Java ''{0}'' non static n''est pas une"
-                    + " r\u00E9f\u00E9rence d''objet valide."
+                        + " r\u00E9f\u00E9rence d''objet valide."
             },
 
             /*
@@ -912,7 +912,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.TYPE_CHECK_UNK_LOC_ERR,
                 "Erreur lors de la v\u00E9rification du type d'expression \u00E0 un emplacement"
-                    + " inconnu."
+                        + " inconnu."
             },
 
             /*
@@ -1048,7 +1048,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.INVALID_QNAME_ERR,
                 "Un attribut dont la valeur doit \u00EAtre un QName ou une liste de QNames"
-                    + " s\u00E9par\u00E9s par des espaces avait la valeur ''{0}''"
+                        + " s\u00E9par\u00E9s par des espaces avait la valeur ''{0}''"
             },
 
             /*
@@ -1081,23 +1081,23 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_GET_FEATURE_NULL_NAME,
                 "Le nom de la fonctionnalit\u00E9 ne peut pas \u00EAtre NULL dans"
-                    + " TransformerFactory.getFeature (cha\u00EEne pour le nom)."
+                        + " TransformerFactory.getFeature (cha\u00EEne pour le nom)."
             },
             {
                 ErrorMsg.JAXP_SET_FEATURE_NULL_NAME,
                 "Le nom de la fonctionnalit\u00E9 ne peut pas \u00EAtre NULL dans"
-                    + " TransformerFactory.setFeature (cha\u00EEne pour le nom, valeur"
-                    + " bool\u00E9enne)."
+                        + " TransformerFactory.setFeature (cha\u00EEne pour le nom, valeur"
+                        + " bool\u00E9enne)."
             },
             {
                 ErrorMsg.JAXP_UNSUPPORTED_FEATURE,
                 "Impossible de d\u00E9finir la fonctionnalit\u00E9 ''{0}'' sur cette"
-                    + " propri\u00E9t\u00E9 TransformerFactory."
+                        + " propri\u00E9t\u00E9 TransformerFactory."
             },
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING : impossible de d\u00E9finir la fonctionnalit\u00E9 sur"
-                    + " False en pr\u00E9sence du gestionnaire de s\u00E9curit\u00E9."
+                        + " False en pr\u00E9sence du gestionnaire de s\u00E9curit\u00E9."
             },
 
             /*
@@ -1110,7 +1110,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_TRY_CATCH,
                 "Erreur XSLTC interne : le code ex\u00E9cutable g\u00E9n\u00E9r\u00E9 contient un"
-                    + " bloc try-catch-finally et ne peut pas \u00EAtre d\u00E9limit\u00E9."
+                        + " bloc try-catch-finally et ne peut pas \u00EAtre d\u00E9limit\u00E9."
             },
 
             /*
@@ -1126,7 +1126,7 @@ public class ErrorMessages_fr extends ListResourceBundle {
             {
                 ErrorMsg.OUTLINE_ERR_UNBALANCED_MARKERS,
                 "Erreur XSLTC interne : les marqueurs OutlineableChunkStart et OutlineableChunkEnd"
-                    + " doivent \u00EAtre \u00E9quilibr\u00E9s et correctement imbriqu\u00E9s."
+                        + " doivent \u00EAtre \u00E9quilibr\u00E9s et correctement imbriqu\u00E9s."
             },
 
             /*

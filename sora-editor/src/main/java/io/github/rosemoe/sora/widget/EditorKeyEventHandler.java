@@ -253,7 +253,7 @@ class EditorKeyEventHandler {
                                             Log.w(
                                                     TAG,
                                                     "Error occurred while calling Language's"
-                                                        + " NewlineHandler",
+                                                            + " NewlineHandler",
                                                     ex);
                                         }
                                         break;

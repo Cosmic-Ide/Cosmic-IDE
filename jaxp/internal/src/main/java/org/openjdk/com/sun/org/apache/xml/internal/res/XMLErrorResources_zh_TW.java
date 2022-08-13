@@ -264,7 +264,7 @@ public class XMLErrorResources_zh_TW extends ListResourceBundle {
         {
             ER_NO_USERINFO_IF_NO_HOST,
             "\u5982\u679C\u6C92\u6709\u6307\u5B9A\u4E3B\u6A5F\uFF0C\u4E0D\u53EF\u6307\u5B9A"
-                + " Userinfo"
+                    + " Userinfo"
         },
         {
             ER_NO_PORT_IF_NO_HOST,
@@ -399,12 +399,12 @@ public class XMLErrorResources_zh_TW extends ListResourceBundle {
         {
             ER_STRAY_NAMESPACE,
             "\u547D\u540D\u7A7A\u9593\u5BA3\u544A ''{0}''=''{1}''"
-                + " \u8D85\u51FA\u5143\u7D20\u5916\u3002"
+                    + " \u8D85\u51FA\u5143\u7D20\u5916\u3002"
         },
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "\u7121\u6CD5\u8F09\u5165 ''{0}'' (\u6AA2\u67E5"
-                + " CLASSPATH)\uFF0C\u76EE\u524D\u53EA\u4F7F\u7528\u9810\u8A2D\u503C"
+                    + " CLASSPATH)\uFF0C\u76EE\u524D\u53EA\u4F7F\u7528\u9810\u8A2D\u503C"
         },
         {
             ER_ILLEGAL_CHARACTER,
@@ -415,7 +415,7 @@ public class XMLErrorResources_zh_TW extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "\u7121\u6CD5\u8F09\u5165\u8F38\u51FA\u65B9\u6CD5 ''{1}'' \u7684\u5C6C\u6027\u6A94"
-                + " ''{0}'' (\u6AA2\u67E5 CLASSPATH)"
+                    + " ''{0}'' (\u6AA2\u67E5 CLASSPATH)"
         }
     };
 

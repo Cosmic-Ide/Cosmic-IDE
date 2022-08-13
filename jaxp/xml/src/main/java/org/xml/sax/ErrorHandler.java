@@ -30,7 +30,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Basic interface for SAX error handlers.
  *

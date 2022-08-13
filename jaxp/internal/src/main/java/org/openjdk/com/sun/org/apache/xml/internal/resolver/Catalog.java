@@ -1110,7 +1110,7 @@ public class Catalog {
                 catalogManager.debug.message(
                         1,
                         "urn:publicid: system identifier differs from public identifier; using"
-                            + " public identifier");
+                                + " public identifier");
                 systemId = null;
             } else {
                 publicId = systemId;
@@ -1211,7 +1211,7 @@ public class Catalog {
                 catalogManager.debug.message(
                         1,
                         "urn:publicid: system identifier differs from public identifier; using"
-                            + " public identifier");
+                                + " public identifier");
                 systemId = null;
             } else {
                 publicId = systemId;
@@ -1288,7 +1288,7 @@ public class Catalog {
                 catalogManager.debug.message(
                         1,
                         "urn:publicid: system identifier differs from public identifier; using"
-                            + " public identifier");
+                                + " public identifier");
                 systemId = null;
             } else {
                 publicId = systemId;
@@ -1368,7 +1368,7 @@ public class Catalog {
                 catalogManager.debug.message(
                         1,
                         "urn:publicid: system identifier differs from public identifier; using"
-                            + " public identifier");
+                                + " public identifier");
                 systemId = null;
             } else {
                 publicId = systemId;

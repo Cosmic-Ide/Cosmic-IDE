@@ -128,7 +128,7 @@ public class DOMResult implements Result {
             if (node == null) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is contained by the"
-                            + " \"null\" node.");
+                                + " \"null\" node.");
             }
 
             // nextSibling contained by node?
@@ -136,7 +136,7 @@ public class DOMResult implements Result {
                     == 0) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is not contained by the"
-                            + " node.");
+                                + " node.");
             }
         }
 
@@ -177,7 +177,7 @@ public class DOMResult implements Result {
             if (node == null) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is contained by the"
-                            + " \"null\" node.");
+                                + " \"null\" node.");
             }
 
             // nextSibling contained by node?
@@ -185,7 +185,7 @@ public class DOMResult implements Result {
                     == 0) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is not contained by the"
-                            + " node.");
+                                + " node.");
             }
         }
 
@@ -220,7 +220,7 @@ public class DOMResult implements Result {
             if (node == null) {
                 throw new IllegalStateException(
                         "Cannot create a DOMResult when the nextSibling is contained by the"
-                            + " \"null\" node.");
+                                + " \"null\" node.");
             }
 
             // nextSibling contained by node?
@@ -228,7 +228,7 @@ public class DOMResult implements Result {
                     == 0) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is not contained by the"
-                            + " node.");
+                                + " node.");
             }
         }
 
@@ -276,7 +276,7 @@ public class DOMResult implements Result {
             if (node == null) {
                 throw new IllegalStateException(
                         "Cannot create a DOMResult when the nextSibling is contained by the"
-                            + " \"null\" node.");
+                                + " \"null\" node.");
             }
 
             // nextSibling contained by node?
@@ -284,7 +284,7 @@ public class DOMResult implements Result {
                     == 0) {
                 throw new IllegalArgumentException(
                         "Cannot create a DOMResult when the nextSibling is not contained by the"
-                            + " node.");
+                                + " node.");
             }
         }
 

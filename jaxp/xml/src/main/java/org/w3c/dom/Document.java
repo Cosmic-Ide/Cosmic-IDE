@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * The <code>Document</code> interface represents the entire HTML or XML document. Conceptually, it
  * is the root of the document tree, and provides the primary access to the document's data.

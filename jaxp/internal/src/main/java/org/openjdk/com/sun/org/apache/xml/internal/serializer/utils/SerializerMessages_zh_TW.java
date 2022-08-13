@@ -71,17 +71,17 @@ public class SerializerMessages_zh_TW extends ListResourceBundle {
                     {
                         MsgKey.BAD_MSGKEY,
                         "\u8A0A\u606F\u7D22\u5F15\u9375 ''{0}''"
-                            + " \u7684\u8A0A\u606F\u985E\u5225\u4E0D\u662F ''{1}''"
+                                + " \u7684\u8A0A\u606F\u985E\u5225\u4E0D\u662F ''{1}''"
                     },
                     {
                         MsgKey.BAD_MSGFORMAT,
                         "\u8A0A\u606F\u985E\u5225 ''{1}'' \u4E2D\u7684\u8A0A\u606F ''{0}''"
-                            + " \u683C\u5F0F\u4E0D\u6B63\u78BA\u3002"
+                                + " \u683C\u5F0F\u4E0D\u6B63\u78BA\u3002"
                     },
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "serializer \u985E\u5225 ''{0}'' \u4E0D\u5BE6\u884C"
-                            + " org.xml.sax.ContentHandler\u3002"
+                                + " org.xml.sax.ContentHandler\u3002"
                     },
                     {
                         MsgKey.ER_RESOURCE_COULD_NOT_FIND,
@@ -111,7 +111,7 @@ public class SerializerMessages_zh_TW extends ListResourceBundle {
                     {
                         MsgKey.ER_NAMESPACE_PREFIX,
                         "\u5B57\u9996 ''{0}''"
-                            + " \u7684\u547D\u540D\u7A7A\u9593\u5C1A\u672A\u5BA3\u544A\u3002"
+                                + " \u7684\u547D\u540D\u7A7A\u9593\u5C1A\u672A\u5BA3\u544A\u3002"
                     },
 
                     /*
@@ -135,7 +135,7 @@ public class SerializerMessages_zh_TW extends ListResourceBundle {
                     {
                         MsgKey.ER_STRAY_NAMESPACE,
                         "\u547D\u540D\u7A7A\u9593\u5BA3\u544A ''{0}''=''{1}''"
-                            + " \u8D85\u51FA\u5143\u7D20\u5916\u3002"
+                                + " \u8D85\u51FA\u5143\u7D20\u5916\u3002"
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
@@ -151,7 +151,7 @@ public class SerializerMessages_zh_TW extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "\u7121\u6CD5\u8F09\u5165\u8F38\u51FA\u65B9\u6CD5 ''{1}''"
-                            + " \u7684\u5C6C\u6027\u6A94 ''{0}'' (\u6AA2\u67E5 CLASSPATH)"
+                                + " \u7684\u5C6C\u6027\u6A94 ''{0}'' (\u6AA2\u67E5 CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "\u7121\u6548\u7684\u9023\u63A5\u57E0\u865F\u78BC"},
                     {
@@ -227,7 +227,7 @@ public class SerializerMessages_zh_TW extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "\u50B3\u905E\u7D66 SerializerFactory \u7684 Properties"
-                            + " \u7269\u4EF6\u6C92\u6709 ''{0}'' \u5C6C\u6027\u3002"
+                                + " \u7269\u4EF6\u6C92\u6709 ''{0}'' \u5C6C\u6027\u3002"
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,

@@ -1668,7 +1668,7 @@ public class XPath {
                         // NCName, QName and non-terminals
                         //
                     case CHARTYPE_NONASCII: // possibly a valid non-ascii 'Letter' (BaseChar |
-                                            // Ideographic)
+                        // Ideographic)
                     case CHARTYPE_LETTER:
                     case CHARTYPE_UNDERSCORE:
                         //
@@ -1789,11 +1789,11 @@ public class XPath {
                             if (isNameTestNCName) {
                                 // System.out.println("abort 7");
                                 return false; // REVISIT - NCName:* where an OperatorName is
-                                              // required
+                                // required
                             } else if (isAxisName) {
                                 // System.out.println("abort 8");
                                 return false; // REVISIT - AxisName:: where an OperatorName is
-                                              // required
+                                // required
                             }
                             break;
                         }
@@ -1866,7 +1866,7 @@ public class XPath {
                             if (isNameTestNCName) {
                                 // System.out.println("abort 10");
                                 return false; // REVISIT - "NCName:* ::" where "AxisName ::" is
-                                              // required
+                                // required
                             }
                             addToken(tokens, XPath.Tokens.EXPRTOKEN_DOUBLE_COLON);
                             starIsMultiplyOperator = false;

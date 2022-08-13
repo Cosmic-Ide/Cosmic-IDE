@@ -302,12 +302,12 @@ public class ErrorMessages_sv extends ListResourceBundle {
             {
                 BasisLibrary.UNALLOWED_EXTENSION_FUNCTION_ERR,
                 "Anv\u00E4ndning av till\u00E4ggsfunktionen ''{0}'' \u00E4r inte till\u00E5tet"
-                    + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
+                        + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
             },
             {
                 BasisLibrary.UNALLOWED_EXTENSION_ELEMENT_ERR,
                 "Anv\u00E4ndning av till\u00E4ggselementet ''{0}'' \u00E4r inte till\u00E5tet"
-                    + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
+                        + " n\u00E4r s\u00E4ker bearbetning till\u00E4mpas."
             },
         };
     }

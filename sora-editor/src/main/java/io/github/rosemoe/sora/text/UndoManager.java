@@ -193,7 +193,7 @@ public final class UndoManager implements ContentListener, Parcelable {
         if (maxSize <= 0) {
             throw new IllegalArgumentException(
                     "max size can not be zero or smaller.Did you want to disable undo module by"
-                        + " calling setUndoEnabled()?");
+                            + " calling setUndoEnabled()?");
         }
         mMaxStackSize = maxSize;
         cleanStack();

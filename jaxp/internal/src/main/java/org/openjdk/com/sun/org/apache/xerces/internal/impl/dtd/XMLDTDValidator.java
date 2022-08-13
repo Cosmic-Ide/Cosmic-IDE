@@ -1363,10 +1363,8 @@ public class XMLDTDValidator
             case XMLSimpleType.TYPE_IDREF:
                 {
                     boolean isAlistAttribute =
-                            attributeDecl
-                                    .simpleType
-                                    .list; // Caveat - Save this information because
-                                           // invalidStandaloneAttDef
+                            attributeDecl.simpleType.list; // Caveat - Save this information because
+                    // invalidStandaloneAttDef
 
                     try {
                         if (isAlistAttribute) {
@@ -1395,10 +1393,8 @@ public class XMLDTDValidator
             case XMLSimpleType.TYPE_NMTOKEN:
                 {
                     boolean isAlistAttribute =
-                            attributeDecl
-                                    .simpleType
-                                    .list; // Caveat - Save this information because
-                                           // invalidStandaloneAttDef
+                            attributeDecl.simpleType.list; // Caveat - Save this information because
+                    // invalidStandaloneAttDef
                     // changes fTempAttDef
                     try {
                         if (isAlistAttribute) {

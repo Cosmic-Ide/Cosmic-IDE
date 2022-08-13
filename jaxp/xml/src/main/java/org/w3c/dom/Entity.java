@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * This interface represents a known entity, either parsed or unparsed, in an XML document. Note
  * that this models the entity itself <em>not</em> the entity declaration.

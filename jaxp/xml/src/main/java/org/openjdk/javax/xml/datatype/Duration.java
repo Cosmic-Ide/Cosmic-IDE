@@ -824,14 +824,14 @@ public abstract class Duration {
         StringBuffer buf;
         int insertionPoint = intString.length() - scale;
         if (insertionPoint == 0) {
-                /* Point goes right before intVal */
+            /* Point goes right before intVal */
             return "0." + intString;
         } else if (insertionPoint > 0) {
-                /* Point goes inside intVal */
+            /* Point goes inside intVal */
             buf = new StringBuffer(intString);
             buf.insert(insertionPoint, '.');
         } else {
-                /* We must insert zeros between point and intVal */
+            /* We must insert zeros between point and intVal */
             buf = new StringBuffer(3 - insertionPoint + intString.length());
             buf.append("0.");
             for (int i = 0; i < -insertionPoint; i++) {

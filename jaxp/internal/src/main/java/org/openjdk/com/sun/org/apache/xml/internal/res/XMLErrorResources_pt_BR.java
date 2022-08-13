@@ -246,7 +246,7 @@ public class XMLErrorResources_pt_BR extends ListResourceBundle {
         {
             ER_NO_USERINFO_IF_NO_HOST,
             "As informa\u00E7\u00F5es do usu\u00E1rio n\u00E3o podem ser especificadas se o host"
-                + " n\u00E3o tiver sido especificado"
+                    + " n\u00E3o tiver sido especificado"
         },
         {
             ER_NO_PORT_IF_NO_HOST,
@@ -255,7 +255,7 @@ public class XMLErrorResources_pt_BR extends ListResourceBundle {
         {
             ER_NO_QUERY_STRING_IN_PATH,
             "A string de consulta n\u00E3o pode ser especificada no caminho nem na string de"
-                + " consulta"
+                    + " consulta"
         },
         {
             ER_NO_FRAGMENT_STRING_IN_PATH,
@@ -294,7 +294,7 @@ public class XMLErrorResources_pt_BR extends ListResourceBundle {
         {
             ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
             "Advert\u00EAncia: n\u00E3o pode haver texto antes do elemento do documento!"
-                + " Ignorando..."
+                    + " Ignorando..."
         },
         {ER_CANT_HAVE_MORE_THAN_ONE_ROOT, "N\u00E3o pode ter mais de uma raiz em um DOM!"},
         {ER_ARG_LOCALNAME_NULL, "O argumento 'localName' \u00E9 nulo"},
@@ -328,7 +328,7 @@ public class XMLErrorResources_pt_BR extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "N\u00E3o \u00E9 poss\u00EDvel adicionar o atributo {0} depois dos n\u00F3s filhos ou"
-                + " antes que um elemento seja produzido. O atributo ser\u00E1 ignorado."
+                    + " antes que um elemento seja produzido. O atributo ser\u00E1 ignorado."
         },
 
         /*
@@ -356,17 +356,17 @@ public class XMLErrorResources_pt_BR extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "N\u00E3o foi poss\u00EDvel carregar ''{0}'' (verificar CLASSPATH); usando agora apenas"
-                + " os defaults"
+                    + " os defaults"
         },
         {
             ER_ILLEGAL_CHARACTER,
             "Tentativa de exibir um caractere de valor integral {0} que n\u00E3o est\u00E1"
-                + " representado na codifica\u00E7\u00E3o de sa\u00EDda especificada de {1}."
+                    + " representado na codifica\u00E7\u00E3o de sa\u00EDda especificada de {1}."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "N\u00E3o foi poss\u00EDvel carregar o arquivo de propriedade ''{0}'' para o"
-                + " m\u00E9todo de sa\u00EDda ''{1}'' (verificar CLASSPATH)"
+                    + " m\u00E9todo de sa\u00EDda ''{1}'' (verificar CLASSPATH)"
         }
     };
 

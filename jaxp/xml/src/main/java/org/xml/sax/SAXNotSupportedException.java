@@ -31,7 +31,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Exception class for an unsupported operation.
  *

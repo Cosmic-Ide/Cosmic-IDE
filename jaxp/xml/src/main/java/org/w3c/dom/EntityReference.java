@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * <code>EntityReference</code> nodes may be used to represent an entity reference in the tree. Note
  * that character references and references to predefined entities are considered to be expanded by

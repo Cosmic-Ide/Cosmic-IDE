@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * <code>DOMErrorHandler</code> is a callback interface that the DOM implementation can call when
  * reporting errors that happens while processing XML data, or when doing some other processing

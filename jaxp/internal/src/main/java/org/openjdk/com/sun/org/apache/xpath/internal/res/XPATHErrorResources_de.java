@@ -322,8 +322,8 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_DOCUMENT_REPLACED,
                     "document()-Funktionsimplementierung wurde durch"
-                        + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument"
-                        + " ersetzt."
+                            + " org.openjdk.com.sun.org.apache.xalan.internal.xslt.FuncDocument"
+                            + " ersetzt."
                 },
                 {ER_CONTEXT_HAS_NO_OWNERDOC, "Kontext hat kein Eigent\u00FCmerdokument."},
                 {ER_LOCALNAME_HAS_TOO_MANY_ARGS, "local-name() hat zu viele Argumente."},
@@ -362,12 +362,12 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_EXPECTED_DOUBLE_QUOTE,
                     "Literal in falschen Anf\u00FChrungszeichen... Doppelte Anf\u00FChrungszeichen"
-                        + " erwartet."
+                            + " erwartet."
                 },
                 {
                     ER_EXPECTED_SINGLE_QUOTE,
                     "Literal in falschen Anf\u00FChrungszeichen... Einzelne Anf\u00FChrungszeichen"
-                        + " erwartet."
+                            + " erwartet."
                 },
                 {ER_EMPTY_EXPRESSION, "Leerer Ausdruck."},
                 {ER_EXPECTED_BUT_FOUND, "{0} erwartet, aber {1} gefunden"},
@@ -387,7 +387,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_PREDICATE_ILLEGAL_SYNTAX,
                     "\"..[predicate]\" oder \".[predicate]\" ist ung\u00FCltige Syntax. Verwenden"
-                        + " Sie stattdessen \"self::node()[predicate]\"."
+                            + " Sie stattdessen \"self::node()[predicate]\"."
                 },
                 {ER_ILLEGAL_AXIS_NAME, "Ung\u00FCltiger Achsenname: {0}"},
                 {ER_UNKNOWN_NODETYPE, "Unbekannter Knotentyp: {0}"},
@@ -415,12 +415,12 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_ILLEGAL_VARIABLE_REFERENCE,
                     "VariableReference au\u00DFerhalb des Kontextes oder ohne Definition f\u00FCr"
-                        + " Variable angegeben. Name = {0}"
+                            + " Variable angegeben. Name = {0}"
                 },
                 {
                     ER_AXES_NOT_ALLOWED,
                     "Nur \"child::\"- und \"attribute::\"-Achsen sind in Vergleichsmustern"
-                        + " zul\u00E4ssig. Betreffende Achsen = {0}"
+                            + " zul\u00E4ssig. Betreffende Achsen = {0}"
                 },
                 {ER_KEY_HAS_TOO_MANY_ARGS, "key() hat eine falsche Anzahl Argumente."},
                 {ER_COUNT_TAKES_1_ARG, "count-Funktion sollte ein Argument akzeptieren."},
@@ -429,7 +429,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_PROBLEM_IN_DTM_NEXTSIBLING,
                     "Problem in DTM in getNextSibling aufgetreten... Es wird versucht, das Problem"
-                        + " zu beheben"
+                            + " zu beheben"
                 },
                 {
                     ER_CANNOT_WRITE_TO_EMPTYNODELISTIMPL,
@@ -446,7 +446,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_PARSE_NOT_SUPPORTED,
                     "parse (InputSource-Quelle) nicht unterst\u00FCtzt in XPathContext. {0} kann"
-                        + " nicht ge\u00F6ffnet werden"
+                            + " nicht ge\u00F6ffnet werden"
                 },
                 {ER_SAX_API_NOT_HANDLED, "SAX-API-Zeichen(char ch[]... nicht verarbeitet von DTM."},
                 {
@@ -558,7 +558,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANNOT_CALL_SETSHOULDCACHENODE,
                     "setShouldCacheNodes kann nicht aufgerufen werden, nachdem nextNode aufgerufen"
-                        + " wurde."
+                            + " wurde."
                 },
                 {ER_ONLY_ALLOWS, "{0} l\u00E4sst nur {1} Argumente zu"},
                 {
@@ -580,7 +580,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH,
                     "Ein Verzeichnispfad wurde erwartet, aber das folgende Token wurde gefunden:"
-                        + " {0}"
+                            + " {0}"
                 },
 
                 // Note to translators:  A location path is a form of XPath expression.
@@ -589,7 +589,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_EXPECTED_LOC_PATH_AT_END_EXPR,
                     "Ein Verzeichnispfad wurde erwartet, aber stattdessen wurde das Ende des"
-                        + " XPath-Ausdrucks gefunden."
+                            + " XPath-Ausdrucks gefunden."
                 },
 
                 // Note to translators:  A location step is part of an XPath expression.
@@ -628,7 +628,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_BOOLEAN,
                     "XPathResult von XPath-Ausdruck \"{0}\" hat XPathResultType {1}, der nicht in"
-                        + " einen booleschen Wert konvertiert werden kann."
+                            + " einen booleschen Wert konvertiert werden kann."
                 },
 
                 // Note to translators: Do not translate ANY_UNORDERED_NODE_TYPE and
@@ -636,9 +636,9 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_SINGLENODE,
                     "XPathResult von XPath-Ausdruck \"{0}\" hat XPathResultType {1}, der nicht in"
-                        + " einen einzelnen Knoten konvertiert werden kann. Die Methode"
-                        + " \"getSingleNodeValue\" gilt nur f\u00FCr die Typen"
-                        + " ANY_UNORDERED_NODE_TYPE und FIRST_ORDERED_NODE_TYPE."
+                            + " einen einzelnen Knoten konvertiert werden kann. Die Methode"
+                            + " \"getSingleNodeValue\" gilt nur f\u00FCr die Typen"
+                            + " ANY_UNORDERED_NODE_TYPE und FIRST_ORDERED_NODE_TYPE."
                 },
 
                 // Note to translators: Do not translate UNORDERED_NODE_SNAPSHOT_TYPE and
@@ -646,9 +646,9 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANT_GET_SNAPSHOT_LENGTH,
                     "Die Methode \"getSnapshotLength\" kann nicht f\u00FCr XPathResult von"
-                        + " XPath-Ausdruck \"{0}\" aufgerufen werden, da der zugeh\u00F6rige"
-                        + " XPathResultType {1} ist. Diese Methode gilt nur f\u00FCr die Typen"
-                        + " UNORDERED_NODE_SNAPSHOT_TYPE und ORDERED_NODE_SNAPSHOT_TYPE."
+                            + " XPath-Ausdruck \"{0}\" aufgerufen werden, da der zugeh\u00F6rige"
+                            + " XPathResultType {1} ist. Diese Methode gilt nur f\u00FCr die Typen"
+                            + " UNORDERED_NODE_SNAPSHOT_TYPE und ORDERED_NODE_SNAPSHOT_TYPE."
                 },
                 {
                     ER_NON_ITERATOR_TYPE,
@@ -664,14 +664,14 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_DOC_MUTATED,
                     "Dokument ge\u00E4ndert, seit Ergebnis zur\u00FCckgegeben wurde. Iterator ist"
-                        + " ung\u00FCltig."
+                            + " ung\u00FCltig."
                 },
                 {ER_INVALID_XPATH_TYPE, "Ung\u00FCltiges XPath-Typargument: {0}"},
                 {ER_EMPTY_XPATH_RESULT, "Leeres XPath-Ergebnisobjekt"},
                 {
                     ER_INCOMPATIBLE_TYPES,
                     "XPathResult von XPath-Ausdruck \"{0}\" hat XPathResultType {1}, der nicht in"
-                        + " den angegebenen XPathResultType {2} ge\u00E4ndert werden kann."
+                            + " den angegebenen XPathResultType {2} ge\u00E4ndert werden kann."
                 },
                 {
                     ER_NULL_RESOLVER,
@@ -684,7 +684,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_TO_STRING,
                     "XPathResult von XPath-Ausdruck \"{0}\" hat XPathResultType {1}, der nicht in"
-                        + " eine Zeichenfolge konvertiert werden kann."
+                            + " eine Zeichenfolge konvertiert werden kann."
                 },
 
                 // Note to translators: Do not translate snapshotItem,
@@ -692,9 +692,9 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_NON_SNAPSHOT_TYPE,
                     "Die Methode \"snapshotItem\" kann nicht f\u00FCr XPathResult von"
-                        + " XPath-Ausdruck \"{0}\" aufgerufen werden, da der zugeh\u00F6rige"
-                        + " XPathResultType {1} ist. Diese Methode gilt nur f\u00FCr die Typen"
-                        + " UNORDERED_NODE_SNAPSHOT_TYPE und ORDERED_NODE_SNAPSHOT_TYPE."
+                            + " XPath-Ausdruck \"{0}\" aufgerufen werden, da der zugeh\u00F6rige"
+                            + " XPathResultType {1} ist. Diese Methode gilt nur f\u00FCr die Typen"
+                            + " UNORDERED_NODE_SNAPSHOT_TYPE und ORDERED_NODE_SNAPSHOT_TYPE."
                 },
 
                 // Note to translators:  XPathEvaluator is a Java interface name.  An
@@ -704,7 +704,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_WRONG_DOCUMENT,
                     "Kontextknoten geh\u00F6rt nicht zum Dokument, das an diesen XPathEvaluator"
-                        + " gebunden ist."
+                            + " gebunden ist."
                 },
 
                 // Note to translators:  The XPath expression cannot be evaluated with respect
@@ -714,7 +714,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_CANT_CONVERT_XPATHRESULTTYPE_TO_NUMBER,
                     "XPathResult von XPath-Ausdruck \"{0}\" hat XPathResultType {1}, der nicht in"
-                        + " eine Zahl konvertiert werden kann"
+                            + " eine Zahl konvertiert werden kann"
                 },
 
                 // BEGIN:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -755,35 +755,35 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_OBJECT_MODEL_NULL,
                     "{0}#isObjectModelSupported( String objectModel ) kann nicht mit objectModel =="
-                        + " null aufgerufen werden"
+                            + " null aufgerufen werden"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_OBJECT_MODEL_EMPTY,
                     "{0}#isObjectModelSupported( String objectModel ) kann nicht mit objectModel =="
-                        + " \"\" aufgerufen werden"
+                            + " \"\" aufgerufen werden"
                 },
 
                 /** Field ER_OBJECT_MODEL_EMPTY */
                 {
                     ER_FEATURE_NAME_NULL,
                     "Es wird versucht, ein Feature mit einem Null-Namen festzulegen:"
-                        + " {0}#setFeature( null, {1})"
+                            + " {0}#setFeature( null, {1})"
                 },
 
                 /** Field ER_FEATURE_UNKNOWN */
                 {
                     ER_FEATURE_UNKNOWN,
                     "Es wird versucht, ein unbekanntes Feature \"{0}\""
-                        + " festzulegen:{1}#setFeature({0},{2})"
+                            + " festzulegen:{1}#setFeature({0},{2})"
                 },
 
                 /** Field ER_GETTING_NULL_FEATURE */
                 {
                     ER_GETTING_NULL_FEATURE,
                     "Es wird versucht, ein Feature mit einem Null-Namen abzurufen:"
-                        + " {0}#getFeature(null)"
+                            + " {0}#getFeature(null)"
                 },
 
                 /** Field ER_GETTING_NULL_FEATURE */
@@ -794,21 +794,21 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     ER_SECUREPROCESSING_FEATURE,
                     "FEATURE_SECURE_PROCESSING: Feature kann nicht auf \"false\" gesetzt werden,"
-                        + " wenn Security Manager vorhanden ist: {1}#setFeature({0},{2})"
+                            + " wenn Security Manager vorhanden ist: {1}#setFeature({0},{2})"
                 },
 
                 /** Field ER_NULL_XPATH_FUNCTION_RESOLVER */
                 {
                     ER_NULL_XPATH_FUNCTION_RESOLVER,
                     "Versuch, Null-XPathFunctionResolver"
-                        + " festzulegen:{0}#setXPathFunctionResolver(null)"
+                            + " festzulegen:{0}#setXPathFunctionResolver(null)"
                 },
 
                 /** Field ER_NULL_XPATH_VARIABLE_RESOLVER */
                 {
                     ER_NULL_XPATH_VARIABLE_RESOLVER,
                     "Versuch, Null-XPathVariableResolver"
-                        + " festzulegen:{0}#setXPathVariableResolver(null)"
+                            + " festzulegen:{0}#setXPathVariableResolver(null)"
                 },
 
                 // END:  Definitions of error keys used  in exception messages of  JAXP 1.3 XPath
@@ -844,7 +844,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     WG_ILLEGAL_VARIABLE_REFERENCE,
                     "VariableReference au\u00DFerhalb des Kontextes oder ohne Definition f\u00FCr"
-                        + " Variable angegeben. Name = {0}"
+                            + " Variable angegeben. Name = {0}"
                 },
                 {WG_UNSUPPORTED_ENCODING, "Nicht unterst\u00FCtzte Codierung: {0}"},
 
@@ -874,7 +874,7 @@ public class XPATHErrorResources_de extends ListResourceBundle {
                 {
                     "noParsermsg4",
                     "Wenn Sie nicht \u00FCber den XML-Parser f\u00FCr Java von IBM verf\u00FCgen,"
-                        + " k\u00F6nnen Sie ihn hier herunterladen:"
+                            + " k\u00F6nnen Sie ihn hier herunterladen:"
                 },
                 {"noParsermsg5", "IBMs AlphaWorks: http://www.alphaworks.ibm.com/formula/xml"},
                 {"gtone", ">1"},

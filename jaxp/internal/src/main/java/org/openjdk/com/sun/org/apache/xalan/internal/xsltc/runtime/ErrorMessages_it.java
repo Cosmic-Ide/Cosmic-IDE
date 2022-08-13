@@ -299,12 +299,12 @@ public class ErrorMessages_it extends ListResourceBundle {
             {
                 BasisLibrary.UNALLOWED_EXTENSION_FUNCTION_ERR,
                 "Non \u00E8 consentito utilizzare la funzione di estensione ''{0}'' se la funzione"
-                    + " di elaborazione sicura \u00E8 impostata su true."
+                        + " di elaborazione sicura \u00E8 impostata su true."
             },
             {
                 BasisLibrary.UNALLOWED_EXTENSION_ELEMENT_ERR,
                 "Non \u00E8 consentito utilizzare l''elemento di estensione ''{0}'' se la funzione"
-                    + " di elaborazione sicura \u00E8 impostata su true."
+                        + " di elaborazione sicura \u00E8 impostata su true."
             },
         };
     }

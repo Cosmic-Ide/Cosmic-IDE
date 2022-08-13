@@ -176,7 +176,7 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
                             XMLMessages.createXMLMessage(
                                     XMLErrorResources.ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
                                     null)); // "Warning: can't output text before document element!
-                                            // Ignoring...");
+                    // Ignoring...");
                 }
 
                 ok = false;

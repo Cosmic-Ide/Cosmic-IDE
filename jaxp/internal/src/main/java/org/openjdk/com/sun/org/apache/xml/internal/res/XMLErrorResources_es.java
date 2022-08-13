@@ -246,7 +246,7 @@ public class XMLErrorResources_es extends ListResourceBundle {
         {
             ER_NO_USERINFO_IF_NO_HOST,
             "No se puede especificar la informaci\u00F3n de usuario si no se ha especificado el"
-                + " host"
+                    + " host"
         },
         {
             ER_NO_PORT_IF_NO_HOST,
@@ -255,7 +255,7 @@ public class XMLErrorResources_es extends ListResourceBundle {
         {
             ER_NO_QUERY_STRING_IN_PATH,
             "No se puede especificar la cadena de consulta en la ruta de acceso y en la cadena de"
-                + " consulta"
+                    + " consulta"
         },
         {
             ER_NO_FRAGMENT_STRING_IN_PATH,
@@ -288,7 +288,7 @@ public class XMLErrorResources_es extends ListResourceBundle {
         {
             ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
             "Advertencia: no se puede realizar la salida de texto antes del elemento del documento."
-                + " Ignorando..."
+                    + " Ignorando..."
         },
         {ER_CANT_HAVE_MORE_THAN_ONE_ROOT, "No se puede tener m\u00E1s de una ra\u00EDz en un DOM."},
         {ER_ARG_LOCALNAME_NULL, "El argumento 'localName' es nulo"},
@@ -325,7 +325,7 @@ public class XMLErrorResources_es extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "No se puede agregar el atributo {0} despu\u00E9s de nodos secundarios o antes de que"
-                + " se produzca un elemento. Se ignorar\u00E1 el atributo."
+                    + " se produzca un elemento. Se ignorar\u00E1 el atributo."
         },
 
         /*
@@ -356,17 +356,17 @@ public class XMLErrorResources_es extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "No se ha podido cargar ''{0}'' (compruebe la CLASSPATH), ahora s\u00F3lo se est\u00E1n"
-                + " utilizando los valores por defecto"
+                    + " utilizando los valores por defecto"
         },
         {
             ER_ILLEGAL_CHARACTER,
             "Intento de realizar la salida del car\u00E1cter del valor integral {0}, que no"
-                + " est\u00E1 representado en la codificaci\u00F3n de salida de {1}."
+                    + " est\u00E1 representado en la codificaci\u00F3n de salida de {1}."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "No se ha podido cargar el archivo de propiedades ''{0}'' para el m\u00E9todo de salida"
-                + " ''{1}'' (compruebe la CLASSPATH)"
+                    + " ''{1}'' (compruebe la CLASSPATH)"
         }
     };
 

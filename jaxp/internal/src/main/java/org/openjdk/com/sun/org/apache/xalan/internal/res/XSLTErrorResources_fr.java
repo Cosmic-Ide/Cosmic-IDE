@@ -463,7 +463,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler) l''\u00E9l\u00E9ment {0} est-il mal plac\u00E9? El\u00E9ment"
-                    + " ''component'' du conteneur manquant"
+                        + " ''component'' du conteneur manquant"
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
@@ -486,7 +486,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_NODE_NOT_ELEMENT,
                 "Le noeud sur lequel pointe l''identificateur de fragment n''\u00E9tait pas un"
-                    + " \u00E9l\u00E9ment : {0}"
+                        + " \u00E9l\u00E9ment : {0}"
             },
             {
                 ER_FOREACH_NEED_MATCH_OR_NAME_ATTRIB,
@@ -500,7 +500,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_CANT_CREATE_ITEM,
                 "Impossible de cr\u00E9er l''\u00E9l\u00E9ment dans l''arborescence de"
-                    + " r\u00E9sultats : {0}"
+                        + " r\u00E9sultats : {0}"
             },
             {
                 ER_XMLSPACE_ILLEGAL_VALUE,
@@ -521,19 +521,19 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "\u00E9l\u00E9ment default-space plus pris en charge. Utilisez plut\u00F4t"
-                    + " xsl:strip-space ou xsl:preserve-space."
+                        + " xsl:strip-space ou xsl:preserve-space."
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
                 "\u00E9l\u00E9ment indent-result plus pris en charge. Utilisez plut\u00F4t"
-                    + " xsl:output."
+                        + " xsl:output."
             },
             {ER_ILLEGAL_ATTRIB, "(StylesheetHandler) {0} a un attribut non admis : {1}"},
             {ER_UNKNOWN_XSL_ELEM, "El\u00E9ment XSL inconnu : {0}"},
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort ne peut \u00EAtre utilis\u00E9 qu'avec"
-                    + " xsl:apply-templates ou xsl:for-each."
+                        + " xsl:apply-templates ou xsl:for-each."
             },
             {ER_MISPLACED_XSLWHEN, "(StylesheetHandler) xsl:when mal plac\u00E9."},
             {
@@ -552,12 +552,12 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_UNKNOWN_EXT_NS_PREFIX,
                 "(StylesheetHandler) Pr\u00E9fixe {1} de l''espace de noms de l''extension {0}"
-                    + " inconnu"
+                        + " inconnu"
             },
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
                 "(StylesheetHandler) Les imports ne peuvent s'appliquer que sur les premiers"
-                    + " \u00E9l\u00E9ments de la feuille de style."
+                        + " \u00E9l\u00E9ments de la feuille de style."
             },
             {
                 ER_IMPORTING_ITSELF,
@@ -576,7 +576,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_CURRENCY_SIGN_ILLEGAL,
                 "le symbole de devise n'est pas autoris\u00E9 dans la cha\u00EEne du mod\u00E8le de"
-                    + " format"
+                        + " format"
             },
             {
                 ER_DOCUMENT_FUNCTION_INVALID_IN_STYLESHEET_DOM,
@@ -589,7 +589,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_REDIRECT_COULDNT_GET_FILENAME,
                 "Extension Redirect : impossible d'obtenir le nom de fichier. L'attribut \"file\""
-                    + " ou \"select\" doit renvoyer une cha\u00EEne valide."
+                        + " ou \"select\" doit renvoyer une cha\u00EEne valide."
             },
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
@@ -598,7 +598,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_INVALID_PREFIX_IN_EXCLUDERESULTPREFIX,
                 "Le pr\u00E9fixe de l''\u00E9l\u00E9ment exclude-result-prefixes n''est pas valide"
-                    + " : {0}"
+                        + " : {0}"
             },
             {
                 ER_MISSING_NS_URI,
@@ -620,14 +620,14 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "Impossible d'utiliser un \u00E9l\u00E9ment DTMLiaison pour un noeud DOM de"
-                    + " sortie... Transmettez plut\u00F4t un \u00E9l\u00E9ment"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper."
+                        + " sortie... Transmettez plut\u00F4t un \u00E9l\u00E9ment"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper."
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "Impossible d'utiliser un \u00E9l\u00E9ment DTMLiaison pour un noeud DOM"
-                    + " d'entr\u00E9e... Transmettez plut\u00F4t un \u00E9l\u00E9ment"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper."
+                        + " d'entr\u00E9e... Transmettez plut\u00F4t un \u00E9l\u00E9ment"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper."
             },
             {ER_CALL_TO_EXT_FAILED, "Echec de l''appel de l''\u00E9l\u00E9ment d''extension : {0}"},
             {
@@ -638,7 +638,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_XSLATTRSET_USED_ITSELF,
                 "xsl:attribute-set {0} s''est utilis\u00E9 lui-m\u00EAme, ce qui g\u00E9n\u00E8re"
-                    + " une boucle sans fin."
+                        + " une boucle sans fin."
             },
             {
                 ER_CANNOT_MIX_XERCESDOM,
@@ -653,17 +653,17 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_INVALID_KEY_CALL,
                 "Appel de fonction non valide : les appels de touche r\u00E9cursive () ne sont pas"
-                    + " autoris\u00E9s"
+                        + " autoris\u00E9s"
             },
             {
                 ER_REFERENCING_ITSELF,
                 "La variable {0} fait directement ou indirectement r\u00E9f\u00E9rence \u00E0"
-                    + " elle-m\u00EAme."
+                        + " elle-m\u00EAme."
             },
             {
                 ER_ILLEGAL_DOMSOURCE_INPUT,
                 "Le noeud d'entr\u00E9e ne peut pas \u00EAtre NULL pour un \u00E9l\u00E9ment"
-                    + " DOMSource de newTemplates."
+                        + " DOMSource de newTemplates."
             },
             {ER_CLASS_NOT_FOUND_FOR_OPTION, "Fichier de classe introuvable pour l''option {0}"},
             {ER_REQUIRED_ELEM_NOT_FOUND, "El\u00E9ment obligatoire introuvable : {0}"},
@@ -677,7 +677,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_INSTANCE_MTHD_CALL_REQUIRES,
                 "L''appel de la m\u00E9thode d''instance {0} exige une instance d''objet comme"
-                    + " premier argument"
+                        + " premier argument"
             },
             {ER_INVALID_ELEMENT_NAME, "Nom d''\u00E9l\u00E9ment sp\u00E9cifi\u00E9 {0} non valide"},
             {
@@ -726,7 +726,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_COULD_NOT_LOAD_RESOURCE,
                 "Impossible de charger {0} (v\u00E9rifier CLASSPATH), les valeurs par d\u00E9faut"
-                    + " sont donc employ\u00E9es"
+                        + " sont donc employ\u00E9es"
             },
             {ER_CANNOT_INIT_DEFAULT_TEMPLATES, "Impossible d'initialiser les mod\u00E8les default"},
             {ER_RESULT_NULL, "Le r\u00E9sultat ne doit pas \u00EAtre NULL"},
@@ -799,12 +799,12 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_NULL_URI_NAMESPACE,
                 "Tentative de g\u00E9n\u00E9ration d'un pr\u00E9fixe d'espace de noms avec un URI"
-                    + " NULL"
+                        + " NULL"
             },
             {
                 ER_NUMBER_TOO_BIG,
                 "Tentative de formatage d'un nombre sup\u00E9rieur \u00E0 l'entier de type Long le"
-                    + " plus grand"
+                        + " plus grand"
             },
             {ER_CANNOT_FIND_SAX1_DRIVER, "Classe de pilote SAX1 {0} introuvable"},
             {
@@ -863,7 +863,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_NONWHITESPACE_NOT_ALLOWED_IN_POSITION,
                 "Le texte imprimable n'est pas autoris\u00E9 \u00E0 cet emplacement de la feuille"
-                    + " de style."
+                        + " de style."
             },
 
             // This code is shared with warning codes.
@@ -871,7 +871,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "Valeur non admise {1} utilis\u00E9e pour l''attribut CHAR : {0}. Un attribut de"
-                    + " type CHAR ne doit \u00EAtre compos\u00E9 que d''un caract\u00E8re."
+                        + " type CHAR ne doit \u00EAtre compos\u00E9 que d''un caract\u00E8re."
             },
 
             // Note to translators:  The following message is used if the value of
@@ -889,7 +889,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 INVALID_ENUM,
                 "Valeur non admise {1} utilis\u00E9e pour l''attribut ENUM : {0}. Les valeurs"
-                    + " valides sont les suivantes : {2}."
+                        + " valides sont les suivantes : {2}."
             },
 
             // Note to translators:  The following message is used if the value of
@@ -935,7 +935,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_ARG_LITERAL,
                 "L''argument pour {0} dans le mod\u00E8le de recherche doit \u00EAtre un"
-                    + " litt\u00E9ral."
+                        + " litt\u00E9ral."
             },
 
             // Note to translators:  The following message indicates that two definitions of
@@ -965,7 +965,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_INVALID_PREFIX,
                 "Le pr\u00E9fixe de l''\u00E9l\u00E9ment exclude-result-prefixes n''est pas valide"
-                    + " : {0}"
+                        + " : {0}"
             },
 
             // Note to translators:  An "attribute set" is a set of attributes that can
@@ -986,7 +986,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_CANT_HAVE_CONTENT_AND_SELECT,
                 "L''\u00E9l\u00E9ment {0} ne doit pas avoir \u00E0 la fois un attribut \"select\""
-                    + " et un attribut de contenu."
+                        + " et un attribut de contenu."
             },
 
             // Note to translators:  This message indicates that the value argument
@@ -1010,24 +1010,24 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "Le nom de la fonctionnalit\u00E9 ne peut pas \u00EAtre NULL dans"
-                    + " TransformerFactory.setFeature (cha\u00EEne pour le nom, valeur"
-                    + " bool\u00E9enne)."
+                        + " TransformerFactory.setFeature (cha\u00EEne pour le nom, valeur"
+                        + " bool\u00E9enne)."
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
                 "Le nom de la fonctionnalit\u00E9 ne peut pas \u00EAtre NULL dans"
-                    + " TransformerFactory.getFeature (cha\u00EEne pour le nom)."
+                        + " TransformerFactory.getFeature (cha\u00EEne pour le nom)."
             },
             {
                 ER_UNSUPPORTED_FEATURE,
                 "Impossible de d\u00E9finir la fonctionnalit\u00E9 ''{0}'' sur cette"
-                    + " propri\u00E9t\u00E9 TransformerFactory."
+                        + " propri\u00E9t\u00E9 TransformerFactory."
             },
             {
                 ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING,
                 "L''utilisation de l''\u00E9l\u00E9ment d''extension ''{0}'' n''est pas"
-                    + " autoris\u00E9e lorsque la fonctionnalit\u00E9 de traitement"
-                    + " s\u00E9curis\u00E9 est d\u00E9finie sur True."
+                        + " autoris\u00E9e lorsque la fonctionnalit\u00E9 de traitement"
+                        + " s\u00E9curis\u00E9 est d\u00E9finie sur True."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
@@ -1048,17 +1048,17 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_COUNT_ATTRIB_MATCHES_NO_ANCESTOR,
                 "Avertissement : l''attribut \"count\" ne correspond pas \u00E0 un anc\u00EAtre"
-                    + " dans xsl:number ! Cible = {0}"
+                        + " dans xsl:number ! Cible = {0}"
             },
             {
                 WG_EXPR_ATTRIB_CHANGED_TO_SELECT,
                 "Ancienne syntaxe : le nom de l'attribut \"expr\" a \u00E9t\u00E9 modifi\u00E9 en"
-                    + " \"select\"."
+                        + " \"select\"."
             },
             {
                 WG_NO_LOCALE_IN_FORMATNUMBER,
                 "Xalan ne g\u00E8re pas encore le nom de l'environnement local dans la fonction"
-                    + " format-number."
+                        + " format-number."
             },
             {
                 WG_LOCALE_NOT_FOUND,
@@ -1079,8 +1079,8 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_SPECIFICITY_CONFLICTS,
                 "Conflits de sp\u00E9cificit\u00E9 d\u00E9tect\u00E9s : {0} Les derniers"
-                    + " \u00E9l\u00E9ments trouv\u00E9s dans la feuille de style seront"
-                    + " utilis\u00E9s."
+                        + " \u00E9l\u00E9ments trouv\u00E9s dans la feuille de style seront"
+                        + " utilis\u00E9s."
             },
             {WG_PARSING_AND_PREPARING, "========= Analyse et pr\u00E9paration de {0} =========="},
             {WG_ATTR_TEMPLATE, "Mod\u00E8le attr, {0}"},
@@ -1101,13 +1101,13 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_XSLDECIMALFORMAT_NAMES_MUST_BE_UNIQUE,
                 "Les noms xsl:decimal-format doivent \u00EAtre uniques. Le nom \"{0}\" a"
-                    + " \u00E9t\u00E9 dupliqu\u00E9."
+                        + " \u00E9t\u00E9 dupliqu\u00E9."
             },
             {WG_ILLEGAL_ATTRIBUTE, "{0} a un attribut non admis : {1}"},
             {
                 WG_COULD_NOT_RESOLVE_PREFIX,
                 "Impossible de r\u00E9soudre le pr\u00E9fixe d''espace de noms : {0}. Le noeud ne"
-                    + " sera pas pris en compte."
+                        + " sera pas pris en compte."
             },
             {WG_STYLESHEET_REQUIRES_VERSION_ATTRIB, "xsl:stylesheet exige un attribut de version."},
             {WG_ILLEGAL_ATTRIBUTE_NAME, "Nom d''attribut non admis : {0}"},
@@ -1118,7 +1118,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_EMPTY_SECOND_ARG,
                 "Le jeu de noeuds r\u00E9sultant du deuxi\u00E8me argument de la fonction de"
-                    + " document est vide. Renvoyez un jeu de noeuds vide."
+                        + " document est vide. Renvoyez un jeu de noeuds vide."
             },
 
             // Following are the new WARNING keys added in XALAN code base after Jdk 1.4 (Xalan
@@ -1129,7 +1129,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "La valeur de l'attribut \"name\" du nom xsl:processing-instruction ne doit pas"
-                    + " \u00EAtre \"xml\""
+                        + " \u00EAtre \"xml\""
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -1138,7 +1138,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "La valeur de l''attribut ''name'' de xsl:processing-instruction doit \u00EAtre un"
-                    + " NCName valide : {0}"
+                        + " NCName valide : {0}"
             },
 
             // Note to translators:  This message is reported if the stylesheet that is
@@ -1148,12 +1148,12 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 WG_ILLEGAL_ATTRIBUTE_POSITION,
                 "Impossible d''ajouter l''attribut {0} apr\u00E8s des noeuds enfant ou avant la"
-                    + " production d''un \u00E9l\u00E9ment. L''attribut est ignor\u00E9."
+                        + " production d''un \u00E9l\u00E9ment. L''attribut est ignor\u00E9."
             },
             {
                 NO_MODIFICATION_ALLOWED_ERR,
                 "Une tentative de modification d'un objet a \u00E9t\u00E9 effectu\u00E9e alors que"
-                    + " les modifications ne sont pas autoris\u00E9es."
+                        + " les modifications ne sont pas autoris\u00E9es."
             },
 
             // Check: WHY THERE IS A GAP B/W NUMBERS in the XSLTErrorResources properties file?
@@ -1220,54 +1220,54 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "optionLF",
                 "   [-LF (Utiliser les retours \u00E0 la ligne uniquement en sortie {valeur par"
-                    + " d\u00E9faut : CR/LF})]"
+                        + " d\u00E9faut : CR/LF})]"
             },
             {
                 "optionCR",
                 "   [-CR (Utiliser les retours chariot uniquement en sortie {valeur par d\u00E9faut"
-                    + " : CR/LF})]"
+                        + " : CR/LF})]"
             },
             {
                 "optionESCAPE",
                 "   [-ESCAPE (Avec caract\u00E8res d'espacement {valeur par d\u00E9faut : <>&\"'\\r"
-                    + "\\n"
-                    + "}]"
+                        + "\\n"
+                        + "}]"
             },
             {
                 "optionINDENT",
                 "   [-INDENT (Contr\u00F4ler le nombre d'espaces \u00E0 mettre en retrait {valeur"
-                    + " par d\u00E9faut : 0})]"
+                        + " par d\u00E9faut : 0})]"
             },
             {
                 "optionTT",
                 "   [-TT (G\u00E9n\u00E9rer une trace des mod\u00E8les pendant qu'ils sont"
-                    + " appel\u00E9s.)]"
+                        + " appel\u00E9s.)]"
             },
             {
                 "optionTG",
                 "   [-TG (G\u00E9n\u00E9rer une trace de chaque \u00E9v\u00E9nement de"
-                    + " g\u00E9n\u00E9ration.)]"
+                        + " g\u00E9n\u00E9ration.)]"
             },
             {
                 "optionTS",
                 "   [-TS (G\u00E9n\u00E9rer une trace de chaque \u00E9v\u00E9nement de"
-                    + " s\u00E9lection.)]"
+                        + " s\u00E9lection.)]"
             },
             {
                 "optionTTC",
                 "   [-TTC (G\u00E9n\u00E9rer une trace des enfants de mod\u00E8le pendant qu'ils"
-                    + " sont trait\u00E9s.)]"
+                        + " sont trait\u00E9s.)]"
             },
             {"optionTCLASS", "   [-TCLASS (Classe TraceListener pour les extensions de trace.)]"},
             {
                 "optionVALIDATE",
                 "   [-VALIDATE (D\u00E9finir si la validation est effectu\u00E9e. Par d\u00E9faut,"
-                    + " la validation est d\u00E9sactiv\u00E9e.)]"
+                        + " la validation est d\u00E9sactiv\u00E9e.)]"
             },
             {
                 "optionEDUMP",
                 "   [-EDUMP {nom de fichier facultatif} (Effectuer le vidage de la pile sur"
-                    + " l'erreur.)]"
+                        + " l'erreur.)]"
             },
             {
                 "optionXML",
@@ -1285,23 +1285,23 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "noParsermsg4",
                 "Si vous ne disposez pas de l'analyseur XML pour Java d'IBM, vous pouvez le"
-                    + " t\u00E9l\u00E9charger sur le site"
+                        + " t\u00E9l\u00E9charger sur le site"
             },
             {"noParsermsg5", "AlphaWorks d'IBM : http://www.alphaworks.ibm.com/formula/xml"},
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER Nom de classe complet (URIResolver \u00E0 utiliser pour"
-                    + " r\u00E9soudre les URI)]"
+                        + " r\u00E9soudre les URI)]"
             },
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER Nom de classe complet (EntityResolver \u00E0 utiliser pour"
-                    + " r\u00E9soudre les entit\u00E9s)]"
+                        + " r\u00E9soudre les entit\u00E9s)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER Nom de classe complet (ContentHandler \u00E0 utiliser pour"
-                    + " s\u00E9rialiser la sortie)]"
+                        + " s\u00E9rialiser la sortie)]"
             },
             {
                 "optionLINENUMBERS",
@@ -1310,7 +1310,7 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "optionSECUREPROCESSING",
                 "   [-SECURE (D\u00E9finir la fonctionnalit\u00E9 de traitement s\u00E9curis\u00E9"
-                    + " sur True)]"
+                        + " sur True)]"
             },
 
             // Following are the new options added in XSLTErrorResources.properties files after Jdk
@@ -1319,12 +1319,12 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "optionMEDIA",
                 "   [-MEDIA mediaType (Utiliser l'attribut de support pour trouver la feuille de"
-                    + " style associ\u00E9e \u00E0 un document)]"
+                        + " style associ\u00E9e \u00E0 un document)]"
             },
             {
                 "optionFLAVOR",
                 "   [-FLAVOR flavorName (Utiliser explicitement s2s=SAX ou d2d=DOM pour effectuer"
-                    + " la transformation)] "
+                        + " la transformation)] "
             }, // Added by sboag/scurcuru; experimental
             {
                 "optionDIAG",
@@ -1338,12 +1338,12 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "optionNOOPTIMIMIZE",
                 "   [-NOOPTIMIMIZE (Ne demander aucune optimisation de la feuille de style en"
-                    + " d\u00E9finissant http://xml.apache.org/xalan/features/optimize false)]"
+                        + " d\u00E9finissant http://xml.apache.org/xalan/features/optimize false)]"
             },
             {
                 "optionRL",
                 "   [-RL recursionlimit (Assertion d'une limite num\u00E9rique sur la profondeur de"
-                    + " r\u00E9cursivit\u00E9 de la feuille de style)]"
+                        + " r\u00E9cursivit\u00E9 de la feuille de style)]"
             },
             {
                 "optionXO",
@@ -1352,17 +1352,17 @@ public class XSLTErrorResources_fr extends ListResourceBundle {
             {
                 "optionXD",
                 "   [-XD destinationDirectory (Indiquer un r\u00E9pertoire de destination pour le"
-                    + " translet)]"
+                        + " translet)]"
             },
             {
                 "optionXJ",
                 "   [-XJ jarfile (Packager les classes de translet dans un fichier JAR nomm\u00E9"
-                    + " <jarfile>)]"
+                        + " <jarfile>)]"
             },
             {
                 "optionXP",
                 "   [-XP package (Indique un pr\u00E9fixe de nom de package pour toutes les classes"
-                    + " de translet g\u00E9n\u00E9r\u00E9es)]"
+                        + " de translet g\u00E9n\u00E9r\u00E9es)]"
             },
 
             // AddITIONAL  STRINGS that need L10n

@@ -1281,7 +1281,7 @@ public class RegularExpression implements java.io.Serializable {
                                 if (cop.refNumber >= this.nofparen) {
                                     throw new RuntimeException(
                                             "Internal Error: Reference number must be more than"
-                                                + " zero: "
+                                                    + " zero: "
                                                     + cop.refNumber);
                                 }
                                 if (con.match.getBeginning(cop.refNumber) >= 0

@@ -651,7 +651,7 @@ class ElementSchemePointer implements XPointerPart {
                 CHARTYPE_INVALID = 0, // invalid XML characters, control characters and 7F
                 CHARTYPE_OTHER =
                         1, // A valid XML character (possibly invalid NCNameChar) that does not fall
-                           // in one of the other categories
+                // in one of the other categories
                 CHARTYPE_MINUS = 2, // '-' (0x2D)
                 CHARTYPE_PERIOD = 3, // '.' (0x2E)
                 CHARTYPE_SLASH = 4, // '/' (0x2F)

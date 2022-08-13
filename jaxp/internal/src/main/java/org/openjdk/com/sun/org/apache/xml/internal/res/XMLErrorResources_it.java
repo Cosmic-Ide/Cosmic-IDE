@@ -295,7 +295,7 @@ public class XMLErrorResources_it extends ListResourceBundle {
         {
             ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
             "Avvertenza: impossibile creare l'output del testo prima dell'elemento del documento."
-                + " Operazione ignorata..."
+                    + " Operazione ignorata..."
         },
         {ER_CANT_HAVE_MORE_THAN_ONE_ROOT, "Non possono esistere pi\u00F9 radici in un DOM."},
         {ER_ARG_LOCALNAME_NULL, "L'argomento 'localName' \u00E8 nullo"},
@@ -326,7 +326,7 @@ public class XMLErrorResources_it extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "Impossibile aggiungere l''attributo {0} dopo i nodi figlio o prima che sia prodotto un"
-                + " elemento. L''attributo verr\u00E0 ignorato."
+                    + " elemento. L''attributo verr\u00E0 ignorato."
         },
 
         /*
@@ -360,17 +360,17 @@ public class XMLErrorResources_it extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "Impossibile caricare ''{0}'' (verificare CLASSPATH); verranno utilizzati i valori"
-                + " predefiniti"
+                    + " predefiniti"
         },
         {
             ER_ILLEGAL_CHARACTER,
             "Tentativo di eseguire l''output di un carattere di valore integrale {0} non"
-                + " rappresentato nella codifica di output {1} specificata."
+                    + " rappresentato nella codifica di output {1} specificata."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "Impossibile caricare il file delle propriet\u00E0 ''{0}'' per il metodo di emissione"
-                + " ''{1}'' (verificare CLASSPATH)"
+                    + " ''{1}'' (verificare CLASSPATH)"
         }
     };
 

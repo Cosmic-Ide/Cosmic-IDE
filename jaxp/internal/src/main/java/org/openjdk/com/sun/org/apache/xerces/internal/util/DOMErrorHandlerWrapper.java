@@ -398,7 +398,7 @@ public class DOMErrorHandlerWrapper implements XMLErrorHandler, DOMErrorHandler 
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_BEFORE_ROOT_ELEMENT_TYPE_IN_DOCTYPEDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node (which
-                                                          // follows !DOCTYPE)
+            // follows !DOCTYPE)
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN, "MSG_ROOT_ELEMENT_TYPE_REQUIRED"),
@@ -547,25 +547,25 @@ public class DOMErrorHandlerWrapper implements XMLErrorHandler, DOMErrorHandler 
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_BEFORE_ENTITY_NAME_IN_ENTITYDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node (which
-                                                          // follows !ENTITY)
+            // follows !ENTITY)
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_BEFORE_PERCENT_IN_PEDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node (which
-                                                          // follows !ENTITY %)
+            // follows !ENTITY %)
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_BEFORE_ENTITY_NAME_IN_PEDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node (which
-                                                          // follows !ENTITY %)
+            // follows !ENTITY %)
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_ENTITY_NAME_REQUIRED_IN_ENTITYDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node (which
-                                                          // follows !ENTITY)
+            // follows !ENTITY)
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
@@ -620,19 +620,19 @@ public class DOMErrorHandlerWrapper implements XMLErrorHandler, DOMErrorHandler 
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_BEFORE_NOTATION_NAME_IN_NOTATIONDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node, which
-                                                          // follows !NOTATION
+            // follows !NOTATION
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_NOTATION_NAME_REQUIRED_IN_NOTATIONDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node, which
-                                                          // follows !NOTATION
+            // follows !NOTATION
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN,
                             "MSG_SPACE_REQUIRED_AFTER_NOTATION_NAME_IN_NOTATIONDECL"),
                     "wf-invalid-character-in-node-name"); // considered error in name of node, which
-                                                          // follows !NOTATION
+            // follows !NOTATION
             fgDOMErrorTypeTable.put(
                     new XMLErrorCode(
                             XMLMessageFormatter.XML_DOMAIN, "ExternalIDorPublicIDRequired"),

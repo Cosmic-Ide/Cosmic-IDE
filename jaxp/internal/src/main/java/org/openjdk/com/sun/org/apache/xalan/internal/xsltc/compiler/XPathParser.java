@@ -4809,7 +4809,7 @@ class CUP$XPathParser$actions {
 
                 /*. . . . . . . . . . . . . . . . . . . .*/
             case 25: // StepPattern ::= ChildOrAttributeAxisSpecifier ProcessingInstructionPattern
-                     // Predicates
+                // Predicates
                 {
                     StepPattern RESULT = null;
                     int axisleft =

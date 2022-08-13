@@ -71,7 +71,7 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.BAD_MSGKEY,
                         "A chave de mensagem ''{0}'' n\u00E3o est\u00E1 na classe de mensagem"
-                            + " ''{1}''"
+                                + " ''{1}''"
                     },
                     {
                         MsgKey.BAD_MSGFORMAT,
@@ -80,7 +80,7 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "A classe ''{0}'' do serializador n\u00E3o implementa"
-                            + " org.xml.sax.ContentHandler."
+                                + " org.xml.sax.ContentHandler."
                     },
                     {
                         MsgKey.ER_RESOURCE_COULD_NOT_FIND,
@@ -99,8 +99,8 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "N\u00E3o \u00E9 poss\u00EDvel adicionar o atributo {0} depois dos n\u00F3s"
-                            + " filhos ou antes que um elemento seja produzido. O atributo"
-                            + " ser\u00E1 ignorado."
+                                + " filhos ou antes que um elemento seja produzido. O atributo"
+                                + " ser\u00E1 ignorado."
                     },
 
                     /*
@@ -135,18 +135,18 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "N\u00E3o foi poss\u00EDvel carregar ''{0}'' (verificar CLASSPATH); usando"
-                            + " agora apenas os defaults"
+                                + " agora apenas os defaults"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "Tentativa de exibir um caractere de valor integral {0} que n\u00E3o"
-                            + " est\u00E1 representado na codifica\u00E7\u00E3o de sa\u00EDda"
-                            + " especificada de {1}."
+                                + " est\u00E1 representado na codifica\u00E7\u00E3o de sa\u00EDda"
+                                + " especificada de {1}."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "N\u00E3o foi poss\u00EDvel carregar o arquivo de propriedade ''{0}'' para"
-                            + " o m\u00E9todo de sa\u00EDda ''{1}'' (verificar CLASSPATH)"
+                                + " o m\u00E9todo de sa\u00EDda ''{1}'' (verificar CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "N\u00FAmero de porta inv\u00E1lido"},
                     {
@@ -165,7 +165,7 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
                         "O caminho cont\u00E9m uma sequ\u00EAncia inv\u00E1lida de caracteres de"
-                            + " escape"
+                                + " escape"
                     },
                     {
                         MsgKey.ER_PATH_INVALID_CHAR,
@@ -195,17 +195,17 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "A string de consulta n\u00E3o pode ser especificada no caminho nem na"
-                            + " string de consulta"
+                                + " string de consulta"
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
                         "A porta n\u00E3o pode ser especificada se o host n\u00E3o tiver sido"
-                            + " especificado"
+                                + " especificado"
                     },
                     {
                         MsgKey.ER_NO_USERINFO_IF_NO_HOST,
                         "As informa\u00E7\u00F5es do usu\u00E1rio n\u00E3o podem ser especificadas"
-                            + " se o host n\u00E3o tiver sido especificado"
+                                + " se o host n\u00E3o tiver sido especificado"
                     },
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
@@ -224,12 +224,12 @@ public class SerializerMessages_pt_BR extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "O objeto Properties especificado para a SerializerFactory n\u00E3o tem uma"
-                            + " propriedade ''{0}''."
+                                + " propriedade ''{0}''."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,
                         "Advert\u00EAncia: a codifica\u00E7\u00E3o ''{0}'' n\u00E3o \u00E9"
-                            + " suportada pelo Java runtime."
+                                + " suportada pelo Java runtime."
                     },
                 };
 

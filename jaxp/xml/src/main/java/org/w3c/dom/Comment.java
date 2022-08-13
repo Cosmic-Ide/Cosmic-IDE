@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * This interface inherits from <code>CharacterData</code> and represents the content of a comment,
  * i.e., all the characters between the starting ' <code>&lt;!--</code>' and ending '<code>--&gt;

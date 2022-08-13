@@ -249,7 +249,7 @@ public class XMLErrorResources_de extends ListResourceBundle {
         {
             ER_NO_USERINFO_IF_NO_HOST,
             "Benutzerinformationen k\u00F6nnen nicht angegeben werden, wenn der Host nicht"
-                + " angegeben wurde"
+                    + " angegeben wurde"
         },
         {
             ER_NO_PORT_IF_NO_HOST,
@@ -332,7 +332,7 @@ public class XMLErrorResources_de extends ListResourceBundle {
         {
             ER_ILLEGAL_ATTRIBUTE_POSITION,
             "Attribut {0} kann nicht nach untergeordneten Knoten oder vor dem Erstellen eines"
-                + " Elements hinzugef\u00FCgt werden. Attribut wird ignoriert."
+                    + " Elements hinzugef\u00FCgt werden. Attribut wird ignoriert."
         },
 
         /*
@@ -360,17 +360,17 @@ public class XMLErrorResources_de extends ListResourceBundle {
         {
             ER_COULD_NOT_LOAD_RESOURCE,
             "\"{0}\" konnte nicht geladen werden (CLASSPATH pr\u00FCfen). Die Standardwerte werden"
-                + " verwendet"
+                    + " verwendet"
         },
         {
             ER_ILLEGAL_CHARACTER,
             "Versuch, Zeichen mit Integralwert {0} auszugeben, das nicht in der speziellen"
-                + " Ausgabecodierung von {1} dargestellt wird."
+                    + " Ausgabecodierung von {1} dargestellt wird."
         },
         {
             ER_COULD_NOT_LOAD_METHOD_PROPERTY,
             "Property-Datei \"{0}\" konnte f\u00FCr Ausgabemethode \"{1}\" nicht geladen werden"
-                + " (CLASSPATH pr\u00FCfen)"
+                    + " (CLASSPATH pr\u00FCfen)"
         }
     };
 

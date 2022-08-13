@@ -232,12 +232,12 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_EXCEPTION_CREATING_POOL,
                     "S'ha produ\u00eft una excepci\u00f3 en crear una nova inst\u00e0ncia de"
-                        + " l'agrupaci\u00f3 "
+                            + " l'agrupaci\u00f3 "
                 },
                 {
                     ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
                     "La via d'acc\u00e9s cont\u00e9 una seq\u00fc\u00e8ncia d'escapament no"
-                        + " v\u00e0lida "
+                            + " v\u00e0lida "
                 },
                 {ER_SCHEME_REQUIRED, "Es necessita l'esquema "},
                 {ER_NO_SCHEME_IN_URI, "No s''ha trobat cap esquema a l''URI: {0} "},
@@ -281,7 +281,7 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_NO_USERINFO_IF_NO_HOST,
                     "No es pot especificar informaci\u00f3 de l'usuari si no s'especifica el"
-                        + " sistema principal "
+                            + " sistema principal "
                 },
                 {
                     ER_NO_PORT_IF_NO_HOST,
@@ -290,12 +290,12 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_NO_QUERY_STRING_IN_PATH,
                     "No es pot especificar una cadena de consulta en la via d'acc\u00e9s i la"
-                        + " cadena de consulta "
+                            + " cadena de consulta "
                 },
                 {
                     ER_NO_FRAGMENT_STRING_IN_PATH,
                     "No es pot especificar un fragment tant en la via d'acc\u00e9s com en el"
-                        + " fragment "
+                            + " fragment "
                 },
                 {
                     ER_CANNOT_INIT_URI_EMPTY_PARMS,
@@ -336,7 +336,7 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
                     "Av\u00eds: no es pot produir text abans de l'element de document. Es passa per"
-                        + " alt. "
+                            + " alt. "
                 },
                 {
                     ER_CANT_HAVE_MORE_THAN_ONE_ROOT,
@@ -378,7 +378,7 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_ILLEGAL_ATTRIBUTE_POSITION,
                     "No es pot afegir l''atribut {0} despr\u00e9s dels nodes subordinats o abans"
-                        + " que es produeixi un element. Es passar\u00e0 per alt l''atribut. "
+                            + " que es produeixi un element. Es passar\u00e0 per alt l''atribut. "
                 },
 
                 /*
@@ -405,17 +405,17 @@ public class XMLErrorResources_ca extends ListResourceBundle {
                 {
                     ER_STRAY_NAMESPACE,
                     "La declaraci\u00f3 d''espai de noms ''{0}''=''{1}'' es troba fora de"
-                        + " l''element."
+                            + " l''element."
                 },
                 {
                     ER_COULD_NOT_LOAD_RESOURCE,
                     "No s''ha pogut carregar ''{0}'' (comproveu la CLASSPATH); ara s''estan fent"
-                        + " servir els valors per defecte."
+                            + " servir els valors per defecte."
                 },
                 {
                     ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                     "No s''ha pogut carregar el fitxer de propietats ''{0}'' del m\u00e8tode de"
-                        + " sortida ''{1}'' (comproveu la CLASSPATH)"
+                            + " sortida ''{1}'' (comproveu la CLASSPATH)"
                 }
             };
 

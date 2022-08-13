@@ -25,7 +25,6 @@
 
 package org.openjdk.com.sun.xml.internal.stream.writers;
 
-
 /**
  * XMLOutputSource.
  *

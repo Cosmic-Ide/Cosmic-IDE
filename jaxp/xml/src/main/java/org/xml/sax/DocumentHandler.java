@@ -30,7 +30,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Receive notification of general document events.
  *

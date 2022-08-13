@@ -889,7 +889,7 @@ public class DOMHelper {
                         XMLMessages.createXMLMessage(
                                 XMLErrorResources.ER_CHILD_HAS_NO_OWNER_DOCUMENT_ELEMENT,
                                 null)); // "Attribute child does not have an owner document
-                                        // element!");
+                // element!");
             }
 
             parent = locateAttrParent(rootElem, node);

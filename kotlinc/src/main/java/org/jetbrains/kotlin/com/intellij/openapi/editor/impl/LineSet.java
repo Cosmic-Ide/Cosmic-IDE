@@ -29,7 +29,7 @@ public final class LineSet {
     private final int[] myStarts;
     private final byte[]
             myFlags; // MODIFIED_MASK bit is for is/setModified(line); SEPARATOR_MASK 2 bits stores
-                     // line separator length: 0..2
+    // line separator length: 0..2
     private final int myLength;
 
     private LineSet(int[] starts, byte[] flags, int length) {

@@ -79,7 +79,7 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
                         "La classe serializzatore ''{0}'' non implementa"
-                            + " org.xml.sax.ContentHandler."
+                                + " org.xml.sax.ContentHandler."
                     },
                     {MsgKey.ER_RESOURCE_COULD_NOT_FIND, "Risorsa [ {0} ] non trovata.\n {1}"},
                     {
@@ -95,7 +95,7 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "Impossibile aggiungere l''attributo {0} dopo i nodi figlio o prima che sia"
-                            + " prodotto un elemento. L''attributo verr\u00E0 ignorato."
+                                + " prodotto un elemento. L''attributo verr\u00E0 ignorato."
                     },
 
                     /*
@@ -126,22 +126,22 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_STRAY_NAMESPACE,
                         "Dichiarazione dello spazio di nomi ''{0}''=''{1}'' al di fuori"
-                            + " dell''elemento."
+                                + " dell''elemento."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "Impossibile caricare ''{0}'' (verificare CLASSPATH); verranno utilizzati i"
-                            + " valori predefiniti"
+                                + " valori predefiniti"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "Tentativo di eseguire l''output di un carattere di valore integrale {0}"
-                            + " non rappresentato nella codifica di output {1} specificata."
+                                + " non rappresentato nella codifica di output {1} specificata."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Impossibile caricare il file delle propriet\u00E0 ''{0}'' per il metodo di"
-                            + " emissione ''{1}'' (verificare CLASSPATH)"
+                                + " emissione ''{1}'' (verificare CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "Numero di porta non valido"},
                     {
@@ -182,12 +182,12 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_FRAGMENT_STRING_IN_PATH,
                         "Il frammento non pu\u00F2 essere specificato sia nel percorso che nel"
-                            + " frammento"
+                                + " frammento"
                     },
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "La stringa di query non pu\u00F2 essere specificata nella stringa di"
-                            + " percorso e query."
+                                + " percorso e query."
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
@@ -200,8 +200,8 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
                         "Avvertenza: la versione del documento di output deve essere ''{0}''."
-                            + " Questa versione di XML non \u00E8 supportata. La versione del"
-                            + " documento di output sar\u00E0 ''1.0''."
+                                + " Questa versione di XML non \u00E8 supportata. La versione del"
+                                + " documento di output sar\u00E0 ''1.0''."
                     },
                     {MsgKey.ER_SCHEME_REQUIRED, "Lo schema \u00E8 obbligatorio."},
 
@@ -213,7 +213,7 @@ public class SerializerMessages_it extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "L''oggetto Properties passato a SerializerFactory non dispone di una"
-                            + " propriet\u00E0 ''{0}''."
+                                + " propriet\u00E0 ''{0}''."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,

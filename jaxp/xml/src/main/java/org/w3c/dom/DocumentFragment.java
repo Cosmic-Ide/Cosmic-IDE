@@ -41,7 +41,6 @@
 
 package org.w3c.dom;
 
-
 /**
  * <code>DocumentFragment</code> is a "lightweight" or "minimal" <code>Document</code> object. It is
  * very common to want to be able to extract a portion of a document's tree or to create a new

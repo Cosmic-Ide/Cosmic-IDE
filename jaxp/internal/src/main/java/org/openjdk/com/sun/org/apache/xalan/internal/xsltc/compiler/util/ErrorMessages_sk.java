@@ -100,7 +100,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.MULTIPLE_STYLESHEET_ERR,
                 "Viac ne\u017e jeden \u0161t\u00fdl dokumentu bol definovan\u00fd v rovnakom"
-                    + " s\u00fabore."
+                        + " s\u00fabore."
             },
 
             /*
@@ -161,7 +161,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.METHOD_NOT_FOUND_ERR,
                 "Nie je mo\u017en\u00e9 n\u00e1js\u0165 extern\u00fa met\u00f3du ''{0}'' (mus\u00ed"
-                    + " by\u0165 verejn\u00e1)."
+                        + " by\u0165 verejn\u00e1)."
             },
 
             /*
@@ -173,7 +173,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "Nie je mo\u017en\u00e9 konvertova\u0165 typ argumentu/n\u00e1vratu vo volan\u00ed"
-                    + " met\u00f3dy ''{0}''"
+                        + " met\u00f3dy ''{0}''"
             },
 
             /*
@@ -291,7 +291,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.CIRCULAR_INCLUDE_ERR,
                 "Cirkul\u00e1rny import/zahrnutie. \u0160t\u00fdl dokumentu ''{0}'' je u\u017e"
-                    + " zaveden\u00fd."
+                        + " zaveden\u00fd."
             },
 
             /*
@@ -302,8 +302,8 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.RESULT_TREE_SORT_ERR,
                 "Fragmenty stromu v\u00fdsledkov nemo\u017eno triedi\u0165 (elementy <xsl:sort>"
-                    + " s\u00fa ignorovan\u00e9). Ke\u010f vytv\u00e1rate v\u00fdsledkov\u00fd"
-                    + " strom, mus\u00edte triedi\u0165 uzly."
+                        + " s\u00fa ignorovan\u00e9). Ke\u010f vytv\u00e1rate v\u00fdsledkov\u00fd"
+                        + " strom, mus\u00edte triedi\u0165 uzly."
             },
 
             /*
@@ -439,7 +439,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.ILLEGAL_TEXT_NODE_ERR,
                 "Textov\u00e9 \u00fadaje s\u00fa mimo elementu vrchnej \u00farovne"
-                    + " <xsl:stylesheet>."
+                        + " <xsl:stylesheet>."
             },
 
             /*
@@ -489,7 +489,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "Vstupn\u00fd dokument nie je \u0161t\u00fdlom dokumentu (n\u00e1zvov\u00fd"
-                    + " priestor XSL nie je deklarovan\u00fd v kore\u0148ovom elemente)."
+                        + " priestor XSL nie je deklarovan\u00fd v kore\u0148ovom elemente)."
             },
 
             /*
@@ -499,7 +499,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_TARGET_ERR,
                 "Nebolo mo\u017en\u00e9 n\u00e1js\u0165 cie\u013e \u0161t\u00fdlu dokumentu"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -541,7 +541,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.KEY_USE_ATTR_ERR,
                 "Atrib\u00fat pou\u017eitia <key> mus\u00ed by\u0165 uzol, sada uzlov, re\u0165azec"
-                    + " alebo \u010d\u00edslo."
+                        + " alebo \u010d\u00edslo."
             },
 
             /*
@@ -631,7 +631,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "Trieda transletu zaveden\u00e1, ale nie je mo\u017en\u00e9 vytvori\u0165"
-                    + " in\u0161tanciu transletu."
+                        + " in\u0161tanciu transletu."
             },
 
             /*
@@ -714,7 +714,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_NO_HANDLER_ERR,
                 "Pre v\u00fdsledok transform\u00e1cie nebol definovan\u00fd \u017eiadny"
-                    + " v\u00fdstupn\u00fd handler."
+                        + " v\u00fdstupn\u00fd handler."
             },
 
             /*
@@ -840,7 +840,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.STRAY_SORT_ERR,
                 "<xsl:sort> mo\u017eno pou\u017ei\u0165 len v <xsl:for-each> alebo"
-                    + " <xsl:apply-templates>."
+                        + " <xsl:apply-templates>."
             },
 
             /*
@@ -879,7 +879,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "Prv\u00fd argument pre nestatick\u00fa funkciu Java ''{0}'' nie je platnou"
-                    + " referenciou objektu."
+                        + " referenciou objektu."
             },
 
             /*
@@ -915,7 +915,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.CMDLINE_OPT_MISSING_ARG_ERR,
                 "Vo\u013ebe pr\u00edkazov\u00e9ho riadka ''{0}'' ch\u00fdba po\u017eadovan\u00fd"
-                    + " argument."
+                        + " argument."
             },
 
             /*
@@ -982,7 +982,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.COULD_NOT_CREATE_TRANS_FACT,
                 "Nebolo mo\u017en\u00e9 vytvori\u0165 in\u0161tanciu triedy TransformerFactory"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -1010,7 +1010,7 @@ public class ErrorMessages_sk extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: Cannot set the feature to false when security manager"
-                    + " is present."
+                        + " is present."
             }
         };
     }

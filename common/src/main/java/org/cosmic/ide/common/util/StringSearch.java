@@ -1,7 +1,10 @@
 package org.cosmic.ide.common.util;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
@@ -9,11 +12,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.regex.Pattern;
-import java.io.BufferedReader;
 import java.util.regex.Matcher;
-import java.io.File;
-import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class StringSearch {
 
@@ -151,6 +151,7 @@ public class StringSearch {
             i++;
         }
     }
+
     public static int endOfLine(CharSequence contents, int cursor) {
         while (cursor < contents.length()) {
             char c = contents.charAt(cursor);
@@ -182,8 +183,8 @@ public class StringSearch {
     public static boolean containsWord(Path java, String query) {
         StringSearch search = new StringSearch(query);
         // if (FileStore.activeDocuments().contains(java)) {
-            // var text = FileStore.contents(java).getBytes();
-            // return search.nextWord(text) != -1;
+        // var text = FileStore.contents(java).getBytes();
+        // return search.nextWord(text) != -1;
         // }
         try (FileChannel channel = FileChannel.open(java)) {
             // Read up to 1 MB of data from file
@@ -199,14 +200,14 @@ public class StringSearch {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static boolean matchesPartialName(CharSequence candidate, CharSequence partialName) {
         if (partialName.length() == 1 && partialName.equals(".")) {
             return true;
         }
         // if (candidate.length() < partialName.length()) return false;
         // for (int i = 0; i < partialName.length(); i++) {
-            // if (candidate.charAt(i) != partialName.charAt(i)) return false;
+        // if (candidate.charAt(i) != partialName.charAt(i)) return false;
         // }
         // return true;
         if (candidate.length() > partialName.length()) {
@@ -215,7 +216,7 @@ public class StringSearch {
         double similarity = similarity(candidate.toString(), partialName.toString());
         return similarity > 0.5;
     }
-    
+
     public static String packageName(File file) {
         Pattern packagePattern = Pattern.compile("package\\s+([a-zA_Z][.\\w]*+)(;)?");
         Pattern startOfClass = Pattern.compile("^[\\w ]*class +\\w+");
@@ -300,8 +301,8 @@ public class StringSearch {
     private static boolean containsString(Path java, String query) {
         StringSearch search = new StringSearch(query);
         // if (FileStore.activeDocuments().contains(java)) {
-            // var text = FileStore.contents(java).getBytes();
-            // return search.next(text) != -1;
+        // var text = FileStore.contents(java).getBytes();
+        // return search.next(text) != -1;
         // }
         try (FileChannel channel = FileChannel.open(java)) {
             // Read up to 1 MB of data from file

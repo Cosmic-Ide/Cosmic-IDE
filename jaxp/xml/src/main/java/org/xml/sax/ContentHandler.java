@@ -31,7 +31,6 @@
 
 package org.xml.sax;
 
-
 /**
  * Receive notification of the logical content of a document.
  *

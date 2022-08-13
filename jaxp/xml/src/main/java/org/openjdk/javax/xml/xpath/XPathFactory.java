@@ -89,7 +89,7 @@ public abstract class XPathFactory {
                         xpathFactoryConfigurationException) {
             throw new RuntimeException(
                     "XPathFactory#newInstance() failed to create an XPathFactory for the default"
-                        + " object model: "
+                            + " object model: "
                             + DEFAULT_OBJECT_MODEL_URI
                             + " with the XPathFactoryConfigurationException: "
                             + xpathFactoryConfigurationException.toString());

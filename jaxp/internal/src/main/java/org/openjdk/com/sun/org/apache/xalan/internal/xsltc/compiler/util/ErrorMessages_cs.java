@@ -100,7 +100,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.MULTIPLE_STYLESHEET_ERR,
                 "V\u00edce ne\u017e jedna p\u0159edloha stylu je definov\u00e1na ve stejn\u00e9m"
-                    + " souboru."
+                        + " souboru."
             },
 
             /*
@@ -130,7 +130,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.VARIABLE_REDEF_ERR,
                 "Prom\u011bnn\u00e1 ''{0}'' je n\u011bkolikan\u00e1sobn\u011b definov\u00e1na ve"
-                    + " stejn\u00e9m oboru."
+                        + " stejn\u00e9m oboru."
             },
 
             /*
@@ -159,7 +159,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.METHOD_NOT_FOUND_ERR,
                 "Nelze naj\u00edt extern\u00ed metodu ''{0}'' (mus\u00ed b\u00fdt"
-                    + " ve\u0159ejn\u00e1)."
+                        + " ve\u0159ejn\u00e1)."
             },
 
             /*
@@ -171,7 +171,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.ARGUMENT_CONVERSION_ERR,
                 "Nelze p\u0159ev\u00e9st argument/n\u00e1vratov\u00fd typ ve vol\u00e1n\u00ed"
-                    + " metody ''{0}''"
+                        + " metody ''{0}''"
             },
 
             /*
@@ -286,7 +286,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.CIRCULAR_INCLUDE_ERR,
                 "Cyklick\u00fd import/zahrnut\u00ed. P\u0159edloha stylu ''{0}'' je ji\u017e"
-                    + " zavedena."
+                        + " zavedena."
             },
 
             /*
@@ -297,8 +297,8 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.RESULT_TREE_SORT_ERR,
                 "Fragmenty stromu v\u00fdsledk\u016f nemohou b\u00fdt \u0159azeny (prvky <xsl:sort>"
-                    + " se ignoruj\u00ed). P\u0159i vytv\u00e1\u0159en\u00ed stromu"
-                    + " v\u00fdsledk\u016f mus\u00edte se\u0159adit uzly."
+                        + " se ignoruj\u00ed). P\u0159i vytv\u00e1\u0159en\u00ed stromu"
+                        + " v\u00fdsledk\u016f mus\u00edte se\u0159adit uzly."
             },
 
             /*
@@ -443,7 +443,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.ILLEGAL_TEXT_NODE_ERR,
                 "Textov\u00e1 data jsou vn\u011b prvku nejvy\u0161\u0161\u00ed \u00farovn\u011b"
-                    + " <xsl:stylesheet>."
+                        + " <xsl:stylesheet>."
             },
 
             /*
@@ -487,7 +487,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.MISSING_XSLT_URI_ERR,
                 "Vstupn\u00ed dokument nen\u00ed p\u0159edloha stylu (obor n\u00e1zv\u016f XSL"
-                    + " nen\u00ed deklarov\u00e1n v ko\u0159enov\u00e9m elementu)."
+                        + " nen\u00ed deklarov\u00e1n v ko\u0159enov\u00e9m elementu)."
             },
 
             /*
@@ -538,7 +538,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.KEY_USE_ATTR_ERR,
                 "Atribut use prom\u011bnn\u00e9 <key> mus\u00ed b\u00fdt typu node, node-set,"
-                    + " string nebo number."
+                        + " string nebo number."
             },
 
             /*
@@ -590,7 +590,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.UNKNOWN_SIG_TYPE_ERR,
                 "Nezn\u00e1m\u00fd datov\u00fd typ prom\u011bnn\u00e9 signature pro t\u0159\u00eddu"
-                    + " ''{0}''."
+                        + " ''{0}''."
             },
 
             /*
@@ -629,7 +629,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.TRANSLET_OBJECT_ERR,
                 "T\u0159\u00edda translet byla zavedena, av\u0161ak nelze vytvo\u0159it instanci"
-                    + " translet."
+                        + " translet."
             },
 
             /*
@@ -650,7 +650,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_UNKNOWN_SOURCE_ERR,
                 "Pouze prom\u011bnn\u00e9 StreamSource, SAXSource a DOMSource jsou podporov\u00e1ny"
-                    + " produktem XSLTC"
+                        + " produktem XSLTC"
             },
 
             /*
@@ -660,7 +660,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_NO_SOURCE_ERR,
                 "Zdrojov\u00fd objekt p\u0159edan\u00fd ''{0}'' nem\u00e1 \u017e\u00e1dn\u00fd"
-                    + " obsah."
+                        + " obsah."
             },
 
             /*
@@ -689,7 +689,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SET_RESULT_ERR,
                 "Metoda setResult() mus\u00ed b\u00fdt vol\u00e1na p\u0159ed metodou"
-                    + " startDocument()."
+                        + " startDocument()."
             },
 
             /*
@@ -702,7 +702,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_NO_TRANSLET_ERR,
                 "Objekt Transformer nem\u00e1 \u017e\u00e1dn\u00fd zapouzd\u0159en\u00fd objekt"
-                    + " translet."
+                        + " translet."
             },
 
             /*
@@ -713,7 +713,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_NO_HANDLER_ERR,
                 "Neexistuje \u017e\u00e1dn\u00fd definovan\u00fd v\u00fdstupn\u00ed"
-                    + " obslu\u017en\u00fd program pro v\u00fdsledek transformace."
+                        + " obslu\u017en\u00fd program pro v\u00fdsledek transformace."
             },
 
             /*
@@ -751,7 +751,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.XSLTC_SOURCE_ERR,
                 "Byla vol\u00e1na metoda XSLTCSource.build(), ani\u017e by byla nastavena hodnota"
-                    + " systemId."
+                        + " systemId."
             },
             {ErrorMsg.COMPILE_STDIN_ERR, "Volba -i mus\u00ed b\u00fdt pou\u017eita s volbou -o."},
 
@@ -839,7 +839,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.STRAY_SORT_ERR,
                 "Prvek <xsl:sort> m\u016f\u017ee b\u00fdt pou\u017eit jen v <xsl:for-each> nebo"
-                    + " <xsl:apply-templates>."
+                        + " <xsl:apply-templates>."
             },
 
             /*
@@ -851,7 +851,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.UNSUPPORTED_ENCODING,
                 "V\u00fdstupn\u00ed k\u00f3dov\u00e1n\u00ed ''{0}'' nen\u00ed v tomto"
-                    + " prost\u0159ed\u00ed JVM podporov\u00e1no."
+                        + " prost\u0159ed\u00ed JVM podporov\u00e1no."
             },
 
             /*
@@ -879,7 +879,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.NO_JAVA_FUNCT_THIS_REF,
                 "Prvn\u00ed argument nestatick\u00e9 funkce Java ''{0}'' nen\u00ed platn\u00fdm"
-                    + " odkazem na objekt."
+                        + " odkazem na objekt."
             },
 
             /*
@@ -915,7 +915,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.CMDLINE_OPT_MISSING_ARG_ERR,
                 "Volb\u011b p\u0159\u00edkazov\u00e9ho \u0159\u00e1dku ''{0}'' chyb\u00ed"
-                    + " po\u017eadovan\u00fd argument."
+                        + " po\u017eadovan\u00fd argument."
             },
 
             /*
@@ -1015,7 +1015,7 @@ public class ErrorMessages_cs extends ListResourceBundle {
             {
                 ErrorMsg.JAXP_SECUREPROCESSING_FEATURE,
                 "FEATURE_SECURE_PROCESSING: Cannot set the feature to false when security manager"
-                    + " is present."
+                        + " is present."
             }
         };
     }

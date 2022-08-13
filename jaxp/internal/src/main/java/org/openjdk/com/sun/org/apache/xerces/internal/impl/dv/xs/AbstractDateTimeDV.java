@@ -330,7 +330,7 @@ public abstract class AbstractDateTimeDV extends TypeValidator {
         } else if (length > 4 && buffer.charAt(start) == '0') {
             throw new RuntimeException(
                     "Leading zeros are required if the year value would otherwise have fewer than"
-                        + " four digits; otherwise they are forbidden");
+                            + " four digits; otherwise they are forbidden");
         }
         date.year = parseIntYear(buffer, i);
         if (buffer.charAt(i) != '-') {

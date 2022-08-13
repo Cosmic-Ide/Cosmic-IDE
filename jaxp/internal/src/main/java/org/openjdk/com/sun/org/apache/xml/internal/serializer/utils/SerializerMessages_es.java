@@ -134,12 +134,12 @@ public class SerializerMessages_es extends ListResourceBundle {
                     {
                         MsgKey.ER_STRAY_NAMESPACE,
                         "Declaraci\u00F3n del espacio de nombres ''{0}''=''{1}'' fuera del"
-                            + " elemento."
+                                + " elemento."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "No se ha podido cargar ''{0}'' (compruebe la CLASSPATH), ahora s\u00F3lo"
-                            + " se est\u00E1n utilizando los valores por defecto"
+                                + " se est\u00E1n utilizando los valores por defecto"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
@@ -150,7 +150,7 @@ public class SerializerMessages_es extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "No se ha podido cargar el archivo de propiedades ''{0}'' para el"
-                            + " m\u00E9todo de salida ''{1}'' (compruebe la CLASSPATH)"
+                                + " m\u00E9todo de salida ''{1}'' (compruebe la CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "N\u00FAmero de puerto no v\u00E1lido"},
                     {
@@ -194,12 +194,12 @@ public class SerializerMessages_es extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_FRAGMENT_STRING_IN_PATH,
                         "No se puede especificar el fragmento en la ruta de acceso y en el"
-                            + " fragmento"
+                                + " fragmento"
                     },
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "No se puede especificar la cadena de consulta en la ruta de acceso y en la"
-                            + " cadena de consulta"
+                                + " cadena de consulta"
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
@@ -208,13 +208,13 @@ public class SerializerMessages_es extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_USERINFO_IF_NO_HOST,
                         "No se puede especificar la informaci\u00F3n de usuario si no se ha"
-                            + " especificado el host"
+                                + " especificado el host"
                     },
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
                         "Advertencia: es necesario que la versi\u00F3n del documento de salida sea"
-                            + " ''{0}''. Esta versi\u00F3n de XML no est\u00E1 soportada. La"
-                            + " versi\u00F3n del documento de salida ser\u00E1 ''1.0''."
+                                + " ''{0}''. Esta versi\u00F3n de XML no est\u00E1 soportada. La"
+                                + " versi\u00F3n del documento de salida ser\u00E1 ''1.0''."
                     },
                     {MsgKey.ER_SCHEME_REQUIRED, "Se necesita un esquema."},
 
@@ -226,12 +226,12 @@ public class SerializerMessages_es extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "El objeto de propiedades transferido a SerializerFactory no tiene una"
-                            + " propiedad ''{0}''."
+                                + " propiedad ''{0}''."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,
                         "Advertencia: el tiempo de ejecuci\u00F3n de Java no soporta la"
-                            + " codificaci\u00F3n ''{0}''."
+                                + " codificaci\u00F3n ''{0}''."
                     },
                 };
 

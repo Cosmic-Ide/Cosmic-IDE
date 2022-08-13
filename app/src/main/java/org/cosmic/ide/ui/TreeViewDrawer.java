@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -89,7 +89,7 @@ public class TreeViewDrawer extends Fragment {
         }
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
-        UiUtilsKt.addSystemWindowInsetToPadding(refreshLayout, false, true, false, true); 
+        UiUtilsKt.addSystemWindowInsetToPadding(refreshLayout, false, true, false, true);
         refreshLayout.setOnRefreshListener(
                 () -> {
                     partialRefresh();
@@ -107,10 +107,11 @@ public class TreeViewDrawer extends Fragment {
                                     try {
                                         activity.loadFileToEditor(
                                                 treeNode.getValue().getFile().getPath());
-                                        if(activity.binding.root instanceof DrawerLayout) {
-                                            DrawerLayout drawer = (DrawerLayout) activity.binding.root;
-                                            if (drawer != null && drawer.isDrawerOpen(
-                                                    GravityCompat.START)) {
+                                        if (activity.binding.root instanceof DrawerLayout) {
+                                            DrawerLayout drawer =
+                                                    (DrawerLayout) activity.binding.root;
+                                            if (drawer != null
+                                                    && drawer.isDrawerOpen(GravityCompat.START)) {
                                                 drawer.close();
                                             }
                                         }

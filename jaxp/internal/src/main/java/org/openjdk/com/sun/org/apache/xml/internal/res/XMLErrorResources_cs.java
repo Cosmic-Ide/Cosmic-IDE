@@ -200,8 +200,8 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_PARSER_DOTERMINATE_ANSWERS,
                     "\n"
-                        + "Neo\u010dek\u00e1van\u00e9: odpov\u011bdi funkce analyz\u00e1toru"
-                        + " doTerminate {0}"
+                            + "Neo\u010dek\u00e1van\u00e9: odpov\u011bdi funkce analyz\u00e1toru"
+                            + " doTerminate {0}"
                 },
                 {
                     ER_NO_PARSE_CALL_WHILE_PARSING,
@@ -226,7 +226,7 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_NODE_NON_NULL,
                     "Uzel pou\u017eit\u00fd ve funkci getDTMHandleFromNode mus\u00ed m\u00edt"
-                        + " hodnotu not-null"
+                            + " hodnotu not-null"
                 },
                 {ER_COULD_NOT_RESOLVE_NODE, "Uzel nelze p\u0159elo\u017eit do manipul\u00e1toru"},
                 {
@@ -241,7 +241,7 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_EXCEPTION_CREATING_POOL,
                     "v\u00fdjimka p\u0159i vytv\u00e1\u0159en\u00ed nov\u00e9 instance"
-                        + " spole\u010dn\u00e9 oblasti"
+                            + " spole\u010dn\u00e9 oblasti"
                 },
                 {
                     ER_PATH_CONTAINS_INVALID_ESCAPE_SEQUENCE,
@@ -307,14 +307,14 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_ERRORHANDLER_CREATED_WITH_NULL_PRINTWRITER,
                     "Prvek ListingErrorHandler byl vytvo\u0159en s funkc\u00ed PrintWriter s"
-                        + " hodnotou null!"
+                            + " hodnotou null!"
                 },
                 {ER_SYSTEMID_UNKNOWN, "Nezn\u00e1m\u00fd identifik\u00e1tor SystemId"},
                 {ER_LOCATION_UNKNOWN, "Chyba se vyskytla na nezn\u00e1m\u00e9m m\u00edst\u011b"},
                 {
                     ER_PREFIX_MUST_RESOLVE,
                     "P\u0159edponu mus\u00ed b\u00fdt mo\u017eno p\u0159elo\u017eit do oboru"
-                        + " n\u00e1zv\u016f: {0}"
+                            + " n\u00e1zv\u016f: {0}"
                 },
                 {
                     ER_CREATEDOCUMENT_NOT_SUPPORTED,
@@ -331,7 +331,7 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_CANT_OUTPUT_TEXT_BEFORE_DOC,
                     "Varov\u00e1n\u00ed: v\u00fdstup textu nem\u016f\u017ee p\u0159edch\u00e1zet"
-                        + " prvku dokumentu! Ignorov\u00e1no..."
+                            + " prvku dokumentu! Ignorov\u00e1no..."
                 },
                 {
                     ER_CANT_HAVE_MORE_THAN_ONE_ROOT,
@@ -345,7 +345,7 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_ARG_LOCALNAME_INVALID,
                     "Hodnota Localname ve funkci QNAME by m\u011bla b\u00fdt platn\u00fdm prvkem"
-                        + " NCName"
+                            + " NCName"
                 },
 
                 // Note to translators:  A QNAME has the syntactic form [NCName:]NCName
@@ -377,7 +377,7 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_ILLEGAL_ATTRIBUTE_POSITION,
                     "Nelze p\u0159idat atribut {0} po uzlech potomk\u016f ani p\u0159ed t\u00edm,"
-                        + " ne\u017e je vytvo\u0159en prvek. Atribut bude ignorov\u00e1n."
+                            + " ne\u017e je vytvo\u0159en prvek. Atribut bude ignorov\u00e1n."
                 },
 
                 /*
@@ -411,12 +411,12 @@ public class XMLErrorResources_cs extends ListResourceBundle {
                 {
                     ER_COULD_NOT_LOAD_RESOURCE,
                     "Nelze zav\u00e9st ''{0}'' (zkontrolujte prom\u011bnnou CLASSPATH), proto se"
-                        + " pou\u017e\u00edvaj\u00ed pouze v\u00fdchoz\u00ed hodnoty"
+                            + " pou\u017e\u00edvaj\u00ed pouze v\u00fdchoz\u00ed hodnoty"
                 },
                 {
                     ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                     "Nelze na\u010d\u00edst soubor vlastnost\u00ed ''{0}'' pro v\u00fdstupn\u00ed"
-                        + " metodu ''{1}'' (zkontrolujte prom\u011bnnou CLASSPATH)."
+                            + " metodu ''{1}'' (zkontrolujte prom\u011bnnou CLASSPATH)."
                 }
             };
 

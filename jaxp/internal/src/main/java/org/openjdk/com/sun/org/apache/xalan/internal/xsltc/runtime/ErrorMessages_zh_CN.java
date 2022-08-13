@@ -157,7 +157,7 @@ public class ErrorMessages_zh_CN extends ListResourceBundle {
             {
                 BasisLibrary.FORMAT_NUMBER_ERR,
                 "\u5C1D\u8BD5\u4F7F\u7528\u6A21\u5F0F ''{1}'' \u8BBE\u7F6E\u6570\u5B57 ''{0}''"
-                    + " \u7684\u683C\u5F0F\u3002"
+                        + " \u7684\u683C\u5F0F\u3002"
             },
 
             /*
@@ -213,7 +213,7 @@ public class ErrorMessages_zh_CN extends ListResourceBundle {
             {
                 BasisLibrary.STRAY_NAMESPACE_ERR,
                 "\u540D\u79F0\u7A7A\u95F4\u58F0\u660E ''{0}''=''{1}''"
-                    + " \u5728\u5143\u7D20\u5916\u90E8\u3002"
+                        + " \u5728\u5143\u7D20\u5916\u90E8\u3002"
             },
 
             /*
@@ -233,7 +233,7 @@ public class ErrorMessages_zh_CN extends ListResourceBundle {
             {
                 BasisLibrary.DOM_ADAPTER_INIT_ERR,
                 "\u4F7F\u7528\u9519\u8BEF\u7C7B\u578B\u7684\u6E90 DOM \u521B\u5EFA\u4E86"
-                    + " DOMAdapter\u3002"
+                        + " DOMAdapter\u3002"
             },
 
             /*
@@ -245,7 +245,7 @@ public class ErrorMessages_zh_CN extends ListResourceBundle {
             {
                 BasisLibrary.PARSER_DTD_SUPPORT_ERR,
                 "\u4F7F\u7528\u7684 SAX \u89E3\u6790\u5668\u4E0D\u4F1A\u5904\u7406 DTD"
-                    + " \u58F0\u660E\u4E8B\u4EF6\u3002"
+                        + " \u58F0\u660E\u4E8B\u4EF6\u3002"
             },
 
             /*
@@ -257,7 +257,7 @@ public class ErrorMessages_zh_CN extends ListResourceBundle {
             {
                 BasisLibrary.NAMESPACES_SUPPORT_ERR,
                 "\u4F7F\u7528\u7684 SAX \u89E3\u6790\u5668\u4E0D\u652F\u6301 XML"
-                    + " \u540D\u79F0\u7A7A\u95F4\u3002"
+                        + " \u540D\u79F0\u7A7A\u95F4\u3002"
             },
 
             /*

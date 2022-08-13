@@ -389,7 +389,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_CURLYBRACE,
                 "\uC624\uB958: \uD45C\uD604\uC2DD\uC5D0\uB294 '{'\uAC00 \uD3EC\uD568\uB420 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_ILLEGAL_ATTRIBUTE,
@@ -414,12 +414,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_TEMPLATE_NOT_FOUND,
                 "\uBA85\uBA85\uB41C \uD15C\uD50C\uB9AC\uD2B8\uB97C \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC74C: {0}"
+                        + " \uC5C6\uC74C: {0}"
             },
             {
                 ER_CANT_RESOLVE_NAME_AVT,
                 "xsl:call-template\uC5D0\uC11C \uC774\uB984 AVT\uB97C \uBD84\uC11D\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {ER_REQUIRES_ATTRIB, "{0}\uC5D0 \uC18D\uC131\uC774 \uD544\uC694\uD568: {1}"},
             {
@@ -433,39 +433,39 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "processing-instruction \uC774\uB984\uC740 'xml'\uC77C \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "processing-instruction \uC774\uB984\uC740 \uC801\uD569\uD55C"
-                    + " NCName\uC774\uC5B4\uC57C \uD568: {0}"
+                        + " NCName\uC774\uC5B4\uC57C \uD568: {0}"
             },
             {
                 ER_NEED_MATCH_ATTRIB,
                 "{0}\uC5D0 \uBAA8\uB4DC\uAC00 \uC788\uC744 \uACBD\uC6B0 match \uC18D\uC131\uC774"
-                    + " \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_NEED_NAME_OR_MATCH_ATTRIB,
                 "{0}\uC5D0\uB294 name \uB610\uB294 match \uC18D\uC131\uC774"
-                    + " \uD544\uC694\uD569\uB2C8\uB2E4."
+                        + " \uD544\uC694\uD569\uB2C8\uB2E4."
             },
             {
                 ER_CANT_RESOLVE_NSPREFIX,
                 "\uB124\uC784\uC2A4\uD398\uC774\uC2A4 \uC811\uB450\uC5B4\uB97C \uBD84\uC11D\uD560"
-                    + " \uC218 \uC5C6\uC74C: {0}"
+                        + " \uC218 \uC5C6\uC74C: {0}"
             },
             {ER_ILLEGAL_VALUE, "xml:space\uC5D0 \uC798\uBABB\uB41C \uAC12\uC774 \uC788\uC74C: {0}"},
             {
                 ER_NO_OWNERDOC,
                 "\uD558\uC704 \uB178\uB4DC\uC5D0 \uC18C\uC720\uC790 \uBB38\uC11C\uAC00"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {ER_ELEMTEMPLATEELEM_ERR, "ElemTemplateElement \uC624\uB958: {0}"},
             {
                 ER_NULL_CHILD,
                 "\uB110 \uD558\uC704\uB97C \uCD94\uAC00\uD558\uB824\uACE0 \uC2DC\uB3C4\uD558\uB294"
-                    + " \uC911\uC785\uB2C8\uB2E4!"
+                        + " \uC911\uC785\uB2C8\uB2E4!"
             },
             {
                 ER_NEED_SELECT_ATTRIB,
@@ -474,22 +474,22 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NEED_TEST_ATTRIB,
                 "xsl:when\uC5D0\uB294 'test' \uC18D\uC131\uC774 \uC788\uC5B4\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD569\uB2C8\uB2E4."
             },
             {
                 ER_NEED_NAME_ATTRIB,
                 "xsl:with-param\uC5D0\uB294 'name' \uC18D\uC131\uC774 \uC788\uC5B4\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD569\uB2C8\uB2E4."
             },
             {
                 ER_NO_CONTEXT_OWNERDOC,
                 "\uCEE8\uD14D\uC2A4\uD2B8\uC5D0 \uC18C\uC720\uC790 \uBB38\uC11C\uAC00"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_COULD_NOT_CREATE_XML_PROC_LIAISON,
                 "XML TransformerFactory \uC5F0\uACB0\uC744 \uC0DD\uC131\uD560 \uC218 \uC5C6\uC74C:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_PROCESS_NOT_SUCCESSFUL,
@@ -519,12 +519,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_REQUIRES_ELEMENTS_ATTRIB,
                 "(StylesheetHandler) {0}\uC5D0\uB294 ''elements'' \uC18D\uC131\uC774"
-                    + " \uD544\uC694\uD569\uB2C8\uB2E4!"
+                        + " \uD544\uC694\uD569\uB2C8\uB2E4!"
             },
             {
                 ER_MISSING_PREFIX_ATTRIB,
                 "(StylesheetHandler) {0} \uC18D\uC131 ''prefix''\uAC00"
-                    + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_BAD_STYLESHEET_URL,
@@ -533,17 +533,17 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_FILE_NOT_FOUND,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uD30C\uC77C\uC744 \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC74C: {0}"
+                        + " \uC5C6\uC74C: {0}"
             },
             {
                 ER_IOEXCEPTION,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uD30C\uC77C\uC5D0 IO \uC608\uC678 \uC0AC\uD56D"
-                    + " \uBC1C\uC0DD: {0}"
+                        + " \uBC1C\uC0DD: {0}"
             },
             {
                 ER_NO_HREF_ATTRIB,
                 "(StylesheetHandler) {0}\uC5D0 \uB300\uD55C href \uC18D\uC131\uC744 \uCC3E\uC744"
-                    + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_STYLESHEET_INCLUDES_ITSELF,
@@ -555,25 +555,25 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_MISSING_LANG_ATTRIB,
                 "(StylesheetHandler) {0} \uC18D\uC131 ''lang''\uAC00"
-                    + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MISSING_CONTAINER_ELEMENT_COMPONENT,
                 "(StylesheetHandler) {0} \uC694\uC18C\uC758 \uC704\uCE58\uAC00 \uC798\uBABB\uB41C"
-                    + " \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uCEE8\uD14C\uC774\uB108 \uC694\uC18C"
-                    + " ''component''\uAC00 \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uCEE8\uD14C\uC774\uB108 \uC694\uC18C"
+                        + " ''component''\uAC00 \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CAN_ONLY_OUTPUT_TO_ELEMENT,
                 "Element, DocumentFragment, Document \uB610\uB294 PrintWriter\uC5D0\uB9CC"
-                    + " \uCD9C\uB825\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uCD9C\uB825\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
             },
             {ER_PROCESS_ERROR, "StylesheetRoot.process \uC624\uB958"},
             {ER_UNIMPLNODE_ERROR, "UnImplNode \uC624\uB958: {0}"},
             {
                 ER_NO_SELECT_EXPRESSION,
                 "\uC624\uB958: xpath select \uD45C\uD604\uC2DD(-select)\uC744 \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CANNOT_SERIALIZE_XSLPROCESSOR,
@@ -582,33 +582,33 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_INPUT_STYLESHEET,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uC785\uB825\uAC12\uC774 \uC9C0\uC815\uB418\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4!"
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_FAILED_PROCESS_STYLESHEET,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uCC98\uB9AC\uB97C"
-                    + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4!"
+                        + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_COULDNT_PARSE_DOC,
                 "{0} \uBB38\uC11C\uC758 \uAD6C\uBB38\uC744 \uBD84\uC11D\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {ER_COULDNT_FIND_FRAGMENT, "\uBD80\uBD84\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC74C: {0}"},
             {
                 ER_NODE_NOT_ELEMENT,
                 "\uBD80\uBD84 \uC2DD\uBCC4\uC790\uAC00 \uAC00\uB9AC\uD0A8 \uB178\uB4DC\uB294"
-                    + " \uC694\uC18C\uAC00 \uC544\uB2D8: {0}"
+                        + " \uC694\uC18C\uAC00 \uC544\uB2D8: {0}"
             },
             {
                 ER_FOREACH_NEED_MATCH_OR_NAME_ATTRIB,
                 "for-each\uC5D0\uB294 match \uB610\uB294 name \uC18D\uC131\uC774 \uC788\uC5B4\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD569\uB2C8\uB2E4."
             },
             {
                 ER_TEMPLATES_NEED_MATCH_OR_NAME_ATTRIB,
                 "templates\uC5D0\uB294 match \uB610\uB294 name \uC18D\uC131\uC774"
-                    + " \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_NO_CLONE_OF_DOCUMENT_FRAG,
@@ -617,12 +617,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANT_CREATE_ITEM,
                 "\uACB0\uACFC \uD2B8\uB9AC\uC5D0 \uD56D\uBAA9\uC744 \uC0DD\uC131\uD560 \uC218"
-                    + " \uC5C6\uC74C: {0}"
+                        + " \uC5C6\uC74C: {0}"
             },
             {
                 ER_XMLSPACE_ILLEGAL_VALUE,
                 "\uC18C\uC2A4 XML\uC758 xml:space\uC5D0 \uC798\uBABB\uB41C \uAC12\uC774"
-                    + " \uC788\uC74C: {0}"
+                        + " \uC788\uC74C: {0}"
             },
             {
                 ER_NO_XSLKEY_DECLARATION,
@@ -631,7 +631,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANT_CREATE_URL,
                 "\uC624\uB958: {0}\uC5D0 \uB300\uD55C URL\uC744 \uC0DD\uC131\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_XSLFUNCTIONS_UNSUPPORTED,
@@ -641,42 +641,42 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NOT_ALLOWED_INSIDE_STYLESHEET,
                 "(StylesheetHandler) \uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uC5D0\uC11C\uB294"
-                    + " {0}\uC774(\uAC00) \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " {0}\uC774(\uAC00) \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_RESULTNS_NOT_SUPPORTED,
                 "result-ns\uB294 \uB354 \uC774\uC0C1 \uC9C0\uC6D0\uB418\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:output\uC744"
-                    + " \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:output\uC744"
+                        + " \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
             },
             {
                 ER_DEFAULTSPACE_NOT_SUPPORTED,
                 "default-space\uB294 \uB354 \uC774\uC0C1 \uC9C0\uC6D0\uB418\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:strip-space \uB610\uB294"
-                    + " xsl:preserve-space\uB97C \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:strip-space \uB610\uB294"
+                        + " xsl:preserve-space\uB97C \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
             },
             {
                 ER_INDENTRESULT_NOT_SUPPORTED,
                 "indent-result\uB294 \uB354 \uC774\uC0C1 \uC9C0\uC6D0\uB418\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:output\uC744"
-                    + " \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC2E0 xsl:output\uC744"
+                        + " \uC0AC\uC6A9\uD558\uC2ED\uC2DC\uC624."
             },
             {
                 ER_ILLEGAL_ATTRIB,
                 "(StylesheetHandler) {0}\uC5D0 \uC798\uBABB\uB41C \uC18D\uC131\uC774 \uC788\uC74C:"
-                    + " {1}"
+                        + " {1}"
             },
             {ER_UNKNOWN_XSL_ELEM, "\uC54C \uC218 \uC5C6\uB294 XSL \uC694\uC18C: {0}"},
             {
                 ER_BAD_XSLSORT_USE,
                 "(StylesheetHandler) xsl:sort\uB294 xsl:apply-templates \uB610\uB294"
-                    + " xsl:for-each\uC640 \uD568\uAED8\uB9CC \uC0AC\uC6A9\uD560 \uC218"
-                    + " \uC788\uC2B5\uB2C8\uB2E4."
+                        + " xsl:for-each\uC640 \uD568\uAED8\uB9CC \uC0AC\uC6A9\uD560 \uC218"
+                        + " \uC788\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MISPLACED_XSLWHEN,
                 "(StylesheetHandler) xsl:when\uC758 \uC704\uCE58\uAC00"
-                    + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
+                        + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_XSLWHEN_NOT_PARENTED_BY_XSLCHOOSE,
@@ -686,7 +686,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_MISPLACED_XSLOTHERWISE,
                 "(StylesheetHandler) xsl:otherwise\uC758 \uC704\uCE58\uAC00"
-                    + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
+                        + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_XSLOTHERWISE_NOT_PARENTED_BY_XSLCHOOSE,
@@ -696,13 +696,13 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NOT_ALLOWED_INSIDE_TEMPLATE,
                 "(StylesheetHandler) \uD15C\uD50C\uB9AC\uD2B8\uC5D0\uC11C\uB294 {0}\uC774(\uAC00)"
-                    + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_UNKNOWN_EXT_NS_PREFIX,
                 "(StylesheetHandler) {0} \uD655\uC7A5 \uB124\uC784\uC2A4\uD398\uC774\uC2A4"
-                    + " \uC811\uB450\uC5B4 {1}\uC744(\uB97C) \uC54C \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC811\uB450\uC5B4 {1}\uC744(\uB97C) \uC54C \uC218"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_IMPORTS_AS_FIRST_ELEM,
@@ -713,13 +713,13 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_IMPORTING_ITSELF,
                 "(StylesheetHandler) {0}\uC774(\uAC00) \uC9C1\uC811 \uB610\uB294"
-                    + " \uAC04\uC811\uC801\uC73C\uB85C \uC790\uC2E0\uC744"
-                    + " \uC784\uD3EC\uD2B8\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4!"
+                        + " \uAC04\uC811\uC801\uC73C\uB85C \uC790\uC2E0\uC744"
+                        + " \uC784\uD3EC\uD2B8\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_XMLSPACE_ILLEGAL_VAL,
                 "(StylesheetHandler) xml:space\uC5D0 \uC798\uBABB\uB41C \uAC12\uC774 \uC788\uC74C:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_PROCESSSTYLESHEET_NOT_SUCCESSFUL,
@@ -736,40 +736,40 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CURRENCY_SIGN_ILLEGAL,
                 "\uD615\uC2DD \uD328\uD134 \uBB38\uC790\uC5F4\uC5D0\uC11C\uB294 \uD1B5\uD654"
-                    + " \uAE30\uD638\uAC00 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uAE30\uD638\uAC00 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_DOCUMENT_FUNCTION_INVALID_IN_STYLESHEET_DOM,
                 "Document \uD568\uC218\uB294 \uC2A4\uD0C0\uC77C\uC2DC\uD2B8 DOM\uC5D0\uC11C"
-                    + " \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_CANT_RESOLVE_PREFIX_OF_NON_PREFIX_RESOLVER,
                 "\uBE44\uC811\uB450\uC5B4 \uBD84\uC11D\uAE30\uC758 \uC811\uB450\uC5B4\uB97C"
-                    + " \uBD84\uC11D\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uBD84\uC11D\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_REDIRECT_COULDNT_GET_FILENAME,
                 "\uC7AC\uC9C0\uC815 \uD655\uC7A5: \uD30C\uC77C \uC774\uB984\uC744"
-                    + " \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. file \uB610\uB294"
-                    + " select \uC18D\uC131\uC740 \uC801\uD569\uD55C \uBB38\uC790\uC5F4\uC744"
-                    + " \uBC18\uD658\uD574\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. file \uB610\uB294"
+                        + " select \uC18D\uC131\uC740 \uC801\uD569\uD55C \uBB38\uC790\uC5F4\uC744"
+                        + " \uBC18\uD658\uD574\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_CANNOT_BUILD_FORMATTERLISTENER_IN_REDIRECT,
                 "\uC7AC\uC9C0\uC815 \uD655\uC7A5\uC5D0 FormatterListener\uB97C \uC0DD\uC131\uD560"
-                    + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_INVALID_PREFIX_IN_EXCLUDERESULTPREFIX,
                 "exclude-result-prefixes\uC758 \uC811\uB450\uC5B4\uAC00 \uBD80\uC801\uD569\uD568:"
-                    + " {0}"
+                        + " {0}"
             },
             {
                 ER_MISSING_NS_URI,
                 "\uC9C0\uC815\uB41C \uC811\uB450\uC5B4\uC5D0 \uB300\uD55C"
-                    + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4 URI\uAC00"
-                    + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4 URI\uAC00"
+                        + " \uB204\uB77D\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MISSING_ARG_FOR_OPTION,
@@ -780,7 +780,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_STYLESHEET_REQUIRES_VERSION_ATTRIB,
                 "xsl:stylesheet\uC5D0\uB294 'version' \uC18D\uC131\uC774"
-                    + " \uD544\uC694\uD569\uB2C8\uB2E4!"
+                        + " \uD544\uC694\uD569\uB2C8\uB2E4!"
             },
             {
                 ER_ILLEGAL_ATTRIBUTE_VALUE,
@@ -793,21 +793,21 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_APPLY_IMPORT_IN_FOR_EACH,
                 "xsl:for-each\uC5D0\uC11C\uB294 xsl:apply-imports\uAC00 \uD5C8\uC6A9\uB418\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CANT_USE_DTM_FOR_OUTPUT,
                 "\uCD9C\uB825 DOM \uB178\uB4DC\uC5D0 DTMLiaison\uC744 \uC0AC\uC6A9\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB300\uC2E0"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper\uB97C"
-                    + " \uC804\uB2EC\uD558\uC2ED\uC2DC\uC624!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB300\uC2E0"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper\uB97C"
+                        + " \uC804\uB2EC\uD558\uC2ED\uC2DC\uC624!"
             },
             {
                 ER_CANT_USE_DTM_FOR_INPUT,
                 "\uC785\uB825 DOM \uB178\uB4DC\uC5D0 DTMLiaison\uC744 \uC0AC\uC6A9\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB300\uC2E0"
-                    + " com.sun.org.apache.xpath.internal.DOM2Helper\uB97C"
-                    + " \uC804\uB2EC\uD558\uC2ED\uC2DC\uC624!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB300\uC2E0"
+                        + " com.sun.org.apache.xpath.internal.DOM2Helper\uB97C"
+                        + " \uC804\uB2EC\uD558\uC2ED\uC2DC\uC624!"
             },
             {
                 ER_CALL_TO_EXT_FAILED,
@@ -816,23 +816,23 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_PREFIX_MUST_RESOLVE,
                 "\uC811\uB450\uC5B4\uB294 \uB124\uC784\uC2A4\uD398\uC774\uC2A4\uB85C"
-                    + " \uBD84\uC11D\uB418\uC5B4\uC57C \uD568: {0}"
+                        + " \uBD84\uC11D\uB418\uC5B4\uC57C \uD568: {0}"
             },
             {
                 ER_INVALID_UTF16_SURROGATE,
                 "\uBD80\uC801\uD569\uD55C UTF-16 \uB300\uB9AC \uC694\uC18C\uAC00"
-                    + " \uAC10\uC9C0\uB428: {0}"
+                        + " \uAC10\uC9C0\uB428: {0}"
             },
             {
                 ER_XSLATTRSET_USED_ITSELF,
                 "xsl:attribute-set {0}\uC774(\uAC00) \uC790\uC2E0\uC744"
-                    + " \uC0AC\uC6A9\uD588\uC2B5\uB2C8\uB2E4. \uC774 \uACBD\uC6B0 \uBB34\uD55C"
-                    + " \uB8E8\uD504\uAC00 \uBC1C\uC0DD\uD569\uB2C8\uB2E4."
+                        + " \uC0AC\uC6A9\uD588\uC2B5\uB2C8\uB2E4. \uC774 \uACBD\uC6B0 \uBB34\uD55C"
+                        + " \uB8E8\uD504\uAC00 \uBC1C\uC0DD\uD569\uB2C8\uB2E4."
             },
             {
                 ER_CANNOT_MIX_XERCESDOM,
                 "\uBE44Xerces-DOM \uC785\uB825\uACFC Xerces-DOM \uCD9C\uB825\uC744 \uD568\uAED8"
-                    + " \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {ER_TOO_MANY_LISTENERS, "addTraceListenersToStylesheet - TooManyListenersException"},
             {
@@ -842,27 +842,27 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_DUPLICATE_NAMED_TEMPLATE,
                 "\uBA85\uBA85\uB41C \uD15C\uD50C\uB9AC\uD2B8\uB97C \uB450 \uAC1C \uC774\uC0C1"
-                    + " \uCC3E\uC74C: {0}"
+                        + " \uCC3E\uC74C: {0}"
             },
             {
                 ER_INVALID_KEY_CALL,
                 "\uBD80\uC801\uD569\uD55C \uD568\uC218 \uD638\uCD9C: recursive key()"
-                    + " \uD638\uCD9C\uC740 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uD638\uCD9C\uC740 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_REFERENCING_ITSELF,
                 "{0} \uBCC0\uC218\uAC00 \uC9C1\uC811 \uB610\uB294 \uAC04\uC811\uC801\uC73C\uB85C"
-                    + " \uC790\uC2E0\uC744 \uCC38\uC870\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4!"
+                        + " \uC790\uC2E0\uC744 \uCC38\uC870\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_ILLEGAL_DOMSOURCE_INPUT,
                 "newTemplates\uC758 DOMSource\uC5D0 \uB300\uD55C \uC785\uB825 \uB178\uB4DC\uB294"
-                    + " \uB110\uC77C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uB110\uC77C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_CLASS_NOT_FOUND_FOR_OPTION,
                 "{0} \uC635\uC158\uC5D0 \uB300\uD55C \uD074\uB798\uC2A4 \uD30C\uC77C\uC744"
-                    + " \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_REQUIRED_ELEM_NOT_FOUND,
@@ -884,7 +884,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANNOT_INIT_BSFMGR,
                 "BSF \uAD00\uB9AC\uC790\uB97C \uCD08\uAE30\uD654\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CANNOT_CMPL_EXTENSN,
@@ -907,29 +907,29 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_ELEMENT_NAME_METHOD_STATIC,
                 "\uC694\uC18C \uC774\uB984 \uBA54\uC18C\uB4DC\uB294 \uC815\uC801"
-                    + " {0}\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " {0}\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_EXTENSION_FUNC_UNKNOWN,
                 "\uD655\uC7A5 \uD568\uC218 {0}: {1}\uC744(\uB97C) \uC54C \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MORE_MATCH_CONSTRUCTOR,
                 "{0}\uC5D0 \uB300\uD55C \uC0DD\uC131\uC790\uC640 \uAC00\uC7A5 \uC798"
-                    + " \uC77C\uCE58\uD558\uB294 \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1"
-                    + " \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uC77C\uCE58\uD558\uB294 \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1"
+                        + " \uC788\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MORE_MATCH_METHOD,
                 "{0} \uBA54\uC18C\uB4DC\uC640 \uAC00\uC7A5 \uC798 \uC77C\uCE58\uD558\uB294"
-                    + " \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1 \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1 \uC788\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_MORE_MATCH_ELEMENT,
                 "\uC694\uC18C \uBA54\uC18C\uB4DC {0}\uACFC(\uC640) \uAC00\uC7A5 \uC798"
-                    + " \uC77C\uCE58\uD558\uB294 \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1"
-                    + " \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uC77C\uCE58\uD558\uB294 \uD56D\uBAA9\uC774 \uB450 \uAC1C \uC774\uC0C1"
+                        + " \uC788\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_INVALID_CONTEXT_PASSED,
@@ -940,7 +940,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_DRIVER_NAME,
                 "\uC9C0\uC815\uB41C \uB4DC\uB77C\uC774\uBC84 \uC774\uB984\uC774"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {ER_NO_URL, "\uC9C0\uC815\uB41C URL\uC774 \uC5C6\uC2B5\uB2C8\uB2E4."},
             {
@@ -950,17 +950,17 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_INVALID_DRIVER,
                 "\uBD80\uC801\uD569\uD55C \uB4DC\uB77C\uC774\uBC84 \uC774\uB984\uC774"
-                    + " \uC9C0\uC815\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
+                        + " \uC9C0\uC815\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_NO_STYLESHEETROOT,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uB8E8\uD2B8\uB97C \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_ILLEGAL_XMLSPACE_VALUE,
                 "xml:space\uC5D0 \uB300\uD55C \uAC12\uC774"
-                    + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \uC798\uBABB\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_PROCESSFROMNODE_FAILED,
@@ -969,20 +969,20 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_RESOURCE_COULD_NOT_LOAD,
                 "[{0}] \uB9AC\uC18C\uC2A4\uAC00 \uB2E4\uC74C\uC744 \uB85C\uB4DC\uD560 \uC218"
-                    + " \uC5C6\uC74C: {1} \n"
-                    + " {2} \t {3}"
+                        + " \uC5C6\uC74C: {1} \n"
+                        + " {2} \t {3}"
             },
             {ER_BUFFER_SIZE_LESSTHAN_ZERO, "\uBC84\uD37C \uD06C\uAE30 <=0"},
             {
                 ER_UNKNOWN_ERROR_CALLING_EXTENSION,
                 "\uD655\uC7A5\uC744 \uD638\uCD9C\uD558\uB294 \uC911 \uC54C \uC218 \uC5C6\uB294"
-                    + " \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uC624\uB958\uAC00 \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_NO_NAMESPACE_DECL,
                 "{0} \uC811\uB450\uC5B4\uC5D0 \uD574\uB2F9\uD558\uB294"
-                    + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4 \uC120\uC5B8\uC774"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4 \uC120\uC5B8\uC774"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_ELEM_CONTENT_NOT_ALLOWED,
@@ -992,7 +992,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_STYLESHEET_DIRECTED_TERMINATION,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uAC00 \uC885\uB8CC\uB97C"
-                    + " \uC9C0\uC815\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uC9C0\uC815\uD588\uC2B5\uB2C8\uB2E4."
             },
             {ER_ONE_OR_TWO, "1 \uB610\uB294 2"},
             {ER_TWO_OR_THREE, "2 \uB610\uB294 3"},
@@ -1005,7 +1005,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANNOT_INIT_DEFAULT_TEMPLATES,
                 "\uAE30\uBCF8 \uD15C\uD50C\uB9AC\uD2B8\uB97C \uCD08\uAE30\uD654\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_RESULT_NULL,
@@ -1022,19 +1022,19 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANNOT_TRANSFORM_TO_RESULT_TYPE,
                 "{0} \uC720\uD615\uC758 \uACB0\uACFC\uB85C \uBCC0\uD658\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CANNOT_TRANSFORM_SOURCE_TYPE,
                 "{0} \uC720\uD615\uC758 \uC18C\uC2A4\uB97C \uBCC0\uD658\uD560 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {ER_NULL_CONTENT_HANDLER, "\uB110 \uCF58\uD150\uCE20 \uCC98\uB9AC\uAE30"},
             {ER_NULL_ERROR_HANDLER, "\uB110 \uC624\uB958 \uCC98\uB9AC\uAE30"},
             {
                 ER_CANNOT_CALL_PARSE,
                 "ContentHandler\uAC00 \uC124\uC815\uB418\uC9C0 \uC54A\uC740 \uACBD\uC6B0"
-                    + " parse\uB97C \uD638\uCD9C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " parse\uB97C \uD638\uCD9C\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_NO_PARENT_FOR_FILTER,
@@ -1043,23 +1043,23 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_STYLESHEET_IN_MEDIA,
                 "{0}\uC5D0\uC11C \uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uB97C \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB9E4\uCCB4 = {1}"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4. \uB9E4\uCCB4 = {1}"
             },
             {
                 ER_NO_STYLESHEET_PI,
                 "{0}\uC5D0\uC11C xml-stylesheet PI\uB97C \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {ER_NOT_SUPPORTED, "\uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC74C: {0}"},
             {
                 ER_PROPERTY_VALUE_BOOLEAN,
                 "{0} \uC18D\uC131\uC5D0 \uB300\uD55C \uAC12\uC740 \uBD80\uC6B8"
-                    + " \uC778\uC2A4\uD134\uC2A4\uC5EC\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uC778\uC2A4\uD134\uC2A4\uC5EC\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_COULD_NOT_FIND_EXTERN_SCRIPT,
                 "{0}\uC5D0 \uC788\uB294 \uC678\uBD80 \uC2A4\uD06C\uB9BD\uD2B8\uB85C"
-                    + " \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_RESOURCE_COULD_NOT_FIND,
@@ -1072,7 +1072,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_FAILED_CREATING_ELEMLITRSLT,
                 "ElemLiteralResult \uC778\uC2A4\uD134\uC2A4 \uC0DD\uC131\uC744"
-                    + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
             },
 
             // Earlier (JDK 1.4 XALAN 2.2-D11) at key code '204' the key name was
@@ -1085,13 +1085,13 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_VALUE_SHOULD_BE_NUMBER,
                 "{0}\uC5D0 \uB300\uD55C \uAC12\uC5D0\uB294 \uAD6C\uBB38\uC744 \uBD84\uC11D\uD560"
-                    + " \uC218 \uC788\uB294 \uC22B\uC790\uAC00 \uD3EC\uD568\uB418\uC5B4\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uC218 \uC788\uB294 \uC22B\uC790\uAC00 \uD3EC\uD568\uB418\uC5B4\uC57C"
+                        + " \uD569\uB2C8\uB2E4."
             },
             {
                 ER_VALUE_SHOULD_EQUAL,
                 "{0}\uC5D0 \uB300\uD55C \uAC12\uC740 yes \uB610\uB294 no\uC5EC\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD569\uB2C8\uB2E4."
             },
             {
                 ER_FAILED_CALLING_METHOD,
@@ -1100,17 +1100,17 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_FAILED_CREATING_ELEMTMPL,
                 "ElemTemplateElement \uC778\uC2A4\uD134\uC2A4 \uC0DD\uC131\uC744"
-                    + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uC2E4\uD328\uD588\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_CHARS_NOT_ALLOWED,
                 "\uBB38\uC11C\uC758 \uC774 \uC9C0\uC810\uC5D0\uC11C\uB294 \uBB38\uC790\uAC00"
-                    + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_ATTR_NOT_ALLOWED,
                 "{1} \uC694\uC18C\uC5D0\uC11C\uB294 \"{0}\" \uC18D\uC131\uC774"
-                    + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
             {ER_BAD_VALUE, "{0}: \uC798\uBABB\uB41C \uAC12 {1} "},
             {
@@ -1124,8 +1124,8 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NULL_URI_NAMESPACE,
                 "\uB110 URI\uB97C \uC0AC\uC6A9\uD558\uC5EC \uB124\uC784\uC2A4\uD398\uC774\uC2A4"
-                    + " \uC811\uB450\uC5B4\uB97C \uC0DD\uC131\uD558\uB824\uACE0"
-                    + " \uC2DC\uB3C4\uD558\uB294 \uC911"
+                        + " \uC811\uB450\uC5B4\uB97C \uC0DD\uC131\uD558\uB824\uACE0"
+                        + " \uC2DC\uB3C4\uD558\uB294 \uC911"
             },
             {
                 ER_NUMBER_TOO_BIG,
@@ -1136,7 +1136,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANNOT_FIND_SAX1_DRIVER,
                 "SAX1 \uB4DC\uB77C\uC774\uBC84 \uD074\uB798\uC2A4 {0}\uC744(\uB97C) \uCC3E\uC744"
-                    + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_SAX1_DRIVER_NOT_LOADED,
@@ -1153,18 +1153,18 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_SAX1_DRIVER_NOT_IMPLEMENT_PARSER,
                 "SAX1 \uB4DC\uB77C\uC774\uBC84 \uD074\uB798\uC2A4 {0}\uC774(\uAC00)"
-                    + " org.xml.sax.Parser\uB97C \uAD6C\uD604\uD558\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
+                        + " org.xml.sax.Parser\uB97C \uAD6C\uD604\uD558\uC9C0"
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_PARSER_PROPERTY_NOT_SPECIFIED,
                 "\uC2DC\uC2A4\uD15C \uC18D\uC131 org.xml.sax.parser\uAC00 \uC9C0\uC815\uB418\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_PARSER_ARG_CANNOT_BE_NULL,
                 "\uAD6C\uBB38 \uBD84\uC11D\uAE30 \uC778\uC218\uB294 \uB110\uC774"
-                    + " \uC544\uB2C8\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uC544\uB2C8\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
             {ER_FEATURE, "\uAE30\uB2A5: {0}"},
             {ER_PROPERTY, "\uC18D\uC131: {0}"},
@@ -1173,7 +1173,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_DRIVER_NAME_SPECIFIED,
                 "\uC9C0\uC815\uB41C \uB4DC\uB77C\uC774\uBC84 \uC774\uB984\uC774"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {ER_NO_URL_SPECIFIED, "\uC9C0\uC815\uB41C URL\uC774 \uC5C6\uC2B5\uB2C8\uB2E4!"},
             {
@@ -1183,7 +1183,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_INVALID_DRIVER_NAME,
                 "\uBD80\uC801\uD569\uD55C \uB4DC\uB77C\uC774\uBC84 \uC774\uB984\uC774"
-                    + " \uC9C0\uC815\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
+                        + " \uC9C0\uC815\uB418\uC5C8\uC2B5\uB2C8\uB2E4!"
             },
             {ER_ERRORLISTENER, "ErrorListener"},
 
@@ -1196,8 +1196,8 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_ASSERT_NO_TEMPLATE_PARENT,
                 "\uD504\uB85C\uADF8\uB798\uBA38 \uC624\uB958\uC785\uB2C8\uB2E4!"
-                    + " \uD45C\uD604\uC2DD\uC5D0 ElemTemplateElement \uC0C1\uC704\uAC00"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uD45C\uD604\uC2DD\uC5D0 ElemTemplateElement \uC0C1\uC704\uAC00"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
 
             // Note to translators:  The following message should not normally be displayed
@@ -1210,18 +1210,18 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_ASSERT_REDUNDENT_EXPR_ELIMINATOR,
                 "RedundentExprEliminator\uC5D0 \uD504\uB85C\uADF8\uB798\uBA38 \uAC80\uC99D\uC774"
-                    + " \uC788\uC74C: {0}"
+                        + " \uC788\uC74C: {0}"
             },
             {
                 ER_NOT_ALLOWED_IN_POSITION,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uC758 \uC774 \uC704\uCE58\uC5D0\uB294"
-                    + " {0}\uC774(\uAC00) \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " {0}\uC774(\uAC00) \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
             {
                 ER_NONWHITESPACE_NOT_ALLOWED_IN_POSITION,
                 "\uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uC758 \uC774 \uC704\uCE58\uC5D0\uB294"
-                    + " \uACF5\uBC31\uC774 \uC544\uB2CC \uD14D\uC2A4\uD2B8\uB294"
-                    + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
+                        + " \uACF5\uBC31\uC774 \uC544\uB2CC \uD14D\uC2A4\uD2B8\uB294"
+                        + " \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4!"
             },
 
             // This code is shared with warning codes.
@@ -1229,8 +1229,8 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_TCHAR,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) CHAR \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0}. CHAR \uC720\uD615\uC758 \uC18D\uC131\uC740"
-                    + " 1\uC790\uC5EC\uC57C \uD569\uB2C8\uB2E4!"
+                        + " \uC0AC\uC6A9\uB428: {0}. CHAR \uC720\uD615\uC758 \uC18D\uC131\uC740"
+                        + " 1\uC790\uC5EC\uC57C \uD569\uB2C8\uB2E4!"
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1241,7 +1241,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_QNAME,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) QNAME \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0}"
+                        + " \uC0AC\uC6A9\uB428: {0}"
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1252,7 +1252,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_ENUM,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) ENUM \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0}. \uC801\uD569\uD55C \uAC12: {2}."
+                        + " \uC0AC\uC6A9\uB428: {0}. \uC801\uD569\uD55C \uAC12: {2}."
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1262,7 +1262,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_NMTOKEN,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) NMTOKEN \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0} "
+                        + " \uC0AC\uC6A9\uB428: {0} "
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1272,7 +1272,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_NCNAME,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) NCNAME \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0} "
+                        + " \uC0AC\uC6A9\uB428: {0} "
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1282,7 +1282,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_BOOLEAN,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) boolean \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0} "
+                        + " \uC0AC\uC6A9\uB428: {0} "
             },
 
             // Note to translators:  The following message is used if the value of
@@ -1292,7 +1292,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 INVALID_NUMBER,
                 "\uC798\uBABB\uB41C \uAC12: {1}\uC774(\uAC00) number \uC18D\uC131\uC5D0"
-                    + " \uC0AC\uC6A9\uB428: {0} "
+                        + " \uC0AC\uC6A9\uB428: {0} "
             },
 
             // End of shared codes...
@@ -1305,7 +1305,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_ARG_LITERAL,
                 "\uC77C\uCE58 \uD328\uD134\uC758 {0}\uC5D0 \uB300\uD55C \uC778\uC218\uB294"
-                    + " \uB9AC\uD130\uB7F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uB9AC\uD130\uB7F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
 
             // Note to translators:  The following message indicates that two definitions of
@@ -1328,8 +1328,8 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_TEMPLATE_NAME_MATCH,
                 "xsl:template\uC5D0\uB294 name \uB610\uB294 match \uC18D\uC131 \uC911"
-                    + " \uD558\uB098\uAC00 \uC788\uAC70\uB098 \uBAA8\uB450 \uC788\uC5B4\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD558\uB098\uAC00 \uC788\uAC70\uB098 \uBAA8\uB450 \uC788\uC5B4\uC57C"
+                        + " \uD569\uB2C8\uB2E4."
             },
 
             // Note to translators:  "exclude-result-prefixes" is an XSLT keyword which
@@ -1340,7 +1340,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_INVALID_PREFIX,
                 "exclude-result-prefixes\uC758 \uC811\uB450\uC5B4\uAC00 \uBD80\uC801\uD569\uD568:"
-                    + " {0}"
+                        + " {0}"
             },
 
             // Note to translators:  An "attribute set" is a set of attributes that can
@@ -1351,7 +1351,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_NO_ATTRIB_SET,
                 "\uC774\uB984\uC774 {0}\uC778 attribute-set\uAC00 \uC874\uC7AC\uD558\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4."
             },
 
             // Note to translators:  This message indicates that there was a reference
@@ -1359,7 +1359,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_FUNCTION_NOT_FOUND,
                 "\uC774\uB984\uC774 {0}\uC778 \uD568\uC218\uAC00 \uC874\uC7AC\uD558\uC9C0"
-                    + " \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uC54A\uC2B5\uB2C8\uB2E4."
             },
 
             // Note to translators:  This message indicates that the XSLT instruction
@@ -1369,8 +1369,8 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_CANT_HAVE_CONTENT_AND_SELECT,
                 "{0} \uC694\uC18C\uC5D0\uB294 content \uC18D\uC131\uACFC select \uC18D\uC131\uC774"
-                    + " \uD568\uAED8 \uD3EC\uD568\uB418\uC9C0 \uC54A\uC544\uC57C"
-                    + " \uD569\uB2C8\uB2E4."
+                        + " \uD568\uAED8 \uD3EC\uD568\uB418\uC9C0 \uC54A\uC544\uC57C"
+                        + " \uD569\uB2C8\uB2E4."
             },
 
             // Note to translators:  This message indicates that the value argument
@@ -1378,7 +1378,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_INVALID_SET_PARAM_VALUE,
                 "{0} \uB9E4\uAC1C\uBCC0\uC218\uC758 \uAC12\uC740 \uC801\uD569\uD55C Java"
-                    + " \uAC1D\uCCB4\uC5EC\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uAC1D\uCCB4\uC5EC\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 ER_INVALID_NAMESPACE_URI_VALUE_FOR_RESULT_PREFIX_FOR_DEFAULT,
@@ -1391,43 +1391,43 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 ER_INVALID_NAMESPACE_URI_VALUE_FOR_RESULT_PREFIX,
                 "xsl:namespace-alias \uC694\uC18C\uC758 result-prefix \uC18D\uC131\uC5D0"
-                    + " \uB300\uD55C \uAC12\uC740 ''{0}''\uC774\uC9C0\uB9CC \uC694\uC18C\uC5D0"
-                    + " \uB300\uD55C \uBC94\uC704\uC5D0\uC11C ''{0}'' \uC811\uB450\uC5B4\uC758"
-                    + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4\uAC00 \uC120\uC5B8\uB418\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
+                        + " \uB300\uD55C \uAC12\uC740 ''{0}''\uC774\uC9C0\uB9CC \uC694\uC18C\uC5D0"
+                        + " \uB300\uD55C \uBC94\uC704\uC5D0\uC11C ''{0}'' \uC811\uB450\uC5B4\uC758"
+                        + " \uB124\uC784\uC2A4\uD398\uC774\uC2A4\uAC00 \uC120\uC5B8\uB418\uC9C0"
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_SET_FEATURE_NULL_NAME,
                 "\uAE30\uB2A5 \uC774\uB984\uC740 TransformerFactory.setFeature(\uBB38\uC790\uC5F4"
-                    + " \uC774\uB984, \uBD80\uC6B8 \uAC12)\uC5D0\uC11C \uB110\uC77C \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC774\uB984, \uBD80\uC6B8 \uAC12)\uC5D0\uC11C \uB110\uC77C \uC218"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_GET_FEATURE_NULL_NAME,
                 "\uAE30\uB2A5 \uC774\uB984\uC740 TransformerFactory.getFeature(\uBB38\uC790\uC5F4"
-                    + " \uC774\uB984)\uC5D0\uC11C \uB110\uC77C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC774\uB984)\uC5D0\uC11C \uB110\uC77C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_UNSUPPORTED_FEATURE,
                 "\uC774 TransformerFactory\uC5D0\uC11C ''{0}'' \uAE30\uB2A5\uC744"
-                    + " \uC124\uC815\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC124\uC815\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_EXTENSION_ELEMENT_NOT_ALLOWED_IN_SECURE_PROCESSING,
                 "\uBCF4\uC548 \uCC98\uB9AC \uAE30\uB2A5\uC774 true\uB85C \uC124\uC815\uB41C"
-                    + " \uACBD\uC6B0 \uD655\uC7A5 \uC694\uC18C ''{0}''\uC744(\uB97C)"
-                    + " \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uACBD\uC6B0 \uD655\uC7A5 \uC694\uC18C ''{0}''\uC744(\uB97C)"
+                        + " \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_NAMESPACE,
                 "\uB110 \uB124\uC784\uC2A4\uD398\uC774\uC2A4 URI\uC5D0 \uB300\uD55C"
-                    + " \uC811\uB450\uC5B4\uB97C \uAC00\uC838\uC62C \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC811\uB450\uC5B4\uB97C \uAC00\uC838\uC62C \uC218"
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_NAMESPACE_CONTEXT_NULL_PREFIX,
                 "\uB110 \uC811\uB450\uC5B4\uC5D0 \uB300\uD55C \uB124\uC784\uC2A4\uD398\uC774\uC2A4"
-                    + " URI\uB97C \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " URI\uB97C \uAC00\uC838\uC62C \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 ER_XPATH_RESOLVER_NULL_QNAME,
@@ -1442,28 +1442,28 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_FOUND_CURLYBRACE,
                 "'}'\uB97C \uCC3E\uC558\uC9C0\uB9CC \uC5F4\uB824 \uC788\uB294 \uC18D\uC131"
-                    + " \uD15C\uD50C\uB9AC\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4!"
+                        + " \uD15C\uD50C\uB9AC\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4!"
             },
             {
                 WG_COUNT_ATTRIB_MATCHES_NO_ANCESTOR,
                 "\uACBD\uACE0: count \uC18D\uC131\uC774 xsl:number\uC758 \uC870\uC0C1\uACFC"
-                    + " \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC0C1 = {0}"
+                        + " \uC77C\uCE58\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4! \uB300\uC0C1 = {0}"
             },
             {
                 WG_EXPR_ATTRIB_CHANGED_TO_SELECT,
                 "\uC774\uC804 \uAD6C\uBB38: 'expr' \uC18D\uC131\uC758 \uC774\uB984\uC774"
-                    + " 'select'\uB85C \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " 'select'\uB85C \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 WG_NO_LOCALE_IN_FORMATNUMBER,
                 "Xalan\uC774 format-number \uD568\uC218\uC5D0\uC11C \uB85C\uCF00\uC77C"
-                    + " \uC774\uB984\uC744 \uC544\uC9C1 \uCC98\uB9AC\uD558\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
+                        + " \uC774\uB984\uC744 \uC544\uC9C1 \uCC98\uB9AC\uD558\uC9C0"
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4."
             },
             {
                 WG_LOCALE_NOT_FOUND,
                 "\uACBD\uACE0: xml:lang={0}\uC5D0 \uB300\uD55C \uB85C\uCF00\uC77C\uC744"
-                    + " \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 WG_CANNOT_MAKE_URL_FROM,
@@ -1476,28 +1476,28 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_CANNOT_FIND_COLLATOR,
                 "<sort xml:lang={0}\uC5D0 \uB300\uD55C \uBCD1\uD569\uAE30\uB97C \uCC3E\uC744 \uC218"
-                    + " \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC5C6\uC2B5\uB2C8\uB2E4."
             },
             {
                 WG_FUNCTIONS_SHOULD_USE_URL,
                 "\uC774\uC804 \uAD6C\uBB38: \uD568\uC218 \uBA85\uB839\uC5D0 {0} URL\uC774"
-                    + " \uC0AC\uC6A9\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " \uC0AC\uC6A9\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
             {
                 WG_ENCODING_NOT_SUPPORTED_USING_UTF8,
                 "\uC778\uCF54\uB529\uC774 \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC74C: {0}. UTF-8\uC744"
-                    + " \uC0AC\uC6A9\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."
+                        + " \uC0AC\uC6A9\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."
             },
             {
                 WG_ENCODING_NOT_SUPPORTED_USING_JAVA,
                 "\uC778\uCF54\uB529\uC774 \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC74C: {0}. Java"
-                    + " {1}\uC744(\uB97C) \uC0AC\uC6A9\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."
+                        + " {1}\uC744(\uB97C) \uC0AC\uC6A9\uD558\uB294 \uC911\uC785\uB2C8\uB2E4."
             },
             {
                 WG_SPECIFICITY_CONFLICTS,
                 "\uD2B9\uC218 \uCDA9\uB3CC\uC774 \uBC1C\uACAC\uB428: {0}."
-                    + " \uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uC5D0\uC11C \uBC1C\uACAC\uB41C"
-                    + " \uB9C8\uC9C0\uB9C9 \uD56D\uBAA9\uC774 \uC0AC\uC6A9\uB429\uB2C8\uB2E4."
+                        + " \uC2A4\uD0C0\uC77C\uC2DC\uD2B8\uC5D0\uC11C \uBC1C\uACAC\uB41C"
+                        + " \uB9C8\uC9C0\uB9C9 \uD56D\uBAA9\uC774 \uC0AC\uC6A9\uB429\uB2C8\uB2E4."
             },
             {
                 WG_PARSING_AND_PREPARING,
@@ -1511,27 +1511,27 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_ATTRIB_NOT_HANDLED,
                 "Xalan\uC774 {0} \uC18D\uC131\uC744 \uC544\uC9C1 \uCC98\uB9AC\uD558\uC9C0"
-                    + " \uC54A\uC558\uC2B5\uB2C8\uB2E4!"
+                        + " \uC54A\uC558\uC2B5\uB2C8\uB2E4!"
             },
             {
                 WG_NO_DECIMALFORMAT_DECLARATION,
                 "\uC2ED\uC9C4\uC218 \uD615\uC2DD\uC5D0 \uB300\uD55C \uC120\uC5B8\uC744 \uCC3E\uC744"
-                    + " \uC218 \uC5C6\uC74C: {0}"
+                        + " \uC218 \uC5C6\uC74C: {0}"
             },
             {
                 WG_OLD_XSLT_NS,
                 "XSLT \uB124\uC784\uC2A4\uD398\uC774\uC2A4\uAC00 \uB204\uB77D\uB418\uAC70\uB098"
-                    + " \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. "
+                        + " \uC62C\uBC14\uB974\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. "
             },
             {
                 WG_ONE_DEFAULT_XSLDECIMALFORMAT_ALLOWED,
                 "\uAE30\uBCF8 xsl:decimal-format \uC120\uC5B8\uC740 \uD558\uB098\uB9CC"
-                    + " \uD5C8\uC6A9\uB429\uB2C8\uB2E4."
+                        + " \uD5C8\uC6A9\uB429\uB2C8\uB2E4."
             },
             {
                 WG_XSLDECIMALFORMAT_NAMES_MUST_BE_UNIQUE,
                 "xsl:decimal-format \uC774\uB984\uC740 \uACE0\uC720\uD574\uC57C \uD569\uB2C8\uB2E4."
-                    + " \"{0}\" \uC774\uB984\uC774 \uC911\uBCF5\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+                        + " \"{0}\" \uC774\uB984\uC774 \uC911\uBCF5\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
             },
             {
                 WG_ILLEGAL_ATTRIBUTE,
@@ -1540,13 +1540,13 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_COULD_NOT_RESOLVE_PREFIX,
                 "\uB124\uC784\uC2A4\uD398\uC774\uC2A4 \uC811\uB450\uC5B4\uB97C \uBD84\uC11D\uD560"
-                    + " \uC218 \uC5C6\uC74C: {0}. \uB178\uB4DC\uAC00"
-                    + " \uBB34\uC2DC\uB429\uB2C8\uB2E4."
+                        + " \uC218 \uC5C6\uC74C: {0}. \uB178\uB4DC\uAC00"
+                        + " \uBB34\uC2DC\uB429\uB2C8\uB2E4."
             },
             {
                 WG_STYLESHEET_REQUIRES_VERSION_ATTRIB,
                 "xsl:stylesheet\uC5D0\uB294 'version' \uC18D\uC131\uC774"
-                    + " \uD544\uC694\uD569\uB2C8\uB2E4!"
+                        + " \uD544\uC694\uD569\uB2C8\uB2E4!"
             },
             {WG_ILLEGAL_ATTRIBUTE_NAME, "\uC798\uBABB\uB41C \uC18D\uC131 \uC774\uB984: {0}"},
             {
@@ -1556,9 +1556,9 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_EMPTY_SECOND_ARG,
                 "document \uD568\uC218\uC758 \uB450\uBC88\uC9F8 \uC778\uC218\uC5D0\uC11C"
-                    + " \uACB0\uACFC\uB85C \uB098\uD0C0\uB09C nodeset\uAC00 \uBE44\uC5B4"
-                    + " \uC788\uC2B5\uB2C8\uB2E4. \uBE48 node-set\uAC00"
-                    + " \uBC18\uD658\uB429\uB2C8\uB2E4."
+                        + " \uACB0\uACFC\uB85C \uB098\uD0C0\uB09C nodeset\uAC00 \uBE44\uC5B4"
+                        + " \uC788\uC2B5\uB2C8\uB2E4. \uBE48 node-set\uAC00"
+                        + " \uBC18\uD658\uB429\uB2C8\uB2E4."
             },
 
             // Following are the new WARNING keys added in XALAN code base after Jdk 1.4 (Xalan
@@ -1569,7 +1569,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NAME_CANT_BE_XML,
                 "xsl:processing-instruction \uC774\uB984\uC758 'name' \uC18D\uC131\uAC12\uC740"
-                    + " 'xml'\uC774 \uC544\uB2C8\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+                        + " 'xml'\uC774 \uC544\uB2C8\uC5B4\uC57C \uD569\uB2C8\uB2E4."
             },
 
             // Note to translators:  "name" and "xsl:processing-instruction" are keywords
@@ -1578,7 +1578,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_PROCESSINGINSTRUCTION_NOTVALID_NCNAME,
                 "xsl:processing-instruction\uC758 ''name'' \uC18D\uC131\uAC12\uC740"
-                    + " \uC801\uD569\uD55C NCName\uC774\uC5B4\uC57C \uD568: {0}"
+                        + " \uC801\uD569\uD55C NCName\uC774\uC5B4\uC57C \uD568: {0}"
             },
 
             // Note to translators:  This message is reported if the stylesheet that is
@@ -1588,14 +1588,14 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 WG_ILLEGAL_ATTRIBUTE_POSITION,
                 "\uD558\uC704 \uB178\uB4DC\uAC00 \uC0DD\uC131\uB41C \uD6C4 \uB610\uB294"
-                    + " \uC694\uC18C\uAC00 \uC0DD\uC131\uB418\uAE30 \uC804\uC5D0 {0}"
-                    + " \uC18D\uC131\uC744 \uCD94\uAC00\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
-                    + " \uC18D\uC131\uC774 \uBB34\uC2DC\uB429\uB2C8\uB2E4."
+                        + " \uC694\uC18C\uAC00 \uC0DD\uC131\uB418\uAE30 \uC804\uC5D0 {0}"
+                        + " \uC18D\uC131\uC744 \uCD94\uAC00\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+                        + " \uC18D\uC131\uC774 \uBB34\uC2DC\uB429\uB2C8\uB2E4."
             },
             {
                 NO_MODIFICATION_ALLOWED_ERR,
                 "\uC218\uC815\uC774 \uD5C8\uC6A9\uB418\uC9C0 \uC54A\uB294 \uAC1D\uCCB4\uB97C"
-                    + " \uC218\uC815\uD558\uB824\uACE0 \uC2DC\uB3C4\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uC218\uC815\uD558\uB824\uACE0 \uC2DC\uB3C4\uD588\uC2B5\uB2C8\uB2E4."
             },
 
             // Check: WHY THERE IS A GAP B/W NUMBERS in the XSLTErrorResources properties file?
@@ -1607,12 +1607,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "BAD_CODE",
                 "createMessage\uC5D0 \uB300\uD55C \uB9E4\uAC1C\uBCC0\uC218\uAC00 \uBC94\uC704\uB97C"
-                    + " \uBC97\uC5B4\uB0AC\uC2B5\uB2C8\uB2E4."
+                        + " \uBC97\uC5B4\uB0AC\uC2B5\uB2C8\uB2E4."
             },
             {
                 "FORMAT_FAILED",
                 "messageFormat \uD638\uCD9C \uC911 \uC608\uC678 \uC0AC\uD56D\uC774"
-                    + " \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4."
+                        + " \uBC1C\uC0DD\uD588\uC2B5\uB2C8\uB2E4."
             },
             {"version", ">>>>>>> Xalan \uBC84\uC804 "},
             {"version2", "<<<<<<<"},
@@ -1635,19 +1635,19 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "xslProc_invalid_xsltc_option",
                 "XSLTC \uBAA8\uB4DC\uC5D0\uC11C\uB294 {0} \uC635\uC158\uC774"
-                    + " \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+                        + " \uC9C0\uC6D0\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
             },
             {
                 "xslProc_invalid_xalan_option",
                 "{0} \uC635\uC158\uC740 -XSLTC\uC5D0\uB9CC \uC0AC\uC6A9\uD560 \uC218"
-                    + " \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uC788\uC2B5\uB2C8\uB2E4."
             },
             {
                 "xslProc_no_input",
                 "\uC624\uB958: \uC9C0\uC815\uB41C \uC2A4\uD0C0\uC77C\uC2DC\uD2B8 \uB610\uB294"
-                    + " \uC785\uB825 xml\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uBC95"
-                    + " \uC9C0\uCE68\uC5D0 \uB300\uD55C \uC635\uC158 \uC5C6\uC774 \uC774"
-                    + " \uBA85\uB839\uC744 \uC2E4\uD589\uD558\uC2ED\uC2DC\uC624."
+                        + " \uC785\uB825 xml\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uC0AC\uC6A9\uBC95"
+                        + " \uC9C0\uCE68\uC5D0 \uB300\uD55C \uC635\uC158 \uC5C6\uC774 \uC774"
+                        + " \uBA85\uB839\uC744 \uC2E4\uD589\uD558\uC2ED\uC2DC\uC624."
             },
             {"xslProc_common_options", "-\uC77C\uBC18 \uC635\uC158-"},
             {"xslProc_xalan_options", "-Xalan \uC635\uC158-"},
@@ -1655,7 +1655,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "xslProc_return_to_continue",
                 "(\uACC4\uC18D\uD558\uB824\uBA74 <Return> \uD0A4\uB97C"
-                    + " \uB204\uB974\uC2ED\uC2DC\uC624.)"
+                        + " \uB204\uB974\uC2ED\uC2DC\uC624.)"
             },
 
             // Note to translators: The option name and the parameter name do not need to
@@ -1672,7 +1672,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionPARSER",
                 "   [-PARSER \uAD6C\uBB38 \uBD84\uC11D\uAE30 \uC5F0\uACB0\uC758 \uC804\uCCB4"
-                    + " \uD074\uB798\uC2A4 \uC774\uB984]"
+                        + " \uD074\uB798\uC2A4 \uC774\uB984]"
             },
             {"optionE", "   [-E(\uC5D4\uD2F0\uD2F0 \uCC38\uC870 \uD655\uC7A5 \uC548\uD568)]"},
             {"optionV", "   [-E(\uC5D4\uD2F0\uD2F0 \uCC38\uC870 \uD655\uC7A5 \uC548\uD568)]"},
@@ -1681,24 +1681,24 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionLF",
                 "   [-LF(\uCD9C\uB825\uC5D0\uB9CC \uC904 \uBC14\uAFC8 \uC0AC\uC6A9"
-                    + " {\uAE30\uBCF8\uAC12: CR/LF})]"
+                        + " {\uAE30\uBCF8\uAC12: CR/LF})]"
             },
             {
                 "optionCR",
                 "   [-CR(\uCD9C\uB825\uC5D0\uB9CC \uCE90\uB9AC\uC9C0 \uB9AC\uD134 \uC0AC\uC6A9"
-                    + " {\uAE30\uBCF8\uAC12: CR/LF})]"
+                        + " {\uAE30\uBCF8\uAC12: CR/LF})]"
             },
             {
                 "optionESCAPE",
                 "   [-ESCAPE(\uC774\uC2A4\uCF00\uC774\uD504 \uBB38\uC790 {\uAE30\uBCF8\uAC12:"
-                    + " <>&\"'\\r"
-                    + "\\n"
-                    + "}]"
+                        + " <>&\"'\\r"
+                        + "\\n"
+                        + "}]"
             },
             {
                 "optionINDENT",
                 "   [-INDENT(\uB4E4\uC5EC \uC4F8 \uACF5\uBC31 \uC218 \uC81C\uC5B4"
-                    + " {\uAE30\uBCF8\uAC12: 0})]"
+                        + " {\uAE30\uBCF8\uAC12: 0})]"
             },
             {"optionTT", "   [-TT(\uD15C\uD50C\uB9AC\uD2B8 \uD638\uCD9C \uC2DC \uCD94\uC801)]"},
             {"optionTG", "   [-TG(\uAC01 \uC0DD\uC131 \uC774\uBCA4\uD2B8 \uCD94\uC801)]"},
@@ -1706,12 +1706,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionTTC",
                 "   [-TTC(\uD15C\uD50C\uB9AC\uD2B8 \uD558\uC704 \uD56D\uBAA9 \uCC98\uB9AC \uC2DC"
-                    + " \uCD94\uC801)]"
+                        + " \uCD94\uC801)]"
             },
             {
                 "optionTCLASS",
                 "   [-TCLASS(\uCD94\uC801 \uD655\uC7A5\uC5D0 \uB300\uD55C TraceListener"
-                    + " \uD074\uB798\uC2A4)]"
+                        + " \uD074\uB798\uC2A4)]"
             },
             {
                 "optionVALIDATE",
@@ -1722,12 +1722,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionEDUMP",
                 "   [-EDUMP {\uC120\uD0DD\uC801 \uD30C\uC77C \uC774\uB984}(\uC624\uB958"
-                    + " \uBC1C\uC0DD \uC2DC \uC2A4\uD0DD \uB364\uD504)]"
+                        + " \uBC1C\uC0DD \uC2DC \uC2A4\uD0DD \uB364\uD504)]"
             },
             {
                 "optionXML",
                 "   [-XML(XML \uD3EC\uB9F7\uD130 \uC0AC\uC6A9 \uBC0F XML \uD5E4\uB354"
-                    + " \uCD94\uAC00)]"
+                        + " \uCD94\uAC00)]"
             },
             {
                 "optionTEXT",
@@ -1737,7 +1737,7 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionPARAM",
                 "   [-PARAM \uC774\uB984 \uD45C\uD604\uC2DD(\uC2A4\uD0C0\uC77C\uC2DC\uD2B8"
-                    + " \uB9E4\uAC1C\uBCC0\uC218 \uC124\uC815)]"
+                        + " \uB9E4\uAC1C\uBCC0\uC218 \uC124\uC815)]"
             },
             {
                 "noParsermsg1",
@@ -1754,25 +1754,25 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "noParsermsg4",
                 "IBM\uC758 Java\uC6A9 XML \uAD6C\uBB38 \uBD84\uC11D\uAE30\uAC00 \uC5C6\uC744"
-                    + " \uACBD\uC6B0 \uB2E4\uC74C \uC704\uCE58\uC5D0\uC11C"
-                    + " \uB2E4\uC6B4\uB85C\uB4DC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+                        + " \uACBD\uC6B0 \uB2E4\uC74C \uC704\uCE58\uC5D0\uC11C"
+                        + " \uB2E4\uC6B4\uB85C\uB4DC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
             },
             {"noParsermsg5", "IBM AlphaWorks: http://www.alphaworks.ibm.com/formula/xml"},
             {
                 "optionURIRESOLVER",
                 "   [-URIRESOLVER \uC804\uCCB4 \uD074\uB798\uC2A4 \uC774\uB984(URI"
-                    + " \uBD84\uC11D\uC5D0 \uC0AC\uC6A9\uD560 URIResolver)]"
+                        + " \uBD84\uC11D\uC5D0 \uC0AC\uC6A9\uD560 URIResolver)]"
             },
             {
                 "optionENTITYRESOLVER",
                 "   [-ENTITYRESOLVER \uC804\uCCB4 \uD074\uB798\uC2A4"
-                    + " \uC774\uB984(\uC5D4\uD2F0\uD2F0 \uBD84\uC11D\uC5D0 \uC0AC\uC6A9\uD560"
-                    + " EntityResolver)]"
+                        + " \uC774\uB984(\uC5D4\uD2F0\uD2F0 \uBD84\uC11D\uC5D0 \uC0AC\uC6A9\uD560"
+                        + " EntityResolver)]"
             },
             {
                 "optionCONTENTHANDLER",
                 "   [-CONTENTHANDLER \uC804\uCCB4 \uD074\uB798\uC2A4 \uC774\uB984(\uCD9C\uB825"
-                    + " \uC9C1\uB82C\uD654\uC5D0 \uC0AC\uC6A9\uD560 ContentHandler)]"
+                        + " \uC9C1\uB82C\uD654\uC5D0 \uC0AC\uC6A9\uD560 ContentHandler)]"
             },
             {
                 "optionLINENUMBERS",
@@ -1789,18 +1789,18 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionMEDIA",
                 "   [-MEDIA mediaType(media \uC18D\uC131\uC744 \uC0AC\uC6A9\uD558\uC5EC"
-                    + " \uBB38\uC11C\uC640 \uC5F0\uAD00\uB41C \uC2A4\uD0C0\uC77C\uC2DC\uD2B8"
-                    + " \uCC3E\uAE30)]"
+                        + " \uBB38\uC11C\uC640 \uC5F0\uAD00\uB41C \uC2A4\uD0C0\uC77C\uC2DC\uD2B8"
+                        + " \uCC3E\uAE30)]"
             },
             {
                 "optionFLAVOR",
                 "   [-FLAVOR flavorName(\uBCC0\uD658\uC5D0 \uBA85\uC2DC\uC801\uC73C\uB85C s2s=SAX"
-                    + " \uB610\uB294 d2d=DOM \uC0AC\uC6A9)] "
+                        + " \uB610\uB294 d2d=DOM \uC0AC\uC6A9)] "
             }, // Added by sboag/scurcuru; experimental
             {
                 "optionDIAG",
                 "   [-DIAG(\uBCC0\uD658\uC5D0 \uAC78\uB9B0 \uCD1D \uC2DC\uAC04(\uBC00\uB9AC\uCD08)"
-                    + " \uC778\uC1C4)]"
+                        + " \uC778\uC1C4)]"
             },
             {
                 "optionINCREMENTAL",
@@ -1821,23 +1821,23 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionXO",
                 "   [-XO [transletName](\uC0DD\uC131\uB41C translet\uC5D0 \uC774\uB984"
-                    + " \uC9C0\uC815)]"
+                        + " \uC9C0\uC815)]"
             },
             {
                 "optionXD",
                 "   [-XD destinationDirectory(translet\uC5D0 \uB300\uD55C \uB300\uC0C1"
-                    + " \uB514\uB809\uD1A0\uB9AC \uC9C0\uC815)]"
+                        + " \uB514\uB809\uD1A0\uB9AC \uC9C0\uC815)]"
             },
             {
                 "optionXJ",
                 "   [-XJ jarfile(translet \uD074\uB798\uC2A4\uB97C <jarfile> \uC774\uB984\uC758 jar"
-                    + " \uD30C\uC77C\uB85C \uD328\uD0A4\uC9C0\uD654)]"
+                        + " \uD30C\uC77C\uB85C \uD328\uD0A4\uC9C0\uD654)]"
             },
             {
                 "optionXP",
                 "   [-XP package(\uC0DD\uC131\uB41C \uBAA8\uB4E0 translet \uD074\uB798\uC2A4\uC5D0"
-                    + " \uB300\uD55C \uD328\uD0A4\uC9C0 \uC774\uB984 \uC811\uB450\uC5B4"
-                    + " \uC9C0\uC815)]"
+                        + " \uB300\uD55C \uD328\uD0A4\uC9C0 \uC774\uB984 \uC811\uB450\uC5B4"
+                        + " \uC9C0\uC815)]"
             },
 
             // AddITIONAL  STRINGS that need L10n
@@ -1848,12 +1848,12 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "optionXN",
                 "   [-XN(\uD15C\uD50C\uB9AC\uD2B8 \uC778\uB77C\uC778\uC744 \uC0AC\uC6A9\uC73C\uB85C"
-                    + " \uC124\uC815)]"
+                        + " \uC124\uC815)]"
             },
             {
                 "optionXX",
                 "   [-XX(\uCD94\uAC00 \uB514\uBC84\uAE45 \uBA54\uC2DC\uC9C0 \uCD9C\uB825"
-                    + " \uC124\uC815)]"
+                        + " \uC124\uC815)]"
             },
             {
                 "optionXT",
@@ -1862,13 +1862,13 @@ public class XSLTErrorResources_ko extends ListResourceBundle {
             {
                 "diagTiming",
                 " --------- {1}\uC744(\uB97C) \uD1B5\uD55C {0} \uBCC0\uD658\uC5D0"
-                    + " {2}\uBC00\uB9AC\uCD08\uAC00 \uAC78\uB838\uC2B5\uB2C8\uB2E4."
+                        + " {2}\uBC00\uB9AC\uCD08\uAC00 \uAC78\uB838\uC2B5\uB2C8\uB2E4."
             },
             {
                 "recursionTooDeep",
                 "\uD15C\uD50C\uB9AC\uD2B8\uAC00 \uB108\uBB34 \uAE4A\uAC8C"
-                    + " \uC911\uCCA9\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC911\uCCA9 = {0},"
-                    + " \uD15C\uD50C\uB9AC\uD2B8: {1} {2}"
+                        + " \uC911\uCCA9\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC911\uCCA9 = {0},"
+                        + " \uD15C\uD50C\uB9AC\uD2B8: {1} {2}"
             },
             {"nameIs", "\uC774\uB984:"},
             {"matchPatternIs", "\uC77C\uCE58 \uD328\uD134:"}

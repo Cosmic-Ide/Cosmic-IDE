@@ -1470,7 +1470,7 @@ public class XSAttributeChecker {
                                 new Object[] {
                                     value,
                                     "((##any | ##other) | List of (anyURI | (##targetNamespace |"
-                                        + " ##local)) )"
+                                            + " ##local)) )"
                                 });
                     }
 

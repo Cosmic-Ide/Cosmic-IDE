@@ -75,7 +75,7 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.BAD_MSGFORMAT,
                         "Formatet p\u00E5 meddelandet ''{0}'' i meddelandeklassen ''{1}''"
-                            + " underk\u00E4ndes."
+                                + " underk\u00E4ndes."
                     },
                     {
                         MsgKey.ER_SERIALIZER_NOT_CONTENTHANDLER,
@@ -98,7 +98,7 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.ER_ILLEGAL_ATTRIBUTE_POSITION,
                         "Kan inte l\u00E4gga till attributet {0} efter underordnade noder eller"
-                            + " innan ett element har skapats. Attributet ignoreras."
+                                + " innan ett element har skapats. Attributet ignoreras."
                     },
 
                     /*
@@ -133,17 +133,17 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.ER_COULD_NOT_LOAD_RESOURCE,
                         "Kunde inte ladda ''{0}'' (kontrollera CLASSPATH), anv\u00E4nder nu enbart"
-                            + " standardv\u00E4rden"
+                                + " standardv\u00E4rden"
                     },
                     {
                         MsgKey.ER_ILLEGAL_CHARACTER,
                         "F\u00F6rs\u00F6k att skriva utdatatecken med integralv\u00E4rdet {0} som"
-                            + " inte \u00E4r representerat i angiven utdatakodning av {1}."
+                                + " inte \u00E4r representerat i angiven utdatakodning av {1}."
                     },
                     {
                         MsgKey.ER_COULD_NOT_LOAD_METHOD_PROPERTY,
                         "Kunde inte ladda egenskapsfilen ''{0}'' f\u00F6r utdatametoden ''{1}''"
-                            + " (kontrollera CLASSPATH)"
+                                + " (kontrollera CLASSPATH)"
                     },
                     {MsgKey.ER_INVALID_PORT, "Ogiltigt portnummer"},
                     {
@@ -188,7 +188,7 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.ER_NO_QUERY_STRING_IN_PATH,
                         "Fr\u00E5gestr\u00E4ng kan inte anges i b\u00E5de s\u00F6kv\u00E4gen och"
-                            + " fr\u00E5gestr\u00E4ngen"
+                                + " fr\u00E5gestr\u00E4ngen"
                     },
                     {
                         MsgKey.ER_NO_PORT_IF_NO_HOST,
@@ -201,8 +201,8 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.ER_XML_VERSION_NOT_SUPPORTED,
                         "Varning:  Versionen av utdatadokumentet som beg\u00E4rts \u00E4r ''{0}''. "
-                            + " Den h\u00E4r versionen av XML st\u00F6ds inte.  Versionen av"
-                            + " utdatadokumentet kommer att vara ''1.0''."
+                                + " Den h\u00E4r versionen av XML st\u00F6ds inte.  Versionen av"
+                                + " utdatadokumentet kommer att vara ''1.0''."
                     },
                     {MsgKey.ER_SCHEME_REQUIRED, "Schema kr\u00E4vs!"},
 
@@ -214,7 +214,7 @@ public class SerializerMessages_sv extends ListResourceBundle {
                     {
                         MsgKey.ER_FACTORY_PROPERTY_MISSING,
                         "Egenskapsobjektet som \u00F6verf\u00F6rts till SerializerFactory har ingen"
-                            + " ''{0}''-egenskap."
+                                + " ''{0}''-egenskap."
                     },
                     {
                         MsgKey.ER_ENCODING_NOT_SUPPORTED,

@@ -469,7 +469,7 @@ public final class JavaInput extends Input {
                 if (strings.size() != 1 && !tokText.equals(originalTokText)) {
                     throw new FormatterException(
                             "Unicode escapes not allowed in whitespace or multi-character"
-                                + " operators");
+                                    + " operators");
                 }
                 for (String str : strings) {
                     toks.add(

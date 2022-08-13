@@ -121,9 +121,10 @@ public class SettingActivity extends BaseActivity {
                                 .setTitle("Notice")
                                 .setMessage(
                                         "Please note that currently only ECJ supports Java 18."
-                                                + " Javac with Java 18 is not currently supported.")
+                                                + " Javac for Java 18 is not yet supported.")
                                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                                 .show();
+                        binding.etJavaVersions.setText("17");
                         return;
                     }
                     compiler_settings.edit().putString("version", javaVersions[pos]).apply();

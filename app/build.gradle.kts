@@ -101,7 +101,6 @@ dependencies {
     implementation(Dependencies.APPCOMPAT)
     implementation(Dependencies.RECYCLERVIEW)
     implementation(Dependencies.SWIPE_REFRESH_LAYOUT)
-    implementation(Dependencies.CFR)
     implementation(Dependencies.DEXLIB2)
     implementation(Dependencies.BAKSMALI)
     implementation(Dependencies.GUAVA)

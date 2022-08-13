@@ -39,7 +39,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
-import org.benf.cfr.reader.Main;
+import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.android.code.disassembler.*;
 import org.cosmic.ide.android.code.formatter.*;
 import org.cosmic.ide.common.Indexer;
@@ -547,28 +547,12 @@ public class MainActivity extends BaseActivity {
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
-                    var args =
-                            new String[] {
-                                getProject().getBinDirPath()
-                                        + "classes"
-                                        + "/"
-                                        + claz
-                                        + // full class name
-                                        ".class",
-                                "--extraclasspath",
-                                FileUtil.getClasspathDir()
-                                        + "android.jar"
-                                        + File.pathSeparator
-                                        + FileUtil.getClasspathDir()
-                                        + "kotlin-stdlib-1.7.10.jar",
-                                "--outputdir",
-                                getProject().getBinDirPath() + "cfr/"
-                            };
-
+                    
+                    var decompiled = "";
                     CoroutineUtil.execute(
                             () -> {
                                 try {
-                                    Main.main(args);
+                                    decompiled = new FernFlowerDecompiler().decompile(claz, getProject().getBinDirPath() + "classes");
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }
@@ -581,11 +565,8 @@ public class MainActivity extends BaseActivity {
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
-                    var decompiledFile =
-                            new File(getProject().getBinDirPath() + "cfr" + "/" + claz + ".java");
-
                     try {
-                        edi.setText(FileUtil.readFile(decompiledFile));
+                        edi.setText(decompiled);
                     } catch (IOException e) {
                         dialog("Failed to read file", getString(e), true);
                     }
@@ -604,13 +585,6 @@ public class MainActivity extends BaseActivity {
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
-
-                    var edi = new CodeEditor(this);
-                    edi.setTypefaceText(
-                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-                    edi.setColorScheme(getColorScheme());
-                    edi.setTextSize(12);
-                    edi.setEditorLanguage(getJavaLanguage());
 
                     try {
                         var disassembled = "";
@@ -633,6 +607,14 @@ public class MainActivity extends BaseActivity {
                                                             + ".class")
                                             .disassemble();
                         }
+                        
+                    var edi = new CodeEditor(this);
+                    edi.setTypefaceText(
+                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
+                    edi.setColorScheme(getColorScheme());
+                    edi.setTextSize(12);
+                    edi.setEditorLanguage(getJavaLanguage());
+
                         edi.setText(disassembled);
 
                     } catch (Throwable e) {
@@ -676,7 +658,7 @@ public class MainActivity extends BaseActivity {
     public String[] getClassesFromDex() {
         try {
             var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
-            /* If the project doesn't seem to have been compiled yet, compile it */
+            /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
                 compile(false, true);
             }

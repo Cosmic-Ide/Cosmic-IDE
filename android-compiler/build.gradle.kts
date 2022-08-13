@@ -37,6 +37,7 @@ dependencies {
 
     implementation(Dependencies.R8)
     implementation(Dependencies.JAVAC)
+    implementation(Dependencies.FERNFLOWER)
     implementation(projects.googleJavaFormat)
     implementation(projects.eclipseJdt) 
     implementation(projects.common)

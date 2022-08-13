@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
+import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
@@ -24,13 +25,14 @@ class ApplicationLoader : Application() {
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)
+        DynamicColors.applyToActivitiesIfAvailable(true)
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->
             val intent = Intent(getApplicationContext(), DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", Log.getStackTraceString(throwable))
-            val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT)
+            val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE)
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)

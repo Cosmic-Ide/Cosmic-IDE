@@ -7,7 +7,6 @@ object BuildDependenciesVersions {
     const val MATERIAL = "1.7.0-alpha03"
     const val SMALI = "2.5.2"
     const val ANDROIDX_ANNOTATION = "1.4.0"
-    const val CFR = "0.152"
     const val JAVAC = "17.0.0.1"
     const val R8 = "3.3.28"
     const val COROUTINES = "1.6.4"
@@ -18,4 +17,5 @@ object BuildDependenciesVersions {
     const val GSON = "2.9.1"
     const val JCODINGS = "1.0.57"
     const val JONI = "2.1.43"
+    const val FERNFLOWER = "ecc675ee43"
 }

@@ -4,7 +4,6 @@ object Dependencies {
     const val APPCOMPAT = "androidx.appcompat:appcompat:${BuildDependenciesVersions.APPCOMPAT}"
     const val MATERIAL = "com.google.android.material:material:${BuildDependenciesVersions.MATERIAL}"
     const val LEAK_CANARY = "com.squareup.leakcanary:leakcanary-android:${BuildDependenciesVersions.LEAK_CANARY}"
-    const val CFR = "org.benf:cfr:${BuildDependenciesVersions.CFR}"
     const val DEXLIB2 = "org.smali:dexlib2:${BuildDependenciesVersions.SMALI}"
     const val BAKSMALI = "org.smali:baksmali:${BuildDependenciesVersions.SMALI}"
     const val JAVAC = "io.github.itsaky:nb-javac-android:${BuildDependenciesVersions.JAVAC}"
@@ -20,4 +19,5 @@ object Dependencies {
     const val GSON = "com.google.code.gson:gson:${BuildDependenciesVersions.GSON}"
     const val JCODINGS = "org.jruby.jcodings:jcodings:${BuildDependenciesVersions.JCODINGS}"
     const val JONI = "org.jruby.joni:joni:${BuildDependenciesVersions.JONI}"
+    const val FERNFLOWER = "com.github.Cosmic-Ide:fernflower:${BuildDependenciesVersions.FERNFLOWER}"
 }

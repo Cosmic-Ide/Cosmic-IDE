@@ -34,7 +34,7 @@
                     </dict>
                 </dict>
                 <key>match</key>
-                <string>^\s*(package)\b(?:\s*([^ ;$]+)\s*)?</string>
+                <string>\b(package)\b</string>
             </dict>
             <dict>
                 <key>captures</key>

@@ -23,7 +23,6 @@ jobs:
       - name: Format Kotlin Source
         uses: gradle/gradle-build-action@v2.2.2
         with:
-          arguments: --continue ktlintFormat
 
       - uses: axel-op/googlejavaformat-action@v3.6.0
         with:

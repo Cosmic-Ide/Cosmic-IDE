@@ -11,10 +11,10 @@ object CoroutineUtil {
     @JvmStatic
     fun execute(runnable: Runnable) = runBlocking {
         launch {
-          runnable.run()
+            runnable.run()
         }
     }
-    
+
     @JvmStatic
     fun inParallel(runnable: Runnable) = scope.launch {
         runnable.run()

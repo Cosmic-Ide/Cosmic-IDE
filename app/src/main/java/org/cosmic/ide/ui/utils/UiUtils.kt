@@ -1,11 +1,9 @@
 package org.cosmic.ide.ui.utils
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import org.cosmic.ide.ui.utils.dpToPx;
 
 fun toDp(dp: Int) = dpToPx.dpToPx(dp.toFloat())
 
@@ -15,7 +13,8 @@ fun View.setMargins(left: Int? = null, top: Int? = null, right: Int? = null, bot
         left ?: params.leftMargin,
         top ?: params.topMargin,
         right ?: params.rightMargin,
-        bottom ?: params.bottomMargin)
+        bottom ?: params.bottomMargin
+    )
     layoutParams = params
 }
 

@@ -1,7 +1,6 @@
 package org.cosmic.ide.android.task
 
 import android.content.Context
-
 import org.cosmic.ide.android.interfaces.Builder
 
 class JavaBuilder(context: Context) : Builder {
@@ -12,7 +11,7 @@ class JavaBuilder(context: Context) : Builder {
         mContext = context
     }
 
-    override fun getContext() : Context {
+    override fun getContext(): Context {
         return mContext
     }
 }

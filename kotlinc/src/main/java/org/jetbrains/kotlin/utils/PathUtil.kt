@@ -115,8 +115,7 @@ object PathUtil {
             // PathUtil.clazz is located not in the kotlin-compiler*.jar, so it must be a test and we'll take KotlinPaths from "dist/"
             // (when running tests, PathUtil.clazz is in its containing module's artifact, i.e. util-{version}.jar)
             kotlinPathsForDistDirectory
-        }
-        else KotlinPathsFromHomeDir(compilerPathForCompilerJar)
+        } else KotlinPathsFromHomeDir(compilerPathForCompilerJar)
 
     @JvmStatic
     val kotlinPathsForDistDirectory: KotlinPaths

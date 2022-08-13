@@ -43,7 +43,7 @@ object ServiceLoaderLite {
             val loader = PathClassLoader(classpath, this::class.java.classLoader)
             return loadImplementations(service, files, loader)
         }
-        return loadImplementations(service, files, classLoader);
+        return loadImplementations(service, files, classLoader)
     }
 
     fun <Service> loadImplementations(service: Class<out Service>, files: List<File>, classLoader: ClassLoader): MutableList<Service> {
@@ -52,10 +52,10 @@ object ServiceLoaderLite {
         for (className in findImplementations(service, files)) {
             try {
                 val instance = classLoader.loadClass(className).getConstructor()
-                    .newInstance();
+                    .newInstance()
                 implementations += service.cast(instance)
             } catch (e: ClassNotFoundException) {
-                throw ClassNotFoundException("Unable to find class $className in $files");
+                throw ClassNotFoundException("Unable to find class $className in $files")
             }
         }
 
@@ -125,5 +125,5 @@ object ServiceLoaderLite {
         return service.name
     }
 
-    fun isDalvik() = System.getProperty("java.vm.name")?.contains("Dalvik");
+    fun isDalvik() = System.getProperty("java.vm.name")?.contains("Dalvik")
 }

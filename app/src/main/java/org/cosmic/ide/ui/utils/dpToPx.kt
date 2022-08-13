@@ -14,7 +14,9 @@ object dpToPx {
     @JvmStatic
     fun dpToPx(dp: Float): Int {
         return Math.round(
-                TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics()))
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics()
+            )
+        )
     }
 }

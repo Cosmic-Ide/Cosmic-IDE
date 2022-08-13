@@ -2,21 +2,16 @@ package org.cosmic.ide.analyzer.java
 
 import android.content.Context
 import android.content.SharedPreferences
-
-import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.project.JavaProject
-
 import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
-
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
-
+import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.project.JavaProject
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.ArrayList
 import java.util.Locale
-
 import javax.tools.Diagnostic
 import javax.tools.DiagnosticCollector
 import javax.tools.JavaFileObject
@@ -46,9 +41,10 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
 
         val javaFileObjects = arrayListOf<JavaFileObject>()
         for (file in files) {
-        javaFileObjects.add(
+            javaFileObjects.add(
                 object : SimpleJavaFileObject(
-                        file.toURI(), JavaFileObject.Kind.SOURCE) {
+                    file.toURI(), JavaFileObject.Kind.SOURCE
+                ) {
                     override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
                         return FileUtil.readFile(file)
                     }
@@ -58,14 +54,17 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         val tool = JavacTool.create()
 
         val standardJavaFileManager =
-                tool.getStandardFileManager(
-                        diagnostics, Locale.getDefault(), Charset.defaultCharset())
+            tool.getStandardFileManager(
+                diagnostics, Locale.getDefault(), Charset.defaultCharset()
+            )
         standardJavaFileManager.apply {
             setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath())
+                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath()
+            )
             setLocation(StandardLocation.CLASS_PATH, getClasspath())
             setLocation(
-                StandardLocation.SOURCE_PATH, files)
+                StandardLocation.SOURCE_PATH, files
+            )
         }
 
         val args = arrayListOf<String>()
@@ -81,13 +80,14 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
         }
 
         val task =
-                tool.getTask(
-                        null,
-                        standardJavaFileManager,
-                        diagnostics,
-                        args,
-                        null,
-                        javaFileObjects) as JavacTask
+            tool.getTask(
+                null,
+                standardJavaFileManager,
+                diagnostics,
+                args,
+                null,
+                javaFileObjects
+            ) as JavacTask
 
         task.parse()
         task.analyze()
@@ -107,8 +107,10 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
             if (it.getSource() == null) continue
             val severity = if (it.getKind() == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
             problems.add(
-                    DiagnosticRegion(
-                            it.getStartPosition().toInt(), it.getEndPosition().toInt(), severity))
+                DiagnosticRegion(
+                    it.getStartPosition().toInt(), it.getEndPosition().toInt(), severity
+                )
+            )
         }
         return problems
     }

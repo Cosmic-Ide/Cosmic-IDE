@@ -2,14 +2,11 @@ package org.cosmic.ide.ui.treeview.file
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-
 import androidx.annotation.Nullable
 import androidx.appcompat.content.res.AppCompatResources
-
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.treeview.model.TreeFolder
 import org.cosmic.ide.ui.treeview.model.TreeJavaFile
-
 import java.io.File
 import java.util.Objects
 
@@ -18,7 +15,7 @@ open class TreeFile {
     companion object {
         @Nullable
         @JvmStatic
-        fun fromFile(file: File) : TreeFile? {
+        fun fromFile(file: File): TreeFile? {
             if (file.isDirectory()) {
                 return TreeFolder(file)
             }
@@ -37,7 +34,7 @@ open class TreeFile {
 
     fun getFile() = mFile
 
-    open fun getIcon(context: Context) : Drawable? {
+    open fun getIcon(context: Context): Drawable? {
         return AppCompatResources.getDrawable(context, R.drawable.ic_file)
     }
 
@@ -52,7 +49,7 @@ open class TreeFile {
         return Objects.equals(mFile, treeFile.mFile)
     }
 
-    override fun hashCode() : Int {
+    override fun hashCode(): Int {
         return Objects.hash(mFile)
     }
 }

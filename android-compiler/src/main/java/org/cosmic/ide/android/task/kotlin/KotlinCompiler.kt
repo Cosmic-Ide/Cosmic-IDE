@@ -1,17 +1,15 @@
 package org.cosmic.ide.android.task.kotlin
 
+import org.cosmic.ide.android.exception.CompilationFailedException
+import org.cosmic.ide.android.interfaces.Task
+import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.project.JavaProject
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
-import java.util.stream.Collectors
-
-import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.android.interfaces.Task
-import org.cosmic.ide.project.JavaProject
-import org.cosmic.ide.android.exception.CompilationFailedException
 
 class KotlinCompiler : Task {
 
@@ -20,10 +18,11 @@ class KotlinCompiler : Task {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
         if (!sourceFiles.any {
             it.endsWith(".kt")
-        }) {
-            return;
         }
-        val mKotlinHome  = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
+        ) {
+            return
+        }
+        val mKotlinHome = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
 
         val collector = object : MessageCollector {
@@ -62,15 +61,15 @@ class KotlinCompiler : Task {
             noReflect = true
             noStdlib = true
             classpath =
-                    FileUtil.getClasspathDir() +
-                    "android.jar" +
-                    File.pathSeparator +
-                    FileUtil.getClasspathDir() +
-                    "core-lambda-stubs.jar" +
-                    File.pathSeparator +
-                    FileUtil.getClasspathDir() +
-                    "kotlin-stdlib-1.7.10.jar" +
-                    claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
+                FileUtil.getClasspathDir() +
+                "android.jar" +
+                File.pathSeparator +
+                FileUtil.getClasspathDir() +
+                "core-lambda-stubs.jar" +
+                File.pathSeparator +
+                FileUtil.getClasspathDir() +
+                "kotlin-stdlib-1.7.10.jar" +
+                claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             javaSourceRoots = sourceFiles.filter {
@@ -84,10 +83,10 @@ class KotlinCompiler : Task {
         val cacheDir = File(project.getBinDirPath(), "caches")
 
         makeIncrementally(
-                cacheDir,
-                listOf(File(project.getSrcDirPath())),
-                args,
-                collector
+            cacheDir,
+            listOf(File(project.getSrcDirPath())),
+            args,
+            collector
         )
 
         if (collector.hasErrors()) {
@@ -112,8 +111,8 @@ class KotlinCompiler : Task {
         }
         return sourceFiles
     }
-    
-    override fun getTaskName() : String {
+
+    override fun getTaskName(): String {
         return "Kotlin Compiler"
     }
 

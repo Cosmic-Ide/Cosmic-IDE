@@ -1,20 +1,14 @@
 package org.cosmic.ide.android.task.java
 
-import android.content.Context
 import android.content.SharedPreferences
-
 import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
-
 import org.eclipse.jdt.internal.compiler.batch.Main
-
 import java.io.File
-import java.io.IOException
 import java.io.OutputStream
 import java.io.PrintWriter
-import java.util.ArrayList
 
 class ECJCompilationTask(preferences: SharedPreferences) : Task {
 
@@ -33,12 +27,12 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
     override fun doFullTask(project: JavaProject) {
 
         val writer =
-                PrintWriter(
-                        object : OutputStream() {
-                            override fun write(p1: Int) {
-                                errs.append(p1.toChar())
-                            }
-                        })
+            PrintWriter(
+                object : OutputStream() {
+                    override fun write(p1: Int) {
+                        errs.append(p1.toChar())
+                    }
+                })
 
         val main = Main(writer, writer, false, null, null)
 

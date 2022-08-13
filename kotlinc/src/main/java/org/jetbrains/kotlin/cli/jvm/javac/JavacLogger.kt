@@ -35,14 +35,17 @@ class JavacLogger(
 
     companion object {
         fun preRegister(context: Context, messageCollector: MessageCollector) {
-            context.put(Log.logKey, Context.Factory<Log> {
-                JavacLogger(
-                    it,
-                    PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.ERROR)),
-                    PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.WARNING)),
-                    PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.INFO))
-                )
-            })
+            context.put(
+                Log.logKey,
+                Context.Factory<Log> {
+                    JavacLogger(
+                        it,
+                        PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.ERROR)),
+                        PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.WARNING)),
+                        PrintWriter(MessageCollectorAdapter(messageCollector, CompilerMessageSeverity.INFO))
+                    )
+                }
+            )
         }
     }
 }

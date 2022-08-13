@@ -1,10 +1,8 @@
 package org.cosmic.ide.common
 
 import org.cosmic.ide.common.util.FileUtil
-
 import org.json.JSONException
 import org.json.JSONObject
-
 import java.io.File
 import java.io.IOException
 
@@ -21,7 +19,7 @@ class Indexer {
     }
 
     @Throws(JSONException::class)
-    fun load()  {
+    fun load() {
         val indexFile = File(filePath)
         try {
             if (!indexFile.exists()) {
@@ -35,28 +33,28 @@ class Indexer {
     }
 
     @Throws(JSONException::class)
-    fun put(key: String, value: String) : Indexer {
+    fun put(key: String, value: String): Indexer {
         json.put(key, value)
         return this
     }
 
     @Throws(JSONException::class)
-    fun put(key: String, value: Long) : Indexer {
+    fun put(key: String, value: Long): Indexer {
         json.put(key, value)
         return this
     }
 
     @Throws(JSONException::class)
-    fun notHas(key: String) : Boolean {
+    fun notHas(key: String): Boolean {
         return !json.has(key)
     }
 
     @Throws(JSONException::class)
-    fun getString(key: String) : String {
+    fun getString(key: String): String {
         return json.getString(key)
     }
 
-    fun getLong(key: String) : Long {
+    fun getLong(key: String): Long {
         try {
             return json.getLong(key)
         } catch (e: JSONException) {
@@ -65,7 +63,7 @@ class Indexer {
     }
 
     @Throws(JSONException::class)
-    fun asString() : String {
+    fun asString(): String {
         return json.toString(4)
     }
 

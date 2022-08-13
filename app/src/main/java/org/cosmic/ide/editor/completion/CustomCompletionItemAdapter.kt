@@ -5,15 +5,10 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-
-import org.cosmic.ide.R
-
 import com.google.android.material.color.MaterialColors
-
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import io.github.rosemoe.sora.lang.completion.CompletionItem
+import org.cosmic.ide.R
 
 class CustomCompletionItemAdapter : EditorCompletionAdapter() {
 
@@ -39,5 +34,4 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         iv.setText(item.desc.subSequence(0, 1))
         return view
     }
-
 }

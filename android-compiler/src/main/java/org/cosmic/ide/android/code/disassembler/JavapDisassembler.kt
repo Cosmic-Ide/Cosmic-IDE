@@ -1,9 +1,7 @@
 package org.cosmic.ide.android.code.disassembler
 
 import com.sun.tools.javap.JavapTask
-
 import java.io.StringWriter
-import java.util.ArrayList
 
 class JavapDisassembler(filePath: String) {
 
@@ -14,11 +12,11 @@ class JavapDisassembler(filePath: String) {
     }
 
     @Throws(Throwable::class)
-    fun disassemble() : String {
+    fun disassemble(): String {
         // Create an arraylist for storing javap arguments
         val args = listOf(
-                "-c",
-                path
+            "-c",
+            path
         )
         // Create a StringWriter object that will store the output
         val writer = StringWriter()

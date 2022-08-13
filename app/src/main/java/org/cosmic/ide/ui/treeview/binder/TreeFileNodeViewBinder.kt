@@ -1,6 +1,5 @@
 package org.cosmic.ide.ui.treeview.binder
 
-import android.graphics.PorterDuff
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,7 +14,7 @@ class TreeFileNodeViewBinder(
     itemView: View,
     private val level: Int,
     private val nodeListener: TreeFileNodeListener
-): BaseNodeViewBinder<TreeFile>(itemView) {
+) : BaseNodeViewBinder<TreeFile>(itemView) {
 
     private lateinit var viewHolder: ViewHolder
 
@@ -64,5 +63,4 @@ class TreeFileNodeViewBinder(
         fun onNodeToggled(treeNode: TreeNode<TreeFile>?, expanded: Boolean)
         fun onNodeLongClicked(view: View?, treeNode: TreeNode<TreeFile>?, expanded: Boolean): Boolean
     }
-
 }

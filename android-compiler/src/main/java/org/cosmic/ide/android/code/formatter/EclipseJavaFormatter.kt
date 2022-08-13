@@ -9,7 +9,7 @@ class EclipseJavaFormatter(code: String) {
     private val source: String
 
     init {
-        source = code;
+        source = code
     }
 
     fun format(): String {
@@ -18,14 +18,14 @@ class EclipseJavaFormatter(code: String) {
         val codeFormatter = DefaultCodeFormatter(options)
 
         val edit =
-                codeFormatter.format(
-                        DefaultCodeFormatter.K_COMPILATION_UNIT,
-                        source,
-                        0, // starting index
-                        source.length, // length
-                        0, // initial indentation
-                        System.lineSeparator() // line separator
-                        )
+            codeFormatter.format(
+                DefaultCodeFormatter.K_COMPILATION_UNIT,
+                source,
+                0, // starting index
+                source.length, // length
+                0, // initial indentation
+                System.lineSeparator() // line separator
+            )
 
         val document = Document(source)
         try {

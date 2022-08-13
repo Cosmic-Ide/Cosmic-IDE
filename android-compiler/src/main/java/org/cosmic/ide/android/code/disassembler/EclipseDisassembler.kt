@@ -1,9 +1,7 @@
 package org.cosmic.ide.android.code.disassembler
 
-import org.eclipse.jdt.internal.core.util.Disassembler
 import org.eclipse.jdt.core.util.ClassFileBytesDisassembler
-
-import java.io.IOException
+import org.eclipse.jdt.internal.core.util.Disassembler
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -16,7 +14,7 @@ class EclipseDisassembler(filePath: String) {
     }
 
     @Throws(Throwable::class)
-    fun disassemble() : String {
+    fun disassemble(): String {
         return Disassembler().disassemble(classFileBytes, System.lineSeparator(), ClassFileBytesDisassembler.SYSTEM)
     }
 }

@@ -11,12 +11,11 @@ import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.Toast
-
 import io.github.rosemoe.sora.widget.component.CompletionLayout
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
-class CustomCompletionLayout: CompletionLayout {
+class CustomCompletionLayout : CompletionLayout {
 
     private lateinit var mListView: ListView
     private lateinit var mProgressBar: ProgressBar
@@ -43,15 +42,15 @@ class CustomCompletionLayout: CompletionLayout {
 
         mListView = ListView(context)
         mListView.setDividerHeight(0)
-        layout.addView(mListView, LinearLayout.LayoutParams(-1, -1));
+        layout.addView(mListView, LinearLayout.LayoutParams(-1, -1))
         mListView.setOnItemClickListener {
             _, _, position, _ ->
-                try {
-                    mEditorAutoCompletion.select(position)
-                } catch (e: Exception) {
-                    Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
-                }
-        };
+            try {
+                mEditorAutoCompletion.select(position)
+            } catch (e: Exception) {
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
         setLoading(true)
         return layout
     }

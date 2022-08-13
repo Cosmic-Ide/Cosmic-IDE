@@ -1,24 +1,18 @@
 package org.cosmic.ide.android.task.exec
 
-import android.content.Context
 import android.content.SharedPreferences
-
-import dalvik.system.PathClassLoader
-
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.JavaProject
-
+import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
-import java.io.File
-import java.nio.file.Paths
 import java.lang.reflect.Modifier
+import java.nio.file.Paths
 
 class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
 
@@ -33,7 +27,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
     }
 
     override fun getTaskName(): String {
-        return "Execute Java Task";
+        return "Execute Java Task"
     }
 
     /*
@@ -46,15 +40,15 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
         val defaultErr = System.err
         val dexFile = project.getBinDirPath() + "classes.dex"
         val out =
-                object : OutputStream() {
-                    override fun write(b: Int) {
-                        log.append(b.toChar())
-                    }
-
-                    override fun toString(): String {
-                        return log.toString()
-                    }
+            object : OutputStream() {
+                override fun write(b: Int) {
+                    log.append(b.toChar())
                 }
+
+                override fun toString(): String {
+                    return log.toString()
+                }
+            }
         System.setOut(PrintStream(out))
         System.setErr(PrintStream(out))
 
@@ -72,10 +66,10 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
                 if (!File(outDex).exists()) {
                     D8.run(
                         D8Command.builder()
-                                .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
-                                .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
-                                .addProgramFiles(lib.toPath())
-                                .build()
+                            .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
+                            .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                            .addProgramFiles(lib.toPath())
+                            .build()
                     )
                     File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
                 }

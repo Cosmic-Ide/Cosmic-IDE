@@ -5,8 +5,8 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Filter.FilterResults
 
-class NonFilterableArrayAdapter(context: Context, val items: Array<String>)
-    : ArrayAdapter<String>(context, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, items.toList()) {
+class NonFilterableArrayAdapter(context: Context, val items: Array<String>) :
+    ArrayAdapter<String>(context, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, items.toList()) {
 
     private val noOpFilter = object : Filter() {
         private val noOpResult = FilterResults()

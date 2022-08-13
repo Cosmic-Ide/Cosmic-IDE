@@ -1,18 +1,16 @@
 package org.cosmic.ide
 
+import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
-import android.app.AlarmManager
-import android.content.Intent
 import android.content.Context
-import android.util.Log
+import android.content.Intent
 import android.os.Process
-
+import android.util.Log
 import com.itsaky.androidide.utils.Environment
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.utils.dpToPx
-
 import java.io.File
 
 class ApplicationLoader : Application() {
@@ -28,16 +26,16 @@ class ApplicationLoader : Application() {
         KindDrawable.setResources(resources)
 
         Thread.setDefaultUncaughtExceptionHandler {
-                _, throwable ->
-                    val intent = Intent(getApplicationContext(), DebugActivity::class.java)
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    intent.putExtra("error", Log.getStackTraceString(throwable))
-                    val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT)
+            _, throwable ->
+            val intent = Intent(getApplicationContext(), DebugActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            intent.putExtra("error", Log.getStackTraceString(throwable))
+            val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 11111, intent, PendingIntent.FLAG_ONE_SHOT)
 
-                    val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)
-                    Process.killProcess(Process.myPid())
-                    System.exit(1)
-                }
+            val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)
+            Process.killProcess(Process.myPid())
+            System.exit(1)
+        }
     }
 }

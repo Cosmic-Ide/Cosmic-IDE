@@ -1,19 +1,18 @@
 package org.cosmic.ide
 
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
+import io.github.rosemoe.sora.text.Content
+import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmic.ide.analyzer.java.JavacAnalyzer
 import org.cosmic.ide.common.Indexer
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
 
-import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
-import io.github.rosemoe.sora.text.Content
-import io.github.rosemoe.sora.widget.CodeEditor
-
 class ProblemMarker(
-        editor: CodeEditor,
-        file: String,
-        project: JavaProject
+    editor: CodeEditor,
+    file: String,
+    project: JavaProject
 ) : ContentListener {
 
     private var editor: CodeEditor
@@ -29,33 +28,32 @@ class ProblemMarker(
     }
 
     override fun beforeReplace(content: Content) {
-        
     }
 
     override fun afterInsert(
-            content: Content,
-            startLine: Int,
-            startColumn: Int,
-            endLine: Int,
-            endColumn: Int,
-            insertedContent: CharSequence
+        content: Content,
+        startLine: Int,
+        startColumn: Int,
+        endLine: Int,
+        endColumn: Int,
+        insertedContent: CharSequence
     ) {
         run(content)
     }
 
     override fun afterDelete(
-            content: Content,
-            startLine: Int,
-            startColumn: Int,
-            endLine: Int,
-            endColumn: Int,
-            deletedContent: CharSequence
+        content: Content,
+        startLine: Int,
+        startColumn: Int,
+        endLine: Int,
+        endColumn: Int,
+        deletedContent: CharSequence
     ) {
         run(content)
     }
 
     private fun run(content: Content) {
-        CoroutineUtil.inParallel thread@ {
+        CoroutineUtil.inParallel thread@{
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
@@ -65,7 +63,6 @@ class ProblemMarker(
                 FileUtil.writeFile(path, content.toString())
                 analyzer.analyze()
             } catch (ignored: Exception) {
-                
             }
             diagnostics.reset()
             diagnostics.addDiagnostics(analyzer.getDiagnostics())

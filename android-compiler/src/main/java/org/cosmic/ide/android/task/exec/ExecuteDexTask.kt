@@ -9,7 +9,7 @@ import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
 
-import org.cosmic.ide.android.interfaces.*
+import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.JavaProject
@@ -37,7 +37,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
     }
 
     /*
-     * Runs the main method pf the program by loading it through
+     * Runs the main method of the program by loading it through
      * PathClassLoader
      */
     @Throws(Exception::class)
@@ -92,7 +92,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
 
         val args = prefs.getString("program_arguments", "")!!.trim()
 
-        // Split argument into an array
+        // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()
 
         if (Modifier.isStatic(method.getModifiers())) {

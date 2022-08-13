@@ -2,8 +2,7 @@ package org.cosmic.ide.android.task
 
 import android.content.Context
 
-import org.cosmic.ide.android.interfaces.*
-import org.cosmic.ide.android.task.java.*
+import org.cosmic.ide.android.interfaces.Builder
 
 class JavaBuilder(context: Context) : Builder {
 

@@ -6,8 +6,8 @@ import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
 
-import io.github.rosemoe.sora.lang.diagnostic.*
-import io.github.rosemoe.sora.text.*
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 
 class ProblemMarker(

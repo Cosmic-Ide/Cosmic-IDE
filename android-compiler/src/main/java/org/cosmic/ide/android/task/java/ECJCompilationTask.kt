@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 import org.cosmic.ide.android.exception.CompilationFailedException
-import org.cosmic.ide.android.interfaces.*
+import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
 

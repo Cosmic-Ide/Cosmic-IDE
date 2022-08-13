@@ -9,10 +9,8 @@ object CoroutineUtil {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     @JvmStatic
-    fun execute(runnable: Runnable) = runBlocking {
-        launch {
-            runnable.run()
-        }
+    fun execute(runnable: Runnable) = runBlocking.launch {
+        runnable.run()
     }
 
     @JvmStatic

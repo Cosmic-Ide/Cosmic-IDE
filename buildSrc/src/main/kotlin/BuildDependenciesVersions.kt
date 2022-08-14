@@ -17,5 +17,5 @@ object BuildDependenciesVersions {
     const val GSON = "2.9.1"
     const val JCODINGS = "1.0.57"
     const val JONI = "2.1.43"
-    const val FERNFLOWER = "ecc675ee43"
+    const val FERNFLOWER = "3c1d05bf23"
 }

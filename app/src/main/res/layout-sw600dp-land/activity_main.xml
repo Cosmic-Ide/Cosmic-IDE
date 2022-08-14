@@ -17,8 +17,7 @@
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:alpha="0.5" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -28,10 +27,14 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
-            style="@style/Widget.CosmicIde.AppBarLayout">
+            android:animateLayoutChanges="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:liftOnScroll="true">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
+                style="@style/Widget.Material3.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>

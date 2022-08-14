@@ -2,6 +2,7 @@ package org.cosmic.ide
 
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
+import io.github.rosemoe.sora.text.ContentListener
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmic.ide.analyzer.java.JavacAnalyzer
 import org.cosmic.ide.common.Indexer
@@ -24,7 +25,7 @@ class ProblemMarker(
         this.editor = editor
         this.project = project
         this.analyzer = JavacAnalyzer(editor.getContext(), file, project)
-        run(editor.getText())
+        analyze(editor.getText())
     }
 
     override fun beforeReplace(content: Content) {
@@ -38,7 +39,7 @@ class ProblemMarker(
         endColumn: Int,
         insertedContent: CharSequence
     ) {
-        run(content)
+        analyze(content)
     }
 
     override fun afterDelete(
@@ -49,10 +50,10 @@ class ProblemMarker(
         endColumn: Int,
         deletedContent: CharSequence
     ) {
-        run(content)
+        analyze(content)
     }
 
-    private fun run(content: Content) {
+    private fun analyze(content: Content) {
         CoroutineUtil.inParallel thread@{
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()

@@ -548,11 +548,11 @@ public class MainActivity extends BaseActivity {
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
 
-                    var decompiled = "";
+                    temp = "";
                     CoroutineUtil.execute(
                             () -> {
                                 try {
-                                    decompiled = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes"));
+                                    temp = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes"));
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }
@@ -565,7 +565,7 @@ public class MainActivity extends BaseActivity {
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
-                    edi.setText(decompiled);
+                    edi.setText(temp);
 
                     var dialog = new AlertDialog.Builder(this).setView(edi).create();
                     dialog.setCanceledOnTouchOutside(true);

@@ -18,7 +18,9 @@ class FernFlowerDecompiler {
         val logger = object : IFernflowerLogger() {
             override fun writeMessage(p0: String?, p1: Severity?) {}
 
-            override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {}
+            override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {
+                throw p2
+            }
         }
 
         val decompiler = BaseDecompiler(bytecodeProvider, resultSaver, options, logger)
@@ -26,7 +28,7 @@ class FernFlowerDecompiler {
         decompiler.decompileContext()
 
         return resultSaver.result.ifEmpty {
-            "// Error: Fernflower couldn't decompile $className"
+            "// Error: Fernflower couldn't decompile class$className.\n "
         }
     }
 

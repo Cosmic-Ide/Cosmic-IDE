@@ -565,11 +565,7 @@ public class MainActivity extends BaseActivity {
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
-                    try {
-                        edi.setText(decompiled);
-                    } catch (IOException e) {
-                        dialog("Failed to read file", getString(e), true);
-                    }
+                    edi.setText(decompiled);
 
                     var dialog = new AlertDialog.Builder(this).setView(edi).create();
                     dialog.setCanceledOnTouchOutside(true);
@@ -586,8 +582,8 @@ public class MainActivity extends BaseActivity {
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
 
+                    var disassembled = "";
                     try {
-                        var disassembled = "";
                         if (compiler_settings.getString("disassembler", "Javap").equals("Javap")) {
                             disassembled =
                                     new JavapDisassembler(
@@ -607,7 +603,10 @@ public class MainActivity extends BaseActivity {
                                                             + ".class")
                                             .disassemble();
                         }
-                        
+                    } catch (Throwable e) {
+                        dialog("Failed to disassemble", getString(e), true);
+                    }
+
                     var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
@@ -617,9 +616,6 @@ public class MainActivity extends BaseActivity {
 
                     edi.setText(disassembled);
 
-                    } catch (Throwable e) {
-                        dialog("Failed to disassemble", getString(e), true);
-                    }
                     var dialog = new AlertDialog.Builder(this).setView(edi).create();
                     dialog.setCanceledOnTouchOutside(true);
                     dialog.show();

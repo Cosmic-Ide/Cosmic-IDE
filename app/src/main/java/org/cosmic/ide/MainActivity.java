@@ -118,27 +118,7 @@ public class MainActivity extends BaseActivity {
             binding.toolbar.setNavigationIcon(null);
         }
 
-        binding.editor.setTypefaceText(
-                ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-        binding.editor.setTextSize(12);
-        binding.editor.setEdgeEffectColor(Color.TRANSPARENT);
-        binding.editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
-        binding.editor.setInputType(
-                EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                        | EditorInfo.TYPE_CLASS_TEXT
-                        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-                        | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        binding.editor
-                .getComponent(EditorAutoCompletion.class)
-                .setLayout(new CustomCompletionLayout());
-        binding.editor
-                .getComponent(EditorAutoCompletion.class)
-                .setAdapter(new CustomCompletionItemAdapter());
-
-        var props = binding.editor.getProps();
-        props.overScrollEnabled = false;
-        props.allowFullscreen = false;
-        props.deleteEmptyLineFast = false;
+        configureEditor(binding.editor);
 
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
@@ -346,6 +326,28 @@ public class MainActivity extends BaseActivity {
         Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", v -> dialog("Failed...", e, true))
                 .show();
+    }
+
+    private void configureEditor(CodeEditor editor) {
+        editor.setTypefaceText(
+                ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
+        editor.setTextSize(12);
+        editor.setEdgeEffectColor(Color.TRANSPARENT);
+        editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+        editor.setInputType(
+                EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                        | EditorInfo.TYPE_CLASS_TEXT
+                        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+                        | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        editor.getComponent(EditorAutoCompletion.class)
+                .setLayout(new CustomCompletionLayout());
+        editor.getComponent(EditorAutoCompletion.class)
+                .setAdapter(new CustomCompletionItemAdapter());
+
+        var props = editor.getProps();
+        props.overScrollEnabled = false;
+        props.allowFullscreen = false;
+        props.deleteEmptyLineFast = false;
     }
 
     private void compile(boolean execute, boolean blockMainThread) {

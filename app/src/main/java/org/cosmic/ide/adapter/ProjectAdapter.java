@@ -26,8 +26,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     private final List<JavaProject> mProjects = new ArrayList<>();
-    public OnProjectSelectedListener onProjectSelectedListener;
-    public OnProjectLongClickedListener onProjectLongClickedListener;
+    private OnProjectSelectedListener onProjectSelectedListener;
+    private OnProjectLongClickedListener onProjectLongClickedListener;
 
     public void setOnProjectSelectedListener(OnProjectSelectedListener onProjectSelectedListener) {
         this.onProjectSelectedListener = onProjectSelectedListener;

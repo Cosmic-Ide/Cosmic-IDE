@@ -4,9 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
@@ -22,14 +23,11 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Used margin top instead of layout behavior as -->
-        <!-- extra padding top is added due to fitsSystemWindows. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="?actionBarSize"
-            android:orientation="vertical"
-            android:fitsSystemWindows="false">
+            android:fitsSystemWindows="false"
+            android:orientation="vertical">
 
             <io.github.rosemoe.sora.widget.CodeEditor
                 android:id="@+id/editor"
@@ -75,7 +73,7 @@
 
         </LinearLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/treeViewFragment"

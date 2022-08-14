@@ -547,18 +547,18 @@ public class MainActivity extends BaseActivity {
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
-                    
+
                     var decompiled = "";
                     CoroutineUtil.execute(
                             () -> {
                                 try {
-                                    decompiled = new FernFlowerDecompiler().decompile(claz, getProject().getBinDirPath() + "classes");
+                                    decompiled = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes"));
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }
                             });
 
-                    var edi = new CodeEditor(this);
+                    final var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
                     edi.setColorScheme(getColorScheme());
@@ -615,7 +615,7 @@ public class MainActivity extends BaseActivity {
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
 
-                        edi.setText(disassembled);
+                    edi.setText(disassembled);
 
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);

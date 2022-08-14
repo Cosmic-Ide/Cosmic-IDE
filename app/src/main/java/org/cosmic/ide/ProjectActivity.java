@@ -19,7 +19,6 @@ import org.cosmic.ide.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,9 +55,6 @@ public class ProjectActivity extends BaseActivity {
         buildDeleteProjectDialog();
 
         setSupportActionBar(binding.toolbar);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.projectRecycler, false, false, false, true);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-        UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
 
         projectAdapter = new ProjectAdapter();
         binding.projectRecycler.setAdapter(projectAdapter);

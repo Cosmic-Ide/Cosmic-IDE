@@ -15,10 +15,6 @@
         android:layout_gravity="start"
         android:layout_weight="25" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="1dp"
-        android:layout_height="match_parent" />
-
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"

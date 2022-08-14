@@ -7,7 +7,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.cosmic.ide.adapter.NonFilterableArrayAdapter;
 import org.cosmic.ide.databinding.ActivitySettingBinding;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public class SettingActivity extends BaseActivity {
 
@@ -23,8 +22,6 @@ public class SettingActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
-
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
         if (!compiler_settings.getString("classpath", "").equals("")) {
             binding.tilClassPath

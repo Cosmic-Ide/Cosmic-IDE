@@ -23,4 +23,5 @@
             android:layout_height="wrap_content"
             android:inputType="textNoSuggestions" />
     </com.google.android.material.textfield.TextInputLayout>
+
 </FrameLayout>

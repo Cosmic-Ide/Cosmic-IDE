@@ -51,7 +51,6 @@ import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.editor.completion.CustomCompletionItemAdapter;
 import org.cosmic.ide.editor.completion.CustomCompletionLayout;
 import org.cosmic.ide.project.JavaProject;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.jf.baksmali.Baksmali;
@@ -112,8 +111,6 @@ public class MainActivity extends BaseActivity {
                 drawer.addDrawerListener(toggle);
                 toggle.syncState();
             }
-            tintAppBarLayout(SurfaceColors.SURFACE_2.getColor(this));
-            UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
         } else {
             binding.toolbar.setNavigationIcon(null);
         }
@@ -184,7 +181,6 @@ public class MainActivity extends BaseActivity {
                 .getText()
                 .addContentListener(
                         new ProblemMarker(binding.editor, currentWorkingFilePath, getProject()));
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.bottomButtons, false, false, false, true);
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */

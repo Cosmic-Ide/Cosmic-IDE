@@ -3,14 +3,17 @@ package org.cosmic.ide.common.util
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 object CoroutineUtil {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
     @JvmStatic
-    fun execute(runnable: Runnable) = runBlocking.launch {
-        runnable.run()
+    fun execute(runnable: Runnable) = runBlocking {
+        launch {
+            runnable.run()
+        }
     }
 
     @JvmStatic

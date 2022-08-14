@@ -19,7 +19,7 @@ class FernFlowerDecompiler {
             override fun writeMessage(p0: String?, p1: Severity?) {}
 
             override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {
-                throw p2
+                throw p2!!
             }
         }
 

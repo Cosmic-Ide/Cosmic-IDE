@@ -137,7 +137,7 @@ public class ProjectActivity extends BaseActivity {
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
             createBtn.setOnClickListener(
                     v -> {
-                        var projectName = input.getText().toString().trim();
+                        var projectName = input.getText().toString().trim().replace("..", "");
                         if (projectName.isEmpty()) {
                             return;
                         }

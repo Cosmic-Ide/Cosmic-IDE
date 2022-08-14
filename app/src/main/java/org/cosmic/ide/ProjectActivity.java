@@ -19,6 +19,7 @@ import org.cosmic.ide.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +63,9 @@ public class ProjectActivity extends BaseActivity {
         projectAdapter.setOnProjectSelectedListener(this::openProject);
         projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
         setOnProjectCreatedListener(this::openProject);
+
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.fab, false, false, false, true);
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.projectRecycler, false, false, false, true);
 
         binding.refreshLayout.setOnRefreshListener(
                 () -> {
@@ -161,9 +165,7 @@ public class ProjectActivity extends BaseActivity {
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
             Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
             message.setText(
-                    "Are you sure you want to delete the "
-                            + project.getProjectName()
-                            + " project?");
+                    "Do you want to delete " + project.getProjectName());
             deleteBtn.setOnClickListener(
                     v -> {
                         runOnUiThread(

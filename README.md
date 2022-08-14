@@ -14,7 +14,7 @@ A next-gen Ide for JVM development on Android!
 
 ## Overview
 
-<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/icon.png" align="right" width="40%" height="40%">
+<img src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/icon.png" align="right" width="40%" height="40%">
 
 <div style="display:flex;">
 
@@ -48,14 +48,14 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 
 <p align="center">
 
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/editor.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/diagnostic.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/run.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/settings.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/javap.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/smali.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/decompiler.png">
-<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/art/img/treeview.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/7.png">
+<img width="125" height="250" src="https://raw.githubusercontent.com/Cosmic-Ide/Cosmic-Ide/main/fastlane/metadata/android/en-US/images/phoneScreenshots/8.png">
 
 </p>
 

@@ -41,7 +41,6 @@ class FernFlowerDecompiler {
         IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES to "1",
         IFernflowerPreferences.REMOVE_SYNTHETIC to "1",
         IFernflowerPreferences.REMOVE_BRIDGE to "1",
-        IFernflowerPreferences.LITERALS_AS_IS to "1",
         IFernflowerPreferences.NEW_LINE_SEPARATOR to "1",
         IFernflowerPreferences.BANNER to getBanner(),
         IFernflowerPreferences.MAX_PROCESSING_METHOD to 60,

@@ -11,15 +11,15 @@
         <item name="android:popupBackground">@drawable/m3_popupmenu_background_overlay</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.CosmicIde.TitleMedium" />
+    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.CosmicIde.Material3.TitleMedium" />
 
-    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.CosmicIde.TitleSmall" />
+    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.CosmicIde.Material3.TitleSmall" />
 
     <style name="Widget.CosmicIde.Material3.CompoundButton.Switch" parent="Widget.Material3.CompoundButton.Switch">
-        <item name="android:thumb">@drawable/switch_thumb_material3</item>
+        <!-- <item name="android:thumb">@drawable/switch_thumb_material3</item> -->
         <!-- <item name="thumbTint">@color/switch_thumb_tint_material3</item> -->
         <item name="thumbTintMode">src_in</item>
-        <item name="track">@drawable/switch_track_material3</item>
+        <!-- <item name="track">@drawable/switch_track_material3</item> -->
         <!-- <item name="trackTint">@color/switch_track_tint_material3</item> -->
     </style>
 

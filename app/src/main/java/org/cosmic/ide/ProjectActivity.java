@@ -64,7 +64,7 @@ public class ProjectActivity extends BaseActivity {
         projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
         setOnProjectCreatedListener(this::openProject);
 
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.fab, false, false, false, true);
+        UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.projectRecycler, false, false, false, true);
 
         binding.refreshLayout.setOnRefreshListener(

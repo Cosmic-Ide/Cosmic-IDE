@@ -14,6 +14,8 @@ import com.itsaky.androidide.utils.Environment
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.utils.dpToPx
+import org.cosmic.ide.ui.utils.CustomThemeHelper
+import org.cosmic.ide.ui.utils.NightModeHelper
 
 import java.io.File
 
@@ -33,6 +35,8 @@ class ApplicationLoader : Application() {
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)
         DynamicColors.applyToActivitiesIfAvailable(this)
+        CustomThemeHelper.initialize(this)
+        NightModeHelper.initialize(this)
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->

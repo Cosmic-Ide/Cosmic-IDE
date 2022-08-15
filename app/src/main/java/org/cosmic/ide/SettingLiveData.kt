@@ -44,8 +44,7 @@ abstract class SettingLiveData<T>(
         }
 
     private fun getKey(@StringRes keyRes: Int, keySuffix: String?): String {
-        val context: Context = ApplicationLoader.applicationContext()
-        val key = context.getString(keyRes)
+        val key = ApplicationLoader.applicationContext().getString(keyRes)
         return if (keySuffix != null) "${key}_$keySuffix" else key
     }
 

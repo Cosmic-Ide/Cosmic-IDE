@@ -29,7 +29,7 @@ class BooleanSettingLiveData(
     }
 
     override fun getDefaultValue(@BoolRes defaultValueRes: Int): Boolean =
-        ApplicationLoader.applicationContext().getResources().getBoolean(defaultValueRes)
+        ApplicationLoader.applicationContext().resources.getBoolean(defaultValueRes)
 
     override fun getValue(
         sharedPreferences: SharedPreferences,
@@ -63,7 +63,7 @@ class EnumSettingLiveData<E : Enum<E>>(
     }
 
     override fun getDefaultValue(@StringRes defaultValueRes: Int): E =
-        enumValues[ApplicationLoader.applicationContext().getResources().getString(defaultValueRes).toInt()]
+        enumValues[ApplicationLoader.applicationContext().resources.getString(defaultValueRes).toInt()]
 
     override fun getValue(
         sharedPreferences: SharedPreferences,

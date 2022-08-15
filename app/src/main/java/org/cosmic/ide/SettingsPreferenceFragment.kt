@@ -5,8 +5,8 @@ import android.os.Bundle
 import com.takisoft.preferencex.PreferenceFragmentCompat
 
 import org.cosmic.ide.ui.utils.CustomThemeHelper
-import org.cosmic.ide.ui.utils.NightModeHelper
-import org.cosmic.ide.ui.utils.NightMode
+import org.cosmic.ide.ui.utils.DarkThemeHelper
+import org.cosmic.ide.ui.utils.DarkTheme
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
@@ -14,7 +14,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         super.onActivityCreated(savedInstanceState)
         val viewLifecycleOwner = viewLifecycleOwner
         Settings.MD3.observe(viewLifecycleOwner, this::onMD3Changed)
-        Settings.NIGHT_MODE.observe(viewLifecycleOwner, this::onNightModeChanged)
+        Settings.DARK_THEME.observe(viewLifecycleOwner, this::onDarkThemeChanged)
     }
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
@@ -25,7 +25,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         CustomThemeHelper.sync()
     }
 
-    private fun onNightModeChanged(nightMode: NightMode) {
-        NightModeHelper.sync()
+    private fun onDarkThemeChanged(darkTheme: DarkTheme) {
+        DarkThemeHelper.sync()
     }
 }

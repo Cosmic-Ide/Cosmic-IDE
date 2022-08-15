@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
 import org.cosmic.ide.ui.utils.CustomThemeHelper;
-import org.cosmic.ide.ui.utils.NightModeHelper;
+import org.cosmic.ide.ui.utils.DarkThemeHelper;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -41,7 +41,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         var delegate = super.getDelegate();
         if (!isDelegateCreated) {
             isDelegateCreated = true;
-            NightModeHelper.apply(this);
+            DarkThemeHelper.apply(this);
         }
         return delegate;
     }

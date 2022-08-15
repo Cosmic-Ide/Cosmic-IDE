@@ -16,7 +16,7 @@ import org.cosmic.ide.Settings
 // 1. We can recreate all activities upon change, instead of only started activities.
 // 2. We can have custom handling of the change, instead of being forced to either recreate or
 //    update resources configuration which is shared among activities.
-object NightModeHelper {
+object DarkThemeHelper {
     private val activities = mutableSetOf<AppCompatActivity>()
 
     fun initialize(application: Application) {
@@ -34,16 +34,16 @@ object NightModeHelper {
     @JvmStatic
     fun apply(activity: AppCompatActivity) {
         activities += activity
-        activity.delegate.localNightMode = nightMode
+        activity.delegate.localNightMode = darkTheme
     }
 
     fun sync() {
         for (activity in activities) {
-            val nightMode = nightMode
-            if (activity is OnNightModeChangedListener) {
+            val nightMode = darkTheme
+            if (activity is OnDarkThemeChangedListener) {
                 if (getUiModeNight(activity.delegate.localNightMode, activity)
                     != getUiModeNight(nightMode, activity)) {
-                    activity.onNightModeChangedFromHelper(nightMode)
+                    activity.onDarkThemeChangedFromHelper(nightMode)
                 }
             } else {
                 activity.delegate.localNightMode = nightMode
@@ -51,8 +51,8 @@ object NightModeHelper {
         }
     }
 
-    private val nightMode: Int
-        get() = Settings.NIGHT_MODE.valueCompat.value
+    private val darkTheme: Int
+        get() = Settings.DARK_THEME.valueCompat.value
 
     /*
      * @see androidx.appcompat.app.AppCompatDelegateImpl#updateForNightMode(int, boolean)
@@ -66,11 +66,11 @@ object NightModeHelper {
                     and Configuration.UI_MODE_NIGHT_MASK)
         }
 
-    fun isInNightMode(activity: AppCompatActivity): Boolean =
+    fun isInDarkTheme(activity: AppCompatActivity): Boolean =
         (getUiModeNight(activity.delegate.localNightMode, activity)
             == Configuration.UI_MODE_NIGHT_YES)
 
-    interface OnNightModeChangedListener {
-        fun onNightModeChangedFromHelper(nightMode: Int)
+    interface OnDarkThemeChangedListener {
+        fun onDarkThemeChangedFromHelper(darkTheme: Int)
     }
 }

@@ -1,119 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="TextAppearance.CosmicIde.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+    <style name="TextAppearance.CosmicIde.Material3.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0192807018</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+    <style name="TextAppearance.CosmicIde.Material3.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0192222222</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+    <style name="TextAppearance.CosmicIde.Material3.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0189444444</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+    <style name="TextAppearance.CosmicIde.Material3.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0185625</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+    <style name="TextAppearance.CosmicIde.Material3.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0180714286</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+    <style name="TextAppearance.CosmicIde.Material3.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.0165833333</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+    <style name="TextAppearance.CosmicIde.Material3.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.01518181818</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.TitleLargeLowEmphasis" parent="TextAppearance.Material3.TitleLarge">
+    <style name="TextAppearance.CosmicIde.Material3.TitleLargeLowEmphasis" parent="TextAppearance.Material3.TitleLarge">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">-0.01818181818</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+    <style name="TextAppearance.CosmicIde.Material3.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.00825</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.TitleMediumLowEmphasis" parent="TextAppearance.Material3.TitleMedium">
+    <style name="TextAppearance.CosmicIde.Material3.TitleMediumLowEmphasis" parent="TextAppearance.Material3.TitleMedium">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">-0.01125</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+    <style name="TextAppearance.CosmicIde.Material3.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">0.01</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+    <style name="TextAppearance.CosmicIde.Material3.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
         <item name="fontFamily">@font/inter_semibold</item>
         <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.003</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+    <style name="TextAppearance.CosmicIde.Material3.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">0.00</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+    <style name="TextAppearance.CosmicIde.Material3.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">0.0045454545</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+    <style name="TextAppearance.CosmicIde.Material3.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">-0.01125</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+    <style name="TextAppearance.CosmicIde.Material3.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">-0.0064285714</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.BodySmall" parent="TextAppearance.Material3.BodySmall">
+    <style name="TextAppearance.CosmicIde.Material3.BodySmall" parent="TextAppearance.Material3.BodySmall">
         <item name="fontFamily">@font/inter_regular</item>
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textStyle">normal</item>

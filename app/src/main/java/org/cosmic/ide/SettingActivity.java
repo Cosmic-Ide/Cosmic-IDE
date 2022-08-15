@@ -5,7 +5,7 @@ import android.widget.AutoCompleteTextView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import org.cosmic.ide.adapter.NonFilterableArrayAdapter;
+import org.cosmic.ide.adapter.UnfilteredArrayAdapter;
 import org.cosmic.ide.databinding.ActivitySettingBinding;
 
 public class SettingActivity extends BaseActivity {

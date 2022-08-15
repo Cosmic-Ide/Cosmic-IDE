@@ -21,6 +21,7 @@
         <item name="colorSurface">@color/color_surface</item>
         <item name="minTouchTargetSize">0dp</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
+        <item name="colorAppBarSurface">?colorSurface</item>
     </style>
     <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde" />
 
@@ -63,6 +64,7 @@
         <item name="colorSurface">@color/color_surface_dark</item>
         <item name="minTouchTargetSize">0dp</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
+        <item name="colorAppBarSurface">@color/dark_50_percent</item>
     </style>
     <style name="Theme.CosmicIde.Immersive" parent="Base.Theme.CosmicIde.Immersive" />
 </resources>

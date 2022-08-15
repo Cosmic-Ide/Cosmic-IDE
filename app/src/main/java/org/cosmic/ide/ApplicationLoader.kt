@@ -35,7 +35,7 @@ class ApplicationLoader : Application() {
             val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT)
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)
+            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 100, pendingIntent)
             Process.killProcess(Process.myPid())
             System.exit(1)
         }

@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 
+import org.cosmic.ide.compat.PreferenceManagerCompat
 import org.cosmic.ide.ui.utils.defaultSharedPreferences
 
 abstract class SettingLiveData<T>(
@@ -33,7 +34,7 @@ abstract class SettingLiveData<T>(
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    private fun getSharedPreferences(nameSuffix: String?): SharedPreferences {
+    private fun getSharedPreferences(nameSuffix: String?): SharedPreferences =
         if (nameSuffix == null) {
             defaultSharedPreferences
         } else {
@@ -41,7 +42,6 @@ abstract class SettingLiveData<T>(
             val mode =  PreferenceManagerCompat.defaultSharedPreferencesMode
             ApplicationLoader.applicationContext().getSharedPreferences(name, mode)
         }
-    }
 
     private fun getKey(@StringRes keyRes: Int, keySuffix: String?): String {
         val context: Context = ApplicationLoader.applicationContext()

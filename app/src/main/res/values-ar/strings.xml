@@ -11,8 +11,8 @@
     <string name="open_drawer">فتح المدرج</string>
     <string name="close_drawer">إغلاق المدرج</string>
     <string name="create_new_file">إنشاء ملف جديد</string>
-    <string name="create_new_directory">إنشاء دليل جديدة</string>
-    <string name="new_file_name">إاسم الملف</string>
+    <string name="create_new_directory">إنشاء دليل جديد</string>
+    <string name="new_file_name">إسم الملف</string>
     <string name="new_directory_name">إسم الدليل</string>
     <string name="java_file_suffix" translatable="false">.java</string>
     <string name="kotlin_file_suffix" translatable="false">.kt</string>
@@ -22,7 +22,7 @@
     <string name="create_directory">إنشاء دليل</string>
     <string name="delete_file">حذف %1$s?</string>
     <string name="delete">حذف</string>
-    <string name="rename">إاعادة تسمية</string>
+    <string name="rename">إعادة تسمية</string>
     <string name="cancel">إلغاء</string>
     <string name="compile_project">تجميع المشروع</string>
     <string name="java_file">ملف جافا</string>

@@ -34,6 +34,7 @@
     <string name="project_name">Project Name</string>
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
+    <string name="discord">Discord Server</string>
 
     <!-- Strings used by SettingActivity -->
     <string name="current_theme">Current Theme</string>

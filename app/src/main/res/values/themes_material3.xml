@@ -25,6 +25,7 @@
         <item name="android:textAppearanceListItemSmall">?textAppearanceListItemSmall</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
+        <item name="colorAppBarSurface">?colorSurface</item>
 
         <item name="textAppearanceDisplayLarge">@style/TextAppearance.CosmicIde.Material3.DisplayLarge</item>
         <item name="textAppearanceDisplayMedium">@style/TextAppearance.CosmicIde.Material3.DisplayMedium</item>
@@ -87,6 +88,7 @@
         <item name="android:textAppearanceListItemSmall">?textAppearanceListItemSmall</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
+        <item name="colorAppBarSurface">@color/dark_50_percent</item>
     </style>
     <style name="Theme.CosmicIde.Material3.Immersive" parent="Base.Theme.CosmicIde.Material3.Immersive" />
 

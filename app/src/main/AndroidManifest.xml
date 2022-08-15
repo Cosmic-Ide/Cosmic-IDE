@@ -16,12 +16,11 @@
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CosmicIde.App">
+        android:theme="@style/Theme.CosmicIde">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:configChanges="uiMode"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
 
@@ -38,7 +37,6 @@
         <activity
             android:name=".SettingActivity"
             android:exported="true"
-            android:configChanges="uiMode"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

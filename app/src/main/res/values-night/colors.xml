@@ -1,7 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-    Used on devices when we can technically use "transparent" system bars, but fully
-    transparent system bars would actually be made translucent by OS.
-    -->
-    <color name="chrome_transparent_ish">#01000000</color>
+    <color name="system_window_scrim">@color/system_window_scrim_dark</color>
+
+    <color name="system_window_scrim_compat">@color/system_window_scrim_dark</color>
+
+    <color name="color_primary_dark_black">@color/system_window_scrim_dark_black</color>
+
+    <color name="color_primary">@color/color_primary_dark</color>
+
+    <color name="color_surface">@color/color_surface_dark</color>
 </resources>

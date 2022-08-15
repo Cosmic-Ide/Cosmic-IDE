@@ -1,156 +1,35 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout 
-        android:id="@+id/appbar"
-        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        app:liftOnScroll="true">
+        app:liftOnScroll="true"
+        app:liftOnScrollTargetViewId="@id/recycler_view">
 
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/Widget.Material3.Toolbar.Surface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings"/>
+            app:title="@string/settings"
+            app:popupTheme="?actionBarPopupTheme" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:id="@+id/content"
+        <fragment
+            android:id="@+id/preferenceFragment"
+            android:name="org.cosmic.ide.SettingsPreferenceFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:paddingStart="@dimen/spacing_large"
-            android:paddingEnd="@dimen/spacing_large"
-            android:orientation="vertical">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_themes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/current_theme"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-
-                <AutoCompleteTextView
-                    android:id="@+id/et_themes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_javaVersions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/java_version"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-
-                <AutoCompleteTextView
-                    android:id="@+id/et_javaVersions"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_javaCompilers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/java_compiler"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-
-                <AutoCompleteTextView
-                    android:id="@+id/et_javaCompilers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_javaFormatters"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/java_formatter"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-
-                <AutoCompleteTextView
-                    android:id="@+id/et_javaFormatters"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_javaDisassemblers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/java_disassembler"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox.ExposedDropdownMenu">
-
-                <AutoCompleteTextView
-                    android:id="@+id/et_javaDisassemblers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_classPath"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/classpath"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_programArguments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:hint="@string/program_arguments"
-                style="@style/Widget.Material3.TextInputLayout.FilledBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    android:ellipsize="end" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_medium"
-                android:text="@string/text_autosaving"
-                android:textAppearance="?textAppearanceBodyMedium" />
-
-        </LinearLayout>
+            android:layout_height="match_parent" />
 
     </androidx.core.widget.NestedScrollView>
 

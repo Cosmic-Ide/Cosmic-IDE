@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource">
+
+    <style name="Preference.CosmicIde.Material3.SimpleMenuPreference" parent="Preference.SimpleMenuPreference">
+        <item name="android:popupMenuStyle">@style/Widget.CosmicIde.Material3.Preference.SimpleMenuPreference.PopupMenu</item>
+    </style>
+
+    <style name="Widget.CosmicIde.Material3.Preference.SimpleMenuPreference.PopupMenu" parent="Widget.Preference.SimpleMenuPreference.PopupMenu">
+        <item name="android:popupBackground">@drawable/m3_popupmenu_background_overlay</item>
+    </style>
+
+    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.CosmicIde.Material3.TitleMedium" />
+
+    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.CosmicIde.Material3.TitleSmall" />
+
+    <style name="Widget.CosmicIde.Material3.CompoundButton.Switch" parent="Widget.Material3.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/switch_thumb_material3</item>
+        <item name="thumbTint">@color/switch_thumb_tint_material3</item>
+        <item name="thumbTintMode">src_in</item>
+        <item name="track">@drawable/switch_track_material3</item>
+        <item name="trackTint">@color/switch_track_tint_material3</item>
+    </style>
+
+    <style name="Widget.CosmicIde.Material3.TabLayout" parent="Widget.Material3.TabLayout">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.CosmicIde.Material3.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
+    </style>
+
+</resources>

@@ -7,20 +7,27 @@ import android.content.Context
 import android.content.Intent
 import android.os.Process
 import android.util.Log
+
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
+
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.utils.dpToPx
+
 import java.io.File
 
 class ApplicationLoader : Application() {
 
+    init {
+        instance = this
+    }
+
     override fun onCreate() {
         super.onCreate()
-        val mContext = getApplicationContext()
-        val dataDirectory = mContext.getExternalFilesDir(null)?.getAbsolutePath()
-        val resources = mContext.getResources()
+        val context: Context = ApplicationLoader.applicationContext()
+        val dataDirectory = context.getExternalFilesDir(null)?.getAbsolutePath()
+        val resources = context.getResources()
         Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
@@ -38,6 +45,14 @@ class ApplicationLoader : Application() {
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)
             Process.killProcess(Process.myPid())
             System.exit(1)
+        }
+    }
+
+    companion object {
+        public var instance: ApplicationLoader? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
         }
     }
 }

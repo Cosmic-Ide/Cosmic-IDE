@@ -56,6 +56,11 @@
     <string name="classpath_not_specified">Specify the classpath</string>
     <string name="edit">Edit</string>
     <string name="text_autosaving">All data will be automatically saved after leaving this page</string>
+    <string-array name="settings_night_mode_entries">
+        <item>Use system theme</item>
+        <item>Disable</item>
+        <item>Enable</item>
+    </string-array>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

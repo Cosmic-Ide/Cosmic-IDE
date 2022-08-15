@@ -18,11 +18,12 @@
             android:fitsSystemWindows="true"
             app:liftOnScroll="true">
 
-            <com.google.android.material.appbar.MaterialToolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
-                style="@style/Widget.Material3.Toolbar.Surface"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:popupTheme="?actionBarPopupTheme"
+                app:subtitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Small" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout

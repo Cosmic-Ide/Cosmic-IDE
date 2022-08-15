@@ -43,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             isDelegateCreated = true;
             NightModeHelper.apply(this);
         }
+        return delegate;
     }
 
     @NonNull

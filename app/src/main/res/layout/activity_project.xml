@@ -14,10 +14,10 @@
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Widget.Material3.Toolbar.Surface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/projects" />
+            app:title="@string/projects"
+            app:popupTheme="?actionBarPopupTheme" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Appearance">
+
+        <SwitchPreferenceCompat
+            android:key="@string/pref_key_md3"
+            android:title="Material Design 3"
+            android:defaultValue="@bool/pref_default_value_md_3"
+            android:disableDependentsState="true" />
+
+        <rikka.preference.SimpleMenuPreference 
+            android:key="@string/pref_key_night_mode"
+            android:title="Night Mode"
+            android:defaultValue="Follow System"
+            android:entries="@array/settings_night_mode_entries"
+            android:entryValues="@array/pref_entry_values_night_mode"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Behavior">
+
+        <rikka.preference.SimpleMenuPreference 
+            android:key="@string/pref_key_java_version"
+            android:title="@string/java_version"
+            android:defaultValue="7"
+            android:entries="@array/settings_java_version_entries"
+            android:entryValues="@array/pref_entry_values_java_version"
+            app:useSimpleSummaryProvider="true" />
+
+        <rikka.preference.SimpleMenuPreference 
+            android:key="@string/pref_key_java_compiler"
+            android:title="@string/java_compiler"
+            android:defaultValue="Javac"
+            android:entries="@array/settings_java_compiler_entries"
+            android:entryValues="@array/pref_entry_values_java_compiler"
+            app:useSimpleSummaryProvider="true" />
+
+        <rikka.preference.SimpleMenuPreference 
+            android:key="@string/pref_key_java_formatter"
+            android:title="@string/java_formatter"
+            android:defaultValue="Google Java Formatter"
+            android:entries="@array/settings_java_formatter_entries"
+            android:entryValues="@array/pref_entry_values_java_formatter"
+            app:useSimpleSummaryProvider="true" />
+
+        <rikka.preference.SimpleMenuPreference 
+            android:key="@string/pref_key_java_disassembler"
+            android:title="@string/java_disassembler"
+            android:defaultValue="Javap"
+            android:entries="@array/settings_java_disassembler_entries"
+            android:entryValues="@array/pref_entry_values_java_disassembler"
+            app:useSimpleSummaryProvider="true" />
+
+        <!-- <org.cosmic.ide.preference.DefaultDirectoryPreference -->
+            <!-- android:key="@string/pref_key_classpath" -->
+            <!-- android:title="@string/classpath" -->
+            <!-- app:useSimpleSummaryProvider="true" /> -->
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

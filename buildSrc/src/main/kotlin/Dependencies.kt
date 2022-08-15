@@ -20,4 +20,7 @@ object Dependencies {
     const val JCODINGS = "org.jruby.jcodings:jcodings:${BuildDependenciesVersions.JCODINGS}"
     const val JONI = "org.jruby.joni:joni:${BuildDependenciesVersions.JONI}"
     const val FERNFLOWER = "com.github.Cosmic-Ide:fernflower:${BuildDependenciesVersions.FERNFLOWER}"
+    const val PREFERENCE_KTX = "androidx.preference:preference-ktx:${BuildDependenciesVersions.PREFERENCE_KTX}"
+    const val PREFERENCEX = "com.takisoft.preferencex:preferencex:${BuildDependenciesVersions.PREFERENCEX}"
+    const val SIMPLEMENU_PREFERENCE = "dev.rikka.rikkax.preference:simplemenu-preference:${BuildDependenciesVersions.SIMPLEMENU_PREFERENCE}"
 }

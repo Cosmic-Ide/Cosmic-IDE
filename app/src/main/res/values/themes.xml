@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Platform.V21.Theme.CosmicIde" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimaryDark">@color/system_window_scrim_compat</item>
+    </style>
+    <style name="Platform.Theme.CosmicIde" parent="Platform.V21.Theme.CosmicIde" />
+    <style name="Base.Theme.CosmicIde" parent="Platform.Theme.CosmicIde">
+        <item name="actionBarTheme">@style/ThemeOverlay.CosmicIde.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.CosmicIde.ActionBarPopup</item>
+        <item name="android:colorBackground">?colorSurface</item>
+        <item name="dropDownListViewStyle">@style/Widget.CosmicIde.ListView.DropDown</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">?colorPrimary</item>
+        <item name="colorSecondary">?colorPrimary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
+        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="minTouchTargetSize">0dp</item>
+        <item name="textInputStyle">?textInputOutlinedStyle</item>
+    </style>
+    <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde" />
+
+    <style name="Platform.V21.Theme.CosmicIde.Translucent" parent="Theme.CosmicIde">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+    <style name="Platform.Theme.CosmicIde.Translucent" parent="Platform.V21.Theme.CosmicIde.Translucent" />
+    <style name="Base.Theme.CosmicIde.Translucent" parent="Platform.Theme.CosmicIde.Translucent">
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.CosmicIde.Translucent" parent="Base.Theme.CosmicIde.Translucent" />
+
+    <style name="Platform.V21.Theme.CosmicIde.Immersive" parent="Theme.MaterialComponents">
+        <item name="android:navigationBarColor">?colorPrimaryDark</item>
+
+        <item name="colorPrimaryDark">@color/dark_50_percent</item>
+    </style>
+    <style name="Platform.Theme.CosmicIde.Immersive" parent="Platform.V21.Theme.CosmicIde.Immersive" />
+    <style name="Base.Theme.CosmicIde.Immersive" parent="Platform.Theme.CosmicIde.Immersive">
+        <item name="actionBarTheme">@style/ThemeOverlay.CosmicIde.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.CosmicIde.ActionBarPopup</item>
+        <item name="android:colorBackground">?colorSurface</item>
+        <item name="dropDownListViewStyle">@style/Widget.CosmicIde.ListView.DropDown</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="colorPrimary">@color/color_primary_dark</item>
+        <item name="colorPrimaryVariant">?colorPrimary</item>
+        <item name="colorSecondary">?colorPrimary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
+        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorSurface">@color/color_surface_dark</item>
+        <item name="minTouchTargetSize">0dp</item>
+        <item name="textInputStyle">?textInputOutlinedStyle</item>
+    </style>
+    <style name="Theme.CosmicIde.Immersive" parent="Base.Theme.CosmicIde.Immersive" />
+</resources>

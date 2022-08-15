@@ -49,7 +49,7 @@
     <string name="classpath_not_specified">Указать путь к классам</string>
     <string name="edit">Изменить</string>
     <string name="text_autosaving">Все данные будут автоматически сохранены после выхода с этой страницы</string>
-    <string-array name="settings_night_mode_entries">
+    <string-array name="settings_dark_theme_entries">
         <item>Использовать системную тему</item>
         <item>Выключить</item>
         <item>Включить</item>

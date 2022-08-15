@@ -56,7 +56,7 @@
     <string name="classpath_not_specified">Specify the classpath</string>
     <string name="edit">Edit</string>
     <string name="text_autosaving">All data will be automatically saved after leaving this page</string>
-    <string-array name="settings_night_mode_entries">
+    <string-array name="settings_dark_theme_entries">
         <item>Follow System</item>
         <item>Off</item>
         <item>On</item>

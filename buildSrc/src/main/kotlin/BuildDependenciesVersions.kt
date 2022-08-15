@@ -20,5 +20,4 @@ object BuildDependenciesVersions {
     const val FERNFLOWER = "ecc675ee43"
     const val PREFERENCE_KTX = "1.2.0"
     const val PREFERENCEX = "1.1.0"
-    const val SIMPLEMENU_PREFERENCE = "1.0.3"
 }

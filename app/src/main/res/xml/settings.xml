@@ -10,19 +10,19 @@
             android:defaultValue="@bool/pref_default_value_md3"
             android:disableDependentsState="true" />
 
-        <rikka.preference.SimpleMenuPreference 
-            android:key="@string/pref_key_night_mode"
-            android:title="Night Mode"
+        <ListPreference 
+            android:key="@string/pref_key_dark_theme"
+            android:title="Dark theme"
             android:defaultValue="Follow System"
-            android:entries="@array/settings_night_mode_entries"
-            android:entryValues="@array/pref_entry_values_night_mode"
+            android:entries="@array/settings_dark_theme_entries"
+            android:entryValues="@array/pref_entry_values_dark_theme"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Behavior">
 
-        <rikka.preference.SimpleMenuPreference 
+        <ListPreference 
             android:key="@string/pref_key_java_version"
             android:title="@string/java_version"
             android:defaultValue="7"
@@ -30,7 +30,7 @@
             android:entryValues="@array/pref_entry_values_java_version"
             app:useSimpleSummaryProvider="true" />
 
-        <rikka.preference.SimpleMenuPreference 
+        <ListPreference 
             android:key="@string/pref_key_java_compiler"
             android:title="@string/java_compiler"
             android:defaultValue="Javac"
@@ -38,7 +38,7 @@
             android:entryValues="@array/pref_entry_values_java_compiler"
             app:useSimpleSummaryProvider="true" />
 
-        <rikka.preference.SimpleMenuPreference 
+        <ListPreference 
             android:key="@string/pref_key_java_formatter"
             android:title="@string/java_formatter"
             android:defaultValue="Google Java Formatter"
@@ -46,7 +46,7 @@
             android:entryValues="@array/pref_entry_values_java_formatter"
             app:useSimpleSummaryProvider="true" />
 
-        <rikka.preference.SimpleMenuPreference 
+        <ListPreference 
             android:key="@string/pref_key_java_disassembler"
             android:title="@string/java_disassembler"
             android:defaultValue="Javap"
@@ -58,6 +58,15 @@
             <!-- android:key="@string/pref_key_classpath" -->
             <!-- android:title="@string/classpath" -->
             <!-- app:useSimpleSummaryProvider="true" /> -->
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+
+        <Preference
+            android:key="@string/pref_key_app_version"
+            android:title="App Version"
+            android:summary="@string/app_version" />
 
     </PreferenceCategory>
 

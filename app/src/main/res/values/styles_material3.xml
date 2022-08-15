@@ -2,14 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="PrivateResource">
 
-    <style name="Preference.CosmicIde.Material3.SimpleMenuPreference" parent="Preference.SimpleMenuPreference">
-        <item name="android:popupMenuStyle">@style/Widget.CosmicIde.Material3.Preference.SimpleMenuPreference.PopupMenu</item>
-    </style>
-
-    <style name="Widget.CosmicIde.Material3.Preference.SimpleMenuPreference.PopupMenu" parent="Widget.Preference.SimpleMenuPreference.PopupMenu">
-        <item name="android:popupBackground">@drawable/m3_popupmenu_background_overlay</item>
-    </style>
-
     <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.Material3.TitleMedium" />
 
     <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.Material3.TitleSmall" />

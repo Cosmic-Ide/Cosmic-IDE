@@ -11,6 +11,7 @@
     <string name="pref_key_java_compiler">key_java_compiler</string>
     <string name="pref_key_java_formatter">key_java_formatter</string>
     <string name="pref_key_java_disassembler">key_java_disassembler</string>
+    <string name="pref_key_app_version">key_app_version</string>
 
     <!-- Some entries in values-XX -->
     <string-array name="settings_java_version_entries">

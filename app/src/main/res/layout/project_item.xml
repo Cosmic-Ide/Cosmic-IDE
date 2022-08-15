@@ -27,23 +27,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="?textAppearanceBodyLarge" />
+            android:maxLines="1" />
 
         <TextView
             android:id="@+id/project_path"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="start"
-            android:maxLines="1"
-            android:textAppearance="?textAppearanceBodyMedium" />
+            android:maxLines="1" />
 
     </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:alpha="0.5"
+        android:alpha="0.6"
         app:dividerInsetStart="@dimen/spacing_medium"
         app:dividerInsetEnd="@dimen/spacing_medium" />
 

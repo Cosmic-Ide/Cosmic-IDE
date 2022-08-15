@@ -19,29 +19,14 @@
         <item name="simpleMenuPreferenceStyle">@style/Preference.CosmicIde.Material3.SimpleMenuPreference</item>
         <item name="switchStyle">@style/Widget.CosmicIde.Material3.CompoundButton.Switch</item>
         <item name="tabStyle">@style/Widget.CosmicIde.Material3.TabLayout</item>
-        <item name="textAppearanceListItem">@style/TextAppearance.CosmicIde.Material3.ListItem</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.Material3.ListItem</item>
         <item name="android:textAppearanceListItem">?textAppearanceListItem</item>
-        <item name="textAppearanceListItemSmall">@style/TextAppearance.CosmicIde.Material3.ListItemSmall</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.Material3.ListItemSmall</item>
         <item name="android:textAppearanceListItemSmall">?textAppearanceListItemSmall</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
         <item name="colorAppBarSurface">?colorSurface</item>
 
-        <item name="textAppearanceDisplayLarge">@style/TextAppearance.CosmicIde.Material3.DisplayLarge</item>
-        <item name="textAppearanceDisplayMedium">@style/TextAppearance.CosmicIde.Material3.DisplayMedium</item>
-        <item name="textAppearanceDisplaySmall">@style/TextAppearance.CosmicIde.Material3.DisplaySmall</item>
-        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.CosmicIde.Material3.HeadlineLarge</item>
-        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.CosmicIde.Material3.HeadlineMedium</item>
-        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.CosmicIde.Material3.HeadlineSmall</item>
-        <item name="textAppearanceTitleLarge">@style/TextAppearance.CosmicIde.Material3.TitleLarge</item>
-        <item name="textAppearanceTitleMedium">@style/TextAppearance.CosmicIde.Material3.TitleMediumLowEmphasis</item>
-        <item name="textAppearanceTitleSmall">@style/TextAppearance.CosmicIde.Material3.TitleSmall</item>
-        <item name="textAppearanceLabelLarge">@style/TextAppearance.CosmicIde.Material3.LabelLarge</item>
-        <item name="textAppearanceLabelMedium">@style/TextAppearance.CosmicIde.Material3.LabelMedium</item>
-        <item name="textAppearanceLabelSmall">@style/TextAppearance.CosmicIde.Material3.LabelSmall</item>
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.CosmicIde.Material3.BodyLarge</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.CosmicIde.Material3.BodyMedium</item>
-        <item name="textAppearanceBodySmall">@style/TextAppearance.CosmicIde.Material3.BodySmall</item>
     </style>
     <style name="Theme.CosmicIde.Material3" parent="Base.Theme.CosmicIde.Material3" />
 
@@ -82,9 +67,9 @@
         <item name="simpleMenuPreferenceStyle">@style/Preference.CosmicIde.Material3.SimpleMenuPreference</item>
         <item name="switchStyle">@style/Widget.CosmicIde.Material3.CompoundButton.Switch</item>
         <item name="tabStyle">@style/Widget.CosmicIde.Material3.TabLayout</item>
-        <item name="textAppearanceListItem">@style/TextAppearance.CosmicIde.Material3.ListItem</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.Material3.ListItem</item>
         <item name="android:textAppearanceListItem">?textAppearanceListItem</item>
-        <item name="textAppearanceListItemSmall">@style/TextAppearance.CosmicIde.Material3.ListItemSmall</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.Material3.ListItemSmall</item>
         <item name="android:textAppearanceListItemSmall">?textAppearanceListItemSmall</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>

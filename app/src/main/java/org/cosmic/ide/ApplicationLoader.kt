@@ -35,8 +35,9 @@ class ApplicationLoader : Application() {
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)
         DynamicColors.applyToActivitiesIfAvailable(this)
-        CustomThemeHelper.initialize(this)
-        NightModeHelper.initialize(this)
+        // Temporarily comment out this section of code
+        // CustomThemeHelper.initialize(this)
+        // NightModeHelper.initialize(this)
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->

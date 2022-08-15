@@ -56,15 +56,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_title"
-                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textSize="18sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_suggestion"
-                        android:layout_marginTop="@dimen/spacing_tiny"
-                        android:textAppearance="?textAppearanceBodyMedium" />
+                        android:layout_marginTop="@dimen/spacing_tiny" />
 
                 </LinearLayout>
 

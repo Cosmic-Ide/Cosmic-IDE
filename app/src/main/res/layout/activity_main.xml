@@ -22,8 +22,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:popupTheme="?actionBarPopupTheme"
-                app:subtitleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Small" />
+                app:popupTheme="?actionBarPopupTheme" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout
@@ -47,7 +46,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_small"
                     android:layout_weight="1"
@@ -64,7 +63,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali2java"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_small"
                     android:layout_weight="1"

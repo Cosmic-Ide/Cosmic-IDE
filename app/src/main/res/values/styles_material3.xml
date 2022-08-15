@@ -10,15 +10,9 @@
         <item name="android:popupBackground">@drawable/m3_popupmenu_background_overlay</item>
     </style>
 
-    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.Material3.TitleMedium">
-        <item name="fontFamily">@string/m3_ref_typeface_plain_regular</item>
-        <item name="android:fontFamily">@string/m3_ref_typeface_plain_regular</item>
-    </style>
+    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.Material3.TitleMedium" />
 
-    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.Material3.TitleSmall">
-        <item name="fontFamily">@string/m3_ref_typeface_plain_regular</item>
-        <item name="android:fontFamily">@string/m3_ref_typeface_plain_regular</item>
-    </style>
+    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.Material3.TitleSmall" />
 
     <style name="Widget.CosmicIde.Material3.CompoundButton.Switch" parent="Widget.Material3.CompoundButton.Switch">
         <item name="android:thumb">@drawable/switch_thumb_material3</item>

@@ -67,9 +67,9 @@
         <item name="simpleMenuPreferenceStyle">@style/Preference.CosmicIde.Material3.SimpleMenuPreference</item>
         <item name="switchStyle">@style/Widget.CosmicIde.Material3.CompoundButton.Switch</item>
         <item name="tabStyle">@style/Widget.CosmicIde.Material3.TabLayout</item>
-        <item name="textAppearanceListItem">@style/TextAppearance.Material3.ListItem</item>
+        <item name="textAppearanceListItem">@style/TextAppearance.CosmicIde.Material3.ListItem</item>
         <item name="android:textAppearanceListItem">?textAppearanceListItem</item>
-        <item name="textAppearanceListItemSmall">@style/TextAppearance.Material3.ListItemSmall</item>
+        <item name="textAppearanceListItemSmall">@style/TextAppearance.CosmicIde.Material3.ListItemSmall</item>
         <item name="android:textAppearanceListItemSmall">?textAppearanceListItemSmall</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>

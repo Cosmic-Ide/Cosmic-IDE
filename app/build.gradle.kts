@@ -25,6 +25,13 @@ android {
             keyAlias = "testkey"
             keyPassword = "testkey"
         }
+
+        create(BuildType.RELEASE) {
+            storeFile = file("testkey.keystore")
+            storePassword = "testkey"
+            keyAlias = "testkey"
+            keyPassword = "testkey"
+        }
     }
 
     buildTypes {
@@ -35,6 +42,7 @@ android {
         }
 
         getByName(BuildType.RELEASE) {
+            signingConfig = signingConfigs.getByName(BuildType.RELEASE)
             isMinifyEnabled = BuildTypeRelease.isMinifyEnabled
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }

@@ -46,9 +46,9 @@ object CustomThemeHelper {
             val currentThemeRes = activity.themeResIdCompat
             val customThemeRes = getCustomThemeRes(baseThemeRes, activity)
             if (currentThemeRes != customThemeRes) {
-                // if (!NightModeHelper.isInNightMode(activity as AppCompatActivity)) {
-                    // continue
-                // }
+                if (!NightModeHelper.isInNightMode(activity as AppCompatActivity)) {
+                    continue
+                }
                 if (activity is OnThemeChangedListener) {
                     (activity as OnThemeChangedListener).onThemeChanged(customThemeRes)
                 } else {

@@ -34,6 +34,7 @@
     <string name="project_name">إسم المشروع</string>
     <string name="no_projects_title">لم يتم العثور على مشاريع</string>
     <string name="no_projects_suggestion">قم بإنشاء مشروع من خلال النقر على زر الإضافة أدناه</string>
+    <string name="discord">سيرفر الدسكورد</string>
 
     <!-- Strings used by SettingActivity -->
     <string name="current_theme">السِمة الحالية</string>

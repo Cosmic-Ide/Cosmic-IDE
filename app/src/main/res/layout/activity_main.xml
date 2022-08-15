@@ -42,7 +42,8 @@
                 android:layout_height="wrap_content"
                 android:background="?colorSurface"
                 android:elevation="@dimen/elevation_normal"
-                android:padding="@dimen/spacing_small">
+                android:padding="@dimen/spacing_small"
+                android:fitsSystemWindows="false">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_smali"

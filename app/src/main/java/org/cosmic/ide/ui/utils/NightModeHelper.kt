@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegateCompat
 
+import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.Settings
 
 // We take over the activity creation when setting the default night mode from AppCompat so that:
@@ -56,7 +57,7 @@ object NightModeHelper {
      * @see androidx.appcompat.app.AppCompatDelegateImpl#updateForNightMode(int, boolean)
      */
     private fun getUiModeNight(nightMode: Int, activity: AppCompatActivity): Int =
-        when (AppCompatDelegateCompat.mapNightMode(activity.delegate, application, nightMode)) {
+        when (AppCompatDelegateCompat.mapNightMode(activity.delegate, ApplicationLoader.applicationContext(), nightMode)) {
             AppCompatDelegate.MODE_NIGHT_YES -> Configuration.UI_MODE_NIGHT_YES
             AppCompatDelegate.MODE_NIGHT_NO -> Configuration.UI_MODE_NIGHT_NO
             else ->

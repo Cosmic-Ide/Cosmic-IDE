@@ -9,6 +9,9 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 
 import org.cosmic.ide.R
+import org.cosmic.ide.compat.recreateCompat
+import org.cosmic.ide.compat.setThemeCompat
+import org.cosmic.ide.compat.themeResIdCompat
 import org.cosmic.ide.Settings
 import org.cosmic.ide.ui.utils.NightModeHelper
 import org.cosmic.ide.ui.utils.SimpleActivityLifecycleCallbacks
@@ -62,7 +65,7 @@ object CustomThemeHelper {
             val material3ThemeName =
                 resources.getResourceEntryName(R.style.Theme_CosmicIde_Material3)
             baseThemeName.replace(defaultThemeName, material3ThemeName)
-        }
+        } else ""
         return resources.getIdentifier(customThemeName, null, null)
     }
 

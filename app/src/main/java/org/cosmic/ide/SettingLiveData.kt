@@ -9,6 +9,8 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 
+import org.cosmic.ide.ui.utils.defaultSharedPreferences
+
 abstract class SettingLiveData<T>(
     nameSuffix: String?,
     @StringRes keyRes: Int,
@@ -31,11 +33,19 @@ abstract class SettingLiveData<T>(
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
 
-    private fun getSharedPreferences(nameSuffix: String?): SharedPreferences =
-        (requireContext() as AppCompatActivity).getSharedPreferences("settings", Context.MODE_PRIVATE)
+    private fun getSharedPreferences(nameSuffix: String?): SharedPreferences {
+        if (nameSuffix == null) {
+            defaultSharedPreferences
+        } else {
+            val name = "${PreferenceManagerCompat.getDefaultSharedPreferences(ApplicationLoader.applicationContext())}_$nameSuffix"
+            val mode =  PreferenceManagerCompat.defaultSharedPreferencesMode
+            ApplicationLoader.applicationContext().getSharedPreferences(name, mode)
+        }
+    }
 
     private fun getKey(@StringRes keyRes: Int, keySuffix: String?): String {
-        val key = application.getString(keyRes)
+        val context: Context = ApplicationLoader.applicationContext()
+        val key = context.getString(keyRes)
         return if (keySuffix != null) "${key}_$keySuffix" else key
     }
 

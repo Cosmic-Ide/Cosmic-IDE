@@ -19,9 +19,13 @@ import java.io.File
 
 class ApplicationLoader : Application() {
 
+    init {
+        instance = this
+    }
+
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        val context: Context = ApplicationLoader.applicationContext()
         val dataDirectory = context.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = context.getResources()
         Environment.init(File(dataDirectory, "compiler-modules"))
@@ -45,8 +49,10 @@ class ApplicationLoader : Application() {
     }
 
     companion object {
-        @Suppress("StaticFieldLeak")
-        @JvmStatic
-        var context: Context? = null
+        public var instance: ApplicationLoader? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
+        }
     }
 }

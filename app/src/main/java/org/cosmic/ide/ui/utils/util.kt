@@ -1,27 +1,16 @@
 package org.cosmic.ide.ui.utils
 
-import android.app.Activity
-import android.content.Context
+import android.content.SharedPreferences
 
-import androidx.annotation.StyleRes
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.preference.PreferenceManager
 
-fun Activity.recreateCompat() {
-    ActivityCompat.recreate(this)
-}
-
-fun Activity.setThemeCompat(@StyleRes resid: Int) {
-    setTheme(resid)
-}
+import org.cosmic.ide.ApplicationLoader
 
 @Suppress("UNCHECKED_CAST")
 val <T> LiveData<T>.valueCompat: T
     get() = value as T
 
-@RestrictedHiddenApi
-private val getThemeResIdMethod by lazyReflectedMethod(Context::class.java, "getThemeResId")
-
-val Context.themeResIdCompat: Int
-    @StyleRes
-    get() = getThemeResIdMethod.invoke(this) as Int
+val defaultSharedPreferences: SharedPreferences by lazy {
+    PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext())
+}

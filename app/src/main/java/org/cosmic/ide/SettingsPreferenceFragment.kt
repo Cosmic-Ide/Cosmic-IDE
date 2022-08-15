@@ -6,6 +6,7 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 
 import org.cosmic.ide.ui.utils.CustomThemeHelper
 import org.cosmic.ide.ui.utils.NightModeHelper
+import org.cosmic.ide.ui.utils.NightMode
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
@@ -16,7 +17,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         Settings.NIGHT_MODE.observe(viewLifecycleOwner, this::onNightModeChanged)
     }
 
-    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String ?) {
+    override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
     }
 

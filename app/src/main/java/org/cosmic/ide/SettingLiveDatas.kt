@@ -1,5 +1,6 @@
 package org.cosmic.ide
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Parcel
 
@@ -10,7 +11,7 @@ import androidx.annotation.DimenRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 
-import org.cosmic.ide.ApplicationLoader.context
+import org.cosmic.ide.ApplicationLoader
 
 class BooleanSettingLiveData(
     nameSuffix: String?,
@@ -26,8 +27,10 @@ class BooleanSettingLiveData(
         init()
     }
 
-    override fun getDefaultValue(@BoolRes defaultValueRes: Int): Boolean =
+    override fun getDefaultValue(@BoolRes defaultValueRes: Int): Boolean {
+        val context: Context = ApplicationLoader.applicationContext()
         context.getBoolean(defaultValueRes)
+    }
 
     override fun getValue(
         sharedPreferences: SharedPreferences,
@@ -60,8 +63,10 @@ class EnumSettingLiveData<E : Enum<E>>(
         init()
     }
 
-    override fun getDefaultValue(@StringRes defaultValueRes: Int): E =
+    override fun getDefaultValue(@StringRes defaultValueRes: Int): E {
+        val context: Context = ApplicationLoader.applicationContext()
         enumValues[context.getString(defaultValueRes).toInt()]
+    }
 
     override fun getValue(
         sharedPreferences: SharedPreferences,

@@ -42,6 +42,7 @@ import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.android.code.disassembler.*;
 import org.cosmic.ide.android.code.formatter.*;
+import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
@@ -485,7 +486,7 @@ public class MainActivity extends BaseActivity {
             final var classes = getClassesFromDex();
             if (classes == null) return;
             listDialog(
-                    "Select a class to extract source",
+                    "Select a class to show smali",
                     classes,
                     (d, pos) -> {
                         final var claz = classes[pos];
@@ -541,7 +542,7 @@ public class MainActivity extends BaseActivity {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
-                "Select a class to extract source",
+                "Select a class to decompile",
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
@@ -550,7 +551,8 @@ public class MainActivity extends BaseActivity {
                     CoroutineUtil.execute(
                             () -> {
                                 try {
-                                    temp = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes"));
+                                    new JarTask().doFullTask(getProject());
+                                    temp = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes.jar"));
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }

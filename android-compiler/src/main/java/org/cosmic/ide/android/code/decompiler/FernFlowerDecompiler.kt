@@ -34,7 +34,7 @@ class FernFlowerDecompiler {
 
     fun getBanner() = """
             /*
-             * Decompiled with Fernflower [151e72ca96].
+             * Decompiled with Fernflower [ecc675ee43].
              */
         """.trimIndent() + "\n"
 

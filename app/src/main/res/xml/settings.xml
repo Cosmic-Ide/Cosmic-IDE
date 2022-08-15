@@ -7,7 +7,7 @@
         <SwitchPreferenceCompat
             android:key="@string/pref_key_md3"
             android:title="Material Design 3"
-            android:defaultValue="@bool/pref_default_value_md_3"
+            android:defaultValue="@bool/pref_default_value_md3"
             android:disableDependentsState="true" />
 
         <rikka.preference.SimpleMenuPreference 

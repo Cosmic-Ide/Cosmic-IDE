@@ -87,6 +87,9 @@ public class ProjectActivity extends BaseActivity {
             case R.id.settings:
                 startActivity(new Intent(this, SettingActivity.class));
                 break;
+            case R.id.discord:
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://discord.gg/zqaMxGeRyr")));
+                break;
             default:
                 break;
         }

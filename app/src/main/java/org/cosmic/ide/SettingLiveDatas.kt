@@ -10,6 +10,7 @@ import androidx.annotation.BoolRes
 import androidx.annotation.DimenRes
 import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
+import androidx.core.content.edit
 
 import org.cosmic.ide.ApplicationLoader
 

@@ -66,7 +66,7 @@ object DarkThemeHelper {
                     and Configuration.UI_MODE_NIGHT_MASK)
         }
 
-    fun isInDarkMode(activity: AppCompatActivity): Boolean =
+    fun isInDarkTheme(activity: AppCompatActivity): Boolean =
         (getUiModeNight(activity.delegate.localNightMode, activity)
             == Configuration.UI_MODE_NIGHT_YES)
 

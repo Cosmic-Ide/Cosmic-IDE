@@ -38,7 +38,7 @@ abstract class SettingLiveData<T>(
         if (nameSuffix == null) {
             defaultSharedPreferences
         } else {
-            val name = "${PreferenceManagerCompat.getDefaultSharedPreferences(ApplicationLoader.applicationContext())}_$nameSuffix"
+            val name = "${PreferenceManagerCompat.getDefaultSharedPreferencesName(ApplicationLoader.applicationContext())}_$nameSuffix"
             val mode =  PreferenceManagerCompat.defaultSharedPreferencesMode
             ApplicationLoader.applicationContext().getSharedPreferences(name, mode)
         }

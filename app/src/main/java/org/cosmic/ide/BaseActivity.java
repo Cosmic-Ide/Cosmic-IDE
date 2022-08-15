@@ -26,7 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CustomThemeHelper.apply(this)
+        CustomThemeHelper.apply(this);
         super.onCreate(savedInstanceState);
 
         ui_settings = getSharedPreferences("ui_settings", MODE_PRIVATE);

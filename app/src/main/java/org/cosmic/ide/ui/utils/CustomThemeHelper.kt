@@ -33,6 +33,7 @@ object CustomThemeHelper {
         })
     }
 
+    @JvmStatic
     fun apply(activity: Activity) {
         val baseThemeRes = activity.themeResIdCompat
         activityBaseThemes[activity] = baseThemeRes

@@ -31,6 +31,7 @@ object NightModeHelper {
             })
     }
 
+    @JvmStatic
     fun apply(activity: AppCompatActivity) {
         activities += activity
         activity.delegate.localNightMode = nightMode

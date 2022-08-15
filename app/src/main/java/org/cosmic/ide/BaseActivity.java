@@ -54,10 +54,4 @@ public abstract class BaseActivity extends AppCompatActivity {
         int uiMode = getResources().getConfiguration().uiMode;
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
-
-    protected static int getColorAttr(Context context, @AttrRes int resId) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(resId, typedValue, true);
-        return typedValue.data;
-    }
 }

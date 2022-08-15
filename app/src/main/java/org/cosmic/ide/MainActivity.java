@@ -250,8 +250,8 @@ public class MainActivity extends BaseActivity {
                 CoroutineUtil.execute(
                         () -> {
                             if (compiler_settings
-                                    .getString("formatter", javaFormatters[0])
-                                    .equals(javaFormatters[0])) {
+                                    .getString("formatter", "Google Java Formatter")
+                                    .equals("Google Java Formatter")) {
                                 var formatter =
                                         new GoogleJavaFormatter(
                                                 binding.editor.getText().toString());
@@ -296,26 +296,6 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         binding.editor.release();
-    }
-
-    private void tintAppBarLayout(@ColorInt int targetColor) {
-        int appBarColor = getAppBarLayoutColor();
-        if (appBarColor == targetColor) {
-            return;
-        }
-        var valueAnimator = ValueAnimator.ofArgb(appBarColor, targetColor);
-        valueAnimator.addUpdateListener(
-                animation ->
-                        binding.appbar.setBackgroundColor((int) valueAnimator.getAnimatedValue()));
-        valueAnimator.setDuration(200).start();
-    }
-
-    private int getAppBarLayoutColor() {
-        var background = binding.appbar.getBackground();
-        if (background == null || background.getClass() != ColorDrawable.class) {
-            binding.appbar.setBackgroundColor(getColorAttr(this, android.R.attr.colorBackground));
-        }
-        return ((ColorDrawable) binding.appbar.getBackground()).getColor();
     }
 
     /* Shows a snackbar indicating that there were problems during compilation */

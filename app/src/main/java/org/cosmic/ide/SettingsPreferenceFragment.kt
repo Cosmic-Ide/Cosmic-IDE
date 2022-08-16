@@ -3,6 +3,9 @@ package org.cosmic.ide
 import android.content.Intent
 import android.os.Bundle
 
+import androidx.core.net.toUri
+import androidx.preference.Preference
+
 import com.takisoft.preferencex.PreferenceFragmentCompat
 
 import org.cosmic.ide.ui.utils.CustomThemeHelper

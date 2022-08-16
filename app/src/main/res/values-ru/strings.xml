@@ -27,6 +27,7 @@
     <string name="project_name">Имя проекта</string>
     <string name="no_projects_title">Нет проектов</string>
     <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
+    <string name="discord">Discord Cервер</string>
 
     <!-- Strings used by SettingActivity -->
     <string name="current_theme">Текущая тема</string>

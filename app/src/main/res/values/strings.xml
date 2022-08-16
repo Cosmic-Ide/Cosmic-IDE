@@ -7,25 +7,20 @@
     <string name="smali" translatable="false">Smali</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="smali2java" translatable="false">Smali2Java</string>
-    <string name="compilation_running">Running</string>
-    <string name="open_drawer">Open Drawer</string>
-    <string name="close_drawer">Close Drawer</string>
-    <string name="create_new_file">Create New File</string>
-    <string name="create_new_directory">Create New Directory</string>
-    <string name="new_file_name">File Name</string>
-    <string name="new_directory_name">Directory Name</string>
-    <string name="java_file_suffix" translatable="false">.java</string>
-    <string name="kotlin_file_suffix" translatable="false">.kt</string>
+    <string name="compilation_running">Compiling a project</string>
+    <string name="file_name">File Name</string>
+    <string name="directory_name">Directory Name</string>
     <string name="create">Create</string>
-    <string name="create_java_class">Create Java Class</string>
-    <string name="create_kotlin_class">Create Kotlin Class</string>
+    <string name="create_java_class">Create Java class</string>
+    <string name="create_kotlin_class">Create Kotlin class</string>
     <string name="create_directory">Create Directory</string>
+    <string name="create_file">Create File</string>
     <string name="delete_file">Delete %1$s?</string>
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
     <string name="cancel">Cancel</string>
     <string name="compile_project">Compile Project</string>
-    <string name="java_file">Java File</string>
+    <string name="java_file">Java file</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>
@@ -35,31 +30,30 @@
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
 
-    <!-- Strings used by SettingActivity -->
-    <string name="current_theme">Current Theme</string>
+    <!-- Strings used by PreferenceSettingsFragment -->
     <string name="java_version">Java Version</string>
     <string name="java_compiler">Java Compiler</string>
     <string name="java_formatter">Java Formatter</string>
     <string name="java_disassembler">Java Disassembler</string>
-    <string name="classpath">Classpath</string>
-    <string name="enter_path">Enter path</string>
-    <string name="enter_classpath">Enter classpath</string>
-    <string name="enter_java_path">Enter path containing your java files</string>
-    <string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
-    <string name="program_arguments">Program Arguments</string>
-    <string name="enter_program_arguments">Enter arguments for the program</string>
     <string name="java_path">Java Path</string>
     <string name="format">Format</string>
     <string name="settings">Settings</string>
-    <string name="save">Save</string>
-    <string name="saved">Saved!</string>
-    <string name="classpath_not_specified">Specify the classpath</string>
-    <string name="edit">Edit</string>
-    <string name="text_autosaving">All data will be automatically saved after leaving this page</string>
     <string-array name="settings_dark_theme_entries">
         <item>Follow System</item>
         <item>Off</item>
         <item>On</item>
+    </string-array>
+    <string-array name="settings_java_compiler_entries">
+        <item>Javac</item>
+        <item>Eclipse Compiler for Java</item>
+    </string-array>
+    <string-array name="settings_java_formatter_entries">
+        <item>Google Java Formatter</item>
+        <item>Eclipse Java Formatter</item>
+    </string-array>
+    <string-array name="settings_java_disassembler_entries">
+        <item>Javap</item>
+        <item>Eclipse Class Disassembler</item>
     </string-array>
 
     <!-- Strings used by CompilerTask Class -->

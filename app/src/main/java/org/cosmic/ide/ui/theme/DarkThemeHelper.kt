@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.utils
+package org.cosmic.ide.ui.theme
 
 import android.app.Activity
 import android.app.Application
@@ -11,6 +11,8 @@ import androidx.appcompat.app.AppCompatDelegateCompat
 
 import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.preference.Settings
+import org.cosmic.ide.ui.utils.SimpleActivityLifecycleCallbacks
+import org.cosmic.ide.ui.utils.valueCompat
 
 // We take over the activity creation when setting the default night mode from AppCompat so that:
 // 1. We can recreate all activities upon change, instead of only started activities.

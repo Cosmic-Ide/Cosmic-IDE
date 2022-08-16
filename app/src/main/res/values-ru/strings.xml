@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Strings used by MainActivity -->
+    <!-- Строки, используемые MainActivity -->
     <string name="run">Запустить</string>
-    <string name="compilation_running">Выполнение</string>
-    <string name="open_drawer">Открыть меню</string>
-    <string name="close_drawer">Закрыть меню</string>
-    <string name="create_new_file">Создать файл</string>
-    <string name="create_new_directory">Создать папку</string>
-    <string name="new_directory_name">Название папки</string>
+    <string name="compilation_running">Компиляция проекта</string>
+    <string name="file_name">Имя файла</string>
+    <string name="directory_name">Имя папки</string>
     <string name="create">Создать</string>
-    <string name="create_java_class">Создать класс Java</string>
-    <string name="create_kotlin_class">Создать класс Kotlin</string>
+    <string name="create_java_class">Создать Java-класс</string>
+    <string name="create_kotlin_class">Создать Kotlin-класс</string>
     <string name="create_directory">Создать папку</string>
+    <string name="create_file">Создать файл</string>
     <string name="delete_file">Удалить %1$s?</string>
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
@@ -20,48 +17,46 @@
     <string name="compile_project">Скомпилировать проект</string>
     <string name="java_file">Java-файл</string>
 
-    <!-- Strings used by ProjectActivity -->
+    <!-- Строки, используемые ProjectActivity -->
     <string name="projects">Проекты</string>
     <string name="new_project">Новый проект</string>
     <string name="delete_project">Удалить проект</string>
     <string name="project_name">Имя проекта</string>
-    <string name="no_projects_title">Нет проектов</string>
+    <string name="no_projects_title">Проекты не найдены</string>
     <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
 
-    <!-- Strings used by SettingActivity -->
-    <string name="current_theme">Текущая тема</string>
+    <!-- Строки, используемые PreferenceSettingsFragment -->
     <string name="java_version">Версия Java</string>
     <string name="java_compiler">Компилятор Java</string>
     <string name="java_formatter">Форматировщик Java</string>
     <string name="java_disassembler">Дизассемблер Java</string>
-    <string name="classpath">Путь к классам</string>
-    <string name="enter_path">Указать путь</string>
-    <string name="enter_classpath">Указать путь к классам</string>
-    <string name="enter_java_path">Указать путь к Java-файлам</string>
-    <string name="classpath_separated_from_colon">Путь к классам (разделены по \':\')</string>
-    <string name="program_arguments">Аргументы программы</string>
-    <string name="enter_program_arguments">Указать аргументы</string>
-    <string name="java_path">Путь к Java-файлам</string>
-    <string name="format">Форматировать</string>
+    <string name="java_path">Java-путь</string>
+    <string name="format">Формат</string>
     <string name="settings">Настройки</string>
-    <string name="save">Сохранить</string>
-    <string name="saved">Сохранено!</string>
-    <string name="classpath_not_specified">Указать путь к классам</string>
-    <string name="edit">Изменить</string>
-    <string name="text_autosaving">Все данные будут автоматически сохранены после выхода с этой страницы</string>
     <string-array name="settings_dark_theme_entries">
         <item>Использовать системную тему</item>
         <item>Выключить</item>
         <item>Включить</item>
     </string-array>
+    <string-array name="settings_java_compiler_entries">
+        <item>Javac</item>
+        <item>Компилятор Eclipse для Java</item>
+    </string-array>
+    <string-array name="settings_java_formatter_entries">
+        <item>Форматировщик от Google</item>
+        <item>Форматировщик от Eclipse</item>
+    </string-array>
+    <string-array name="settings_java_disassembler_entries">
+        <item>Javap</item>
+        <item>Дизассемблер класса Eclipse</item>
+    </string-array>
 
-    <!-- Strings used by CompilerTask Class -->
+    <!-- Строки, используемые CompilerTask -->
     <string name="stage">Стадия</string>
     <string name="stage_clean">Очистка сборки&#8230;</string>
-    <string name="stage_kotlinc">Компиляция c Kotlinc&#8230;</string>
+    <string name="stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
     <string name="stage_javac">Компиляция с Javac&#8230;</string>
     <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
     <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
-    <string name="stage_loading_dex">Загрузка файла DEX&#8230;</string>
-
+    <string name="stage_loading_dex">Загрузка DEX-файла&#8230;</string>
 </resources>

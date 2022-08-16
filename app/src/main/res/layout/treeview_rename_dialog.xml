@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/abc_dialog_title_divider_material"
-        android:hint="@string/new_file_name"
+        android:hint="@string/file_name"
         android:textDirection="locale"
         app:counterEnabled="true">
 

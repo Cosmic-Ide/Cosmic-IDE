@@ -30,18 +30,6 @@
         <item>17</item>
         <item>18</item>
     </string-array>
-    <string-array name="settings_java_compiler_entries">
-        <item>Javac</item>
-        <item>Eclipse Compiler for Java</item>
-    </string-array>
-    <string-array name="settings_java_formatter_entries">
-        <item>Google Java Formatter</item>
-        <item>Eclipse Java Formatter</item>
-    </string-array>
-    <string-array name="settings_java_disassembler_entries">
-        <item>Javap</item>
-        <item>Eclipse Class Disassembler</item>
-    </string-array>
 
     <!-- Default values -->
     <bool name="pref_default_value_md3">false</bool>

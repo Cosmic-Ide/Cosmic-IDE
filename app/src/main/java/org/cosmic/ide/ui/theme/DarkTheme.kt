@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.utils
+package org.cosmic.ide.ui.theme
 
 import androidx.appcompat.app.AppCompatDelegate
 

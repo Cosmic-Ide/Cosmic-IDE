@@ -5,8 +5,11 @@ import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Process
 import android.util.Log
+
+import androidx.preference.PreferenceManager
 
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
@@ -43,7 +46,7 @@ class ApplicationLoader : Application() {
             val intent = Intent(getApplicationContext(), DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", Log.getStackTraceString(throwable))
-            val pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_ONE_SHOT)
+            val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT)
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 250, pendingIntent)
@@ -57,6 +60,11 @@ class ApplicationLoader : Application() {
 
         fun applicationContext() : Context {
             return instance!!.applicationContext
+        }
+
+        @JvmStatic
+        fun getDefaultSharedPreferences() : SharedPreferences {
+            return PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext())
         }
     }
 }

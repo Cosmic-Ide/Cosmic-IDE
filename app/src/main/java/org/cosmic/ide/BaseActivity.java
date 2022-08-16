@@ -21,16 +21,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private boolean isDelegateCreated = false;
 
-    protected SharedPreferences ui_settings;
-    protected SharedPreferences compiler_settings;
+    protected SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         CustomThemeHelper.apply(this);
         super.onCreate(savedInstanceState);
 
-        ui_settings = getSharedPreferences("ui_settings", MODE_PRIVATE);
-        compiler_settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+        settings = ApplicationLoader.getDefaultSharedPreferences();
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         UiUtilsKt.addSystemWindowInsetToPadding(getRootActivityView(), true, false, true, false);

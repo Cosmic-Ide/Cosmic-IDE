@@ -181,7 +181,7 @@ public class MainActivity extends BaseActivity {
         binding.editor
                 .getText()
                 .addContentListener(
-                        new ProblemMarker(binding.editor, currentWorkingFilePath, getProject()));
+                        new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, currentWorkingFilePath, getProject()));
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -232,7 +232,7 @@ public class MainActivity extends BaseActivity {
 
         binding.editor
                 .getText()
-                .addContentListener(new ProblemMarker(binding.editor, path, getProject()));
+                .addContentListener(new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, path, getProject()));
         currentWorkingFilePath = path;
         getSupportActionBar().setSubtitle(new File(path).getName());
     }
@@ -249,9 +249,8 @@ public class MainActivity extends BaseActivity {
             case R.id.format_menu_button:
                 CoroutineUtil.execute(
                         () -> {
-                            if (compiler_settings
-                                    .getString("formatter", "Google Java Formatter")
-                                    .equals("Google Java Formatter")) {
+                            if (settings.getString("key_java_formatter", getString(R.string.google_java_formatter))
+                                    .equals(getString(R.string.google_java_formatter))) {
                                 var formatter =
                                         new GoogleJavaFormatter(
                                                 binding.editor.getText().toString());
@@ -428,7 +427,7 @@ public class MainActivity extends BaseActivity {
                             getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getRawTheme());
         } catch (IOException e) {
-            Log.e(TAG, e + " while loading kotlin language");
+            Log.e(TAG, e + " while loading java language");
             return new EmptyLanguage();
         }
     }
@@ -564,7 +563,7 @@ public class MainActivity extends BaseActivity {
 
                     var disassembled = "";
                     try {
-                        if (compiler_settings.getString("disassembler", "Javap").equals("Javap")) {
+                        if (settings.getString("key_java_disassembler", getString(R.string.javap)).equals(getString(R.string.javap))) {
                             disassembled =
                                     new JavapDisassembler(
                                                     getProject().getBinDirPath()
@@ -636,6 +635,7 @@ public class MainActivity extends BaseActivity {
             var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
+                // Somewhy the dialog is not showing
                 compile(false, true);
             }
             var classes = new ArrayList<String>();

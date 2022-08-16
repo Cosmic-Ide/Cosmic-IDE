@@ -9,9 +9,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="colorAccent">@color/sakura</item>
-        <item name="colorPrimary">@color/sakura</item>
-        <item name="textInputStyle">?textInputOutlinedStyle</item>
+        <item name="colorPrimary">@color/bitterpink</item>
+        <item name="colorPrimaryVariant">?colorPrimary</item>
+        <item name="colorSecondary">?colorPrimary</item>
+        <item name="colorSecondaryVariant">?colorSecondary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
+
+        <item name="textInputStyle">?textInputFilledStyle</item>
         <item name="colorAppBarSurface">?colorSurface</item>
     </style>
     <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde" />

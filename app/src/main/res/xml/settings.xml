@@ -13,9 +13,9 @@
         <ListPreference 
             android:key="@string/pref_key_dark_theme"
             android:title="@string/dark_theme"
-            android:defaultValue="-1"
+            android:defaultValue="@string/follow_system"
             android:entries="@array/settings_dark_theme_entries"
-            android:entryValues="@array/pref_entry_values_dark_theme"
+            android:entryValues="@array/settings_dark_theme_entries"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -27,31 +27,31 @@
             android:title="@string/java_version"
             android:defaultValue="7"
             android:entries="@array/settings_java_version_entries"
-            android:entryValues="@array/pref_entry_values_java_version"
+            android:entryValues="@array/settings_java_version_entries"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference 
             android:key="@string/pref_key_java_compiler"
             android:title="@string/java_compiler"
-            android:defaultValue="Javac"
+            android:defaultValue="@string/javac"
             android:entries="@array/settings_java_compiler_entries"
-            android:entryValues="@array/pref_entry_values_java_compiler"
+            android:entryValues="@array/settings_java_compiler_entries"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference 
             android:key="@string/pref_key_java_formatter"
             android:title="@string/java_formatter"
-            android:defaultValue="Google Java Formatter"
+            android:defaultValue="@string/google_java_formatter"
             android:entries="@array/settings_java_formatter_entries"
-            android:entryValues="@array/pref_entry_values_java_formatter"
+            android:entryValues="@array/settings_java_formatter_entries"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference 
             android:key="@string/pref_key_java_disassembler"
             android:title="@string/java_disassembler"
-            android:defaultValue="Javap"
+            android:defaultValue="@string/javap"
             android:entries="@array/settings_java_disassembler_entries"
-            android:entryValues="@array/pref_entry_values_java_disassembler"
+            android:entryValues="@array/settings_java_disassembler_entries"
             app:useSimpleSummaryProvider="true" />
 
         <!-- <org.cosmic.ide.preference.DefaultDirectoryPreference -->

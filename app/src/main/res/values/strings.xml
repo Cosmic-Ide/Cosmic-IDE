@@ -29,6 +29,7 @@
     <string name="project_name">Project Name</string>
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
+    <string name="project_delete_warning">Do you want to delete %1$s?</string>
 
     <!-- Strings used by PreferenceSettingsFragment -->
     <string name="java_version">Java Version</string>
@@ -46,23 +47,15 @@
     <string name="our_discord">Our Discord</string>
     <string name="join_discord">Join our discord channel</string>
     <string name="app_version_text">Version</string>
-    <string-array name="settings_dark_theme_entries">
-        <item>Follow System</item>
-        <item>Off</item>
-        <item>On</item>
-    </string-array>
-    <string-array name="settings_java_compiler_entries">
-        <item>Javac</item>
-        <item>Eclipse Compiler for Java</item>
-    </string-array>
-    <string-array name="settings_java_formatter_entries">
-        <item>Google Java Formatter</item>
-        <item>Eclipse Java Formatter</item>
-    </string-array>
-    <string-array name="settings_java_disassembler_entries">
-        <item>Javap</item>
-        <item>Eclipse Class Disassembler</item>
-    </string-array>
+    <string name="follow_system">Follow System</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="javac">Javac Compiler for Java</string>
+    <string name="eclipse_compiler_for_java">Eclipse Compiler for Java</string>
+    <string name="google_java_formatter">Google Java Formatter</string>
+    <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
+    <string name="javap">Javap Disassembler</string>
+    <string name="eclipse_class_disassembler">Eclipse Disassembler</string>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

@@ -24,6 +24,7 @@
     <string name="project_name">Имя проекта</string>
     <string name="no_projects_title">Проекты не найдены</string>
     <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
+    <string name="project_delete_warning">Вы уверены, что хотите удалить %1$s?</string>
 
     <!-- Строки, используемые PreferenceSettingsFragment -->
     <string name="java_version">Версия Java</string>
@@ -41,23 +42,15 @@
     <string name="our_discord">Наш Дискорд</string>
     <string name="join_discord">Присоединяйтесь к нашему дискорд каналу</string>
     <string name="app_version_text">Версия</string>
-    <string-array name="settings_dark_theme_entries">
-        <item>Использовать системную тему</item>
-        <item>Выключить</item>
-        <item>Включить</item>
-    </string-array>
-    <string-array name="settings_java_compiler_entries">
-        <item>Компилятор Javac</item>
-        <item>Компилятор Eclipse</item>
-    </string-array>
-    <string-array name="settings_java_formatter_entries">
-        <item>Форматировщик Google</item>
-        <item>Форматировщик Eclipse</item>
-    </string-array>
-    <string-array name="settings_java_disassembler_entries">
-        <item>Дизассемблер Javap</item>
-        <item>Дизассемблер Eclipse</item>
-    </string-array>
+    <string name="follow_system">Использовать системную тему</string>
+    <string name="off">Выключить</string>
+    <string name="on">Включить</string>
+    <string name="javac">Компилятор Javac</string>
+    <string name="eclipse_compiler_for_java">Компилятор Eclipse</string>
+    <string name="google_java_formatter">Форматировщик Google</string>
+    <string name="eclipse_java_formatter">Форматировщик Eclipse</string>
+    <string name="javap">Дизассемблер Javap</string>
+    <string name="eclipse_class_disassembler">Дизассемблер Eclipse</string>
 
     <!-- Строки, используемые CompilerTask -->
     <string name="stage">Стадия</string>

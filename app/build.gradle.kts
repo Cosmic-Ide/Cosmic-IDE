@@ -108,7 +108,6 @@ dependencies {
     implementation(Dependencies.DEXLIB2)
     implementation(Dependencies.BAKSMALI)
     implementation(Dependencies.GUAVA)
-    implementation(Dependencies.PREFERENCE_KTX)
     implementation(Dependencies.PREFERENCEX)
     implementation(projects.common)
     implementation(projects.soraEditor)

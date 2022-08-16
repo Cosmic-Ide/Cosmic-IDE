@@ -14,4 +14,6 @@
     <color name="system_window_scrim_dark_black">#66000000</color>
     <!-- Make lint happy, although actually we never use this in a non-night configuration. -->
     <color name="color_primary_dark_black">@android:color/transparent</color>
+
+    <color name="sakura">#FF9CA8</color>
 </resources>

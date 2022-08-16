@@ -1,4 +1,7 @@
--dontobfuscate
+# -dontobfuscate
+-dontwarn
+-overloadaggressively
+-optimizationpasses 5
 
 -keep class com.google.googlejavaformat.** { *; }
 -keep class org.eclipse.jdt.internal.core.util.** { *; }
@@ -9,4 +12,4 @@
 -keep class javax.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
-# -keep class org.openjdk.com.sun.xml.internal.stream.** { *; }
+-keep class org.openjdk.com.sun.xml.internal.stream.** { *; }

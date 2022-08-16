@@ -13,6 +13,7 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.Constants.GITHUB_URL
+import org.cosmic.ide.Constants.DISCORD_URL
 import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.ui.theme.DarkTheme
@@ -29,6 +30,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         addPreferencesFromResource(R.xml.settings)
         findPreference<Preference>(ApplicationLoader.applicationContext().getString(R.string.pref_key_app_version))?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
+            true
+        }
+        findPreference<Preference>(ApplicationLoader.applicationContext().getString(R.string.pref_key_discord))?.setOnPreferenceClickListener {
+            startActivity(Intent(ACTION_VIEW, DISCORD_URL.toUri()))
             true
         }
     }

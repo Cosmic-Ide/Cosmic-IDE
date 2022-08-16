@@ -45,7 +45,6 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:alpha="0.6"
         app:dividerInsetStart="@dimen/spacing_medium"
         app:dividerInsetEnd="@dimen/spacing_medium" />
 

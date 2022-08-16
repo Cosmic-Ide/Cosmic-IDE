@@ -33,22 +33,30 @@
     <string name="java_path">Java-путь</string>
     <string name="format">Формат</string>
     <string name="settings">Настройки</string>
+    <string name="appearance">Вид</string>
+    <string name="behavior">Поведение</string>
+    <string name="md3">Материал Дизайн 3</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="about">О приложении</string>
+    <string name="our_discord">Наш Дискорд</string>
+    <string name="join_discord">Присоединяйтесь к нашему дискорд каналу</string>
+    <string name="app_version_text">Версия</string>
     <string-array name="settings_dark_theme_entries">
         <item>Использовать системную тему</item>
         <item>Выключить</item>
         <item>Включить</item>
     </string-array>
     <string-array name="settings_java_compiler_entries">
-        <item>Javac</item>
-        <item>Компилятор Eclipse для Java</item>
+        <item>Компилятор Javac</item>
+        <item>Компилятор Eclipse</item>
     </string-array>
     <string-array name="settings_java_formatter_entries">
-        <item>Форматировщик от Google</item>
-        <item>Форматировщик от Eclipse</item>
+        <item>Форматировщик Google</item>
+        <item>Форматировщик Eclipse</item>
     </string-array>
     <string-array name="settings_java_disassembler_entries">
-        <item>Javap</item>
-        <item>Дизассемблер класса Eclipse</item>
+        <item>Дизассемблер Javap</item>
+        <item>Дизассемблер Eclipse</item>
     </string-array>
 
     <!-- Строки, используемые CompilerTask -->

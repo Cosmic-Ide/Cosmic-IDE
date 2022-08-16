@@ -2,25 +2,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Appearance">
+    <PreferenceCategory android:title="@string/appearance">
 
         <SwitchPreferenceCompat
             android:key="@string/pref_key_md3"
-            android:title="Material Design 3"
+            android:title="@string/md3"
             android:defaultValue="@bool/pref_default_value_md3"
             android:disableDependentsState="true" />
 
         <ListPreference 
             android:key="@string/pref_key_dark_theme"
-            android:title="Dark theme"
-            android:defaultValue="Follow System"
+            android:title="@string/dark_theme"
+            android:defaultValue="-1"
             android:entries="@array/settings_dark_theme_entries"
             android:entryValues="@array/pref_entry_values_dark_theme"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Behavior">
+    <PreferenceCategory android:title="@string/behavior">
 
         <ListPreference 
             android:key="@string/pref_key_java_version"
@@ -61,12 +61,17 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="About">
+    <PreferenceCategory android:title="@string/about">
 
         <Preference
             android:key="@string/pref_key_app_version"
-            android:title="App Version"
+            android:title="@string/app_version_text"
             android:summary="@string/app_version" />
+
+        <Preference
+            android:key="@string/pref_key_discord"
+            android:title="@string/our_discord"
+            android:summary="@string/join_discord" />
 
     </PreferenceCategory>
 

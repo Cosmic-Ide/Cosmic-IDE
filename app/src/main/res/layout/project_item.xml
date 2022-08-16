@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="marquee"
-            android:textAppearance="?android:textAppearanceLarge"
+            android:textAppearance="?android:textAppearanceMedium"
             android:fadingEdge="horizontal" />
 
         <TextView

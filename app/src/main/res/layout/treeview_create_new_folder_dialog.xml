@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="?dialogPreferredPadding"
-        android:layout_marginTop="@dimen/spacing_large"
+        android:layout_marginTop="@dimen/spacing_mid_large"
         android:layout_marginEnd="?dialogPreferredPadding"
         android:hint="@string/directory_name"
         android:textDirection="locale"

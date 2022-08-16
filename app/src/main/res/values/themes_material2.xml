@@ -9,6 +9,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
+        <item name="colorAccent">@color/sakura</item>
         <item name="colorPrimary">@color/sakura</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="colorAppBarSurface">?colorSurface</item>

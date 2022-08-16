@@ -29,6 +29,7 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?android:textAppearanceMedium"
+            android:textColor="?android:textColorPrimary"
             android:fadingEdge="horizontal" />
 
         <TextView

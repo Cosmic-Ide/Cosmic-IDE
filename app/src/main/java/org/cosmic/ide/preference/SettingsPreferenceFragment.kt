@@ -28,11 +28,11 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
-        findPreference<Preference>(ApplicationLoader.applicationContext().getString(R.string.pref_key_app_version))?.setOnPreferenceClickListener {
+        findPreference<Preference>("key_app_version")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
             true
         }
-        findPreference<Preference>(ApplicationLoader.applicationContext().getString(R.string.pref_key_discord))?.setOnPreferenceClickListener {
+        findPreference<Preference>("key_discord")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, DISCORD_URL.toUri()))
             true
         }

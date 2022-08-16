@@ -15,5 +15,5 @@
     <!-- Make lint happy, although actually we never use this in a non-night configuration. -->
     <color name="color_primary_dark_black">@android:color/transparent</color>
 
-    <color name="sakura">#FE6262</color>
+    <color name="bitterpink">#FE6262</color>
 </resources>

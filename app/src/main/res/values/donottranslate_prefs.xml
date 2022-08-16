@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="pref_default_value_empty" />
-
     <!-- Keys -->
     <string name="pref_key_md3">key_md3</string>
     <string name="pref_key_dark_theme">key_dark_theme</string>
@@ -14,7 +12,7 @@
     <string name="pref_key_app_version">key_app_version</string>
     <string name="pref_key_discord">key_discord</string>
 
-    <!-- Some entries in values-XX -->
+    <!-- Entries -->
     <string-array name="settings_java_version_entries">
         <item>5</item>
         <item>6</item>
@@ -31,48 +29,25 @@
         <item>17</item>
         <item>18</item>
     </string-array>
+    <string-array name="settings_dark_theme_entries">
+        <item>@string/follow_system</item>
+        <item>@string/off</item>
+        <item>@string/on</item>
+    </string-array>
+    <string-array name="settings_java_compiler_entries">
+        <item>@string/javac</item>
+        <item>@string/eclipse_compiler_for_java</item>
+    </string-array>
+    <string-array name="settings_java_formatter_entries">
+        <item>@string/google_java_formatter</item>
+        <item>@string/eclipse_java_formatter</item>
+    </string-array>
+    <string-array name="settings_java_disassembler_entries">
+        <item>@string/javap</item>
+        <item>@string/eclipse_class_disassembler</item>
+    </string-array>
 
     <!-- Default values -->
     <bool name="pref_default_value_md3">false</bool>
-    <string name="pref_default_value_dark_theme">0</string>
-
-    <!-- Entry values -->
-    <string-array name="pref_entry_values_dark_theme">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-    <string-array name="pref_entry_values_java_version">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-    </string-array>
-    <string-array name="pref_entry_values_java_compiler">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-    <string-array name="pref_entry_values_java_formatter">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-    <string-array name="pref_entry_values_java_disassembler">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
 
 </resources>

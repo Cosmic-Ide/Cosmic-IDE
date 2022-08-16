@@ -10,8 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 
 import org.cosmic.ide.ApplicationLoader
-import org.cosmic.ide.compat.PreferenceManagerCompat
-import org.cosmic.ide.ui.utils.defaultSharedPreferences
 
 abstract class SettingLiveData<T>(
     nameSuffix: String?,
@@ -19,7 +17,7 @@ abstract class SettingLiveData<T>(
     keySuffix: String?,
     @AnyRes private val defaultValueRes: Int
 ) : LiveData<T>(), OnSharedPreferenceChangeListener {
-    private val sharedPreferences = getSharedPreferences(nameSuffix)
+    private val sharedPreferences = ApplicationLoader.getDefaultSharedPreferences()
     private val key = getKey(keyRes, keySuffix)
     private var defaultValue: T? = null
 
@@ -33,15 +31,6 @@ abstract class SettingLiveData<T>(
         // Only a weak reference is stored so we don't need to worry about unregistering.
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
     }
-
-    private fun getSharedPreferences(nameSuffix: String?): SharedPreferences =
-        if (nameSuffix == null) {
-            defaultSharedPreferences
-        } else {
-            val name = "${PreferenceManagerCompat.getDefaultSharedPreferencesName(ApplicationLoader.applicationContext())}_$nameSuffix"
-            val mode =  PreferenceManagerCompat.defaultSharedPreferencesMode
-            ApplicationLoader.applicationContext().getSharedPreferences(name, mode)
-        }
 
     private fun getKey(@StringRes keyRes: Int, keySuffix: String?): String {
         val key = ApplicationLoader.applicationContext().getString(keyRes)

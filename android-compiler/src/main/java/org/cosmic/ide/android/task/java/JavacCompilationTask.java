@@ -41,7 +41,7 @@ public class JavacCompilationTask implements Task {
 
         final var output = new File(project.getBinDirPath(), "classes");
 
-        final var version = prefs.getString("version", "7");
+        final var version = prefs.getString("key_java_version", "7");
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
@@ -169,7 +169,7 @@ public class JavacCompilationTask implements Task {
 
     public ArrayList<File> getClasspath(JavaProject project) {
         var classpath = new ArrayList<File>();
-        var clspath = prefs.getString("classpath", "");
+        var clspath = prefs.getString("key_classpath", "");
 
         if (!clspath.isEmpty()) {
             for (var clas : clspath.split(":")) {

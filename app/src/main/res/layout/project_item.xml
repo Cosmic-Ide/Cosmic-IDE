@@ -26,15 +26,19 @@
             android:id="@+id/project_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:fadingEdge="horizontal" />
 
         <TextView
             android:id="@+id/project_path"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="start"
-            android:maxLines="1" />
+            android:textAppearance="?android:textAppearanceSmall"
+            android:textColor="?android:textColorSecondary"
+            android:maxLines="2" />
 
     </LinearLayout>
 

@@ -14,8 +14,8 @@ import com.itsaky.androidide.utils.Environment
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.utils.dpToPx
-import org.cosmic.ide.ui.utils.CustomThemeHelper
-import org.cosmic.ide.ui.utils.DarkThemeHelper
+import org.cosmic.ide.ui.theme.CustomThemeHelper
+import org.cosmic.ide.ui.theme.DarkThemeHelper
 
 import java.io.File
 

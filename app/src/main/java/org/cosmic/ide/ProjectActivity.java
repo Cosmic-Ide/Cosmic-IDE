@@ -165,7 +165,8 @@ public class ProjectActivity extends BaseActivity {
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
             Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
             message.setText(
-                    "Do you want to delete " + project.getProjectName());
+                    "Do you want to delete "
+                    + project.getProjectName() + "?");
             deleteBtn.setOnClickListener(
                     v -> {
                         runOnUiThread(

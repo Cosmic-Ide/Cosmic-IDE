@@ -14,7 +14,6 @@
         <item name="tabStyle">@style/Widget.CosmicIde.Material3.TabLayout</item>
         <item name="textInputStyle">?textInputOutlinedStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
-        <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="colorAppBarSurface">?colorSurface</item>
     </style>
     <style name="Theme.CosmicIde.Material3" parent="Base.Theme.CosmicIde.Material3" />

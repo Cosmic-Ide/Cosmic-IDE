@@ -1,7 +1,7 @@
 package org.cosmic.ide.preference
 
 import org.cosmic.ide.R
-import org.cosmic.ide.ui.utils.DarkTheme
+import org.cosmic.ide.ui.theme.DarkTheme
 
 object Settings {
 

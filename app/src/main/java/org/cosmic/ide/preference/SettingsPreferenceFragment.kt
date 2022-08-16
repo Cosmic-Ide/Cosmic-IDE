@@ -1,6 +1,7 @@
 package org.cosmic.ide.preference
 
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
 
 import androidx.core.net.toUri
@@ -11,10 +12,10 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
-import org.cosmic.ide.Constants
-import org.cosmic.ide.ui.utils.CustomThemeHelper
-import org.cosmic.ide.ui.utils.DarkThemeHelper
-import org.cosmic.ide.ui.utils.DarkTheme
+import org.cosmic.ide.Constants.GITHUB_URL
+import org.cosmic.ide.ui.theme.CustomThemeHelper
+import org.cosmic.ide.ui.theme.DarkThemeHelper
+import org.cosmic.ide.ui.theme.DarkTheme
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -27,7 +28,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
         findPreference<Preference>(ApplicationLoader.applicationContext().getString(R.string.pref_key_app_version))?.setOnPreferenceClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Constants.APP_URL.toUri()))
+            startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
             true
         }
     }

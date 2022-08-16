@@ -20,7 +20,6 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 
 class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        // val context: Context? = activity
         mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE
         val builder = MaterialAlertDialogBuilder(requireContext())
                 .setTitle(preference.dialogTitle)
@@ -37,9 +36,6 @@ class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat(
         onPrepareDialogBuilder(builder)
 
         val dialog = builder.create()
-        //if (needInputMethod()) {
-        //    requestInputMethod(dialog)
-        //}
         return dialog
     }
 

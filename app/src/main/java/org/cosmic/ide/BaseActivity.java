@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
-import org.cosmic.ide.ui.utils.CustomThemeHelper;
-import org.cosmic.ide.ui.utils.DarkThemeHelper;
+import org.cosmic.ide.ui.theme.CustomThemeHelper;
+import org.cosmic.ide.ui.theme.DarkThemeHelper;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public abstract class BaseActivity extends AppCompatActivity {

@@ -28,7 +28,7 @@
 
         <fragment
             android:id="@+id/preferenceFragment"
-            android:name="org.cosmic.ide.SettingsPreferenceFragment"
+            android:name="org.cosmic.ide.preference.SettingsPreferenceFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -12,7 +12,7 @@ import org.cosmic.ide.R
 import org.cosmic.ide.compat.recreateCompat
 import org.cosmic.ide.compat.setThemeCompat
 import org.cosmic.ide.compat.themeResIdCompat
-import org.cosmic.ide.Settings
+import org.cosmic.ide.preference.Settings
 import org.cosmic.ide.ui.utils.SimpleActivityLifecycleCallbacks
 
 object CustomThemeHelper {
@@ -45,12 +45,6 @@ object CustomThemeHelper {
             val currentThemeRes = activity.themeResIdCompat
             val customThemeRes = getCustomThemeRes(baseThemeRes, activity)
             if (currentThemeRes != customThemeRes) {
-                // If I comment out this section of code, then all activities will be continuously recreated -->
-                // idk how to fix it (help me aaaaaaaaaa)
-                // Material Design 3 will only turn on in dark mode
-                if (!DarkThemeHelper.isInDarkTheme(activity as AppCompatActivity)) {
-                    continue
-                }
                 if (activity is OnThemeChangedListener) {
                     (activity as OnThemeChangedListener).onThemeChanged(customThemeRes)
                 } else {

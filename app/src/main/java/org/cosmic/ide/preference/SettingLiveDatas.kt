@@ -1,4 +1,4 @@
-package org.cosmic.ide
+package org.cosmic.ide.preference
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -63,7 +63,7 @@ class EnumSettingLiveData<E : Enum<E>>(
     }
 
     override fun getDefaultValue(@StringRes defaultValueRes: Int): E =
-        enumValues[ApplicationLoader.applicationContext().resources.getString(defaultValueRes).toInt()]
+        enumValues[ApplicationLoader.applicationContext().getString(defaultValueRes).toInt()]
 
     override fun getValue(
         sharedPreferences: SharedPreferences,

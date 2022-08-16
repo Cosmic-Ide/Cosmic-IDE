@@ -1,4 +1,4 @@
-package org.cosmic.ide
+package org.cosmic.ide.preference
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 
+import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.compat.PreferenceManagerCompat
 import org.cosmic.ide.ui.utils.defaultSharedPreferences
 
@@ -18,7 +19,6 @@ abstract class SettingLiveData<T>(
     keySuffix: String?,
     @AnyRes private val defaultValueRes: Int
 ) : LiveData<T>(), OnSharedPreferenceChangeListener {
-
     private val sharedPreferences = getSharedPreferences(nameSuffix)
     private val key = getKey(keyRes, keySuffix)
     private var defaultValue: T? = null

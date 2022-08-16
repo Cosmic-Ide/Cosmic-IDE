@@ -6,11 +6,4 @@
         <item name="colorPrimaryDark">@android:color/transparent</item>
     </style>
     <style name="Platform.Theme.CosmicIde" parent="Platform.V29.Theme.CosmicIde" />
-
-    <style name="Platform.V29.Theme.CosmicIde.Immersive" parent="Platform.V28.Theme.CosmicIde.Immersive">
-        <item name="android:forceDarkAllowed">false</item>
-
-        <item name="colorPrimaryDark">@android:color/transparent</item>
-    </style>
-    <style name="Platform.Theme.CosmicIde.Immersive" parent="Platform.V29.Theme.CosmicIde.Immersive" />
 </resources>

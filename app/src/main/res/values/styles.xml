@@ -1,28 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
-    <style name="TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Small">
-        <item name="android:textSize" tools:ignore="SpUsage">12dp</item>
-    </style>
-
-    <!--
-      ~ See also drawable-v21/mtrl_popupmenu_background.xml and
-      ~ drawable-v23/mtrl_popupmenu_background_dark.xml which are overridden.
-      -->
-    <style name="Widget.CosmicIde.ListView.DropDown" parent="Widget.AppCompat.ListView.DropDown">
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
-        <item name="android:clipToPadding">false</item>
-    </style>
-
-    <!-- See also ThemeOverlay.AppCompat.ActionBar . -->
-    <style name="ThemeOverlay.CosmicIde.ActionBar" parent="">
-        <item name="colorControlNormal">?android:textColorPrimary</item>
-        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
-    </style>
-
-    <style name="ThemeOverlay.CosmicIde.ActionBarPopup" parent="">
-        <item name="colorControlNormal">?android:textColorSecondary</item>
-        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView</item>
-    </style>
 </resources>

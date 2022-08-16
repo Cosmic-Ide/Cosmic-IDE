@@ -2,10 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="PrivateResource">
 
-    <style name="TextAppearance.CosmicIde.Material3.ListItem" parent="TextAppearance.Material3.TitleMedium" />
-
-    <style name="TextAppearance.CosmicIde.Material3.ListItemSmall" parent="TextAppearance.Material3.TitleSmall" />
-
     <style name="Widget.CosmicIde.Material3.CompoundButton.Switch" parent="Widget.Material3.CompoundButton.Switch">
         <item name="android:thumb">@drawable/switch_thumb_material3</item>
         <item name="thumbTint">@color/switch_thumb_tint_material3</item>

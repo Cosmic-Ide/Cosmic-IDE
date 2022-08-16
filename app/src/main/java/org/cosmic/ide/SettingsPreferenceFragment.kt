@@ -1,5 +1,6 @@
 package org.cosmic.ide
 
+import android.content.Intent
 import android.os.Bundle
 
 import com.takisoft.preferencex.PreferenceFragmentCompat
@@ -19,6 +20,10 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.settings)
+        findPreference<Preference>(ApplicationLoader.applicationContext().resources.getString(R.string.pref_key_app_version))?.setOnPreferenceClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Constants.APP_URL.toUri()))
+            true
+        }
     }
 
     private fun onMD3Changed(isMD3: Boolean) {

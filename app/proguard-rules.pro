@@ -8,5 +8,5 @@
 -keep class org.osgi.** { *; }
 -keep class javax.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
--keep class org.xml.sax.** { *; }
--keep class org.openjdk.com.sun.xml.internal.stream.** { *; }
+# -keep class org.xml.sax.** { *; }
+# -keep class org.openjdk.com.sun.xml.internal.stream.** { *; }

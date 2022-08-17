@@ -47,7 +47,15 @@
         <item>@string/eclipse_class_disassembler</item>
     </string-array>
 
+    <!-- Entry values -->
+    <string-array name="pref_entry_values_dark_theme">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <!-- Default values -->
     <bool name="pref_default_value_md3">false</bool>
+    <string name="pref_default_value_dark_theme">0</string>
 
 </resources>

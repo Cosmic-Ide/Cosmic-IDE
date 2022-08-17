@@ -91,7 +91,7 @@ public class CompileTask extends Thread {
 
         // Compile Java Files
         try {
-            if (prefs.getString("key_java_compiler", activity.getString(R.string.google_java_formatter)).equals(activity.getString(R.string.google_java_formatter))) {
+            if (prefs.getString("key_java_compiler", activity.getString(R.string.javac)).equals(activity.getString(R.string.javac))) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());

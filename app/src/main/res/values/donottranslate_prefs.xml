@@ -55,7 +55,7 @@
     </string-array>
 
     <!-- Default values -->
-    <bool name="pref_default_value_md3">false</bool>
+    <bool name="pref_default_value_md3">true</bool>
     <string name="pref_default_value_dark_theme">0</string>
 
 </resources>

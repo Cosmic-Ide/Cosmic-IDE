@@ -13,9 +13,9 @@
         <ListPreference 
             android:key="@string/pref_key_dark_theme"
             android:title="@string/dark_theme"
-            android:defaultValue="@string/follow_system"
+            android:defaultValue="@string/pref_default_value_dark_theme"
             android:entries="@array/settings_dark_theme_entries"
-            android:entryValues="@array/settings_dark_theme_entries"
+            android:entryValues="@array/pref_entry_values_dark_theme"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

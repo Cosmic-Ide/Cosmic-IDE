@@ -7,25 +7,20 @@
     <string name="smali" translatable="false">Smali</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="smali2java" translatable="false">Smali2Java</string>
-    <string name="compilation_running">Running</string>
-    <string name="open_drawer">Open Drawer</string>
-    <string name="close_drawer">Close Drawer</string>
-    <string name="create_new_file">Create New File</string>
-    <string name="create_new_directory">Create New Directory</string>
-    <string name="new_file_name">File Name</string>
-    <string name="new_directory_name">Directory Name</string>
-    <string name="java_file_suffix" translatable="false">.java</string>
-    <string name="kotlin_file_suffix" translatable="false">.kt</string>
+    <string name="compilation_running">Compiling a project</string>
+    <string name="file_name">File Name</string>
+    <string name="directory_name">Directory Name</string>
     <string name="create">Create</string>
-    <string name="create_java_class">Create Java Class</string>
-    <string name="create_kotlin_class">Create Kotlin Class</string>
+    <string name="create_java_class">Create Java class</string>
+    <string name="create_kotlin_class">Create Kotlin class</string>
     <string name="create_directory">Create Directory</string>
+    <string name="create_file">Create File</string>
     <string name="delete_file">Delete %1$s?</string>
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
     <string name="cancel">Cancel</string>
     <string name="compile_project">Compile Project</string>
-    <string name="java_file">Java File</string>
+    <string name="java_file">Java file</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>
@@ -34,29 +29,33 @@
     <string name="project_name">Project Name</string>
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
-    <string name="discord">Discord Server</string>
+    <string name="project_delete_warning">Do you want to delete %1$s?</string>
 
-    <!-- Strings used by SettingActivity -->
-    <string name="current_theme">Current Theme</string>
+    <!-- Strings used by PreferenceSettingsFragment -->
     <string name="java_version">Java Version</string>
     <string name="java_compiler">Java Compiler</string>
     <string name="java_formatter">Java Formatter</string>
     <string name="java_disassembler">Java Disassembler</string>
-    <string name="classpath">Classpath</string>
-    <string name="enter_path">Enter path</string>
-    <string name="enter_classpath">Enter classpath</string>
-    <string name="enter_java_path">Enter path containing your java files</string>
-    <string name="classpath_separated_from_colon">Classpath (separated by \':\')</string>
-    <string name="program_arguments">Program Arguments</string>
-    <string name="enter_program_arguments">Enter arguments for the program</string>
     <string name="java_path">Java Path</string>
     <string name="format">Format</string>
     <string name="settings">Settings</string>
-    <string name="save">Save</string>
-    <string name="saved">Saved!</string>
-    <string name="classpath_not_specified">Specify the classpath</string>
-    <string name="edit">Edit</string>
-    <string name="text_autosaving">All data will be automatically saved after leaving this page</string>
+    <string name="appearance">Appearance</string>
+    <string name="behavior">Behavior</string>
+    <string name="md3">Material Design 3</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="about">About app</string>
+    <string name="our_discord">Our Discord</string>
+    <string name="join_discord">Join our discord channel</string>
+    <string name="app_version_text">Version</string>
+    <string name="follow_system">Follow System</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="javac">Javac Compiler for Java</string>
+    <string name="eclipse_compiler_for_java">Eclipse Compiler for Java</string>
+    <string name="google_java_formatter">Google Java Formatter</string>
+    <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
+    <string name="javap">Javap Disassembler</string>
+    <string name="eclipse_class_disassembler">Eclipse Disassembler</string>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

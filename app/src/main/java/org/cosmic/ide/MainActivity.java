@@ -181,7 +181,7 @@ public class MainActivity extends BaseActivity {
         binding.editor
                 .getText()
                 .addContentListener(
-                        new ProblemMarker(binding.editor, currentWorkingFilePath, getProject()));
+                        new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, currentWorkingFilePath, getProject()));
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -232,7 +232,7 @@ public class MainActivity extends BaseActivity {
 
         binding.editor
                 .getText()
-                .addContentListener(new ProblemMarker(binding.editor, path, getProject()));
+                .addContentListener(new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, path, getProject()));
         currentWorkingFilePath = path;
         getSupportActionBar().setSubtitle(new File(path).getName());
     }
@@ -249,9 +249,8 @@ public class MainActivity extends BaseActivity {
             case R.id.format_menu_button:
                 CoroutineUtil.execute(
                         () -> {
-                            if (compiler_settings
-                                    .getString("formatter", javaFormatters[0])
-                                    .equals(javaFormatters[0])) {
+                            if (settings.getString("key_java_formatter", getString(R.string.google_java_formatter))
+                                    .equals(getString(R.string.google_java_formatter))) {
                                 var formatter =
                                         new GoogleJavaFormatter(
                                                 binding.editor.getText().toString());
@@ -296,26 +295,6 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         binding.editor.release();
-    }
-
-    private void tintAppBarLayout(@ColorInt int targetColor) {
-        int appBarColor = getAppBarLayoutColor();
-        if (appBarColor == targetColor) {
-            return;
-        }
-        var valueAnimator = ValueAnimator.ofArgb(appBarColor, targetColor);
-        valueAnimator.addUpdateListener(
-                animation ->
-                        binding.appbar.setBackgroundColor((int) valueAnimator.getAnimatedValue()));
-        valueAnimator.setDuration(200).start();
-    }
-
-    private int getAppBarLayoutColor() {
-        var background = binding.appbar.getBackground();
-        if (background == null || background.getClass() != ColorDrawable.class) {
-            binding.appbar.setBackgroundColor(getColorAttr(this, android.R.attr.colorBackground));
-        }
-        return ((ColorDrawable) binding.appbar.getBackground()).getColor();
     }
 
     /* Shows a snackbar indicating that there were problems during compilation */
@@ -448,7 +427,7 @@ public class MainActivity extends BaseActivity {
                             getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getRawTheme());
         } catch (IOException e) {
-            Log.e(TAG, e + " while loading kotlin language");
+            Log.e(TAG, e + " while loading java language");
             return new EmptyLanguage();
         }
     }
@@ -584,7 +563,7 @@ public class MainActivity extends BaseActivity {
 
                     var disassembled = "";
                     try {
-                        if (compiler_settings.getString("disassembler", "Javap").equals("Javap")) {
+                        if (settings.getString("key_java_disassembler", getString(R.string.javap)).equals(getString(R.string.javap))) {
                             disassembled =
                                     new JavapDisassembler(
                                                     getProject().getBinDirPath()
@@ -656,6 +635,7 @@ public class MainActivity extends BaseActivity {
             var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
+                // Somewhy the dialog is not showing
                 compile(false, true);
             }
             var classes = new ArrayList<String>();

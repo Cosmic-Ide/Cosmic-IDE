@@ -46,7 +46,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
         classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
         classpath.append(File.pathSeparator)
         classpath.append(output)
-        val clspath = prefs.getString("classpath", "")
+        val clspath = prefs.getString("key_classpath", "")
         if (!clspath!!.isEmpty() && classpath.length > 0) {
             classpath.append(File.pathSeparator)
             classpath.append(clspath)
@@ -61,7 +61,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
 
         val args = arrayListOf<String>(
             "-g",
-            "-" + prefs.getString("version", "7"),
+            "-" + prefs.getString("key_java_version", "7"),
             "-d",
             output.getAbsolutePath(),
             "-cp",

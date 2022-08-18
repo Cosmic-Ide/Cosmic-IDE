@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Keys -->
+    <string name="pref_key_md3">key_md3</string>
+    <string name="pref_key_dark_theme">key_dark_theme</string>
+    <string name="pref_key_classpath">key_classpath</string>
+    <string name="pref_key_java_version">key_java_version</string>
+    <string name="pref_key_java_compiler">key_java_compiler</string>
+    <string name="pref_key_java_formatter">key_java_formatter</string>
+    <string name="pref_key_java_disassembler">key_java_disassembler</string>
+    <string name="pref_key_app_version">key_app_version</string>
+    <string name="pref_key_discord">key_discord</string>
+
+    <!-- Entries -->
+    <string-array name="settings_java_version_entries">
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+    </string-array>
+    <string-array name="settings_dark_theme_entries">
+        <item>@string/follow_system</item>
+        <item>@string/off</item>
+        <item>@string/on</item>
+    </string-array>
+    <string-array name="settings_java_compiler_entries">
+        <item>@string/javac</item>
+        <item>@string/eclipse_compiler_for_java</item>
+    </string-array>
+    <string-array name="settings_java_formatter_entries">
+        <item>@string/google_java_formatter</item>
+        <item>@string/eclipse_java_formatter</item>
+    </string-array>
+    <string-array name="settings_java_disassembler_entries">
+        <item>@string/javap</item>
+        <item>@string/eclipse_class_disassembler</item>
+    </string-array>
+
+    <!-- Entry values -->
+    <string-array name="pref_entry_values_dark_theme">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <!-- Default values -->
+    <bool name="pref_default_value_md3">true</bool>
+    <string name="pref_default_value_dark_theme">0</string>
+
+</resources>

@@ -2,11 +2,17 @@ package org.cosmic.ide.analyzer.java
 
 import android.content.Context
 import android.content.SharedPreferences
+
+import androidx.preference.PreferenceManager
+
 import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
+
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
+
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
+
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -27,7 +33,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
     private val project: JavaProject
 
     init {
-        prefs = context.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE)
+        prefs = PreferenceManager.getDefaultSharedPreferences(context)
         project = javaProject
         currentFile = file
     }
@@ -36,7 +42,7 @@ class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
     fun analyze() {
         val output = File(project.getBinDirPath(), "classes")
         output.mkdirs()
-        val version = prefs.getString("version", "7")
+        val version = prefs.getString("key_java_version", "7")
         val files = getSourceFiles(File(project.getSrcDirPath()))
 
         val javaFileObjects = arrayListOf<JavaFileObject>()

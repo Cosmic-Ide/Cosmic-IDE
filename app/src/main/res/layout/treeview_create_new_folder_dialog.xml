@@ -3,16 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="?dialogPreferredPadding"
-    android:paddingStart="?dialogPreferredPadding"
-    android:paddingEnd="?dialogPreferredPadding"
     android:layoutDirection="locale">
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.FilledBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/new_directory_name"
+        android:layout_marginStart="?dialogPreferredPadding"
+        android:layout_marginTop="@dimen/spacing_mid_large"
+        android:layout_marginEnd="?dialogPreferredPadding"
+        android:hint="@string/directory_name"
         android:textDirection="locale"
         app:counterEnabled="true">
 
@@ -20,7 +19,10 @@
             android:id="@android:id/text1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textNoSuggestions" />
+            android:importantForAutofill="no"
+            android:inputType="text">
+            <requestFocus />
+        </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
 </FrameLayout>

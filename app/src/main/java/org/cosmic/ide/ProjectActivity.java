@@ -1,6 +1,5 @@
 package org.cosmic.ide;
 
-import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -65,7 +64,7 @@ public class ProjectActivity extends BaseActivity {
         projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
         setOnProjectCreatedListener(this::openProject);
 
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.fab, false, false, false, true);
+        UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.projectRecycler, false, false, false, true);
 
         binding.refreshLayout.setOnRefreshListener(
@@ -87,9 +86,6 @@ public class ProjectActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.settings:
                 startActivity(new Intent(this, SettingActivity.class));
-                break;
-            case R.id.discord:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://discord.gg/zqaMxGeRyr")));
                 break;
             default:
                 break;
@@ -168,8 +164,7 @@ public class ProjectActivity extends BaseActivity {
             deleteProjectDialog.show();
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
             Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
-            message.setText(
-                    "Do you want to delete " + project.getProjectName());
+            message.setText(getString(R.string.project_delete_warning, project.getProjectName()));
             deleteBtn.setOnClickListener(
                     v -> {
                         runOnUiThread(

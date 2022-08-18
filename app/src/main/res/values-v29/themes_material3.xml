@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Platform.V29.Theme.CosmicIde.Material3" parent="Platform.V27.Theme.CosmicIde.Material3">
+        <item name="android:forceDarkAllowed">false</item>
+
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+    </style>
+    <style name="Platform.Theme.CosmicIde.Material3" parent="Platform.V29.Theme.CosmicIde.Material3" />
+</resources>

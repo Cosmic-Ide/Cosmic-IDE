@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="system_window_scrim">@color/system_window_scrim_dark</color>
+    <color name="system_window_scrim_compat">@color/system_window_scrim_dark</color>
+</resources>

@@ -4,8 +4,11 @@ import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
+import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
@@ -56,7 +59,7 @@ public class CompileTask extends Thread {
             Looper.prepare();
         }
 
-        final var prefs = activity.getSharedPreferences("compiler_settings", Context.MODE_PRIVATE);
+        final var prefs = ApplicationLoader.getDefaultSharedPreferences();
         try {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             final String code =
@@ -88,7 +91,7 @@ public class CompileTask extends Thread {
 
         // Compile Java Files
         try {
-            if (prefs.getString("compiler", "Javac").equals("Javac")) {
+            if (prefs.getString("key_java_compiler", activity.getString(R.string.javac)).equals(activity.getString(R.string.javac))) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());

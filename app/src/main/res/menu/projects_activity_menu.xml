@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/discord"
+        android:icon="@drawable/discord"
+        android:title="@string/discord"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"

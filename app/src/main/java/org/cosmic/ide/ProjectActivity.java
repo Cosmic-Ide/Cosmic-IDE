@@ -1,6 +1,5 @@
 package org.cosmic.ide;
 
-import android.net.Uri;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -87,9 +86,6 @@ public class ProjectActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.settings:
                 startActivity(new Intent(this, SettingActivity.class));
-                break;
-            case R.id.discord:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://discord.gg/zqaMxGeRyr")));
                 break;
             default:
                 break;

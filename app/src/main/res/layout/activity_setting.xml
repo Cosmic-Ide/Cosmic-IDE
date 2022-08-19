@@ -25,7 +25,7 @@
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/preferenceFragment"
             android:name="org.cosmic.ide.preference.SettingsPreferenceFragment"
             android:layout_width="match_parent"

@@ -4,7 +4,6 @@
     <!-- Keys -->
     <string name="pref_key_md3">key_md3</string>
     <string name="pref_key_dark_theme">key_dark_theme</string>
-    <string name="pref_key_classpath">key_classpath</string>
     <string name="pref_key_java_version">key_java_version</string>
     <string name="pref_key_java_compiler">key_java_compiler</string>
     <string name="pref_key_java_formatter">key_java_formatter</string>

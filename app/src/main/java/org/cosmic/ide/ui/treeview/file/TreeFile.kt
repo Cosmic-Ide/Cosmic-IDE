@@ -13,7 +13,6 @@ import java.util.Objects
 open class TreeFile {
 
     companion object {
-        @Nullable
         @JvmStatic
         fun fromFile(file: File): TreeFile? {
             if (file.isDirectory()) {

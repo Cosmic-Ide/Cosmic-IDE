@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dark_30_percent">#4D000000</color>
-    <color name="dark_50_percent">#80000000</color>
-    <color name="dark_70_percent">#B3000000</color>
 
     <color name="system_window_scrim_light">#99FFFFFF</color>
     <color name="system_window_scrim_dark">#66202124</color>
@@ -10,10 +7,6 @@
 
     <color name="system_window_scrim_light_compat">#44000000</color>
     <color name="system_window_scrim_compat">@color/system_window_scrim_light_compat</color>
-
-    <color name="system_window_scrim_dark_black">#66000000</color>
-    <!-- Make lint happy, although actually we never use this in a non-night configuration. -->
-    <color name="color_primary_dark_black">@android:color/transparent</color>
 
     <color name="bitterpink">#FE6262</color>
 </resources>

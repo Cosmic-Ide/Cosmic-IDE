@@ -20,7 +20,7 @@
     <item
         android:id="@+id/rename_menu_bttn"
         android:title="@string/rename"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/delete_menu_bttn"

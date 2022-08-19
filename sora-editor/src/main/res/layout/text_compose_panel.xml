@@ -23,7 +23,8 @@
   ~     additional information or have any questions
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/panel_hv"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -31,67 +32,60 @@
     android:background="@drawable/magnifier_background"
     android:id="@+id/panel_root">
 
-    <HorizontalScrollView
+    <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
-        android:id="@+id/panel_hv">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_height="match_parent"
+        <Button
+            android:id="@+id/panel_btn_select_all"
             android:layout_width="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_height="wrap_content"
+            android:text="@android:string/selectAll"
+            android:textColor="@color/textActionNameColor"
+            android:textSize="8sp"
+            android:drawableTop="@drawable/round_select_all_20"
+            android:drawablePadding="-4dp"
+            android:paddingTop="4dp"
+            android:background="#00000000" />
 
-            <Button
-                android:id="@+id/panel_btn_select_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@android:string/selectAll"
-                android:textColor="@color/textActionNameColor"
-                android:textSize="8sp"
-                android:drawableTop="@drawable/round_select_all_20"
-                android:drawablePadding="-4dp"
-                android:paddingTop="4dp"
-                android:background="#00000000" />
+        <Button
+            android:id="@+id/panel_btn_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/copy"
+            android:textColor="@color/textActionNameColor"
+            android:textSize="8sp"
+            android:drawableTop="@drawable/round_content_copy_20"
+            android:drawablePadding="-4dp"
+            android:paddingTop="4dp"
+            android:background="#00000000" />
 
-            <Button
-                android:id="@+id/panel_btn_copy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@android:string/copy"
-                android:textColor="@color/textActionNameColor"
-                android:textSize="8sp"
-                android:drawableTop="@drawable/round_content_copy_20"
-                android:drawablePadding="-4dp"
-                android:paddingTop="4dp"
-                android:background="#00000000" />
+        <Button
+            android:id="@+id/panel_btn_paste"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/paste"
+            android:textColor="@color/textActionNameColor"
+            android:textSize="8sp"
+            android:drawableTop="@drawable/round_content_paste_20"
+            android:drawablePadding="-4dp"
+            android:paddingTop="4dp"
+            android:background="#00000000" />
 
-            <Button
-                android:id="@+id/panel_btn_paste"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@android:string/paste"
-                android:textColor="@color/textActionNameColor"
-                android:textSize="8sp"
-                android:drawableTop="@drawable/round_content_paste_20"
-                android:drawablePadding="-4dp"
-                android:paddingTop="4dp"
-                android:background="#00000000" />
+        <Button
+            android:id="@+id/panel_btn_cut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@android:string/cut"
+            android:textColor="@color/textActionNameColor"
+            android:textSize="8sp"
+            android:drawableTop="@drawable/round_content_cut_20"
+            android:drawablePadding="-4dp"
+            android:paddingTop="4dp"
+            android:background="#00000000" />
 
-            <Button
-                android:id="@+id/panel_btn_cut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@android:string/cut"
-                android:textColor="@color/textActionNameColor"
-                android:textSize="8sp"
-                android:drawableTop="@drawable/round_content_cut_20"
-                android:drawablePadding="-4dp"
-                android:paddingTop="4dp"
-                android:background="#00000000" />
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </HorizontalScrollView>
-
-</LinearLayout>
+</HorizontalScrollView>

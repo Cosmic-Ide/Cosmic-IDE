@@ -12,6 +12,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -272,8 +273,8 @@ public class StringSearch {
     }
 
     public static int editDistance(String s1, String s2) {
-        s1 = s1.toLowerCase();
-        s2 = s2.toLowerCase();
+        s1 = s1.toLowerCase(Locale.ROOT);
+        s2 = s2.toLowerCase(Locale.ROOT);
 
         int[] costs = new int[s2.length() + 1];
         for (int i = 0; i <= s1.length(); i++) {

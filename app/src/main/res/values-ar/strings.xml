@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Cosmic IDE</string>
 
     <!-- Strings used by MainActivity -->
     <string name="run">تشغيل</string>
-    <string name="smali" translatable="false">Smali</string>
-    <string name="disassemble" translatable="false">Disassemble</string>
-    <string name="smali2java" translatable="false">Smali2Java</string>
     <string name="compilation_running">جارِ التشغيل</string>
-    <string name="open_drawer">فتح المدرج</string>
-    <string name="close_drawer">إغلاق المدرج</string>
-    <string name="create_new_file">إنشاء ملف جديد</string>
-    <string name="create_new_directory">إنشاء دليل جديد</string>
-    <string name="new_file_name">إسم الملف</string>
-    <string name="new_directory_name">إسم الدليل</string>
-    <string name="java_file_suffix" translatable="false">.java</string>
-    <string name="kotlin_file_suffix" translatable="false">.kt</string>
     <string name="create">إنشاء</string>
+    <string name="file_name">اسم الملف</string>
+    <string name="directory_name">اسم الدليل</string>
     <string name="create_java_class">إنشاء صنف</string>
     <string name="create_kotlin_class">إنشاء صنف كوتلن</string>
     <string name="create_directory">إنشاء دليل</string>
     <string name="delete_file">حذف %1$s?</string>
+    <string name="create_file">إنشاء ملف</string>
     <string name="delete">حذف</string>
     <string name="rename">إعادة تسمية</string>
     <string name="cancel">إلغاء</string>
@@ -30,33 +21,37 @@
     <!-- Strings used by ProjectActivity -->
     <string name="projects">المشاريع</string>
     <string name="new_project">مشروع جديد</string>
-    <string name="delete_project">حذف المشروع</string>
+    <string name="delete_project">حذف المشروع</string> 
+    <string name="project_delete_warning">هل تريد حذف ٪1$s؟</string>
     <string name="project_name">إسم المشروع</string>
     <string name="no_projects_title">لم يتم العثور على مشاريع</string>
     <string name="no_projects_suggestion">قم بإنشاء مشروع من خلال النقر على زر الإضافة أدناه</string>
-    <string name="discord">سيرفر الدسكورد</string>
 
     <!-- Strings used by SettingActivity -->
-    <string name="current_theme">السِمة الحالية</string>
     <string name="java_version">إصدار جافا</string>
     <string name="java_compiler">مجمع جافا</string>
     <string name="java_formatter">منسق جافا</string>
-    <string name="java_disassembler">Java disassembler</string>
-    <string name="classpath">مسار الصنف</string>
-    <string name="enter_path">أدخل مسار</string>
-    <string name="enter_classpath">أدخل مسار الصنف</string>
-    <string name="enter_java_path">أدخل المسار الذي يحتوي على ملفات جافا الخاصة بك</string>
-    <string name="classpath_separated_from_colon">مسار الفئة (مفصول بـ \':\')</string>
-    <string name="program_arguments">قيم البرنامج</string>
-    <string name="enter_program_arguments">أدخل قيم للبرنامج</string>
+    <string name="java_disassembler">جافا تفكيك</string> 
     <string name="java_path">مسار جافا</string>
     <string name="format">تنسيق</string>
     <string name="settings">الإعدادات</string>
-    <string name="save">حفظ</string>
-    <string name="saved">تم الحفظ!</string>
-    <string name="classpath_not_specified">حدد مسار الصنف</string>
-    <string name="edit">تعديل</string>
-    <string name="text_autosaving">سيتم حفظ جميع الإعدادات تلقائيًا بعد مغادرة هذه الصفحة</string>
+    <string name="appearance">مظهر</string>
+    <string name="behavior">البحيرة</string>
+    <string name="md3">تصميم المواد 3</string>
+    <string name="dark_theme">نسق داكن</string>
+    <string name="about">حول التطبيق</string>
+    <string name="our_discord">نا Discord</string>
+    <string name="join_discord">انضم إلى قناة Discord الخاصة بنا</string>
+    <string name="app_version_text">الإصدار</string>
+    <string name="follow_system">اتبع النظام</string>
+    <string name="off">عن</string>
+    <string name="on">على</string>
+    <string name="javac">مترجم Javac لجافا</string>
+    <string name="eclipse_compiler_for_java">مترجم Eclipse لجافا</string>
+    <string name="google_java_formatter">Google Java Formatter</string>
+    <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
+    <string name="javap">Javap Disassembler</string>
+    <string name="eclipse_class_disassembler">Eclipse Disassembler</string>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

@@ -24,7 +24,6 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/panel_hv"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal"

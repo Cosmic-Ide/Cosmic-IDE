@@ -13,45 +13,35 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
+import org.cosmic.ide.ui.theme.CustomThemeHelper;
+import org.cosmic.ide.ui.theme.DarkThemeHelper;
 import org.cosmic.ide.ui.utils.UiUtilsKt;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected final String[] themes = {"Follow System", "Light", "Dark"};
+    private boolean isDelegateCreated = false;
 
-    protected final String[] javaVersions = {
-        "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"
-    };
-
-    protected final String[] javaCompilers = {"Javac", "Eclipse Compiler for Java"};
-
-    protected final String[] javaFormatters = {"Google Java Formatter", "Eclipse Java Formatter"};
-
-    protected final String[] javaDisassemblers = {"Javap", "Eclipse Class Disassembler"};
-
-    protected SharedPreferences ui_settings;
-    protected SharedPreferences compiler_settings;
-
-    @NonNull private String currentTheme;
+    protected SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        CustomThemeHelper.apply(this);
         super.onCreate(savedInstanceState);
 
-        ui_settings = getSharedPreferences("ui_settings", MODE_PRIVATE);
-        compiler_settings = getSharedPreferences("compiler_settings", MODE_PRIVATE);
+        settings = ApplicationLoader.getDefaultSharedPreferences();
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         UiUtilsKt.addSystemWindowInsetToPadding(getRootActivityView(), true, false, true, false);
-
-        currentTheme = ui_settings.getString("current_theme", themes[0]);
-        checkCurrentTheme();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        checkCurrentTheme();
+    public AppCompatDelegate getDelegate() {
+        var delegate = super.getDelegate();
+        if (!isDelegateCreated) {
+            isDelegateCreated = true;
+            DarkThemeHelper.apply(this);
+        }
+        return delegate;
     }
 
     @NonNull
@@ -62,55 +52,5 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected boolean isDarkMode() {
         int uiMode = getResources().getConfiguration().uiMode;
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-    }
-
-    protected void setCurrentTheme(String theme) {
-        if (ui_settings.getString("current_theme", themes[0]) == theme) return;
-        int uiMode;
-        int pos;
-        switch (theme) {
-            case "Follow System":
-                uiMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                pos = 0;
-                break;
-            case "Light":
-                uiMode = AppCompatDelegate.MODE_NIGHT_NO;
-                pos = 1;
-                break;
-            case "Dark":
-                uiMode = AppCompatDelegate.MODE_NIGHT_YES;
-                pos = 2;
-                break;
-            default:
-                uiMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                pos = 0;
-        }
-        AppCompatDelegate.setDefaultNightMode(uiMode);
-        ui_settings.edit().putString("current_theme", themes[pos]).apply();
-        recreate();
-    }
-
-    private void checkCurrentTheme() {
-        switch (ui_settings.getString("current_theme", themes[0])) {
-            case "Follow System":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-            case "Light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "Dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
-        if (currentTheme != ui_settings.getString("current_theme", themes[0])) recreate();
-    }
-
-    protected static int getColorAttr(Context context, @AttrRes int resId) {
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(resId, typedValue, true);
-        return typedValue.data;
     }
 }

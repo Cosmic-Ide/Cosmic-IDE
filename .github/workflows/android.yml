@@ -43,7 +43,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v2.2.2
+        uses: gradle/gradle-build-action@v2.2.4
         with:
           arguments: assembleDebug
 

@@ -12,15 +12,14 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
-            android:animateLayoutChanges="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            android:background="?colorAppBarSurface"
             app:liftOnScroll="true">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
-                style="@style/Widget.Material3.Toolbar.Surface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>
@@ -51,7 +50,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_small"
                     android:layout_weight="1"
-                    android:padding="@dimen/spacing_small"
                     android:text="@string/smali" />
 
                 <com.google.android.material.button.MaterialButton
@@ -59,7 +57,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:padding="@dimen/spacing_small"
                     android:text="@string/disassemble" />
 
                 <com.google.android.material.button.MaterialButton
@@ -68,7 +65,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_small"
                     android:layout_weight="1"
-                    android:padding="@dimen/spacing_small"
                     android:text="@string/smali2java" />
 
             </LinearLayout>

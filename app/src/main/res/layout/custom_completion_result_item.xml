@@ -17,7 +17,7 @@
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_small"
         android:text="K"
-        android:textSize="20sp"
+        android:textAppearance="?android:textAppearanceLarge"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -33,7 +33,6 @@
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
             android:text="Medium Text"
-            android:textAppearance="?textAppearanceTitleSmall"
             android:singleLine="true" />
 
         <TextView
@@ -44,7 +43,6 @@
             android:layout_marginStart="@dimen/spacing_tiny"
             android:layout_marginEnd="@dimen/spacing_small"
             android:text="Small Text"
-            android:textAppearance="?textAppearanceBodySmall"
             android:singleLine="true" />
 
     </LinearLayout>

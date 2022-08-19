@@ -28,7 +28,7 @@ class FernFlowerDecompiler {
         decompiler.decompileContext()
 
         return resultSaver.result.ifEmpty {
-            "// Error: Fernflower couldn't decompile class$className.\n "
+            "// Error: Fernflower couldn't decompile $className.\n "
         }
     }
 

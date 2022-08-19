@@ -35,6 +35,7 @@ android {
 dependencies {
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
 
+    implementation(Dependencies.PREFERENCE_KTX)
     implementation(Dependencies.R8)
     implementation(Dependencies.JAVAC)
     implementation(Dependencies.FERNFLOWER)

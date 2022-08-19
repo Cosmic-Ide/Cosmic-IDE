@@ -5,15 +5,14 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
+        android:background="?colorAppBarSurface"
         app:liftOnScroll="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
-            style="@style/Widget.Material3.Toolbar.Surface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/projects" />
@@ -55,15 +54,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_title"
-                        android:textAppearance="?textAppearanceTitleMedium"
-                        android:textSize="18sp" />
+                        android:textAppearance="?android:textAppearanceMedium"
+                        android:textColor="?android:textColorPrimary" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_suggestion"
-                        android:layout_marginTop="@dimen/spacing_tiny"
-                        android:textAppearance="?textAppearanceBodyMedium" />
+                        android:textAppearance="?android:textAppearanceSmall"
+                        android:textColor="?android:textColorSecondary"
+                        android:layout_marginTop="@dimen/spacing_tiny" />
 
                 </LinearLayout>
 

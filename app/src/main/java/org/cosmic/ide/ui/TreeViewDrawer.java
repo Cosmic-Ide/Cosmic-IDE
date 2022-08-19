@@ -199,7 +199,7 @@ public class TreeViewDrawer extends Fragment {
 
     private void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(getString(R.string.create_new_file));
+        builder.setTitle(getString(R.string.create_file));
         builder.setView(R.layout.treeview_create_new_file_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -208,7 +208,7 @@ public class TreeViewDrawer extends Fragment {
 
     private void buildCreateDirectoryDialog() {
         var builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(getString(R.string.create_new_directory));
+        builder.setTitle(getString(R.string.create_directory));
         builder.setView(R.layout.treeview_create_new_folder_dialog);
         builder.setPositiveButton(getString(R.string.create), null);
         builder.setNegativeButton(android.R.string.cancel, null);
@@ -265,7 +265,7 @@ public class TreeViewDrawer extends Fragment {
             createNewFileDialog.show();
 
             ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
-                    .setSuffixText(getString(R.string.java_file_suffix));
+                    .setSuffixText(".java");
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
@@ -315,7 +315,7 @@ public class TreeViewDrawer extends Fragment {
             createNewFileDialog.show();
 
             ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
-                    .setSuffixText(getString(R.string.kotlin_file_suffix));
+                    .setSuffixText(".kt");
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);

@@ -1,9 +1,12 @@
 package org.cosmic.ide
 
+import android.content.Context
+
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentListener
 import io.github.rosemoe.sora.widget.CodeEditor
+
 import org.cosmic.ide.analyzer.java.JavacAnalyzer
 import org.cosmic.ide.common.Indexer
 import org.cosmic.ide.common.util.CoroutineUtil
@@ -11,6 +14,7 @@ import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
 
 class ProblemMarker(
+    context: Context,
     editor: CodeEditor,
     file: String,
     project: JavaProject
@@ -24,7 +28,7 @@ class ProblemMarker(
     init {
         this.editor = editor
         this.project = project
-        this.analyzer = JavacAnalyzer(editor.getContext(), file, project)
+        this.analyzer = JavacAnalyzer(context, file, project)
         analyze(editor.getText())
     }
 

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Cosmic IDE</string>
+
+    <!-- Strings used by MainActivity -->
+    <string name="run">Compilar</string>
+    <string name="smali" translatable="false">Smali</string>
+    <string name="disassemble" translatable="false">Disassemble</string>
+    <string name="smali2java" translatable="false">Smali2Java</string>
+    <string name="compilation_running">Compilando o projeto</string>
+    <string name="file_name">Nome do arquivo</string>
+    <string name="directory_name">Nome do diretório</string>
+    <string name="create">Criar</string>
+    <string name="create_java_class">Criar uma classe Java</string>
+    <string name="create_kotlin_class">Criar uma classe Kotlin</string>
+    <string name="create_directory">Criar um diretório</string>
+    <string name="create_file">Criar um arquivo</string>
+    <string name="delete_file">Deletar %1$s?</string>
+    <string name="delete">Deletar</string>
+    <string name="rename">Renomear</string>
+    <string name="cancel">Cancelar</string>
+    <string name="compile_project">Compilar projeto</string>
+    <string name="java_file">Arquivo Java</string>
+
+    <!-- Strings used by ProjectActivity -->
+    <string name="projects">Projetos</string>
+    <string name="new_project">Novo Projeto</string>
+    <string name="delete_project">Deletar Projeto</string>
+    <string name="project_name">Nome do projeto</string>
+    <string name="no_projects_title">Projetos não encontrados</string>
+    <string name="no_projects_suggestion">Crie um projeto clicando no botão abaixo</string>
+    <string name="project_delete_warning">Você deseja deletar %1$s?</string>
+
+    <!-- Strings used by PreferenceSettingsFragment -->
+    <string name="java_version">Versão do Java</string>
+    <string name="java_compiler">Compilador Java</string>
+    <string name="java_formatter">Formatador Java</string>
+    <string name="java_disassembler">Java Decompiler</string>
+    <string name="java_path">Caminho Java</string>
+    <string name="format">Formatar</string>
+    <string name="settings">Definições</string>
+    <string name="appearance">Aparência</string>
+    <string name="behavior">Comportamento</string>
+    <string name="md3">Material Design 3</string>
+    <string name="dark_theme">Tema escuro</string>
+    <string name="about">Sobre o aplicativo</string>
+    <string name="our_discord">Nossa Discord</string>
+    <string name="join_discord">Entre no nosso servidor do Discord</string>
+    <string name="app_version_text">Versão</string>
+    <string name="follow_system">Follow System</string>
+    <string name="off">Desligado</string>
+    <string name="on">Ligado</string>
+    <string name="javac">Javac Compiler for Java</string>
+    <string name="eclipse_compiler_for_java">Eclipse Compiler for Java</string>
+    <string name="google_java_formatter">Google Java Formatter</string>
+    <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
+    <string name="javap">Javap Decompiler</string>
+    <string name="eclipse_class_disassembler">Eclipse Decompiler</string>
+
+    <!-- Strings used by CompilerTask Class -->
+    <string name="stage">Stage</string>
+    <string name="stage_clean">Cleaning build&#8230;</string>
+    <string name="stage_kotlinc">Compiling with Kotlinc&#8230;</string>
+    <string name="stage_javac">Compiling with Javac&#8230;</string>
+    <string name="stage_ecj">Compiling with ECJ&#8230;</string>
+    <string name="stage_d8">Dexing class files with D8&#8230;</string>
+    <string name="stage_loading_dex">Loading DEX File&#8230;</string>
+</resources>

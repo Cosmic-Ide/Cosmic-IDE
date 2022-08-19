@@ -1,7 +1,5 @@
-# -dontobfuscate
+-dontobfuscate
 -dontwarn
--overloadaggressively
--optimizationpasses 5
 
 -keep class com.google.googlejavaformat.** { *; }
 -keep class org.eclipse.jdt.internal.core.util.** { *; }

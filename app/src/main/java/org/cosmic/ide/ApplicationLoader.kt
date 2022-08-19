@@ -46,7 +46,7 @@ class ApplicationLoader : Application() {
             val intent = Intent(getApplicationContext(), DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", Log.getStackTraceString(throwable))
-            val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE))
+            val pendingIntent = PendingIntent.getActivity(context, 1, intent, (PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)))
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)

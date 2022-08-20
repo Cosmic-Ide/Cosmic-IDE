@@ -6,7 +6,7 @@ import android.view.View
 import org.cosmic.ide.databinding.ActivitySettingBinding
 import org.cosmic.ide.ui.utils.addSystemWindowInsetToPadding
 
-class SettingActivity() : BaseActivity {
+class SettingActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySettingBinding
 
@@ -21,7 +21,7 @@ class SettingActivity() : BaseActivity {
         binding.toolbar.setNavigationOnClickListener { v -> onBackPressed() }
 
         binding.appbar.setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
-        val recyclerView: View = findViewById(androidx.preference.R.id.recycler_view)
+        val recyclerView: View? = findViewById(androidx.preference.R.id.recycler_view)
         recyclerView?.addSystemWindowInsetToPadding(false, false, false, true)
     }
 }

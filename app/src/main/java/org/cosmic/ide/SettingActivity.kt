@@ -22,6 +22,6 @@ class SettingActivity : BaseActivity {
 
         binding.appbar.setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
         val recyclerView = findViewById(androidx.preference.R.id.recycler_view)
-        addSystemWindowInsetToPadding(recyclerView?, false, false, false, true)
+        recyclerView?.addSystemWindowInsetToPadding(false, false, false, true)
     }
 }

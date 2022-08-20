@@ -23,10 +23,6 @@ object DarkThemeHelper {
 
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
-                override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-                    check(activity in activities) { "Activity must extend BaseActivity: $activity" }
-                }
-
                 override fun onActivityDestroyed(activity: Activity) {
                     activities -= activity as AppCompatActivity
                 }

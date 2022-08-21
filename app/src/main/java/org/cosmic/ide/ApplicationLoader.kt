@@ -10,6 +10,7 @@ import android.os.Process
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
+import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.theme.CustomThemeHelper
@@ -27,14 +28,16 @@ class ApplicationLoader : Application() {
         super.onCreate()
         val context: Context = applicationContext
         val dataDirectory = context.getExternalFilesDir(null)?.getAbsolutePath()
-        val resources = context.getResources()
+        val resources = context.getResources() 
         Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)
-        DynamicColors.applyToActivitiesIfAvailable(this)
-        CustomThemeHelper.initialize(this)
-        DarkThemeHelper.initialize(this)
+        CoroutineUtil.inParallel {
+            DynamicColors.applyToActivitiesIfAvailable(this)
+            CustomThemeHelper.initialize(this)
+            DarkThemeHelper.initialize(this)
+        }
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->

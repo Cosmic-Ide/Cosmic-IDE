@@ -22,7 +22,7 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
- 
+
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -40,7 +40,7 @@ dependencies {
     implementation(Dependencies.JAVAC)
     implementation(Dependencies.FERNFLOWER)
     implementation(projects.googleJavaFormat)
-    implementation(projects.eclipseJdt) 
+    implementation(projects.eclipseJdt)
     implementation(projects.common)
     implementation(projects.projectCreator)
     implementation(projects.kotlinc)

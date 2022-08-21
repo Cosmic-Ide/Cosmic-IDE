@@ -7,19 +7,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Process
-import android.util.Log
-
 import androidx.preference.PreferenceManager
-
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
-
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
-import org.cosmic.ide.ui.utils.dpToPx
 import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkThemeHelper
-
+import org.cosmic.ide.ui.utils.dpToPx
 import java.io.File
 
 class ApplicationLoader : Application() {
@@ -58,12 +53,12 @@ class ApplicationLoader : Application() {
     companion object {
         public var instance: ApplicationLoader? = null
 
-        fun applicationContext() : Context {
+        fun applicationContext(): Context {
             return instance!!.applicationContext
         }
 
         @JvmStatic
-        fun getDefaultSharedPreferences() : SharedPreferences {
+        fun getDefaultSharedPreferences(): SharedPreferences {
             return PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext())
         }
     }

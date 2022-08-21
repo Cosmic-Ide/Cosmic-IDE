@@ -1,7 +1,6 @@
 package org.cosmic.ide.compat
 
 import android.app.Activity
-
 import androidx.annotation.StyleRes
 import androidx.core.app.ActivityCompat
 

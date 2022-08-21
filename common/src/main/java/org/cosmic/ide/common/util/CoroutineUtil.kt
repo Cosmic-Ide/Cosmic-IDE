@@ -2,8 +2,8 @@ package org.cosmic.ide.common.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 object CoroutineUtil {
 

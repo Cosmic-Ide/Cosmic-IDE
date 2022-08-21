@@ -15,5 +15,4 @@ class FFBytecodeProvider : IBytecodeProvider {
             return it.readBytes()
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package org.cosmic.ide;
 
-import android.animation.ValueAnimator;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,14 +20,12 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.elevation.SurfaceColors;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
@@ -181,7 +177,11 @@ public class MainActivity extends BaseActivity {
         binding.editor
                 .getText()
                 .addContentListener(
-                        new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, currentWorkingFilePath, getProject()));
+                        new ProblemMarker(
+                                ApplicationLoader.Companion.applicationContext(),
+                                binding.editor,
+                                currentWorkingFilePath,
+                                getProject()));
     }
 
     /* Build Loading Dialog - This dialog shows on code compilation */
@@ -232,7 +232,12 @@ public class MainActivity extends BaseActivity {
 
         binding.editor
                 .getText()
-                .addContentListener(new ProblemMarker(ApplicationLoader.Companion.applicationContext(), binding.editor, path, getProject()));
+                .addContentListener(
+                        new ProblemMarker(
+                                ApplicationLoader.Companion.applicationContext(),
+                                binding.editor,
+                                path,
+                                getProject()));
         currentWorkingFilePath = path;
         getSupportActionBar().setSubtitle(new File(path).getName());
     }
@@ -249,7 +254,9 @@ public class MainActivity extends BaseActivity {
             case R.id.format_menu_button:
                 CoroutineUtil.execute(
                         () -> {
-                            if (settings.getString("key_java_formatter", getString(R.string.google_java_formatter))
+                            if (settings.getString(
+                                            "key_java_formatter",
+                                            getString(R.string.google_java_formatter))
                                     .equals(getString(R.string.google_java_formatter))) {
                                 var formatter =
                                         new GoogleJavaFormatter(
@@ -305,8 +312,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void configureEditor(CodeEditor editor) {
-        editor.setTypefaceText(
-                ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
+        editor.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
         editor.setTextSize(12);
         editor.setEdgeEffectColor(Color.TRANSPARENT);
         editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
@@ -315,8 +321,7 @@ public class MainActivity extends BaseActivity {
                         | EditorInfo.TYPE_CLASS_TEXT
                         | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
                         | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        editor.getComponent(EditorAutoCompletion.class)
-                .setLayout(new CustomCompletionLayout());
+        editor.getComponent(EditorAutoCompletion.class).setLayout(new CustomCompletionLayout());
         editor.getComponent(EditorAutoCompletion.class)
                 .setAdapter(new CustomCompletionItemAdapter());
 
@@ -531,7 +536,13 @@ public class MainActivity extends BaseActivity {
                             () -> {
                                 try {
                                     new JarTask().doFullTask(getProject());
-                                    temp = new FernFlowerDecompiler().decompile(claz, new File(getProject().getBinDirPath() + "classes.jar"));
+                                    temp =
+                                            new FernFlowerDecompiler()
+                                                    .decompile(
+                                                            claz,
+                                                            new File(
+                                                                    getProject().getBinDirPath()
+                                                                            + "classes.jar"));
                                 } catch (Exception e) {
                                     dialog("Failed to decompile...", getString(e), true);
                                 }
@@ -563,7 +574,8 @@ public class MainActivity extends BaseActivity {
 
                     var disassembled = "";
                     try {
-                        if (settings.getString("key_java_disassembler", getString(R.string.javap)).equals(getString(R.string.javap))) {
+                        if (settings.getString("key_java_disassembler", getString(R.string.javap))
+                                .equals(getString(R.string.javap))) {
                             disassembled =
                                     new JavapDisassembler(
                                                     getProject().getBinDirPath()

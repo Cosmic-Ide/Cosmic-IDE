@@ -6,5 +6,5 @@ import androidx.lifecycle.LiveData
 val <T> LiveData<T>.valueCompat: T
     get() = value as T
 
-val Boolean.int 
-     get() = if (this) 1 else 0
+val Boolean.int
+    get() = if (this) 1 else 0

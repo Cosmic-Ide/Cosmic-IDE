@@ -1,12 +1,10 @@
 package org.cosmic.ide
 
 import android.content.Context
-
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentListener
 import io.github.rosemoe.sora.widget.CodeEditor
-
 import org.cosmic.ide.analyzer.java.JavacAnalyzer
 import org.cosmic.ide.common.Indexer
 import org.cosmic.ide.common.util.CoroutineUtil

@@ -2,17 +2,12 @@ package org.cosmic.ide.analyzer.java
 
 import android.content.Context
 import android.content.SharedPreferences
-
 import androidx.preference.PreferenceManager
-
 import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
-
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
-
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
-
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset

@@ -3,11 +3,7 @@ package org.cosmic.ide.ui.theme
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
-
 import androidx.annotation.StyleRes
-import androidx.appcompat.app.AppCompatActivity
-
 import org.cosmic.ide.R
 import org.cosmic.ide.compat.recreateCompat
 import org.cosmic.ide.compat.setThemeCompat

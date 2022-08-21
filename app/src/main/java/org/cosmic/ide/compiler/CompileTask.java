@@ -1,14 +1,11 @@
 package org.cosmic.ide.compiler;
 
-import android.content.Context;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.preference.PreferenceManager;
-
+import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
-import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
@@ -91,7 +88,8 @@ public class CompileTask extends Thread {
 
         // Compile Java Files
         try {
-            if (prefs.getString("key_java_compiler", activity.getString(R.string.javac)).equals(activity.getString(R.string.javac))) {
+            if (prefs.getString("key_java_compiler", activity.getString(R.string.javac))
+                    .equals(activity.getString(R.string.javac))) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
                 var javaTask = new JavacCompilationTask(prefs);
                 javaTask.doFullTask(activity.getProject());

@@ -1,17 +1,9 @@
 package org.cosmic.ide.preference
 
-import android.content.Context
 import android.content.SharedPreferences
-import android.os.Parcel
-
-import androidx.annotation.AnyRes
-import androidx.annotation.ArrayRes
 import androidx.annotation.BoolRes
-import androidx.annotation.DimenRes
-import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import androidx.core.content.edit
-
 import org.cosmic.ide.ApplicationLoader
 
 class BooleanSettingLiveData(

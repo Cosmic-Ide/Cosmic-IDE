@@ -1,14 +1,10 @@
 package org.cosmic.ide.preference
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-
 import androidx.annotation.AnyRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
-
 import org.cosmic.ide.ApplicationLoader
 
 abstract class SettingLiveData<T>(

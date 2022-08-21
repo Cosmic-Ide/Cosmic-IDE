@@ -36,7 +36,7 @@ class FernFlowerDecompiler {
             /*
              * Decompiled with Fernflower [ecc675ee43].
              */
-        """.trimIndent() + "\n"
+    """.trimIndent() + "\n"
 
     private fun defaultOptions() = mapOf(
         IFernflowerPreferences.HIDE_DEFAULT_CONSTRUCTOR to "0",

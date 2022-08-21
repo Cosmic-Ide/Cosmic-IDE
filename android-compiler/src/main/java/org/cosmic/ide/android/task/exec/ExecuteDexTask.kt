@@ -4,12 +4,10 @@ import android.content.SharedPreferences
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.JavaProject
-
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream

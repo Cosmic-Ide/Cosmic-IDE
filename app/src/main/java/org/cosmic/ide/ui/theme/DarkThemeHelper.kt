@@ -3,12 +3,9 @@ package org.cosmic.ide.ui.theme
 import android.app.Activity
 import android.app.Application
 import android.content.res.Configuration
-import android.os.Bundle
-
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegateCompat
-
 import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.preference.Settings
 import org.cosmic.ide.ui.utils.SimpleActivityLifecycleCallbacks
@@ -23,10 +20,10 @@ object DarkThemeHelper {
 
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
-                override fun onActivityDestroyed(activity: Activity) {
-                    activities -= activity as AppCompatActivity
-                }
-            })
+            override fun onActivityDestroyed(activity: Activity) {
+                activities -= activity as AppCompatActivity
+            }
+        })
     }
 
     @JvmStatic
@@ -40,7 +37,8 @@ object DarkThemeHelper {
             val nightMode = darkTheme
             if (activity is OnDarkThemeChangedListener) {
                 if (getUiModeNight(activity.delegate.localNightMode, activity)
-                    != getUiModeNight(nightMode, activity)) {
+                    != getUiModeNight(nightMode, activity)
+                ) {
                     activity.onDarkThemeChangedFromHelper(nightMode)
                 }
             } else {
@@ -60,13 +58,17 @@ object DarkThemeHelper {
             AppCompatDelegate.MODE_NIGHT_YES -> Configuration.UI_MODE_NIGHT_YES
             AppCompatDelegate.MODE_NIGHT_NO -> Configuration.UI_MODE_NIGHT_NO
             else ->
-                (activity.applicationContext.resources.configuration.uiMode
-                    and Configuration.UI_MODE_NIGHT_MASK)
+                (
+                    activity.applicationContext.resources.configuration.uiMode
+                        and Configuration.UI_MODE_NIGHT_MASK
+                    )
         }
 
     fun isInDarkTheme(activity: AppCompatActivity): Boolean =
-        (getUiModeNight(activity.delegate.localNightMode, activity)
-            == Configuration.UI_MODE_NIGHT_YES)
+        (
+            getUiModeNight(activity.delegate.localNightMode, activity)
+                == Configuration.UI_MODE_NIGHT_YES
+            )
 
     interface OnDarkThemeChangedListener {
         fun onDarkThemeChangedFromHelper(darkTheme: Int)

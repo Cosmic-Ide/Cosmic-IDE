@@ -7,25 +7,21 @@
 package org.cosmic.ide.preference
 
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-
 import androidx.preference.ListPreference
 import androidx.preference.ListPreferenceDialogFragmentCompat
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
 import com.takisoft.preferencex.PreferenceFragmentCompat
 
 class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE
         val builder = MaterialAlertDialogBuilder(requireContext())
-                .setTitle(preference.dialogTitle)
-                .setIcon(preference.dialogIcon)
-                .setPositiveButton(preference.positiveButtonText, this)
-                .setNegativeButton(preference.negativeButtonText, this)
+            .setTitle(preference.dialogTitle)
+            .setIcon(preference.dialogIcon)
+            .setPositiveButton(preference.positiveButtonText, this)
+            .setNegativeButton(preference.negativeButtonText, this)
         val contentView = onCreateDialogView(requireContext())
         if (contentView != null) {
             onBindDialogView(contentView)

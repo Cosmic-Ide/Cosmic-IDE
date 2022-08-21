@@ -2,7 +2,6 @@ package org.cosmic.ide.ui.treeview.file
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.annotation.Nullable
 import androidx.appcompat.content.res.AppCompatResources
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.treeview.model.TreeFolder

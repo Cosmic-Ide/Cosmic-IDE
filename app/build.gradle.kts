@@ -100,7 +100,7 @@ android {
                 "OSGI-OPT/**",
                 "jdtCompilerAdapter.jar"
             )
-        )  
+        )
     }
 }
 

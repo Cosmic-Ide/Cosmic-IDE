@@ -1,7 +1,6 @@
 package org.cosmic.ide.android.task.jar;
 
 import org.cosmic.ide.android.interfaces.*;
-import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.JavaProject;
 
 import java.io.BufferedInputStream;

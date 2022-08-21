@@ -88,9 +88,9 @@ public class TextMateColorScheme extends EditorColorScheme {
                 setColor(TEXT_NORMAL, Color.parseColor(foreground));
             }
 
-            String highlightedDelimetersBackground = (String) themeRaw.get("highlightedDelimetersBackground");
-            if (highlightedDelimetersBackground != null) {
-                setColor(HIGHLIGHTED_DELIMITERS_BACKGROUND, Color.parseColor(foreground));
+            String highlightedDelimetersForeground = (String) themeRaw.get("highlightedDelimetersForeground");
+            if (highlightedDelimetersForeground != null) {
+                setColor(HIGHLIGHTED_DELIMITERS_FOREGROUND, Color.parseColor(foreground));
             }
 
             String completionWindowBackground = (String) themeRaw.get("completionWindowBackground");

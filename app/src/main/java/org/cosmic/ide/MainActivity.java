@@ -48,6 +48,7 @@ import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.editor.completion.CustomCompletionItemAdapter;
 import org.cosmic.ide.editor.completion.CustomCompletionLayout;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.ui.utils.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.jf.baksmali.Baksmali;
@@ -94,6 +95,8 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
         getSupportActionBar().setTitle(getProject().getProjectName());
+ 
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.bottomButtons, false, false, false, true);
 
         if (binding.root instanceof DrawerLayout) {
             DrawerLayout drawer = (DrawerLayout) binding.root;

@@ -95,11 +95,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
                 });
         holder.background.setOnLongClickListener(
                 v -> {
-                    if (onProjectLongClickedListener != null) {
-                        if (position != RecyclerView.NO_POSITION) {
-                            return onProjectLongClickedListener.onLongClicked(
+                    if (onProjectLongClickedListener != null && position != RecyclerView.NO_POSITION) {
+                        return onProjectLongClickedListener.onLongClicked(
                                     mProjects.get(position));
-                        }
                     }
                     return false;
                 });

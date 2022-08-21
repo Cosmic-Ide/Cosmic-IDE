@@ -17,7 +17,7 @@ class SettingActivity : BaseActivity() {
         setSupportActionBar(binding.toolbar)
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
         getSupportActionBar()?.setHomeButtonEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { v -> onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { _ -> onBackPressed() }
 
         binding.appbar.setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
         val recyclerView: View? = findViewById(androidx.preference.R.id.recycler_view)

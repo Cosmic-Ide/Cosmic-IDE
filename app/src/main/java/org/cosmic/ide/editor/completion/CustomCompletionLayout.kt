@@ -45,11 +45,7 @@ class CustomCompletionLayout : CompletionLayout {
         layout.addView(mListView, LinearLayout.LayoutParams(-1, -1))
         mListView.setOnItemClickListener {
             _, _, position, _ ->
-            try {
-                mEditorAutoCompletion.select(position)
-            } catch (e: Exception) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
-            }
+            mEditorAutoCompletion.select(position)
         }
         setLoading(true)
         return layout

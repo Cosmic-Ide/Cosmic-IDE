@@ -77,8 +77,8 @@ class KotlinCompiler : Task {
             javaSourceRoots = sourceFiles.filter {
                 it.endsWith(".java")
             }.toTypedArray()
-            // incremental compiler needs this somewhy
-            moduleName = "project-kotlin"
+            // incremental compiler needs the module name somewhy
+            moduleName = "kotlin-module"
             noJdk = true
         }
 

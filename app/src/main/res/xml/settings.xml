@@ -73,6 +73,11 @@
             android:title="@string/our_discord"
             android:summary="@string/join_discord" />
 
+        <Preference
+            android:key="@string/pref_key_github"
+            android:title="@string/our_github"
+            android:summary="@string/view_github_repository" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

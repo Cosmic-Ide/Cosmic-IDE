@@ -30,7 +30,7 @@ class ApplicationLoader : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val context: Context = ApplicationLoader.applicationContext()
+        val context: Context = applicationContext
         val dataDirectory = context.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = context.getResources()
         Environment.init(File(dataDirectory, "compiler-modules"))
@@ -45,7 +45,7 @@ class ApplicationLoader : Application() {
             _, throwable ->
             val intent = Intent(getApplicationContext(), DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            intent.putExtra("error", Log.getStackTraceString(throwable))
+            intent.putExtra("error", throwable.stackTraceToString())
             val pendingIntent = PendingIntent.getActivity(context, 1, intent, (PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE))
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager

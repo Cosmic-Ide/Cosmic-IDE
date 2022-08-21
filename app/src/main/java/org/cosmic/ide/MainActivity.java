@@ -114,60 +114,58 @@ public class MainActivity extends BaseActivity {
 
         configureEditor(binding.editor);
 
-        CoroutineUtil.inParallel(() -> {
+        try {
+            indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
+            if (indexer.notHas("currentFile")) {
+                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
+                indexer.flush();
+             }
+            currentWorkingFilePath = indexer.getString("currentFile");
+            getSupportActionBar().setSubtitle(new File(currentWorkingFilePath).getName());
+        } catch (Exception e) {
+            dialog("Exception", e.getMessage(), true);
+        }
+        if (currentWorkingFilePath.endsWith(".kt")) {
+            setEditorLanguage(LANGUAGE_KOTLIN);
+        } else if (currentWorkingFilePath.endsWith(".java")
+                 || currentWorkingFilePath.endsWith(".jav")) {
+            setEditorLanguage(LANGUAGE_JAVA);
+        }
+
+        final var file = new File(currentWorkingFilePath);
+        if (file.exists()) {
             try {
-                indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
-                if (indexer.notHas("currentFile")) {
-                    indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
-                    indexer.flush();
-                }
-                currentWorkingFilePath = indexer.getString("currentFile");
-                getSupportActionBar().setSubtitle(new File(currentWorkingFilePath).getName());
-            } catch (Exception e) {
-                dialog("Exception", e.getMessage(), true);
+                binding.editor.setText(FileUtil.readFile(file));
+            } catch (IOException e) {
+                dialog("Failed to read file", getString(e), true);
             }
-            if (currentWorkingFilePath.endsWith(".kt")) {
-                setEditorLanguage(LANGUAGE_KOTLIN);
-            } else if (currentWorkingFilePath.endsWith(".java")
-                    || currentWorkingFilePath.endsWith(".jav")) {
-                setEditorLanguage(LANGUAGE_JAVA);
-            }
+        }
 
-            final var file = new File(currentWorkingFilePath);
-            if (file.exists()) {
-                try {
-                    binding.editor.setText(FileUtil.readFile(file));
-                } catch (IOException e) {
-                    dialog("Failed to read file", getString(e), true);
-                }
-            }
-
-            if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-                ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
-            }
-            final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
-            if (!stdlib.exists()) {
-                try {
-                    FileUtil.writeFile(
-                            getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
+        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
+            ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
+        }
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
+        if (!stdlib.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
                             stdlib.getAbsolutePath());
-                } catch (Exception e) {
-                    showErr(getString(e));
-                }
+            } catch (Exception e) {
+                showErr(getString(e));
             }
-            if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
-                ZipUtil.unzipFromAssets(this, "compiler-modules.zip", FileUtil.getDataDir());
+        }
+        if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
+            ZipUtil.unzipFromAssets(this, "compiler-modules.zip", FileUtil.getDataDir());
+        }
+        var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        if (!output.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
+            } catch (Exception e) {
+                showErr(getString(e));
             }
-            var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
-            if (!output.exists()) {
-                try {
-                    FileUtil.writeFile(
-                            getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
-                } catch (Exception e) {
-                    showErr(getString(e));
-                }
-            }
-        }); 
+        }
 
         /* Create Loading Dialog */
         buildLoadingDialog();

@@ -46,6 +46,9 @@
     <string name="about">Sobre o aplicativo</string>
     <string name="our_discord">Nosso Discord</string>
     <string name="join_discord">Entre no nosso servidor do Discord</string>
+    <string name="our_github">Nosso Github</string>
+    <string name="view_github_repository">Veja nosso repositório do Github</string>
+ 
     <string name="app_version_text">Versão</string>
     <string name="follow_system">Follow System</string>
     <string name="off">Desligado</string>

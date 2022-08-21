@@ -39,8 +39,10 @@
     <string name="md3">Материал Дизайн 3</string>
     <string name="dark_theme">Темная тема</string>
     <string name="about">О приложении</string>
-    <string name="our_discord">Наш Дискорд</string>
-    <string name="join_discord">Присоединяйтесь к нашему дискорд каналу</string>
+    <string name="our_discord">Наш Discord</string>
+    <string name="join_discord">Присоединяйтесь к нашему Discord каналу</string>
+    <string name="our_github">Наш Github</string>
+    <string name="view_github_repository">Посмотреть наш репозиторий Github</string>
     <string name="app_version_text">Версия</string>
     <string name="follow_system">Использовать системную тему</string>
     <string name="off">Выключить</string>

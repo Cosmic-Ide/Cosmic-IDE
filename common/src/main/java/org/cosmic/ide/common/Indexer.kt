@@ -70,7 +70,7 @@ class Indexer {
     fun flush() {
         try {
             FileUtil.writeFile(filePath, asString())
-        } catch (e: IOException | JSONException) {
+        } catch (e: Throwable) {
         }
     }
 }

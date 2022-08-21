@@ -13,9 +13,6 @@
     <string name="delete_file">Удалить %1$s?</string>
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
-    <string name="cancel">Отмена</string>
-    <string name="compile_project">Скомпилировать проект</string>
-    <string name="java_file">Java-файл</string>
 
     <!-- Строки, используемые ProjectActivity -->
     <string name="projects">Проекты</string>

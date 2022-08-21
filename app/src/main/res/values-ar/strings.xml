@@ -11,12 +11,8 @@
     <string name="create_kotlin_class">إنشاء صنف كوتلن</string>
     <string name="create_directory">إنشاء دليل</string>
     <string name="delete_file">حذف %1$s?</string>
-    <string name="create_file">إنشاء ملف</string>
     <string name="delete">حذف</string>
     <string name="rename">إعادة تسمية</string>
-    <string name="cancel">إلغاء</string>
-    <string name="compile_project">تجميع المشروع</string>
-    <string name="java_file">ملف جافا</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">المشاريع</string>
@@ -42,6 +38,9 @@
     <string name="about">حول التطبيق</string>
     <string name="our_discord">نا Discord</string>
     <string name="join_discord">انضم إلى قناة Discord الخاصة بنا</string>
+    <string name="our_github">نا Github</string>
+    <string name="view_github_repository">عرض مستودع Github الخاص بنا</string>
+
     <string name="app_version_text">الإصدار</string>
     <string name="follow_system">اتبع النظام</string>
     <string name="off">عن</string>

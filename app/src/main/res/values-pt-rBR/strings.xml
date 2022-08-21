@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Cosmic IDE</string>
 
     <!-- Strings used by MainActivity -->
     <string name="run">Compilar</string>
-    <string name="smali" translatable="false">Smali</string>
-    <string name="disassemble" translatable="false">Disassemble</string>
-    <string name="smali2java" translatable="false">Smali2Java</string>
     <string name="compilation_running">Compilando o projeto</string>
     <string name="file_name">Nome do arquivo</string>
     <string name="directory_name">Nome do diretório</string>
@@ -18,9 +14,6 @@
     <string name="delete_file">Deletar %1$s?</string>
     <string name="delete">Deletar</string>
     <string name="rename">Renomear</string>
-    <string name="cancel">Cancelar</string>
-    <string name="compile_project">Compilar projeto</string>
-    <string name="java_file">Arquivo Java</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projetos</string>

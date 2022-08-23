@@ -7,6 +7,7 @@
     <string name="smali" translatable="false">Smali</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="smali2java" translatable="false">Smali2Java</string>
+    <string name="jar2dex" translatable="false">Jar2Dex</string>
     <string name="compilation_running">Compiling a project</string>
     <string name="file_name">File Name</string>
     <string name="directory_name">Directory Name</string>

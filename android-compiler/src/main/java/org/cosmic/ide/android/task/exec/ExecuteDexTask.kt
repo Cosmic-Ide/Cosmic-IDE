@@ -61,7 +61,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
         if (libs != null) {
             // check if all libs have been pre-dexed or not
             for (lib in libs) {
-                val outDex = project.getBuildDirPath() + lib.getName().replace(".jar", ".dex")
+                val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
 
                 if (!File(outDex).exists()) {
                     D8.run(
@@ -78,7 +78,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
             }
         }
 
-        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
+        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-Beta.jar")
 
         val calledClass = loader.loadClass(clazz)
 

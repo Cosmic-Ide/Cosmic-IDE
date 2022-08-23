@@ -650,7 +650,6 @@ public class MainActivity extends BaseActivity {
             var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
-                // Somewhy the dialog is not showing
                 compile(false, true);
             }
             var classes = new ArrayList<String>();

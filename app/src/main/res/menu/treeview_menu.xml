@@ -27,4 +27,9 @@
         android:title="@string/delete"
         app:showAsAction="never" />
 
+    <item
+        android:id="@id/dex_menu_bttn"
+        android:title="@string/jar2dex"
+        android:visible="false"
+        app:showAsAction="never" />
 </menu>

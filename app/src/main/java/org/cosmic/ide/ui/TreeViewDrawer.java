@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.R;
+import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.CodeTemplate;
 import org.cosmic.ide.ui.treeview.TreeNode;
@@ -152,17 +153,22 @@ public class TreeViewDrawer extends Fragment {
         var inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
+        final var nodeFile = node.getContent().getFile();
 
-        if (node.getContent().getFile().getName().equals(activity.getProject().getProjectName())
+        if (nodeFile.getName().equals(activity.getProject().getProjectName())
                 && node.getLevel() == 0) {
             /* Disable Option to delete the root folder  */
             popup.getMenu().getItem(2).setVisible(false);
         }
 
-        if (node.getContent().getFile().isFile()) {
+        if (nodeFile.isFile()) {
             popup.getMenu().getItem(0).setVisible(false);
             popup.getMenu().getItem(1).setVisible(false);
             popup.getMenu().getItem(2).setVisible(false);
+        }
+        
+        if (nodeFile.getName().endsWith(".jar")) {
+            popup.getMenu().getItem(5).setVisible(true);
         }
 
         popup.setOnMenuItemClickListener(
@@ -178,7 +184,10 @@ public class TreeViewDrawer extends Fragment {
                         showConfirmDeleteDialog(node);
                     } else if (id == R.id.rename_menu_bttn) {
                         showRenameFileDialog(node);
-                    }
+                    } else if (id == R.id.dex_menu_bttn) {
+                        D8Task.compileJar(nodeFile.getAbsolutePath());
+                        partialRefresh();
+                    } 
                     return false;
                 });
     }

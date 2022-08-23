@@ -56,7 +56,6 @@ public class CompileTask extends Thread {
             Looper.prepare();
         }
 
-        final var prefs = ApplicationLoader.getDefaultSharedPreferences();
         try {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
             final String code =
@@ -73,8 +72,27 @@ public class CompileTask extends Thread {
             listener.onFailed(e.getMessage());
         }
 
-        // Run kotlinc
         var time = System.currentTimeMillis();
+        // Compile Kotlin files
+        compileKotlin();
+
+        // Compile Java Files
+        compileJava();
+
+        ecjTime = System.currentTimeMillis() - time;
+        time = System.currentTimeMillis();
+
+        // Run D8
+        compileDex();
+        d8Time = System.currentTimeMillis() - time;
+
+        listener.onSuccess();
+
+        // Executes the class by loading the dex file
+        executeDex();
+    }
+
+    private void compileKotlin() {
         listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
         try {
             new KotlinCompiler().doFullTask(activity.getProject());
@@ -85,8 +103,10 @@ public class CompileTask extends Thread {
             listener.onFailed(Log.getStackTraceString(e));
             return;
         }
+    }
 
-        // Compile Java Files
+    private void compileJava() {
+        final var prefs = ApplicationLoader.getDefaultSharedPreferences();
         try {
             if (prefs.getString("key_java_compiler", activity.getString(R.string.javac))
                     .equals(activity.getString(R.string.javac))) {
@@ -105,11 +125,9 @@ public class CompileTask extends Thread {
             listener.onFailed(Log.getStackTraceString(e));
             return;
         }
+    }
 
-        ecjTime = System.currentTimeMillis() - time;
-        time = System.currentTimeMillis();
-
-        // Run D8
+    private void compileDex() {
         listener.onCurrentBuildStageChanged(STAGE_D8);
         try {
             new D8Task().doFullTask(activity.getProject());
@@ -117,11 +135,9 @@ public class CompileTask extends Thread {
             listener.onFailed(e.getMessage());
             return;
         }
-        d8Time = System.currentTimeMillis() - time;
+    }
 
-        listener.onSuccess();
-
-        // Code that executes the final dex
+    private void executeDex() {
         try {
             listener.onCurrentBuildStageChanged(STAGE_LOADING_DEX);
             final var classes = activity.getClassesFromDex();
@@ -133,7 +149,7 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task = new ExecuteDexTask(prefs, classes[item]);
+                            var task = new ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classes[item]);
                             try {
                                 task.doFullTask(activity.getProject());
                             } catch (InvocationTargetException e) {

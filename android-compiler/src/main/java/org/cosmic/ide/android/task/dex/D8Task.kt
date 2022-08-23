@@ -12,6 +12,21 @@ import java.nio.file.Paths
 
 class D8Task : Task {
 
+    companion object {
+        @JvmStatic
+        fun compileJar(jarFile: String) {
+            val outputDex = jarFile.replaceAfterLast('.', "dex")
+            D8.run(
+                D8Command.builder()
+                    .setMinApiLevel(26)
+                    .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                    .addProgramFiles(Paths.get(jarFile))
+                    .setOutput(Paths.get(outputDex), OutputMode.DexIndexed)
+                    .build()
+            )
+        }
+    }
+
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
         D8.run(

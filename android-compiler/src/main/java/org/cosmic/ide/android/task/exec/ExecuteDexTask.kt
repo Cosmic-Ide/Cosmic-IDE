@@ -24,7 +24,6 @@ class ExecuteDexTask(
 ) : Task {
 
     private var result: Any? = null
-    private val log = StringBuilder()
 
     override fun getTaskName(): String {
         return "Execute Java Task"
@@ -36,8 +35,8 @@ class ExecuteDexTask(
      */
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
-        val defaultIn = System.in
-        val defaultOut = System.out
+        val defaultIn = System.`in`
+        val defaultOut = System.`out`
         val defaultErr = System.err
         val dexFile = project.getBinDirPath() + "classes.dex"
         System.setOut(outputStream)
@@ -91,19 +90,10 @@ class ExecuteDexTask(
             result = method.invoke(classInstance, param as? Any)
         }
         if (result != null) {
-            log.append(result.toString())
+            System.out.println(result.toString())
         }
         System.setOut(defaultOut)
         System.setErr(defaultErr)
         System.setIn(defaultIn)
     }
-
-    /*
-     * Returns all the system logs recorded while executing the method
-     */
-    fun getLogs(): String {
-        return log.toString()
-    }
-    
-    fun getOutputStream(): OutputStream = outStream
 }

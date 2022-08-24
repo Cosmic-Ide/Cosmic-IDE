@@ -1,10 +1,12 @@
 package org.cosmic.ide.compiler;
 
+import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
 import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.MainActivity;
+import org.cosmic.ide.ConsoleActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
@@ -15,7 +17,6 @@ import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
 import org.cosmic.ide.common.util.FileUtil;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 
 public class CompileTask extends Thread {
 
@@ -149,41 +150,10 @@ public class CompileTask extends Thread {
                         "Select a class to execute",
                         classes,
                         (dialog, item) -> {
-                            var task = new ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classes[item]);
-                            try {
-                                task.doFullTask(activity.getProject());
-                            } catch (InvocationTargetException e) {
-                                activity.dialog(
-                                        "Failed...",
-                                        "Runtime error: "
-                                                + e.getMessage()
-                                                + "\n\nSystem logs:\n"
-                                                + task.getLogs(),
-                                        true);
-                                return;
-                            } catch (Exception e) {
-                                activity.dialog(
-                                        "Failed...",
-                                        "Couldn't execute the dex: "
-                                                + e.toString()
-                                                + "\n\nSystem logs:\n"
-                                                + task.getLogs()
-                                                + "\n"
-                                                + Log.getStackTraceString(e),
-                                        true);
-                                return;
-                            }
-                            var s = new StringBuilder();
-
-                            s.append("Compiling took: ");
-                            s.append(String.valueOf(ecjTime));
-                            s.append("ms, ");
-                            s.append("D8");
-                            s.append(" took: ");
-                            s.append(String.valueOf(d8Time));
-                            s.append("ms");
-
-                            activity.dialog(s.toString(), task.getLogs(), true);
+                            var intent = new Intent(activity, ConsoleActivity.class);
+                            intent.putExtra("project_path", activity.getProject().getRootDirPath());
+                            intent.putExtra("class_to_execute", classes[item]
+                            startActivity(intent);
                         });
             }
         } catch (Throwable e) {

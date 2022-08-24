@@ -11,20 +11,20 @@ import org.cosmic.ide.project.JavaProject
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
+import java.io.InputStream
 import java.lang.reflect.Modifier
 import java.nio.file.Paths
 
-class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
+class ExecuteDexTask(
+    val prefs: SharedPreferences,
+    val clazz: String,
+    val inputStream: InputStream,
+    val outputStream: PrintStream,
+    val errorStream: PrintStream
+) : Task {
 
-    private val clazz: String
     private var result: Any? = null
     private val log = StringBuilder()
-    private val prefs: SharedPreferences
-
-    init {
-        clazz = claz
-        prefs = preferences
-    }
 
     override fun getTaskName(): String {
         return "Execute Java Task"
@@ -36,21 +36,13 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
      */
     @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
+        val defaultIn = System.in
         val defaultOut = System.out
         val defaultErr = System.err
         val dexFile = project.getBinDirPath() + "classes.dex"
-        val out =
-            object : OutputStream() {
-                override fun write(b: Int) {
-                    log.append(b.toChar())
-                }
-
-                override fun toString(): String {
-                    return log.toString()
-                }
-            }
-        System.setOut(PrintStream(out))
-        System.setErr(PrintStream(out))
+        System.setOut(outputStream)
+        System.setErr(errorStream)
+        System.setIn(inputStream)
 
         // Load the dex file into a ClassLoader
         val dexLoader = MultipleDexClassLoader()
@@ -103,6 +95,7 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
         }
         System.setOut(defaultOut)
         System.setErr(defaultErr)
+        System.setIn(defaultIn)
     }
 
     /*
@@ -111,4 +104,6 @@ class ExecuteDexTask(preferences: SharedPreferences, claz: String) : Task {
     fun getLogs(): String {
         return log.toString()
     }
+    
+    fun getOutputStream(): OutputStream = outStream
 }

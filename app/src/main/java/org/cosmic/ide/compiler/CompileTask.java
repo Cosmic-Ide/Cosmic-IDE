@@ -151,7 +151,7 @@ public class CompileTask extends Thread {
                         classes,
                         (dialog, item) -> {
                             var intent = new Intent(activity, ConsoleActivity.class);
-                            intent.putExtra("project_path", activity.getProject().getRootDirPath());
+                            intent.putExtra("project_path", activity.getProject().getProjectDirPath());
                             intent.putExtra("class_to_execute", classes[item]);
                             activity.startActivity(intent);
                         });

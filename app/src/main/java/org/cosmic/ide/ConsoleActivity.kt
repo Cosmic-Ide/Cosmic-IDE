@@ -1,6 +1,5 @@
 package org.cosmic.ide
 
-
 import android.content.ClipboardManager
 import android.content.ClipData
 import android.os.Bundle

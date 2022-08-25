@@ -140,6 +140,7 @@ public class IdentifierAutoComplete {
                 }
             }
         }
+/*
         if (userIdentifiers != null) {
             List<CompletionItem> words = new ArrayList<>();
             List<String> dest = new ArrayList<>();
@@ -148,6 +149,7 @@ public class IdentifierAutoComplete {
                 publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
             }
         }
+*/
     }
 
     /**

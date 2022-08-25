@@ -66,7 +66,7 @@ public class JavaProject {
     }
 
     public String getLibDirPath() {
-        return getProjectDirPath() + "lib" + File.separator;
+        return getProjectDirPath() + "libs" + File.separator;
     }
 
     public String getBuildDirPath() {

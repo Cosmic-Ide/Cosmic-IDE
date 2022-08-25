@@ -33,9 +33,9 @@ class ConsoleActivity : BaseActivity() {
             val projectPath = bundle!!.getString("project_path")
             val console = binding.console
             val project = JavaProject(File(projectPath!!))
-            val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
+            val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz!!, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
             try {
-                task.doFullTask()
+                task.doFullTask(project)
             } catch (e: Throwable) {
                 e.printStackTrace(console.getErrorStream())
             } 

@@ -153,7 +153,7 @@ public class CompileTask extends Thread {
                             var intent = new Intent(activity, ConsoleActivity.class);
                             intent.putExtra("project_path", activity.getProject().getRootDirPath());
                             intent.putExtra("class_to_execute", classes[item]);
-                            startActivity(intent);
+                            activity.startActivity(intent);
                         });
             }
         } catch (Throwable e) {

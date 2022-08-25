@@ -29,8 +29,8 @@ class ConsoleActivity : BaseActivity() {
         val bundle = getIntent().getExtras()
 
         if (bundle != null) {
-            val clazz = bundle!!.getString("class_to_execute")
-            val projectPath = bundle!!.getString("project_path")
+            val clazz = bundle.getString("class_to_execute")
+            val projectPath = bundle.getString("project_path")
             val console = binding.console
             val project = JavaProject(File(projectPath!!))
             val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz!!, console.getInputStream(), console.getOutputStream(), console.getErrorStream())

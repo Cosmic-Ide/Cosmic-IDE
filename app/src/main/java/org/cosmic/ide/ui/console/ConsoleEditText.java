@@ -370,3 +370,4 @@ public class ConsoleEditText extends AppCompatEditText {
 			return returnStr;
 		}
 	}
+}

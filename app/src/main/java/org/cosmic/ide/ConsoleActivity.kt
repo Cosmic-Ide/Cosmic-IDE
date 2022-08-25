@@ -9,6 +9,7 @@ import org.cosmic.ide.databinding.ActivityConsoleBinding
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.ui.utils.addSystemWindowInsetToPadding
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
+import java.io.File
 import java.lang.reflect.InvocationTargetException
 
 class ConsoleActivity : BaseActivity() {
@@ -31,43 +32,13 @@ class ConsoleActivity : BaseActivity() {
             val clazz = bundle!!.getString("class_to_execute")
             val projectPath = bundle!!.getString("project_path")
             val console = binding.console
-            val project = JavaProject(File(projectPath))
+            val project = JavaProject(File(projectPath!!))
             val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
             try {
-                task.doFullTask(getProject())
-            } catch (e: InvocationTargetException) {
-                dialog(
-                        "Failed...",
-                        "Runtime error: "
-                                + e.message
-                                + "\n\nSystem logs:\n"
-                                + task.getLogs())
-            } catch (e: Exception) {
-                dialog(
-                        "Failed...",
-                        "Couldn't execute the dex: "
-                                + e.toString()
-                                + "\n\nSystem logs:\n"
-                                + task.getLogs()
-                                + "\n"
-                                + e.stackTraceToString())
-            }
+                task.doFullTask()
+            } catch (e: Throwable) {
+                e.printStackTrace(console.getErrorStream())
+            } 
         }
-    }
-
-    private fun dialog(title: String, message: String) {
-        val dialog =
-                MaterialAlertDialogBuilder(this)
-                        .setTitle(title)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setNegativeButton(android.R.string.cancel, null)
-        dialog.setNeutralButton(
-                "Copy",
-                { dialogInterface, i ->
-                        ((getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                                .setPrimaryClip(ClipData.newPlainText("", message))
-                    })
-        dialog.create().show()
     }
 }

@@ -5,6 +5,7 @@ import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
 import org.cosmic.ide.android.interfaces.Task
+import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.JavaProject
@@ -55,14 +56,16 @@ class ExecuteDexTask(
                 val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
 
                 if (!File(outDex).exists()) {
-                    D8.run(
-                        D8Command.builder()
-                            .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
-                            .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
-                            .addProgramFiles(lib.toPath())
-                            .build()
-                    )
-                    File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
+                    CoroutineUtil.inParallel {
+                        D8.run(
+                            D8Command.builder()
+                                .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
+                                .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                                .addProgramFiles(lib.toPath())
+                                .build()
+                        )
+                        File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
+                    } 
                 }
                 // load library into ClassLoader
                 dexLoader.loadDex(outDex)
@@ -80,18 +83,21 @@ class ExecuteDexTask(
         // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()
 
-        if (Modifier.isStatic(method.getModifiers())) {
-            // If the method is static, directly call it
-            result = method.invoke(null, param as? Any)
-        } else if (Modifier.isPublic(method.getModifiers())) {
-            // If the method is public, create an instance of the class,
-            // and then call it on the instance
-            val classInstance = calledClass.getConstructor().newInstance()
-            result = method.invoke(classInstance, param as? Any)
+        CoroutineUtil.inParallel {
+
+            if (Modifier.isStatic(method.getModifiers())) {
+                // If the method is static, directly call it
+                result = method.invoke(null, param as? Any)
+            } else if (Modifier.isPublic(method.getModifiers())) {
+                // If the method is public, create an instance of the class,
+                // and then call it on the instance
+                val classInstance = calledClass.getConstructor().newInstance()
+                result = method.invoke(classInstance, param as? Any)
+            }
         }
         if (result != null) {
             System.out.println(result.toString())
-        }
+        } 
         System.setOut(defaultOut)
         System.setErr(defaultErr)
         System.setIn(defaultIn)

@@ -34,12 +34,10 @@ class ConsoleActivity : BaseActivity() {
             val console = binding.console
             val project = JavaProject(File(projectPath!!))
             val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz!!, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
-            CoroutineUtil.inParallel {
-                try { 
-                    task.doFullTask(project)
-                } catch (e: Throwable) {
-                    e.printStackTrace(console.getErrorStream())
-                }
+            try { 
+                task.doFullTask(project)
+            } catch (e: Throwable) {
+                e.printStackTrace(console.getErrorStream())
             }
         }
     }

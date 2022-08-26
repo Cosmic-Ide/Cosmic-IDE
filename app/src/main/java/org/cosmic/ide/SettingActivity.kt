@@ -12,14 +12,17 @@ class SettingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingBinding.inflate(getLayoutInflater())
-        setContentView(binding.getRoot())
+        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
         getSupportActionBar()?.setHomeButtonEnabled(true)
         binding.toolbar.setNavigationOnClickListener { _ -> onBackPressed() }
 
-        binding.appbar.setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
+        binding.appbar.apply {
+            setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
+            addSystemWindowInsetToPadding(false, true, false, false)
+        }
         val recyclerView: View? = findViewById(androidx.preference.R.id.recycler_view)
         recyclerView?.addSystemWindowInsetToPadding(false, false, false, true)
     }

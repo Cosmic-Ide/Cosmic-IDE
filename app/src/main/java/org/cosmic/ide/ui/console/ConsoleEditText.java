@@ -1,4 +1,4 @@
-package kz.pet;
+package org.cosmic.ide.ui.console;
 
 import android.content.Context;
 import android.graphics.Canvas;

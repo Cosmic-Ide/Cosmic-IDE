@@ -8,6 +8,7 @@ import org.cosmic.ide.databinding.ActivityConsoleBinding
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.ui.utils.addSystemWindowInsetToPadding
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
+import org.cosmic.ide.common.util.CoroutineUtil
 import java.io.File
 import java.lang.reflect.InvocationTargetException
 
@@ -33,11 +34,13 @@ class ConsoleActivity : BaseActivity() {
             val console = binding.console
             val project = JavaProject(File(projectPath!!))
             val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz!!, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
-            try {
-                task.doFullTask(project)
-            } catch (e: Throwable) {
-                e.printStackTrace(console.getErrorStream())
-            } 
+            CoroutineUtil.inParallel {
+                try { 
+                    task.doFullTask(project)
+                } catch (e: Throwable) {
+                    e.printStackTrace(console.getErrorStream())
+                }
+            }
         }
     }
 }

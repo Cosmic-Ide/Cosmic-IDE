@@ -83,7 +83,7 @@ class ExecuteDexTask(
         // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()
 
-        CoroutineUtil.inParallel {
+        Thread {
 
             if (Modifier.isStatic(method.getModifiers())) {
                 // If the method is static, directly call it
@@ -94,7 +94,7 @@ class ExecuteDexTask(
                 val classInstance = calledClass.getConstructor().newInstance()
                 result = method.invoke(classInstance, param as? Any)
             }
-        }
+        }.start()
         if (result != null) {
             System.out.println(result.toString())
         } 

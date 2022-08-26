@@ -94,12 +94,12 @@ class ExecuteDexTask(
                 val classInstance = calledClass.getConstructor().newInstance()
                 result = method.invoke(classInstance, param as? Any)
             }
+            if (result != null) {
+                System.out.println(result.toString())
+            } 
+            System.setOut(defaultOut)
+            System.setErr(defaultErr)
+            System.setIn(defaultIn)
         }.start()
-        if (result != null) {
-            System.out.println(result.toString())
-        } 
-        System.setOut(defaultOut)
-        System.setErr(defaultErr)
-        System.setIn(defaultIn)
     }
 }

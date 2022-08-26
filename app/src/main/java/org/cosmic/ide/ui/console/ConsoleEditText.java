@@ -132,7 +132,6 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
             int bytesRead = mStdoutBuffer.read(mReceiveBuffer, 0, bytesToRead);
-//                        mEmulator.append(mReceiveBuffer, 0, bytesRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStdout(out);
@@ -146,16 +145,11 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
             int bytesRead = mStderrBuffer.read(mReceiveBuffer, 0, bytesToRead);
-//                        mEmulator.append(mReceiveBuffer, 0, bytesRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStderr(out);
         } catch (InterruptedException e) {
         }
-//
-//        String out = new String(Character.toChars(read));
-//        mLength = mLength + out.length();
-//        appendStdout(out);
     }
 
     @WorkerThread
@@ -181,24 +175,18 @@ public class ConsoleEditText extends AppCompatEditText {
 
     @UiThread
     private void appendStdout(final CharSequence spannableString) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                append(spannableString);
-            }
+        mHandler.post(() -> {
+            append(spannableString);
         });
     }
 
     @UiThread
     private void appendStderr(final CharSequence str) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                SpannableString spannableString = new SpannableString(str);
-                spannableString.setSpan(new ForegroundColorSpan(Color.RED), 0, str.length(),
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                append(spannableString);
-            }
+        mHandler.post(() -> {
+            SpannableString spannableString = new SpannableString(str);
+            spannableString.setSpan(new ForegroundColorSpan(Color.RED), 0, str.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            append(spannableString);
         });
     }
 

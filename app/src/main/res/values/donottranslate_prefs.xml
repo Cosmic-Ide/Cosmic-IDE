@@ -8,6 +8,7 @@
     <string name="pref_key_java_compiler">key_java_compiler</string>
     <string name="pref_key_java_formatter">key_java_formatter</string>
     <string name="pref_key_java_disassembler">key_java_disassembler</string>
+    <string name="pref_key_program_arguments">key_program_arguments</string>
     <string name="pref_key_app_version">key_app_version</string>
     <string name="pref_key_discord">key_discord</string>
     <string name="pref_key_github">key_github</string>

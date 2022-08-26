@@ -32,7 +32,11 @@
                 android:id="@+id/console"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:gravity="top|left"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textMultiLine|textNoSuggestions|text"
+                android:typeface="monospace" />
             </HorizontalScrollView>
         </ScrollView>
 

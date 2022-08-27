@@ -62,7 +62,6 @@ class ConsoleActivity : BaseActivity() {
 
     private fun executeDex() {
         val console = binding.console
-//        console.resetState();
         val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classToExecute, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
         try { 
             task.doFullTask(project)
@@ -73,6 +72,5 @@ class ConsoleActivity : BaseActivity() {
         } catch (e: Error) {
             e.printStackTrace(console.getErrorStream())
         }
-        console.stop()
     }
 }

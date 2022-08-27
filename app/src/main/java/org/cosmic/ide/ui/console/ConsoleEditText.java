@@ -34,9 +34,9 @@ public class ConsoleEditText extends AppCompatEditText {
 	private int mLength = 0;
 	
 	//out, in and err stream
-	private  PrintStream outputStream;
-	private  InputStream inputStream;
-	private  PrintStream errorStream;
+	private PrintStream outputStream;
+	private InputStream inputStream;
+	private PrintStream errorStream;
 	
 	/**
 	* uses for input
@@ -46,18 +46,18 @@ public class ConsoleEditText extends AppCompatEditText {
 	/**
 	* buffer for output
 	*/
-	private ByteQueue mStdoutBuffer = new ByteQueue(IntegerQueue.QUEUE_SIZE);
+	private ByteQueue mStdoutBuffer = new ByteQueue(4 * 1024);
 	
 	/**
 	* buffer for output
 	*/
-	private ByteQueue mStderrBuffer = new ByteQueue(IntegerQueue.QUEUE_SIZE);
+	private ByteQueue mStderrBuffer = new ByteQueue(4 * 1024);
 	private AtomicBoolean isRunning = new AtomicBoolean(true);
 	
 	//filter input text, block a part of text
 	private TextListener mTextListener = new TextListener();
 	private EnterListener mEnterListener = new EnterListener();
-	private byte[] mReceiveBuffer;
+	private byte[] mReceiveBuffer = new byte[4 * 1024];
 	private final Handler mHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message msg) {
@@ -109,22 +109,12 @@ public class ConsoleEditText extends AppCompatEditText {
 	}
 	
 	private void createIOStream() {
-		mReceiveBuffer = new byte[4 * 1024];
-		mStdoutBuffer = new ByteQueue(4 * 1024);
-		mStderrBuffer = new ByteQueue(4 * 1024);
-		
 		inputStream = new ConsoleInputStream(mInputBuffer);
-		outputStream = new PrintStream(new ConsoleOutputStream(mStdoutBuffer, new StdListener() {
-			@Override
-			public void onUpdate() {
-				mHandler.sendMessage(mHandler.obtainMessage(NEW_OUTPUT));
-			}
+		outputStream = new PrintStream(new ConsoleOutputStream(mStdoutBuffer, () -> {
+			mHandler.sendMessage(mHandler.obtainMessage(NEW_OUTPUT));
 		}));
-		errorStream = new PrintStream(new ConsoleErrorStream(mStderrBuffer, new StdListener() {
-			@Override
-			public void onUpdate() {
-				mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR));
-			}
+		errorStream = new PrintStream(new ConsoleErrorStream(mStderrBuffer, () -> {
+	        mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR));
 		}));
 	}
 	
@@ -138,7 +128,7 @@ public class ConsoleEditText extends AppCompatEditText {
 			String out = new String(mReceiveBuffer, 0, bytesRead);
 			mLength = mLength + out.length();
 			appendStdout(out);
-			} catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 		}
 	}
 	
@@ -152,7 +142,7 @@ public class ConsoleEditText extends AppCompatEditText {
 			String out = new String(mReceiveBuffer, 0, bytesRead);
 			mLength = mLength + out.length();
 			appendStderr(out);
-			} catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 		}
 		//
 		//        String out = new String(Character.toChars(read));
@@ -183,24 +173,18 @@ public class ConsoleEditText extends AppCompatEditText {
 	
 	@UiThread
 	private void appendStdout(final CharSequence spannableString) {
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				append(spannableString);
-			}
+		mHandler.post(() -> {
+		    append(spannableString);
 		});
 	}
 	
 	@UiThread
 	private void appendStderr(final CharSequence str) {
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				SpannableString spannableString = new SpannableString(str);
-				spannableString.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, str.length(),
-				Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-				append(spannableString);
-			}
+		mHandler.post(() -> {
+			SpannableString spannableString = new SpannableString(str);
+			spannableString.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, str.length(),
+			Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			append(spannableString);
 		});
 	}
 	
@@ -228,7 +212,7 @@ public class ConsoleEditText extends AppCompatEditText {
 			try {
 				mStdoutBuffer.write(b, off, len);
 				listener.onUpdate();
-				} catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -363,7 +347,7 @@ public class ConsoleEditText extends AppCompatEditText {
 					returnStr = TextUtils.concat(curStr.subSequence(0, newStr.length()), TextListener.this.removeStr(curStr.subSequence(newStr.length(), curStr.length()), dstart + curStr.length()));
 					} else {
 					// Case Replace chars.
-					returnStr = TextListener.this.updateStr(curStr, dstart, newStr);
+					returnStr = updateStr(curStr, dstart, newStr);
 				}
 				} else if (curStr.length() < newStr.length()) {
 				// Case: Append String or rrepace.
@@ -371,7 +355,7 @@ public class ConsoleEditText extends AppCompatEditText {
 					// Addend, Insert
 					returnStr = TextUtils.concat(curStr, TextListener.this.insertStr(newStr.subSequence(curStr.length(), newStr.length()), dstart + curStr.length()));
 					} else {
-					returnStr = TextListener.this.updateStr(curStr, dstart, newStr);
+					returnStr = updateStr(curStr, dstart, newStr);
 				}
 				} else {
 				// No update os str...

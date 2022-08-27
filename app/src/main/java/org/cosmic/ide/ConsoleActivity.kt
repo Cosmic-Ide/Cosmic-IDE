@@ -3,6 +3,8 @@ package org.cosmic.ide
 import android.content.ClipboardManager
 import android.content.ClipData
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
@@ -18,11 +20,13 @@ import java.lang.reflect.InvocationTargetException
 class ConsoleActivity : BaseActivity() {
 
     private lateinit var binding: ActivityConsoleBinding
+    private lateinit var project: Project
+    private lateinit var classToExecute: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityConsoleBinding.inflate(getLayoutInflater())
-        setContentView(binding.getRoot())
+        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
         getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
@@ -34,16 +38,36 @@ class ConsoleActivity : BaseActivity() {
         val bundle = getIntent().getExtras()
 
         if (bundle != null) {
-            val clazz = bundle.getString("class_to_execute")
+            classToExecute = bundle.getString("class_to_execute")!!
             val projectPath = bundle.getString("project_path")
-            val console = binding.console
-            val project = JavaProject(File(projectPath!!))
-            val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), clazz!!, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
-            try { 
-                task.doFullTask(project)
-            } catch (e: Throwable) {
-                e.printStackTrace(console.getErrorStream())
+            project = JavaProject(File(projectPath!!))
+            executeDex()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.console_activity_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.getItemId()) {
+            R.id.recompile -> {
+                executeDex()
+                true
             }
+            else -> super.onOptionsItemSelected(item) 
+        }
+    }
+
+    private fun executeDex() {
+        val console = binding.console
+        console.setText("")
+        val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classToExecute, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
+        try { 
+            task.doFullTask(project)
+        } catch (e: Throwable) {
+            e.printStackTrace(console.getErrorStream())
         }
     }
 }

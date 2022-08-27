@@ -59,6 +59,7 @@
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>
     <string name="console" translatable="false">Console</string>
+    <string name="recompile" translatable="false">Recompile</string>
     <string name="stage_clean">Cleaning build&#8230;</string>
     <string name="stage_kotlinc">Compiling with Kotlinc&#8230;</string>
     <string name="stage_javac">Compiling with Javac&#8230;</string>

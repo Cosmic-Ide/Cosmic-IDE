@@ -54,10 +54,10 @@
             android:entryValues="@array/settings_java_disassembler_entries"
             app:useSimpleSummaryProvider="true" />
 
-        <!-- <org.cosmic.ide.preference.DefaultDirectoryPreference -->
-            <!-- android:key="@string/pref_key_classpath" -->
-            <!-- android:title="@string/classpath" -->
-            <!-- app:useSimpleSummaryProvider="true" /> -->
+        <EditTextPreference
+            android:key="@string/pref_key_program_arguments"
+            android:title="Program Arguments"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

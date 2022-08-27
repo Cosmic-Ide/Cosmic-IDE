@@ -28,7 +28,6 @@
     <string name="java_compiler">مجمع جافا</string>
     <string name="java_formatter">منسق جافا</string>
     <string name="java_disassembler">جافا تفكيك</string> 
-    <string name="java_path">مسار جافا</string>
     <string name="format">تنسيق</string>
     <string name="settings">الإعدادات</string>
     <string name="appearance">مظهر</string>

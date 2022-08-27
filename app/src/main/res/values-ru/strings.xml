@@ -28,7 +28,6 @@
     <string name="java_compiler">Компилятор Java</string>
     <string name="java_formatter">Форматировщик Java</string>
     <string name="java_disassembler">Дизассемблер Java</string>
-    <string name="java_path">Java-путь</string>
     <string name="format">Формат</string>
     <string name="settings">Настройки</string>
     <string name="appearance">Вид</string>

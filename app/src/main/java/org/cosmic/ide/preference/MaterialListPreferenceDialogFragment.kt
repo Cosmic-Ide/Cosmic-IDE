@@ -1,7 +1,7 @@
 /*
  * Taken as is from: https://stackoverflow.com/a/61424867/3969362
  *
- * Modified by @nonzzzz
+ * Modified by @TheRemakerMan
  */
 
 package org.cosmic.ide.preference

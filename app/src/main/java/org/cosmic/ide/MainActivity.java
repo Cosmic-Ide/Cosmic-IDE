@@ -92,13 +92,14 @@ public class MainActivity extends BaseActivity {
         javaProject = new JavaProject(new File(getIntent().getStringExtra("project_path")));
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(false);
         getSupportActionBar().setTitle(getProject().getProjectName());
  
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.bottomButtons, false, false, false, true);
 
         if (binding.root instanceof DrawerLayout) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(false);
             DrawerLayout drawer = (DrawerLayout) binding.root;
             if (drawer != null) {
                 var toggle =

@@ -52,7 +52,7 @@ class ConsoleActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.getItemId()) {
-            R.id.recompile -> {
+            R.id.recompile_menu_bttn -> {
                 executeDex()
                 true
             }
@@ -62,12 +62,17 @@ class ConsoleActivity : BaseActivity() {
 
     private fun executeDex() {
         val console = binding.console
-        console.setText("")
+        console.resetState();
         val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classToExecute, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
         try { 
             task.doFullTask(project)
+        } catch (e: InvocationTargetException) {
+            e.getTargetException().printStackTrace(console.getErrorStream()) 
         } catch (e: Throwable) {
             e.printStackTrace(console.getErrorStream())
+        } catch (e: Error) {
+            e.printStackTrace(console.getErrorStream())
         }
+        console.stop()
     }
 }

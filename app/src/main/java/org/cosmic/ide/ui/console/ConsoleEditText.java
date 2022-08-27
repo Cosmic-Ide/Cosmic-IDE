@@ -74,20 +74,25 @@ public class ConsoleEditText extends AppCompatEditText {
 	
 	public ConsoleEditText(Context context) {
 		super(context);
-		init(context);
+		init();
 	}
 	
 	public ConsoleEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		init();
 	}
 	
 	public ConsoleEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context);
+		init();
 	}
 	
-	private void init(Context context) {
+	public void resetState() {
+	    init();
+	    setText("");
+	}
+	
+	private void init() {
 		if (!isInEditMode()) {
 			/*
 			AppSetting pref = new AppSetting(context);

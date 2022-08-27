@@ -7,7 +7,6 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         android:background="?colorAppBarSurface"
         app:liftOnScroll="true">
 
@@ -34,8 +33,14 @@
                 android:id="@+id/console"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="top|start"
-                android:textSize="16sp" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:textSize="16sp"
+                android:gravity="top|left"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textMultiLine|textNoSuggestions|text"
+                android:singleLine="false"
+                android:typeface="monospace" />
             </HorizontalScrollView>
         </ScrollView>
 

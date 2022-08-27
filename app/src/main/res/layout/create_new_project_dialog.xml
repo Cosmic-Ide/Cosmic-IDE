@@ -40,6 +40,7 @@
         android:layout_below="@id/til_project_name"
         android:layout_marginTop="@dimen/spacing_small"
         android:hint="@string/package_name"
+        android:visibility="gone"
         android:textDirection="locale"
         app:placeholderText="com.example.project">
 
@@ -56,7 +57,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_package_name"
+        android:layout_below="@id/til_project_name"
         android:text="@android:string/cancel" />
 
     <Button
@@ -64,7 +65,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_package_name"
+        android:layout_below="@id/til_project_name"
         android:layout_alignParentEnd="true"
         android:text="@string/create" />
 

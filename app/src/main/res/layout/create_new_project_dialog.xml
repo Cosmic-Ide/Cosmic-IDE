@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layoutDirection="locale">
+    android:layoutDirection="locale"
+    android:padding="?dialogPreferredPadding">
+
+    <TextView
+        android:id="@android:id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_project"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="?android:textColorPrimary" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_project_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?dialogPreferredPadding"
-        android:layout_marginTop="@dimen/spacing_mid_large"
-        android:layout_marginEnd="?dialogPreferredPadding"
+        android:layout_below="@android:id/title"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:hint="@string/project_name"
         android:textDirection="locale">
 
@@ -24,4 +33,40 @@
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
-</FrameLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_package_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/til_project_name"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:hint="@string/package_name"
+        android:visibility="gone"
+        android:textDirection="locale"
+        app:placeholderText="com.example.project">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@android:id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@android:id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_below="@id/til_project_name"
+        android:text="@android:string/cancel" />
+
+    <Button
+        android:id="@android:id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_below="@id/til_project_name"
+        android:layout_alignParentEnd="true"
+        android:text="@string/create" />
+
+</RelativeLayout>

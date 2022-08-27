@@ -28,6 +28,7 @@
     <string name="no_projects_title">Projects not found</string>
     <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
     <string name="project_delete_warning">Do you want to delete %1$s?</string>
+    <string name="package_name">Package Name</string>
 
     <!-- Strings used by PreferenceSettingsFragment -->
     <string name="java_version">Java Version</string>

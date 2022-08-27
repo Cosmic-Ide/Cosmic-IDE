@@ -17,5 +17,4 @@
     <style name="Widget.CosmicIde.Material3.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
     </style>
-
 </resources>

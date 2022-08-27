@@ -4,7 +4,7 @@
 
     <item
         android:title="@string/recompile"
-        android:id="@+id/recompile_menu_button"
+        android:id="@+id/recompile_menu_bttn"
         android:icon="@drawable/refresh"
         app:showAsAction="always" />
 

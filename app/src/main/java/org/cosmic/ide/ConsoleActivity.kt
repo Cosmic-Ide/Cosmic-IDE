@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException
 class ConsoleActivity : BaseActivity() {
 
     private lateinit var binding: ActivityConsoleBinding
-    private lateinit var project: Project
+    private lateinit var project: JavaProject
     private lateinit var classToExecute: String
 
     override fun onCreate(savedInstanceState: Bundle?) {

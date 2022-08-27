@@ -33,6 +33,7 @@ class ConsoleActivity : BaseActivity() {
         getSupportActionBar()?.setHomeButtonEnabled(true)
         binding.toolbar.setNavigationOnClickListener { _ -> onBackPressed() }
 
+        binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
 
         val bundle = getIntent().getExtras()

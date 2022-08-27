@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -70,7 +72,7 @@ public class MainActivity extends BaseActivity {
     private static final int LANGUAGE_JAVA = 0;
     private static final int LANGUAGE_KOTLIN = 1;
 
-    private AlertDialog loadingDialog;
+    private BottomSheetDialog loadingDialog;
 
     public JavaProject javaProject;
 
@@ -190,12 +192,8 @@ public class MainActivity extends BaseActivity {
 
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
-        var builder = new MaterialAlertDialogBuilder(this);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
-        View dialogView =
-                getLayoutInflater().inflate(R.layout.compile_loading_dialog, viewGroup, false);
-        builder.setView(dialogView);
-        loadingDialog = builder.create();
+        loadingDialog = new BottomSheetDialog(this);
+        loadingDialog.setContentView(R.layout.compile_loading_dialog);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
     }
@@ -629,12 +627,11 @@ public class MainActivity extends BaseActivity {
     }
 
     public void dialog(String title, final String message, boolean copyButton) {
-        var dialog =
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle(title)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setNegativeButton(android.R.string.cancel, null);
+        var dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
         if (copyButton)
             dialog.setNeutralButton(
                     "Copy",

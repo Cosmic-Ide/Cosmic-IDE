@@ -10,10 +10,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.cosmic.ide.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
@@ -37,8 +36,8 @@ public class ProjectActivity extends BaseActivity {
     private ProjectAdapter projectAdapter;
     private ActivityProjectBinding binding;
 
-    private AlertDialog createNewProjectDialog;
-    private AlertDialog deleteProjectDialog;
+    private BottomSheetDialog createNewProjectDialog;
+    private BottomSheetDialog deleteProjectDialog;
 
     private OnProjectCreatedListener mListener;
 
@@ -97,7 +96,6 @@ public class ProjectActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        binding.projectRecycler.invalidate();
         loadProjects();
     }
 
@@ -113,21 +111,13 @@ public class ProjectActivity extends BaseActivity {
     }
 
     private void buildCreateNewProjectDialog() {
-        var builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle(getString(R.string.new_project));
-        builder.setView(R.layout.create_new_project_dialog);
-        builder.setPositiveButton(getString(R.string.create), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        createNewProjectDialog = builder.create();
+        createNewProjectDialog = new BottomSheetDialog(this);
+        createNewProjectDialog.setContentView(R.layout.create_new_project_dialog);
     }
 
     private void buildDeleteProjectDialog() {
-        var builder = new MaterialAlertDialogBuilder(this);
-        builder.setTitle(getString(R.string.delete_project));
-        builder.setMessage("blablabla"); // DON'T REMOVE THIS LINE
-        builder.setPositiveButton(getString(R.string.delete), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        deleteProjectDialog = builder.create();
+        deleteProjectDialog = new BottomSheetDialog(this);
+        deleteProjectDialog.setContentView(R.layout.delete_dialog);
     }
 
     @WorkerThread
@@ -135,7 +125,9 @@ public class ProjectActivity extends BaseActivity {
         if (!createNewProjectDialog.isShowing()) {
             createNewProjectDialog.show();
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
+            Button cancelBtn = createNewProjectDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
+            cancelBtn.setOnClickListener(v -> createNewProjectDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
                         var projectName = input.getText().toString().trim().replace("..", "");
@@ -163,8 +155,12 @@ public class ProjectActivity extends BaseActivity {
     private void showDeleteProjectDialog(JavaProject project) {
         if (!deleteProjectDialog.isShowing()) {
             deleteProjectDialog.show();
+            TextView title = deleteProjectDialog.findViewById(android.R.id.title);
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
+            Button cancelBtn = deleteProjectDialog.findViewById(android.R.id.button2);
             Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
+            cancelBtn.setOnClickListener(v -> deleteProjectDialog.dismiss());
+            title.setText(getString(R.string.delete_project));
             message.setText(getString(R.string.project_delete_warning, project.getProjectName()));
             deleteBtn.setOnClickListener(
                     v -> {

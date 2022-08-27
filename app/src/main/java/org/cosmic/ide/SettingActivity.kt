@@ -2,6 +2,7 @@ package org.cosmic.ide
 
 import android.os.Bundle
 import android.view.View
+
 import org.cosmic.ide.databinding.ActivitySettingBinding
 import org.cosmic.ide.ui.utils.addSystemWindowInsetToPadding
 
@@ -23,7 +24,6 @@ class SettingActivity : BaseActivity() {
             setLiftOnScrollTargetViewId(androidx.preference.R.id.recycler_view)
             addSystemWindowInsetToPadding(false, true, false, false)
         }
-        val recyclerView: View? = findViewById(androidx.preference.R.id.recycler_view)
-        recyclerView?.addSystemWindowInsetToPadding(false, false, false, true)
+        binding.content.addSystemWindowInsetToPadding(false, false, false, true)
     }
 }

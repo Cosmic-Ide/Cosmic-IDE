@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layoutDirection="locale">
+    android:layoutDirection="locale"
+    android:padding="?dialogPreferredPadding">
+
+    <TextView
+        android:id="@android:id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_directory"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:textColor="?android:textColorPrimary" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_directory_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="?dialogPreferredPadding"
-        android:layout_marginTop="@dimen/spacing_mid_large"
-        android:layout_marginEnd="?dialogPreferredPadding"
+        android:layout_below="@android:id/title"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:hint="@string/directory_name"
-        android:textDirection="locale"
-        app:counterEnabled="true">
+        android:textDirection="locale">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"
@@ -25,4 +33,21 @@
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
-</FrameLayout>
+    <Button
+        android:id="@android:id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_below="@id/til_directory_name"
+        android:text="@android:string/cancel" />
+
+    <Button
+        android:id="@android:id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_below="@id/til_directory_name"
+        android:layout_alignParentEnd="true"
+        android:text="@string/create" />
+
+</RelativeLayout>

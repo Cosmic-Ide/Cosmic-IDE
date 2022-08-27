@@ -10,36 +10,22 @@
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/rename"
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorPrimary" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_input"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@android:id/message"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@android:id/title"
         android:layout_marginTop="@dimen/spacing_medium"
-        android:hint="@string/file_name"
-        android:textDirection="locale"
-        app:counterEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@android:id/text1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="text">
-            <requestFocus />
-        </com.google.android.material.textfield.TextInputEditText>
-    </com.google.android.material.textfield.TextInputLayout>
+        android:layout_below="@android:id/title" />
 
     <Button
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_input"
+        android:layout_below="@android:id/message"
         android:text="@android:string/cancel" />
 
     <Button
@@ -47,8 +33,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_input"
+        android:layout_below="@android:id/message"
         android:layout_alignParentEnd="true"
-        android:text="@string/rename" />
+        android:text="@string/delete" />
 
 </RelativeLayout>

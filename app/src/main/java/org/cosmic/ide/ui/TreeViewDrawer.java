@@ -18,7 +18,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.cosmic.ide.MainActivity;
@@ -46,10 +46,10 @@ public class TreeViewDrawer extends Fragment {
 
     private TreeView<TreeFile> treeView;
 
-    private AlertDialog createNewFileDialog;
-    private AlertDialog createNewDirectoryDialog;
-    private AlertDialog confirmDeleteDialog;
-    private AlertDialog renameFileDialog;
+    private BottomSheetDialog createNewFileDialog;
+    private BottomSheetDialog createNewDirectoryDialog;
+    private BottomSheetDialog confirmDeleteDialog;
+    private BottomSheetDialog renameFileDialog;
 
     private MainActivity activity;
 
@@ -207,39 +207,23 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(getString(R.string.create_file));
-        builder.setView(R.layout.treeview_create_new_file_dialog);
-        builder.setPositiveButton(getString(R.string.create), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        createNewFileDialog = builder.create();
+        createNewFileDialog = new BottomSheetDialog(requireContext());
+        createNewFileDialog.setContentView(R.layout.treeview_create_new_file_dialog);
     }
 
     private void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(getString(R.string.create_directory));
-        builder.setView(R.layout.treeview_create_new_folder_dialog);
-        builder.setPositiveButton(getString(R.string.create), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        createNewDirectoryDialog = builder.create();
+        createNewDirectoryDialog = new BottomSheetDialog(requireContext());
+        createNewDirectoryDialog.setContentView(R.layout.treeview_create_new_folder_dialog);
     }
 
     private void buildConfirmDeleteDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(getString(R.string.delete));
-        builder.setMessage(getString(R.string.delete_file));
-        builder.setPositiveButton(getString(R.string.delete), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        confirmDeleteDialog = builder.create();
+        confirmDeleteDialog = new BottomSheetDialog(requireContext());
+        confirmDeleteDialog.setContentView(R.layout.delete_dialog);
     }
 
     private void buildRenameFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(getContext());
-        builder.setTitle(getString(R.string.rename));
-        builder.setView(R.layout.treeview_rename_dialog);
-        builder.setPositiveButton(getString(R.string.rename), null);
-        builder.setNegativeButton(android.R.string.cancel, null);
-        renameFileDialog = builder.create();
+        renameFileDialog = new BottomSheetDialog(requireContext());
+        renameFileDialog.setContentView(R.layout.treeview_rename_dialog);
     }
 
     private void showRenameFileDialog(TreeNode<TreeFile> node) {
@@ -247,10 +231,12 @@ public class TreeViewDrawer extends Fragment {
             renameFileDialog.show();
 
             EditText fileName = renameFileDialog.findViewById(android.R.id.text1);
-            Button createBttn = renameFileDialog.findViewById(android.R.id.button1);
-            fileName.setText(node.getContent().getFile().getPath());
+            Button cancelBtn = renameFileDialog.findViewById(android.R.id.button2);
+            Button createBtn = renameFileDialog.findViewById(android.R.id.button1);
+            fileName.setText(node.getContent().getFile().getName());
 
-            createBttn.setOnClickListener(
+            cancelBtn.setOnClickListener(v -> renameFileDialog.dismiss());
+            createBtn.setOnClickListener(
                     v -> {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
@@ -273,13 +259,15 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewFileDialog.isShowing()) {
             createNewFileDialog.show();
 
-            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
+            ((TextInputLayout) createNewFileDialog.findViewById(R.id.til_input))
                     .setSuffixText(".java");
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
-            Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
+            Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
+            Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
 
-            createBttn.setOnClickListener(
+            cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
+            createBtn.setOnClickListener(
                     v -> {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
@@ -323,13 +311,15 @@ public class TreeViewDrawer extends Fragment {
         if (!createNewFileDialog.isShowing()) {
             createNewFileDialog.show();
 
-            ((TextInputLayout) createNewFileDialog.findViewById(R.id.inputLayout))
+            ((TextInputLayout) createNewFileDialog.findViewById(R.id.til_input))
                     .setSuffixText(".kt");
 
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
-            Button createBttn = createNewFileDialog.findViewById(android.R.id.button1);
+            Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
+            Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
 
-            createBttn.setOnClickListener(
+            cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
+            createBtn.setOnClickListener(
                     v -> {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
@@ -374,9 +364,11 @@ public class TreeViewDrawer extends Fragment {
             createNewDirectoryDialog.show();
 
             EditText fileName = createNewDirectoryDialog.findViewById(android.R.id.text1);
-            Button createBttn = createNewDirectoryDialog.findViewById(android.R.id.button1);
+            Button cancelBtn = createNewDirectoryDialog.findViewById(android.R.id.button2);
+            Button createBtn = createNewDirectoryDialog.findViewById(android.R.id.button1);
 
-            createBttn.setOnClickListener(
+            cancelBtn.setOnClickListener(v -> createNewDirectoryDialog.dismiss());
+            createBtn.setOnClickListener(
                     v -> {
                         var fileNameString = fileName.getText().toString().replace("..", "");
 
@@ -411,14 +403,16 @@ public class TreeViewDrawer extends Fragment {
         if (!confirmDeleteDialog.isShowing()) {
             confirmDeleteDialog.show();
 
-            TextView areUsure_txt = confirmDeleteDialog.findViewById(android.R.id.message);
-            Button confirmBttn = confirmDeleteDialog.findViewById(android.R.id.button1);
-            Button cancelBttn = confirmDeleteDialog.findViewById(android.R.id.button2);
+            TextView title = confirmDeleteDialog.findViewById(android.R.id.title);
+            TextView message = confirmDeleteDialog.findViewById(android.R.id.message);
+            Button confirmBtn = confirmDeleteDialog.findViewById(android.R.id.button1);
+            Button cancelBtn = confirmDeleteDialog.findViewById(android.R.id.button2);
 
-            areUsure_txt.setText(
+            title.setText(getString(R.string.delete));
+            message.setText(
                     getString(R.string.delete_file, node.getContent().getFile().getName()));
 
-            confirmBttn.setOnClickListener(
+            confirmBtn.setOnClickListener(
                     v -> {
                         FileUtil.deleteFile(node.getContent().getFile().getPath());
                         node.getParent().removeChild(node);
@@ -426,7 +420,7 @@ public class TreeViewDrawer extends Fragment {
                         confirmDeleteDialog.dismiss();
                     });
 
-            cancelBttn.setOnClickListener(v -> confirmDeleteDialog.dismiss());
+            cancelBtn.setOnClickListener(v -> confirmDeleteDialog.dismiss());
         }
     }
 }

@@ -296,6 +296,16 @@ public class MainActivity extends BaseActivity {
             case R.id.run_menu_button:
                 compile(true, false);
                 break;
+            case R.id.action_undo:
+				if (binding.editor.canUndo()) {
+					binding.editor.undo();				
+				}
+				break;
+			case R.id.action_redo:
+				if (binding.editor.canRedo()) {
+					binding.editor.redo();
+				}
+				break;
             default:
                 break;
         }

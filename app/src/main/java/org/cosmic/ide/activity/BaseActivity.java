@@ -46,9 +46,4 @@ public abstract class BaseActivity extends AppCompatActivity {
     private View getRootActivityView() {
         return getWindow().getDecorView().findViewById(android.R.id.content);
     }
-
-    protected boolean isDarkMode() {
-        int uiMode = getResources().getConfiguration().uiMode;
-        return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-    }
 }

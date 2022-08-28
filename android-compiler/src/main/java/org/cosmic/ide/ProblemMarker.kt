@@ -60,13 +60,13 @@ class ProblemMarker(
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
-            try {
-                val path = Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile")
-                if (!path.endsWith(".java")) return@thread
-                FileUtil.writeFile(path, content.toString())
-                analyzer.analyze()
-            } catch (ignored: Exception) {
-            }
+            // try {
+                // val path = Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile")
+                // if (!path.endsWith(".java")) return@thread
+                // FileUtil.writeFile(path, content.toString())
+            // } catch (ignored: Exception) {
+            // }
+            analyzer.analyze()
             diagnostics.reset()
             diagnostics.addDiagnostics(analyzer.getDiagnostics())
             editor.setDiagnostics(diagnostics)

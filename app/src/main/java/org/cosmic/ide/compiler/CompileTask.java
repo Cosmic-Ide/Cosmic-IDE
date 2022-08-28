@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.activity.ConsoleActivity;
+import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
@@ -26,6 +29,7 @@ public class CompileTask extends Thread {
     private boolean showExecuteDialog = false;
 
     private final MainActivity activity;
+    private MainViewModel mainViewModel;
 
     private final CompilerListeners listener;
     private final JavaBuilder builder;
@@ -35,20 +39,19 @@ public class CompileTask extends Thread {
     private final String STAGE_JAVAC;
     private final String STAGE_ECJ;
     private final String STAGE_D8;
-    private final String STAGE_LOADING_DEX;
 
     public CompileTask(MainActivity context, boolean isExecuteMethod, CompilerListeners listener) {
         this.activity = context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
         this.builder = new JavaBuilder(activity);
+        mainViewModel = new ViewModelProvider(activity).get(MainViewModel.class);
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);
         STAGE_JAVAC = context.getString(R.string.stage_javac);
         STAGE_ECJ = context.getString(R.string.stage_ecj);
         STAGE_D8 = context.getString(R.string.stage_d8);
-        STAGE_LOADING_DEX = context.getString(R.string.stage_loading_dex);
     }
 
     @Override
@@ -59,43 +62,27 @@ public class CompileTask extends Thread {
 
         try {
             listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-            final String code =
-                    activity.binding
-                            .editor
-                            .getText()
-                            .toString()
-                            .replace("System.exit(", "System.out.println(\"Exit code \" + ");
-            final String currentPath = activity.currentWorkingFilePath;
-            if (code != FileUtil.readFile(new File(currentPath))) {
-                FileUtil.writeFile(currentPath, code);
-            }
+            activity.saveAll();
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
         }
 
         var time = System.currentTimeMillis();
-        // Compile Kotlin files
         compileKotlin();
 
-        // Compile Java Files
         compileJava();
-
         ecjTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
 
-        // Run D8
         compileDex();
         d8Time = System.currentTimeMillis() - time;
 
-        listener.onSuccess();
-
-        // Executes the class by loading the dex file
         executeDex();
     }
 
     private void compileKotlin() {
-        listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
         try {
+            listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
@@ -129,8 +116,8 @@ public class CompileTask extends Thread {
     }
 
     private void compileDex() {
-        listener.onCurrentBuildStageChanged(STAGE_D8);
         try {
+            listener.onCurrentBuildStageChanged(STAGE_D8);
             new D8Task().doFullTask(activity.getProject());
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
@@ -140,7 +127,7 @@ public class CompileTask extends Thread {
 
     private void executeDex() {
         try {
-            listener.onCurrentBuildStageChanged(STAGE_LOADING_DEX);
+            listener.onSuccess();
             final var classes = activity.getClassesFromDex();
             if (classes == null) {
                 return;

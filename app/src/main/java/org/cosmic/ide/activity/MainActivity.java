@@ -11,7 +11,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,14 +22,25 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationChannelCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
@@ -35,11 +48,14 @@ import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.ProblemMarker;
+import org.cosmic.ide.activity.model.MainViewModel;
+import org.cosmic.ide.activity.model.FileViewModel;
+import org.cosmic.ide.activity.editor.CodeEditorView;
+import org.cosmic.ide.activity.editor.adapter.PageAdapter;
 import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.android.code.disassembler.*;
 import org.cosmic.ide.android.code.formatter.*;
@@ -48,10 +64,10 @@ import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.common.util.ZipUtil;
+import org.cosmic.ide.common.util.UniqueNameBuilder;
 import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
-import org.cosmic.ide.activity.editor.completion.CustomCompletionItemAdapter;
-import org.cosmic.ide.activity.editor.completion.CustomCompletionLayout;
+import org.cosmic.ide.fragment.CodeEditorFragment;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.util.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
@@ -66,38 +82,37 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity {
 
+    public static final String BUILD_STATUS = "BUILD_STATUS";
     public static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final int LANGUAGE_JAVA = 0;
-    private static final int LANGUAGE_KOTLIN = 1;
-
+    private String temp;
     private BottomSheetDialog loadingDialog;
 
-    public JavaProject javaProject;
+    private JavaProject javaProject;
+    private MainViewModel mainViewModel;
+    private FileViewModel fileViewModel;
+    private PageAdapter tabsAdapter;
 
-    // It's a variable that stores an object temporarily, for e.g. if you want to access a local
-    // variable in a lambda expression, etc.
-    private String temp;
-
-    public String currentWorkingFilePath;
-    public Indexer indexer;
-    public static String BUILD_STATUS = "BUILD_STATUS";
     public ActivityMainBinding binding;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
+        tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra("project_path")));
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setTitle(getProject().getProjectName());
  
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.bottomButtons, false, false, false, true);
@@ -116,135 +131,141 @@ public class MainActivity extends BaseActivity {
                                 R.string.app_name);
                 drawer.addDrawerListener(toggle);
                 toggle.syncState();
+                binding.toolbar.setNavigationOnClickListener(v -> {
+                    if (binding.root instanceof DrawerLayout) {
+                        if (drawer.isDrawerOpen(GravityCompat.START)) {
+                            mainViewModel.setDrawerState(false);
+                        } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                            mainViewModel.setDrawerState(true);
+                        }
+                    }
+                });
+                drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(@NonNull View p1) {
+                        mainViewModel.setDrawerState(true);
+                    }
+    
+                    @Override
+                    public void onDrawerClosed(@NonNull View p1) {
+                        mainViewModel.setDrawerState(false);
+                    }
+                });
             }
         } else {
             binding.toolbar.setNavigationIcon(null);
         }
 
-        configureEditor(binding.editor);
-
-        try {
-            indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
-            if (indexer.notHas("currentFile")) {
-                indexer.put("currentFile", getProject().getSrcDirPath() + "Main.kt");
-                indexer.flush();
-             }
-            currentWorkingFilePath = indexer.getString("currentFile");
-            getSupportActionBar().setSubtitle(new File(currentWorkingFilePath).getName());
-        } catch (Exception e) {
-            dialog("Exception", e.getMessage(), true);
-        }
-        if (currentWorkingFilePath.endsWith(".kt")) {
-            setEditorLanguage(LANGUAGE_KOTLIN);
-        } else if (currentWorkingFilePath.endsWith(".java")
-                 || currentWorkingFilePath.endsWith(".jav")) {
-            setEditorLanguage(LANGUAGE_JAVA);
-        }
-
-        final var file = new File(currentWorkingFilePath);
-        if (file.exists()) {
-            try {
-                binding.editor.setText(FileUtil.readFile(file));
-            } catch (IOException e) {
-                dialog("Failed to read file", getString(e), true);
-            }
-        }
-
-        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-            ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
-        }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
-        if (!stdlib.exists()) {
-            try {
-                FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
-                            stdlib.getAbsolutePath());
-            } catch (Exception e) {
-                showErr(getString(e));
-            }
-        }
-        if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
-            ZipUtil.unzipFromAssets(this, "compiler-modules.zip", FileUtil.getDataDir());
-        }
-        var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
-        if (!output.exists()) {
-            try {
-                FileUtil.writeFile(
-                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
-            } catch (Exception e) {
-                showErr(getString(e));
-            }
-        }
-
-        /* Create Loading Dialog */
+        unzipFiles();
         buildLoadingDialog();
 
-        binding.btnDisassemble.setOnClickListener(v -> disassemble());
-        binding.btnSmali2java.setOnClickListener(v -> decompile());
-        binding.btnSmali.setOnClickListener(v -> smali());
+        File root;
+        if (getProject() != null) {
+            root = getProject().getRootFile();
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                root = getExternalFilesDir(null);
+            } else {
+                root = Environment.getExternalStorageDirectory();
+            }
+        }
+        fileViewModel.refreshNode(root);
 
-        binding.editor
-                .getText()
-                .addContentListener(
-                        new ProblemMarker(
-                                ApplicationLoader.Companion.applicationContext(),
-                                binding.editor,
-                                currentWorkingFilePath,
-                                getProject()));
-    }
+        mainViewModel.setFiles(new ArrayList<>());
+        mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
+        mainViewModel.setToolbarTitle(getProject().getProjectName());
+        binding.viewPager.setAdapter(tabsAdapter);
+        binding.viewPager.setUserInputEnabled(false);
+        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                mainViewModel.setCurrentPosition(position);
+            }
+        });
 
-    /* Build Loading Dialog - This dialog shows on code compilation */
-    void buildLoadingDialog() {
-        loadingDialog = new BottomSheetDialog(this);
-        loadingDialog.setContentView(R.layout.compile_loading_dialog);
-        loadingDialog.setCancelable(false);
-        loadingDialog.setCanceledOnTouchOutside(false);
-    }
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabUnselected(TabLayout.Tab p1) {
+                // For some reason we're get an error when saving the file.
+                // Fragment fragment = getSupportFragmentManager()
+                        // .findFragmentByTag("f" + tabsAdapter.getItemId(p1.getPosition()));
+                // if (fragment instanceof CodeEditorFragment) {
+                    // ((CodeEditorFragment) fragment).save();
+                // }
+            }
 
-    /* To change user Stage TextView Text to compiling stage in CompileTask.java */
-    void changeLoadingDialogBuildStage(String stage) {
-        if (loadingDialog.isShowing()) {
-            /* So, this method is also triggered from another thread (Compile.java)
-             * We need to make sure that this code is executed on main thread */
-            runOnUiThread(
-                    () -> {
-                        TextView stage_txt = loadingDialog.findViewById(R.id.stage_txt);
-                        stage_txt.setText(stage);
-                    });
+            @Override
+            public void onTabReselected(TabLayout.Tab p1) {
+                PopupMenu popup = new PopupMenu(MainActivity.this, p1.view);
+                popup.getMenu().add(0, 0, 1, "Close");
+                popup.getMenu().add(0, 1, 2, "Close others");
+                popup.getMenu().add(0, 2, 3, "Close all");
+                popup.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case 0:
+                            mainViewModel.removeFile(mainViewModel.getCurrentFile());
+                            break;
+                        case 1:
+                            mainViewModel.removeOthers(mainViewModel.getCurrentFile());
+                            break;
+                        case 2:
+                            mainViewModel.clear();
+                    }
+                    return true;
+                });
+                popup.show();
+            }
+
+            @Override
+            public void onTabSelected(TabLayout.Tab p1) {
+                updateTab(p1, p1.getPosition());
+            }
+        });
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab).attach();
+
+        mainViewModel.getFiles().observe(this, files -> {
+            tabsAdapter.submitList(files);
+            if (files.isEmpty()) {
+                binding.tabLayout.setVisibility(View.GONE);
+                binding.emptyContainer.setVisibility(View.VISIBLE);
+            } else {
+                binding.tabLayout.setVisibility(View.VISIBLE);
+                binding.emptyContainer.setVisibility(View.GONE);
+            }
+        });
+        mainViewModel.getCurrentPosition().observe(this, position -> {
+            binding.viewPager.setCurrentItem(position);
+        });
+        if (binding.root instanceof DrawerLayout) {
+            mainViewModel.getDrawerState().observe(this, isOpen -> {
+                if (isOpen) {
+                    ((DrawerLayout) binding.root).open();
+                } else {
+                    ((DrawerLayout) binding.root).close();
+                }
+            });
+        }
+
+        if (savedInstanceState != null) {
+            restoreViewState(savedInstanceState);
         }
     }
 
-    /* Loads a file from a path to the editor */
-    public void loadFileToEditor(String path) throws IOException, JSONException {
-        if (!indexer.getString("currentFile").equals(path)) {
-            indexer.put("currentFile", path);
-            indexer.flush();
-            final String code =
-                    binding.editor
-                            .getText()
-                            .toString()
-                            .replace("System.exit(", "System.out.println(\"Exit code \" + ");
-            FileUtil.writeFile(currentWorkingFilePath, code);
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        saveAll();
+        if (binding.root instanceof DrawerLayout) {
+            outState.putBoolean("start_drawer_state",
+                    ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
         }
-        var newWorkingFile = new File(path);
-        binding.editor.setText(FileUtil.readFile(newWorkingFile));
+        super.onSaveInstanceState(outState);
+    }
 
-        if (path.endsWith(".kt")) {
-            setEditorLanguage(LANGUAGE_KOTLIN);
-        } else if (path.endsWith(".java") || path.endsWith(".jav")) {
-            setEditorLanguage(LANGUAGE_JAVA);
+    private void restoreViewState(@NonNull Bundle state) {
+        if (binding.root instanceof DrawerLayout) {
+            boolean b = state.getBoolean("start_drawer_state", false);
+            mainViewModel.setDrawerState(b);
         }
-
-        binding.editor
-                .getText()
-                .addContentListener(
-                        new ProblemMarker(
-                                ApplicationLoader.Companion.applicationContext(),
-                                binding.editor,
-                                path,
-                                getProject()));
-        currentWorkingFilePath = path;
-        getSupportActionBar().setSubtitle(new File(path).getName());
     }
 
     @Override
@@ -257,24 +278,28 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.format_menu_button:
-                CoroutineUtil.execute(
-                        () -> {
-                            if (settings.getString(
-                                            "key_java_formatter",
-                                            getString(R.string.google_java_formatter))
-                                    .equals(getString(R.string.google_java_formatter))) {
-                                var formatter =
-                                        new GoogleJavaFormatter(
-                                                binding.editor.getText().toString());
-                                temp = formatter.format();
-                            } else {
-                                var formatter =
-                                        new EclipseJavaFormatter(
-                                                binding.editor.getText().toString());
-                                temp = formatter.format();
-                            }
-                        });
-                binding.editor.setText(temp);
+                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment instanceof CodeEditorFragment) {
+                    CoroutineUtil.execute(
+                             () -> {
+                                 if (settings.getString(
+                                                "key_java_formatter",
+                                                getString(R.string.google_java_formatter))
+                                            .equals(getString(R.string.google_java_formatter))) {
+                                     var formatter =
+                                            new GoogleJavaFormatter(
+                                                    ((CodeEditorFragment) fragment).getEditor().getText().toString());
+                                     temp = formatter.format();
+                                 } else {
+                                     var formatter =
+                                            new EclipseJavaFormatter(
+                                                    ((CodeEditorFragment) fragment).getEditor().getText().toString());
+                                     temp = formatter.format();
+                                 }
+                            });
+                    ((CodeEditorFragment) fragment).getEditor().setText(temp);
+                }
                 break;
             case R.id.settings_menu_button:
                 startActivity(new Intent(this, SettingActivity.class));
@@ -288,79 +313,101 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            final String code =
-                    binding.editor
-                            .getText()
-                            .toString()
-                            .replace("System.exit(", "System.out.println(\"Exit code \" + ");
-            FileUtil.writeFile(currentWorkingFilePath, code);
-        } catch (IOException e) {
-            Log.e(TAG, e + "while saving a file");
+    private void unzipFiles() {
+        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
+            ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
+        }
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
+        if (!stdlib.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
+                            stdlib.getAbsolutePath());
+            } catch (Exception e) {
+                showError(getString(e));
+            }
+        }
+        if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
+            ZipUtil.unzipFromAssets(this, "compiler-modules.zip", FileUtil.getDataDir());
+        }
+        var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        if (!output.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
+            } catch (Exception e) {
+                showError(getString(e));
+            }
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding.editor.release();
+    private void updateTab(TabLayout.Tab tab, int pos) {
+        File currentFile = Objects.requireNonNull(mainViewModel.getFiles().getValue()).get(pos);
+        tab.setText(currentFile != null ? getUniqueTabName(currentFile) : "Unknown");
     }
 
-    /* Shows a snackbar indicating that there were problems during compilation */
-    public void showErr(final String e) {
-        Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Show error", v -> dialog("Failed...", e, true))
-                .show();
+    private String getUniqueTabName(@NonNull File currentFile) {
+        int sameFileNameCount = 0;
+        UniqueNameBuilder<File> builder = new UniqueNameBuilder<>("", "/");
+
+        for (File file : Objects.requireNonNull(mainViewModel.getFiles().getValue())) {
+            if (file.getName().equals(currentFile.getName())) {
+                sameFileNameCount++;
+            }
+            builder.addPath(file, file.getPath());
+        }
+
+        if (sameFileNameCount > 1) {
+            return builder.getShortPath(currentFile);
+        } else {
+            return currentFile.getName();
+        }
     }
 
-    private void configureEditor(CodeEditor editor) {
-        editor.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-        editor.setTextSize(12);
-        editor.setEdgeEffectColor(Color.TRANSPARENT);
-        editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
-        editor.setInputType(
-                EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                        | EditorInfo.TYPE_CLASS_TEXT
-                        | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
-                        | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        editor.getComponent(EditorAutoCompletion.class).setLayout(new CustomCompletionLayout());
-        editor.getComponent(EditorAutoCompletion.class)
-                .setAdapter(new CustomCompletionItemAdapter());
+    private void buildLoadingDialog() {
+        loadingDialog = new BottomSheetDialog(this);
+        loadingDialog.setContentView(R.layout.compile_loading_dialog);
+        loadingDialog.setCancelable(false);
+        loadingDialog.setCanceledOnTouchOutside(false);
+    }
 
-        var props = editor.getProps();
-        props.overScrollEnabled = false;
-        props.allowFullscreen = false;
-        props.deleteEmptyLineFast = false;
+    /* So, this method is also triggered from another thread (Compile.java)
+     * We need to make sure that this code is executed on main thread */
+    private void changeLoadingDialogBuildStage(String currentStage) {
+        if (loadingDialog.isShowing()) {
+            runOnUiThread(
+                    () -> {
+                        TextView stage = loadingDialog.findViewById(R.id.stage_txt);
+                        stage.setText(currentStage);
+                    });
+        }
     }
 
     private void compile(boolean execute, boolean blockMainThread) {
-        final int id = 1;
+        final int id = 201;
         final var intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         final var pendingIntent =
                 PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        final var channel =
+        final var notifChannel =
                 new NotificationChannel(
-                        BUILD_STATUS, "Build Status", NotificationManager.IMPORTANCE_HIGH);
-        channel.setDescription("Shows the current build status.");
+                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_HIGH);
+        notifChannel.setDescription("Shows the current build status.");
 
-        final var manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.createNotificationChannel(channel);
+        final var notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notifManager.createNotificationChannel(notifChannel);
 
-        final var mBuilder =
+        final var notifBuilder =
                 new Notification.Builder(this, BUILD_STATUS)
-                        .setContentTitle("Build Status")
+                        .setContentTitle(getProject().getProjectName())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(
                                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
-        loadingDialog.show(); // Show Loading Dialog
+        loadingDialog.show();
         final var compilationThread =
                 new CompileTask(
                         this,
@@ -368,26 +415,26 @@ public class MainActivity extends BaseActivity {
                         new CompileTask.CompilerListeners() {
                             @Override
                             public void onCurrentBuildStageChanged(String stage) {
-                                mBuilder.setContentText(stage);
-                                manager.notify(id, mBuilder.build());
                                 changeLoadingDialogBuildStage(stage);
                             }
 
                             @Override
                             public void onSuccess() {
-                                loadingDialog.dismiss();
-                                mBuilder.setContentText("Success!");
-                                manager.notify(id, mBuilder.build());
+                                notifBuilder.setContentText("Compiled successfully!");
+                                notifManager.notify(id, notifBuilder.build());
+                                if (loadingDialog.isShowing()) {
+                                    loadingDialog.dismiss();
+                                }
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
-                                mBuilder.setContentText("Failure");
-                                manager.notify(id, mBuilder.build());
+                                notifBuilder.setContentText("Compilation failure!");
+                                notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
-                                showErr(errorMessage);
+                                showError(errorMessage);
                             }
                         });
         if (!blockMainThread) {
@@ -397,23 +444,10 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void setEditorLanguage(int lang) {
-        if (lang == LANGUAGE_JAVA) {
-            binding.editor.setColorScheme(getColorScheme());
-            binding.editor.setEditorLanguage(getJavaLanguage());
-        } else if (lang == LANGUAGE_KOTLIN) {
-            binding.editor.setColorScheme(getColorScheme());
-            binding.editor.setEditorLanguage(getKotlinLanguage());
-        } else {
-            binding.editor.setColorScheme(getColorScheme());
-            binding.editor.setEditorLanguage(new EmptyLanguage());
-        }
-    }
-
     private TextMateColorScheme getColorScheme() {
         try {
             IRawTheme rawTheme;
-            if (isDarkMode()) {
+            if (ApplicationLoader.Companion.isDarkMode(this)) {
                 rawTheme =
                         ThemeReader.readThemeSync(
                                 "darcula.json", getAssets().open("textmate/darcula.json"));
@@ -437,21 +471,6 @@ public class MainActivity extends BaseActivity {
                             getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getRawTheme());
         } catch (IOException e) {
-            Log.e(TAG, e + " while loading java language");
-            return new EmptyLanguage();
-        }
-    }
-
-    private Language getKotlinLanguage() {
-        try {
-            return TextMateLanguage.create(
-                    "kotlin.tmLanguage",
-                    getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
-                    new InputStreamReader(
-                            getAssets().open("textmate/kotlin/language-configuration.json")),
-                    getColorScheme().getRawTheme());
-        } catch (IOException e) {
-            Log.e(TAG, e + " while loading kotlin language");
             return new EmptyLanguage();
         }
     }
@@ -465,12 +484,11 @@ public class MainActivity extends BaseActivity {
                             getAssets().open("textmate/smali/language-configuration.json")),
                     getColorScheme().getRawTheme());
         } catch (IOException e) {
-            Log.e(TAG, e + " while loading smali language");
             return new EmptyLanguage();
         }
     }
 
-    public void smali() {
+    public void smali(View v) {
         try {
             final var classes = getClassesFromDex();
             if (classes == null) return;
@@ -514,7 +532,7 @@ public class MainActivity extends BaseActivity {
                         try {
                             edi.setText(FileUtil.readFile(smaliFile));
                         } catch (IOException e) {
-                            dialog("Failed to read file", getString(e), true);
+                            dialog("Failed to open file", getString(e), true);
                             return;
                         }
 
@@ -527,7 +545,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void decompile() {
+    public void decompile(View v) {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
@@ -536,7 +554,6 @@ public class MainActivity extends BaseActivity {
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
 
-                    temp = "";
                     CoroutineUtil.execute(
                             () -> {
                                 try {
@@ -568,7 +585,7 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    public void disassemble() {
+    public void disassemble(View v) {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
@@ -666,11 +683,28 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /* Shows a snackbar indicating that there were problems during compilation */
+    private void showError(String exception) {
+        Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
+                .setAction("Show error", v -> dialog("Failed...", exception.toString(), true))
+                .show();
+    }
+
     private String getString(Throwable e) {
         return Log.getStackTraceString(e);
     }
 
     public JavaProject getProject() {
         return javaProject;
+    }
+
+    public void saveAll() {
+        for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
+            String tag = "f" + tabsAdapter.getItemId(i);
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+            if (fragment instanceof CodeEditorFragment) {
+                ((CodeEditorFragment) fragment).save();
+            }
+        }
     }
 }

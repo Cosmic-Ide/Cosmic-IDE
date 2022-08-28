@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Process
 
 import androidx.preference.PreferenceManager
@@ -68,6 +69,11 @@ class ApplicationLoader : Application() {
         @JvmStatic
         fun getDefaultSharedPreferences(): SharedPreferences {
             return PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext())
+        }
+
+        fun isDarkMode(context: Context): Boolean {
+            val darkModeFlag = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            return darkModeFlag == Configuration.UI_MODE_NIGHT_YES
         }
     }
 }

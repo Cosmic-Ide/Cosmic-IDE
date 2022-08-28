@@ -26,7 +26,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/preferenceFragment"
-            android:name="org.cosmic.ide.preference.SettingsPreferenceFragment"
+            android:name="org.cosmic.ide.ui.preference.SettingsPreferenceFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

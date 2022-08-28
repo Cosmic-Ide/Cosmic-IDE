@@ -1,6 +1,7 @@
 package org.cosmic.ide.ui;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,13 +17,16 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.R;
+import org.cosmic.ide.activity.MainActivity;
+import org.cosmic.ide.activity.model.MainViewModel;
+import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.CodeTemplate;
@@ -52,9 +56,19 @@ public class TreeViewDrawer extends Fragment {
     private BottomSheetDialog renameFileDialog;
 
     private MainActivity activity;
+    private MainViewModel mainViewModel;
+    private FileViewModel fileViewModel;
 
     public TreeViewDrawer() {
         super(R.layout.drawer_treeview);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+        fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
     }
 
     @Override
@@ -79,22 +93,20 @@ public class TreeViewDrawer extends Fragment {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        TreeNode<TreeFile> currentNode = treeView.getRoot();
-        if (currentNode != null) {
-            partialRefresh();
-        } else {
-            TreeNode<TreeFile> node =
-                    TreeNode.root(
-                            TreeUtil.getNodes(new File(activity.getProject().getProjectDirPath())));
+        fileViewModel.getNodes().observe(getViewLifecycleOwner(), node -> {
             treeView.refreshTreeView(node);
-        }
+        });
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
         UiUtilsKt.addSystemWindowInsetToPadding(refreshLayout, false, true, false, true);
         refreshLayout.setOnRefreshListener(
                 () -> {
-                    partialRefresh();
-                    refreshLayout.setRefreshing(false);
+                    if (getActivity() != null) {
+                        requireActivity().runOnUiThread(() -> {
+                            partialRefresh();
+                            refreshLayout.setRefreshing(false);
+                        });
+                    }
                 });
 
         /* Finally - set adapter for TreeView and assign a listener to it */
@@ -104,21 +116,20 @@ public class TreeViewDrawer extends Fragment {
                             @Override
                             public void onNodeToggled(
                                     @Nullable TreeNode<TreeFile> treeNode, boolean expanded) {
-                                if (treeNode.isLeaf() && treeNode.getValue().getFile().isFile()) {
+                                if (treeNode.isLeaf() && treeNode.getContent().getFile().isFile()) {
                                     try {
-                                        activity.loadFileToEditor(
-                                                treeNode.getValue().getFile().getPath());
+                                        mainViewModel.openFile(treeNode.getContent().getFile());
                                         if (activity.binding.root instanceof DrawerLayout) {
                                             DrawerLayout drawer =
                                                     (DrawerLayout) activity.binding.root;
-                                            if (drawer != null
-                                                    && drawer.isDrawerOpen(GravityCompat.START)) {
-                                                drawer.close();
+                                            if (drawer != null &&
+                                                    drawer.isDrawerOpen(GravityCompat.START)) {
+                                                mainViewModel.setDrawerState(false);
                                             }
                                         }
                                     } catch (Exception e) {
                                         activity.dialog(
-                                                "Failed to read file", e.getMessage(), true);
+                                                "Failed to open file", Log.getStackTraceString(e), true);
                                     }
                                 }
                             }
@@ -149,7 +160,7 @@ public class TreeViewDrawer extends Fragment {
     }
 
     private void showPopup(View v, TreeNode<TreeFile> node) {
-        var popup = new PopupMenu(activity, v);
+        var popup = new PopupMenu(requireActivity(), v);
         var inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();

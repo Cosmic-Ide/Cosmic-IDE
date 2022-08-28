@@ -10,10 +10,6 @@
         <item name="trackTint">@color/switch_track_tint_material3</item>
     </style>
 
-    <style name="Widget.CosmicIde.Material3.TabLayout" parent="Widget.Material3.TabLayout">
-        <item name="android:background">@android:color/transparent</item>
-    </style>
-
     <style name="Widget.CosmicIde.Material3.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
     </style>

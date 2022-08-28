@@ -22,7 +22,7 @@ class DebugActivity : BaseActivity() {
                 "COPY",
                 { _, _ ->
                     (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                        .setPrimaryClip(ClipData.newPlainText("clipboard", error))
+                        .setPrimaryClip(ClipData.newPlainText("", error))
                 }
             )
             .create()

@@ -63,15 +63,18 @@ class ConsoleActivity : BaseActivity() {
 
     private fun executeDex() {
         val console = binding.console
-        val task = ExecuteDexTask(ApplicationLoader.getDefaultSharedPreferences(), classToExecute, console.getInputStream(), console.getOutputStream(), console.getErrorStream())
-        try { 
-            task.doFullTask(project)
-        } catch (e: InvocationTargetException) {
-            e.getTargetException().printStackTrace(console.getErrorStream()) 
-        } catch (e: Throwable) {
-            e.printStackTrace(console.getErrorStream())
-        } catch (e: Error) {
-            e.printStackTrace(console.getErrorStream())
-        }
+        getSupportActionBar()?.setSubtitle("Running")
+        val task = ExecuteDexTask(
+                ApplicationLoader.getDefaultSharedPreferences(),
+                classToExecute,
+                console.getInputStream(),
+                console.getOutputStream(),
+                console.getErrorStream(),
+                {
+                    console.stop()
+                    getSupportActionBar()?.setSubtitle("Stopped")
+                }
+        )
+        task.doFullTask(project)
     }
 }

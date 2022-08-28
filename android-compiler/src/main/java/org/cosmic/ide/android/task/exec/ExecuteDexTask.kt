@@ -1,6 +1,8 @@
 package org.cosmic.ide.android.task.exec
 
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
@@ -14,6 +16,7 @@ import java.io.OutputStream
 import java.io.PrintStream
 import java.io.InputStream
 import java.lang.reflect.Modifier
+import java.lang.reflect.InvocationTargetException
 import java.nio.file.Paths
 
 class ExecuteDexTask(
@@ -22,6 +25,7 @@ class ExecuteDexTask(
     val inputStream: InputStream,
     val outputStream: PrintStream,
     val errorStream: PrintStream
+    val postRunnable: Runnable
 ) : Task {
 
     private var result: Any? = null
@@ -34,7 +38,6 @@ class ExecuteDexTask(
      * Runs the main method of the program by loading it through
      * PathClassLoader
      */
-    @Throws(Exception::class)
     override fun doFullTask(project: JavaProject) {
         val defaultIn = System.`in`
         val defaultOut = System.`out`
@@ -83,23 +86,32 @@ class ExecuteDexTask(
         // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()
 
-        Thread {
-
-            if (Modifier.isStatic(method.getModifiers())) {
-                // If the method is static, directly call it
-                result = method.invoke(null, param as? Any)
-            } else if (Modifier.isPublic(method.getModifiers())) {
-                // If the method is public, create an instance of the class,
-                // and then call it on the instance
-                val classInstance = calledClass.getConstructor().newInstance()
-                result = method.invoke(classInstance, param as? Any)
+        CoroutineUtil.inParallel {
+            try {
+                if (Modifier.isStatic(method.getModifiers())) {
+                    // If the method is static, directly call it
+                    result = method.invoke(null, param as? Any)
+                } else if (Modifier.isPublic(method.getModifiers())) {
+                    // If the method is public, create an instance of the class,
+                    // and then call it on the instance
+                    val classInstance = calledClass.getConstructor().newInstance()
+                    result = method.invoke(classInstance, param as? Any)
+                }
+                // print the value of the method if it's not null
+                if (result != null) {
+                    println(result.toString())
+                }
+            } catch (e: InvocationTargetException) {
+                e.getTargetException().printStackTrace(errorStream) 
+            } catch (e: Throwable) {
+                e.printStackTrace(errorStream)
+            } catch (e: Error) {
+                e.printStackTrace(errorStream)
             }
-            if (result != null) {
-                System.out.println(result.toString())
-            } 
             System.setOut(defaultOut)
             System.setErr(defaultErr)
             System.setIn(defaultIn)
-        }.start()
+            Handler(Looper.getMainLooper()).post(postRunnable);
+        }
     }
 }

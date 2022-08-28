@@ -20,8 +20,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
+            android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

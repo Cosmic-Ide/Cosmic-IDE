@@ -27,9 +27,8 @@ class ApplicationLoader : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val context: Context = applicationContext
-        val dataDirectory = context.getExternalFilesDir(null)?.getAbsolutePath()
-        val resources = context.getResources() 
+        val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
+        val resources = applicationContext.getResources() 
         Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
@@ -42,10 +41,10 @@ class ApplicationLoader : Application() {
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->
-            val intent = Intent(getApplicationContext(), DebugActivity::class.java)
+            val intent = Intent(applicationContext, DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
-            val pendingIntent = PendingIntent.getActivity(context, 1, intent, (PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE))
+            val pendingIntent = PendingIntent.getActivity(applicationContext, 1, intent, (PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE))
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)

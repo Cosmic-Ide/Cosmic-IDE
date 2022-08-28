@@ -54,8 +54,7 @@ class ApplicationLoader : Application() {
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)
-            Process.killProcess(Process.myPid())
-            System.exit(1)
+            finishAffinity()
         }
     }
 
@@ -68,7 +67,7 @@ class ApplicationLoader : Application() {
 
         @JvmStatic
         fun getDefaultSharedPreferences(): SharedPreferences {
-            return PreferenceManager.getDefaultSharedPreferences(ApplicationLoader.applicationContext())
+            return PreferenceManager.getDefaultSharedPreferences(applicationContext())
         }
 
         fun isDarkMode(context: Context): Boolean {

@@ -20,14 +20,12 @@ import org.cosmic.ide.common.util.CoroutineUtil
 import java.io.File
 import java.lang.reflect.InvocationTargetException
 
-import kotlinx.coroutines.Job
 
 class ConsoleActivity : BaseActivity() {
 
     private lateinit var binding: ActivityConsoleBinding
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
-    private lateinit var job: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +33,10 @@ class ConsoleActivity : BaseActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()?.setHomeButtonEnabled(true)
+        getSupportActionBar()?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
+        }
         binding.toolbar.setNavigationOnClickListener { _ -> onBackPressed() }
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
@@ -86,6 +86,5 @@ class ConsoleActivity : BaseActivity() {
                 }
         )
         task.doFullTask(project)
-        job = task.job
     }
 }

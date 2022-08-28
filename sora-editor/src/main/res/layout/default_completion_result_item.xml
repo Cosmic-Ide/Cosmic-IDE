@@ -32,13 +32,13 @@
 
     <TextView
         android:id="@+id/result_item_image"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_width="30dp"
         android:fontFamily="monospace"
         android:gravity="center"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="4dp"
         android:text="K"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -53,15 +53,15 @@
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:text="Name"
             android:textSize="16sp" />
 
         <TextView
             android:id="@+id/result_item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Small Text"
+            android:layout_marginTop="2dp"
+            android:text="Description"
             android:textSize="12sp" />
 
     </LinearLayout>

@@ -23,18 +23,19 @@ android {
     }
 
     signingConfigs {
+        const val TESTKEY = "testkey"
         getByName(BuildType.DEBUG) {
             storeFile = file("testkey.keystore")
-            storePassword = "testkey"
-            keyAlias = "testkey"
-            keyPassword = "testkey"
+            storePassword = TESTKEY
+            keyAlias = TESTKEY
+            keyPassword = TESTKEY
         }
 
         create(BuildType.RELEASE) {
             storeFile = file("testkey.keystore")
-            storePassword = "testkey"
-            keyAlias = "testkey"
-            keyPassword = "testkey"
+            storePassword = TESTKEY
+            keyAlias = TESTKEY
+            keyPassword = TESTKEY
         }
     }
 

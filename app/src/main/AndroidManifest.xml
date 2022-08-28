@@ -19,9 +19,8 @@
         android:theme="@style/Theme.CosmicIde">
 
         <activity
-            android:name=".activity.MainActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
+            android:name=".MainActivity"
+            android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
         <activity

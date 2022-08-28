@@ -24,7 +24,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center_vertical"
@@ -33,7 +33,7 @@
 
     <LinearLayout
         android:layout_height="match_parent"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -46,8 +46,8 @@
             android:textSize="11sp"
             android:drawableTop="@drawable/round_select_all_20"
             android:drawablePadding="-4dp"
-            android:paddingTop="4dp"
-            android:background="#00000000" />
+            android:paddingTop="2dp"
+            android:background="@android:color/white" />
 
         <Button
             android:id="@+id/panel_btn_copy"
@@ -58,8 +58,8 @@
             android:textSize="11sp"
             android:drawableTop="@drawable/round_content_copy_20"
             android:drawablePadding="-4dp"
-            android:paddingTop="4dp"
-            android:background="#00000000" />
+            android:paddingTop="2dp"
+            android:background="@android:color/white" />
 
         <Button
             android:id="@+id/panel_btn_paste"
@@ -70,8 +70,8 @@
             android:textSize="11sp"
             android:drawableTop="@drawable/round_content_paste_20"
             android:drawablePadding="-4dp"
-            android:paddingTop="4dp"
-            android:background="#00000000" />
+            android:paddingTop="2dp"
+            android:background="@android:color/white" />
 
         <Button
             android:id="@+id/panel_btn_cut"
@@ -82,8 +82,8 @@
             android:textSize="11sp"
             android:drawableTop="@drawable/round_content_cut_20"
             android:drawablePadding="-4dp"
-            android:paddingTop="4dp"
-            android:background="#00000000" />
+            android:paddingTop="2dp"
+            android:background="@android:color/white" />
 
     </LinearLayout>
 

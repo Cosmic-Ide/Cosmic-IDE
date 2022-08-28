@@ -17,6 +17,7 @@ import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.ui.utils.dpToPx
 import java.io.File
+import kotlin.system.exitProcess
 
 class ApplicationLoader : Application() {
 
@@ -48,7 +49,8 @@ class ApplicationLoader : Application() {
 
             val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)
-            finishAffinity()
+            Process.killProcess(Process.myPid())
+            exitProcess(0)
         }
     }
 

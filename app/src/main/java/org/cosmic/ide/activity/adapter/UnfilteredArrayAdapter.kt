@@ -1,4 +1,4 @@
-package org.cosmic.ide.adapter
+package org.cosmic.ide.activity.adapter
 
 import android.content.Context
 import android.widget.ArrayAdapter

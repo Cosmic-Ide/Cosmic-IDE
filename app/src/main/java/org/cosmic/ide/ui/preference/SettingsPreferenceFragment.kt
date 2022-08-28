@@ -1,4 +1,4 @@
-package org.cosmic.ide.preference
+package org.cosmic.ide.ui.preference
 
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
@@ -7,10 +7,10 @@ import androidx.core.net.toUri
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import org.cosmic.ide.Constants.DISCORD_URL
-import org.cosmic.ide.Constants.GITHUB_RELEASE_URL
-import org.cosmic.ide.Constants.GITHUB_URL
 import org.cosmic.ide.R
+import org.cosmic.ide.util.Constants.DISCORD_URL
+import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
+import org.cosmic.ide.util.Constants.GITHUB_URL
 import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkTheme
 import org.cosmic.ide.ui.theme.DarkThemeHelper

@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.utils
+package org.cosmic.ide.util
 
 import android.content.res.Resources
 import android.util.TypedValue

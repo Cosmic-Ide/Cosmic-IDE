@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
-import org.cosmic.ide.ApplicationLoader;
-import org.cosmic.ide.MainActivity;
-import org.cosmic.ide.ConsoleActivity;
 import org.cosmic.ide.R;
+import org.cosmic.ide.ApplicationLoader;
+import org.cosmic.ide.activity.MainActivity;
+import org.cosmic.ide.activity.ConsoleActivity;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;

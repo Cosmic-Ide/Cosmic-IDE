@@ -21,7 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
-import org.cosmic.ide.MainActivity;
+import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.common.util.FileUtil;
@@ -33,7 +33,7 @@ import org.cosmic.ide.ui.treeview.binder.TreeFileNodeViewBinder;
 import org.cosmic.ide.ui.treeview.binder.TreeFileNodeViewFactory;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
 import org.cosmic.ide.ui.treeview.model.TreeFolder;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
+import org.cosmic.ide.util.UiUtilsKt;
 
 import java.io.File;
 import java.nio.file.Files;

@@ -1,4 +1,4 @@
-package org.cosmic.ide
+package org.cosmic.ide.activity
 
 import android.content.ClipboardManager
 import android.content.ClipData
@@ -8,9 +8,11 @@ import android.view.MenuItem
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
+import org.cosmic.ide.R
+import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.databinding.ActivityConsoleBinding
 import org.cosmic.ide.project.JavaProject
-import org.cosmic.ide.ui.utils.addSystemWindowInsetToPadding
+import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
 import org.cosmic.ide.common.util.CoroutineUtil
 

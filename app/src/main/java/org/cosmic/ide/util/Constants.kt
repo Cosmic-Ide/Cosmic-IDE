@@ -1,4 +1,4 @@
-package org.cosmic.ide
+package org.cosmic.ide.util
 
 object Constants {
 

@@ -1,4 +1,4 @@
-package org.cosmic.ide;
+package org.cosmic.ide.activity;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -37,6 +37,9 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
+import org.cosmic.ide.R;
+import org.cosmic.ide.ApplicationLoader;
+import org.cosmic.ide.ProblemMarker;
 import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.android.code.disassembler.*;
 import org.cosmic.ide.android.code.formatter.*;
@@ -47,10 +50,10 @@ import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.common.util.ZipUtil;
 import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
-import org.cosmic.ide.editor.completion.CustomCompletionItemAdapter;
-import org.cosmic.ide.editor.completion.CustomCompletionLayout;
+import org.cosmic.ide.activity.editor.completion.CustomCompletionItemAdapter;
+import org.cosmic.ide.activity.editor.completion.CustomCompletionLayout;
 import org.cosmic.ide.project.JavaProject;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
+import org.cosmic.ide.util.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
 import org.eclipse.tm4e.core.theme.IRawTheme;
 import org.jf.baksmali.Baksmali;

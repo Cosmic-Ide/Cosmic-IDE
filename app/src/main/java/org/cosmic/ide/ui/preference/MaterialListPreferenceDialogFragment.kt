@@ -4,7 +4,7 @@
  * Modified by @TheRemakerMan
  */
 
-package org.cosmic.ide.preference
+package org.cosmic.ide.ui.preference
 
 import android.app.Dialog
 import android.content.DialogInterface

@@ -1,4 +1,4 @@
-package org.cosmic.ide.preference
+package org.cosmic.ide.ui.preference
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener

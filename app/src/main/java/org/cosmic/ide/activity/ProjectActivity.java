@@ -1,4 +1,4 @@
-package org.cosmic.ide;
+package org.cosmic.ide.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,11 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import org.cosmic.ide.adapter.ProjectAdapter;
+import org.cosmic.ide.R;
+import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
+import org.cosmic.ide.util.UiUtilsKt;
 
 import java.io.File;
 import java.io.IOException;

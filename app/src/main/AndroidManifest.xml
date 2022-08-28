@@ -19,13 +19,13 @@
         android:theme="@style/Theme.CosmicIde">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".ProjectActivity"
+            android:name=".activity.ProjectActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -35,16 +35,16 @@
         </activity>
 
         <activity
-            android:name=".SettingActivity"
+            android:name=".activity.SettingActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".DebugActivity"
+            android:name=".activity.DebugActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ConsoleActivity"
+            android:name=".activity.ConsoleActivity"
             android:exported="false" />  
 
     </application>

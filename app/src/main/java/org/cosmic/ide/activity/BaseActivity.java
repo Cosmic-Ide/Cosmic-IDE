@@ -1,4 +1,4 @@
-package org.cosmic.ide;
+package org.cosmic.ide.activity;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -10,9 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
+import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.ui.theme.CustomThemeHelper;
 import org.cosmic.ide.ui.theme.DarkThemeHelper;
-import org.cosmic.ide.ui.utils.UiUtilsKt;
+import org.cosmic.ide.util.UiUtilsKt;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

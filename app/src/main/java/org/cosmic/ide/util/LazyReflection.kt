@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.utils
+package org.cosmic.ide.util
 
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field

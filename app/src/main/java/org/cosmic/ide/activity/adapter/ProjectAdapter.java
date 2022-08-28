@@ -1,4 +1,4 @@
-package org.cosmic.ide.adapter;
+package org.cosmic.ide.activity.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;

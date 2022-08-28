@@ -8,4 +8,10 @@
         android:icon="@drawable/refresh"
         app:showAsAction="always" />
 
+    <item
+        android:title="@android:string/cancel"
+        android:id="@+id/cancel_menu_bttn"
+        android:icon="@drawable/cancel"
+        app:showAsAction="always" />
+
 </menu>

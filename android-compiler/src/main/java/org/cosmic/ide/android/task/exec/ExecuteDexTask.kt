@@ -18,17 +18,19 @@ import java.io.InputStream
 import java.lang.reflect.Modifier
 import java.lang.reflect.InvocationTargetException
 import java.nio.file.Paths
+import kotlinx.coroutines.Job
 
 class ExecuteDexTask(
     val prefs: SharedPreferences,
     val clazz: String,
     val inputStream: InputStream,
     val outputStream: PrintStream,
-    val errorStream: PrintStream
+    val errorStream: PrintStream,
     val postRunnable: Runnable
 ) : Task {
 
     private var result: Any? = null
+    lateinit var job: Job
 
     override fun getTaskName(): String {
         return "Execute Java Task"
@@ -86,7 +88,7 @@ class ExecuteDexTask(
         // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()
 
-        CoroutineUtil.inParallel {
+        job = CoroutineUtil.inParallel {
             try {
                 if (Modifier.isStatic(method.getModifiers())) {
                     // If the method is static, directly call it

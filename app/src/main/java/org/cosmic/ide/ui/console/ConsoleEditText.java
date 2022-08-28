@@ -182,7 +182,7 @@ public class ConsoleEditText extends AppCompatEditText {
 	private void appendStderr(final CharSequence str) {
 		mHandler.post(() -> {
 			SpannableString spannableString = new SpannableString(str);
-			spannableString.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, str.length(),
+			spannableString.setSpan(new ForegroundColorSpan(Color.RED), 0, str.length(),
 			Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			append(spannableString);
 		});
@@ -304,12 +304,12 @@ public class ConsoleEditText extends AppCompatEditText {
 		}
 		
 		public CharSequence insertStr(CharSequence newChars, int startPos) {
-			if (startPos < mLength) { //it mean output from console
+			if (startPos < mLength) { // it means output from console
 				return newChars;
 				
-				} else { //(startPos >= mLength)
+				} else {
 				SpannableString spannableString = new SpannableString(newChars);
-				spannableString.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
+				spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#A4C639")), 0,
 				spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 				return spannableString;
 				
@@ -322,7 +322,7 @@ public class ConsoleEditText extends AppCompatEditText {
 				
 				} else {//if (startPos >= mLength)
 				SpannableString spannableString = new SpannableString(newChars);
-				spannableString.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
+				spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#A4C639")), 0,
 				spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 				return spannableString;
 			}

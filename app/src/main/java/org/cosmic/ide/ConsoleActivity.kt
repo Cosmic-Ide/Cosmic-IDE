@@ -61,7 +61,7 @@ class ConsoleActivity : BaseActivity() {
                 true
             }
             R.id.cancel_menu_bttn -> {
-                job.cancel()
+                finishAffinity()
                 true
             }
             else -> super.onOptionsItemSelected(item) 

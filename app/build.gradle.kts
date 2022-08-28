@@ -23,7 +23,7 @@ android {
     }
 
     signingConfigs {
-        const val TESTKEY = "testkey"
+        val TESTKEY = "testkey"
         getByName(BuildType.DEBUG) {
             storeFile = file("testkey.keystore")
             storePassword = TESTKEY

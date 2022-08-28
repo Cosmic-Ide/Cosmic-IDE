@@ -81,7 +81,7 @@ class ConsoleActivity : BaseActivity() {
                 console.getOutputStream(),
                 console.getErrorStream(),
                 {
-                    console.stop()
+                    // console.stop()
                     getSupportActionBar()?.setSubtitle("Stopped")
                 }
         )

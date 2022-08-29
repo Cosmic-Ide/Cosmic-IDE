@@ -185,12 +185,16 @@ public class MainActivity extends BaseActivity {
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabUnselected(TabLayout.Tab p1) {
-                // For some reason we're get an error when saving the file.
-                // Fragment fragment = getSupportFragmentManager()
-                        // .findFragmentByTag("f" + tabsAdapter.getItemId(p1.getPosition()));
-                // if (fragment instanceof CodeEditorFragment) {
-                    // ((CodeEditorFragment) fragment).save();
-                // }
+                try {
+                    // For some reason we're get an error when saving the file.
+                    String tag = "f" + tabsAdapter.getItemId(p1.getPosition());
+                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                    if (fragment instanceof CodeEditorFragment) {
+                        ((CodeEditorFragment) fragment).save();
+                    }
+                } catch (Exception e) {
+                    dialog("Unable to save file", e.toString(), true);
+                }
             }
 
             @Override

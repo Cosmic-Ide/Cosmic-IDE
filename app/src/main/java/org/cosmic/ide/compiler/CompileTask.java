@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
 import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.activity.ConsoleActivity;
-import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
@@ -29,7 +26,6 @@ public class CompileTask extends Thread {
     private boolean showExecuteDialog = false;
 
     private final MainActivity activity;
-    private MainViewModel mainViewModel;
 
     private final CompilerListeners listener;
     private final JavaBuilder builder;
@@ -45,7 +41,6 @@ public class CompileTask extends Thread {
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
         this.builder = new JavaBuilder(activity);
-        mainViewModel = new ViewModelProvider(activity).get(MainViewModel.class);
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);

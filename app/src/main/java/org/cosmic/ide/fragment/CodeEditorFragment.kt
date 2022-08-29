@@ -72,7 +72,7 @@ class CodeEditorFragment : Fragment() {
                         ProblemMarker(
                                 ApplicationLoader.applicationContext(),
                                 getEditor(),
-                                currentFile.getAbsolutePath(),
+                                currentFile,
                                 (requireActivity() as MainActivity).getProject()));
     }
 

@@ -51,7 +51,6 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
-import org.cosmic.ide.ProblemMarker;
 import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.activity.editor.CodeEditorView;

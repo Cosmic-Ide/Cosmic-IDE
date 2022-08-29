@@ -10,23 +10,26 @@ import org.cosmic.ide.common.Indexer
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
+import java.io.File
 
 class ProblemMarker(
     context: Context,
     editor: CodeEditor,
-    file: String,
+    file: File,
     project: JavaProject
 ) : ContentListener {
 
     private var editor: CodeEditor
     private var analyzer: JavacAnalyzer
+    private var file: File
     private var project: JavaProject
     private val diagnostics = DiagnosticsContainer()
 
     init {
         this.editor = editor
+        this.file = file
         this.project = project
-        this.analyzer = JavacAnalyzer(context, file, project)
+        this.analyzer = JavacAnalyzer(context, project)
         analyze(editor.getText())
     }
 
@@ -60,13 +63,12 @@ class ProblemMarker(
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
-            // try {
-                // val path = Indexer(project.getProjectName(), project.getCacheDirPath()).getString("currentFile")
-                // if (!path.endsWith(".java")) return@thread
-                // FileUtil.writeFile(path, content.toString())
-            // } catch (ignored: Exception) {
-            // }
-            analyzer.analyze()
+            try {
+                if (!file.name.endsWith(".java")) return@thread
+                FileUtil.writeFile(file.getAbsolutePath(), content.toString())
+                analyzer.analyze()
+            } catch (ignored: Exception) {
+            }
             diagnostics.reset()
             diagnostics.addDiagnostics(analyzer.getDiagnostics())
             editor.setDiagnostics(diagnostics)

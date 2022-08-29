@@ -19,18 +19,16 @@ import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
 import javax.tools.StandardLocation
 
-class JavacAnalyzer(context: Context, file: String, javaProject: JavaProject) {
+class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private val prefs: SharedPreferences
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
     private var isFirstUse = true
-    private val currentFile: String
     private val project: JavaProject
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         project = javaProject
-        currentFile = file
     }
 
     @Throws(IOException::class)

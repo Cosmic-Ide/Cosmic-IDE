@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -191,9 +192,9 @@ public class MainActivity extends BaseActivity {
                                 currentWorkingFilePath,
                                 getProject()));
     }
-    
-    
-    public void addSymbolsPannel(){		
+   
+    public void addSymbolsPannel(){
+		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);	
 		String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
 		String[] symoolsAction = getResources().getStringArray(R.array.symbols_actions);		
 		binding.symbolInput.addSymbols(symbolsArray,symoolsAction);		

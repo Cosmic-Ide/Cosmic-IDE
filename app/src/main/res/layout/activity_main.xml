@@ -36,13 +36,13 @@
             <HorizontalScrollView
                 android:backgroundTint="?colorSurface"
                 android:layout_width="match_parent"
-                android:layout_height="36.0dip">
+                android:layout_height="42.0dip">
                 
                 <io.github.rosemoe.sora.widget.SymbolInputView
                     android:backgroundTint="?colorSurface"
                     android:id="@+id/symbol_input"
                     android:layout_width="wrap_content"
-                    android:layout_height="36.0dip" />
+                    android:layout_height="42.0dip" />
                     
             </HorizontalScrollView>
             

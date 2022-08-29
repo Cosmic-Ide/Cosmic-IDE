@@ -412,6 +412,7 @@ public class MainActivity extends BaseActivity {
                         this,
                         execute,
                         new CompileTask.CompilerListeners() {
+                            private boolean compileSuccess = true;
                             @Override
                             public void onCurrentBuildStageChanged(String stage) {
                                 changeLoadingDialogBuildStage(stage);
@@ -428,12 +429,18 @@ public class MainActivity extends BaseActivity {
 
                             @Override
                             public void onFailed(String errorMessage) {
+                                compileSuccess = false;
                                 notifBuilder.setContentText("Failure");
                                 notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
                                 showError(errorMessage);
+                            }
+
+                            @Override
+                            public boolean isSuccessTillNow() {
+                                return compileSuccess;
                             }
                         });
         if (!blockMainThread) {

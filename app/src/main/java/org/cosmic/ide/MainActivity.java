@@ -119,6 +119,8 @@ public class MainActivity extends BaseActivity {
         }
 
         configureEditor(binding.editor);
+        
+        addSymbolsPannel();
 
         try {
             indexer = new Indexer(getProject().getProjectName(), getProject().getCacheDirPath());
@@ -189,7 +191,14 @@ public class MainActivity extends BaseActivity {
                                 currentWorkingFilePath,
                                 getProject()));
     }
-
+    
+    
+    public void addSymbolsPannel(){		
+		String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
+		String[] symoolsAction = getResources().getStringArray(R.array.symbols_actions);		
+		binding.symbolInput.addSymbols(symbolsArray,symoolsAction);		
+		binding.symbolInput.bindEditor(binding.editor);
+	}
     /* Build Loading Dialog - This dialog shows on code compilation */
     void buildLoadingDialog() {
         loadingDialog = new BottomSheetDialog(this);

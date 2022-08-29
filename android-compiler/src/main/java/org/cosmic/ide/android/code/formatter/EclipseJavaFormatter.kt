@@ -31,7 +31,7 @@ class EclipseJavaFormatter(code: String) {
         try {
             edit.apply(document)
         } catch (e: Exception) {
-            throw IllegalStateException(e)
+            e.printStackTrace()
         }
         // return the formatted code
         return document.get()

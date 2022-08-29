@@ -194,7 +194,7 @@ public class MainActivity extends BaseActivity {
     }
    
     public void addSymbolsPannel(){
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
         String[] symoolsAction = getResources().getStringArray(R.array.symbols_actions);
         binding.symbolInput.addSymbols(symbolsArray,symoolsAction);	

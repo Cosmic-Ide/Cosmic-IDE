@@ -9,7 +9,6 @@ import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.ConsoleActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.android.exception.CompilationFailedException;
-import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.android.task.exec.ExecuteDexTask;
 import org.cosmic.ide.android.task.java.*;
@@ -28,7 +27,6 @@ public class CompileTask extends Thread {
     private final MainActivity activity;
 
     private final CompilerListeners listener;
-    private final JavaBuilder builder;
 
     private final String STAGE_CLEAN;
     private final String STAGE_KOTLINC;
@@ -41,7 +39,6 @@ public class CompileTask extends Thread {
         this.activity = context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
-        this.builder = new JavaBuilder(activity);
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);

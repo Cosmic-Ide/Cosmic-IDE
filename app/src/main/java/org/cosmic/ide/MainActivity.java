@@ -382,6 +382,7 @@ public class MainActivity extends BaseActivity {
                         this,
                         execute,
                         new CompileTask.CompilerListeners() {
+                            private boolean compileSuccess = true;
                             @Override
                             public void onCurrentBuildStageChanged(String stage) {
                                 mBuilder.setContentText(stage);
@@ -398,12 +399,18 @@ public class MainActivity extends BaseActivity {
 
                             @Override
                             public void onFailed(String errorMessage) {
+                                compileSuccess = false;
                                 mBuilder.setContentText("Failure");
                                 manager.notify(id, mBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
                                 showErr(errorMessage);
+                            }
+
+                            @Override
+                            public boolean isSuccessTillNow() {
+                                return compileSuccess;
                             }
                         });
         if (!blockMainThread) {

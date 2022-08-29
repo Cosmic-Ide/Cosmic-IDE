@@ -9,7 +9,6 @@ import org.cosmic.ide.MainActivity;
 import org.cosmic.ide.ConsoleActivity;
 import org.cosmic.ide.R;
 import org.cosmic.ide.android.exception.CompilationFailedException;
-import org.cosmic.ide.android.task.JavaBuilder;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.android.task.exec.ExecuteDexTask;
 import org.cosmic.ide.android.task.java.*;
@@ -28,7 +27,6 @@ public class CompileTask extends Thread {
     private final MainActivity activity;
 
     private final CompilerListeners listener;
-    private final JavaBuilder builder;
 
     private final String STAGE_CLEAN;
     private final String STAGE_KOTLINC;
@@ -41,7 +39,6 @@ public class CompileTask extends Thread {
         this.activity = context;
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
-        this.builder = new JavaBuilder(activity);
 
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);
@@ -71,20 +68,25 @@ public class CompileTask extends Thread {
             }
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
+            return;
         }
 
         var time = System.currentTimeMillis();
         // Compile Kotlin files
         compileKotlin();
+        if (!listener.isSuccessTillNow()) return;
 
         // Compile Java Files
         compileJava();
+        if (!listener.isSuccessTillNow()) return;
 
         ecjTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
 
         // Run D8
         compileDex();
+        if (!listener.isSuccessTillNow()) return;
+ 
         d8Time = System.currentTimeMillis() - time;
 
         listener.onSuccess();
@@ -99,10 +101,8 @@ public class CompileTask extends Thread {
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
-            return;
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
-            return;
         }
     }
 
@@ -121,10 +121,8 @@ public class CompileTask extends Thread {
             }
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
-            return;
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
-            return;
         }
     }
 
@@ -134,7 +132,6 @@ public class CompileTask extends Thread {
             new D8Task().doFullTask(activity.getProject());
         } catch (Exception e) {
             listener.onFailed(e.getMessage());
-            return;
         }
     }
 
@@ -167,5 +164,7 @@ public class CompileTask extends Thread {
         public void onSuccess();
 
         public void onFailed(String errorMessage);
+
+        public boolean isSuccessTillNow();
     }
 }

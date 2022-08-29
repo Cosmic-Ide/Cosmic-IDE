@@ -31,6 +31,12 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabMode="scrollable" />
         </com.google.android.material.appbar.AppBarLayout>
 
         <LinearLayout
@@ -38,8 +44,31 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <io.github.rosemoe.sora.widget.CodeEditor
-                android:id="@+id/editor"
+            <LinearLayout
+                android:id="@+id/empty_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+        
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No open files"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="?android:textColorPrimary" />
+        
+                <TextView
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="Open the file through the left menu"
+                     android:textAppearance="?android:textAppearanceSmall"
+                     android:textColor="?android:textColorSecondary"
+                     android:layout_marginTop="@dimen/spacing_tiny" />
+            </LinearLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />

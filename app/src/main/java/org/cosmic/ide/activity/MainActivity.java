@@ -185,16 +185,9 @@ public class MainActivity extends BaseActivity {
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabUnselected(TabLayout.Tab p1) {
-                try {
-                    // For some reason we're get an error when saving the file.
-                    String tag = "f" + tabsAdapter.getItemId(p1.getPosition());
-                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                    if (fragment instanceof CodeEditorFragment) {
-                        ((CodeEditorFragment) fragment).save();
-                    }
-                } catch (Exception e) {
-                    dialog("Unable to save file", e.toString(), true);
-                }
+                /* There is no need to save the file here
+                 * as each time you enter text the file
+                 * is automatically saved. */
             }
 
             @Override
@@ -395,8 +388,8 @@ public class MainActivity extends BaseActivity {
 
         final var notifChannel =
                 new NotificationChannel(
-                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_HIGH);
-        notifChannel.setDescription("Shows the current build status.");
+                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_NONE);
+        notifChannel.setDescription("Foreground notification for the compiler");
 
         final var notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notifManager.createNotificationChannel(notifChannel);
@@ -423,7 +416,7 @@ public class MainActivity extends BaseActivity {
 
                             @Override
                             public void onSuccess() {
-                                notifBuilder.setContentText("Compiled successfully!");
+                                notifBuilder.setContentText("Success");
                                 notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
@@ -432,7 +425,7 @@ public class MainActivity extends BaseActivity {
 
                             @Override
                             public void onFailed(String errorMessage) {
-                                notifBuilder.setContentText("Compilation failure!");
+                                notifBuilder.setContentText("Failure");
                                 notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();

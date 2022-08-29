@@ -11,9 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +95,7 @@ public class MainActivity extends BaseActivity {
     private MainViewModel mainViewModel;
     private FileViewModel fileViewModel;
     private PageAdapter tabsAdapter;
+    private Indexer indexer;
 
     public ActivityMainBinding binding;
 
@@ -158,17 +157,7 @@ public class MainActivity extends BaseActivity {
         unzipFiles();
         buildLoadingDialog();
 
-        File root;
-        if (getProject() != null) {
-            root = getProject().getRootFile();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                root = getExternalFilesDir(null);
-            } else {
-                root = Environment.getExternalStorageDirectory();
-            }
-        }
-        fileViewModel.refreshNode(root);
+        fileViewModel.refreshNode(getProject().getRootFile());
 
         mainViewModel.setFiles(new ArrayList<>());
         mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
@@ -222,10 +211,13 @@ public class MainActivity extends BaseActivity {
         mainViewModel.getFiles().observe(this, files -> {
             tabsAdapter.submitList(files);
             if (files.isEmpty()) {
+                binding.tabLayout.removeAllTabs();
                 binding.tabLayout.setVisibility(View.GONE);
+                binding.viewPager.setVisibility(View.GONE);
                 binding.emptyContainer.setVisibility(View.VISIBLE);
             } else {
                 binding.tabLayout.setVisibility(View.VISIBLE);
+                binding.viewPager.setVisibility(View.VISIBLE);
                 binding.emptyContainer.setVisibility(View.GONE);
             }
         });

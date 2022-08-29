@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModel;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
+import org.cosmic.ide.common.util.CoroutineUtil;
 
 import java.io.File;
-import java.util.concurrent.Executors;
 
 public class FileViewModel extends ViewModel {
 
@@ -33,7 +33,7 @@ public class FileViewModel extends ViewModel {
     }
 
     public void refreshNode(File root) {
-        Executors.newSingleThreadExecutor().execute(() -> {
+        CoroutineUtil.execute(() -> {
             TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(root));
             mNode.postValue(node);
         });

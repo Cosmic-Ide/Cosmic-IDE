@@ -194,10 +194,10 @@ public class MainActivity extends BaseActivity {
     }
    
     public void addSymbolsPannel(){
-		WindowCompat.setDecorFitsSystemWindows(getWindow(), false);	
-		String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
-		String[] symoolsAction = getResources().getStringArray(R.array.symbols_actions);		
-		binding.symbolInput.addSymbols(symbolsArray,symoolsAction);		
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
+        String[] symoolsAction = getResources().getStringArray(R.array.symbols_actions);
+        binding.symbolInput.addSymbols(symbolsArray,symoolsAction);	
 		binding.symbolInput.bindEditor(binding.editor);
 	}
     /* Build Loading Dialog - This dialog shows on code compilation */

@@ -7,8 +7,8 @@ import org.cosmic.ide.R
 import org.cosmic.ide.ui.treeview.TreeNode
 import org.cosmic.ide.ui.treeview.base.BaseNodeViewBinder
 import org.cosmic.ide.ui.treeview.file.TreeFile
-import org.cosmic.ide.ui.utils.dpToPx
-import org.cosmic.ide.ui.utils.setMargins
+import org.cosmic.ide.util.dpToPx
+import org.cosmic.ide.util.setMargins
 
 class TreeFileNodeViewBinder(
     itemView: View,

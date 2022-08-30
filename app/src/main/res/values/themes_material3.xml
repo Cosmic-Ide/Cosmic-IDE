@@ -11,7 +11,6 @@
 
         <item name="floatingActionButtonStyle">?floatingActionButtonSecondaryStyle</item>
         <item name="switchStyle">@style/Widget.CosmicIde.Material3.CompoundButton.Switch</item>
-        <item name="tabStyle">@style/Widget.CosmicIde.Material3.TabLayout</item>
         <item name="textInputStyle">?textInputFilledStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
         <item name="colorAppBarSurface">?colorSurface</item>

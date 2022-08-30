@@ -18,5 +18,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 dependencies {
     api(Dependencies.COROUTINES)
+    api(Dependencies.GSON)
     compileOnly(files("libs/android-stubs.jar"))
 }

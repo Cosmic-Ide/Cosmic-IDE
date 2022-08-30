@@ -13,6 +13,11 @@
     <string name="delete_file">Удалить %1$s?</string>
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
+    <string name="close">Закрыть</string>
+    <string name="close_others">Закрыть другие</string>
+    <string name="close_all">Закрыть все</string>
+    <string name="no_open_files">Нет открытых файлов</string>
+    <string name="open_the_file">Откройте файл через левое меню</string>
 
     <!-- Строки, используемые ProjectActivity -->
     <string name="projects">Проекты</string>

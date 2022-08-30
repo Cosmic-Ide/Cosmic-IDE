@@ -1,10 +1,16 @@
 package org.cosmic.ide.common
 
+import com.google.gson.Gson
+
 import org.cosmic.ide.common.util.FileUtil
 import org.json.JSONException
 import org.json.JSONObject
+
 import java.io.File
 import java.io.IOException
+import java.util.ArrayList
+import java.util.List
+import java.util.stream.Collectors
 
 class Indexer {
 
@@ -31,6 +37,15 @@ class Indexer {
             e.printStackTrace()
         }
     }
+
+    // @Throws(JSONException::class)
+    // fun put(key: String, items: List<File>): Indexer {
+        // var value = Gson().toJson(items.stream()
+                        // .map(File::getAbsolutePath)
+                        // .collect(Collectors.toList()))
+        // json.put(key, value)
+        // return this
+    // }
 
     @Throws(JSONException::class)
     fun put(key: String, value: String): Indexer {

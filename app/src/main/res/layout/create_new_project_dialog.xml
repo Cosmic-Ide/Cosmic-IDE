@@ -60,7 +60,7 @@
         android:layout_below="@id/til_project_name"
         android:text="@android:string/cancel" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@android:id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

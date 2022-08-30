@@ -19,6 +19,11 @@
     <string name="delete_file">Delete %1$s?</string>
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
+    <string name="close">Close</string>
+    <string name="close_others">Close others</string>
+    <string name="close_all">Close all</string>
+    <string name="no_open_files">No open files</string>
+    <string name="open_the_file">Open the file through the left menu</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>

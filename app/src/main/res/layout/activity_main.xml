@@ -39,18 +39,18 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center">
-        
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No open files"
+                    android:text="@string/no_open_files"
                     android:textAppearance="?android:textAppearanceMedium"
                     android:textColor="?android:textColorPrimary" />
-        
+
                 <TextView
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
-                     android:text="Open the file through the drawer"
+                     android:text="@string/open_the_file"
                      android:textAppearance="?android:textAppearanceSmall"
                      android:textColor="?android:textColorSecondary"
                      android:layout_marginTop="@dimen/spacing_tiny" />

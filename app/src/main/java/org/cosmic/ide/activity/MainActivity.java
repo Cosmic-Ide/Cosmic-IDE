@@ -183,9 +183,9 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onTabReselected(TabLayout.Tab p1) {
                 PopupMenu popup = new PopupMenu(MainActivity.this, p1.view);
-                popup.getMenu().add(0, 0, 1, "Close");
-                popup.getMenu().add(0, 1, 2, "Close others");
-                popup.getMenu().add(0, 2, 3, "Close all");
+                popup.getMenu().add(0, 0, 1, getString(R.string.close));
+                popup.getMenu().add(0, 1, 2, getString(R.string.close_others));
+                popup.getMenu().add(0, 2, 3, getString(R.string.close_all));
                 popup.setOnMenuItemClickListener(item -> {
                     switch (item.getItemId()) {
                         case 0:

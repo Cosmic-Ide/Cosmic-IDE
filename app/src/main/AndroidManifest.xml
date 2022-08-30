@@ -19,7 +19,7 @@
         android:theme="@style/Theme.CosmicIde">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 

@@ -66,6 +66,7 @@ import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.fragment.CodeEditorFragment;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
 import org.eclipse.tm4e.core.theme.IRawTheme;
@@ -108,7 +109,7 @@ public class MainActivity extends BaseActivity {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
-        javaProject = new JavaProject(new File(getIntent().getStringExtra("project_path")));
+        javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 
         setSupportActionBar(binding.toolbar);
  
@@ -243,7 +244,7 @@ public class MainActivity extends BaseActivity {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         saveAll();
         if (binding.root instanceof DrawerLayout) {
-            outState.putBoolean("start_drawer_state",
+            outState.putBoolean(Constants.DRAWER_STATE,
                     ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
         }
         super.onSaveInstanceState(outState);
@@ -251,7 +252,7 @@ public class MainActivity extends BaseActivity {
 
     private void restoreViewState(@NonNull Bundle state) {
         if (binding.root instanceof DrawerLayout) {
-            boolean b = state.getBoolean("start_drawer_state", false);
+            boolean b = state.getBoolean(Constants.DRAWER_STATE, false);
             mainViewModel.setDrawerState(b);
         }
     }

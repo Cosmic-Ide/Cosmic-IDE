@@ -13,6 +13,7 @@ import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.databinding.ActivityConsoleBinding
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
+import org.cosmic.ide.util.Constants.PROJECT_PATH
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
 import org.cosmic.ide.common.util.CoroutineUtil
 
@@ -45,7 +46,7 @@ class ConsoleActivity : BaseActivity() {
 
         if (bundle != null) {
             classToExecute = bundle.getString("class_to_execute")!!
-            val projectPath = bundle.getString("project_path")
+            val projectPath = bundle.getString(PROJECT_PATH)
             project = JavaProject(File(projectPath!!))
             executeDex()
         }

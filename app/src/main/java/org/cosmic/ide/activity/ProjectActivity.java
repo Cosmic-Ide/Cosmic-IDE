@@ -19,6 +19,7 @@ import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 
 import java.io.File;
@@ -179,7 +180,7 @@ public class ProjectActivity extends BaseActivity {
     private void openProject(JavaProject project) {
         var projectPath = project.getProjectDirPath();
         var intent = new Intent(this, MainActivity.class);
-        intent.putExtra("project_path", projectPath);
+        intent.putExtra(Constants.PROJECT_PATH, projectPath);
         startActivity(intent);
     }
 

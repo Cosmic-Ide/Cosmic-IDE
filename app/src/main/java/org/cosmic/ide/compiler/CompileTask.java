@@ -15,6 +15,7 @@ import org.cosmic.ide.android.task.exec.ExecuteDexTask;
 import org.cosmic.ide.android.task.java.*;
 import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
 import org.cosmic.ide.common.util.FileUtil;
+import org.cosmic.ide.util.Constants;
 
 import java.io.File;
 
@@ -133,7 +134,7 @@ public class CompileTask extends Thread {
                         classes,
                         (dialog, item) -> {
                             var intent = new Intent(activity, ConsoleActivity.class);
-                            intent.putExtra("project_path", activity.getProject().getProjectDirPath());
+                            intent.putExtra(Constants.PROJECT_PATH, activity.getProject().getProjectDirPath());
                             intent.putExtra("class_to_execute", classes[item]);
                             activity.startActivity(intent);
                         });

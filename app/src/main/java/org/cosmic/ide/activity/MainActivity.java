@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.WindowCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -156,6 +157,7 @@ public class MainActivity extends BaseActivity {
         }
 
         unzipFiles();
+        addSymbolsPanel();
         buildLoadingDialog();
 
         fileViewModel.refreshNode(getProject().getRootFile());
@@ -297,15 +299,23 @@ public class MainActivity extends BaseActivity {
                 compile(true, false);
                 break;
             case R.id.action_undo:
-				if (binding.editor.canUndo()) {
-					binding.editor.undo();				
-				}
-				break;
-			case R.id.action_redo:
-				if (binding.editor.canRedo()) {
-					binding.editor.redo();
-				}
-				break;
+                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment instanceof CodeEditorFragment) {
+                    if (((CodeEditorFragment) fragment).canUndo()) {
+                        ((CodeEditorFragment) fragment).undo();
+                    }
+                }
+                break;
+            case R.id.action_redo:
+                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment instanceof CodeEditorFragment) {
+                    if (((CodeEditorFragment) fragment).canRedo()) {
+                        ((CodeEditorFragment) fragment).redo();
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -337,6 +347,18 @@ public class MainActivity extends BaseActivity {
             } catch (Exception e) {
                 showError(getString(e));
             }
+        }
+    }
+
+    public void addSymbolsPanel(){
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        if (fragment instanceof CodeEditorFragment) {
+            String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
+            String[] symbolsAction = getResources().getStringArray(R.array.symbols_actions);
+            binding.symbolInput.addSymbols(symbolsArray, symbolsAction);
+            binding.symbolInput.bindEditor((CodeEditorFragment) fragment).getEditor());
         }
     }
 

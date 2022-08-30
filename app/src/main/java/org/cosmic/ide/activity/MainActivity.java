@@ -299,21 +299,17 @@ public class MainActivity extends BaseActivity {
                 compile(true, false);
                 break;
             case R.id.action_undo:
-                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment instanceof CodeEditorFragment) {
-                    if (((CodeEditorFragment) fragment).canUndo()) {
-                        ((CodeEditorFragment) fragment).undo();
-                    }
+                String _tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                Fragment _fragment = getSupportFragmentManager().findFragmentByTag(_tag);
+                if (_fragment instanceof CodeEditorFragment) {
+                    ((CodeEditorFragment) _fragment).undo();
                 }
                 break;
             case R.id.action_redo:
-                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment instanceof CodeEditorFragment) {
-                    if (((CodeEditorFragment) fragment).canRedo()) {
-                        ((CodeEditorFragment) fragment).redo();
-                    }
+                String __tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                Fragment __fragment = getSupportFragmentManager().findFragmentByTag(__tag);
+                if (__fragment instanceof CodeEditorFragment) {
+                    ((CodeEditorFragment) __fragment).redo();
                 }
                 break;
             default:
@@ -350,7 +346,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void addSymbolsPanel(){
+    private void addSymbolsPanel(){
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
@@ -358,7 +354,7 @@ public class MainActivity extends BaseActivity {
             String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
             String[] symbolsAction = getResources().getStringArray(R.array.symbols_actions);
             binding.symbolInput.addSymbols(symbolsArray, symbolsAction);
-            binding.symbolInput.bindEditor((CodeEditorFragment) fragment).getEditor());
+            binding.symbolInput.bindEditor(((CodeEditorFragment) fragment).getEditor());
         }
     }
 
@@ -458,11 +454,6 @@ public class MainActivity extends BaseActivity {
                                     loadingDialog.dismiss();
                                 }
                                 showError(errorMessage);
-                            }
-
-                            @Override
-                            public boolean isSuccessTillNow() {
-                                return compileSuccess;
                             }
 
                             @Override

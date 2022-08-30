@@ -365,4 +365,10 @@ public class ConsoleEditText extends AppCompatEditText {
 			return returnStr;
 		}
 	}
+
+	public void release() {
+	    outputStream = null;
+	    inputStream = null;
+	    errorStream = null;
+	}
 }

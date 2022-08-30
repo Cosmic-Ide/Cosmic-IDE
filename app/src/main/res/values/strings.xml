@@ -77,32 +77,32 @@
         <item>-></item>
         <item>{</item>
         <item>}</item>
-	<item>(</item>
-	<item>)</item>
-	<item>,</item>
-	<item>.</item>
-	<item>;</item>
+	    <item>(</item>
+	    <item>)</item>
+	    <item>,</item>
+	    <item>.</item>
+	    <item>;</item>
         <item>"\"</item>
         <item>?</item>
         <item>+</item>
-	<item>-</item>
-	<item>*</item>
-	<item>/</item>
+	    <item>-</item>
+	    <item>*</item>
+	    <item>/</item>
     </string-array>
 	<string-array name="symbols_actions">
-        <item>-></item>
+        <item>"\t"</item>
         <item>{</item>
         <item>}</item>
-	<item>(</item>
-	<item>)</item>
-	<item>,</item>
-	<item>.</item>
-	<item>;</item>
-	<item>"\"</item>
-	<item>?</item>
-	<item>+</item>
-	<item>-</item>
-	<item>*</item>
-	<item>/</item>
-    </string-array>
+	    <item>(</item>
+	    <item>)</item>
+        <item>,</item>
+     	<item>.</item>
+	    <item>;</item>
+	    <item>"\"</item>
+        <item>?</item>
+	    <item>+</item>
+	    <item>-</item>
+     	<item>*</item>
+	    <item>/</item>
+        </string-array>
 </resources>

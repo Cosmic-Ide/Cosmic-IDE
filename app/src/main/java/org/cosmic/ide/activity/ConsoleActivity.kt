@@ -52,6 +52,11 @@ class ConsoleActivity : BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.console.release()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.console_activity_menu, menu)
         return true

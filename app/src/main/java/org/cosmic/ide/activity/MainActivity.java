@@ -704,7 +704,7 @@ public class MainActivity extends BaseActivity {
 
     /* Shows a snackbar indicating that there were problems during compilation */
     private void showError(String exception) {
-        Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(binding.snackbarContainer, "An error occurred", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", v -> dialog("Failed...", exception.toString(), true))
                 .show();
     }

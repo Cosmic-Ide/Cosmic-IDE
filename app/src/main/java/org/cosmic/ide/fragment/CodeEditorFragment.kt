@@ -18,6 +18,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
+import org.cosmic.ide.util.UiUtilsKt
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.activity.MainActivity

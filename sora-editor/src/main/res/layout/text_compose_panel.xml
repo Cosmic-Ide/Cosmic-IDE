@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        androidd:background="#ffffff">
+        android:background="#ffffff">
 
         <Button
             android:id="@+id/panel_btn_select_all"

@@ -18,7 +18,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
-import org.cosmic.ide.util.UiUtilsKt
+import org.cosmic.ide.util.*
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.activity.MainActivity
@@ -54,7 +54,7 @@ class CodeEditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.inputViewContainer, false, false, false, true);
+        binding.inputViewContainer.addSystemWindowInsetToPadding(false, false, false, true)
 
         configureEditor(binding.editor)
         

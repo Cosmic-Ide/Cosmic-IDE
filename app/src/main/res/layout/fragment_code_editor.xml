@@ -1,10 +1,36 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.cosmic.ide.activity.editor.CodeEditorView
         android:id="@+id/editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-</FrameLayout>
+        
+    <LinearLayout
+        android:id="@+id/input_view_container"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="42.0dip">
+        
+        <HorizontalScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="42.0dip"
+            android:backgroundTint="?colorSurface">
+            
+            <io.github.rosemoe.sora.widget.SymbolInputView
+                android:id="@+id/input_view"
+                android:layout_width="wrap_content"
+                android:layout_height="42.0dip"
+                android:backgroundTint="?colorSurface" />
+                
+        </HorizontalScrollView>
+        
+    </LinearLayout>
+    
+</LinearLayout>

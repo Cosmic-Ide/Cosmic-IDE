@@ -52,7 +52,18 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.inputViewContainer, false, false, false, true);
+
         configureEditor(binding.editor)
+        
+        val inputView = binding.inputView
+        inputView.bindEditor(binding.editor)
+        inputView.addSymbols(
+            arrayOf( "->","{","}","(",")",",",".",";","\"","?","+","-","*", "/" ),                 
+            arrayOf( "\t", "{}", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/" )
+        )
+
         if (currentFile.exists()) {
             try {
                 binding.editor.setText(FileUtil.readFile(currentFile))

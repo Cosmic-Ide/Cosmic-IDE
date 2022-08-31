@@ -59,12 +59,15 @@ class ProblemMarker(
     }
 
     private fun analyze(content: Content) {
-        CoroutineUtil.inParallel thread@{
+        CoroutineUtil.inParallel thread@ {
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
             try {
-                if (!file.name.endsWith(".java")) return@thread
+                if (!(file.name.endsWith(".java") || file.name.endsWith(".jav"))) {
+                    editor.setDiagnostics(DiagnosticsContainer())
+                    return@thread
+                } 
                 FileUtil.writeFile(file.getAbsolutePath(), content.toString())
                 analyzer.analyze()
                 diagnostics.reset();

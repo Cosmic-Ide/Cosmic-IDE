@@ -64,16 +64,15 @@ class CodeEditorFragment : Fragment() {
             } else if (currentFile.getPath().endsWith(".java")
                     || currentFile.endsWith(".jav")) {
                 setEditorLanguage(LANGUAGE_JAVA)
- 
-                binding.editor
+            }
+            binding.editor
                     .getText()
                     .addContentListener(
                             ProblemMarker(
                                     ApplicationLoader.applicationContext(),
                                     getEditor(),
                                     currentFile,
-                                    (requireActivity() as MainActivity).getProject()));
-            }
+                                    (requireActivity() as MainActivity).getProject()))
         }
     }
 

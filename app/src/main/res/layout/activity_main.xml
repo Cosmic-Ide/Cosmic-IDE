@@ -61,56 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
-            
-            <HorizontalScrollView
-                android:backgroundTint="?colorSurface"
-                android:layout_width="match_parent"
-                android:layout_height="42.0dip">
                 
-                <io.github.rosemoe.sora.widget.SymbolInputView
-                    android:backgroundTint="?colorSurface"
-                    android:id="@+id/symbol_input"
-                    android:layout_width="wrap_content"
-                    android:layout_height="42.0dip" />
-                    
-            </HorizontalScrollView>
-            
-            <LinearLayout
-                android:id="@+id/bottom_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?colorSurface"
-                android:elevation="@dimen/elevation_normal"
-                android:padding="@dimen/spacing_small">
-                
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_smali"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_small"
-                    android:layout_weight="1"
-                    android:onClick="smali"
-                    android:text="@string/smali" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_disassemble"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:onClick="disassemble"
-                    android:text="@string/disassemble" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_smali2java"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/spacing_small"
-                    android:layout_weight="1"
-                    android:onClick="decompile"
-                    android:text="@string/smali2java" />
-
-            </LinearLayout>
-
         </LinearLayout>
 
     </LinearLayout>

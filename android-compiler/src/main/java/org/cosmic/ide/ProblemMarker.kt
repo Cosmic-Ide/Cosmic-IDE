@@ -67,11 +67,11 @@ class ProblemMarker(
                 if (!file.name.endsWith(".java")) return@thread
                 FileUtil.writeFile(file.getAbsolutePath(), content.toString())
                 analyzer.analyze()
+                diagnostics.reset();
+                diagnostics.addDiagnostics(analyzer.getDiagnostics())
+                editor.setDiagnostics(diagnostics)
             } catch (ignored: Exception) {
             }
-            diagnostics.reset()
-            diagnostics.addDiagnostics(analyzer.getDiagnostics())
-            editor.setDiagnostics(diagnostics)
         }
     }
 }

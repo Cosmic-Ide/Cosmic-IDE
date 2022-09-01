@@ -62,15 +62,8 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            binding.root.setPadding(0, 0, 0, imeHeight)
-            insets
-        }
-        
-        configureEditor(binding.editor)
-        
+        configureEditor(binding.editor)      
+         
         val inputView = binding.inputView
         inputView.bindEditor(binding.editor)
         inputView.addSymbols(

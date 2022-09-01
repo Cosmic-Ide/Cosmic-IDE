@@ -30,7 +30,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -115,7 +119,19 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(binding.toolbar);
  
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.viewPager, false, false, false, true);
+        
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager, (vi, insets) -> {
+        
+			boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+			
+			Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			view.setPadding(0,0,0,in.bottom);
+			if(imeVisible){
+				int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+				view.setPadding(0,0,0,imeHeight);
+			}
+			return insets;
+		});
         
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

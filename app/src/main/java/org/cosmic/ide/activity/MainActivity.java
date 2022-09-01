@@ -115,7 +115,7 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(binding.toolbar);
  
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.viewPager, false, true, false, false);
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.viewPager, false, false, false, true);
         
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

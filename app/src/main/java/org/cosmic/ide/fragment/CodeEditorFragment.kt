@@ -5,6 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginLeft
+import androidx.core.view.marginRight
+import androidx.core.view.marginTop
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
+import androidx.core.view.updatePadding
 import android.view.inputmethod.EditorInfo
 import android.util.Log
 
@@ -18,6 +27,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
+import org.cosmic.ide.util.*
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.activity.MainActivity
@@ -52,7 +62,15 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        configureEditor(binding.editor)
+        configureEditor(binding.editor)      
+         
+        val inputView = binding.inputView
+        inputView.bindEditor(binding.editor)
+        inputView.addSymbols(
+            arrayOf( "->","{","}","(",")",",",".",";","\"","?","+","-","*", "/" ),                 
+            arrayOf( "\t", "{}", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/" )
+        )
+
         if (currentFile.exists()) {
             try {
                 binding.editor.setText(FileUtil.readFile(currentFile))

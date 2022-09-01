@@ -30,7 +30,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -115,8 +119,20 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(binding.toolbar);
  
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.bottomButtons, false, false, false, true);
-
+        
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager, (vi, insets) -> {
+        
+			boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+			
+			Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			binding.viewPager.setPadding(0,0,0,in.bottom);
+			if(imeVisible){
+				int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+				binding.viewPager.setPadding(0,0,0,imeHeight);
+			}
+			return insets;
+		});
+        
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(false);
@@ -157,7 +173,6 @@ public class MainActivity extends BaseActivity {
         }
 
         unzipFiles();
-        addSymbolsPanel();
         buildLoadingDialog();
 
         fileViewModel.refreshNode(getProject().getRootFile());
@@ -298,6 +313,15 @@ public class MainActivity extends BaseActivity {
             case R.id.run_menu_button:
                 compile(true, false);
                 break;
+            case R.id.smali_menu_button:
+                smali();
+                break;
+            case R.id.disassemble_menu_button:
+                disassemble();
+                break;
+            case R.id.smali2java_menu_button:
+                decompile();
+                break;
             case R.id.action_undo:
                 String _tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
                 Fragment _fragment = getSupportFragmentManager().findFragmentByTag(_tag);
@@ -343,18 +367,6 @@ public class MainActivity extends BaseActivity {
             } catch (Exception e) {
                 showError(getString(e));
             }
-        }
-    }
-
-    private void addSymbolsPanel(){
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
-        String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-        if (fragment instanceof CodeEditorFragment) {
-            String[] symbolsArray = getResources().getStringArray(R.array.symbols_array);
-            String[] symbolsAction = getResources().getStringArray(R.array.symbols_actions);
-            binding.symbolInput.addSymbols(symbolsArray, symbolsAction);
-            binding.symbolInput.bindEditor(((CodeEditorFragment) fragment).getEditor());
         }
     }
 
@@ -512,7 +524,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void smali(View v) {
+    private void smali() {
         try {
             final var classes = getClassesFromDex();
             if (classes == null) return;
@@ -569,7 +581,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void decompile(View v) {
+    private void decompile() {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
@@ -609,7 +621,7 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    public void disassemble(View v) {
+    private void disassemble() {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
@@ -709,7 +721,7 @@ public class MainActivity extends BaseActivity {
 
     /* Shows a snackbar indicating that there were problems during compilation */
     private void showError(String exception) {
-        Snackbar.make(binding.bottomButtons, "An error occurred", Snackbar.LENGTH_INDEFINITE)
+        Snackbar.make(binding.snackbarContainer, "An error occurred", Snackbar.LENGTH_INDEFINITE)
                 .setAction("Show error", v -> dialog("Failed...", exception.toString(), true))
                 .show();
     }

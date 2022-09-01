@@ -49,6 +49,11 @@ class CodeEditorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            binding.root.setPadding(0, 0, 0, imeHeight)
+            insets
+        }
         return binding.root
     }
 

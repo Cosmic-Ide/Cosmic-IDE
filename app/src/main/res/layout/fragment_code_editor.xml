@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     android:gravity="center"
-    android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+   <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
     <org.cosmic.ide.activity.editor.CodeEditorView
         android:id="@+id/editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
         
-    <LinearLayout
-        android:id="@+id/input_view_container"
-        android:orientation="vertical"
+    <HorizontalScrollView
         android:layout_width="fill_parent"
-        android:layout_height="42.0dip">
-        
-        <HorizontalScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="42.0dip"
-            android:backgroundTint="?colorSurface">
+        android:layout_alignParentBottom="true"
+        android:layout_height="42.0dip"
+        android:backgroundTint="?colorSurface">
             
             <io.github.rosemoe.sora.widget.SymbolInputView
                 android:id="@+id/input_view"
@@ -29,8 +28,7 @@
                 android:layout_height="42.0dip"
                 android:backgroundTint="?colorSurface" />
                 
-        </HorizontalScrollView>
-        
-    </LinearLayout>
-    
-</LinearLayout>
+    </HorizontalScrollView>
+
+   </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

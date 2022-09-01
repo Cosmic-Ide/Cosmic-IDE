@@ -53,9 +53,7 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        
-        binding.inputViewContainer.addSystemWindowInsetToPadding(false, false, false, true)
-
+    
         configureEditor(binding.editor)
         
         val inputView = binding.inputView

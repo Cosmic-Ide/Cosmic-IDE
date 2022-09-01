@@ -58,17 +58,17 @@ class CodeEditorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
-        
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     
-        ViewCompat.setOnApplyWindowInsetsListener(binding.inputView) { _, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            binding.inputView.setPadding(0, 0, 0, imeHeight)
+            binding.root.setPadding(0, 0, 0, imeHeight)
             insets
         }
+        
         configureEditor(binding.editor)
         
         val inputView = binding.inputView

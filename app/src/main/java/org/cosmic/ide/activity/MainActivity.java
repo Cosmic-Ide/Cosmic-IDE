@@ -125,10 +125,10 @@ public class MainActivity extends BaseActivity {
 			boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
 			
 			Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-			view.setPadding(0,0,0,in.bottom);
+			binding.viewPager.setPadding(0,0,0,in.bottom);
 			if(imeVisible){
 				int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-				view.setPadding(0,0,0,imeHeight);
+				binding.viewPager.setPadding(0,0,0,imeHeight);
 			}
 			return insets;
 		});

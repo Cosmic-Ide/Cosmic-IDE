@@ -10,30 +10,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationChannelCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
 import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -42,9 +33,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.android.material.snackbar.Snackbar;
 
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
@@ -52,12 +43,11 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
-import org.cosmic.ide.activity.model.MainViewModel;
-import org.cosmic.ide.activity.model.FileViewModel;
-import org.cosmic.ide.activity.editor.CodeEditorView;
+import org.cosmic.ide.R;
 import org.cosmic.ide.activity.editor.adapter.PageAdapter;
+import org.cosmic.ide.activity.model.FileViewModel;
+import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.android.code.disassembler.*;
 import org.cosmic.ide.android.code.formatter.*;
@@ -65,8 +55,8 @@ import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.common.util.ZipUtil;
 import org.cosmic.ide.common.util.UniqueNameBuilder;
+import org.cosmic.ide.common.util.ZipUtil;
 import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.fragment.CodeEditorFragment;
@@ -80,12 +70,10 @@ import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
-import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -117,22 +105,23 @@ public class MainActivity extends BaseActivity {
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 
         setSupportActionBar(binding.toolbar);
- 
+
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
-        
-        ViewCompat.setOnApplyWindowInsetsListener(binding.viewPager, (vi, insets) -> {
-        
-			boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-			
-			Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-			binding.viewPager.setPadding(0,0,0,in.bottom);
-			if(imeVisible){
-				int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-				binding.viewPager.setPadding(0,0,0,imeHeight);
-			}
-			return insets;
-		});
-        
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+                binding.viewPager,
+                (vi, insets) -> {
+                    boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+
+                    Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    binding.viewPager.setPadding(0, 0, 0, in.bottom);
+                    if (imeVisible) {
+                        int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                        binding.viewPager.setPadding(0, 0, 0, imeHeight);
+                    }
+                    return insets;
+                });
+
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(false);
@@ -147,26 +136,28 @@ public class MainActivity extends BaseActivity {
                                 R.string.app_name);
                 drawer.addDrawerListener(toggle);
                 toggle.syncState();
-                binding.toolbar.setNavigationOnClickListener(v -> {
-                    if (binding.root instanceof DrawerLayout) {
-                        if (drawer.isDrawerOpen(GravityCompat.START)) {
-                            mainViewModel.setDrawerState(false);
-                        } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                            mainViewModel.setDrawerState(true);
-                        }
-                    }
-                });
-                drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
-                    @Override
-                    public void onDrawerOpened(@NonNull View p1) {
-                        mainViewModel.setDrawerState(true);
-                    }
-    
-                    @Override
-                    public void onDrawerClosed(@NonNull View p1) {
-                        mainViewModel.setDrawerState(false);
-                    }
-                });
+                binding.toolbar.setNavigationOnClickListener(
+                        v -> {
+                            if (binding.root instanceof DrawerLayout) {
+                                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                                    mainViewModel.setDrawerState(false);
+                                } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                                    mainViewModel.setDrawerState(true);
+                                }
+                            }
+                        });
+                drawer.addDrawerListener(
+                        new DrawerLayout.SimpleDrawerListener() {
+                            @Override
+                            public void onDrawerOpened(@NonNull View p1) {
+                                mainViewModel.setDrawerState(true);
+                            }
+
+                            @Override
+                            public void onDrawerClosed(@NonNull View p1) {
+                                mainViewModel.setDrawerState(false);
+                            }
+                        });
             }
         } else {
             binding.toolbar.setNavigationIcon(null);
@@ -182,74 +173,92 @@ public class MainActivity extends BaseActivity {
         mainViewModel.setToolbarTitle(getProject().getProjectName());
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
-        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                mainViewModel.setCurrentPosition(position);
-            }
-        });
-
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabUnselected(TabLayout.Tab p1) {
-                /* There is no need to save the file here
-                 * as each time you enter text the file
-                 * is automatically saved. */
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab p1) {
-                PopupMenu popup = new PopupMenu(MainActivity.this, p1.view);
-                popup.getMenu().add(0, 0, 1, getString(R.string.close));
-                popup.getMenu().add(0, 1, 2, getString(R.string.close_others));
-                popup.getMenu().add(0, 2, 3, getString(R.string.close_all));
-                popup.setOnMenuItemClickListener(item -> {
-                    switch (item.getItemId()) {
-                        case 0:
-                            mainViewModel.removeFile(mainViewModel.getCurrentFile());
-                            break;
-                        case 1:
-                            mainViewModel.removeOthers(mainViewModel.getCurrentFile());
-                            break;
-                        case 2:
-                            mainViewModel.clear();
+        binding.viewPager.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        mainViewModel.setCurrentPosition(position);
                     }
-                    return true;
                 });
-                popup.show();
-            }
 
-            @Override
-            public void onTabSelected(TabLayout.Tab p1) {
-                updateTab(p1, p1.getPosition());
-            }
-        });
-        new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab).attach();
+        binding.tabLayout.addOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab p1) {
+                        /* There is no need to save the file here
+                         * as each time you enter text the file
+                         * is automatically saved. */
+                    }
 
-        mainViewModel.getFiles().observe(this, files -> {
-            tabsAdapter.submitList(files);
-            if (files.isEmpty()) {
-                binding.tabLayout.removeAllTabs();
-                binding.tabLayout.setVisibility(View.GONE);
-                binding.viewPager.setVisibility(View.GONE);
-                binding.emptyContainer.setVisibility(View.VISIBLE);
-            } else {
-                binding.tabLayout.setVisibility(View.VISIBLE);
-                binding.viewPager.setVisibility(View.VISIBLE);
-                binding.emptyContainer.setVisibility(View.GONE);
-            }
-        });
-        mainViewModel.getCurrentPosition().observe(this, position -> {
-            binding.viewPager.setCurrentItem(position);
-        });
+                    @Override
+                    public void onTabReselected(TabLayout.Tab p1) {
+                        PopupMenu popup = new PopupMenu(MainActivity.this, p1.view);
+                        popup.getMenu().add(0, 0, 1, getString(R.string.close));
+                        popup.getMenu().add(0, 1, 2, getString(R.string.close_others));
+                        popup.getMenu().add(0, 2, 3, getString(R.string.close_all));
+                        popup.setOnMenuItemClickListener(
+                                item -> {
+                                    switch (item.getItemId()) {
+                                        case 0:
+                                            mainViewModel.removeFile(
+                                                    mainViewModel.getCurrentFile());
+                                            break;
+                                        case 1:
+                                            mainViewModel.removeOthers(
+                                                    mainViewModel.getCurrentFile());
+                                            break;
+                                        case 2:
+                                            mainViewModel.clear();
+                                    }
+                                    return true;
+                                });
+                        popup.show();
+                    }
+
+                    @Override
+                    public void onTabSelected(TabLayout.Tab p1) {
+                        updateTab(p1, p1.getPosition());
+                    }
+                });
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab)
+                .attach();
+
+        mainViewModel
+                .getFiles()
+                .observe(
+                        this,
+                        files -> {
+                            tabsAdapter.submitList(files);
+                            if (files.isEmpty()) {
+                                binding.tabLayout.removeAllTabs();
+                                binding.tabLayout.setVisibility(View.GONE);
+                                binding.viewPager.setVisibility(View.GONE);
+                                binding.emptyContainer.setVisibility(View.VISIBLE);
+                            } else {
+                                binding.tabLayout.setVisibility(View.VISIBLE);
+                                binding.viewPager.setVisibility(View.VISIBLE);
+                                binding.emptyContainer.setVisibility(View.GONE);
+                            }
+                        });
+        mainViewModel
+                .getCurrentPosition()
+                .observe(
+                        this,
+                        position -> {
+                            binding.viewPager.setCurrentItem(position);
+                        });
         if (binding.root instanceof DrawerLayout) {
-            mainViewModel.getDrawerState().observe(this, isOpen -> {
-                if (isOpen) {
-                    ((DrawerLayout) binding.root).open();
-                } else {
-                    ((DrawerLayout) binding.root).close();
-                }
-            });
+            mainViewModel
+                    .getDrawerState()
+                    .observe(
+                            this,
+                            isOpen -> {
+                                if (isOpen) {
+                                    ((DrawerLayout) binding.root).open();
+                                } else {
+                                    ((DrawerLayout) binding.root).close();
+                                }
+                            });
         }
 
         if (savedInstanceState != null) {
@@ -261,7 +270,8 @@ public class MainActivity extends BaseActivity {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         saveAll();
         if (binding.root instanceof DrawerLayout) {
-            outState.putBoolean(Constants.DRAWER_STATE,
+            outState.putBoolean(
+                    Constants.DRAWER_STATE,
                     ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
         }
         super.onSaveInstanceState(outState);
@@ -288,21 +298,27 @@ public class MainActivity extends BaseActivity {
                 Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
                 if (fragment instanceof CodeEditorFragment) {
                     CoroutineUtil.execute(
-                             () -> {
-                                 if (settings.getString(
+                            () -> {
+                                if (settings.getString(
                                                 "key_java_formatter",
                                                 getString(R.string.google_java_formatter))
-                                            .equals(getString(R.string.google_java_formatter))) {
-                                     var formatter =
+                                        .equals(getString(R.string.google_java_formatter))) {
+                                    var formatter =
                                             new GoogleJavaFormatter(
-                                                    ((CodeEditorFragment) fragment).getEditor().getText().toString());
-                                     temp = formatter.format();
-                                 } else {
-                                     var formatter =
+                                                    ((CodeEditorFragment) fragment)
+                                                            .getEditor()
+                                                            .getText()
+                                                            .toString());
+                                    temp = formatter.format();
+                                } else {
+                                    var formatter =
                                             new EclipseJavaFormatter(
-                                                    ((CodeEditorFragment) fragment).getEditor().getText().toString());
-                                     temp = formatter.format();
-                                 }
+                                                    ((CodeEditorFragment) fragment)
+                                                            .getEditor()
+                                                            .getText()
+                                                            .toString());
+                                    temp = formatter.format();
+                                }
                             });
                     ((CodeEditorFragment) fragment).getEditor().setText(temp);
                 }
@@ -351,7 +367,7 @@ public class MainActivity extends BaseActivity {
             try {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
-                            stdlib.getAbsolutePath());
+                        stdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));
             }
@@ -443,6 +459,7 @@ public class MainActivity extends BaseActivity {
                         execute,
                         new CompileTask.CompilerListeners() {
                             private boolean compileSuccess = true;
+
                             @Override
                             public void onCurrentBuildStageChanged(String stage) {
                                 changeLoadingDialogBuildStage(stage);
@@ -683,11 +700,12 @@ public class MainActivity extends BaseActivity {
     }
 
     public void dialog(String title, final String message, boolean copyButton) {
-        var dialog = new MaterialAlertDialogBuilder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(android.R.string.ok, null)
-                .setNegativeButton(android.R.string.cancel, null);
+        var dialog =
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(title)
+                        .setMessage(message)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .setNegativeButton(android.R.string.cancel, null);
         if (copyButton)
             dialog.setNeutralButton(
                     "Copy",

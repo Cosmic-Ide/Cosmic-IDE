@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
@@ -25,8 +24,8 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.MainActivity;
-import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.activity.model.FileViewModel;
+import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.CodeTemplate;
@@ -93,19 +92,25 @@ public class TreeViewDrawer extends Fragment {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        fileViewModel.getNodes().observe(getViewLifecycleOwner(), node -> {
-            treeView.refreshTreeView(node);
-        });
+        fileViewModel
+                .getNodes()
+                .observe(
+                        getViewLifecycleOwner(),
+                        node -> {
+                            treeView.refreshTreeView(node);
+                        });
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
         UiUtilsKt.addSystemWindowInsetToPadding(refreshLayout, false, true, false, true);
         refreshLayout.setOnRefreshListener(
                 () -> {
                     if (getActivity() != null) {
-                        requireActivity().runOnUiThread(() -> {
-                            partialRefresh();
-                            refreshLayout.setRefreshing(false);
-                        });
+                        requireActivity()
+                                .runOnUiThread(
+                                        () -> {
+                                            partialRefresh();
+                                            refreshLayout.setRefreshing(false);
+                                        });
                     }
                 });
 
@@ -122,14 +127,16 @@ public class TreeViewDrawer extends Fragment {
                                         if (activity.binding.root instanceof DrawerLayout) {
                                             DrawerLayout drawer =
                                                     (DrawerLayout) activity.binding.root;
-                                            if (drawer != null &&
-                                                    drawer.isDrawerOpen(GravityCompat.START)) {
+                                            if (drawer != null
+                                                    && drawer.isDrawerOpen(GravityCompat.START)) {
                                                 mainViewModel.setDrawerState(false);
                                             }
                                         }
                                     } catch (Exception e) {
                                         activity.dialog(
-                                                "Failed to open file", Log.getStackTraceString(e), true);
+                                                "Failed to open file",
+                                                Log.getStackTraceString(e),
+                                                true);
                                     }
                                 }
                             }
@@ -177,7 +184,7 @@ public class TreeViewDrawer extends Fragment {
             popup.getMenu().getItem(1).setVisible(false);
             popup.getMenu().getItem(2).setVisible(false);
         }
-        
+
         if (nodeFile.getName().endsWith(".jar")) {
             popup.getMenu().getItem(5).setVisible(true);
         }
@@ -198,7 +205,7 @@ public class TreeViewDrawer extends Fragment {
                     } else if (id == R.id.dex_menu_bttn) {
                         D8Task.compileJar(nodeFile.getAbsolutePath());
                         partialRefresh();
-                    } 
+                    }
                     return false;
                 });
     }
@@ -420,8 +427,7 @@ public class TreeViewDrawer extends Fragment {
             Button cancelBtn = confirmDeleteDialog.findViewById(android.R.id.button2);
 
             title.setText(getString(R.string.delete));
-            message.setText(
-                    getString(R.string.delete_file, node.getContent().getFile().getName()));
+            message.setText(getString(R.string.delete_file, node.getContent().getFile().getName()));
 
             confirmBtn.setOnClickListener(
                     v -> {

@@ -1,8 +1,6 @@
 package org.cosmic.ide.activity
 
 import android.os.Bundle
-import android.view.View
-
 import org.cosmic.ide.databinding.ActivitySettingBinding
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 

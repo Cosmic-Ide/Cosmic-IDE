@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
-import org.cosmic.ide.common.util.CoroutineUtil;
 
 import java.io.File;
 
@@ -33,9 +33,10 @@ public class FileViewModel extends ViewModel {
     }
 
     public void refreshNode(File root) {
-        CoroutineUtil.execute(() -> {
-            TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(root));
-            mNode.postValue(node);
-        });
+        CoroutineUtil.execute(
+                () -> {
+                    TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(root));
+                    mNode.postValue(node);
+                });
     }
 }

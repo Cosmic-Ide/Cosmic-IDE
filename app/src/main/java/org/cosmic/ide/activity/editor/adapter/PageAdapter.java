@@ -24,27 +24,33 @@ public class PageAdapter extends FragmentStateAdapter {
     }
 
     public void submitList(List<File> files) {
-        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-            @Override
-            public int getOldListSize() {
-                return data.size();
-            }
+        DiffUtil.DiffResult result =
+                DiffUtil.calculateDiff(
+                        new DiffUtil.Callback() {
+                            @Override
+                            public int getOldListSize() {
+                                return data.size();
+                            }
 
-            @Override
-            public int getNewListSize() {
-                return files.size();
-            }
+                            @Override
+                            public int getNewListSize() {
+                                return files.size();
+                            }
 
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return Objects.equals(data.get(oldItemPosition), files.get(newItemPosition));
-            }
+                            @Override
+                            public boolean areItemsTheSame(
+                                    int oldItemPosition, int newItemPosition) {
+                                return Objects.equals(
+                                        data.get(oldItemPosition), files.get(newItemPosition));
+                            }
 
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return Objects.equals(data.get(oldItemPosition), files.get(newItemPosition));
-            }
-        });
+                            @Override
+                            public boolean areContentsTheSame(
+                                    int oldItemPosition, int newItemPosition) {
+                                return Objects.equals(
+                                        data.get(oldItemPosition), files.get(newItemPosition));
+                            }
+                        });
         data.clear();
         data.addAll(files);
         result.dispatchUpdatesTo(this);

@@ -8,12 +8,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Process
-
 import androidx.preference.PreferenceManager
-
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.utils.Environment
-
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
@@ -21,7 +18,6 @@ import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.dpToPx
-
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -34,7 +30,7 @@ class ApplicationLoader : Application() {
     override fun onCreate() {
         super.onCreate()
         val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
-        val resources = applicationContext.getResources() 
+        val resources = applicationContext.getResources()
         Environment.init(File(dataDirectory, "compiler-modules"))
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)

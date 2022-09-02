@@ -1,10 +1,6 @@
 package org.cosmic.ide.ui.console;
 
-/**
- * A multi-thread-safe produce-consumer byte array.
- * Only allows one producer and one consumer.
- */
-
+/** A multi-thread-safe produce-consumer byte array. Only allows one producer and one consumer. */
 public class ByteQueue {
     private byte[] mBuffer;
     private int mHead;
@@ -20,16 +16,12 @@ public class ByteQueue {
         }
     }
 
-    public  int read(byte[] buffer, int offset, int length)
-            throws InterruptedException {
+    public int read(byte[] buffer, int offset, int length) throws InterruptedException {
         if (length + offset > buffer.length) {
-            throw
-                    new IllegalArgumentException("length + offset > buffer.length");
+            throw new IllegalArgumentException("length + offset > buffer.length");
         }
         if (length < 0) {
-            throw
-                    new IllegalArgumentException("length < 0");
-
+            throw new IllegalArgumentException("length < 0");
         }
         if (length == 0) {
             return 0;
@@ -61,15 +53,12 @@ public class ByteQueue {
         }
     }
 
-    public  void write(byte[] buffer, int offset, int length) throws InterruptedException {
+    public void write(byte[] buffer, int offset, int length) throws InterruptedException {
         if (length + offset > buffer.length) {
-            throw
-                    new IllegalArgumentException("length + offset > buffer.length");
+            throw new IllegalArgumentException("length + offset > buffer.length");
         }
         if (length < 0) {
-            throw
-                    new IllegalArgumentException("length < 0");
-
+            throw new IllegalArgumentException("length < 0");
         }
         if (length == 0) {
             return;

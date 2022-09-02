@@ -8,12 +8,12 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import org.cosmic.ide.R
-import org.cosmic.ide.util.Constants.DISCORD_URL
-import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
-import org.cosmic.ide.util.Constants.GITHUB_URL
 import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkTheme
 import org.cosmic.ide.ui.theme.DarkThemeHelper
+import org.cosmic.ide.util.Constants.DISCORD_URL
+import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
+import org.cosmic.ide.util.Constants.GITHUB_URL
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {

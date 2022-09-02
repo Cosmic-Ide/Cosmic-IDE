@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Adopted from:
- * <a href="https://github.com/JetBrains/intellij-community/blob/master/platform/util/base/src/com/intellij/filename/UniqueNameBuilder.java">UniqueNameBuilder.java</a>
+ * Adopted from: <a
+ * href="https://github.com/JetBrains/intellij-community/blob/master/platform/util/base/src/com/intellij/filename/UniqueNameBuilder.java">UniqueNameBuilder.java</a>
  */
 public final class UniqueNameBuilder<T> {
     private static final String VFS_SEPARATOR = "/";
@@ -51,11 +51,14 @@ public final class UniqueNameBuilder<T> {
 
     // Build a trie from path components starting from end
     // E.g. following try will be build from example
-    //                                                                                   |<-------[/fabrique]  <-  [/idea]
+    //
+    // |<-------[/fabrique]  <-  [/idea]
     // /idea/pycharm/download/index.html                                                 |
-    // /idea/fabrique/download/index.html           [RootNode] <- [/index.html] <- [/download] <- [/pycharm]  <- [/idea]
+    // /idea/fabrique/download/index.html           [RootNode] <- [/index.html] <- [/download] <-
+    // [/pycharm]  <- [/idea]
     // /idea/pycharm/documentation/index.html                              |
-    //                                                                     |<------[/documentation] <- [/pycharm]  <- [/idea]
+    //                                                                     |<------[/documentation]
+    // <- [/pycharm]  <- [/idea]
     public void addPath(T key, String path) {
         path = trimStart(path, myRoot);
         myPaths.put(key, path);
@@ -93,10 +96,12 @@ public final class UniqueNameBuilder<T> {
             current = current.findOrAddChild(pathComponent);
 
             if (fileNameNode == null) fileNameNode = current;
-            if (firstNodeBeforeNodeWithBranches == null &&
-                firstNodeWithBranches != null &&
-                current.myChildren.size() <= 1) {
-                if (current.myParentNode.myNestedChildrenCount - current.myParentNode.myChildren.size() < 1) {
+            if (firstNodeBeforeNodeWithBranches == null
+                    && firstNodeWithBranches != null
+                    && current.myChildren.size() <= 1) {
+                if (current.myParentNode.myNestedChildrenCount
+                                - current.myParentNode.myChildren.size()
+                        < 1) {
                     firstNodeBeforeNodeWithBranches = current;
                 }
             }
@@ -113,19 +118,20 @@ public final class UniqueNameBuilder<T> {
 
         boolean skipFirstSeparator = true;
         for (Node c = firstNodeBeforeNodeWithBranches; c != myRootNode; c = c.myParentNode) {
-            if (c != fileNameNode && c != firstNodeBeforeNodeWithBranches && c.myParentNode.myChildren.size() == 1) {
+            if (c != fileNameNode
+                    && c != firstNodeBeforeNodeWithBranches
+                    && c.myParentNode.myChildren.size() == 1) {
                 b.append(mySeparator);
                 b.append("\u2026");
 
-                while (c.myParentNode != fileNameNode && c.myParentNode.myChildren.size() == 1) c = c.myParentNode;
-            }
-            else {
+                while (c.myParentNode != fileNameNode && c.myParentNode.myChildren.size() == 1)
+                    c = c.myParentNode;
+            } else {
                 if (c.myText.startsWith(VFS_SEPARATOR)) {
                     if (!skipFirstSeparator) b.append(mySeparator);
                     skipFirstSeparator = false;
                     b.append(c.myText, VFS_SEPARATOR.length(), c.myText.length());
-                }
-                else {
+                } else {
                     b.append(c.myText);
                 }
             }
@@ -162,10 +168,10 @@ public final class UniqueNameBuilder<T> {
                 pathComponent = myPath.substring(mySeparatorPos, myLastPos);
                 myLastPos = mySeparatorPos;
                 mySeparatorPos = myPath.lastIndexOf(VFS_SEPARATOR, myLastPos - 1);
-            }
-            else {
+            } else {
                 pathComponent = myPath.substring(0, myLastPos);
-                if (!pathComponent.startsWith(VFS_SEPARATOR)) pathComponent = VFS_SEPARATOR + pathComponent;
+                if (!pathComponent.startsWith(VFS_SEPARATOR))
+                    pathComponent = VFS_SEPARATOR + pathComponent;
                 myLastPos = 0;
             }
             return pathComponent;

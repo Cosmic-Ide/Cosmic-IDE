@@ -140,16 +140,16 @@ public class IdentifierAutoComplete {
                 }
             }
         }
-/*
-        if (userIdentifiers != null) {
-            List<CompletionItem> words = new ArrayList<>();
-            List<String> dest = new ArrayList<>();
-            userIdentifiers.filterIdentifiers(prefix, dest);
-            for (String word : dest) {
-                publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
-            }
-        }
-*/
+        /*
+                if (userIdentifiers != null) {
+                    List<CompletionItem> words = new ArrayList<>();
+                    List<String> dest = new ArrayList<>();
+                    userIdentifiers.filterIdentifiers(prefix, dest);
+                    for (String word : dest) {
+                        publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
+                    }
+                }
+        */
     }
 
     /**

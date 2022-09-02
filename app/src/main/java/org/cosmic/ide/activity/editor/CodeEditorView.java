@@ -3,13 +3,13 @@ package org.cosmic.ide.activity.editor;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
+
 import org.cosmic.ide.activity.editor.completion.CustomCompletionItemAdapter;
 import org.cosmic.ide.activity.editor.completion.CustomCompletionLayout;
 
 import java.io.File;
-
-import io.github.rosemoe.sora.widget.CodeEditor;
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 
 public class CodeEditorView extends CodeEditor {
 

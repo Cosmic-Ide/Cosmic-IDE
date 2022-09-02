@@ -1,7 +1,6 @@
 package org.cosmic.ide.activity.model;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,20 +11,15 @@ import java.util.List;
 
 public class MainViewModel extends ViewModel {
 
-    /**
-     * The files currently opened in the editor
-     */
+    /** The files currently opened in the editor */
     private MutableLiveData<List<File>> mFiles;
 
     private final MutableLiveData<String> mToolbarTitle = new MutableLiveData<>();
 
-    /**
-     * The current position of the CodeEditorView
-     */
+    /** The current position of the CodeEditorView */
     private final MutableLiveData<Integer> currentPosition = new MutableLiveData<>(0);
 
-    private final MutableLiveData<Boolean> mDrawerState =
-            new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> mDrawerState = new MutableLiveData<>(false);
 
     public LiveData<String> getToolbarTitle() {
         return mToolbarTitle;
@@ -93,6 +87,7 @@ public class MainViewModel extends ViewModel {
 
     /**
      * Opens this file to the editor
+     *
      * @param file The file to be opened
      * @return whether the operation was successful
      */
@@ -134,9 +129,7 @@ public class MainViewModel extends ViewModel {
         }
     }
 
-    /**
-     * Remove all the files except the given file
-     */
+    /** Remove all the files except the given file */
     public void removeOthers(File file) {
         List<File> files = getFiles().getValue();
         if (files != null) {

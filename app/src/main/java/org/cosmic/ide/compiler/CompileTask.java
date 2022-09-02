@@ -4,19 +4,15 @@ import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
-import org.cosmic.ide.R;
 import org.cosmic.ide.ApplicationLoader;
-import org.cosmic.ide.activity.MainActivity;
+import org.cosmic.ide.R;
 import org.cosmic.ide.activity.ConsoleActivity;
+import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.dex.D8Task;
-import org.cosmic.ide.android.task.exec.ExecuteDexTask;
 import org.cosmic.ide.android.task.java.*;
 import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
-import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.util.Constants;
-
-import java.io.File;
 
 public class CompileTask extends Thread {
 
@@ -73,7 +69,7 @@ public class CompileTask extends Thread {
 
         compileDex();
         if (!listener.isSuccessTillNow()) return;
- 
+
         d8Time = System.currentTimeMillis() - time;
 
         executeDex();
@@ -132,7 +128,9 @@ public class CompileTask extends Thread {
                         classes,
                         (dialog, item) -> {
                             var intent = new Intent(activity, ConsoleActivity.class);
-                            intent.putExtra(Constants.PROJECT_PATH, activity.getProject().getProjectDirPath());
+                            intent.putExtra(
+                                    Constants.PROJECT_PATH,
+                                    activity.getProject().getProjectDirPath());
                             intent.putExtra("class_to_execute", classes[item]);
                             activity.startActivity(intent);
                         });

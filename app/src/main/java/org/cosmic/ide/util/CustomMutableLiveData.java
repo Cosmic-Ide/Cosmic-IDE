@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 
 /**
  * A {@link LiveData} class which supports updating values but not notifying them.
+ *
  * @param <T> The object this live data holds
  */
 public class CustomMutableLiveData<T> extends MutableLiveData<T> {

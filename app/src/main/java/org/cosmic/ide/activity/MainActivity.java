@@ -171,9 +171,14 @@ public class MainActivity extends BaseActivity {
         mainViewModel.setToolbarTitle(getProject().getProjectName());
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
-        binding.viewPager.registerOnPageChangeCallback(position -> {
-                mainViewModel.setCurrentPosition(position);
-        });
+        binding.viewPager.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        mainViewModel.setCurrentPosition(position);
+                    }
+                });
+
 
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {

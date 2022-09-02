@@ -77,10 +77,6 @@ class ExecuteDexTask(
 
         val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-Beta.jar")
 
-        val calledClass = loader.loadClass(clazz)
-
-        val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
-
         val args = prefs.getString("key_program_arguments", "")!!.trim()
 
         // Split arguments into an array
@@ -88,6 +84,9 @@ class ExecuteDexTask(
 
         CoroutineUtil.inParallel {
             try {
+                val calledClass = loader.loadClass(clazz)
+ 
+                val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.getModifiers())) {
                     // If the method is static, directly call it
                     result = method.invoke(null, param as? Any)

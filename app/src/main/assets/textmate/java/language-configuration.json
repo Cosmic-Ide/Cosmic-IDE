@@ -1,8 +1,4 @@
 {
-  "comments": {
-    "lineComment": "//",
-    "blockComment": ["/*", "*/"]
-  },
   "brackets": [
     ["{", "}"],
     ["[", "]"],
@@ -39,5 +35,9 @@
       "start": "^\\s*//\\s*#region",
       "end": "^\\s*//\\s*#endregion"
     }
+  },
+  "comments": {
+    "lineComment": "//",
+    "blockComment": ["/*", "*/"]
   }
 }

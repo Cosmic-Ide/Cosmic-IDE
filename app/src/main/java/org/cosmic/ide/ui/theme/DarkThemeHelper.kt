@@ -21,7 +21,11 @@ object DarkThemeHelper {
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
             override fun onActivityDestroyed(activity: Activity) {
-                activities -= activity as AppCompatActivity
+                try {
+                    activities -= activity as AppCompatActivity
+                } catch (e: ClassCastException) {
+                    // Caused by LeakCanary's LeakActivity that doesn't extend AppCompatActivity
+                }
             }
         })
     }

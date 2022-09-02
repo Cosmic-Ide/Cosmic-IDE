@@ -68,7 +68,7 @@ class KotlinCompiler : Task {
                 "core-lambda-stubs.jar" +
                 File.pathSeparator +
                 FileUtil.getClasspathDir() +
-                "kotlin-stdlib-1.7.10.jar" +
+                "kotlin-stdlib-1.7.20-Beta.jar" +
                 claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath

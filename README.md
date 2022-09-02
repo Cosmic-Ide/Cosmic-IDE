@@ -83,6 +83,8 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 - [Nonzzzz](https://github.com/Nonzzzz)
 
+- [Aidos Zhaqyp](https://github.com/AidosZhaqyp)
+
 - [TheWolf](https://github.com/TheWolfProd)
 
 - [Mike Anderson](https://github.com/MikeAndrson)

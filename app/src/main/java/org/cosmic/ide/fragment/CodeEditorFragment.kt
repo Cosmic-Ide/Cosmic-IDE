@@ -27,7 +27,6 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 
 import org.cosmic.ide.R
 import org.cosmic.ide.ApplicationLoader
-import org.cosmic.ide.util.*
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.activity.MainActivity
@@ -39,7 +38,6 @@ import org.eclipse.tm4e.core.theme.IRawTheme
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.*
 
 class CodeEditorFragment : Fragment() {
 

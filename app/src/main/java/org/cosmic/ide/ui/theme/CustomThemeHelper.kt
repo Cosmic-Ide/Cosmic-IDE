@@ -6,7 +6,11 @@ import android.content.Context
 import androidx.annotation.StyleRes
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.Settings
-import org.cosmic.ide.util.*
+import org.cosmic.ide.util.SimpleActivityLifecycleCallbacks
+import org.cosmic.ide.util.setThemeCompat
+import org.cosmic.ide.util.themeResIdCompat
+import org.cosmic.ide.util.recreateCompat
+import org.cosmic.ide.util.valueCompat
 
 object CustomThemeHelper {
     private val activityBaseThemes = mutableMapOf<Activity, Int>()

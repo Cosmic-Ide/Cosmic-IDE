@@ -43,7 +43,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
         classpath.append(File.pathSeparator)
         classpath.append(FileUtil.getClasspathDir() + "core-lambda-stubs.jar")
         classpath.append(File.pathSeparator)
-        classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.10.jar")
+        classpath.append(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-Beta.jar")
         classpath.append(File.pathSeparator)
         classpath.append(output)
         val clspath = prefs.getString("key_classpath", "")

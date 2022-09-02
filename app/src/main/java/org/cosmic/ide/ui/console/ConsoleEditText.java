@@ -246,6 +246,11 @@ public class ConsoleEditText extends AppCompatEditText {
 		public void write(int b) throws IOException {
 			write(new byte[]{(byte) b}, 0, 1);
 		}
+
+		@Override
+		public void close() {
+		    stdListener = null;
+		}
 	}
 	
 	private static class ConsoleInputStream extends InputStream {
@@ -367,8 +372,12 @@ public class ConsoleEditText extends AppCompatEditText {
 	}
 
 	public void release() {
-	    outputStream = null;
-	    inputStream = null;
-	    errorStream = null;
+	    outputStream.close();
+	    inputStream.close();
+	    errorStream.close();
+
+        outputStream = null;
+        inputStream = null;
+        errorStream = null;
 	}
 }

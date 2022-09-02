@@ -44,7 +44,8 @@
 
         <activity
             android:name=".activity.ConsoleActivity"
-            android:exported="false" />  
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

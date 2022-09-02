@@ -372,9 +372,13 @@ public class ConsoleEditText extends AppCompatEditText {
 	}
 
 	public void release() {
-	    outputStream.close();
-	    inputStream.close();
-	    errorStream.close();
+	    try {
+	        outputStream.close();
+	        inputStream.close();
+	        errorStream.close();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 
         outputStream = null;
         inputStream = null;

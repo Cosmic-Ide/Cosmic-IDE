@@ -138,12 +138,10 @@ public class MainActivity extends BaseActivity {
                 toggle.syncState();
                 binding.toolbar.setNavigationOnClickListener(
                         v -> {
-                            if (binding.root instanceof DrawerLayout) {
-                                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                                    mainViewModel.setDrawerState(false);
-                                } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                                    mainViewModel.setDrawerState(true);
-                                }
+                            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                                mainViewModel.setDrawerState(false);
+                            } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                                mainViewModel.setDrawerState(true);
                             }
                         });
                 drawer.addDrawerListener(
@@ -173,13 +171,9 @@ public class MainActivity extends BaseActivity {
         mainViewModel.setToolbarTitle(getProject().getProjectName());
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
-        binding.viewPager.registerOnPageChangeCallback(
-                new ViewPager2.OnPageChangeCallback() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        mainViewModel.setCurrentPosition(position);
-                    }
-                });
+        binding.viewPager.registerOnPageChangeCallback(position -> {
+                mainViewModel.setCurrentPosition(position);
+        });
 
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
@@ -362,7 +356,7 @@ public class MainActivity extends BaseActivity {
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
             ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
         }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar");
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-Beta.jar");
         if (!stdlib.exists()) {
             try {
                 FileUtil.writeFile(

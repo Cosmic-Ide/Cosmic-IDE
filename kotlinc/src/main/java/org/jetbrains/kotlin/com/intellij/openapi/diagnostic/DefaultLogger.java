@@ -76,9 +76,9 @@ public class DefaultLogger extends Logger {
   @Override
   public void setLevel(Level level) { }
 
-  public static @NonNls String attachmentsToString(@Nullable Throwable t) {
+  public static @NonNull String attachmentsToString(@Nullable Throwable t) {
     if (t != null) {
-        return "\n\nAttachments:\n" + StringUtil.join(ExceptionUtil.getThrowableText(t), ATTACHMENT_TO_STRING::apply, "\n----\n");
+        return "\n\nAttachments:\n" + ExceptionUtil.getThrowableText(t);
     }
     return "";
   }

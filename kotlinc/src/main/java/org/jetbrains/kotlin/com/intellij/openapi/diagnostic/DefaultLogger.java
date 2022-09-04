@@ -4,11 +4,11 @@ package org.jetbrains.kotlin.com.intellij.openapi.diagnostic;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.intellij.openapi.Disposable;
-import com.intellij.openapi.util.Disposer;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ExceptionUtil;
-import org.apache.log4j.Level;
+import org.jetbrains.kotlin.com.intellij.openapi.Disposable;
+import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer;
+import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil;
+import org.jetbrains.kotlin.com.intellij.util.ExceptionUtil;
+import org.jetbraibs.kotlin.org.apache.log4j.Level;
 
 import java.util.List;
 import java.util.stream.Collectors;

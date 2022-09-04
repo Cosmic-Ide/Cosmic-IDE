@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.com.intellij.openapi.Disposable;
 import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer;
 import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.kotlin.com.intellij.util.ExceptionUtil;
-import org.jetbraibs.kotlin.org.apache.log4j.Level;
+import org.jetbrains.kotlin.org.apache.log4j.Level;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ public class DefaultLogger extends Logger {
   public void debug(Throwable t) { }
 
   @Override
-  public void debug(String message, Throwable t) { }
+  public void debug(@NonNull String message, Throwable t) { }
 
   @Override
   public void info(String message) { }
@@ -41,24 +41,26 @@ public class DefaultLogger extends Logger {
   public void info(String message, Throwable t) { }
 
   @Override
-  @SuppressWarnings("UseOfSystemOutOrSystemErr")
-  public void warn(String message, @Nullable Throwable t) {
-    t = ensureNotControlFlow(t);
+  @SuppressWarnings({"UseOfSystemOutOrSystemErr", "HardCodedStringLiteral"})
+  public void warn(@NonNull String message, @Nullable Throwable t) {
+    t = checkException(t);
     System.err.println("WARN: " + message);
     if (t != null) t.printStackTrace(System.err);
   }
 
   @Override
-  public void error(String message, @Nullable Throwable t, String @NonNull ... details) {
-    t = ensureNotControlFlow(t);
+  public void error(String message, @Nullable Throwable t, @NonNull String... details) {
+    t = checkException(t);
     message += attachmentsToString(t);
     dumpExceptionsToStderr(message, t, details);
 
     throw new AssertionError(message, t);
   }
 
-  @SuppressWarnings("UseOfSystemOutOrSystemErr")
-  public static void dumpExceptionsToStderr(String message, @Nullable Throwable t, String @NonNull ... details) {
+  @SuppressWarnings({"UseOfSystemOutOrSystemErr", "HardCodedStringLiteral"})
+  public static void dumpExceptionsToStderr(String message,
+                                            @Nullable Throwable t,
+                                            @NonNull String... details) {
     if (shouldDumpExceptionToStderr()) {
       System.err.println("ERROR: " + message);
       if (t != null) t.printStackTrace(System.err);
@@ -72,18 +74,11 @@ public class DefaultLogger extends Logger {
   }
 
   @Override
-  public void setLevel(@NonNull Level level) { }
+  public void setLevel(Level level) { }
 
-  public static @NonNull String attachmentsToString(@Nullable Throwable t) {
+  public static @NonNls String attachmentsToString(@Nullable Throwable t) {
     if (t != null) {
-      List<Attachment> attachments = ExceptionUtil
-        .findCauseAndSuppressed(t, ExceptionWithAttachments.class)
-        .stream()
-        .flatMap(e -> Stream.of(e.getAttachments()))
-        .collect(Collectors.toList());
-      if (!attachments.isEmpty()) {
-        return "\n\nAttachments:\n" + StringUtil.join(attachments, ATTACHMENT_TO_STRING::apply, "\n----\n");
-      }
+        return "\n\nAttachments:\n" + StringUtil.join(ExceptionUtil.getThrowableText(t), ATTACHMENT_TO_STRING::apply, "\n----\n");
     }
     return "";
   }

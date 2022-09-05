@@ -40,14 +40,18 @@ public class SimpleBracketsCollector implements BracketsProvider {
         mapping = new SparseIntArray();
     }
 
-    /** Add new pair */
+    /**
+     * Add new pair
+     */
     public void add(int start, int end) {
         // add 1 to avoid zeros
         mapping.put(start + 1, end + 1);
         mapping.put(end + 1, start + 1);
     }
 
-    /** Remove all pairs */
+    /**
+     * Remove all pairs
+     */
     public void clear() {
         mapping.clear();
     }

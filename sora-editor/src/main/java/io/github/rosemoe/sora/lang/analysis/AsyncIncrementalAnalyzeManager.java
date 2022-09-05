@@ -32,6 +32,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import io.github.rosemoe.sora.lang.styling.CodeBlock;
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.lang.styling.Spans;
@@ -42,20 +49,12 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+public abstract class AsyncIncrementalAnalyzeManager<S, T> implements IncrementalAnalyzeManager<S, T> {
 
-public abstract class AsyncIncrementalAnalyzeManager<S, T>
-        implements IncrementalAnalyzeManager<S, T> {
-
-    private static final int MSG_BASE = 11451400;
-    private static final int MSG_INIT = MSG_BASE + 1;
-    private static final int MSG_MOD = MSG_BASE + 2;
-    private static final int MSG_EXIT = MSG_BASE + 3;
+    private final static int MSG_BASE = 11451400;
+    private final static int MSG_INIT = MSG_BASE + 1;
+    private final static int MSG_MOD = MSG_BASE + 2;
+    private final static int MSG_EXIT = MSG_BASE + 3;
     private static int sThreadId = 0;
     private StyleReceiver receiver;
     private ContentReference ref;
@@ -63,18 +62,22 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
     private LooperThread thread;
     private volatile long runCount;
 
-    private static synchronized int nextThreadId() {
+    private synchronized static int nextThreadId() {
         sThreadId++;
         return sThreadId;
     }
 
-    /** Get receiver */
+    /**
+     * Get receiver
+     */
     @Nullable
     protected StyleReceiver getReceiver() {
         return receiver;
     }
 
-    /** Run the given code block only when the receiver is currently non-null */
+    /**
+     * Run the given code block only when the receiver is currently non-null
+     */
     protected void withReceiver(@NonNull ReceiverConsumer consumer) {
         var r = getReceiver();
         if (r != null) {
@@ -98,14 +101,7 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
     public void insert(CharPosition start, CharPosition end, CharSequence insertedText) {
         if (thread != null) {
             increaseRunCount();
-            thread.handler.sendMessage(
-                    thread.handler.obtainMessage(
-                            MSG_MOD,
-                            new TextModification(
-                                    IntPair.pack(start.line, start.column),
-                                    IntPair.pack(end.line, end.column),
-                                    insertedText)));
-            sendUpdate(thread.styles);
+            thread.handler.sendMessage(thread.handler.obtainMessage(MSG_MOD, new TextModification(IntPair.pack(start.line, start.column), IntPair.pack(end.line, end.column), insertedText)));
         }
     }
 
@@ -113,24 +109,16 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
     public void delete(CharPosition start, CharPosition end, CharSequence deletedText) {
         if (thread != null) {
             increaseRunCount();
-            thread.handler.sendMessage(
-                    thread.handler.obtainMessage(
-                            MSG_MOD,
-                            new TextModification(
-                                    IntPair.pack(start.line, start.column),
-                                    IntPair.pack(end.line, end.column),
-                                    null)));
-            sendUpdate(thread.styles);
+            thread.handler.sendMessage(thread.handler.obtainMessage(MSG_MOD, new TextModification(IntPair.pack(start.line, start.column), IntPair.pack(end.line, end.column), null)));
         }
     }
 
     @Override
     public void rerun() {
         if (thread != null) {
-            thread.callback =
-                    () -> {
-                        throw new CancelledException();
-                    };
+            thread.callback = () -> {
+                throw new CancelledException();
+            };
             if (thread.isAlive()) {
                 final var handler = thread.handler;
                 if (handler != null) {
@@ -141,15 +129,11 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
         }
         final var text = ref.getReference().copyText(false);
         text.setUndoEnabled(false);
-        thread =
-                new LooperThread(
-                        () ->
-                                thread.handler.sendMessage(
-                                        thread.handler.obtainMessage(MSG_INIT, text)));
+        thread = new LooperThread(() -> thread.handler.sendMessage(thread.handler.obtainMessage(MSG_INIT, text)));
         thread.setName("AsyncAnalyzer-" + nextThreadId());
         increaseRunCount();
+        sendNewStyles(null);
         thread.start();
-        sendUpdate(null);
     }
 
     @Override
@@ -165,10 +149,14 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
     }
 
     @Override
-    public void onAbandonState(S state) {}
+    public void onAbandonState(S state) {
+
+    }
 
     @Override
-    public void onAddState(S state) {}
+    public void onAddState(S state) {
+
+    }
 
     private synchronized void increaseRunCount() {
         runCount++;
@@ -177,10 +165,9 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
     @Override
     public void destroy() {
         if (thread != null) {
-            thread.callback =
-                    () -> {
-                        throw new CancelledException();
-                    };
+            thread.callback = () -> {
+                throw new CancelledException();
+            };
             if (thread.isAlive()) {
                 thread.interrupt();
                 var handler = thread.handler;
@@ -196,10 +183,17 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
         thread = null;
     }
 
-    private void sendUpdate(Styles styles) {
+    private void sendNewStyles(Styles styles) {
         final var r = receiver;
         if (r != null) {
             r.setStyles(this, styles);
+        }
+    }
+
+    private void sendUpdate(Styles styles, int startLine, int endLine) {
+        final var r = receiver;
+        if (r != null) {
+            r.updateStyles(this, styles, new StyleUpdateRange(startLine, endLine));
         }
     }
 
@@ -233,10 +227,14 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
         }
 
         @Override
-        public void adjustOnDelete(CharPosition start, CharPosition end) {}
+        public void adjustOnDelete(CharPosition start, CharPosition end) {
+
+        }
 
         @Override
-        public void adjustOnInsert(CharPosition start, CharPosition end) {}
+        public void adjustOnInsert(CharPosition start, CharPosition end) {
+
+        }
 
         @Override
         public int getLineCount() {
@@ -271,6 +269,7 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
             public Line(List<Span> s) {
                 spans = s;
             }
+
         }
 
         private class ReaderImpl implements Spans.Reader {
@@ -322,9 +321,7 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
 
             @Override
             public Span getSpanAt(int index) {
-                return line == null
-                        ? Span.obtain(0, EditorColorScheme.TEXT_NORMAL)
-                        : line.spans.get(index);
+                return line == null ? Span.obtain(0, EditorColorScheme.TEXT_NORMAL) : line.spans.get(index);
             }
 
             @Override
@@ -410,13 +407,16 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
                 }
             }
         }
+
     }
 
     private static class TextModification {
 
         private final long start;
         private final long end;
-        /** null for deletion */
+        /**
+         * null for deletion
+         */
         private final CharSequence changedText;
 
         TextModification(long start, long end, CharSequence text) {
@@ -426,9 +426,12 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
         }
     }
 
-    private static class CancelledException extends RuntimeException {}
+    private static class CancelledException extends RuntimeException {
+    }
 
-    /** Helper class for analyzing code block */
+    /**
+     * Helper class for analyzing code block
+     */
     public class CodeBlockAnalyzeDelegate {
 
         private final LooperThread thread;
@@ -453,6 +456,7 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
         public boolean isNotCancelled() {
             return !isCancelled();
         }
+
     }
 
     private final class LooperThread extends Thread {
@@ -473,10 +477,6 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
             this.callback = callback;
         }
 
-        private void tryUpdate() {
-            if (!abort) sendUpdate(styles);
-        }
-
         private void initialize() {
             styles = new Styles(spans = new LockedSpans());
             S state = getInitialState();
@@ -492,188 +492,145 @@ public abstract class AsyncIncrementalAnalyzeManager<S, T>
             }
             styles.blocks = computeBlocks(shadowed, delegate);
             styles.setSuppressSwitch(delegate.suppressSwitch);
-            tryUpdate();
+            if (!abort)
+                sendNewStyles(styles);
         }
 
         @Override
         public void run() {
             Looper.prepare();
             looper = Looper.myLooper();
-            handler =
-                    new Handler(looper) {
+            handler = new Handler(looper) {
 
-                        @Override
-                        public void handleMessage(@NonNull Message msg) {
-                            super.handleMessage(msg);
-                            try {
-                                myRunCount = runCount;
-                                delegate.reset();
-                                switch (msg.what) {
-                                    case MSG_INIT:
-                                        shadowed = (Content) msg.obj;
-                                        if (!abort && !isInterrupted()) {
-                                            initialize();
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    try {
+                        myRunCount = runCount;
+                        delegate.reset();
+                        switch (msg.what) {
+                            case MSG_INIT:
+                                shadowed = (Content) msg.obj;
+                                if (!abort && !isInterrupted()) {
+                                    initialize();
+                                }
+                                break;
+                            case MSG_MOD:
+                                int updateStart = 0, updateEnd = 0;
+                                if (!abort && !isInterrupted()) {
+                                    var mod = (TextModification) msg.obj;
+                                    int startLine = IntPair.getFirst(mod.start);
+                                    int endLine = IntPair.getFirst(mod.end);
+
+                                    updateStart = startLine;
+                                    if (mod.changedText == null) {
+                                        shadowed.delete(IntPair.getFirst(mod.start), IntPair.getSecond(mod.start),
+                                                IntPair.getFirst(mod.end), IntPair.getSecond(mod.end));
+                                        S state = startLine == 0 ? getInitialState() : states.get(startLine - 1).state;
+                                        // Remove states
+                                        if (endLine >= startLine + 1) {
+                                            var subList = states.subList(startLine + 1, endLine + 1);
+                                            for (LineTokenizeResult<S, T> stLineTokenizeResult : subList) {
+                                                onAbandonState(stLineTokenizeResult.state);
+                                            }
+                                            subList.clear();
                                         }
-                                        break;
-                                    case MSG_MOD:
-                                        if (!abort && !isInterrupted()) {
-                                            var mod = (TextModification) msg.obj;
-                                            int startLine = IntPair.getFirst(mod.start);
-                                            int endLine = IntPair.getFirst(mod.end);
-                                            if (mod.changedText == null) {
-                                                shadowed.delete(
-                                                        IntPair.getFirst(mod.start),
-                                                        IntPair.getSecond(mod.start),
-                                                        IntPair.getFirst(mod.end),
-                                                        IntPair.getSecond(mod.end));
-                                                S state =
-                                                        startLine == 0
-                                                                ? getInitialState()
-                                                                : states.get(startLine - 1).state;
-                                                // Remove states
-                                                if (endLine >= startLine + 1) {
-                                                    var subList =
-                                                            states.subList(
-                                                                    startLine + 1, endLine + 1);
-                                                    for (LineTokenizeResult<S, T>
-                                                            stLineTokenizeResult : subList) {
-                                                        onAbandonState(stLineTokenizeResult.state);
-                                                    }
-                                                    subList.clear();
-                                                }
-                                                var mdf = spans.modify();
-                                                for (int i = startLine + 1; i <= endLine; i++) {
-                                                    mdf.deleteLineAt(startLine + 1);
-                                                }
-                                                int line = startLine;
-                                                while (line < shadowed.getLineCount()) {
-                                                    var res =
-                                                            tokenizeLine(
-                                                                    shadowed.getLine(line),
-                                                                    state,
-                                                                    line);
-                                                    mdf.setSpansOnLine(
-                                                            line,
-                                                            res.spans != null
-                                                                    ? res.spans
-                                                                    : generateSpansForLine(res));
-                                                    var old = states.set(line, res.clearSpans());
-                                                    if (old != null) {
-                                                        onAbandonState(old.state);
-                                                    }
-                                                    onAddState(res.state);
-                                                    if (stateEquals(
-                                                            old == null ? null : old.state,
-                                                            res.state)) {
-                                                        break;
-                                                    }
-                                                    state = res.state;
-                                                    line++;
+                                        var mdf = spans.modify();
+                                        for (int i = startLine + 1; i <= endLine; i++) {
+                                            mdf.deleteLineAt(startLine + 1);
+                                        }
+                                        int line = startLine;
+                                        while (line < shadowed.getLineCount()) {
+                                            var res = tokenizeLine(shadowed.getLine(line), state, line);
+                                            mdf.setSpansOnLine(line, res.spans != null ? res.spans : generateSpansForLine(res));
+                                            var old = states.set(line, res.clearSpans());
+                                            if (old != null) {
+                                                onAbandonState(old.state);
+                                            }
+                                            onAddState(res.state);
+                                            if (stateEquals(old == null ? null : old.state, res.state)) {
+                                                break;
+                                            }
+                                            state = res.state;
+                                            line++;
+                                        }
+                                        updateEnd = line;
+                                    } else {
+                                        shadowed.insert(IntPair.getFirst(mod.start), IntPair.getSecond(mod.start), mod.changedText);
+                                        S state = startLine == 0 ? getInitialState() : states.get(startLine - 1).state;
+                                        int line = startLine;
+                                        var spans = styles.spans.modify();
+                                        // Add Lines
+                                        while (line <= endLine) {
+                                            var res = tokenizeLine(shadowed.getLine(line), state, line);
+                                            if (line == startLine) {
+                                                spans.setSpansOnLine(line, res.spans != null ? res.spans : generateSpansForLine(res));
+                                                var old = states.set(line, res.clearSpans());
+                                                if (old != null) {
+                                                    onAbandonState(old.state);
                                                 }
                                             } else {
-                                                shadowed.insert(
-                                                        IntPair.getFirst(mod.start),
-                                                        IntPair.getSecond(mod.start),
-                                                        mod.changedText);
-                                                S state =
-                                                        startLine == 0
-                                                                ? getInitialState()
-                                                                : states.get(startLine - 1).state;
-                                                int line = startLine;
-                                                var spans = styles.spans.modify();
-                                                // Add Lines
-                                                while (line <= endLine) {
-                                                    var res =
-                                                            tokenizeLine(
-                                                                    shadowed.getLine(line),
-                                                                    state,
-                                                                    line);
-                                                    if (line == startLine) {
-                                                        spans.setSpansOnLine(
-                                                                line,
-                                                                res.spans != null
-                                                                        ? res.spans
-                                                                        : generateSpansForLine(
-                                                                                res));
-                                                        var old =
-                                                                states.set(line, res.clearSpans());
-                                                        if (old != null) {
-                                                            onAbandonState(old.state);
-                                                        }
-                                                    } else {
-                                                        spans.addLineAt(
-                                                                line,
-                                                                res.spans != null
-                                                                        ? res.spans
-                                                                        : generateSpansForLine(
-                                                                                res));
-                                                        states.add(line, res.clearSpans());
-                                                    }
-                                                    onAddState(res.state);
-                                                    state = res.state;
-                                                    line++;
-                                                }
-                                                // line = end.line + 1, check whether the state
-                                                // equals
-                                                while (line < shadowed.getLineCount()) {
-                                                    var res =
-                                                            tokenizeLine(
-                                                                    shadowed.getLine(line),
-                                                                    state,
-                                                                    line);
-                                                    if (stateEquals(
-                                                            res.state, states.get(line).state)) {
-                                                        break;
-                                                    } else {
-                                                        spans.setSpansOnLine(
-                                                                line,
-                                                                res.spans != null
-                                                                        ? res.spans
-                                                                        : generateSpansForLine(
-                                                                                res));
-                                                        var old =
-                                                                states.set(line, res.clearSpans());
-                                                        if (old != null) {
-                                                            onAbandonState(old.state);
-                                                        }
-                                                        onAddState(res.state);
-                                                    }
-                                                    line++;
-                                                }
+                                                spans.addLineAt(line, res.spans != null ? res.spans : generateSpansForLine(res));
+                                                states.add(line, res.clearSpans());
                                             }
+                                            onAddState(res.state);
+                                            state = res.state;
+                                            line++;
                                         }
-                                        // Do not update incomplete code blocks
-                                        var blocks = computeBlocks(shadowed, delegate);
-                                        if (delegate.isNotCancelled()) {
-                                            styles.blocks = blocks;
-                                            styles.setSuppressSwitch(delegate.suppressSwitch);
+                                        // line = end.line + 1, check whether the state equals
+                                        while (line < shadowed.getLineCount()) {
+                                            var res = tokenizeLine(shadowed.getLine(line), state, line);
+                                            if (stateEquals(res.state, states.get(line).state)) {
+                                                break;
+                                            } else {
+                                                spans.setSpansOnLine(line, res.spans != null ? res.spans : generateSpansForLine(res));
+                                                var old = states.set(line, res.clearSpans());
+                                                if (old != null) {
+                                                    onAbandonState(old.state);
+                                                }
+                                                onAddState(res.state);
+                                            }
+                                            line++;
                                         }
-                                        tryUpdate();
-                                        break;
-                                    case MSG_EXIT:
-                                        looper.quit();
-                                        break;
+                                        updateEnd = line;
+                                    }
                                 }
-                            } catch (Exception e) {
-                                Log.w(
-                                        "AsyncAnalysis",
-                                        "Thread " + Thread.currentThread().getName() + " failed",
-                                        e);
-                            }
+                                // Do not update incomplete code blocks
+                                var blocks = computeBlocks(shadowed, delegate);
+                                if (delegate.isNotCancelled()) {
+                                    styles.blocks = blocks;
+                                    styles.setSuppressSwitch(delegate.suppressSwitch);
+                                }
+                                if (!abort) {
+                                    sendUpdate(styles, updateStart, updateEnd);
+                                }
+                                break;
+                            case MSG_EXIT:
+                                looper.quit();
+                                break;
                         }
-                    };
+                    } catch (Exception e) {
+                        Log.w("AsyncAnalysis", "Thread " + Thread.currentThread().getName() + " failed", e);
+                    }
+                }
+
+            };
 
             try {
                 callback.run();
                 Looper.loop();
             } catch (CancelledException e) {
-                // ignored
+                //ignored
             }
         }
     }
 
+
     public interface ReceiverConsumer {
 
         void accept(@NonNull StyleReceiver receiver);
+
     }
+
+
 }

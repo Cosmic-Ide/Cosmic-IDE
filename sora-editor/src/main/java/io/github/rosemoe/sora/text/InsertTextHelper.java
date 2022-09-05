@@ -34,7 +34,7 @@ class InsertTextHelper {
     private CharSequence text;
     private int index, indexNext, length;
 
-    private static synchronized InsertTextHelper obtain() {
+    private synchronized static InsertTextHelper obtain() {
         for (int i = 0; i < sCached.length; i++) {
             if (sCached[i] != null) {
                 var cache = sCached[i];
@@ -112,4 +112,5 @@ class InsertTextHelper {
         text = null;
         length = index = 0;
     }
+
 }

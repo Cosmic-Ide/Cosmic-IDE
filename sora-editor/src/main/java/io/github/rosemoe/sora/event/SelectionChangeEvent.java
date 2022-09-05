@@ -25,35 +25,45 @@ package io.github.rosemoe.sora.event;
 
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.widget.CodeEditor;
+import io.github.rosemoe.sora.widget.EditorSearcher;
 
 /**
  * This event happens when text is edited by the user, or the user click the view to change the
- * position of selection. Even when the actual values of CharPosition are not changed, you may
- * receive the event.
- *
- * <p>Note that you should not change returned CharPosition objects because they are shared in an
- * event dispatch.
+ * position of selection. Even when the actual values of CharPosition are not changed, you may receive the event.
+ * <p>
+ * Note that you should not change returned CharPosition objects because they are shared in an event
+ * dispatch.
  */
 public class SelectionChangeEvent extends Event {
 
-    /** Unknown cause */
-    public static final int CAUSE_UNKNOWN = 0;
-    /** Selection change caused by text modifications */
-    public static final int CAUSE_TEXT_MODIFICATION = 1;
-    /** Set selection by handle */
-    public static final int CAUSE_SELECTION_HANDLE = 2;
-    /** Set selection by single tap */
-    public static final int CAUSE_TAP = 3;
     /**
-     * Set selection because of {@link android.view.inputmethod.InputConnection#setSelection(int,
-     * int)}
+     * Unknown cause
      */
-    public static final int CAUSE_IME = 4;
-    /** Long press */
-    public static final int CAUSE_LONG_PRESS = 5;
-    /** Search text by {@link io.github.rosemoe.sora.widget.EditorSearcher} */
-    public static final int CAUSE_SEARCH = 6;
-
+    public final static int CAUSE_UNKNOWN = 0;
+    /**
+     * Selection change caused by text modifications
+     */
+    public final static int CAUSE_TEXT_MODIFICATION = 1;
+    /**
+     * Set selection by handle
+     */
+    public final static int CAUSE_SELECTION_HANDLE = 2;
+    /**
+     * Set selection by single tap
+     */
+    public final static int CAUSE_TAP = 3;
+    /**
+     * Set selection because of {@link android.view.inputmethod.InputConnection#setSelection(int, int)}
+     */
+    public final static int CAUSE_IME = 4;
+    /**
+     * Long press
+     */
+    public final static int CAUSE_LONG_PRESS = 5;
+    /**
+     * Search text by {@link EditorSearcher}
+     */
+    public final static int CAUSE_SEARCH = 6;
     private final CharPosition left;
     private final CharPosition right;
     private final int cause;
@@ -78,18 +88,25 @@ public class SelectionChangeEvent extends Event {
         return cause;
     }
 
-    /** Get the left selection's position */
+    /**
+     * Get the left selection's position
+     */
     public CharPosition getLeft() {
         return left;
     }
 
-    /** Get the right selection's position */
+    /**
+     * Get the right selection's position
+     */
     public CharPosition getRight() {
         return right;
     }
 
-    /** Checks whether text is selected */
+    /**
+     * Checks whether text is selected
+     */
     public boolean isSelected() {
         return left.index != right.index;
     }
+
 }

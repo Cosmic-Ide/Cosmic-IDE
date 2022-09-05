@@ -29,12 +29,14 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionItem;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
-import io.github.rosemoe.sora.lang.styling.Spans;
-import io.github.rosemoe.sora.lang.styling.TextStyle;
+import io.github.rosemoe.sora.lang.styling.StylesUtils;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.Cursor;
@@ -43,9 +45,6 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.widget.base.EditorPopupWindow;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
-import java.lang.ref.WeakReference;
-import java.util.List;
-
 /**
  * Auto complete window for editing code quicker
  *
@@ -53,16 +52,16 @@ import java.util.List;
  */
 public class EditorAutoCompletion extends EditorPopupWindow implements EditorBuiltinComponent {
 
-    private final CodeEditor mEditor;
-    protected boolean mCancelShowUp = false;
-    protected long mRequestTime;
-    protected int mMaxHeight;
-    protected CompletionThread mThread;
-    protected CompletionPublisher mPublisher;
-    protected WeakReference<List<CompletionItem>> mLastAttachedItems;
-    private int mCurrent = -1;
-    private EditorCompletionAdapter mAdapter;
-    private CompletionLayout mLayout;
+    private final CodeEditor editor;
+    protected boolean cancelShowUp = false;
+    protected long requestTime;
+    protected int maxHeight;
+    protected CompletionThread completionThread;
+    protected CompletionPublisher publisher;
+    protected WeakReference<List<CompletionItem>> lastAttachedItems;
+    private int currentSelection = -1;
+    private EditorCompletionAdapter adapter;
+    private CompletionLayout layout;
     private long requestShow = 0;
     private long requestHide = -1;
     private boolean enabled = true;
@@ -74,19 +73,19 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      */
     public EditorAutoCompletion(CodeEditor editor) {
         super(editor, FEATURE_HIDE_WHEN_FAST_SCROLL);
-        mEditor = editor;
-        mAdapter = new DefaultCompletionItemAdapter();
+        this.editor = editor;
+        adapter = new DefaultCompletionItemAdapter();
         setLayout(new DefaultCompletionLayout());
     }
 
     @SuppressWarnings("unchecked")
     public void setLayout(@NonNull CompletionLayout layout) {
-        mLayout = layout;
+        this.layout = layout;
         layout.setEditorCompletion(this);
-        setContentView(layout.inflate(mEditor.getContext()));
+        setContentView(layout.inflate(editor.getContext()));
         applyColorScheme();
-        if (mAdapter != null) {
-            mLayout.getCompletionList().setAdapter(mAdapter);
+        if (adapter != null) {
+            this.layout.getCompletionList().setAdapter(adapter);
         }
     }
 
@@ -105,28 +104,26 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
 
     @SuppressWarnings("unchecked")
     public void setAdapter(EditorCompletionAdapter adapter) {
-        mAdapter = adapter;
+        this.adapter = adapter;
         if (adapter == null) {
-            mAdapter = new DefaultCompletionItemAdapter();
+            this.adapter = new DefaultCompletionItemAdapter();
         }
 
-        mLayout.getCompletionList().setAdapter(adapter);
+        layout.getCompletionList().setAdapter(adapter);
     }
 
     @Override
     public void show() {
-        if (mCancelShowUp || !isEnabled()) {
+        if (cancelShowUp || !isEnabled()) {
             return;
         }
         requestShow = System.currentTimeMillis();
-        final var requireRequest = mRequestTime;
-        mEditor.postDelayed(
-                () -> {
-                    if (requestHide < requestShow && mRequestTime == requireRequest) {
-                        super.show();
-                    }
-                },
-                70);
+        final var requireRequest = requestTime;
+        editor.postDelayed(() -> {
+            if (requestHide < requestShow && requestTime == requireRequest) {
+                super.show();
+            }
+        }, 70);
     }
 
     public void hide() {
@@ -136,17 +133,19 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
     }
 
     public Context getContext() {
-        return mEditor.getContext();
+        return editor.getContext();
     }
 
     public int getCurrentPosition() {
-        return mCurrent;
+        return currentSelection;
     }
 
-    /** Apply colors for self */
+    /**
+     * Apply colors for self
+     */
     public void applyColorScheme() {
-        EditorColorScheme colors = mEditor.getColorScheme();
-        mLayout.onApplyColorScheme(colors);
+        EditorColorScheme colors = editor.getColorScheme();
+        layout.onApplyColorScheme(colors);
     }
 
     /**
@@ -155,44 +154,55 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      * @param state Whether loading
      */
     public void setLoading(boolean state) {
-        mLayout.setLoading(state);
+        layout.setLoading(state);
     }
 
-    /** Move selection down */
+    /**
+     * Move selection down
+     */
     public void moveDown() {
-        var adpView = mLayout.getCompletionList();
-        if (mCurrent + 1 >= adpView.getAdapter().getCount()) {
+        var adpView = layout.getCompletionList();
+        if (currentSelection + 1 >= adpView.getAdapter().getCount()) {
             return;
         }
-        mCurrent++;
+        currentSelection++;
         ((EditorCompletionAdapter) adpView.getAdapter()).notifyDataSetChanged();
         ensurePosition();
     }
 
-    /** Move selection up */
+    /**
+     * Move selection up
+     */
     public void moveUp() {
-        var adpView = mLayout.getCompletionList();
-        if (mCurrent - 1 < 0) {
+        var adpView = layout.getCompletionList();
+        if (currentSelection - 1 < 0) {
             return;
         }
-        mCurrent--;
+        currentSelection--;
         ((EditorCompletionAdapter) adpView.getAdapter()).notifyDataSetChanged();
         ensurePosition();
     }
 
-    /** Make current selection visible */
+    /**
+     * Make current selection visible
+     */
     private void ensurePosition() {
-        if (mCurrent != -1) mLayout.ensureListPositionVisible(mCurrent, mAdapter.getItemHeight());
+        if (currentSelection != -1)
+            layout.ensureListPositionVisible(currentSelection, adapter.getItemHeight());
     }
 
-    /** Reject the requests from IME to set composing region/text */
+    /**
+     * Reject the requests from IME to set composing region/text
+     */
     public boolean shouldRejectComposing() {
-        return mCancelShowUp;
+        return cancelShowUp;
     }
 
-    /** Select current position */
+    /**
+     * Select current position
+     */
     public void select() {
-        select(mCurrent);
+        select(currentSelection);
     }
 
     /**
@@ -202,122 +212,90 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
      */
     public void select(int pos) {
         if (pos == -1) {
-            mEditor.commitText("\n");
+            editor.commitText("\n");
             return;
         }
-        var adpView = mLayout.getCompletionList();
+        var adpView = layout.getCompletionList();
         var item = ((EditorCompletionAdapter) adpView.getAdapter()).getItem(pos);
-        Cursor cursor = mEditor.getCursor();
-        if (!cursor.isSelected()) {
-            mCancelShowUp = true;
-            mEditor.restartInput();
-            mEditor.getText().beginBatchEdit();
-            item.performCompletion(
-                    mEditor, mEditor.getText(), mThread.mPosition.line, mThread.mPosition.column);
-            mEditor.getText().endBatchEdit();
-            mEditor.updateCursor();
-            mCancelShowUp = false;
-            mEditor.restartInput();
+        Cursor cursor = editor.getCursor();
+        final var completionThread = this.completionThread;
+        if (!cursor.isSelected() && completionThread != null) {
+            cancelShowUp = true;
+            editor.restartInput();
+            editor.getText().beginBatchEdit();
+            item.performCompletion(editor, editor.getText(), completionThread.mPosition);
+            editor.getText().endBatchEdit();
+            editor.updateCursor();
+            cancelShowUp = false;
+            editor.restartInput();
         }
         hide();
     }
 
-    /** Stop previous completion thread */
+    /**
+     * Stop previous completion thread
+     */
     public void cancelCompletion() {
-        var previous = mThread;
+        var previous = completionThread;
         if (previous != null && previous.isAlive()) {
             previous.cancel();
             previous.mTime = -1;
         }
-        mThread = null;
+        completionThread = null;
     }
 
     /**
-     * Check cursor position's span. If {@link
-     * io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
+     * Check cursor position's span.
+     * If {@link io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
      */
     public boolean checkNoCompletion() {
-        var pos = mEditor.getCursor().left();
-        var line = pos.line;
-        var column = pos.column;
-        var styles = mEditor.getStyles();
-        Spans spans;
-        // Do not make completion without styles. The language may be empty or busy analyzing spans
-        if (styles == null || (spans = styles.spans) == null) {
-            return true;
-        }
-        var reader = spans.read();
-        try {
-            reader.moveToLine(line);
-            int index = reader.getSpanCount() - 1;
-            if (index == -1) {
-                return true;
-            }
-            for (int i = 0; i < reader.getSpanCount(); i++) {
-                if (reader.getSpanAt(i).column > column) {
-                    index = i - 1;
-                    break;
-                }
-            }
-            index = Math.max(0, Math.min(index, reader.getSpanCount() - 1));
-            if (TextStyle.isNoCompletion(reader.getSpanAt(index).style)) {
-                reader.moveToLine(-1);
-                return true;
-            }
-            reader.moveToLine(-1);
-            return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Unexpected exception. Maybe there is something wrong in language implementation
-            return true;
-        }
+        var pos = editor.getCursor().left();
+        var styles = editor.getStyles();
+        return StylesUtils.checkNoCompletion(styles, pos);
     }
 
-    /** Start completion at current selection position */
-    @SuppressWarnings("unchecked")
+    /**
+     * Start completion at current selection position
+     */
     public void requireCompletion() {
-        if (mCancelShowUp || !isEnabled()) {
+        if (cancelShowUp || !isEnabled()) {
             return;
         }
-        var text = mEditor.getText();
+        var text = editor.getText();
         if (text.getCursor().isSelected() || checkNoCompletion()) {
             hide();
             return;
         }
-        if (System.nanoTime() - mRequestTime < mEditor.getProps().cancelCompletionNs) {
+        if (System.nanoTime() - requestTime < editor.getProps().cancelCompletionNs) {
             hide();
-            mRequestTime = System.nanoTime();
+            requestTime = System.nanoTime();
             return;
         }
         cancelCompletion();
-        mRequestTime = System.nanoTime();
-        mCurrent = -1;
-        mPublisher =
-                new CompletionPublisher(
-                        mEditor.getHandler(),
-                        () -> {
-                            var items = mPublisher.getItems();
-                            if (mLastAttachedItems == null || mLastAttachedItems.get() != items) {
-                                mAdapter.attachValues(this, items);
-                                mAdapter.notifyDataSetInvalidated();
-                                mLastAttachedItems = new WeakReference<>(items);
-                            } else {
-                                mAdapter.notifyDataSetChanged();
-                            }
-                            float newHeight = mAdapter.getItemHeight() * mAdapter.getCount();
-                            setSize(getWidth(), (int) Math.min(newHeight, mMaxHeight));
-                            if (!isShowing()) {
-                                show();
-                            }
-                        },
-                        mEditor.getEditorLanguage().getInterruptionLevel());
-        mThread = new CompletionThread(mRequestTime, mPublisher);
+        requestTime = System.nanoTime();
+        currentSelection = -1;
+        publisher = new CompletionPublisher(editor.getHandler(), () -> {
+            var items = publisher.getItems();
+            if (lastAttachedItems == null || lastAttachedItems.get() != items) {
+                adapter.attachValues(this, items);
+                adapter.notifyDataSetInvalidated();
+                lastAttachedItems = new WeakReference<>(items);
+            } else {
+                adapter.notifyDataSetChanged();
+            }
+            float newHeight = adapter.getItemHeight() * adapter.getCount();
+            setSize(getWidth(), (int) Math.min(newHeight, maxHeight));
+            if (!isShowing()) {
+                show();
+            }
+        }, editor.getEditorLanguage().getInterruptionLevel());
+        completionThread = new CompletionThread(requestTime, publisher);
         setLoading(true);
-        mThread.start();
+        completionThread.start();
     }
 
     public void setMaxHeight(int height) {
-        mMaxHeight = height;
+        maxHeight = height;
     }
 
     /**
@@ -337,16 +315,18 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
 
         public CompletionThread(long requestTime, CompletionPublisher publisher) {
             mTime = requestTime;
-            mPosition = mEditor.getCursor().left();
-            mLanguage = mEditor.getEditorLanguage();
-            mRef = new ContentReference(mEditor.getText());
+            mPosition = editor.getCursor().left();
+            mLanguage = editor.getEditorLanguage();
+            mRef = new ContentReference(editor.getText());
             mRef.setValidator(this);
             mLocalPublisher = publisher;
-            mExtra = mEditor.getExtraArguments();
+            mExtra = editor.getExtraArguments();
             mAborted = false;
         }
 
-        /** Abort the completion thread */
+        /**
+         * Abort the completion thread
+         */
         public void cancel() {
             mAborted = true;
             var level = mLanguage.getInterruptionLevel();
@@ -362,7 +342,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
 
         @Override
         public void validate() {
-            if (mRequestTime != mTime || mAborted) {
+            if (requestTime != mTime || mAborted) {
                 throw new CompletionCancelledException();
             }
         }
@@ -372,17 +352,24 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             try {
                 mLanguage.requireAutoComplete(mRef, mPosition, mLocalPublisher, mExtra);
                 if (mLocalPublisher.hasData()) {
-                    mLocalPublisher.updateList(true);
+                    if (completionThread == Thread.currentThread()) {
+                        mLocalPublisher.updateList(true);
+                    }
                 } else {
-                    mEditor.post(EditorAutoCompletion.this::hide);
+                    editor.post(EditorAutoCompletion.this::hide);
                 }
-                mEditor.post(() -> setLoading(false));
+                editor.post(() -> setLoading(false));
             } catch (Exception e) {
                 if (e instanceof CompletionCancelledException) {
                     Log.v("CompletionThread", "Completion is cancelled");
+                } else {
+                    e.printStackTrace();
                 }
-                e.printStackTrace();
             }
         }
+
+
     }
+
 }
+

@@ -24,8 +24,9 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor picked from Notepad++ v7.8.1 Thanks to liyujiang-gzu
- * (GitHub @liyujiang-gzu)
+ * ColorScheme for editor
+ * picked from Notepad++ v7.8.1
+ * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeNotepadXX extends EditorColorScheme {
 
@@ -44,6 +45,7 @@ public class SchemeNotepadXX extends EditorColorScheme {
         setColor(TEXT_NORMAL, 0xff000000);
         setColor(LINE_NUMBER_BACKGROUND, 0xffe4e4e4);
         setColor(LINE_NUMBER, 0xff808080);
+        setColor(LINE_NUMBER_CURRENT, 0xff808080);
         setColor(SELECTED_TEXT_BACKGROUND, 0xff75d975);
         setColor(MATCHED_TEXT_BACKGROUND, 0xffc0c0c0);
         setColor(CURRENT_LINE, 0xffe8e8ff);
@@ -53,4 +55,5 @@ public class SchemeNotepadXX extends EditorColorScheme {
         setColor(BLOCK_LINE_CURRENT, 0);
         setColor(TEXT_SELECTED, 0xffffffff);
     }
+
 }

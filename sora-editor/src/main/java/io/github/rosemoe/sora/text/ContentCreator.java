@@ -35,12 +35,16 @@ import java.io.Reader;
  */
 public class ContentCreator {
 
-    /** Create a {@link Content} from stream */
+    /**
+     * Create a {@link Content} from stream
+     */
     public static Content fromStream(InputStream stream) throws IOException {
         return fromReader(new InputStreamReader(stream));
     }
 
-    /** Create a {@link Content} from reader */
+    /**
+     * Create a {@link Content} from reader
+     */
     public static Content fromReader(Reader reader) throws IOException {
         var content = new Content();
         content.setUndoEnabled(false);
@@ -48,12 +52,33 @@ public class ContentCreator {
         var wrapper = new CharArrayWrapper(buffer, 0);
         int count;
         while ((count = reader.read(buffer)) != -1) {
-            wrapper.setDataCount(count);
-            var line = content.getLineCount() - 1;
-            content.insert(line, content.getColumnCount(line), wrapper);
+            if (count > 0) {
+                if (buffer[count - 1] == '\r') {
+                    var peek = reader.read();
+                    if (peek == '\n') {
+                        wrapper.setDataCount(count - 1);
+                        var line = content.getLineCount() - 1;
+                        content.insert(line, content.getColumnCount(line), wrapper);
+                        line = content.getLineCount() - 1;
+                        content.insert(line, content.getColumnCount(line), "\r\n");
+                        continue;
+                    } else if (peek != -1) {
+                        wrapper.setDataCount(count);
+                        var line = content.getLineCount() - 1;
+                        content.insert(line, content.getColumnCount(line), wrapper);
+                        line = content.getLineCount() - 1;
+                        content.insert(line, content.getColumnCount(line), String.valueOf((char) peek));
+                        continue;
+                    }
+                }
+                wrapper.setDataCount(count);
+                var line = content.getLineCount() - 1;
+                content.insert(line, content.getColumnCount(line), wrapper);
+            }
         }
         reader.close();
         content.setUndoEnabled(true);
         return content;
     }
+
 }

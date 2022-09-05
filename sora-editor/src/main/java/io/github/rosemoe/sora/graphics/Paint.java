@@ -27,19 +27,35 @@ import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import io.github.rosemoe.sora.text.ContentLine;
 
 public class Paint extends android.graphics.Paint {
 
     private float spaceWidth;
+    private float tabWidth;
+
+    private SingleCharacterWidths widths;
 
     public Paint() {
         super();
         spaceWidth = measureText(" ");
+        tabWidth = measureText("\t");
+    }
+
+    private void ensureCacheObject() {
+        if (widths == null) {
+            widths = new SingleCharacterWidths(1);
+        }
     }
 
     public void onAttributeUpdate() {
         spaceWidth = measureText(" ");
+        tabWidth = measureText("\t");
+        if (widths != null)
+            widths.clearCache();
     }
 
     public float getSpaceWidth() {
@@ -61,32 +77,52 @@ public class Paint extends android.graphics.Paint {
         onAttributeUpdate();
     }
 
-    /** Get the advance of text with the context positions related to shaping the characters */
+    @Override
+    public void setLetterSpacing(float letterSpacing) {
+        super.setLetterSpacing(letterSpacing);
+        onAttributeUpdate();
+    }
+
     @SuppressLint("NewApi")
-    public float measureTextRunAdvance(
-            char[] text, int start, int end, int contextStart, int contextEnd) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return getRunAdvance(text, start, end, contextStart, contextEnd, false, end);
+    public float myGetTextRunAdvances(@NonNull char[] chars, int index, int count, int contextIndex, int contextCount, boolean isRtl, @Nullable float[] advances, int advancesIndex, boolean fast) {
+        if (fast) {
+            ensureCacheObject();
+            var width = 0f;
+            for (int i = 0; i < count; i++) {
+                char ch = chars[i + index];
+                float charWidth;
+                if (Character.isHighSurrogate(ch) && i + 1 < count && Character.isLowSurrogate(chars[index + i + 1])) {
+                    charWidth = widths.measureCodePoint(Character.toCodePoint(ch, chars[index + i + 1]), this);
+                    if (advances != null) {
+                        advances[advancesIndex + i] = charWidth;
+                        advances[advancesIndex + i + 1] = 0f;
+                    }
+                    i++;
+                } else {
+                    charWidth = (ch == '\t') ? tabWidth : widths.measureChar(ch, this);
+                    if (advances != null) {
+                        advances[advancesIndex + i] = charWidth;
+                    }
+                }
+                width += charWidth;
+            }
+            return width;
         } else {
-            // Hidden, but we can call it directly on Android 21 - 22
-            return getTextRunAdvances(
-                    text,
-                    start,
-                    end - start,
-                    contextStart,
-                    contextEnd - contextStart,
-                    false,
-                    null,
-                    0);
+            return getTextRunAdvances(chars, index, count, contextIndex, contextCount, isRtl, advances, advancesIndex);
         }
     }
 
     /**
-     * Find offset for a certain advance returned by {@link #measureTextRunAdvance(char[], int, int,
-     * int, int)}
+     * Get the advance of text with the context positions related to shaping the characters
      */
-    public int findOffsetByRunAdvance(
-            ContentLine text, int start, int end, float advance, boolean useCache) {
+    public float measureTextRunAdvance(char[] text, int start, int end, int contextStart, int contextEnd, boolean fast) {
+        return myGetTextRunAdvances(text, start, end - start, contextStart, contextEnd - contextStart, false, null, 0, fast);
+    }
+
+    /**
+     * Find offset for a certain advance returned by {@link #measureTextRunAdvance(char[], int, int, int, int, boolean)}
+     */
+    public int findOffsetByRunAdvance(ContentLine text, int start, int end, float advance, boolean useCache, boolean fast) {
         if (text.widthCache != null && useCache) {
             var cache = text.widthCache;
             var offset = start;
@@ -99,10 +135,31 @@ public class Paint extends android.graphics.Paint {
             }
             return Math.max(offset, start);
         }
+        if (fast) {
+            ensureCacheObject();
+            var width = 0f;
+            for (int i = start; i < end; i++) {
+                char ch = text.value[i];
+                float charWidth;
+                int j = i;
+                if (Character.isHighSurrogate(ch) && i + 1 < end && Character.isLowSurrogate(text.value[i + 1])) {
+                    charWidth = widths.measureCodePoint(Character.toCodePoint(ch, text.value[i + 1]), this);
+                    i++;
+                } else {
+                    charWidth = (ch == '\t') ? tabWidth : widths.measureChar(ch, this);
+                }
+                width += charWidth;
+                if (width > advance) {
+                    return Math.max(start, j - 1);
+                }
+            }
+            return end;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             return getOffsetForAdvance(text, start, end, start, end, false, advance);
         } else {
             return start + breakText(text.value, start, end - start, advance, null);
         }
     }
+
 }

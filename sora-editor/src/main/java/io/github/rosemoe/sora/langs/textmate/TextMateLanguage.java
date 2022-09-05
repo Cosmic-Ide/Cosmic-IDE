@@ -26,8 +26,14 @@ package io.github.rosemoe.sora.langs.textmate;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
-import io.github.rosemoe.sora.annotations.Experimental;
+import org.eclipse.tm4e.core.registry.IGrammarSource;
+import org.eclipse.tm4e.core.registry.IThemeSource;
+
+import java.io.Reader;
+import java.util.Objects;
+
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
@@ -38,35 +44,17 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 
-import org.eclipse.tm4e.core.theme.IRawTheme;
-
-import java.io.InputStream;
-import java.io.Reader;
-
-@Experimental
 public class TextMateLanguage extends EmptyLanguage {
 
     private TextMateAnalyzer textMateAnalyzer;
     private int tabSize = 4;
-    private IdentifierAutoComplete autoComplete = new IdentifierAutoComplete();
+    private final IdentifierAutoComplete autoComplete = new IdentifierAutoComplete();
     boolean autoCompleteEnabled;
     final boolean createIdentifiers;
 
-    private TextMateLanguage(
-            String grammarName,
-            InputStream grammarIns,
-            Reader languageConfiguration,
-            IRawTheme theme,
-            boolean createIdentifiers) {
-        if (grammarName.startsWith("java")) {
-            autoComplete = new IdentifierAutoComplete(javaKeywords);
-        } else if (grammarName.startsWith("kotlin")) {
-            autoComplete = new IdentifierAutoComplete(kotlinKeywords);
-        }
+    protected TextMateLanguage(IGrammarSource grammarSource, Reader languageConfiguration, IThemeSource themeSource, boolean createIdentifiers) {
         try {
-            textMateAnalyzer =
-                    new TextMateAnalyzer(
-                            this, grammarName, grammarIns, languageConfiguration, theme);
+            textMateAnalyzer = new TextMateAnalyzer(this, grammarSource, languageConfiguration, themeSource);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,39 +62,29 @@ public class TextMateLanguage extends EmptyLanguage {
         autoCompleteEnabled = true;
     }
 
-    public static TextMateLanguage create(
-            String grammarName,
-            InputStream grammarIns,
-            Reader languageConfiguration,
-            IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, true);
+    public static TextMateLanguage create(IGrammarSource grammarSource, Reader languageConfiguration, IThemeSource themeSource) {
+        return new TextMateLanguage(grammarSource, languageConfiguration, themeSource, true);
     }
 
-    public static TextMateLanguage create(
-            String grammarName, InputStream grammarIns, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, null, theme, true);
+    public static TextMateLanguage create(IGrammarSource grammarSource, IThemeSource themeSource) {
+        return new TextMateLanguage(grammarSource, null, themeSource, true);
     }
 
-    public static TextMateLanguage createNoCompletion(
-            String grammarName,
-            InputStream grammarIns,
-            Reader languageConfiguration,
-            IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, languageConfiguration, theme, false);
+    public static TextMateLanguage createNoCompletion(IGrammarSource grammarSource, Reader languageConfiguration, IThemeSource themeSource) {
+        return new TextMateLanguage(grammarSource, languageConfiguration, themeSource, false);
     }
 
-    public static TextMateLanguage createNoCompletion(
-            String grammarName, InputStream grammarIns, IRawTheme theme) {
-        return new TextMateLanguage(grammarName, grammarIns, null, theme, false);
+    public static TextMateLanguage createNoCompletion(IGrammarSource grammarSource, IThemeSource themeSource) {
+        return new TextMateLanguage(grammarSource, null, themeSource, true);
     }
 
     /**
-     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the
-     * updates here
+     * When you update the {@link TextMateColorScheme} for editor, you need to synchronize the updates here
      *
-     * @param theme IRawTheme creates from file
+     * @param theme IThemeSource creates from file
      */
-    public void updateTheme(IRawTheme theme) {
+    @WorkerThread
+    public void updateTheme(IThemeSource theme) throws Exception {
         if (textMateAnalyzer != null) {
             textMateAnalyzer.updateTheme(theme);
         }
@@ -115,10 +93,7 @@ public class TextMateLanguage extends EmptyLanguage {
     @NonNull
     @Override
     public AnalyzeManager getAnalyzeManager() {
-        if (textMateAnalyzer != null) {
-            return textMateAnalyzer;
-        }
-        return EmptyAnalyzeManager.INSTANCE;
+        return Objects.requireNonNullElse(textMateAnalyzer, EmptyAnalyzeManager.INSTANCE);
     }
 
     @Override
@@ -126,7 +101,9 @@ public class TextMateLanguage extends EmptyLanguage {
         super.destroy();
     }
 
-    /** Set tab size. The tab size is used to compute code blocks. */
+    /**
+     * Set tab size. The tab size is used to compute code blocks.
+     */
     public void setTabSize(int tabSize) {
         this.tabSize = tabSize;
     }
@@ -149,17 +126,11 @@ public class TextMateLanguage extends EmptyLanguage {
     }
 
     @Override
-    public void requireAutoComplete(
-            @NonNull ContentReference content,
-            @NonNull CharPosition position,
-            @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments) {
+    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
         if (!autoCompleteEnabled) {
             return;
         }
-        var prefix =
-                CompletionHelper.computePrefix(
-                        content, position, MyCharacter::isJavaIdentifierPart);
+        var prefix = CompletionHelper.computePrefix(content, position, MyCharacter::isJavaIdentifierPart);
         final var idt = textMateAnalyzer.syncIdentifiers;
         autoComplete.requireAutoComplete(prefix, publisher, idt);
     }
@@ -168,143 +139,7 @@ public class TextMateLanguage extends EmptyLanguage {
         return autoComplete;
     }
 
-    private final String[] javaKeywords = {
-        "assert",
-        "abstract",
-        "boolean",
-        "byte",
-        "char",
-        "class",
-        "do",
-        "double",
-        "final",
-        "float",
-        "for",
-        "if",
-        "int",
-        "long",
-        "new",
-        "public",
-        "private",
-        "protected",
-        "package",
-        "return",
-        "static",
-        "short",
-        "super",
-        "switch",
-        "else",
-        "volatile",
-        "synchronized",
-        "strictfp",
-        "goto",
-        "continue",
-        "break",
-        "transient",
-        "void",
-        "try",
-        "catch",
-        "finally",
-        "while",
-        "case",
-        "default",
-        "const",
-        "enum",
-        "extends",
-        "implements",
-        "import",
-        "instanceof",
-        "interface",
-        "native",
-        "this",
-        "throw",
-        "throws",
-        "true",
-        "false",
-        "null",
-        "var",
-        "sealed",
-        "permits"
-    };
-
-    private final String[] kotlinKeywords = {
-        "as",
-        "as?",
-        "break",
-        "class",
-        "continue",
-        "do",
-        "else",
-        "false",
-        "for",
-        "fun",
-        "if",
-        "in",
-        "interface",
-        "is",
-        "null",
-        "object",
-        "package",
-        "return",
-        "super",
-        "this",
-        "throw",
-        "true",
-        "try",
-        "typealias",
-        "typeof",
-        "val",
-        "var",
-        "when",
-        "while",
-        "by",
-        "catch",
-        "constructor",
-        "delegate",
-        "dynamic",
-        "field",
-        "file",
-        "finally",
-        "get",
-        "import",
-        "init",
-        "param",
-        "property",
-        "reciever",
-        "set",
-        "setparam",
-        "value",
-        "where",
-        "abstract",
-        "actual",
-        "annotation",
-        "companion",
-        "const",
-        "crossinline",
-        "data",
-        "enum",
-        "expect",
-        "external",
-        "final",
-        "infix",
-        "inline",
-        "inner",
-        "internal",
-        "lateinit",
-        "noinline",
-        "open",
-        "operator",
-        "out",
-        "override",
-        "private",
-        "protected",
-        "public",
-        "reified",
-        "sealed",
-        "suspend",
-        "tailrec",
-        "vararg",
-        "field",
-        "it"
-    };
+    public void setCompleterKeywords(String[] keywords) {
+        autoComplete.setKeywords(keywords, false);
+    }
 }

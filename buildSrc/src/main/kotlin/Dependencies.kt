@@ -22,4 +22,6 @@ object Dependencies {
     const val FERNFLOWER = "com.github.Cosmic-Ide:fernflower:${BuildDependenciesVersions.FERNFLOWER}"
     const val PREFERENCE_KTX = "androidx.preference:preference-ktx:${BuildDependenciesVersions.PREFERENCE_KTX}"
     const val PREFERENCEX = "com.takisoft.preferencex:preferencex:${BuildDependenciesVersions.PREFERENCEX}"
+    const val JDT_ANNOTATION = "org.eclipse.jdt:org.eclipse.jdt.annotation:${BuildDependenciesVersions.JDT_ANNOTATION}"
+    const val SNAKEYAML = "org.yaml:snakeyaml:${BuildDependenciesVersions.SNAKEYAML}"
 }

@@ -25,34 +25,40 @@ package io.github.rosemoe.sora.langs.textmate;
 
 import android.graphics.Color;
 
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
-
-import org.eclipse.tm4e.core.internal.theme.ThemeRaw;
-import org.eclipse.tm4e.core.theme.IRawTheme;
-import org.eclipse.tm4e.core.theme.Theme;
-
+import java.util.Collections;
 import java.util.List;
+
+import org.eclipse.tm4e.core.internal.theme.IRawTheme;
+import org.eclipse.tm4e.core.internal.theme.Theme;
+import org.eclipse.tm4e.core.internal.theme.ThemeRaw;
+import org.eclipse.tm4e.core.internal.theme.ThemeReader;
+import org.eclipse.tm4e.core.registry.IThemeSource;
+
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class TextMateColorScheme extends EditorColorScheme {
 
     private final Theme theme;
-    private final IRawTheme iRawTheme;
+    private final IThemeSource themeSource;
 
-    public TextMateColorScheme(IRawTheme iRawTheme) {
-        this.iRawTheme = iRawTheme;
-        this.theme = Theme.createFromRawTheme(iRawTheme);
+    private final IRawTheme rawTheme;
+
+    public TextMateColorScheme(IThemeSource themeSource) throws Exception {
+        this.themeSource = themeSource;
+        this.rawTheme = ThemeReader.readTheme(themeSource);
+        this.theme = Theme.createFromRawTheme(rawTheme, null);
         applyDefault();
     }
 
-    public static TextMateColorScheme create(IRawTheme iRawTheme) {
-        return new TextMateColorScheme(iRawTheme);
+    public static TextMateColorScheme create(IThemeSource themeSource) throws Exception {
+        return new TextMateColorScheme(themeSource);
     }
 
     @Override
     public void applyDefault() {
-        if (iRawTheme != null) {
+        if (rawTheme != null) {
             super.applyDefault();
-            ThemeRaw themeRaw = (ThemeRaw) ((List<?>) iRawTheme.getSettings()).get(0);
+            ThemeRaw themeRaw = (ThemeRaw) ((List<?>) rawTheme.getSettings()).get(0);
             themeRaw = (ThemeRaw) themeRaw.getSetting();
 
             setColor(LINE_DIVIDER, Color.TRANSPARENT);
@@ -61,6 +67,7 @@ public class TextMateColorScheme extends EditorColorScheme {
             if (caret != null) {
                 setColor(SELECTION_INSERT, Color.parseColor(caret));
             }
+
 
             String selection = (String) themeRaw.get("selection");
             if (selection != null) {
@@ -88,30 +95,13 @@ public class TextMateColorScheme extends EditorColorScheme {
                 setColor(TEXT_NORMAL, Color.parseColor(foreground));
             }
 
-            String highlightedDelimetersForeground =
-                    (String) themeRaw.get("highlightedDelimetersForeground");
-            if (highlightedDelimetersForeground != null) {
-                setColor(HIGHLIGHTED_DELIMITERS_FOREGROUND, Color.parseColor(foreground));
-            }
-
-            String completionWindowBackground = (String) themeRaw.get("completionWindowBackground");
-            if (completionWindowBackground != null) {
-                setColor(COMPLETION_WND_BACKGROUND, Color.parseColor(completionWindowBackground));
-            }
-
-            String completionWindowStroke = (String) themeRaw.get("completionWindowStroke");
-            if (completionWindowStroke != null) {
-                setColor(COMPLETION_WND_CORNER, Color.parseColor(completionWindowStroke));
-            }
-
-            // TMTheme seems to have no fields to control BLOCK_LINE colors
-            int blockLineColor =
-                    ((getColor(WHOLE_BACKGROUND) + getColor(TEXT_NORMAL)) / 2) & 0x00FFFFFF
-                            | 0x88000000;
+            //TMTheme seems to have no fields to control BLOCK_LINE colors
+            int blockLineColor = ((getColor(WHOLE_BACKGROUND) + getColor(TEXT_NORMAL)) / 2) & 0x00FFFFFF | 0x88000000;
             setColor(BLOCK_LINE, blockLineColor);
             int blockLineColorCur = (blockLineColor) | 0xFF000000;
             setColor(BLOCK_LINE_CURRENT, blockLineColorCur);
         }
+
     }
 
     @Override
@@ -122,8 +112,7 @@ public class TextMateColorScheme extends EditorColorScheme {
             if (superColor == 0) {
                 if (theme != null) {
                     String color = theme.getColor(type - 255);
-                    var newColor =
-                            color != null ? Color.parseColor(color) : super.getColor(TEXT_NORMAL);
+                    var newColor = color != null ? Color.parseColor(color) : super.getColor(TEXT_NORMAL);
                     super.colors.put(type, newColor);
                     return newColor;
                 }
@@ -136,6 +125,11 @@ public class TextMateColorScheme extends EditorColorScheme {
     }
 
     public IRawTheme getRawTheme() {
-        return iRawTheme;
+        return rawTheme;
+    }
+
+
+    public IThemeSource getThemeSource() {
+        return themeSource;
     }
 }

@@ -69,11 +69,8 @@ final class CursorBlink implements Runnable, EventReceiver<SelectionChangeEvent>
     }
 
     public boolean isSelectionVisible() {
-        return (buffer[0] >= editor.getOffsetY()
-                && buffer[0] - editor.getRowHeight() <= editor.getOffsetY() + editor.getHeight()
-                && buffer[1] >= editor.getOffsetX()
-                && buffer[1] - 100f /* larger than a single character */
-                        <= editor.getOffsetX() + editor.getWidth());
+        return (buffer[0] >= editor.getOffsetY() && buffer[0] - editor.getRowHeight() <= editor.getOffsetY() + editor.getHeight()
+                && buffer[1] >= editor.getOffsetX() && buffer[1] - 100f/* larger than a single character */ <= editor.getOffsetX() + editor.getWidth());
     }
 
     @Override
@@ -94,4 +91,5 @@ final class CursorBlink implements Runnable, EventReceiver<SelectionChangeEvent>
             visibility = true;
         }
     }
+
 }

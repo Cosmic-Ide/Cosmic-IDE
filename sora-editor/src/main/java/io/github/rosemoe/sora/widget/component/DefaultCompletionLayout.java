@@ -39,72 +39,64 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 public class DefaultCompletionLayout implements CompletionLayout {
 
-    private ListView mListView;
-    private ProgressBar mProgressBar;
-    private GradientDrawable mBackground;
-    private EditorAutoCompletion mEditorAutoCompletion;
+    private ListView listView;
+    private ProgressBar progressBar;
+    private RelativeLayout rootView;
+    private EditorAutoCompletion editorAutoCompletion;
 
     @Override
     public void setEditorCompletion(EditorAutoCompletion completion) {
-        mEditorAutoCompletion = completion;
+        editorAutoCompletion = completion;
     }
 
     @Override
     public View inflate(Context context) {
         RelativeLayout layout = new RelativeLayout(context);
-
-        mProgressBar = new ProgressBar(context);
-        layout.addView(mProgressBar);
-        var params = ((RelativeLayout.LayoutParams) mProgressBar.getLayoutParams());
+        listView = new ListView(context);
+        layout.addView(listView, new LinearLayout.LayoutParams(-1, -1));
+        progressBar = new ProgressBar(context);
+        layout.addView(progressBar);
+        var params = ((RelativeLayout.LayoutParams) progressBar.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.width =
-                params.height =
-                        (int)
-                                TypedValue.applyDimension(
-                                        TypedValue.COMPLEX_UNIT_DIP,
-                                        30,
-                                        context.getResources().getDisplayMetrics());
-
-        mBackground = new GradientDrawable();
-        mBackground.setCornerRadius(
-                TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        8,
-                        context.getResources().getDisplayMetrics()));
-        layout.setBackground(mBackground);
-
-        mListView = new ListView(context);
-        mListView.setDividerHeight(0);
-        layout.addView(mListView, new LinearLayout.LayoutParams(-1, -1));
-        mListView.setOnItemClickListener(
-                (parent, view, position, id) -> {
-                    try {
-                        mEditorAutoCompletion.select(position);
-                    } catch (Exception e) {
-                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        params.width = params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
+        GradientDrawable gd = new GradientDrawable();
+        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
+        layout.setBackground(gd);
+        rootView = layout;
+        listView.setDividerHeight(0);
         setLoading(true);
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            try {
+                editorAutoCompletion.select(position);
+            } catch (Exception e) {
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
         return layout;
     }
 
     @Override
     public void onApplyColorScheme(EditorColorScheme colorScheme) {
-        mBackground.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER));
-        mBackground.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND));
+        GradientDrawable gd = new GradientDrawable();
+        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, editorAutoCompletion.getContext().getResources().getDisplayMetrics()));
+        gd.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER));
+        gd.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND));
+        rootView.setBackground(gd);
     }
 
     @Override
     public void setLoading(boolean state) {
-        mProgressBar.setVisibility(state ? View.VISIBLE : View.INVISIBLE);
+        progressBar.setVisibility(state ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
     public ListView getCompletionList() {
-        return mListView;
+        return listView;
     }
 
-    /** Perform motion events */
+    /**
+     * Perform motion events
+     */
     private void performScrollList(int offset) {
         var adpView = getCompletionList();
 
@@ -124,16 +116,13 @@ public class DefaultCompletionLayout implements CompletionLayout {
 
     @Override
     public void ensureListPositionVisible(int position, int increment) {
-        mListView.post(
-                () -> {
-                    while (mListView.getFirstVisiblePosition() + 1 > position
-                            && mListView.canScrollList(-1)) {
-                        performScrollList(increment / 2);
-                    }
-                    while (mListView.getLastVisiblePosition() - 1 < position
-                            && mListView.canScrollList(1)) {
-                        performScrollList(-increment / 2);
-                    }
-                });
+        listView.post(() -> {
+            while (listView.getFirstVisiblePosition() + 1 > position && listView.canScrollList(-1)) {
+                performScrollList(increment / 2);
+            }
+            while (listView.getLastVisiblePosition() - 1 < position && listView.canScrollList(1)) {
+                performScrollList(-increment / 2);
+            }
+        });
     }
 }

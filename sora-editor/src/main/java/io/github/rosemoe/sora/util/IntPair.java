@@ -24,13 +24,17 @@
 package io.github.rosemoe.sora.util;
 
 /**
- * Pack two int into a long Also unpack it This is convenient while passing data
+ * Pack two int into a long
+ * Also unpack it
+ * This is convenient while passing data
  *
  * @author Rose
  */
 public class IntPair {
 
-    /** Convert an integer to a long whose binary bits are equal to the given integer */
+    /**
+     * Convert an integer to a long whose binary bits are equal to the given integer
+     */
     private static long toUnsignedLong(int x) {
         return ((long) x) & 0xffffffffL;
     }
@@ -38,7 +42,7 @@ public class IntPair {
     /**
      * Pack two int into a long
      *
-     * @param first First of pair
+     * @param first  First of pair
      * @param second Second of pair
      * @return Packed value
      */
@@ -65,4 +69,5 @@ public class IntPair {
     public static int getFirst(long packedValue) {
         return (int) (packedValue >> 32L);
     }
+
 }

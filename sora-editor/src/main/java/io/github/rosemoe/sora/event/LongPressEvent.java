@@ -32,10 +32,9 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
  * Long press event.
- *
- * <p>This event can be intercepted so that the editor framework will do nothing (such as selecting
- * a word). You can take over the procedure. Note that after intercepting an event, it will not be
- * sent to other listeners, either.
+ * <p>
+ * This event can be intercepted so that the editor framework will do nothing (such as selecting a word). You can take over the
+ * procedure. Note that after intercepting an event, it will not be sent to other listeners, either.
  *
  * @author Rosemoe
  */
@@ -75,8 +74,11 @@ public class LongPressEvent extends Event {
         return event.getY();
     }
 
-    /** Get original event object from Android framework */
+    /**
+     * Get original event object from Android framework
+     */
     public MotionEvent getCausingEvent() {
         return event;
     }
+
 }

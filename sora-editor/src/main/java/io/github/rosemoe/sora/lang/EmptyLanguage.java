@@ -46,7 +46,8 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch;
  */
 public class EmptyLanguage implements Language {
 
-    public static final SymbolPairMatch EMPTY_SYMBOL_PAIRS = new SymbolPairMatch();
+
+    public final static SymbolPairMatch EMPTY_SYMBOL_PAIRS = new SymbolPairMatch();
 
     @NonNull
     @Override
@@ -60,11 +61,9 @@ public class EmptyLanguage implements Language {
     }
 
     @Override
-    public void requireAutoComplete(
-            @NonNull ContentReference content,
-            @NonNull CharPosition position,
-            @NonNull CompletionPublisher publisher,
-            @NonNull Bundle extraArguments) {}
+    public void requireAutoComplete(@NonNull ContentReference content, @NonNull CharPosition position, @NonNull CompletionPublisher publisher, @NonNull Bundle extraArguments) {
+
+    }
 
     @Override
     public int getInterruptionLevel() {
@@ -88,7 +87,9 @@ public class EmptyLanguage implements Language {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+
+    }
 
     @Override
     public boolean useTab() {
@@ -97,19 +98,22 @@ public class EmptyLanguage implements Language {
 
     public static class EmptyFormatter implements Formatter {
 
-        public static final EmptyFormatter INSTANCE = new EmptyFormatter();
+        public final static EmptyFormatter INSTANCE = new EmptyFormatter();
 
         @Override
-        public void format(@NonNull Content text, @NonNull TextRange cursorRange) {}
+        public void format(@NonNull Content text, @NonNull TextRange cursorRange) {
+
+        }
 
         @Override
-        public void formatRegion(
-                @NonNull Content text,
-                @NonNull TextRange rangeToFormat,
-                @NonNull TextRange cursorRange) {}
+        public void formatRegion(@NonNull Content text, @NonNull TextRange rangeToFormat, @NonNull TextRange cursorRange) {
+
+        }
 
         @Override
-        public void setReceiver(@Nullable FormatResultReceiver receiver) {}
+        public void setReceiver(@Nullable FormatResultReceiver receiver) {
+
+        }
 
         @Override
         public boolean isRunning() {
@@ -117,29 +121,44 @@ public class EmptyLanguage implements Language {
         }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+
+        }
     }
 
     public static class EmptyAnalyzeManager implements AnalyzeManager {
 
-        public static final EmptyAnalyzeManager INSTANCE = new EmptyAnalyzeManager();
+        public final static EmptyAnalyzeManager INSTANCE = new EmptyAnalyzeManager();
 
         @Override
-        public void setReceiver(@Nullable StyleReceiver receiver) {}
+        public void setReceiver(@Nullable StyleReceiver receiver) {
+
+        }
 
         @Override
-        public void reset(@NonNull ContentReference content, @NonNull Bundle extraArguments) {}
+        public void reset(@NonNull ContentReference content, @NonNull Bundle extraArguments) {
+
+        }
 
         @Override
-        public void insert(CharPosition start, CharPosition end, CharSequence insertedContent) {}
+        public void insert(CharPosition start, CharPosition end, CharSequence insertedContent) {
+
+        }
 
         @Override
-        public void delete(CharPosition start, CharPosition end, CharSequence deletedContent) {}
+        public void delete(CharPosition start, CharPosition end, CharSequence deletedContent) {
+
+        }
 
         @Override
-        public void rerun() {}
+        public void rerun() {
+
+        }
 
         @Override
-        public void destroy() {}
+        public void destroy() {
+
+        }
     }
 }
+

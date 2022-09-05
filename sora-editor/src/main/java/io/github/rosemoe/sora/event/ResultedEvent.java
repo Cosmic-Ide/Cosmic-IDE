@@ -51,4 +51,5 @@ public abstract class ResultedEvent<T> extends Event {
     public boolean isResultSet() {
         return result != null;
     }
+
 }

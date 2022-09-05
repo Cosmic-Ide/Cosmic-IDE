@@ -38,4 +38,5 @@ public class MutableInt {
     public void increase() {
         value++;
     }
+
 }

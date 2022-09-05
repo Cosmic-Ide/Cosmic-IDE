@@ -18,8 +18,7 @@ import org.cosmic.ide.activity.MainActivity
 import org.cosmic.ide.activity.editor.CodeEditorView
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
-import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader
-import org.eclipse.tm4e.core.theme.IRawTheme
+import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -88,14 +87,15 @@ class CodeEditorFragment : Fragment() {
 
     private fun configureEditor(editor: CodeEditorView) {
         editor.setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
-        editor.setTextSize(12.toFloat())
+        editor.setTextSize(12F)
         editor.setEdgeEffectColor(Color.TRANSPARENT)
         editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
 
-        var props = editor.getProps()
-        props.overScrollEnabled = false
-        props.allowFullscreen = false
-        props.deleteEmptyLineFast = false
+        var props = editor.getProps().apply {
+            overScrollEnabled = false
+            allowFullscreen = false
+            deleteEmptyLineFast = false
+        }
     }
 
     fun undo() {
@@ -117,33 +117,40 @@ class CodeEditorFragment : Fragment() {
 
     private fun getColorScheme(): TextMateColorScheme {
         try {
-            var rawTheme: IRawTheme
+            var themeSource: IThemeSource
             if (ApplicationLoader.isDarkMode(requireContext())) {
-                rawTheme =
-                    ThemeReader.readThemeSync(
-                        "darcula.json", requireContext().getAssets().open("textmate/darcula.json")
+                themeSource =
+                    IThemeSource.fromInputStream(
+                        requireContext().getAssets().open("textmate/darcula.json"),
+                        "darcula.json",
+                        null
                     )
             } else {
-                rawTheme =
-                    ThemeReader.readThemeSync(
-                        "light.tmTheme", requireContext().getAssets().open("textmate/light.tmTheme")
+                themeSource =
+                    IThemeSource.fromFile(
+                        requireContext().assets.open("textmate/light.tmTheme"),
+                        "light.tmTheme",
+                        null
                     )
             }
-            return TextMateColorScheme.create(rawTheme)
+            return TextMateColorScheme.create(themeSource)
         } catch (e: Exception) {
-            throw Error(e)
+            throw IllegalStateException(e)
         }
     }
 
     private fun getJavaLanguage(): Language {
         try {
             return TextMateLanguage.create(
-                "java.tmLanguage.json",
-                requireContext().getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                InputStreamReader(
-                    requireContext().getAssets().open("textmate/java/language-configuration.json")
+                IGrammarSource.fromInputStream(
+                    requireContext().assets.open("textmate/java/syntaxes/java.tmLanguage.json"),
+                    "java.tmLanguage.json",
+                    null
                 ),
-                getColorScheme().getRawTheme()
+                InputStreamReader(
+                    requireContext().assets.open("textmate/java/language-configuration.json")
+                ),
+                getColorScheme().themeSource
             )
         } catch (e: IOException) {
             return EmptyLanguage()
@@ -153,12 +160,15 @@ class CodeEditorFragment : Fragment() {
     private fun getKotlinLanguage(): Language {
         try {
             return TextMateLanguage.create(
-                "kotlin.tmLanguage",
-                requireContext().getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
+                IGrammarSource.fromInputStream(
+                    requireContext().assets.open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
+                    "kotlin.tmLanguage",
+                    null
+                ), 
                 InputStreamReader(
-                    requireContext().getAssets().open("textmate/kotlin/language-configuration.json")
+                    requireContext().assets.open("textmate/kotlin/language-configuration.json")
                 ),
-                getColorScheme().getRawTheme()
+                getColorScheme().themeSource
             )
         } catch (e: IOException) {
             return EmptyLanguage()

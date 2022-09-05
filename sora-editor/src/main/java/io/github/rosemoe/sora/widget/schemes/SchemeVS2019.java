@@ -24,8 +24,9 @@
 package io.github.rosemoe.sora.widget.schemes;
 
 /**
- * ColorScheme for editor picked from Visual Studio 2019 Thanks to liyujiang-gzu
- * (GitHub @liyujiang-gzu)
+ * ColorScheme for editor
+ * picked from Visual Studio 2019
+ * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu)
  */
 public class SchemeVS2019 extends EditorColorScheme {
 
@@ -50,6 +51,7 @@ public class SchemeVS2019 extends EditorColorScheme {
         setColor(TEXT_NORMAL, 0xffdcdcdc);
         setColor(LINE_NUMBER_BACKGROUND, 0xff1e1e1e);
         setColor(LINE_NUMBER, 0xff2b9eaf);
+        setColor(LINE_NUMBER_CURRENT, 0xff2b9eaf);
         setColor(LINE_DIVIDER, 0xff2b9eaf);
         setColor(SCROLL_BAR_THUMB, 0xff3e3e42);
         setColor(SCROLL_BAR_THUMB_PRESSED, 0xff9e9e9e);
@@ -64,4 +66,5 @@ public class SchemeVS2019 extends EditorColorScheme {
         setColor(TEXT_SELECTED, 0xffffffff);
         setColor(HIGHLIGHTED_DELIMITERS_FOREGROUND, 0xffffffff);
     }
+
 }

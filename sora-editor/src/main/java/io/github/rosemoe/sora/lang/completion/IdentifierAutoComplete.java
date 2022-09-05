@@ -29,14 +29,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.text.CharPosition;
-import io.github.rosemoe.sora.text.ContentReference;
-import io.github.rosemoe.sora.text.TextUtils;
-import io.github.rosemoe.sora.util.MutableInt;
-
-import org.cosmic.ide.completion.*;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -47,33 +39,39 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import io.github.rosemoe.sora.lang.Language;
+import io.github.rosemoe.sora.text.CharPosition;
+import io.github.rosemoe.sora.text.ContentReference;
+import io.github.rosemoe.sora.text.TextUtils;
+import io.github.rosemoe.sora.util.MutableInt;
+
 /**
  * Identifier auto-completion.
- *
- * <p>You can use it to provide identifiers, but you can't update the given {@link
- * CompletionPublisher} if it is used. If you have to mix the result, then you should call {@link
- * CompletionPublisher#setComparator(Comparator)} with null first. Otherwise, your completion list
- * may be corrupted. And in that case, you must do the sorting work by yourself and then add your
- * items.
+ * <p>
+ * You can use it to provide identifiers, but you can't update the given {@link CompletionPublisher}
+ * if it is used. If you have to mix the result, then you should call {@link CompletionPublisher#setComparator(Comparator)}
+ * with null first. Otherwise, your completion list may be corrupted. And in that case, you must do the sorting
+ * work by yourself and then add your items.
  *
  * @author Rosemoe
  */
 public class IdentifierAutoComplete {
 
-    private static final Comparator<CompletionItem> COMPARATOR =
-            (p1, p2) -> {
-                var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
-                if (cmp1 < 0) {
-                    return 1;
-                } else if (cmp1 > 0) {
-                    return -1;
-                }
-                return asString(p1.label).compareTo(asString(p2.label));
-            };
-    private String[] mKeywords;
-    private boolean mKeywordsAreLowCase;
+    private final static Comparator<CompletionItem> COMPARATOR = (p1, p2) -> {
+        var cmp1 = asString(p1.desc).compareTo(asString(p2.desc));
+        if (cmp1 < 0) {
+            return 1;
+        } else if (cmp1 > 0) {
+            return -1;
+        }
+        return asString(p1.label).compareTo(asString(p2.label));
+    };
+    private String[] keywords;
+    private boolean keywordsAreLowCase;
+    private Map<String, Object> keywordMap;
 
-    public IdentifierAutoComplete() {}
+    public IdentifierAutoComplete() {
+    }
 
     public IdentifierAutoComplete(String[] keywords) {
         this();
@@ -85,71 +83,62 @@ public class IdentifierAutoComplete {
     }
 
     public void setKeywords(String[] keywords, boolean lowCase) {
-        mKeywords = keywords;
-        mKeywordsAreLowCase = lowCase;
+        this.keywords = keywords;
+        keywordsAreLowCase = lowCase;
+        var map = new HashMap<String, Object>();
+        if (keywords != null) {
+            for (var keyword : keywords) {
+                map.put(keyword, true);
+            }
+        }
+        keywordMap = map;
     }
 
     public String[] getKeywords() {
-        return mKeywords;
+        return keywords;
     }
 
     /**
-     * Make completion items for the given arguments. Provide the required arguments passed by
-     * {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher,
-     * Bundle)}
+     * Make completion items for the given arguments.
+     * Provide the required arguments passed by {@link Language#requireAutoComplete(ContentReference, CharPosition, CompletionPublisher, Bundle)}
      *
      * @param prefix The prefix to make completions for.
      */
-    public void requireAutoComplete(
-            @NonNull String prefix,
-            @NonNull CompletionPublisher publisher,
-            @Nullable Identifiers userIdentifiers) {
+    public void requireAutoComplete(@NonNull String prefix, @NonNull CompletionPublisher publisher, @Nullable Identifiers userIdentifiers) {
         publisher.setComparator(COMPARATOR);
         publisher.setUpdateThreshold(0);
         int prefixLength = prefix.length();
         if (prefixLength == 0) {
             return;
         }
-        final String[] keywordArray = mKeywords;
-        final boolean lowCase = mKeywordsAreLowCase;
-        String match = prefix.toLowerCase(Locale.ROOT);
+        final var keywordArray = keywords;
+        final var lowCase = keywordsAreLowCase;
+        final var keywordMap = this.keywordMap;
+        var match = prefix.toLowerCase(Locale.ROOT);
         if (keywordArray != null) {
             if (lowCase) {
-                for (String kw : keywordArray) {
+                for (var kw : keywordArray) {
                     if (kw.startsWith(match)) {
-                        publisher.addItem(
-                                new SimpleCompletionItem(
-                                        kw,
-                                        "Keyword",
-                                        new KindDrawable(Kind.Keyword),
-                                        prefixLength,
-                                        kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             } else {
-                for (String kw : keywordArray) {
+                for (var kw : keywordArray) {
                     if (kw.toLowerCase(Locale.ROOT).startsWith(match)) {
-                        publisher.addItem(
-                                new SimpleCompletionItem(
-                                        kw,
-                                        "Keyword",
-                                        new KindDrawable(Kind.Keyword),
-                                        prefixLength,
-                                        kw));
+                        publisher.addItem(new SimpleCompletionItem(kw, "Keyword", prefixLength, kw));
                     }
                 }
             }
         }
-        /*
-                if (userIdentifiers != null) {
-                    List<CompletionItem> words = new ArrayList<>();
-                    List<String> dest = new ArrayList<>();
-                    userIdentifiers.filterIdentifiers(prefix, dest);
-                    for (String word : dest) {
-                        publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
-                    }
-                }
-        */
+        if (userIdentifiers != null) {
+            List<CompletionItem> words = new ArrayList<>();
+            List<String> dest = new ArrayList<>();
+            userIdentifiers.filterIdentifiers(prefix, dest);
+            for (var word : dest) {
+                if (keywordMap == null || !keywordMap.containsKey(word))
+                    publisher.addItem(new SimpleCompletionItem(word, "Identifier", prefixLength, word));
+            }
+        }
     }
 
     /**
@@ -164,23 +153,24 @@ public class IdentifierAutoComplete {
          * Filter identifiers with the given prefix
          *
          * @param prefix The prefix to filter
-         * @param dest Result list
+         * @param dest   Result list
          */
         void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest);
+
     }
 
     /**
-     * This object is used only once. In other words, the object is generated every time the text
-     * changes, and is abandoned when next time the text change.
-     *
-     * <p>In this case, the frequent allocation of memory is unavoidable. And also, this class is
-     * not thread-safe.
+     * This object is used only once. In other words, the object is generated every time the
+     * text changes, and is abandoned when next time the text change.
+     * <p>
+     * In this case, the frequent allocation of memory is unavoidable.
+     * And also, this class is not thread-safe.
      *
      * @author Rosemoe
      */
     public static class DisposableIdentifiers implements Identifiers {
 
-        private static final Object SIGN = new Object();
+        private final static Object SIGN = new Object();
         private final List<String> identifiers = new ArrayList<>(128);
         private HashMap<String, Object> cache;
 
@@ -194,12 +184,16 @@ public class IdentifierAutoComplete {
             identifiers.add(identifier);
         }
 
-        /** Start building the identifiers */
+        /**
+         * Start building the identifiers
+         */
         public void beginBuilding() {
             cache = new HashMap<>();
         }
 
-        /** Free memory and finish building */
+        /**
+         * Free memory and finish building
+         */
         public void finishBuilding() {
             cache.clear();
             cache = null;
@@ -266,8 +260,7 @@ public class IdentifierAutoComplete {
             filterIdentifiers(prefix, dest, false);
         }
 
-        public void filterIdentifiers(
-                @NonNull String prefix, @NonNull List<String> dest, boolean waitForLock) {
+        public void filterIdentifiers(@NonNull String prefix, @NonNull List<String> dest, boolean waitForLock) {
             boolean acquired;
             if (waitForLock) {
                 lock.lock();
@@ -291,5 +284,8 @@ public class IdentifierAutoComplete {
                 }
             }
         }
+
     }
+
+
 }

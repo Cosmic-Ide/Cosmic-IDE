@@ -25,85 +25,99 @@ package io.github.rosemoe.sora.text.bidi;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import io.github.rosemoe.sora.util.IntPair;
 
 public class ContentBidi implements ContentListener {
 
-    private List<DirectionsEntry> entries = new ArrayList<>();
+    public final static int MAX_BIDI_CACHE_ENTRY_COUNT = 64;
+
+    private final DirectionsEntry[] entries = new DirectionsEntry[MAX_BIDI_CACHE_ENTRY_COUNT];
     private final Content text;
+    private boolean enabled;
 
     public ContentBidi(@NonNull Content content) {
         text = Objects.requireNonNull(content);
         text.addContentListener(this);
     }
 
-    public Directions getLineBidi(int line) {
-        for (DirectionsEntry entry : entries) {
-            if (entry.line == line) {
-                return entry.dir;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        if (!enabled) {
+            Arrays.fill(entries, null);
+        }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public Directions getLineDirections(int line) {
+        if (!enabled) {
+            return new Directions(new long[]{IntPair.pack(0, 0)}, text.getLine(line).length());
+        }
+        synchronized (this) {
+            for (int i = 0; i < entries.length; i++) {
+                var entry = entries[i];
+                if (entry != null && entry.line == line) {
+                    return entry.dir;
+                }
             }
         }
         var dir = TextBidi.getDirections(text.getLine(line));
-        entries.add(new DirectionsEntry(dir, line));
-        if (entries.size() > 100) {
-            entries.remove(0);
+        synchronized (this) {
+            System.arraycopy(entries, 0, entries, 1, entries.length - 1);
+            entries[0] = new DirectionsEntry(dir, line);
         }
         return dir;
     }
 
     @Override
-    public void afterDelete(
-            Content content,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn,
-            CharSequence deletedContent) {
-        var itr = entries.iterator();
+    public synchronized void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
         var delta = endLine - startLine;
-        while (itr.hasNext()) {
-            var entry = itr.next();
+        for (int i = 0; i < entries.length; i++) {
+            var entry = entries[i];
+            if (entry == null) {
+                continue;
+            }
             if (entry.line >= startLine) {
                 if (entry.line > endLine) {
                     entry.line -= delta;
                 } else {
-                    itr.remove();
+                    entries[i] = null;
                 }
             }
         }
     }
 
     @Override
-    public void afterInsert(
-            Content content,
-            int startLine,
-            int startColumn,
-            int endLine,
-            int endColumn,
-            CharSequence insertedContent) {
-        var itr = entries.iterator();
+    public synchronized void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
         var delta = endLine - startLine;
-        while (itr.hasNext()) {
-            var entry = itr.next();
+        for (int i = 0; i < entries.length; i++) {
+            var entry = entries[i];
+            if (entry == null) {
+                continue;
+            }
             if (entry.line > startLine) {
                 entry.line += delta;
             } else if (entry.line == startLine) {
-                itr.remove();
+                entries[i] = null;
             }
         }
     }
 
     @Override
-    public void beforeReplace(Content content) {}
+    public void beforeReplace(Content content) {
+
+    }
 
     public void destroy() {
         text.removeContentListener(this);
-        entries.clear();
+        Arrays.fill(entries, null);
     }
 
     private static class DirectionsEntry {
@@ -117,4 +131,5 @@ public class ContentBidi implements ContentListener {
             this.line = line;
         }
     }
+
 }

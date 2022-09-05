@@ -32,7 +32,9 @@ android {
 dependencies {
     implementation(Dependencies.MATERIAL)
     // We are using sora-editor from this commit 67b15c1
-    implementation(Dependencies.ANDROIDX_ANNOTATION)
+    implementation(Dependencies.GUAVA)
+    implementation(Dependencies.SNAKEYAML)
+    implementation(Dependencies.JDT_ANNOTATION)
     implementation(Dependencies.GSON)
     implementation(Dependencies.JCODINGS)
     implementation(Dependencies.JONI)

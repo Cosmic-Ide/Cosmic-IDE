@@ -30,8 +30,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class BlockIntList {
 
-    private static final int CACHE_COUNT = 8;
-    private static final int CACHE_SWITCH = 30;
+    private final static int CACHE_COUNT = 8;
+    private final static int CACHE_SWITCH = 30;
     public final Lock lock = new ReentrantLock();
     private final int blockSize;
     private final List<Block> recycled = new java.util.ArrayList<>();
@@ -76,7 +76,9 @@ public class BlockIntList {
         }
     }
 
-    /** 0 <=index < length */
+    /**
+     * 0 <=index < length
+     */
     private void findBlock1(int index) {
         int distance = index;
         int usedNo = -1;
@@ -183,9 +185,7 @@ public class BlockIntList {
         if (block.size() == 0 && previous != null) {
             previous.next = block.next;
             recycled.add(block);
-        } else if (block.size() < blockSize / 4
-                && previous != null
-                && previous.size() + block.size() < blockSize / 2) {
+        } else if (block.size() < blockSize / 4 && previous != null && previous.size() + block.size() < blockSize / 2) {
             // Merge small pieces
             previous.next = block.next;
             System.arraycopy(block.data, 0, previous.data, previous.size, block.size);
@@ -201,7 +201,9 @@ public class BlockIntList {
             throw new ArrayIndexOutOfBoundsException("index = " + index + ", length = " + size());
         }
         findBlock1(index);
-        return (int) foundBlock.set(foundIndex, element);
+        var old = foundBlock.set(foundIndex, element);
+        modCount++;
+        return old;
     }
 
     public int get(int index) {
@@ -299,8 +301,14 @@ public class BlockIntList {
         public int set(int index, int element) {
             int old = data[index];
             data[index] = element;
-            if (old == max && old < element) {
-                compute();
+            if (old == max) {
+                if (element >= old) {
+                    max = element;
+                } else {
+                    compute();
+                }
+            } else if (element > max) {
+                max = element;
             }
             return old;
         }
@@ -348,4 +356,6 @@ public class BlockIntList {
         public Block block;
         public int indexOfStart;
     }
+
+
 }

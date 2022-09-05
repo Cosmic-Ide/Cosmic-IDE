@@ -26,13 +26,18 @@ package io.github.rosemoe.sora.util;
 import java.util.Arrays;
 
 /**
- * @author Rose Get whether Identifier part/start quickly
+ * @author Rose
+ * Get whether Identifier part/start quickly
  */
 public class MyCharacter {
 
-    /** Compressed bit set for isJavaIdentifierStart() */
+    /**
+     * Compressed bit set for isJavaIdentifierStart()
+     */
     private static int[] bitsIsStart;
-    /** Compressed bit set for isJavaIdentifierPart() */
+    /**
+     * Compressed bit set for isJavaIdentifierPart()
+     */
     private static int[] bitsIsPart;
 
     static {
@@ -42,7 +47,7 @@ public class MyCharacter {
     /**
      * Get bit in compressed bit set
      *
-     * @param values Compressed bit set
+     * @param values   Compressed bit set
      * @param bitIndex Target index
      * @return Boolean value at the index
      */
@@ -53,7 +58,7 @@ public class MyCharacter {
     /**
      * Make the given position's bit true
      *
-     * @param values Compressed bit set
+     * @param values   Compressed bit set
      * @param bitIndex Index of bit
      */
     private static void set(int[] values, int bitIndex) {
@@ -70,7 +75,9 @@ public class MyCharacter {
         // Empty
     }
 
-    /** Init maps */
+    /**
+     * Init maps
+     */
     private static void initMapInternal() {
         if (bitsIsStart != null) {
             return;
@@ -94,7 +101,7 @@ public class MyCharacter {
      * @return Whether a identifier part
      * @see Character#isJavaIdentifierPart(char)
      */
-    public static boolean isJavaIdentifierPart(int key) {
+    public static boolean isJavaIdentifierPart(char key) {
         return get(bitsIsPart, key);
     }
 
@@ -103,7 +110,33 @@ public class MyCharacter {
      * @return Whether a identifier start
      * @see Character#isJavaIdentifierStart(char)
      */
-    public static boolean isJavaIdentifierStart(int key) {
+    public static boolean isJavaIdentifierStart(char key) {
         return get(bitsIsStart, key);
     }
+
+    public static boolean couldBeEmoji(int cp) {
+        return cp >= 0x1F000 && cp <= 0x1FAFF;
+    }
+
+    public static boolean isFitzpatrick(int cp) {
+        return cp >= 0x1F3FB && cp <= 0x1F3FF;
+    }
+
+    public static boolean isZWJ(int cp) {
+        return cp == 0x200D;
+    }
+
+    public static boolean isZWNJ(int cp) {
+        return cp == 0x200C;
+    }
+
+    public static boolean isVariationSelector(int cp) {
+        return cp == 0xFE0E || cp == 0xFE0F;
+    }
+
+    public static boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
 }
+

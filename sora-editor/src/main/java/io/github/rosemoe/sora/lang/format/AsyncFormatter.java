@@ -29,17 +29,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import io.github.rosemoe.sora.text.Content;
-import io.github.rosemoe.sora.text.TextRange;
-
 import java.lang.ref.WeakReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-/** Base class for formatting code in another thread. */
+import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.text.TextRange;
+
+/**
+ * Base class for formatting code in another thread.
+ */
 public abstract class AsyncFormatter implements Formatter {
 
-    private static final String LOG_TAG = "AsyncFormatter";
+    private final static String LOG_TAG = "AsyncFormatter";
     private static int sThreadId = 0;
     private final ReentrantLock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
@@ -50,7 +52,7 @@ public abstract class AsyncFormatter implements Formatter {
 
     private FormattingThread thread;
 
-    private static synchronized int nextThreadId() {
+    private synchronized static int nextThreadId() {
         sThreadId++;
         return sThreadId;
     }
@@ -95,10 +97,7 @@ public abstract class AsyncFormatter implements Formatter {
     }
 
     @Override
-    public void formatRegion(
-            @NonNull Content text,
-            @NonNull TextRange rangeToFormat,
-            @NonNull TextRange cursorRange) {
+    public void formatRegion(@NonNull Content text, @NonNull TextRange rangeToFormat, @NonNull TextRange cursorRange) {
         this.text = text;
         range = rangeToFormat;
         this.cursorRange = cursorRange;
@@ -107,8 +106,8 @@ public abstract class AsyncFormatter implements Formatter {
 
     /**
      * like {@link Formatter#format(Content, TextRange)}, but run in background thread.
-     *
-     * <p>Implementation of this method can edit text directly to generate formatted code.
+     * <p>
+     * Implementation of this method can edit text directly to generate formatted code.
      *
      * @return the new cursor range to be applied to the text
      */
@@ -117,31 +116,38 @@ public abstract class AsyncFormatter implements Formatter {
     public abstract TextRange formatAsync(@NonNull Content text, @NonNull TextRange cursorRange);
 
     /**
-     * like {@link Formatter#formatRegion(Content, TextRange, TextRange)}, but run in background
-     * thread
-     *
-     * <p>Implementation of this method can edit text directly to generate formatted code.
+     * like {@link Formatter#formatRegion(Content, TextRange, TextRange)}, but run in background thread
+     * <p>
+     * Implementation of this method can edit text directly to generate formatted code.
      *
      * @return the new cursor range to be applied to the text
      */
     @WorkerThread
     @Nullable
-    public abstract TextRange formatRegionAsync(
-            @NonNull Content text,
-            @NonNull TextRange rangeToFormat,
-            @NonNull TextRange cursorRange);
+    public abstract TextRange formatRegionAsync(@NonNull Content text, @NonNull TextRange rangeToFormat, @NonNull TextRange cursorRange);
 
     private void sendUpdate(Content text, TextRange cursorRange) {
         FormatResultReceiver r;
-        if (receiver != null && (r = receiver.get()) != null) {
+        if (!Thread.currentThread().isInterrupted() && receiver != null && (r = receiver.get()) != null) {
             r.onFormatSucceed(text, cursorRange);
         }
     }
 
     private void sendFailure(Throwable throwable) {
         FormatResultReceiver r;
-        if (receiver != null && (r = receiver.get()) != null) {
+        if (!Thread.currentThread().isInterrupted() && receiver != null && (r = receiver.get()) != null) {
             r.onFormatFail(throwable);
+        }
+    }
+
+    @Override
+    public void cancel() {
+        if (thread != null) {
+            final var t = thread;
+            if (t.isAlive()) {
+                t.interrupt();
+            }
+            thread = null;
         }
     }
 

@@ -48,7 +48,6 @@ import org.eclipse.tm4e.core.internal.types.IRawRule;
 import org.eclipse.tm4e.core.internal.utils.ObjectCloner;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
-import io.github.rosemoe.sora.langs.textmate.BuildConfig;
 import io.github.rosemoe.sora.util.Logger;
 
 /**
@@ -193,14 +192,6 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
         var injections = this._injections;
         if (injections == null) {
             injections = this._injections = this._collectInjections();
-
-            if (BuildConfig.DEBUG && !injections.isEmpty()) {
-                LOGGER.d(
-                        "Grammar " + rootScopeName + " contains the following injections:");
-                for (final var injection : injections) {
-                    LOGGER.d("  - " + injection.debugSelector);
-                }
-            }
         }
         return injections;
     }

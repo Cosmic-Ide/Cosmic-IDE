@@ -3,6 +3,11 @@ package org.cosmic.ide.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type
+import androidx.core.view.WindowCompat
 import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.R
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
@@ -32,6 +37,15 @@ class ConsoleActivity : BaseActivity() {
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
+        
+        ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
+    		val isKeyboardVisible = insets.isVisible(Type.ime())
+    		val keyboardHeight = insets.getInsets(Type.ime()).bottom
+			if(isKeyboardVisible){
+				binding.console.setPadding(0,0,0,keyboardHeight)
+			}
+			insets
+		}
 
         val bundle = getIntent().getExtras()
 

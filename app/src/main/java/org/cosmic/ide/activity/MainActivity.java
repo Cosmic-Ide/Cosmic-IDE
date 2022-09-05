@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity {
                         binding.viewPager.setPadding(0, 0, 0, imeHeight);
                     }
                     return insets;
-                });
+        });
 
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type
 import androidx.core.view.WindowCompat
 import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.R

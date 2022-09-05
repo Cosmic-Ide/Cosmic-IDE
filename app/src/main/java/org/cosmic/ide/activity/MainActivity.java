@@ -530,7 +530,7 @@ public class MainActivity extends BaseActivity {
                     ), 
                     new InputStreamReader(
                             getAssets().open("textmate/java/language-configuration.json")),
-                    getColorScheme().getRawTheme());
+                    getColorScheme().getThemeSource());
         } catch (IOException e) {
             return new EmptyLanguage();
         }
@@ -546,7 +546,7 @@ public class MainActivity extends BaseActivity {
                     ),
                     new InputStreamReader(
                             getAssets().open("textmate/smali/language-configuration.json")),
-                    getColorScheme().getRawTheme());
+                    getColorScheme().getThemeSource());
         } catch (IOException e) {
             return new EmptyLanguage();
         }

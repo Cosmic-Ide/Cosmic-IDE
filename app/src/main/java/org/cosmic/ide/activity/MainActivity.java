@@ -63,8 +63,8 @@ import org.cosmic.ide.fragment.CodeEditorFragment;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
-import org.eclipse.tm4e.core.internal.theme.reader.ThemeReader;
-import org.eclipse.tm4e.core.theme.IRawTheme;
+import org.eclipse.tm4e.core.registry.IThemeSource;
+import org.eclipse.tm4e.core.registry.IGrammarSource;
 import org.jf.baksmali.Baksmali;
 import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
@@ -498,27 +498,36 @@ public class MainActivity extends BaseActivity {
 
     private TextMateColorScheme getColorScheme() {
         try {
-            IRawTheme rawTheme;
+            IThemeSource themeSource;
             if (ApplicationLoader.Companion.isDarkMode(this)) {
-                rawTheme =
-                        ThemeReader.readThemeSync(
-                                "darcula.json", getAssets().open("textmate/darcula.json"));
+                themeSource =
+                        IThemeSource.fromInputStream(
+                            getAssets().open("textmate/darcula.json"),
+                            "darcula.json",
+                            null
+                        );
             } else {
-                rawTheme =
-                        ThemeReader.readThemeSync(
-                                "light.tmTheme", getAssets().open("textmate/light.tmTheme"));
+                themeSource =
+                        IThemeSource.fromInputStream(
+                            getAssets().open("textmate/light.tmTheme"),
+                            "light.tmTheme",
+                            null
+                        );
             }
-            return TextMateColorScheme.create(rawTheme);
+            return TextMateColorScheme.create(themeSource);
         } catch (Exception e) {
-            throw new Error(e);
+            throw new IllegalStateException(e);
         }
     }
 
     private Language getJavaLanguage() {
         try {
             return TextMateLanguage.create(
-                    "java.tmLanguage.json",
-                    getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                    IGrammarSource.fromInputStream(
+                        getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                        "java.tmLanguage.json",
+                        null
+                    ), 
                     new InputStreamReader(
                             getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getRawTheme());
@@ -530,8 +539,11 @@ public class MainActivity extends BaseActivity {
     private Language getSmaliLanguage() {
         try {
             return TextMateLanguage.create(
-                    "smali.tmLanguage.json",
-                    getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                    IGrammarSource.fromInputStream(
+                        getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                        "smali.tmLanguage.json",
+                        null
+                    ),
                     new InputStreamReader(
                             getAssets().open("textmate/smali/language-configuration.json")),
                     getColorScheme().getRawTheme());

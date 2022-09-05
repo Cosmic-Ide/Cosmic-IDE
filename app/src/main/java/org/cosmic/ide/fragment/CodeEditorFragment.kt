@@ -19,6 +19,7 @@ import org.cosmic.ide.activity.editor.CodeEditorView
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.eclipse.tm4e.core.registry.IThemeSource
+import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -127,7 +128,7 @@ class CodeEditorFragment : Fragment() {
                     )
             } else {
                 themeSource =
-                    IThemeSource.fromFile(
+                    IThemeSource.fromInputStream(
                         requireContext().assets.open("textmate/light.tmTheme"),
                         "light.tmTheme",
                         null

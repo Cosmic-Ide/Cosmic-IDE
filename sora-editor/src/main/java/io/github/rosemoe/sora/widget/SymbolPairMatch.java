@@ -23,15 +23,15 @@
  */
 package io.github.rosemoe.sora.widget;
 
-import io.github.rosemoe.sora.text.Content;
-import io.github.rosemoe.sora.text.ContentLine;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import io.github.rosemoe.sora.text.Content;
+import io.github.rosemoe.sora.text.ContentLine;
+
 /**
- * Define symbol pairs to complete them automatically when the user enters the first character of
- * pair.
+ * Define symbol pairs to complete them automatically when the user
+ * enters the first character of pair.
  *
  * @author Rosemoe
  */
@@ -54,9 +54,9 @@ public class SymbolPairMatch {
     }
 
     /**
-     * Put a pair of symbol completion When the user types the {@param firstCharacter}, it will be
-     * replaced by {@param replacement} Replacement maybe null to disable completion for this
-     * character.
+     * Put a pair of symbol completion
+     * When the user types the {@param firstCharacter}, it will be replaced by {@param replacement}
+     * Replacement maybe null to disable completion for this character.
      *
      * @see Replacement
      */
@@ -76,12 +76,17 @@ public class SymbolPairMatch {
         pairMaps.clear();
     }
 
-    /** Defines a replacement of input */
+
+    /**
+     * Defines a replacement of input
+     */
     public static class Replacement {
 
-        /** Defines that this character does not have to be replaced */
-        public static final Replacement NO_REPLACEMENT = new Replacement("", 0);
 
+        /**
+         * Defines that this character does not have to be replaced
+         */
+        public final static Replacement NO_REPLACEMENT = new Replacement("", 0);
         public final String text;
         public final int selection;
         private String[] autoSurroundPair;
@@ -91,8 +96,9 @@ public class SymbolPairMatch {
         private IReplacement iReplacement;
 
         /**
-         * The entered character will be replaced to {@param text} and the new cursor position will
-         * be {@param selection} The value of {@param selection} maybe 0 to {@param text}.length()
+         * The entered character will be replaced to {@param text} and
+         * the new cursor position will be {@param selection}
+         * The value of {@param selection} maybe 0 to {@param text}.length()
          */
         public Replacement(String text, int selection) {
             this.selection = selection;
@@ -104,9 +110,8 @@ public class SymbolPairMatch {
 
         public Replacement(String text, int selection, IReplacement iReplacement) {
             this(text, selection);
-            // cache pair
-            this.autoSurroundPair =
-                    iReplacement != null ? iReplacement.getAutoSurroundPair() : null;
+            //cache pair
+            this.autoSurroundPair = iReplacement != null ? iReplacement.getAutoSurroundPair() : null;
         }
 
         public String[] getAutoSurroundPair() {
@@ -127,32 +132,33 @@ public class SymbolPairMatch {
 
         public interface IReplacement {
             /**
-             * The method will be called to decide whether to perform the replacement or not. It may
-             * be same as vscode language-configuration Auto-closing 'notIn' also see <a
-             * href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autoclosing">this</a>
+             * The method will be called
+             * to decide whether to perform the replacement or not.
+             * It may be same as vscode language-configuration Auto-closing 'notIn'
+             * also see <a href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autoclosing">this</a>
              * If not implemented,always return true
              *
-             * @param currentLine The current line edit in the editor,quick analysis it to decide
-             *     whether to replaced
-             * @param leftColumn return current cursor column
+             * @param currentLine The current line edit in the editor,quick analysis it to decide whether to replaced
+             * @param leftColumn  return current cursor column
              */
             default boolean shouldDoReplace(ContentLine currentLine, int leftColumn) {
                 return true;
             }
 
             /**
-             * when before the replaced and select a range,surrounds the selected content with
-             * return pair if return pair not null. If not implemented,always return null also see
-             * <a
-             * href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autosurrounding">this</a>
+             * when before the replaced and select a range,surrounds the selected content with return pair if return pair not null.
+             * If not implemented,always return null
+             * also see <a href="https://code.visualstudio.com/api/language-extensions/language-configuration-guide#autosurrounding">this</a>
              */
             default String[] getAutoSurroundPair() {
                 return null;
             }
+
         }
+
     }
 
-    public static final class DefaultSymbolPairs extends SymbolPairMatch {
+    public final static class DefaultSymbolPairs extends SymbolPairMatch {
 
         public DefaultSymbolPairs() {
             super.putPair('{', new Replacement("{}", 1));
@@ -161,5 +167,7 @@ public class SymbolPairMatch {
             super.putPair('"', new Replacement("\"\"", 1));
             super.putPair('\'', new Replacement("''", 1));
         }
+
     }
+
 }

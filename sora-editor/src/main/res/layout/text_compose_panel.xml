@@ -23,68 +23,56 @@
   ~     additional information or have any questions
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:background="@drawable/magnifier_background"
-    android:id="@+id/panel_root">
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="match_parent"
+	android:orientation="horizontal"
+	android:gravity="center_vertical"
+	android:background="@drawable/magnifier_background"
+	android:id="@+id/panel_root">
 
-    <LinearLayout
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+	<HorizontalScrollView
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:id="@+id/panel_hv">
 
-        <Button
-            android:id="@+id/panel_btn_select_all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/selectAll"
-            android:textColor="@color/textActionNameColor"
-            android:textSize="11sp"
-            android:drawableTop="@drawable/round_select_all_20"
-            android:drawablePadding="-4dp"
-            android:paddingTop="2dp"
-            android:background="#ffffff" />
+		<LinearLayout
+			android:layout_height="match_parent"
+			android:layout_width="wrap_content"
+			android:orientation="horizontal"
+			android:gravity="center_vertical">
 
-        <Button
-            android:id="@+id/panel_btn_copy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/copy"
-            android:textColor="@color/textActionNameColor"
-            android:textSize="11sp"
-            android:drawableTop="@drawable/round_content_copy_20"
-            android:drawablePadding="-4dp"
-            android:paddingTop="2dp"
-            android:background="#ffffff" />
+			<ImageButton
+				android:id="@+id/panel_btn_select_all"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/round_select_all_20"
+				android:background="#00000000" />
 
-        <Button
-            android:id="@+id/panel_btn_paste"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/paste"
-            android:textColor="@color/textActionNameColor"
-            android:textSize="11sp"
-            android:drawableTop="@drawable/round_content_paste_20"
-            android:drawablePadding="-4dp"
-            android:paddingTop="2dp"
-            android:background="#ffffff" />
+			<ImageButton
+				android:id="@+id/panel_btn_copy"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/round_content_copy_20"
+				android:background="#00000000" />
 
-        <Button
-            android:id="@+id/panel_btn_cut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/cut"
-            android:textColor="@color/textActionNameColor"
-            android:textSize="11sp"
-            android:drawableTop="@drawable/round_content_cut_20"
-            android:drawablePadding="-4dp"
-            android:paddingTop="2dp"
-            android:background="#ffffff" />
+			<ImageButton
+				android:id="@+id/panel_btn_paste"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/round_content_paste_20"
+				android:background="#00000000" />
 
-    </LinearLayout>
+			<ImageButton
+				android:id="@+id/panel_btn_cut"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/round_content_cut_20"
+				android:background="#00000000" />
 
-</HorizontalScrollView>
+		</LinearLayout>
+
+	</HorizontalScrollView>
+
+</LinearLayout>

@@ -97,12 +97,7 @@ public class ConsoleEditText extends AppCompatEditText {
             */
         }
         setFilters(new InputFilter[] {mTextListener});
-        setInputType(
-                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-                        | InputType.TYPE_CLASS_TEXT
-                        | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         addTextChangedListener(mEnterListener);
-        setMaxLines(2000);
 
         createIOStream();
     }
@@ -392,6 +387,10 @@ public class ConsoleEditText extends AppCompatEditText {
             // If the return value is same as the source values, return the source value.
             return returnStr;
         }
+    }
+
+    public void flushInputStream() {
+        mInputBuffer.flush();
     }
 
     public void release() {

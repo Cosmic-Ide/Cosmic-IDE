@@ -10,7 +10,6 @@ on:
       - SECURITY.md
       - CODE_OF_CONDUCT.md
       - .github/ISSUE_TEMPLATE/*
-      - art/*
       - fastlane/*
   pull_request:
     path-ignore:
@@ -20,7 +19,6 @@ on:
       - SECURITY.md
       - CODE_OF_CONDUCT.md
       - .github/ISSUE_TEMPLATE/*
-      - art/*
       - fastlane/*
   workflow_dispatch:
 
@@ -33,11 +31,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3.0.2
 
-      - name: Set up JDK 17
+      - name: Set up JDK 18
         uses: actions/setup-java@v3.4.1
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '18'
 
       - name: Give permission to executable
         run: chmod +x gradlew
@@ -60,11 +58,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3.0.2
 
-      - name: Set up JDK 17
+      - name: Set up JDK 18
         uses: actions/setup-java@v3.4.1
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '18'
+
+      - name: Give permission to executable
+        run: chmod +x gradlew
+
+      - name: Build with gradle
+        uses: gradle/gradle-build-action@v2.3.0
+        with:
+          arguments: assembleDebug
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3.0.2
+
+      - name: Set up JDK 18
+        uses: actions/setup-java@v3.4.1
+        with:
+          distribution: 'temurin'
+          java-version: '18'
 
       - name: Give permission to executable
         run: chmod +x gradlew

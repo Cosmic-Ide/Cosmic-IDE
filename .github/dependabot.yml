@@ -4,14 +4,18 @@ updates:
 
 # enable dependabot updates for project dependencies
 
-  - package-ecosystem: 'gradle'
+  - package-ecosystem: gradle
     directory: '/'
     schedule:
-      interval: 'daily'
+      interval: daily
+      time: '5:00'
+    target-branch: main
 
 # enable dependabot updates for workflow versions
 
-  - package-ecosystem: 'github-actions'
+  - package-ecosystem: github-actions
     directory: '/'
     schedule:
-      interval: 'daily'
+      interval: daily
+      time: '5:00'
+    target-branch: main

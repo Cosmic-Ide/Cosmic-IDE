@@ -83,6 +83,7 @@ class ConsoleActivity : BaseActivity() {
 
     private fun executeDex() {
         val console = binding.console
+        console.flushInputStream()
         getSupportActionBar()?.setSubtitle("Running")
         val task = ExecuteDexTask(
             ApplicationLoader.getDefaultSharedPreferences(),

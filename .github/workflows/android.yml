@@ -53,6 +53,7 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    needs: [ build-ubuntu ]
 
     steps:
       - name: Checkout repository
@@ -74,6 +75,7 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    needs: [ build-ubuntu, build-windows ]
 
     steps:
       - name: Checkout repository

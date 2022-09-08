@@ -110,6 +110,7 @@ dependencies {
 
     debugImplementation(Dependencies.LEAK_CANARY)
 
+    implementation(Dependencies.JAVAC)
     implementation(Dependencies.MATERIAL)
     implementation(Dependencies.APPCOMPAT)
     implementation(Dependencies.RECYCLERVIEW)

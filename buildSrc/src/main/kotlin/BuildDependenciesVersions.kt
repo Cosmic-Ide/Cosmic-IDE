@@ -7,7 +7,7 @@ object BuildDependenciesVersions {
     const val MATERIAL = "1.7.0-beta01"
     const val SMALI = "2.5.2"
     const val ANDROIDX_ANNOTATION = "1.5.0-beta01"
-    const val JAVAC = "17.0.0.1"
+    const val JAVAC = "17.0.0.4"
     const val R8 = "3.3.75"
     const val COROUTINES = "1.6.4"
     const val RECYCLERVIEW = "1.3.0-beta02"

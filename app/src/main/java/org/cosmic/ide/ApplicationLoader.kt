@@ -10,7 +10,7 @@ import android.content.res.Configuration
 import android.os.Process
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
-import com.itsaky.androidide.utils.Environment
+import com.itsaky.androidide.config.JavacConfigProvider
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
@@ -31,7 +31,8 @@ class ApplicationLoader : Application() {
         super.onCreate()
         val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = applicationContext.getResources()
-        Environment.init(File(dataDirectory, "compiler-modules"))
+        JavacConfigProvider.disableModules()
+        System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, dataDirectory)
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
         KindDrawable.setResources(resources)

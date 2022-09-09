@@ -14,13 +14,6 @@
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="?android:textColorPrimary" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/use_kotlin_template"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:checked="true"
-        android:text="@string/kotlin_template" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_project_name"
         android:layout_width="match_parent"
@@ -59,12 +52,20 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/use_kotlin_template"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_below="@id/til_project_name"
+        android:checked="true"
+        android:text="@string/kotlin_template" />
+
     <Button
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_project_name"
+        android:layout_below="@id/use_kotlin_template"
         android:text="@android:string/cancel" />
 
     <com.google.android.material.button.MaterialButton
@@ -72,7 +73,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_project_name"
+        android:layout_below="@id/use_kotlin_template"
         android:layout_alignParentEnd="true"
         android:text="@string/create" />
 

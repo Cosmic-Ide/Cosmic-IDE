@@ -9,8 +9,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="floatingActionButtonStyle">?floatingActionButtonSecondaryStyle</item>
-        <item name="switchStyle">@style/Widget.CosmicIde.Material3.CompoundButton.Switch</item>
+        <item name="switchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
         <item name="textInputStyle">?textInputFilledStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Material3.Toolbar</item>
         <item name="colorAppBarSurface">?colorSurface</item>

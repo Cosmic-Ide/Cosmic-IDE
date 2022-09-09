@@ -29,7 +29,6 @@
     <string name="java_compiler">Compilador Java</string>
     <string name="java_formatter">Formatador Java</string>
     <string name="java_disassembler">Java Decompiler</string>
-    <string name="java_path">Caminho Java</string>
     <string name="format">Formatar</string>
     <string name="settings">Definições</string>
     <string name="appearance">Aparência</string>

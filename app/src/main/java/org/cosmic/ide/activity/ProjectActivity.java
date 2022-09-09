@@ -13,12 +13,14 @@ import androidx.annotation.WorkerThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 
@@ -129,6 +131,7 @@ public class ProjectActivity extends BaseActivity {
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
             Button cancelBtn = createNewProjectDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
+            MaterialSwitch kotlinTemplate = createNewProjectDialog.findViewById(R.id.use_kotlin_template);
             cancelBtn.setOnClickListener(v -> createNewProjectDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
@@ -136,8 +139,9 @@ public class ProjectActivity extends BaseActivity {
                         if (projectName.isEmpty()) {
                             return;
                         }
+                        boolean useKotlinTemplate = kotlinTemplate.isChecked();
                         try {
-                            var project = JavaProject.newProject(projectName);
+                            var project = useKotlinTemplate ? KotlinProject.newProject(projectName) : JavaProject.newProject(projectName);
                             if (mListener != null) {
                                 runOnUiThread(
                                         () -> {

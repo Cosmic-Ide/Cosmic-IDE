@@ -5,22 +5,22 @@ import org.cosmic.ide.common.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 
-public class JavaProject {
+public class KotlinProject {
 
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
     private final File root;
 
-    public JavaProject(File root) {
+    public KotlinProject(File root) {
         this.root = root;
     }
 
-    public static JavaProject newProject(String projectName) throws IOException {
+    public static KotlinProject newProject(String projectName) throws IOException {
         var projectRoot = new File(getRootDirPath() + projectName);
         if (!projectRoot.exists() && !projectRoot.mkdirs()) {
             throw new IOException("Unable to create directory");
         }
-        var project = new JavaProject(projectRoot);
+        var project = new KotlinProject(projectRoot);
         project.init();
         return project;
     }
@@ -32,8 +32,8 @@ public class JavaProject {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        var classTemplate = CodeTemplate.getJavaClassTemplate(null, "Main", true);
-        FileUtil.writeFileFromString(getSrcDirPath() + "Main.java", classTemplate);
+        var classTemplate = CodeTemplate.getKotlinClassTemplate(null, "Main", true);
+        FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 
     public void delete() {

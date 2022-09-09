@@ -26,7 +26,7 @@ public class KotlinProject implements Project {
         return project;
     }
 
-    privateblic void init() {
+    private void init() {
         FileUtil.createOrExistsDir(getProjectDirPath());
         FileUtil.createOrExistsDir(getSrcDirPath());
         FileUtil.createOrExistsDir(getBinDirPath());

@@ -5,6 +5,7 @@
     <!-- Strings used by MainActivity -->
     <string name="run">Run</string>
     <string name="smali" translatable="false">Smali</string>
+    <string name="decompile">Decompile</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="smali2java" translatable="false">Smali2Java</string>
     <string name="jar2dex" translatable="false">Jar2Dex</string>

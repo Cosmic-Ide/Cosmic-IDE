@@ -25,16 +25,20 @@
         android:title="@string/format" />
 
     <item
-        android:id="@+id/smali_menu_button"
-        android:title="@string/smali" />
-
-    <item
-        android:id="@+id/disassemble_menu_button"
-        android:title="@string/disassemble" />
-
-    <item
-        android:id="@+id/smali2java_menu_button"
-        android:title="@string/smali2java" />
+        android:id="@+id/action_decompile"
+        android:title="@string/decompile">
+        <menu>
+            <item
+                android:id="@+id/smali_menu_button"
+                android:title="@string/smali" />
+            <item
+                android:id="@+id/disassemble_menu_button"
+                android:title="@string/disassemble" />
+            <item
+                android:id="@+id/smali2java_menu_button"
+                android:title="@string/smali2java" />
+        </menu>
+    </item>
 
     <item
         android:id="@+id/settings_menu_button"

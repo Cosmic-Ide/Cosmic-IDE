@@ -3,13 +3,9 @@ package org.cosmic.ide.project
 import java.io.File
 
 interface Project {
-    fun newProject(projectName: String): Project
-
     fun delete()
 
     fun getRootFile(): File
-
-    fun getRootDirPath(): String
 
     fun getProjectName(): String
 

@@ -15,7 +15,6 @@ public class KotlinProject implements Project {
         this.root = root;
     }
 
-    @Override
     public static Project newProject(String projectName) throws IOException {
         var projectRoot = new File(getRootDirPath() + projectName);
         if (!projectRoot.exists() && !projectRoot.mkdirs()) {
@@ -48,7 +47,6 @@ public class KotlinProject implements Project {
         return root;
     }
 
-    @Override
     public static String getRootDirPath() {
         return rootDirPath;
     }

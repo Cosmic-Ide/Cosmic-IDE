@@ -19,6 +19,7 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
+import org.cosmic.ide.project.Project;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.util.Constants;
@@ -34,7 +35,7 @@ import java.util.List;
 public class ProjectActivity extends BaseActivity {
 
     public interface OnProjectCreatedListener {
-        void onProjectCreated(JavaProject project);
+        void onProjectCreated(Project project);
     }
 
     private ProjectAdapter projectAdapter;
@@ -181,7 +182,7 @@ public class ProjectActivity extends BaseActivity {
         }
     }
 
-    private void openProject(JavaProject project) {
+    private void openProject(Project project) {
         var projectPath = project.getProjectDirPath();
         var intent = new Intent(this, MainActivity.class);
         intent.putExtra(Constants.PROJECT_PATH, projectPath);

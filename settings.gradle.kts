@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "Cosmic-Ide"

@@ -2,7 +2,7 @@ object BuildDependenciesVersions {
     const val CORE_LIBRARY_DESUGARING = "1.2.2"
     const val GUAVA = "31.1-jre"
     const val LEAK_CANARY = "2.9.1"
-    const val KOTLIN = "1.7.20-Beta"
+    const val KOTLIN = "1.7.20-RC"
     const val APPCOMPAT = "1.6.0-beta01"
     const val MATERIAL = "1.7.0-beta01"
     const val SMALI = "2.5.2"

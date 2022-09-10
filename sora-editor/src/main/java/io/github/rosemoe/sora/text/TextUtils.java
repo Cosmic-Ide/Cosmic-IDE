@@ -72,7 +72,7 @@ public class TextUtils {
             s.append('\t');
         }
         for (int i = 0; i < space; i++) {
-            s.append('\t');
+            s.append(' ');
         }
         return s.toString();
     }

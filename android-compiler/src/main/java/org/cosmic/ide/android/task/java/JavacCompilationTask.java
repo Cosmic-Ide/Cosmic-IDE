@@ -93,10 +93,6 @@ public class JavacCompilationTask implements Task {
         args.add(version);
         args.add("-target");
         args.add(version);
-        if (Integer.valueOf(version) >= 9) {
-            args.add("--system");
-            args.add(FileUtil.getDataDir() + "compiler-modules");
-        }
 
         final var task =
                 (JavacTask)
@@ -190,7 +186,8 @@ public class JavacCompilationTask implements Task {
         var classpath = new ArrayList<File>();
         classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
         classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
-        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-Beta.jar"));
+        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar"));
+        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar"));
         return classpath;
     }
 }

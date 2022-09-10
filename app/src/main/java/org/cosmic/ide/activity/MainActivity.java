@@ -361,18 +361,28 @@ public class MainActivity extends BaseActivity {
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
             ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
         }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-Beta.jar");
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar");
         if (!stdlib.exists()) {
             try {
                 FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-1.7.20-Beta.jar"),
+                        getAssets().open("kotlin-stdlib-1.7.20-RC.jar"),
                         stdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));
             }
         }
-        if (!new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
-            ZipUtil.unzipFromAssets(this, "compiler-modules.zip", FileUtil.getDataDir());
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-common-RC.jar");
+        if (!stdlib.exists()) {
+            try {
+                FileUtil.writeFile(
+                        getAssets().open("kotlin-stdlib-common-1.7.20-RC.jar"),
+                        stdlib.getAbsolutePath());
+            } catch (Exception e) {
+                showError(getString(e));
+            }
+        }
+        if (new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
+            FileUtil.deleteFile(FileUtil.getDataDir() + "compiler-modules");
         }
         var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
         if (!output.exists()) {

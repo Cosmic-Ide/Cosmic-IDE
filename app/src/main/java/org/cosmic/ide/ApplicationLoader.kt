@@ -14,7 +14,6 @@ import com.itsaky.androidide.config.JavacConfigProvider
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.completion.KindDrawable
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.dpToPx
 import java.io.File
@@ -34,7 +33,6 @@ class ApplicationLoader : Application() {
         System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, dataDirectory)
         FileUtil.setDataDirectory(dataDirectory)
         dpToPx.initalizeResources(resources)
-        KindDrawable.setResources(resources)
         CoroutineUtil.inParallel {
             DynamicColors.applyToActivitiesIfAvailable(this)
             DarkThemeHelper.initialize(this)

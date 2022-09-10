@@ -75,7 +75,9 @@ class ExecuteDexTask(
             }
         }
 
-        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-Beta.jar")
+        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-common-1.7.20-RC.jar")
+
+        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-RC.jar")
 
         val args = prefs.getString("key_program_arguments", "")!!.trim()
 

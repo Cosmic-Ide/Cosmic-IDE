@@ -74,38 +74,4 @@
     <string name="stage_javac">Compiling with Javac&#8230;</string>
     <string name="stage_ecj">Compiling with ECJ&#8230;</string>
     <string name="stage_d8">Dexing class files with D8&#8230;</string>
-    <string name="stage_loading_dex">Loading DEX File&#8230;</string>
-    
-    <string-array name="symbols_array">
-        <item>-></item>
-        <item>{</item>
-        <item>}</item>
-	    <item>(</item>
-	    <item>)</item>
-	    <item>,</item>
-	    <item>.</item>
-	    <item>;</item>
-        <item>"\"</item>
-        <item>?</item>
-        <item>+</item>
-	    <item>-</item>
-	    <item>*</item>
-	    <item>/</item>
-    </string-array>
-	<string-array name="symbols_actions">
-        <item>"\t"</item>
-        <item>{</item>
-        <item>}</item>
-	    <item>(</item>
-	    <item>)</item>
-        <item>,</item>
-     	<item>.</item>
-	    <item>;</item>
-	    <item>"\"</item>
-        <item>?</item>
-	    <item>+</item>
-	    <item>-</item>
-     	<item>*</item>
-	    <item>/</item>
-        </string-array>
 </resources>

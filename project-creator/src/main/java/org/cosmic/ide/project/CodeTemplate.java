@@ -14,9 +14,9 @@ public class CodeTemplate {
                 + className
                 + " {\n"
                 + (isCreateMainMethod
-                        ? "    public static void main(String[] args) {\n"
-                                + "        System.out.println(\"Hello, World!\");\n"
-                                + "    }"
+                        ? "\tpublic static void main(String[] args) {\n"
+                                + "\t\tSystem.out.println(\"Hello, World!\");\n"
+                                + "\t}"
                         : "    ")
                 + "\n"
                 + "}\n";
@@ -32,11 +32,11 @@ public class CodeTemplate {
                 + "import java.util.*\n\n"
                 + "class "
                 + className
-                + " {\n"
+                + " {\n\t"
                 + (isCreateMainMethod
-                        ? "    fun main(args: Array<String>) {\n"
-                                + "        println(\"Hello, World!\")\n"
-                                + "    }"
+                        ? "fun main(args: Array<String>) {\n"
+                                + "\t\tprintln(\"Hello, World!\")\n"
+                                + "\t}"
                         : "    ")
                 + "\n"
                 + "}\n";

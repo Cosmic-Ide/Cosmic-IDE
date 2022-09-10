@@ -8,7 +8,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import org.cosmic.ide.R
-import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkTheme
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.Constants.DISCORD_URL
@@ -19,7 +18,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val viewLifecycleOwner = viewLifecycleOwner
-        Settings.MD3.observe(viewLifecycleOwner, this::onMD3Changed)
         Settings.DARK_THEME.observe(viewLifecycleOwner, this::onDarkThemeChanged)
     }
 
@@ -46,10 +44,6 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
-    }
-
-    private fun onMD3Changed(isMD3: Boolean) {
-        CustomThemeHelper.sync()
     }
 
     private fun onDarkThemeChanged(darkTheme: DarkTheme) {

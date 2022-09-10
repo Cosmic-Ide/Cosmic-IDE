@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Platform.V21.Theme.CosmicIde" parent="Theme.MaterialComponents.DayNight">
+    <style name="Platform.V21.Theme.CosmicIde" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="colorPrimaryDark">@color/system_window_scrim_compat</item>
     </style>
     <style name="Platform.Theme.CosmicIde" parent="Platform.V21.Theme.CosmicIde" />
@@ -9,14 +9,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="colorPrimary">@color/bitterpink</item>
-        <item name="colorPrimaryVariant">?colorPrimary</item>
-        <item name="colorSecondary">?colorPrimary</item>
-        <item name="colorSecondaryVariant">?colorSecondary</item>
-        <item name="colorOnSecondary">?colorOnPrimary</item>
-
+        <item name="switchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
         <item name="textInputStyle">?textInputFilledStyle</item>
-        <item name="colorAppBarSurface">?colorSurface</item>
+        <item name="toolbarStyle">@style/Widget.CosmicIde.Toolbar</item>
     </style>
     <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde" />
 

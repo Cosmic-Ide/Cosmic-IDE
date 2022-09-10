@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
 import org.cosmic.ide.ApplicationLoader;
-import org.cosmic.ide.ui.theme.CustomThemeHelper;
 import org.cosmic.ide.ui.theme.DarkThemeHelper;
 import org.cosmic.ide.util.UiUtilsKt;
 
@@ -22,7 +21,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CustomThemeHelper.apply(this);
         super.onCreate(savedInstanceState);
 
         settings = ApplicationLoader.getDefaultSharedPreferences();

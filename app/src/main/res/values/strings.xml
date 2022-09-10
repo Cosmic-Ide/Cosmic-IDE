@@ -45,8 +45,8 @@
     <string name="format">Format</string>
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
-    <string name="behavior">Behavior</string>
-    <string name="md3">Material Design 3</string>
+    <string name="editor">Editor</string>
+    <string name="compiler">Compiler</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="about">About app</string>
     <string name="our_discord">Our Discord</string> 

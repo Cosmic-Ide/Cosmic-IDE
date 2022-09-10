@@ -15,7 +15,6 @@ import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.completion.KindDrawable
-import org.cosmic.ide.ui.theme.CustomThemeHelper
 import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.dpToPx
 import java.io.File
@@ -38,7 +37,6 @@ class ApplicationLoader : Application() {
         KindDrawable.setResources(resources)
         CoroutineUtil.inParallel {
             DynamicColors.applyToActivitiesIfAvailable(this)
-            CustomThemeHelper.initialize(this)
             DarkThemeHelper.initialize(this)
         }
 

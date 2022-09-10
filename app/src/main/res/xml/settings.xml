@@ -4,12 +4,6 @@
 
     <PreferenceCategory android:title="@string/appearance">
 
-        <SwitchPreferenceCompat
-            android:key="@string/pref_key_md3"
-            android:title="@string/md3"
-            android:defaultValue="@bool/pref_default_value_md3"
-            android:disableDependentsState="true" />
-
         <ListPreference 
             android:key="@string/pref_key_dark_theme"
             android:title="@string/dark_theme"
@@ -20,7 +14,16 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/behavior">
+    <!-- <PreferenceCategory android:title="@string/editor"> -->
+
+        <!-- <SwitchPreferenceCompat -->
+            <!-- android:key="@string/pref_key_soft_tab" -->
+            <!-- android:title="Soft Tab" -->
+            <!-- android:defaultValue="true" /> -->
+
+    <!-- </PreferenceCategory> -->
+
+    <PreferenceCategory android:title="@string/compiler">
 
         <ListPreference 
             android:key="@string/pref_key_java_version"

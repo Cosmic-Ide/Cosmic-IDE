@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- This is actually unused on v29+, so it's okay to hard code. -->
+    <color name="system_window_scrim_light">#99FFFFFF</color>
+    <color name="system_window_scrim_dark">#661F1F1F</color>
+    <color name="system_window_scrim">@color/system_window_scrim_light</color>
+</resources>

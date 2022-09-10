@@ -71,7 +71,7 @@ class KotlinCompiler : Task {
                 "kotlin-stdlib-1.7.20-RC.jar" +
                 File.pathSeparator +
                 FileUtil.getClasspathDir() +
-                "kotlin-stdlib-common-1.7.20-RC.jar"
+                "kotlin-stdlib-common-1.7.20-RC.jar" +
                 claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath

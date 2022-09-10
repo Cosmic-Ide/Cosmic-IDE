@@ -68,7 +68,7 @@ class ProblemMarker(
             }
             try {
                 if (!(file.extension.equals(".java") || file.extension.equals(".jav"))) {
-                    Handler(Looper.mainLooper).post {
+                    Handler(Looper.getMainLooper()).post {
                         editor.setDiagnostics(DiagnosticsContainer())
                     }
                     return@thread
@@ -77,7 +77,7 @@ class ProblemMarker(
                 analyzer.analyze()
                 diagnostics.reset();
                 diagnostics.addDiagnostics(analyzer.getDiagnostics())
-                Handler(Looper.mainLooper).post {
+                Handler(Looper.getMainLooper()).post {
                     editor.setDiagnostics(diagnostics)
                 }
             } catch (ignored: Exception) {

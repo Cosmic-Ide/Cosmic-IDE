@@ -72,7 +72,7 @@ class CodeEditorFragment : Fragment() {
                 .getText()
                 .addContentListener(
                     ProblemMarker(
-                        ApplicationLoader.applicationContext(),
+                        requireActivity(),
                         getEditor(),
                         currentFile,
                         (requireActivity() as MainActivity).getProject()

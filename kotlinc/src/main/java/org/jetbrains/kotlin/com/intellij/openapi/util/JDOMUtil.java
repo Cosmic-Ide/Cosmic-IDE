@@ -19,9 +19,9 @@ import org.jetbrains.kotlin.org.jdom.filter.Filter;
 import org.jetbrains.kotlin.org.jdom.output.Format;
 import org.jetbrains.kotlin.org.jdom.output.Format.TextMode;
 import org.jetbrains.kotlin.org.jdom.output.XMLOutputter;
-import org.openjdk.javax.xml.stream.XMLInputFactory;
-import org.openjdk.javax.xml.stream.XMLStreamException;
-import org.openjdk.javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -61,7 +61,7 @@ public final class JDOMUtil {
                     String property =
                             System.setProperty(
                                     "javax.xml.stream.XMLInputFactory",
-                                    "org.openjdk.com.sun.xml.internal.stream.XMLInputFactoryImpl");
+                                    "com.sun.xml.internal.stream.XMLInputFactoryImpl");
 
                     try {
                         factory = XMLInputFactory.newFactory();

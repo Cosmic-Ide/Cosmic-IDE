@@ -1,19 +1,19 @@
 package org.jetbrains.kotlin.com.intellij.openapi.util;
 
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.COMMENT;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.DTD;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.PROCESSING_INSTRUCTION;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.SPACE;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
-import static org.openjdk.javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.COMMENT;
+import static javax.xml.stream.XMLStreamConstants.DTD;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.PROCESSING_INSTRUCTION;
+import static javax.xml.stream.XMLStreamConstants.SPACE;
+import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import org.jetbrains.kotlin.org.jdom.AttributeType;
 import org.jetbrains.kotlin.org.jdom.Element;
 import org.jetbrains.kotlin.org.jdom.Namespace;
-import org.openjdk.javax.xml.stream.XMLStreamException;
-import org.openjdk.javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 public class SafeStAXStreamBuilderWrapper {
 

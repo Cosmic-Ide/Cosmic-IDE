@@ -15,12 +15,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:backgroundTint="?colorSurface">
+        android:background="?colorSurface">
 
         <io.github.rosemoe.sora.widget.SymbolInputView
             android:id="@+id/input_view"
             android:layout_width="wrap_content"
-             android:layout_height="42dp" />
+            android:layout_height="42dp" />
 
     </HorizontalScrollView>
 </RelativeLayout>

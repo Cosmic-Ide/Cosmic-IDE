@@ -11,8 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/new_project"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="?android:textColorPrimary" />
+        android:textAppearance="?attr/textAppearanceTitleLarge" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_project_name"
@@ -57,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_below="@id/til_project_name"
+        android:layout_marginTop="@dimen/spacing_small"
         android:checked="true"
         android:text="@string/kotlin_template" />
 

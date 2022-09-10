@@ -37,7 +37,7 @@
                 android:textSize="16sp"
                 android:gravity="top|start"
                 android:singleLine="false"
-                android:typeface="monospace" />
+                android:fontFamily="@font/mono_font" />
             </HorizontalScrollView>
         </ScrollView>
 

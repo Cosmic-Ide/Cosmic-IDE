@@ -13,11 +13,11 @@
         android:layout_width="30dp"
         android:layout_marginStart="@dimen/spacing_tiny"
         android:layout_marginEnd="@dimen/spacing_tiny"
-        android:fontFamily="monospace"
+        android:fontFamily="@font/mono_font"
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_small"
         android:text="K"
-        android:textAppearance="?android:textAppearanceLarge"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:textStyle="bold" />
 
     <LinearLayout

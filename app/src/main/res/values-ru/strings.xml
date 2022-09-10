@@ -2,6 +2,7 @@
 <resources>
     <!-- Строки, используемые MainActivity -->
     <string name="run">Запустить</string>
+    <string name="decompile">Декомпилировать</string>
     <string name="compilation_running">Компиляция проекта</string>
     <string name="file_name">Имя файла</string>
     <string name="directory_name">Имя папки</string>
@@ -27,6 +28,7 @@
     <string name="no_projects_title">Проекты не найдены</string>
     <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
     <string name="project_delete_warning">Вы уверены, что хотите удалить %1$s?</string>
+    <string name="kotlin_template">Kotlin-шаблон</string>
 
     <!-- Строки, используемые PreferenceSettingsFragment -->
     <string name="java_version">Версия Java</string>
@@ -54,6 +56,7 @@
     <string name="eclipse_java_formatter">Форматировщик Eclipse</string>
     <string name="javap">Дизассемблер Javap</string>
     <string name="eclipse_class_disassembler">Дизассемблер Eclipse</string>
+    <string name="program_arguments">Аргументы программы</string>
 
     <!-- Строки, используемые CompilerTask -->
     <string name="stage">Стадия</string>

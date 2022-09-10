@@ -5,6 +5,7 @@
     <!-- Strings used by MainActivity -->
     <string name="run">Run</string>
     <string name="smali" translatable="false">Smali</string>
+    <string name="decompile">Decompile</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="smali2java" translatable="false">Smali2Java</string>
     <string name="jar2dex" translatable="false">Jar2Dex</string>
@@ -62,6 +63,7 @@
     <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
     <string name="javap">Javap Disassembler</string>
     <string name="eclipse_class_disassembler">Eclipse Disassembler</string>
+    <string name="program_arguments">Program Arguments</string>
 
     <!-- Strings used by CompilerTask Class -->
     <string name="stage">Stage</string>

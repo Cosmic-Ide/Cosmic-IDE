@@ -56,7 +56,7 @@
 
         <EditTextPreference
             android:key="@string/pref_key_program_arguments"
-            android:title="Program Arguments"
+            android:title="@string/program_arguments"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

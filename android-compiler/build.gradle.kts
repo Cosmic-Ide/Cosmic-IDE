@@ -44,5 +44,5 @@ dependencies {
     implementation(projects.common)
     implementation(projects.projectCreator)
     implementation(projects.kotlinc)
-    compileOnly(files("libs/sora-editor.jar"))
+    implementation(projects.soraEditor)
 }

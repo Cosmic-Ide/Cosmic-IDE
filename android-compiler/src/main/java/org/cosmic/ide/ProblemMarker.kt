@@ -1,6 +1,8 @@
 package org.cosmic.ide
 
 import android.content.Context
+import android.os.Looper
+import android.os.Handler
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentListener
@@ -59,20 +61,25 @@ class ProblemMarker(
     }
 
     private fun analyze(content: Content) {
+        val code = content.toString()
         CoroutineUtil.inParallel thread@ {
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
             try {
-                if (!(file.name.endsWith(".java") || file.name.endsWith(".jav"))) {
-                    editor.setDiagnostics(DiagnosticsContainer())
+                if (!(file.extension.equals(".java") || file.extension.equals(".jav"))) {
+                    Handler(Looper.mainLooper).post {
+                        editor.setDiagnostics(DiagnosticsContainer())
+                    }
                     return@thread
                 } 
-                FileUtil.writeFile(file.getAbsolutePath(), content.toString())
+                FileUtil.writeFile(file.getAbsolutePath(), code)
                 analyzer.analyze()
                 diagnostics.reset();
                 diagnostics.addDiagnostics(analyzer.getDiagnostics())
-                editor.setDiagnostics(diagnostics)
+                Handler(Looper.mainLooper).post {
+                    editor.setDiagnostics(diagnostics)
+                }
             } catch (ignored: Exception) {
             }
         }

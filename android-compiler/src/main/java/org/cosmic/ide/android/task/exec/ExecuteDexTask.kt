@@ -106,6 +106,8 @@ class ExecuteDexTask(
                 e.getTargetException().printStackTrace(errorStream) 
             } catch (e: Throwable) {
                 e.printStackTrace(errorStream)
+            } catch (e: RuntimeException) {
+                e.printStackTrace(errorStream)
             } catch (e: Error) {
                 e.printStackTrace(errorStream)
             }

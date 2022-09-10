@@ -371,7 +371,7 @@ public class MainActivity extends BaseActivity {
                 showError(getString(e));
             }
         }
-        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-common-RC.jar");
+        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar");
         if (!commonStdlib.exists()) {
             try {
                 FileUtil.writeFile(

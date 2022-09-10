@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Platform.V27.Theme.CosmicIde" parent="Platform.V23.Theme.CosmicIde">
+    <style name="Platform.V27.Theme.CosmicIde" parent="Platform.V21.Theme.CosmicIde">
+        <item name="colorPrimaryDark">@color/system_window_scrim</item>
         <item name="android:navigationBarColor">?colorPrimaryDark</item>
         <item name="android:windowLightNavigationBar">?isLightTheme</item>
     </style>

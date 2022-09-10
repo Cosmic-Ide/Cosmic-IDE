@@ -81,19 +81,19 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 ## Special Thanks
 
-- [Nonzzzz](https://github.com/Nonzzzz)
+- [TheRemakerMan](https://github.com/TheRemakerMan)
 
-- [Aidos Zhaqyp](https://github.com/AidosZhaqyp)
+- [AidosZhaqyp](https://github.com/AidosZhaqyp)
 
-- [TheWolf](https://github.com/TheWolfProd)
+- [TheWolfProd](https://github.com/TheWolfProd)
 
-- [Mike Anderson](https://github.com/MikeAndrson)
+- [MikeAndrson](https://github.com/MikeAndrson)
 
-- [Tyron Lucena Scott](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
+- [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 
-- [Akash Yadav](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
+- [Itsaky](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
 
 - [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
 

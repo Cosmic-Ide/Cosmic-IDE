@@ -371,12 +371,12 @@ public class MainActivity extends BaseActivity {
                 showError(getString(e));
             }
         }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-common-RC.jar");
-        if (!stdlib.exists()) {
+        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-common-RC.jar");
+        if (!commonStdlib.exists()) {
             try {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-common-1.7.20-RC.jar"),
-                        stdlib.getAbsolutePath());
+                        commonStdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));
             }

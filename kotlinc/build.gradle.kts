@@ -12,8 +12,7 @@ configurations.implementation {
 dependencies {
     implementation(Dependencies.ANDROIDX_ANNOTATION)
     implementation(Dependencies.JAVAC)
-    implementation(projects.jaxp.xml)
-    implementation(projects.jaxp.internal)
+    implementation(projects.jaxp)
 
     runtimeOnly(Dependencies.KOTLIN_REFLECT)
 

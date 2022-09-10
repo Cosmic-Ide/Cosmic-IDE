@@ -8,7 +8,7 @@ android {
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdk = BuildAndroidConfig.MIN_SDK_VERSION
+        minSdk = 21
         targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
@@ -31,7 +31,6 @@ android {
 
 dependencies {
     implementation(Dependencies.MATERIAL)
-    // We are using sora-editor from this commit 67b15c1
     implementation(Dependencies.GUAVA)
     implementation(Dependencies.SNAKEYAML)
     implementation(Dependencies.JDT_ANNOTATION)

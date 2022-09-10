@@ -11,6 +11,5 @@ include(
     ":sora-editor",
     ":project-creator",
     ":kotlinc",
-    ":jaxp:xml",
-    ":jaxp:internal"
+    ":jaxp"
 ) 

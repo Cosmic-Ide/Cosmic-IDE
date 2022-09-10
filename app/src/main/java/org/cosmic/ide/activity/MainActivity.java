@@ -334,7 +334,7 @@ public class MainActivity extends BaseActivity {
             case R.id.disassemble_menu_button:
                 disassemble();
                 break;
-            case R.id.smali2java_menu_button:
+            case R.id.class2java_menu_button:
                 decompile();
                 break;
             case R.id.action_undo:

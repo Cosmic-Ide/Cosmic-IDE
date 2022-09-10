@@ -25,8 +25,8 @@
         android:title="@string/format" />
 
     <item
-        android:id="@+id/action_decompile"
-        android:title="@string/decompile">
+        android:id="@+id/action_advanced"
+        android:title="@string/advanced">
         <menu>
             <item
                 android:id="@+id/smali_menu_button"
@@ -35,8 +35,8 @@
                 android:id="@+id/disassemble_menu_button"
                 android:title="@string/disassemble" />
             <item
-                android:id="@+id/smali2java_menu_button"
-                android:title="@string/smali2java" />
+                android:id="@+id/class2java_menu_button"
+                android:title="@string/class2java" />
         </menu>
     </item>
 

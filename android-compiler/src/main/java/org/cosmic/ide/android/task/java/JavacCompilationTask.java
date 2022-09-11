@@ -163,7 +163,7 @@ public class JavacCompilationTask implements Task {
         return sourceFiles;
     }
 
-    public ArrayList<File> getClasspath(JavaProject project) {
+    public ArrayList<File> getClasspath(Project project) {
         var classpath = new ArrayList<File>();
         var clspath = prefs.getString("key_classpath", "");
 

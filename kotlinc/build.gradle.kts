@@ -18,7 +18,7 @@ dependencies {
 
     api(Dependencies.TROVE4J)
 
-    api(files("libs/kotlin-compiler-embeddable-1.6.21.jar"))
+    api(files("libs/kotlin-compiler-embeddable-1.7.20-RC.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
     compileOnly(files("libs/android-stubs.jar"))

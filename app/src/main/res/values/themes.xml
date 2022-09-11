@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Platform.V21.Theme.CosmicIde" parent="Theme.Material3.DynamicColors.DayNight">
-        <item name="colorPrimaryDark">@color/system_window_scrim_compat</item>
+    <style name="Base.Platform.Theme.CosmicIde" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="colorPrimaryDark">@color/system_window_scrim</item>
+        <item name="android:windowLightStatusBar">?isLightTheme</item>
     </style>
-    <style name="Platform.Theme.CosmicIde" parent="Platform.V21.Theme.CosmicIde" />
+    <style name="Platform.Theme.CosmicIde" parent="Base.Platform.Theme.CosmicIde" />
     <style name="Base.Theme.CosmicIde" parent="Platform.Theme.CosmicIde">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

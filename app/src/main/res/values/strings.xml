@@ -25,6 +25,7 @@
     <string name="close_all">Close all</string>
     <string name="no_open_files">No open files</string>
     <string name="open_the_file">Open the file through the left menu</string>
+    <string name="successful_compilation">Successful compilation</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>

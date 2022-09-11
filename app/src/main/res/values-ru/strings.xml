@@ -19,6 +19,7 @@
     <string name="close_all">Закрыть все</string>
     <string name="no_open_files">Нет открытых файлов</string>
     <string name="open_the_file">Откройте файл через левое меню</string>
+    <string name="successful_compilation">Успешная компиляция</string>
 
     <!-- Строки, используемые ProjectActivity -->
     <string name="projects">Проекты</string>

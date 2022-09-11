@@ -9,7 +9,7 @@ import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.interfaces.*;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.project.Project;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class JavacCompilationTask implements Task {
     }
 
     @Override
-    public void doFullTask(JavaProject project) throws Exception {
+    public void doFullTask(Project project) throws Exception {
 
         final var output = new File(project.getBinDirPath(), "classes");
 

@@ -10,7 +10,7 @@ import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
-import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.project.Project
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
@@ -38,7 +38,7 @@ class ExecuteDexTask(
      * Runs the main method of the program by loading it through
      * PathClassLoader
      */
-    override fun doFullTask(project: JavaProject) {
+    override fun doFullTask(project: Project) {
         val defaultIn = System.`in`
         val defaultOut = System.`out`
         val defaultErr = System.err

@@ -1,7 +1,7 @@
 package org.cosmic.ide.android.task.jar;
 
 import org.cosmic.ide.android.interfaces.*;
-import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.project.Project;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -16,7 +16,7 @@ import java.util.jar.Manifest;
 public class JarTask implements Task {
 
     @Override
-    public void doFullTask(JavaProject project) throws Exception {
+    public void doFullTask(Project project) throws Exception {
 
         // input file
         var classesFolder = new File(project.getBinDirPath() + "classes");

@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.project.Project
 import org.eclipse.jdt.internal.compiler.batch.Main
 import java.io.File
 import java.io.OutputStream
@@ -24,7 +24,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
     }
 
     @Throws(Exception::class)
-    override fun doFullTask(project: JavaProject) {
+    override fun doFullTask(project: Project) {
 
         val writer =
             PrintWriter(

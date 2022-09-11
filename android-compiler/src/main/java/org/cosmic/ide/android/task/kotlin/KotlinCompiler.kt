@@ -3,7 +3,7 @@ package org.cosmic.ide.android.task.kotlin
 import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.project.Project
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -14,7 +14,7 @@ import java.io.File
 class KotlinCompiler : Task {
 
     @Throws(Exception::class)
-    override fun doFullTask(project: JavaProject) {
+    override fun doFullTask(project: Project) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
         if (!sourceFiles.any {
             it.endsWith(".kt")

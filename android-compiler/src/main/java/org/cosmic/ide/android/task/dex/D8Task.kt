@@ -5,7 +5,7 @@ import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.project.Project
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -28,7 +28,7 @@ class D8Task : Task {
     }
 
     @Throws(Exception::class)
-    override fun doFullTask(project: JavaProject) {
+    override fun doFullTask(project: Project) {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(26)

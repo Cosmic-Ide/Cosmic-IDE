@@ -82,7 +82,7 @@ android {
                 "plugin.properties",
                 "baksmali.properties",
                 ".api_description",
-                "META-INF/*",
+//                "META-INF/*",
                 "README.md",
                 "SECURITY.md",
                 "about_files/*",

@@ -288,6 +288,10 @@ public class TreeViewDrawer extends Fragment {
             Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
             Spinner classType = createNewFileDialog.findViewById(R.id.class_kind);
             
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class, android.R.layout.simple_spinner_item);   
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			classType.setAdapter(adapter);
+			
             cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {

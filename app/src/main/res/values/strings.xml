@@ -15,6 +15,7 @@
     <string name="create">Create</string>
     <string name="create_java_class">Create Java class</string>
     <string name="create_kotlin_class">Create Kotlin class</string>
+    <string name="class_kind">Kind</string>
     <string name="create_directory">Create Directory</string>
     <string name="create_file">Create File</string>
     <string name="delete_file">Delete %1$s?</string>

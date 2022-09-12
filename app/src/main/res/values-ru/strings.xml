@@ -9,6 +9,7 @@
     <string name="create">Создать</string>
     <string name="create_java_class">Создать Java-класс</string>
     <string name="create_kotlin_class">Создать Kotlin-класс</string>
+    <string name="class_kind">Вид</string>
     <string name="create_directory">Создать папку</string>
     <string name="create_file">Создать файл</string>
     <string name="delete_file">Удалить %1$s?</string>

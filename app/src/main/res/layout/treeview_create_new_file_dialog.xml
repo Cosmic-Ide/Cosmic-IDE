@@ -33,21 +33,41 @@
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+		android:layout_below="@id/til_input"
+		android:orientation="horizontal"
+		android:id="@+id/kind_of_class"
+		android:layout_height="wrap_content"
+		android:weightSum="100"
+		android:layout_width="match_parent">
+		
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Kind"/>
+		
+		<Spinner
+			android:id="@+id/class_kind"
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"	
+			android:entries="@array/kind_class"/>
+	</LinearLayout>
+	
     <Button
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/kind_of_class"
         android:layout_marginTop="14dp"
-        android:layout_below="@id/til_input"
         android:text="@android:string/cancel" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@android:id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:layout_below="@id/til_input"
         android:layout_alignParentEnd="true"
+        android:layout_below="@id/kind_of_class"
+        android:layout_marginTop="14dp"
         android:text="@string/create" />
 
 </RelativeLayout>

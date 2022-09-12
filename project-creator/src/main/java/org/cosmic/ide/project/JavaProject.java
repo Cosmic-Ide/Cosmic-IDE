@@ -32,7 +32,7 @@ public class JavaProject implements Project {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        var classTemplate = CodeTemplate.getJavaClassTemplate(null, "Main", true);
+        var classTemplate = CodeTemplate.getJavaClassTemplate(null, "Main", true, "Class");
         FileUtil.writeFileFromString(getSrcDirPath() + "Main.java", classTemplate);
     }
 

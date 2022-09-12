@@ -28,7 +28,7 @@ public class CodeTemplate {
 		
 		String simpleJavaAbstract =
 		"import java.util.*;\n\n"
-		+ "public abstract "
+		+ "public abstract class "
 		+ className
 		+ " {\n"		
 		+ "\n"
@@ -49,7 +49,7 @@ public class CodeTemplate {
 			header = "package " + packageName + ";\n" + "\n";
 		}
 		
-		switch(classType){
+		switch (classType) {
 			case "Class":
 				classBody = header + simpleJavaClass;
 			break;
@@ -85,7 +85,7 @@ public class CodeTemplate {
 		
 		String simpleKotlinDataClass =
 		"import java.util.*;\n\n"
-		+ "data class " + className + "(val name: String, val age: Int) "		
+		+ "data class " + className + "()"
 		+ "\n";
 		
 		String simpleKotlinObjectDeclaration =
@@ -126,7 +126,7 @@ public class CodeTemplate {
 			header = "package " + packageName + "\n" + "\n";
 		}
 		
-		switch(classType){
+		switch (classType) {
 			case "Class":
 				classBody = header + simpleKotlinClass;
 			break;
@@ -152,6 +152,6 @@ public class CodeTemplate {
 	}
 	
 	public static boolean isEmpty(final CharSequence s) {
-		return s == null || s.length() == 0;
+		return s == null || s.length() < 0;
 	}
 }

@@ -54,6 +54,8 @@ class KotlinCompiler : Task {
             }
         }
 
+        val plugins = getKotlinCompilerPlugins().map(File::getAbsolutePath).toTypedArray()
+
         val args = K2JVMCompilerArguments().apply {
             useJavac = false
             compileJava = false
@@ -80,6 +82,7 @@ class KotlinCompiler : Task {
             }.toTypedArray()
             // incremental compiler needs the module name somewhy
             moduleName = "kotlin-module"
+            pluginClasspaths = plugins
             noJdk = true
         }
 
@@ -113,6 +116,24 @@ class KotlinCompiler : Task {
             }
         }
         return sourceFiles
+    }
+
+    private fun getKotlinCompilerPlugins(): List<File> {
+        val pluginDir = File(project.getProjectDirPath(), "kt_plugins")
+        
+        if (!pluginDir.exists() || pluginDir.isFile) {
+            return listOf<File>()
+        }
+        
+        val plugins = pluginDir.listFiles { file ->
+            file.name.endsWith(".jar")
+        }
+        
+        if (plugins == null) {
+            return listOf<File>()
+        }
+        
+        return plugins.toList()
     }
 
     override fun getTaskName(): String {

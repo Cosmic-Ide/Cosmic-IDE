@@ -8,7 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
-
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -283,12 +286,17 @@ public class TreeViewDrawer extends Fragment {
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
-
+            Spinner classType = createNewFileDialog.findViewById(R.id.class_kind);
+            
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class, android.R.layout.simple_spinner_item);   
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			classType.setAdapter(adapter);
+			
             cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
                         var fileNameString = fileName.getText().toString().replace("..", "");
-
+                        
                         if (!fileNameString.isEmpty()) {
                             try {
                                 var filePth =
@@ -306,7 +314,8 @@ public class TreeViewDrawer extends Fragment {
                                         CodeTemplate.getJavaClassTemplate(
                                                 getPackageName(node.getContent().getFile()),
                                                 fileNameString,
-                                                false));
+                                                false, 
+                                                classType.getSelectedItem().toString()));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(
@@ -335,7 +344,12 @@ public class TreeViewDrawer extends Fragment {
             EditText fileName = createNewFileDialog.findViewById(android.R.id.text1);
             Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
-
+            Spinner classType = createNewFileDialog.findViewById(R.id.class_kind);
+			
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class_kotlin, android.R.layout.simple_spinner_item);   
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			classType.setAdapter(adapter);
+			
             cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
@@ -358,7 +372,8 @@ public class TreeViewDrawer extends Fragment {
                                         CodeTemplate.getKotlinClassTemplate(
                                                 getPackageName(node.getContent().getFile()),
                                                 fileNameString,
-                                                false));
+                                                false, 
+                                                classType.getSelectedItem().toString()));
 
                                 var newDir =
                                         new TreeNode<TreeFile>(

@@ -32,7 +32,7 @@ public class KotlinProject implements Project {
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
         FileUtil.createOrExistsDir(getCacheDirPath());
-        var classTemplate = CodeTemplate.getKotlinClassTemplate(null, "Main", true);
+        var classTemplate = CodeTemplate.getKotlinClassTemplate(null, "Main", true, "Class");
         FileUtil.writeFileFromString(getSrcDirPath() + "Main.kt", classTemplate);
     }
 

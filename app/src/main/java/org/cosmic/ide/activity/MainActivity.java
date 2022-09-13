@@ -563,7 +563,6 @@ public class MainActivity extends BaseActivity {
     }
 
     private void smali() {
-        try {
             final var classes = getClassesFromDex();
             if (classes == null) return;
             listDialog(
@@ -581,6 +580,7 @@ public class MainActivity extends BaseActivity {
 
             CoroutineUtil.execute(
                     () -> {
+                            try {
                             final var dexFile =
                                     DexFileFactory.loadDexFile(
                                             new File(getProject().getBinDirPath(), "classes.dex"),
@@ -591,7 +591,10 @@ public class MainActivity extends BaseActivity {
                                     new File(getProject().getBinDirPath(), "smali"),
                                     1,
                                     options);
-                          });
+                          } catch (Throwable e) {
+            dialog("Failed to extract smali source", getString(e), true);
+        }
+                       });
 
                         
                         final var edi = new CodeEditor(this);
@@ -612,9 +615,6 @@ public class MainActivity extends BaseActivity {
                         dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
                     });
-        } catch (Throwable e) {
-            dialog("Failed to extract smali source", getString(e), true);
-        }
     }
 
     private void decompile() {

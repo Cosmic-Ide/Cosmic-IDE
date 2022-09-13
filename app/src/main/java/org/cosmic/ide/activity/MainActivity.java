@@ -580,7 +580,7 @@ public class MainActivity extends BaseActivity {
                                     dexFile,
                                     new File(getProject().getBinDirPath(), "smali"),
                                     1,
-                                    options)
+                                    options);
                           });
 
             listDialog(

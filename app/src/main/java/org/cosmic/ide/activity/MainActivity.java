@@ -566,6 +566,16 @@ public class MainActivity extends BaseActivity {
         try {
             final var classes = getClassesFromDex();
             if (classes == null) return;
+            listDialog(
+                    "Select a class to show smali",
+                    classes,
+                    (d, pos) -> {
+                        final var claz = classes[pos];
+                        final var smaliFile =
+                                new File(
+                                        getProject().getBinDirPath(),
+                                        "smali" + "/" + claz.replace(".", "/") + ".smali");
+                                        
             final var opcodes = Opcodes.forApi(32);
             final var options = new BaksmaliOptions();
 
@@ -583,15 +593,6 @@ public class MainActivity extends BaseActivity {
                                     options);
                           });
 
-            listDialog(
-                    "Select a class to show smali",
-                    classes,
-                    (d, pos) -> {
-                        final var claz = classes[pos];
-                        final var smaliFile =
-                                new File(
-                                        getProject().getBinDirPath(),
-                                        "smali" + "/" + claz.replace(".", "/") + ".smali");
                         
                         final var edi = new CodeEditor(this);
                         edi.setTypefaceText(

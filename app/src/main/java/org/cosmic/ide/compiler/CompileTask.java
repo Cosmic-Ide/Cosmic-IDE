@@ -16,10 +16,7 @@ import org.cosmic.ide.util.Constants;
 
 public class CompileTask extends Thread {
 
-    private long d8Time = 0;
-    private long ecjTime = 0;
-
-    private boolean showExecuteDialog = false;
+    private final boolean showExecuteDialog;
 
     private final MainActivity activity;
 
@@ -57,20 +54,14 @@ public class CompileTask extends Thread {
             return;
         }
 
-        var time = System.currentTimeMillis();
         compileKotlin();
         if (!listener.isSuccessTillNow()) return;
 
         compileJava();
         if (!listener.isSuccessTillNow()) return;
 
-        ecjTime = System.currentTimeMillis() - time;
-        time = System.currentTimeMillis();
-
         compileDex();
         if (!listener.isSuccessTillNow()) return;
-
-        d8Time = System.currentTimeMillis() - time;
 
         executeDex();
     }
@@ -123,6 +114,16 @@ public class CompileTask extends Thread {
                 return;
             }
             if (showExecuteDialog) {
+                // if there is only one class, there is no need to show a dialog
+                if (classes.length == 1) {
+                    final var intent = new Intent(activity, ConsoleActivity.class);
+                    intent.putExtra(
+                            Constants.PROJECT_PATH,
+                            activity.getProject().getProjectDirPath());
+                    intent.putExtra("class_to_execute", classes[0]);
+                    activity.startActivity(intent);
+                    break;
+                }
                 activity.listDialog(
                         "Select a class to execute",
                         classes,

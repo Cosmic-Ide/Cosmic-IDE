@@ -122,7 +122,7 @@ public class CompileTask extends Thread {
                             activity.getProject().getProjectDirPath());
                     intent.putExtra("class_to_execute", classes[0]);
                     activity.startActivity(intent);
-                    break;
+                    return;
                 }
                 activity.listDialog(
                         "Select a class to execute",

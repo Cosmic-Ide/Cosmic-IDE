@@ -566,6 +566,23 @@ public class MainActivity extends BaseActivity {
         try {
             final var classes = getClassesFromDex();
             if (classes == null) return;
+            final var opcodes = Opcodes.forApi(32);
+            final var options = new BaksmaliOptions();
+
+            CoroutineUtil.execute(
+                    () -> {
+                            final var dexFile =
+                                    DexFileFactory.loadDexFile(
+                                            new File(getProject().getBinDirPath(), "classes.dex"),
+                                            opcodes);
+                            options.apiLevel = 32;
+                            Baksmali.disassembleDexFile(
+                                    dexFile,
+                                    new File(getProject().getBinDirPath(), "smali"),
+                                    1,
+                                    options)
+                          });
+
             listDialog(
                     "Select a class to show smali",
                     classes,
@@ -575,28 +592,8 @@ public class MainActivity extends BaseActivity {
                                 new File(
                                         getProject().getBinDirPath(),
                                         "smali" + "/" + claz.replace(".", "/") + ".smali");
-                        try {
-                            final var opcodes = Opcodes.forApi(32);
-                            final var options = new BaksmaliOptions();
-
-                            final var dexFile =
-                                    DexFileFactory.loadDexFile(
-                                            new File(getProject().getBinDirPath(), "classes.dex"),
-                                            opcodes);
-                            options.apiLevel = 32;
-                            CoroutineUtil.execute(
-                                    () ->
-                                            Baksmali.disassembleDexFile(
-                                                    dexFile,
-                                                    new File(getProject().getBinDirPath(), "smali"),
-                                                    1,
-                                                    options));
-                        } catch (Exception e) {
-                            dialog("Unable to load dex file", getString(e), true);
-                            return;
-                        }
-
-                        var edi = new CodeEditor(this);
+                        
+                        final var edi = new CodeEditor(this);
                         edi.setTypefaceText(
                                 ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
                         edi.setColorScheme(getColorScheme());
@@ -610,7 +607,7 @@ public class MainActivity extends BaseActivity {
                             return;
                         }
 
-                        var dialog = new AlertDialog.Builder(this).setView(edi).create();
+                        final var dialog = new AlertDialog.Builder(this).setView(edi).create();
                         dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
                     });
@@ -622,6 +619,7 @@ public class MainActivity extends BaseActivity {
     private void decompile() {
         final var classes = getClassesFromDex();
         if (classes == null) return;
+
         listDialog(
                 "Select a class to decompile",
                 classes,
@@ -712,6 +710,10 @@ public class MainActivity extends BaseActivity {
     public void listDialog(String title, String[] items, DialogInterface.OnClickListener listener) {
         runOnUiThread(
                 () -> {
+                    if (items.length == 1) {
+                        listener.onClick(null, 0);
+                        return;
+                    }
                     new MaterialAlertDialogBuilder(this)
                             .setTitle(title)
                             .setItems(items, listener)

@@ -61,12 +61,14 @@ class CodeEditorFragment : Fragment() {
             } catch (e: IOException) {
                 (requireActivity() as MainActivity).dialog("Failed to open file", e.toString(), true)
             }
-            if (currentFile.getPath().endsWith(".kt")) {
+            if (currentFile.extension.equals("kt")) {
                 setEditorLanguage(LANGUAGE_KOTLIN)
-            } else if (currentFile.getPath().endsWith(".java") ||
-                currentFile.endsWith(".jav")
+            } else if (currentFile.extension.equals("java") ||
+                currentFile.extension.equals("jav")
             ) {
                 setEditorLanguage(LANGUAGE_JAVA)
+            } else if (currentFile.extension.equals("smali")) {
+                setEditorLanguage(LANGUAGE_SMALI)
             }
             binding.editor
                 .getText()
@@ -111,6 +113,7 @@ class CodeEditorFragment : Fragment() {
         when (lang) {
             LANGUAGE_JAVA -> binding.editor.setEditorLanguage(getJavaLanguage())
             LANGUAGE_KOTLIN -> binding.editor.setEditorLanguage(getKotlinLanguage())
+            LANGUAGE_SMALI -> binding.editor.setEditorLanguage(getSmaliLanguage())
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
         binding.editor.setColorScheme(getColorScheme())
@@ -176,6 +179,24 @@ class CodeEditorFragment : Fragment() {
         }
     }
 
+    private fun getSmaliLanguage(): Language {
+        try {
+            return TextMateLanguage.create(
+                IGrammarSource.fromInputStream(
+                    requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                    "smali.tmLanguage.json",
+                    null
+                ), 
+                InputStreamReader(
+                    requireContext().assets.open("textmate/smali/language-configuration.json")
+                ),
+                getColorScheme().themeSource
+            )
+        } catch (e: IOException) {
+            return EmptyLanguage()
+        }
+    }
+
     fun getEditor(): CodeEditorView {
         return binding.editor
     }
@@ -200,6 +221,7 @@ class CodeEditorFragment : Fragment() {
     companion object {
         const val LANGUAGE_JAVA = 0
         const val LANGUAGE_KOTLIN = 1
+        const val LANGUAGE_SMALI = 2
         const val TAG = "CodeEditorFragment"
 
         fun newInstance(file: File): CodeEditorFragment {

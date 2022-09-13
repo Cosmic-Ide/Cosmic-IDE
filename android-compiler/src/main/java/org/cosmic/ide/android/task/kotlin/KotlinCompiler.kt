@@ -54,7 +54,7 @@ class KotlinCompiler : Task {
             }
         }
 
-        val plugins = getKotlinCompilerPlugins().map(File::getAbsolutePath).toTypedArray()
+        val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
 
         val args = K2JVMCompilerArguments().apply {
             useJavac = false
@@ -107,9 +107,9 @@ class KotlinCompiler : Task {
         if (files == null) return sourceFiles
         for (file in files) {
             if (file.isFile()) {
-                val path = file.name
-                if (path.endsWith(".java") || path.endsWith(".kt")) {
-                    sourceFiles.add(path)
+                val path = file.extension
+                if (path.equals("java") || path.equals("kt")) {
+                    sourceFiles.add(file.absolutePath)
                 }
             } else {
                 sourceFiles.addAll(getSourceFiles(file))
@@ -118,7 +118,7 @@ class KotlinCompiler : Task {
         return sourceFiles
     }
 
-    private fun getKotlinCompilerPlugins(): List<File> {
+    private fun getKotlinCompilerPlugins(project: Project): List<File> {
         val pluginDir = File(project.getProjectDirPath(), "kt_plugins")
         
         if (!pluginDir.exists() || pluginDir.isFile) {
@@ -126,7 +126,7 @@ class KotlinCompiler : Task {
         }
         
         val plugins = pluginDir.listFiles { file ->
-            file.name.endsWith(".jar")
+            file.extension.equals("jar")
         }
         
         if (plugins == null) {

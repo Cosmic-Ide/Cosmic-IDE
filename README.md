@@ -41,7 +41,7 @@ A next-gen Ide for JVM development on Android!
 
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/org.cosmic.ide)
 
-You can get the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v1.0.0)
+You can download the latest release from [here](https://github.com/Cosmic-Ide/Cosmic-Ide/releases/v1.0.0)
 and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/Cosmic-Ide/actions).
 
 ## Screenshots
@@ -61,11 +61,14 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 
 ## TO-DO
 
+- \[ \] Kotlin error/warning highlight in editor
+- \[ \] Git Support (possibly with JGit)
+- \[ \] Functions for external Jar/Dex files
 - \[ \] Java auto-complete server
 
 ## Building
 
-Clone this repository on your device and compile using Android Studio or by running the command
+Clone this repository on your device and compile using Android Studio or with gradle
 
 ```sh
 ./gradlew assembleDebug
@@ -73,10 +76,10 @@ Clone this repository on your device and compile using Android Studio or by runn
 
 ## Contribution
 
-We would really appreciate all kinds of contributions.
-If you have any questions, ideas, need help or want to propose a change just open an issue.
+We would appreciate any kinds of contributions.
+If you have any questions, ideas, need help or want to propose a change just open an issue/pull request.
 
-- Any type of contributions are highly appreciated.
+- Any type of contributions are appreciated.
 - Create a pull request and we'll merge it after review.
 
 ## Special Thanks

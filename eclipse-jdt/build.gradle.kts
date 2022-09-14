@@ -10,7 +10,7 @@ java {
 
 dependencies {
     api("org.eclipse.platform:org.eclipse.core.resources:3.17.0")
-    api("org.eclipse.platform:org.eclipse.core.runtime:3.25.0")
+    api("org.eclipse.platform:org.eclipse.core.runtime:3.26.0")
     api("org.eclipse.platform:org.eclipse.equinox.preferences:3.10.1")
     api("org.eclipse.platform:org.eclipse.core.filesystem:1.9.400")
     api("org.eclipse.platform:org.eclipse.text:3.12.100")

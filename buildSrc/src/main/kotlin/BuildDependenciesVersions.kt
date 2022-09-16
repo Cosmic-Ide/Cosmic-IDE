@@ -21,5 +21,5 @@ object BuildDependenciesVersions {
     const val PREFERENCE_KTX = "1.2.0"
     const val PREFERENCEX = "1.1.0"
     const val JDT_ANNOTATION = "2.2.600"
-    const val SNAKEYAML = "1.31"
+    const val SNAKEYAML = "1.32"
 }

@@ -17,7 +17,7 @@ object BuildDependenciesVersions {
     const val GSON = "2.9.1"
     const val JCODINGS = "1.0.57"
     const val JONI = "2.1.43"
-    const val FERNFLOWER = "1da81802e5"
+    const val FERNFLOWER = "13fb1e463f"
     const val PREFERENCE_KTX = "1.2.0"
     const val PREFERENCEX = "1.1.0"
     const val JDT_ANNOTATION = "2.2.600"

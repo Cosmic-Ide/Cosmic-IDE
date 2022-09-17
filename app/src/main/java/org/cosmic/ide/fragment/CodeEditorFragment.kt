@@ -125,8 +125,8 @@ class CodeEditorFragment : Fragment() {
             if (ApplicationLoader.isDarkMode(requireContext())) {
                 themeSource =
                     IThemeSource.fromInputStream(
-                        requireContext().getAssets().open("textmate/darcula.json"),
-                        "darcula.json",
+                        requireContext().getAssets().open("textmate/darcula.tmTheme.yml"),
+                        "darcula.tmTheme.yml",
                         null
                     )
             } else {
@@ -147,12 +147,12 @@ class CodeEditorFragment : Fragment() {
         try {
             return TextMateLanguage.create(
                 IGrammarSource.fromInputStream(
-                    requireContext().assets.open("textmate/java/syntaxes/java.tmLanguage.json"),
-                    "java.tmLanguage.json",
+                    requireContext().assets.open("textmate/java/syntaxes/java.tmLanguage.yml"),
+                    "java.tmLanguage.yml",
                     null
                 ),
                 InputStreamReader(
-                    requireContext().assets.open("textmate/java/language-configuration.json")
+                    requireContext().assets.open("textmate/java/language-configuration.yml")
                 ),
                 getColorScheme().themeSource
             )
@@ -170,7 +170,7 @@ class CodeEditorFragment : Fragment() {
                     null
                 ), 
                 InputStreamReader(
-                    requireContext().assets.open("textmate/kotlin/language-configuration.json")
+                    requireContext().assets.open("textmate/kotlin/language-configuration.yml")
                 ),
                 getColorScheme().themeSource
             )
@@ -183,12 +183,12 @@ class CodeEditorFragment : Fragment() {
         try {
             return TextMateLanguage.create(
                 IGrammarSource.fromInputStream(
-                    requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.json"),
-                    "smali.tmLanguage.json",
+                    requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.yml"),
+                    "smali.tmLanguage.yml",
                     null
                 ), 
                 InputStreamReader(
-                    requireContext().assets.open("textmate/smali/language-configuration.json")
+                    requireContext().assets.open("textmate/smali/language-configuration.yml")
                 ),
                 getColorScheme().themeSource
             )

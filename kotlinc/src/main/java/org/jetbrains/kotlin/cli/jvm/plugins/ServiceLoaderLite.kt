@@ -1,8 +1,8 @@
 package org.jetbrains.kotlin.cli.jvm.plugins
 
 import dalvik.system.PathClassLoader
-import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil.isJavaIdentifierPart
-import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil.isJavaIdentifierStart
+import com.intellij.openapi.util.text.StringUtil.isJavaIdentifierPart
+import com.intellij.openapi.util.text.StringUtil.isJavaIdentifierStart
 import java.io.File
 import java.io.IOError
 import java.net.URLClassLoader

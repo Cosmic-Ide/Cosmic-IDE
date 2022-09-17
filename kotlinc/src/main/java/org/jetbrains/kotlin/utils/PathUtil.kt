@@ -3,8 +3,8 @@
 package org.jetbrains.kotlin.utils
 
 import org.jetbrains.jps.model.java.impl.JavaSdkUtil
-import org.jetbrains.kotlin.com.intellij.openapi.application.ApplicationManager
-import org.jetbrains.kotlin.com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.PathManager
 import java.io.File
 import java.lang.IllegalStateException
 import java.util.regex.Pattern

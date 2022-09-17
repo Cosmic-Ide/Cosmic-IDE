@@ -304,7 +304,7 @@ public class ConsoleEditText extends AppCompatEditText {
                 spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),
                         0,
-                        spannableString.length(),
+                        newChars.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 return spannable;
             }
@@ -319,7 +319,7 @@ public class ConsoleEditText extends AppCompatEditText {
                 spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),
                         0,
-                        spannableString.length(),
+                        newChars.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 return spannable;
             }

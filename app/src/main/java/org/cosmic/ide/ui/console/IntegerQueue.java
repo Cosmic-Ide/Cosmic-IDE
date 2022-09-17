@@ -4,7 +4,7 @@ import android.util.Log;
 
 /** Created by Duy on 10-Feb-17. */
 public class IntegerQueue {
-    public static final int QUEUE_SIZE = 2 * 1024; // 2MB ram
+    public static final int QUEUE_SIZE = 4 * 1024; // 2MB ram
     private static final String TAG = "ByteQueue";
     public int text[];
     public int front;

@@ -89,13 +89,6 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void init() {
-        if (!isInEditMode()) {
-            /*
-            AppSetting pref = new AppSetting(context);
-            setTypeface(pref.getConsoleFont());
-            setTextSize(pref.getConsoleTextSize());
-            */
-        }
         setFilters(new InputFilter[] {mTextListener});
         addTextChangedListener(mEnterListener);
 
@@ -108,16 +101,16 @@ public class ConsoleEditText extends AppCompatEditText {
                 new PrintStream(
                         new ConsoleOutputStream(
                                 mStdoutBuffer,
-                                () -> {
+                                () ->
                                     mHandler.sendMessage(mHandler.obtainMessage(NEW_OUTPUT));
-                                }));
+                                ));
         errorStream =
                 new PrintStream(
                         new ConsoleErrorStream(
                                 mStderrBuffer,
-                                () -> {
-                                    mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR));
-                                }));
+                                () ->
+                                    mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR))
+                                ));
     }
 
     private void writeStdoutToScreen() {
@@ -126,12 +119,10 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
             int bytesRead = mStdoutBuffer.read(mReceiveBuffer, 0, bytesToRead);
-            //                        mEmulator.append(mReceiveBuffer, 0, bytesRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStdout(out);
-        } catch (InterruptedException e) {
-        }
+        } catch (InterruptedException e) {}
     }
 
     private void writeStderrToScreen() {
@@ -140,16 +131,10 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
             int bytesRead = mStderrBuffer.read(mReceiveBuffer, 0, bytesToRead);
-            //                        mEmulator.append(mReceiveBuffer, 0, bytesRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStderr(out);
-        } catch (InterruptedException e) {
-        }
-        //
-        //        String out = new String(Character.toChars(read));
-        //        mLength = mLength + out.length();
-        //        appendStdout(out);
+        } catch (InterruptedException e) {}
     }
 
     @WorkerThread
@@ -184,13 +169,13 @@ public class ConsoleEditText extends AppCompatEditText {
     private void appendStderr(final CharSequence str) {
         mHandler.post(
                 () -> {
-                    SpannableString spannableString = new SpannableString(str);
-                    spannableString.setSpan(
+                    var spannable = new SpannableString(str);
+                    spannable.setSpan(
                             new ForegroundColorSpan(Color.RED),
                             0,
                             str.length(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    append(spannableString);
+                    append(spannable);
                 });
     }
 

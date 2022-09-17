@@ -83,12 +83,10 @@ public class CompileTask extends Thread {
             if (prefs.getString("key_java_compiler", activity.getString(R.string.javac))
                     .equals(activity.getString(R.string.javac))) {
                 listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-                var javaTask = new JavacCompilationTask(prefs);
-                javaTask.doFullTask(activity.getProject());
+                new JavacCompilationTask(prefs).doFullTask(activity.getProject());
             } else {
                 listener.onCurrentBuildStageChanged(STAGE_ECJ);
-                var javaTask = new ECJCompilationTask(prefs);
-                javaTask.doFullTask(activity.getProject());
+                new ECJCompilationTask(prefs).doFullTask(activity.getProject());
             }
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());

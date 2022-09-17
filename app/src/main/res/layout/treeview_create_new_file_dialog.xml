@@ -6,7 +6,7 @@
     android:layoutDirection="locale"
     android:padding="?dialogPreferredPadding">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 		android:weightSum="100"
 		android:layout_width="match_parent">
 		
-		<TextView
+		<com.google.android.material.textview.MaterialTextView
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/class_kind"/>
@@ -53,7 +53,7 @@
 			android:entries="@array/kind_class"/>
 	</LinearLayout>
 	
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

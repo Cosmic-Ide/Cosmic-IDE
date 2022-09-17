@@ -15,7 +15,7 @@
         android:indeterminate="true"
         app:trackCornerRadius="@dimen/mtrl_progress_indicator_full_rounded_corner_radius" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
         android:text="@string/compilation_running"
         android:textAppearance="?attr/textAppearanceTitleLarge" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/stage_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

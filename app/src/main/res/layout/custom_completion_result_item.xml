@@ -2,22 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:background="?selectableItemBackground"
+    android:background="?attr/colorSurface"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="@dimen/spacing_tiny">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/result_item_image"
         android:layout_height="match_parent"
         android:layout_width="30dp"
-        android:layout_marginStart="@dimen/spacing_tiny"
-        android:layout_marginEnd="@dimen/spacing_tiny"
+        android:layout_marginHorizontal="@dimen/spacing_tiny"
         android:fontFamily="@font/mono_font"
         android:gravity="center"
         android:paddingHorizontal="@dimen/spacing_small"
         android:text="K"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -26,23 +24,21 @@
         android:orientation="vertical"
         android:gravity="center_vertical">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:text="Medium Text"
             android:singleLine="true" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/result_item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
             android:layout_marginEnd="@dimen/spacing_small"
-            android:text="Small Text"
             android:singleLine="true" />
 
     </LinearLayout>

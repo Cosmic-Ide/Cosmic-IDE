@@ -6,7 +6,7 @@
     android:layoutDirection="locale"
     android:padding="?dialogPreferredPadding">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
         android:checked="true"
         android:text="@string/kotlin_template" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

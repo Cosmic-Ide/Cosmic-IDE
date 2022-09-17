@@ -4,25 +4,23 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="start|center_vertical"
-    android:paddingTop="@dimen/spacing_tiny"
-    android:paddingBottom="@dimen/spacing_tiny"
-    android:paddingStart="@dimen/spacing_small"
-    android:paddingEnd="@dimen/spacing_small">
+    android:paddingVertical="@dimen/spacing_tiny"
+    android:paddingHorizontal="@dimen/spacing_small">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/arrow"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/arrow_forward" />
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginHorizontal="@dimen/spacing_small"
         android:src="@drawable/ic_file" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

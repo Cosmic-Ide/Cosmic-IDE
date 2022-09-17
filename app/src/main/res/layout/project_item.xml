@@ -17,12 +17,10 @@
         android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:paddingTop="@dimen/spacing_small"
-        android:paddingBottom="@dimen/spacing_small"
-        android:paddingStart="@dimen/spacing_medium"
-        android:paddingEnd="@dimen/spacing_medium">
+        android:paddingVertical="@dimen/spacing_small"
+        android:paddingHorizontal="@dimen/spacing_medium">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/project_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +29,7 @@
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:fadingEdge="horizontal" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/project_path"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

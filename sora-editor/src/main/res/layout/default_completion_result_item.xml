@@ -30,7 +30,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/result_item_image"
         android:layout_height="wrap_content"
         android:layout_width="30dp"
@@ -49,14 +49,14 @@
         android:paddingLeft="8dp"
         android:paddingRight="8dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name"
             android:textSize="16sp" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/result_item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

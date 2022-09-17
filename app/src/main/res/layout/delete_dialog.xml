@@ -6,20 +6,20 @@
     android:layoutDirection="locale"
     android:padding="?dialogPreferredPadding">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceTitleLarge" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_medium"
         android:layout_below="@android:id/title" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@android:id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

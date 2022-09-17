@@ -48,13 +48,13 @@
                     android:gravity="center"
                     android:visibility="gone">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_title"
                         android:textAppearance="?attr/textAppearanceTitleLarge" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_suggestion"

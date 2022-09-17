@@ -101,16 +101,16 @@ public class ConsoleEditText extends AppCompatEditText {
                 new PrintStream(
                         new ConsoleOutputStream(
                                 mStdoutBuffer,
-                                () ->
+                                () -> {
                                     mHandler.sendMessage(mHandler.obtainMessage(NEW_OUTPUT));
-                                ));
+                                }));
         errorStream =
                 new PrintStream(
                         new ConsoleErrorStream(
                                 mStderrBuffer,
-                                () ->
+                                () -> {
                                     mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR))
-                                ));
+                                }));
     }
 
     private void writeStdoutToScreen() {
@@ -300,13 +300,13 @@ public class ConsoleEditText extends AppCompatEditText {
                 return newChars;
 
             } else {
-                SpannableString spannableString = new SpannableString(newChars);
-                spannableString.setSpan(
+                var spannable = new SpannableString(newChars);
+                spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),
                         0,
                         spannableString.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                return spannableString;
+                return spannable;
             }
         }
 
@@ -315,13 +315,13 @@ public class ConsoleEditText extends AppCompatEditText {
                 return oldChars; // don't edit
 
             } else { // if (startPos >= mLength)
-                SpannableString spannableString = new SpannableString(newChars);
-                spannableString.setSpan(
+                var spannable = new SpannableString(newChars);
+                spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),
                         0,
                         spannableString.length(),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                return spannableString;
+                return spannable;
             }
         }
 

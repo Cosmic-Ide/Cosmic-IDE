@@ -109,7 +109,7 @@ public class ConsoleEditText extends AppCompatEditText {
                         new ConsoleErrorStream(
                                 mStderrBuffer,
                                 () -> {
-                                    mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR))
+                                    mHandler.sendMessage(mHandler.obtainMessage(NEW_ERR));
                                 }));
     }
 

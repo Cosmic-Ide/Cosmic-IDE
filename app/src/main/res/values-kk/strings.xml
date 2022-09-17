@@ -30,7 +30,7 @@
     <string name="no_projects_title">Жобалар табылмады</string>
     <string name="no_projects_suggestion">Астыңғы батырманы басу арқылы жоба құрыңыз</string>
     <string name="project_delete_warning">%1$s өшіргіңіз келетіндігіне сенімдісіз бе?</string>
-    <string name="kotlin_template">Kotlin-қалыпүлгі</string>
+    <string name="kotlin_template">Kotlin қалыпүлгі</string>
 
     <!-- PreferenceSettingsFragment-те қолданылатын жолдар -->
     <string name="java_version">Java нұсқасы</string>
@@ -42,7 +42,7 @@
     <string name="appearance">Түр</string>
     <string name="editor">Редактор</string>
     <string name="compiler">Компилятор</string>
-    <string name="dark_theme">Қараңғы</string>
+    <string name="dark_theme">Түнгі режим</string>
     <string name="about">Бағдарлама туралы</string>
     <string name="our_discord">Біздің Discord</string>
     <string name="join_discord">Біздің Discord каналымызға қосылыңыздар</string>

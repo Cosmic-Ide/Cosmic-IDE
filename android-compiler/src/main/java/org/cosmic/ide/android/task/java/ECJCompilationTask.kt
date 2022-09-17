@@ -70,7 +70,7 @@ class ECJCompilationTask(preferences: SharedPreferences) : Task {
             classpath.toString(),
             "-proc:none",
             "-sourcepath",
-            " ",
+            " ", // This space is needed here
             project.getSrcDirPath()
         )
 

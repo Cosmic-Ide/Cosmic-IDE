@@ -41,8 +41,8 @@ class ConsoleActivity : BaseActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
     		val isKeyboardVisible = insets.isVisible(Type.ime())
     		val keyboardHeight = insets.getInsets(Type.ime()).bottom
-			if(isKeyboardVisible){
-				binding.console.setPadding(0,0,0,keyboardHeight)
+			if (isKeyboardVisible){
+				binding.console.setPadding(0, 0, 0, keyboardHeight)
 			}
 			insets
 		}

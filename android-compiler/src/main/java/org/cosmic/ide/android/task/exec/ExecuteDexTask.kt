@@ -39,9 +39,6 @@ class ExecuteDexTask(
      * PathClassLoader
      */
     override fun doFullTask(project: Project) {
-        val defaultIn = System.`in`
-        val defaultOut = System.`out`
-        val defaultErr = System.err
         val dexFile = project.getBinDirPath() + "classes.dex"
         System.setOut(outputStream)
         System.setErr(errorStream)
@@ -93,7 +90,7 @@ class ExecuteDexTask(
                     // If the method is static, directly call it
                     result = method.invoke(null, param as? Any)
                 } else if (Modifier.isPublic(method.getModifiers())) {
-                    // If the method is public, create an instance of the class,
+                    // If the method is public, try to create an instance of the class,
                     // and then call it on the instance
                     val classInstance = calledClass.getConstructor().newInstance()
                     result = method.invoke(classInstance, param as? Any)
@@ -111,9 +108,6 @@ class ExecuteDexTask(
             } catch (e: Error) {
                 e.printStackTrace(errorStream)
             }
-            System.setOut(defaultOut)
-            System.setErr(defaultErr)
-            System.setIn(defaultIn)
             Handler(Looper.getMainLooper()).post(postRunnable);
         }
     }

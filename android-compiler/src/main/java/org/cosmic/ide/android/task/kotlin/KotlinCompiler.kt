@@ -8,79 +8,8 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
-import org.jetbrains.kotlin.incremental.IncrementalFirJvmCompilerRunner
-import org.jetbrains.kotlin.build.report.BuildReporter
-import org.jetbrains.kotlin.build.report.ICReporter
-import org.jetbrains.kotlin.cli.common.ExitCode
-import org.jetbrains.kotlin.config.IncrementalCompilation
-import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
-import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotDisabled
-import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
-import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
+import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
-
-/*
- * Copied from https://github.com/JetBrains/kotlin/blob/0b4a4ca42b96b9f4dfd32b4219f8afc034d9d766/compiler/incremental-compilation-impl/src/org/jetbrains/kotlin/incremental/IncrementalJvmCompilerRunner.kt#L71
- */
-fun makeIncrementally(
-    cachesDir: File,
-    sourceRoots: Iterable<File>,
-    args: K2JVMCompilerArguments,
-    messageCollector: MessageCollector = MessageCollector.NONE
-) {
-    val kotlinExtensions = listOf("kt", "kts")
-    val allExtensions = kotlinExtensions + "java"
-    val rootsWalk = sourceRoots.asSequence().flatMap { it.walk() }
-    val files = rootsWalk.filter(File::isFile)
-    val sourceFiles = files.filter { it.extension.lowercase() in allExtensions }.toList()
-    val buildHistoryFile = File(cachesDir, "build-history.bin")
-    args.javaSourceRoots = sourceRoots.map { it.absolutePath }.toTypedArray()
-    val buildReporter = BuildReporter(icReporter = DoNothingICReporter, buildMetricsReporter = DoNothingBuildMetricsReporter)
-
-    withIC(args) {
-        val compiler =
-            if (args.useK2 && args.useFirIC && args.useFirLT)
-                IncrementalFirJvmCompilerRunner(
-                    cachesDir, buildReporter, buildHistoryFile, emptyList(), EmptyModulesApiHistory, kotlinExtensions, ClasspathSnapshotDisabled
-                )
-            else
-                IncrementalJvmCompilerRunner(
-                    cachesDir,
-                    buildReporter,
-                    // Use precise setting in case of non-Gradle build
-                    usePreciseJavaTracking = !args.useK2,
-                    outputFiles = emptyList(),
-                    buildHistoryFile = buildHistoryFile,
-                    modulesApiHistory = EmptyModulesApiHistory,
-                    kotlinSourceFilesExtensions = kotlinExtensions,
-                    classpathChanges = ClasspathSnapshotDisabled
-                )
-        compiler.compile(sourceFiles, args, messageCollector, providedChangedFiles = null)
-    }
-}
-
-inline fun <R> withIC(args: CommonCompilerArguments, enabled: Boolean = true, fn: () -> R): R {
-    val isEnabledBackup = IncrementalCompilation.isEnabledForJvm()
-    IncrementalCompilation.setIsEnabledForJvm(enabled)
-
-    try {
-        if (args.incrementalCompilation == null) {
-            args.incrementalCompilation = enabled
-        }
-        return fn()
-    } finally {
-        IncrementalCompilation.setIsEnabledForJvm(isEnabledBackup)
-    }
-}
-
-object DoNothingICReporter : ICReporter {
-    override fun report(message: () -> String, severity: ICReporter.ReportSeverity) {}
-    override fun reportCompileIteration(incremental: Boolean, sourceFiles: Collection<File>, exitCode: ExitCode) {}
-    override fun reportMarkDirtyClass(affectedFiles: Iterable<File>, classFqName: String) {}
-    override fun reportMarkDirtyMember(affectedFiles: Iterable<File>, scope: String, name: String) {}
-    override fun reportMarkDirty(affectedFiles: Iterable<File>, reason: String) {}
-}
 
 class KotlinCompiler : Task {
 
@@ -151,7 +80,8 @@ class KotlinCompiler : Task {
             javaSourceRoots = sourceFiles.filter {
                 it.endsWith(".java")
             }.toTypedArray()
-            moduleName = project.getProjectName()
+            // incremental compiler needs the module name somewhy
+            moduleName = "kotlin-module"
             pluginClasspaths = plugins
             noJdk = true
             useK2 = true
@@ -169,6 +99,7 @@ class KotlinCompiler : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
+        // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(dir: File): ArrayList<String> {
@@ -196,7 +127,7 @@ class KotlinCompiler : Task {
         }
         
         val plugins = pluginDir.listFiles { file ->
-            file.extension.equals("dex")
+            file.extension.equals("jar")
         }
         
         if (plugins == null) {

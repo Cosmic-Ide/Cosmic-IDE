@@ -78,12 +78,13 @@ class KotlinCompiler : Task {
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             javaSourceRoots = sourceFiles.filter {
-                it.endsWith(".java")
+                it.extension.equals("java")
             }.toTypedArray()
             // incremental compiler needs the module name somewhy
-            moduleName = "kotlin-module"
+            moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
+            useK2 = true
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

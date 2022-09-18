@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.makeIncrementally
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.makeIncrementally
 import java.io.File
 
 class KotlinCompiler : Task {
@@ -126,7 +126,7 @@ class KotlinCompiler : Task {
         }
         
         val plugins = pluginDir.listFiles { file ->
-            file.extension.equals("jar")
+            file.extension.equals("dex")
         }
         
         if (plugins == null) {

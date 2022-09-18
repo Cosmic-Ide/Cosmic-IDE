@@ -26,7 +26,7 @@ fun makeIncrementally(
     cachesDir: File,
     sourceRoots: Iterable<File>,
     args: K2JVMCompilerArguments,
-    messageCollector: MessageCollector = MessageCollector.NONE,
+    messageCollector: MessageCollector = MessageCollector.NONE
 ) {
     val allExtensions = listOf("kt", "kts", "java")
     val rootsWalk = sourceRoots.asSequence().flatMap { it.walk() }

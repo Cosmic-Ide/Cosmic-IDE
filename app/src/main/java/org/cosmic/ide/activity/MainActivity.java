@@ -512,15 +512,15 @@ public class MainActivity extends BaseActivity {
             if (ApplicationLoader.Companion.isDarkMode(this)) {
                 themeSource =
                         IThemeSource.fromInputStream(
-                            getAssets().open("textmate/darcula.tmTheme.yml"),
-                            "darcula.tmTheme.yml",
+                            getAssets().open("textmate/darcula.tmTheme.json"),
+                            "darcula.tmTheme.json",
                             null
                         );
             } else {
                 themeSource =
                         IThemeSource.fromInputStream(
-                            getAssets().open("textmate/light.tmTheme.yml"),
-                            "light.tmTheme.yml",
+                            getAssets().open("textmate/light.tmTheme"),
+                            "light.tmTheme",
                             null
                         );
             }
@@ -534,12 +534,12 @@ public class MainActivity extends BaseActivity {
         try {
             return TextMateLanguage.create(
                     IGrammarSource.fromInputStream(
-                        getAssets().open("textmate/java/syntaxes/java.tmLanguage.yml"),
-                        "java.tmLanguage.yml",
+                        getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                        "java.tmLanguage.json",
                         null
                     ), 
                     new InputStreamReader(
-                            getAssets().open("textmate/java/language-configuration.yml")),
+                            getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getThemeSource());
         } catch (IOException e) {
             return new EmptyLanguage();
@@ -550,12 +550,12 @@ public class MainActivity extends BaseActivity {
         try {
             return TextMateLanguage.create(
                     IGrammarSource.fromInputStream(
-                        getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.yml"),
-                        "smali.tmLanguage.yml",
+                        getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                        "smali.tmLanguage.json",
                         null
                     ),
                     new InputStreamReader(
-                            getAssets().open("textmate/smali/language-configuration.yml")),
+                            getAssets().open("textmate/smali/language-configuration.json")),
                     getColorScheme().getThemeSource());
         } catch (IOException e) {
             return new EmptyLanguage();

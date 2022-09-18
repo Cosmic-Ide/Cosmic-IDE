@@ -37,6 +37,10 @@ A next-gen Ide for JVM development on Android!
 </div>
 <p>
 
+## Chat
+
+Chat with us on our [Discord Server](https://discord.gg/8Gu6YCq2eS) or on our [Telegram Channel](https://t.me/cosmicide).
+
 ## Downloads
 
 [<img alt="Get it on IzzyOnDroid" height="80" src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png">](https://apt.izzysoft.de/fdroid/index/apk/org.cosmic.ide)

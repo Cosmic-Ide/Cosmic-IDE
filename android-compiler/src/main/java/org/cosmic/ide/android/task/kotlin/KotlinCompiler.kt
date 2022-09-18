@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.makeIncrementally
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt.makeIncrementally
 import java.io.File
 
 class KotlinCompiler : Task {

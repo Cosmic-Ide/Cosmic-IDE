@@ -81,13 +81,14 @@ class KotlinCompiler : Task {
                 it.endsWith(".java")
             }.toTypedArray()
             // incremental compiler needs the module name somewhy
-            moduleName = "kotlin-module"
+            moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
-            useK2 = true
+            useK2 = File(project.getRootFile(), "k2").exists()
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")
+        val time = System.currentTimeMillis()
 
         makeIncrementally(
             cacheDir,
@@ -99,6 +100,7 @@ class KotlinCompiler : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
+        throw CompilationFailedException((time - System.currentTimeMillis()).toString())
         // File(mClassOutput, "META-INF").deleteRecursively()
     }
 

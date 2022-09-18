@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt.makeIncrementally
+import org.jetbrains.kotlin.incremental.*
 import java.io.File
 
 class KotlinCompiler : Task {
@@ -78,9 +78,8 @@ class KotlinCompiler : Task {
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath
             javaSourceRoots = sourceFiles.filter {
-                it.extension.equals("java")
+                it.endsWith(".java")
             }.toTypedArray()
-            // incremental compiler needs the module name somewhy
             moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
@@ -99,7 +98,6 @@ class KotlinCompiler : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
-        // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(dir: File): ArrayList<String> {

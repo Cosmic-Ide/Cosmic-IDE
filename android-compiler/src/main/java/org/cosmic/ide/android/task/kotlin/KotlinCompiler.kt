@@ -11,7 +11,8 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
 import org.jetbrains.kotlin.incremental.IncrementalFirJvmCompilerRunner
 import org.jetbrains.kotlin.build.report.BuildReporter
-import org.jetbrains.kotlin.build.report.ICReporter.DoNothingICReporter
+import org.jetbrains.kotlin.build.report.ICReporter
+import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotDisabled
@@ -28,7 +29,8 @@ fun makeIncrementally(
     args: K2JVMCompilerArguments,
     messageCollector: MessageCollector = MessageCollector.NONE
 ) {
-    val allExtensions = listOf("kt", "kts", "java")
+    val kotlinExtensions = listOf("kt", "kts")
+    val allExtensions = kotlinExtensions + "java"
     val rootsWalk = sourceRoots.asSequence().flatMap { it.walk() }
     val files = rootsWalk.filter(File::isFile)
     val sourceFiles = files.filter { it.extension.lowercase() in allExtensions }.toList()
@@ -57,7 +59,7 @@ fun makeIncrementally(
         compiler.compile(sourceFiles, args, messageCollector, providedChangedFiles = null)
     }
 }
-/
+
 inline fun <R> withIC(args: CommonCompilerArguments, enabled: Boolean = true, fn: () -> R): R {
     val isEnabledBackup = IncrementalCompilation.isEnabledForJvm()
     IncrementalCompilation.setIsEnabledForJvm(enabled)
@@ -70,6 +72,14 @@ inline fun <R> withIC(args: CommonCompilerArguments, enabled: Boolean = true, fn
     } finally {
         IncrementalCompilation.setIsEnabledForJvm(isEnabledBackup)
     }
+}
+
+object DoNothingICReporter : ICReporter {
+    override fun report(message: () -> String, severity: ICReporter.ReportSeverity) {}
+    override fun reportCompileIteration(incremental: Boolean, sourceFiles: Collection<File>, exitCode: ExitCode) {}
+    override fun reportMarkDirtyClass(affectedFiles: Iterable<File>, classFqName: String) {}
+    override fun reportMarkDirtyMember(affectedFiles: Iterable<File>, scope: String, name: String) {}
+    override fun reportMarkDirty(affectedFiles: Iterable<File>, reason: String) {}
 }
 
 class KotlinCompiler : Task {

@@ -8,16 +8,15 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.incremental.withIC
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner
 import org.jetbrains.kotlin.incremental.IncrementalFirJvmCompilerRunner
 import org.jetbrains.kotlin.build.report.BuildReporter
-import org.jetbrains.kotlin.build.report.ICReport
+import org.jetbrains.kotlin.build.report.ICReporter.DoNothingICReporter
+import org.jetbrains.kotlin.config.IncrementalCompilation
+import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.incremental.ClasspathChanges.ClasspathSnapshotDisabled
 import org.jetbrains.kotlin.build.report.metrics.DoNothingBuildMetricsReporter
-import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.incremental.multiproject.EmptyModulesApiHistory
-import org.jetbrains.kotlin.build.DEFAULT_KOTLIN_SOURCE_FILES_EXTENSIONS
 import java.io.File
 
 /*
@@ -28,16 +27,14 @@ fun makeIncrementally(
     sourceRoots: Iterable<File>,
     args: K2JVMCompilerArguments,
     messageCollector: MessageCollector = MessageCollector.NONE,
-    reporter: ICReporter = DoNothingICReporter
 ) {
-    val kotlinExtensions = DEFAULT_KOTLIN_SOURCE_FILES_EXTENSIONS
-    val allExtensions = kotlinExtensions + "java"
+    val allExtensions = listOf("kt", "kts", "java")
     val rootsWalk = sourceRoots.asSequence().flatMap { it.walk() }
     val files = rootsWalk.filter(File::isFile)
     val sourceFiles = files.filter { it.extension.lowercase() in allExtensions }.toList()
     val buildHistoryFile = File(cachesDir, "build-history.bin")
     args.javaSourceRoots = sourceRoots.map { it.absolutePath }.toTypedArray()
-    val buildReporter = BuildReporter(icReporter = reporter, buildMetricsReporter = DoNothingBuildMetricsReporter)
+    val buildReporter = BuildReporter(icReporter = DoNothingICReporter, buildMetricsReporter = DoNothingBuildMetricsReporter)
 
     withIC(args) {
         val compiler =
@@ -58,6 +55,20 @@ fun makeIncrementally(
                     classpathChanges = ClasspathSnapshotDisabled
                 )
         compiler.compile(sourceFiles, args, messageCollector, providedChangedFiles = null)
+    }
+}
+/
+inline fun <R> withIC(args: CommonCompilerArguments, enabled: Boolean = true, fn: () -> R): R {
+    val isEnabledBackup = IncrementalCompilation.isEnabledForJvm()
+    IncrementalCompilation.setIsEnabledForJvm(enabled)
+
+    try {
+        if (args.incrementalCompilation == null) {
+            args.incrementalCompilation = enabled
+        }
+        return fn()
+    } finally {
+        IncrementalCompilation.setIsEnabledForJvm(isEnabledBackup)
     }
 }
 

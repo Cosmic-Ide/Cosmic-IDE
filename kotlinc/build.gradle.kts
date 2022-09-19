@@ -25,10 +25,6 @@ android {
     }
 }
 
-configurations.implementation {
-    exclude("org.jetbrains", "annotations")
-}
-
 dependencies {
     implementation(Dependencies.ANDROIDX_ANNOTATION)
     implementation(Dependencies.JAVAC)

@@ -105,10 +105,6 @@ android {
     }
 }
 
-configurations.implementation {
-    exclude("org.jetbrains", "annotations")
-}
-
 dependencies {
     coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
 

@@ -4,7 +4,4 @@
     <color name="system_window_scrim_light">#99FFFFFF</color>
     <color name="system_window_scrim_dark">#661F1F1F</color>
     <color name="system_window_scrim">@color/system_window_scrim_light</color>
-
-    <color name="system_window_scrim_light_compat">#44000000</color>
-    <color name="system_window_scrim_compat">@color/system_window_scrim_light_compat</color>
 </resources>

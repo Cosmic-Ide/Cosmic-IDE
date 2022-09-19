@@ -56,5 +56,4 @@
     <string name="stage_javac">التجميع بواسطة Javac&#8230;</string>
     <string name="stage_ecj">التجميع بواسطة ECJ&#8230;</string>
     <string name="stage_d8">تحويل المصنفات إلى Dex بواسطة D8&#8230;</string>
-    <string name="stage_loading_dex">تحميل ملف Dex&#8230;</string>
 </resources>

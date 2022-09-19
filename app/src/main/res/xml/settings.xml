@@ -14,15 +14,6 @@
 
     </PreferenceCategory>
 
-    <!-- <PreferenceCategory android:title="@string/editor"> -->
-
-        <!-- <SwitchPreferenceCompat -->
-            <!-- android:key="@string/pref_key_soft_tab" -->
-            <!-- android:title="Soft Tab" -->
-            <!-- android:defaultValue="true" /> -->
-
-    <!-- </PreferenceCategory> -->
-
     <PreferenceCategory android:title="@string/compiler">
 
         <ListPreference 

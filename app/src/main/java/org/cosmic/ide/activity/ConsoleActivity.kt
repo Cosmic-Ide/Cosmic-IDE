@@ -39,13 +39,13 @@ class ConsoleActivity : BaseActivity() {
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
         
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
-    		val isKeyboardVisible = insets.isVisible(Type.ime())
-    		val keyboardHeight = insets.getInsets(Type.ime()).bottom
-			if (isKeyboardVisible){
-				binding.console.setPadding(0, 0, 0, keyboardHeight)
-			}
-			insets
-		}
+            val isKeyboardVisible = insets.isVisible(Type.ime())
+            val keyboardHeight = insets.getInsets(Type.ime()).bottom
+            if (isKeyboardVisible) {
+                binding.console.setPadding(0, 0, 0, keyboardHeight)
+            }
+            insets
+        }
 
         val bundle = getIntent().getExtras()
 

@@ -26,7 +26,6 @@
     <string name="close_all">Close all</string>
     <string name="no_open_files">No open files</string>
     <string name="open_the_file">Open the file through the left menu</string>
-    <string name="successful_compilation">Successful compilation</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projects</string>
@@ -47,7 +46,6 @@
     <string name="format">Format</string>
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
-    <string name="editor">Editor</string>
     <string name="compiler">Compiler</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="about">About app</string>

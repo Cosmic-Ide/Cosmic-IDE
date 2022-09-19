@@ -4,7 +4,4 @@
     <dimen name="spacing_tiny">4dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">16dp</dimen>
-
-    <!-- Misc -->
-    <dimen name="elevation_normal">4dp</dimen>
 </resources>

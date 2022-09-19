@@ -29,7 +29,7 @@
 	android:layout_height="match_parent"
 	android:orientation="horizontal"
 	android:gravity="center_vertical"
-	android:background="@drawable/magnifier_background"
+	android:background="?attr/colorSurface"
 	android:id="@+id/panel_hv">
 
 	<LinearLayout

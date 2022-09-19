@@ -70,7 +70,6 @@ android {
 
     lintOptions {
         isAbortOnError = false
-        isCheckDependencies = true
     }
 
     packagingOptions {

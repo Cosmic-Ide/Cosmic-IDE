@@ -3,6 +3,7 @@ package com.intellij.util.containers;
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the
 // Apache 2.0 license that can be found in the LICENSE file.
 
+import android.os.Build;
 import androidx.annotation.NonNull;
 
 import sun.misc.Unsafe;
@@ -1550,8 +1551,12 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
 
         private static int getAndAddInt(Object object, long offset, int v) {
             try {
-                HiddenApiBypass.setHiddenApiExemptions("Lsun/misc/Unsafe;");
-                return (int) HiddenApiBypass.invoke(Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    HiddenApiBypass.setHiddenApiExemptions("Lsun/misc/Unsafe;");
+                    return (int) HiddenApiBypass.invoke(Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
+                } else {
+                    return theUnsafe.getAndAddInt(object, offset, v);
+                }
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }

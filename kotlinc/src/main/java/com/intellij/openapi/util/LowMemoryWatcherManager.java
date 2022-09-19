@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ExecutorService;
 
 public final class LowMemoryWatcherManager implements Disposable {
-  public LowMemoryWatcherManager(@NotNull ExecutorService backendExecutorService) {
+  public LowMemoryWatcherManager(@NonNull ExecutorService backendExecutorService) {
     
   }
 

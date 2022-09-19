@@ -17,6 +17,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.locks.LockSupport;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
 /**
  * Adapted from Doug Lea ConcurrentHashMap (see
  * http://gee.cs.oswego.edu/dl/concurrency-interest/index.html) to int keys with following
@@ -1573,7 +1575,8 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
 
         private static int getAndAddInt(Object object, long offset, int v) {
             try {
-                return theUnsafe.getAndAddInt(object, offset, v);
+                HiddenApiBypass.setHiddenApiExemptions("Lsun/misc/Unsafe;");
+                return (int) HiddenApiBypass.invoke(Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }

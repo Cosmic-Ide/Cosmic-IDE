@@ -32,7 +32,6 @@ public class UnsafeUtil {
                                 } catch (Exception e) {
                                     throw new RuntimeException("Unsafe unavailable", e);
                                 }
-                                throw new RuntimeException("Unsafe unavailable");
                             });
         }
     }

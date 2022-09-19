@@ -84,11 +84,10 @@ class KotlinCompiler : Task {
             moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
-            useK2 = File(project.getRootFile(), "k2").exists()
+            useK2 = true
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")
-        val time = System.currentTimeMillis()
 
         makeIncrementally(
             cacheDir,
@@ -100,8 +99,6 @@ class KotlinCompiler : Task {
         if (collector.hasErrors()) {
             throw CompilationFailedException(collector.toString())
         }
-        throw CompilationFailedException((time - System.currentTimeMillis()).toString())
-        // File(mClassOutput, "META-INF").deleteRecursively()
     }
 
     fun getSourceFiles(dir: File): ArrayList<String> {
@@ -110,8 +107,8 @@ class KotlinCompiler : Task {
         if (files == null) return sourceFiles
         for (file in files) {
             if (file.isFile()) {
-                val path = file.extension
-                if (path.equals("java") || path.equals("kt")) {
+                val extension = file.extension
+                if (extension.equals("java") || extension.equals("kt")) {
                     sourceFiles.add(file.absolutePath)
                 }
             } else {

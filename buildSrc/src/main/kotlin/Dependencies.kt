@@ -24,4 +24,5 @@ object Dependencies {
     const val PREFERENCEX = "com.takisoft.preferencex:preferencex:1.1.0"
     const val JDT_ANNOTATION = "org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.600"
     const val SNAKEYAML = "org.yaml:snakeyaml:1.32"
+    const val LSPOSED = "org.lsposed.hiddenapibypass:hiddenapibypass:4.3"
 }

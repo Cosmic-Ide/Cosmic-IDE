@@ -39,7 +39,7 @@ A next-gen Ide for JVM development on Android!
 
 ## Chat
 
-Chat with us on our [Discord Server](https://discord.gg/8Gu6YCq2eS) or on our [Telegram Channel](https://t.me/cosmicide).
+Chat with us on our [Discord Server](https://discord.gg/8Gu6YCq2eS).
 
 ## Downloads
 

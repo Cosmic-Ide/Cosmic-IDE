@@ -1,9 +1,9 @@
 package com.tyron.kotlin.completion.core.model
 
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer
-import org.jetbrains.kotlin.com.intellij.openapi.vfs.impl.ZipHandler
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.vfs.impl.ZipHandler
 import java.util.concurrent.ConcurrentHashMap
 
 class CachedEnvironment<T: Any, E : KotlinCoreEnvironment> {

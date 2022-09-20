@@ -1,6 +1,6 @@
 package com.tyron.kotlin.completion.core.model
 
-import org.jetbrains.kotlin.com.intellij.testFramework.LightVirtualFile
+import com.intellij.testFramework.LightVirtualFile
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import java.io.File
 

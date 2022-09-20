@@ -8,8 +8,8 @@ import com.tyron.completion.progress.ProgressManager;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.concurrency.CancellablePromise;
-import org.jetbrains.kotlin.com.intellij.openapi.application.ModalityState;
-import org.jetbrains.kotlin.com.intellij.openapi.application.NonBlockingReadAction;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.application.NonBlockingReadAction;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

@@ -1,13 +1,13 @@
 package com.tyron.kotlin.completion
 
 import org.cosmic.ide.project.KotlinProject
-import com.tyron.editor.Editor
+import io.github.rosemoe.sora.widget.CodeEditor
 import com.tyron.kotlin.completion.codeassist.getResolutionScope
 import com.tyron.kotlin.completion.codeassist.isVisible
 import com.tyron.kotlin.completion.core.builder.KotlinPsiManager
 import com.tyron.kotlin.completion.core.resolve.KotlinAnalyzer
-import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtilRt
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import com.intellij.openapi.util.text.StringUtilRt
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithVisibility
@@ -75,7 +75,7 @@ object KotlinCompletionUtils {
         }
     }
 
-    fun getPsiElement(project: KotlinProject, editor: Editor, identOffset: Int): PsiElement? {
+    fun getPsiElement(project: KotlinProject, editor: CodeEditor, identOffset: Int): PsiElement? {
         val sourceCode = editor.content
         val sourceCodeWithMarker = StringBuilder(sourceCode).insert(identOffset, KOTLIN_DUMMY_IDENTIFIER).toString()
         val jetFile: KtFile?

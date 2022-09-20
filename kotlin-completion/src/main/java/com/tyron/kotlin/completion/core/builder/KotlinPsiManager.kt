@@ -3,10 +3,10 @@ package com.tyron.kotlin.completion.core.builder
 import org.cosmic.ide.project.KotlinProject
 import com.tyron.kotlin.completion.core.model.KotlinLightVirtualFile
 import com.tyron.kotlin.completion.core.model.getEnvironment
-import org.jetbrains.kotlin.com.intellij.openapi.util.io.FileUtil
-import org.jetbrains.kotlin.com.intellij.openapi.vfs.CharsetToolkit
-import org.jetbrains.kotlin.com.intellij.psi.PsiFileFactory
-import org.jetbrains.kotlin.com.intellij.psi.impl.PsiFileFactoryImpl
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.vfs.CharsetToolkit
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.impl.PsiFileFactoryImpl
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtFile

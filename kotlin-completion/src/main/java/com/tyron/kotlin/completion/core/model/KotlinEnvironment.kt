@@ -13,32 +13,32 @@ import org.jetbrains.kotlin.cli.jvm.config.addJavaSourceRoot
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.cli.jvm.config.addJvmSdkRoots
 import org.jetbrains.kotlin.cli.jvm.index.JvmDependenciesIndexImpl
-import org.jetbrains.kotlin.com.intellij.core.CoreApplicationEnvironment
-import org.jetbrains.kotlin.com.intellij.lang.ASTNode
-import org.jetbrains.kotlin.com.intellij.mock.MockProject
-import org.jetbrains.kotlin.com.intellij.openapi.Disposable
-import org.jetbrains.kotlin.com.intellij.openapi.application.AppUIExecutor
-import org.jetbrains.kotlin.com.intellij.openapi.application.AsyncExecutionService
-import org.jetbrains.kotlin.com.intellij.openapi.application.ModalityState
-import org.jetbrains.kotlin.com.intellij.openapi.application.NonBlockingReadAction
-import org.jetbrains.kotlin.com.intellij.openapi.editor.Document
-import org.jetbrains.kotlin.com.intellij.openapi.editor.impl.DocumentWriteAccessGuard
-import org.jetbrains.kotlin.com.intellij.openapi.extensions.ExtensionPointName
-import org.jetbrains.kotlin.com.intellij.openapi.fileTypes.FileType
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project
-import org.jetbrains.kotlin.com.intellij.openapi.util.*
-import org.jetbrains.kotlin.com.intellij.pom.PomModel
-import org.jetbrains.kotlin.com.intellij.pom.PomModelAspect
-import org.jetbrains.kotlin.com.intellij.pom.PomTransaction
-import org.jetbrains.kotlin.com.intellij.pom.core.impl.PomModelImpl
-import org.jetbrains.kotlin.com.intellij.pom.tree.TreeAspect
-import org.jetbrains.kotlin.com.intellij.psi.*
-import org.jetbrains.kotlin.com.intellij.psi.codeStyle.ChangedRangesInfo
-import org.jetbrains.kotlin.com.intellij.psi.codeStyle.CodeStyleManager
-import org.jetbrains.kotlin.com.intellij.psi.codeStyle.Indent
-import org.jetbrains.kotlin.com.intellij.psi.impl.PsiDocumentManagerBase
-import org.jetbrains.kotlin.com.intellij.psi.impl.PsiNameHelperImpl
-import org.jetbrains.kotlin.com.intellij.util.ThrowableRunnable
+import com.intellij.core.CoreApplicationEnvironment
+import com.intellij.lang.ASTNode
+import com.intellij.mock.MockProject
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.AppUIExecutor
+import com.intellij.openapi.application.AsyncExecutionService
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.NonBlockingReadAction
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.impl.DocumentWriteAccessGuard
+import com.intellij.openapi.extensions.ExtensionPointName
+import com.intellij.openapi.fileTypes.FileType
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.*
+import com.intellij.pom.PomModel
+import com.intellij.pom.PomModelAspect
+import com.intellij.pom.PomTransaction
+import com.intellij.pom.core.impl.PomModelImpl
+import com.intellij.pom.tree.TreeAspect
+import com.intellij.psi.*
+import com.intellij.psi.codeStyle.ChangedRangesInfo
+import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.psi.codeStyle.Indent
+import com.intellij.psi.impl.PsiDocumentManagerBase
+import com.intellij.psi.impl.PsiNameHelperImpl
+import com.intellij.util.ThrowableRunnable
 import org.jetbrains.kotlin.config.*
 import org.jetbrains.kotlin.config.CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS
 import org.jetbrains.kotlin.config.CommonConfigurationKeys.MODULE_NAME
@@ -52,7 +52,7 @@ fun getEnvironment(module: KotlinProject): KotlinCoreEnvironment {
     return KotlinEnvironment.getEnvironment(module)
 }
 
-fun getEnvironment(project: org.jetbrains.kotlin.com.intellij.openapi.project.Project): KotlinCoreEnvironment? {
+fun getEnvironment(project: com.intellij.openapi.project.Project): KotlinCoreEnvironment? {
     val javaProject = KotlinEnvironment.getJavaProject(project)
     return javaProject?.let { KotlinEnvironment.getEnvironment(it) }
 }
@@ -287,7 +287,7 @@ class KotlinEnvironment private constructor(val module: KotlinProject, disposabl
         }
 
         @JvmStatic
-        fun getJavaProject(project: org.jetbrains.kotlin.com.intellij.openapi.project.Project):
+        fun getJavaProject(project: com.intellij.openapi.project.Project):
                 KotlinProject? = cachedEnvironment.getEclipseResource(project)
 
     }

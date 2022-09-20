@@ -2,7 +2,7 @@ package com.tyron.kotlin.completion.core.resolve
 
 import com.tyron.kotlin.completion.core.model.KotlinCommonEnvironment
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
-import org.jetbrains.kotlin.com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFile
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.load.kotlin.PackagePartProvider
 import org.jetbrains.kotlin.metadata.jvm.deserialization.ModuleMapping

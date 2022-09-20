@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 import org.cosmic.ide.project.KotlinProject;
 import com.tyron.kotlin.completion.core.model.KotlinEnvironment;
 
-import org.jetbrains.kotlin.com.intellij.mock.MockProject;
-import org.jetbrains.kotlin.com.intellij.openapi.project.Project;
-import org.jetbrains.kotlin.com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.mock.MockProject;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.search.GlobalSearchScope;
 import org.jetbrains.kotlin.config.JvmTarget;
 import org.jetbrains.kotlin.config.LanguageVersionSettings;
 import org.jetbrains.kotlin.load.java.AbstractJavaClassFinder;

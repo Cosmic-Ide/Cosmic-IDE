@@ -48,7 +48,7 @@ object ServiceLoaderLite {
             try {
                 val instance = classLoader.loadClass(className).getConstructor()
                     .newInstance()
-                implementations += service?.cast(instance)
+                implementations += service.cast(instance)
             } catch (e: ClassNotFoundException) {
                 throw ClassNotFoundException("Unable to find class $className in $files")
             }

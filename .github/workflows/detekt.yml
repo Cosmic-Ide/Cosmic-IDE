@@ -12,7 +12,6 @@ env:
 
 jobs:
   detekt:
-  name: Detekt
   runs-on: ubuntu-latest
 
   steps:

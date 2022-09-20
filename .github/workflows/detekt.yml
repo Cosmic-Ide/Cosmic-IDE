@@ -12,28 +12,29 @@ env:
 
 jobs:
   detekt:
-  runs-on: ubuntu-latest
 
-  steps:
-    - uses: actions/checkout@v2
+    runs-on: ubuntu-latest
 
-    - name: Setup detekt
-      id: detekt_setup
-      uses: ./
-      with:
-        detekt_version: ${{ env.DETEKT_RELEASE_TAG }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup detekt
+        id: detekt_setup
+        uses: ./
+        with:
+          detekt_version: ${{ env.DETEKT_RELEASE_TAG }}
 
 
-    - name: Show CLI tool contents
-      run: |
-        ls -la ${{ steps.detekt_setup.outputs.detekt }}
+      - name: Show CLI tool contents
+        run: |
+          ls -la ${{ steps.detekt_setup.outputs.detekt }}
 
-    - name: Run Detekt
-      continue-on-error: true
-      run: |
-        detekt-cli --input ${{ github.workspace }} --report sarif:${{ github.workspace }}/detekt.sarif.json
+      - name: Run Detekt
+        continue-on-error: true
+        run: |
+          detekt-cli --input ${{ github.workspace }} --report sarif:${{ github.workspace }}/detekt.sarif.json
 
-    - uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ${{ github.workspace }}/detekt.sarif.json
-        checkout_path: ${{ github.workspace }}
+      - uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ github.workspace }}/detekt.sarif.json
+          checkout_path: ${{ github.workspace }}

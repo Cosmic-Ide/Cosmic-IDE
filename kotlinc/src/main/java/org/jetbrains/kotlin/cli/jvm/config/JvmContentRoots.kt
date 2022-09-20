@@ -89,8 +89,8 @@ fun CompilerConfiguration.configureJdkClasspathRoots() {
     if (getBoolean(JVMConfigurationKeys.NO_JDK)) return
 
     val jdkHome = get(JVMConfigurationKeys.JDK_HOME)
-    val (javaRoot, classesRoots) = if (jdkHome == null) {
-        val javaHome = File(System.getProperty("java.home"))
+    if (jdkHome == null) {
+        val javaHome = File(System.getProperty("java.home")!!)
         put(JVMConfigurationKeys.JDK_HOME, javaHome)
 
         javaHome to PathUtil.getJdkClassesRootsFromCurrentJre()

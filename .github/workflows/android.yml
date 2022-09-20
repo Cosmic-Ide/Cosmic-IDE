@@ -4,20 +4,20 @@ name: Android CI
 on:
   push:
     paths-ignore:
-      - .idea/*
       - LICENSE
       - README.md
       - SECURITY.md
       - CODE_OF_CONDUCT.md
+      - .github/workflows/*
       - .github/ISSUE_TEMPLATE/*
       - fastlane/*
   pull_request:
     path-ignore:
-      - .idea/*
       - LICENSE
       - README.md
       - SECURITY.md
       - CODE_OF_CONDUCT.md
+      - .github/workflows/*
       - .github/ISSUE_TEMPLATE/*
       - fastlane/*
   workflow_dispatch:

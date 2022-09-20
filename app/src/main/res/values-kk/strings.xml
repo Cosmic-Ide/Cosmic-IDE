@@ -20,7 +20,6 @@
     <string name="close_all">Барлығын жабу</string>
     <string name="no_open_files">Ашылған бірде-бір файл жоқ</string>
     <string name="open_the_file">Сол жақтағы меню арқылы файлды ашыңыз</string>
-    <string name="successful_compilation">Компиляция ойдағыдай аяқталды</string>
 
     <!-- ProjectActivity-де қолданылатын жолдар-->
     <string name="projects">Жобалар</string>

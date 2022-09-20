@@ -84,7 +84,7 @@ class Indexer {
     fun flush() {
         try {
             FileUtil.writeFile(filePath, asString())
-        } catch (e: Throwable) {
+        } catch (ignore: Throwable) {
         }
     }
 }

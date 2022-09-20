@@ -20,7 +20,6 @@
     <string name="close_all">Закрыть все</string>
     <string name="no_open_files">Нет открытых файлов</string>
     <string name="open_the_file">Откройте файл через левое меню</string>
-    <string name="successful_compilation">Успешная компиляция</string>
 
     <!-- Строки, используемые ProjectActivity -->
     <string name="projects">Проекты</string>
@@ -67,5 +66,4 @@
     <string name="stage_javac">Компиляция с Javac&#8230;</string>
     <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
     <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
-    <string name="stage_loading_dex">Загрузка DEX-файла&#8230;</string>
 </resources>

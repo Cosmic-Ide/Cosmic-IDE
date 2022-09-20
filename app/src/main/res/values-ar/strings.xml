@@ -18,7 +18,7 @@
     <string name="projects">المشاريع</string>
     <string name="new_project">مشروع جديد</string>
     <string name="delete_project">حذف المشروع</string> 
-    <string name="project_delete_warning">هل تريد حذف ٪1$s؟</string>
+    <string name="project_delete_warning">هل تريد حذ %1$s؟</string>
     <string name="project_name">إسم المشروع</string>
     <string name="no_projects_title">لم يتم العثور على مشاريع</string>
     <string name="no_projects_suggestion">قم بإنشاء مشروع من خلال النقر على زر الإضافة أدناه</string>

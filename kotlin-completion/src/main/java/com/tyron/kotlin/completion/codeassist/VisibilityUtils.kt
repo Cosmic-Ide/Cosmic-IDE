@@ -36,7 +36,7 @@ fun DeclarationDescriptorWithVisibility.isVisible(
     bindingContext: BindingContext? = null,
     element: KtSimpleNameExpression? = null
 ): Boolean {
-    if (DescriptorVisibilities.isVisibleWithAnyReceiver(this, from)) return true
+    if (DescriptorVisibilities.isVisibleWithAnyReceiver(this, from, false)) return true
 
     if (bindingContext == null || element == null) return false
 
@@ -44,12 +44,12 @@ fun DeclarationDescriptorWithVisibility.isVisible(
     if (receiverExpression != null) {
         val receiverType = bindingContext.getType(receiverExpression) ?: return false
         val explicitReceiver = ExpressionReceiver.create(receiverExpression, receiverType, bindingContext)
-        return DescriptorVisibilities.isVisible(explicitReceiver, this, from)
+        return DescriptorVisibilities.isVisible(explicitReceiver, this, from, false)
     }
     else {
         val resolutionScope = element.getResolutionScope(bindingContext)
         return resolutionScope.getImplicitReceiversHierarchy().any {
-            DescriptorVisibilities.isVisible(it.value, this, from)
+            DescriptorVisibilities.isVisible(it.value, this, from, false)
         }
     }
 }

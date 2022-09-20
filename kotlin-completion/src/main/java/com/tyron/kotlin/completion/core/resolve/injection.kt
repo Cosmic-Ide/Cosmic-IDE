@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.load.java.components.JavaPropertyInitializerEvaluato
 import org.jetbrains.kotlin.load.java.components.JavaSourceElementFactoryImpl
 import org.jetbrains.kotlin.load.java.components.SignaturePropagatorImpl
 import org.jetbrains.kotlin.load.java.components.TraceBasedErrorReporter
-import org.jetbrains.kotlin.load.java.lazy.JavaModuleAnnotationsProvider
+import org.jetbrains.kotlin.load.java.JavaModuleAnnotationsProvider
 import org.jetbrains.kotlin.load.java.lazy.JavaResolverSettings
 import org.jetbrains.kotlin.load.java.lazy.ModuleClassResolver
 import org.jetbrains.kotlin.load.kotlin.DeserializationComponentsForJava
@@ -111,10 +111,9 @@ fun createContainerForLazyResolveWithJava(
     targetEnvironment.configure(this)
 
     useInstance(JavaResolverSettings.create(
-        isReleaseCoroutines = languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines),
         true,
-        typeEnhancementImprovementsInStrictMode = true,
-        ignoreNullabilityForErasedValueParameters = false
+        true,
+        false
     ))
 }.apply {
     get<JavaClassFinderImpl>().initialize(bindingTrace, get(), languageVersionSettings, jvmTarget)

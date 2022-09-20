@@ -2,7 +2,6 @@ package com.tyron.kotlin.completion.core.resolve.lang.kotlin
 
 import org.cosmic.ide.project.KotlinProject
 import com.tyron.kotlin.completion.core.model.KotlinEnvironment
-import com.tyron.kotlin.completion.core.resolve.lang.java.structure.CodeAssistJavaElementUtil
 import org.jetbrains.kotlin.cli.jvm.index.JavaRoot
 import org.jetbrains.kotlin.cli.jvm.index.JvmDependenciesIndex
 import com.intellij.openapi.project.Project

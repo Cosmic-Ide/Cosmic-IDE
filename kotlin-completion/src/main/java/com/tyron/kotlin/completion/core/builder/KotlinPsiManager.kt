@@ -86,7 +86,9 @@ private class ProjectSourceFiles : PsiFilesStorage {
     fun addFilesToParse(module: KotlinProject) {
         projectFiles[module] = HashSet()
 
-        val kotlinFiles = module.kotlinFiles
+        val kotlinFiles = File(module.getSrcDirPath()).walkBottomUp().filter {
+            it.extension == "kt"
+        }
 
     }
 

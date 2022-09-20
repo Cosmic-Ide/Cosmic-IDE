@@ -1,6 +1,6 @@
 package com.tyron.kotlin.completion.core.model
 
-import com.tyron.builder.BuildModule
+import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.KotlinProject
 import com.tyron.common.TestUtil
 import org.jetbrains.concurrency.CancellablePromise
@@ -71,14 +71,11 @@ class KotlinEnvironment private constructor(val module: KotlinProject, disposabl
     }
 
     private fun configureClasspath(kotlinModule: KotlinProject) {
-        val androidJar = BuildModule.getAndroidJar()
-        if (androidJar.exists()) {
-            addToClassPath(androidJar)
-        }
+        addToClassPath(File(FileUtil.getClasspathDir(), "android.jar"))
 
-        addToClassPath(kotlinModule.getSrcDirPath())
+        addToClassPath(File(kotlinModule.getSrcDirPath()))
 
-        File(kotlinModule.libraries).walkBottomUp().forEach {
+        File(kotlinModule.getLibDirPath()).walkBottomUp().forEach {
             if (it.extension == "jar") {
                 addToClassPath(it)
             }
@@ -89,12 +86,12 @@ class KotlinEnvironment private constructor(val module: KotlinProject, disposabl
         private val cachedEnvironment = CachedEnvironment<KotlinProject, KotlinCoreEnvironment>()
         private val environmentCreation = { module: KotlinProject ->
             val environment = KotlinCoreEnvironment.createForProduction(
-                Disposer.newDisposable("Project Env ${module.name}"),
+                Disposer.newDisposable("Project Env ${module.getProjectName()}"),
                 getConfiguration(module),
                 EnvironmentConfigFiles.JVM_CONFIG_FILES
             )
 
-            environment.addKotlinSourceRoots(listOf(module.kotlinDirectory, module.getSrcDirPath()))
+            environment.addKotlinSourceRoots(listOf(File(module.getSrcDirPath())))
 
             CoreApplicationEnvironment.registerApplicationExtensionPoint(DocumentWriteAccessGuard.EP_NAME, DocumentWriteAccessGuard::class.java);
             environment.projectEnvironment.registerProjectExtensionPoint(
@@ -307,10 +304,7 @@ private fun getConfiguration(module: KotlinProject): CompilerConfiguration {
         map
     )
 
-    if (TestUtil.isWindows()) {
-        configuration.put(CLIConfigurationKeys.INTELLIJ_PLUGIN_ROOT, """C:\Users\tyron scott\StudioProjects\CodeAssist\kotlin-completion\src\test\resources""")
-    }
-    configuration.put(MODULE_NAME, module.name)
+    configuration.put(MODULE_NAME, module.getProjectName())
     configuration.put(LANGUAGE_VERSION_SETTINGS, settings)
     configuration.put(
         CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
@@ -319,10 +313,10 @@ private fun getConfiguration(module: KotlinProject): CompilerConfiguration {
     configuration.put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, true)
     configuration.put(JVMConfigurationKeys.NO_JDK, true)
 
-    configuration.addJvmSdkRoots(listOf(BuildModule.getAndroidJar()))
+    configuration.addJvmSdkRoots(listOf(File(FileUtil.getClasspathDir(), "android.jar")))
 
-    configuration.addJavaSourceRoot(module.getSrcDirPath())
-    configuration.addJvmClasspathRoots(module.getLibDirPath())
+    configuration.addJavaSourceRoot(File(module.getSrcDirPath()))
+    configuration.addJvmClasspathRoots(File(module.getLibDirPath()))
 
     return configuration
 }

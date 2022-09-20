@@ -27,6 +27,8 @@ android {
 dependencies {
     implementation(Dependencies.ANDROIDX_ANNOTATION)
     implementation(Dependencies.GUAVA)
+    implementation(projects.common)
+    implementation(projects.soraEditor)
     implementation(projects.projectCreator)
     implementation(projects.kotlinc)
 }

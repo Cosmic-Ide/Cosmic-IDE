@@ -1,6 +1,5 @@
 package com.tyron.kotlin.completion.core.model
 
-import com.tyron.kotlin.completion.core.resolve.KotlinSourceIndex
 import org.jetbrains.kotlin.asJava.KotlinAsJavaSupport
 import org.jetbrains.kotlin.asJava.LightClassGenerationSupport
 import org.jetbrains.kotlin.asJava.finder.JavaElementFinder
@@ -97,7 +96,6 @@ abstract class KotlinCommonEnvironment(disposable: Disposable) {
             )
 
             registerService(ModuleAnnotationsResolver::class.java, CliModuleAnnotationsResolver())
-            registerService(KotlinSourceIndex::class.java, KotlinSourceIndex())
             registerService(ExternalAnnotationsManager::class.java, MockExternalAnnotationsManager())
             registerService(InferredAnnotationsManager::class.java, MockInferredAnnotationsManager())
 

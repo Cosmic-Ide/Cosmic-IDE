@@ -21,7 +21,7 @@ private typealias RandomAccessFileAndBuffer = Pair<RandomAccessFile, MappedByteB
 
 class FastJarFileSystem private constructor(internal val unmapBuffer: MappedByteBuffer.() -> Unit) : DeprecatedVirtualFileSystem() {
     private val myHandlers: MutableMap<String, FastJarHandler> =
-        ConcurrentFactoryMap.createMap { key: String -> FastJarHandler(this@FastJarFileSystem, key) }
+        ConcurrentFactoryMap.createMap { key: String -> FastJarHandler(this, key) }
 
     internal val cachedOpenFileHandles: FileAccessorCache<File, RandomAccessFileAndBuffer> =
         object : FileAccessorCache<File, RandomAccessFileAndBuffer>(20, 10) {

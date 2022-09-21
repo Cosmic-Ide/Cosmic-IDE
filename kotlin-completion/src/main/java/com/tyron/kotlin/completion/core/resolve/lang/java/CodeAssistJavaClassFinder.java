@@ -58,8 +58,8 @@ public class CodeAssistJavaClassFinder extends AbstractJavaClassFinder {
     }
 
     @Override
-    public JavaPackage findPackage(@NonNull FqName fqName) {
-        return impl.findPackage(fqName);
+    public JavaPackage findPackage(@NonNull FqName fqName, boolean mayHaveAnnotations) {
+        return impl.findPackage(fqName, false);
     }
 
     @Override

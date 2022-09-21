@@ -90,7 +90,7 @@ public class KotlinLanguage extends TextMateLanguage {
         String[] items = referenceVariants.stream().map(it -> it.getName().toString()).toArray(String[]::new);
         setCompleterKeywords(items);
         try {
-            FileUtil.writeFile(FileUtil.getDataDir() + "Kotlin_completion.txt", items);
+            FileUtil.writeFile(FileUtil.getDataDir() + "Kotlin_completion.txt", items.toString());
         } catch (IOException e) {}
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }

@@ -16,6 +16,7 @@ import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
 import org.cosmic.ide.activity.editor.CodeEditorView
+import org.cosmic.ide.activity.editor.KotlinLanguage
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -163,17 +164,7 @@ class CodeEditorFragment : Fragment() {
 
     private fun getKotlinLanguage(): Language {
         try {
-            return TextMateLanguage.create(
-                IGrammarSource.fromInputStream(
-                    requireContext().assets.open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
-                    "kotlin.tmLanguage",
-                    null
-                ), 
-                InputStreamReader(
-                    requireContext().assets.open("textmate/kotlin/language-configuration.json")
-                ),
-                getColorScheme().themeSource
-            )
+            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile)
         } catch (e: IOException) {
             return EmptyLanguage()
         }

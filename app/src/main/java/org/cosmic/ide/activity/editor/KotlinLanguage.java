@@ -72,11 +72,11 @@ public class KotlinLanguage extends TextMateLanguage {
                                     CompletionPublisher publisher,
                                     Bundle extraArguments) throws CompletionCancelledException {
         char c = content.charAt(position.getIndex() - 1);
-        publisher.addItem(new SimpleCompletionItem(prefix.length(), "joe"));
 //        if (!isAutoCompleteChar(c)) {
 //            return;
 //        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
+        publisher.addItem(new SimpleCompletionItem(prefix.length(), "joe"));
         PsiElement psiElement = KotlinCompletionUtils.INSTANCE
                 .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCursor().getLeft());
         KtSimpleNameExpression parent =

@@ -90,7 +90,10 @@ class KotlinEnvironment private constructor(val module: KotlinProject, disposabl
                 EnvironmentConfigFiles.JVM_CONFIG_FILES
             )
 
-            environment.addKotlinSourceRoots(listOf(File(module.getSrcDirPath())))
+            val kotlinSourceRoots = File(module.getLibDirPath()).walkBottomUp().filter {
+                it.extension == "kt"
+            }.toList()
+            environment.addKotlinSourceRoots(kotlinSourceRoots)
 
             CoreApplicationEnvironment.registerApplicationExtensionPoint(DocumentWriteAccessGuard.EP_NAME, DocumentWriteAccessGuard::class.java);
             environment.projectEnvironment.registerProjectExtensionPoint(

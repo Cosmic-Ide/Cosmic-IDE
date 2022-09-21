@@ -6,7 +6,7 @@ import com.tyron.kotlin_completion.util.PsiUtils;
 import com.tyron.kotlin.completion.KotlinCompletionUtils;
 import org.cosmic.ide.project.Project;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;

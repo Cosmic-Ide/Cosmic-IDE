@@ -1,6 +1,6 @@
 package com.tyron.kotlin_completion.util;
 
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
 import org.jetbrains.kotlin.name.FqName;
 import org.jetbrains.kotlin.psi.KtElement;

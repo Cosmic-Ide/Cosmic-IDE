@@ -315,7 +315,10 @@ private fun getConfiguration(module: KotlinProject): CompilerConfiguration {
     configuration.addJvmSdkRoots(listOf(File(FileUtil.getClasspathDir(), "android.jar")))
 
     configuration.addJavaSourceRoot(File(module.getSrcDirPath()))
-    configuration.addJvmClasspathRoots(listOf(File(module.getLibDirPath())))
+    val classpathRoots = File(module.getLibDirPath()).walkBottomUp().filter {
+        it.extension == "jar"
+    }.toList()
+    configuration.addJvmClasspathRoots(classpathRoots)
 
     return configuration
 }

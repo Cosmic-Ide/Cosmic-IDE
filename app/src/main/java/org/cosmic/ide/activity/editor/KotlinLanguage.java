@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import com.tyron.kotlin_completion.util.PsiUtils;
 import com.tyron.kotlin.completion.KotlinCompletionUtils;
+import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
@@ -25,6 +26,7 @@ import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import org.eclipse.tm4e.core.registry.IThemeSource;
 
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.File;
 import java.util.Collection;
@@ -76,6 +78,8 @@ public class KotlinLanguage extends TextMateLanguage {
         referenceVariants.stream().forEach(it -> {
             publisher.addItem(new SimpleCompletionItem(prefix.length(), it.getName().toString()));
         });
+        FileUtil.writeFile(FileUtil.getDataDir() + "kotlin_completion.txt",
+                String.join(", ", referenceVariants.stream().map(it -> it.getName().toString()).collect(Collectors.toList())));
     }
 
     public boolean isAutoCompleteChar(char p1) {

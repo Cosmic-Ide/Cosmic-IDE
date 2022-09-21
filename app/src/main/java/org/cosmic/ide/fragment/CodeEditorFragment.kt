@@ -163,11 +163,11 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun getKotlinLanguage(): Language {
-        try {
+//        try {
             return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
-        } catch (e: IOException) {
-            return EmptyLanguage()
-        }
+//        } catch (e: IOException) {
+//            return EmptyLanguage()
+//        }
     }
 
     private fun getSmaliLanguage(): Language {

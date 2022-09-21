@@ -79,6 +79,6 @@ public class KotlinLanguage extends TextMateLanguage {
     }
 
     public boolean isAutoCompleteChar(char p1) {
-        return p1 == '.' || MyCharacter.isJavaIdentifierPart(p1);
+        return true;
     }
 }

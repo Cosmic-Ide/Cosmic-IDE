@@ -78,8 +78,10 @@ public class KotlinLanguage extends TextMateLanguage {
         referenceVariants.stream().forEach(it -> {
             publisher.addItem(new SimpleCompletionItem(prefix.length(), it.getName().toString()));
         });
+        try {
         FileUtil.writeFile(FileUtil.getDataDir() + "kotlin_completion.txt",
                 String.join(", ", referenceVariants.stream().map(it -> it.getName().toString()).collect(Collectors.toList())));
+        } catch (IOException e) {}
     }
 
     public boolean isAutoCompleteChar(char p1) {

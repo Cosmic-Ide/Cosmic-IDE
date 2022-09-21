@@ -88,7 +88,11 @@ public class KotlinLanguage extends TextMateLanguage {
         Collection<DeclarationDescriptor> referenceVariants = KotlinCompletionUtils.INSTANCE
                 .getReferenceVariants(parent, name -> true, mCurrentFile, prefix);
         String[] items = referenceVariants.stream().map(it -> it.getName().toString()).toArray(String[]::new);
- //       getAutoCompleter().requireAutoComplete(prefix, publisher, items);
+        setCompleterKeywords(items);
+        try {
+            FileUtil.writeFile(FileUtil.getDataDir() + "Kotlin_completion.txt", items);
+        } catch (IOException e) {}
+        super.requireAutoComplete(content, position, publisher, extraArguments);
     }
 
     public boolean isAutoCompleteChar(char p1) {

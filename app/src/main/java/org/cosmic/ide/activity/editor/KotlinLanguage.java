@@ -65,7 +65,7 @@ public class KotlinLanguage extends TextMateLanguage {
                 .getReferenceVariants(parent, name -> true, mCurrentFile, prefix);
         referenceVariants.stream().forEach(it -> {
             publisher.addItem(new SimpleCompletionItem(prefix.length(), it.getName().toString()));
-        })
+        });
     }
 
     public boolean isAutoCompleteChar(char p1) {

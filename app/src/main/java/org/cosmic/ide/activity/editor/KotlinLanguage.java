@@ -8,22 +8,26 @@ import org.cosmic.ide.project.Project;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
+import org.eclipse.tm4e.core.registry.IGrammarSource;
 import io.github.rosemoe.sora.widget.CodeEditor;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
+import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
-import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
+import org.eclipse.tm4e.core.registry.IThemeSource;
 
 import java.io.IOException;
 import java.io.File;
 import java.util.Collection;
+import java.io.InputStreamReader;
 
 public class KotlinLanguage extends TextMateLanguage {
 
@@ -31,11 +35,11 @@ public class KotlinLanguage extends TextMateLanguage {
     private final Project mProject;
     private final File mCurrentFile;
 
-    public KotlinLanguage(CodeEditor editor, Project project, File file) throws IOException {
+    public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme) throws IOException {
         mEditor = editor;
         mProject = project;
         mCurrentFile = file;
-        super.create(
+        super(
                 IGrammarSource.fromInputStream(
                     editor.getContext().getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
                     "kotlin.tmLanguage",
@@ -43,7 +47,8 @@ public class KotlinLanguage extends TextMateLanguage {
                 ),
                 new InputStreamReader(
                         editor.getContext().getAssets().open("textmate/kotlin/language-configuration.json")),
-                getColorScheme().getThemeSource());
+                theme,
+                false);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class KotlinLanguage extends TextMateLanguage {
         }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
         PsiElement psiElement = KotlinCompletionUtils.INSTANCE
-                .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCaret().getStart());
+                .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCursor().getLeft());
         KtSimpleNameExpression parent =
                 PsiUtils.findParent(psiElement, KtSimpleNameExpression.class);
 
@@ -70,34 +75,5 @@ public class KotlinLanguage extends TextMateLanguage {
 
     public boolean isAutoCompleteChar(char p1) {
         return p1 == '.' || MyCharacter.isJavaIdentifierPart(p1);
-    }
-
-    @Override
-    public NewlineHandler[] getNewlineHandlers() {
-        return handlers;
-    }
-
-    private final NewlineHandler[] handlers = new NewlineHandler[]{new BraceHandler()};
-
-    class BraceHandler implements NewlineHandler {
-
-        @Override
-        public boolean matchesRequirement(String beforeText, String afterText) {
-            return beforeText.endsWith("{") && afterText.startsWith("}");
-        }
-
-        @Override
-        public NewlineHandleResult handleNewline(String beforeText, String afterText, int tabSize) {
-            int count = TextUtils.countLeadingSpaceCount(beforeText, tabSize);
-            int advanceBefore = getIndentAdvance(beforeText);
-            int advanceAfter = getIndentAdvance(afterText);
-            String text;
-            StringBuilder sb = new StringBuilder("\n").append(
-                    TextUtils.createIndent(count + advanceBefore, tabSize, useTab()))
-                    .append('\n')
-                    .append(text = TextUtils.createIndent(count + advanceAfter, tabSize, useTab()));
-            int shiftLeft = text.length() + 1;
-            return new NewlineHandleResult(sb, shiftLeft);
-        }
     }
 }

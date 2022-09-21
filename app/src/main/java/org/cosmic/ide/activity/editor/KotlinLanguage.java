@@ -1,6 +1,7 @@
 package org.cosmic.ide.activity.editor;
 
 import android.content.res.AssetManager;
+import androidx.annotation.WorkerThread;
 import android.os.Bundle;
 import com.tyron.kotlin_completion.util.PsiUtils;
 import com.tyron.kotlin.completion.KotlinCompletionUtils;
@@ -48,7 +49,7 @@ public class KotlinLanguage extends TextMateLanguage {
                 new InputStreamReader(
                         editor.getContext().getAssets().open("textmate/kotlin/language-configuration.json")),
                 theme,
-                false);
+                true);
         mEditor = editor;
         mCurrentFile = file;
         if (project instanceof KotlinProject) {
@@ -56,17 +57,25 @@ public class KotlinLanguage extends TextMateLanguage {
         } else {
             mProject = new KotlinProject(project.getRootFile());
         }
+        setAutoCompleteEnabled(true);
     }
 
     @Override
+    public int getInterruptionLevel() {
+        return INTERRUPTION_LEVEL_STRONG;
+    }
+
+    @Override
+    @WorkerThread
     public void requireAutoComplete(ContentReference content,
                                     CharPosition position,
                                     CompletionPublisher publisher,
                                     Bundle extraArguments) throws CompletionCancelledException {
         char c = content.charAt(position.getIndex() - 1);
-        if (!isAutoCompleteChar(c)) {
-            return;
-        }
+        publisher.addItem(new SimpleCompletionItem(prefix.length(), "joe"));
+//        if (!isAutoCompleteChar(c)) {
+//            return;
+//        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
         PsiElement psiElement = KotlinCompletionUtils.INSTANCE
                 .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCursor().getLeft());

@@ -2,7 +2,6 @@ package com.tyron.kotlin.completion.core.model
 
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.KotlinProject
-import com.tyron.common.TestUtil
 import org.jetbrains.concurrency.CancellablePromise
 import org.jetbrains.kotlin.asJava.classes.FacadeCache
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
@@ -316,7 +315,7 @@ private fun getConfiguration(module: KotlinProject): CompilerConfiguration {
     configuration.addJvmSdkRoots(listOf(File(FileUtil.getClasspathDir(), "android.jar")))
 
     configuration.addJavaSourceRoot(File(module.getSrcDirPath()))
-    configuration.addJvmClasspathRoots(File(module.getLibDirPath()))
+    configuration.addJvmClasspathRoots(listOf(File(module.getLibDirPath())))
 
     return configuration
 }

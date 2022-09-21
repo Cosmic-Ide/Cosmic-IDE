@@ -75,11 +75,10 @@ object KotlinCompletionUtils {
         }
     }
 
-    fun getPsiElement(project: KotlinProject, editor: CodeEditor, identOffset: Int): PsiElement? {
-        val sourceCode = editor.content
+    fun getPsiElement(file: File, project: KotlinProject, editor: CodeEditor, identOffset: Int): PsiElement? {
+        val sourceCode = editor.getText().toString()
         val sourceCodeWithMarker = StringBuilder(sourceCode).insert(identOffset, KOTLIN_DUMMY_IDENTIFIER).toString()
         val jetFile: KtFile?
-        val file = editor.currentFile
         if (file != null) {
             jetFile = KotlinPsiManager.parseText(StringUtilRt.convertLineSeparators(sourceCodeWithMarker), file, project)
         } else {

@@ -120,6 +120,7 @@ dependencies {
     implementation(Dependencies.PREFERENCEX)
     implementation(projects.common)
     implementation(projects.soraEditor)
+    implementation(projects.kotlinc)
     implementation(projects.kotlinCompletion)
     implementation(projects.androidCompiler)
     implementation(projects.projectCreator)

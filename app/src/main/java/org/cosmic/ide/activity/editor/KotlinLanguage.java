@@ -76,6 +76,9 @@ public class KotlinLanguage extends TextMateLanguage {
 //            return;
 //        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
+        try {
+            FileUtil.writeFile(FileUtil.getDataDir() + "KotlinLanguage.txt", "Seems like this method actually gets called");
+        } catch (IOException e) {}
         publisher.addItem(new SimpleCompletionItem(prefix.length(), "joe"));
         PsiElement psiElement = KotlinCompletionUtils.INSTANCE
                 .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCursor().getLeft());
@@ -84,13 +87,8 @@ public class KotlinLanguage extends TextMateLanguage {
 
         Collection<DeclarationDescriptor> referenceVariants = KotlinCompletionUtils.INSTANCE
                 .getReferenceVariants(parent, name -> true, mCurrentFile, prefix);
-        referenceVariants.stream().forEach(it -> {
-            publisher.addItem(new SimpleCompletionItem(prefix.length(), it.getName().toString()));
-        });
-        try {
-        FileUtil.writeFile(FileUtil.getDataDir() + "kotlin_completion.txt",
-                String.join(", ", referenceVariants.stream().map(it -> it.getName().toString()).collect(Collectors.toList())));
-        } catch (IOException e) {}
+        String[] items = referenceVariants.stream().map(it -> it.getName().toString()).toArray(String[]::new);
+        getAutoCompleter().requireAutoComplete(prefix, publisher, items);
     }
 
     public boolean isAutoCompleteChar(char p1) {

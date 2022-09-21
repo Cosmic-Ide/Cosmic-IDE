@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import com.tyron.kotlin_completion.util.PsiUtils;
 import com.tyron.kotlin.completion.KotlinCompletionUtils;
+import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 import com.intellij.psi.PsiElement;
@@ -32,13 +33,10 @@ import java.io.InputStreamReader;
 public class KotlinLanguage extends TextMateLanguage {
 
     private final CodeEditor mEditor;
-    private final Project mProject;
+    private final KotlinProject mProject;
     private final File mCurrentFile;
 
     public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme) throws IOException {
-        mEditor = editor;
-        mProject = project;
-        mCurrentFile = file;
         super(
                 IGrammarSource.fromInputStream(
                     editor.getContext().getAssets().open("textmate/kotlin/syntaxes/kotlin.tmLanguage"),
@@ -49,6 +47,13 @@ public class KotlinLanguage extends TextMateLanguage {
                         editor.getContext().getAssets().open("textmate/kotlin/language-configuration.json")),
                 theme,
                 false);
+        mEditor = editor;
+        mCurrentFile = file;
+        if (project instanceof KotlinProject) {
+            mProject = (KotlinProject) project;
+        } else {
+            mProject = new KotlinProject(project.getRootFile());
+        }
     }
 
     @Override

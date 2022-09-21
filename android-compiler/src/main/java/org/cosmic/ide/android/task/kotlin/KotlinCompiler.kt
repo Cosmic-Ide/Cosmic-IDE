@@ -85,6 +85,7 @@ class KotlinCompiler : Task {
             pluginClasspaths = plugins
             noJdk = true
             useK2 = true
+            useJavac = true
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

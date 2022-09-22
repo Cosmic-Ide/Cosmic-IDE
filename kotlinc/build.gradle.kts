@@ -38,5 +38,4 @@ dependencies {
     api(files("libs/kotlin-compiler-1.7.20-RC.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
-    compileOnly(files("libs/android-stubs.jar"))
 }

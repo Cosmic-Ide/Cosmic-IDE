@@ -82,6 +82,7 @@ class FastJarFileSystem private constructor(internal val unmapBuffer: MappedByte
 
 private fun prepareCleanerCallback(): ((ByteBuffer) -> Unit)? {
     return try {
+          // API 26+ already allow using these methods
 //        if (IS_PRIOR_9_JRE) {
             val cleaner = Class.forName("java.nio.DirectByteBuffer").getMethod("cleaner")
             cleaner.isAccessible = true

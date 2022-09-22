@@ -80,12 +80,11 @@ class KotlinCompiler : Task {
             javaSourceRoots = sourceFiles.filter {
                 it.endsWith(".java")
             }.toTypedArray()
-            // incremental compiler needs the module name somewhy
+            // incremental compiler needs the module name for generating .kotlin_module files
             moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
             useK2 = true
-            useJavac = true
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

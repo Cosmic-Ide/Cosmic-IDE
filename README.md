@@ -68,7 +68,8 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 - \[ \] Kotlin error/warning highlight in editor
 - \[ \] Git Support (possibly with JGit)
 - \[ \] Functions for external Jar/Dex files
-- \[ \] Java auto-complete server
+- \[ \] Java auto-complete
+- \[ \] Kotlin auto-complete
 
 ## Building
 
@@ -100,7 +101,7 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 
-- [Itsaky](https://github.com/Itsaky) for [nb-javac-android](https://github.com/Itsaky/nb-javac-android)
+- [AndroidIDEOfficial](https://github.com/AndroidIDEOfficial) for [nb-javac-android](https://github.com/AndroidIDEOfficial/nb-javac-android)
 
 - [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
 

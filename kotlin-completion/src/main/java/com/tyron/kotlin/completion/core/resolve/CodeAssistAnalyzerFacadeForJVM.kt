@@ -83,6 +83,7 @@ object CodeAssistAnalyzerFacadeForJVM {
         try {
             container.get<LazyTopDownAnalyzer>().analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, filesToAnalyze)
         } catch (e: KotlinFrontEndException) {
+            throw RuntimeException("exception while analyzeKotlin()", e)
 //          Editor will break if we do not catch this exception
 //          and will not be able to save content without reopening it.
 //          In IDEA this exception throws only in CLI

@@ -38,7 +38,7 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("com.android.tools:r8:3.3.75")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
-    implementation("com.github.Cosmic-Ide:fernflower:72adfdb")
+    implementation("com.github.Cosmic-Ide:fernflower:862ff6b")
     implementation(projects.googleJavaFormat)
     implementation(projects.eclipseJdt)
     implementation(projects.common)

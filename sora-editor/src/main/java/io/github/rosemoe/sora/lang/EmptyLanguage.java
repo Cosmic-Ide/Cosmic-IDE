@@ -93,7 +93,7 @@ public class EmptyLanguage implements Language {
 
     @Override
     public boolean useTab() {
-        return true;
+        return false;
     }
 
     public static class EmptyFormatter implements Formatter {

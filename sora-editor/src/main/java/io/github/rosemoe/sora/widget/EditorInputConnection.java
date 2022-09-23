@@ -55,7 +55,7 @@ import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 class EditorInputConnection extends BaseInputConnection {
 
     private final static Logger logger = Logger.instance("EditorInputConnection");
-    static boolean DEBUG = true;
+    static boolean DEBUG = false;
     private final CodeEditor editor;
     protected ComposingText composingText = new ComposingText();
     protected boolean imeConsumingInput = false;

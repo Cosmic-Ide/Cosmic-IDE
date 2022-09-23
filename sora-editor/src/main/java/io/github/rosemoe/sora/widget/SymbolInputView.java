@@ -31,9 +31,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
-import java.util.function.Consumer;
 
 import io.github.rosemoe.sora.R;
 
@@ -124,7 +121,7 @@ public class SymbolInputView extends LinearLayout {
             addView(btn, new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
             int finalI = i;
             btn.setOnClickListener((view) -> {
-                if (editor != null) {
+                if (editor != null && editor.isEditable()) {
                     if ("\t".equals(insertText[finalI]) && editor.getSnippetController().isInSnippet()) {
                         editor.getSnippetController().shiftToNextTabStop();
                     } else {
@@ -135,12 +132,16 @@ public class SymbolInputView extends LinearLayout {
         }
     }
 
-    @RequiresApi(24)
-    public void forEachButton(@NonNull Consumer<Button> consumer) {
+    public void forEachButton(@NonNull ButtonConsumer consumer) {
         for (int i = 0; i < getChildCount(); i++) {
             consumer.accept((Button) getChildAt(i));
-            ;
         }
+    }
+
+    public interface ButtonConsumer {
+
+        void accept(@NonNull Button btn);
+
     }
 
 }

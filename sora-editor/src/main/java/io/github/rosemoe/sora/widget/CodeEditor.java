@@ -33,6 +33,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -123,6 +124,8 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import io.github.rosemoe.sora.widget.snippet.SnippetController;
 import io.github.rosemoe.sora.widget.style.CursorAnimator;
 import io.github.rosemoe.sora.widget.style.DiagnosticIndicatorStyle;
+import io.github.rosemoe.sora.widget.style.LineInfoPanelPosition;
+import io.github.rosemoe.sora.widget.style.LineInfoPanelPositionMode;
 import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
 import io.github.rosemoe.sora.widget.style.builtin.HandleStyleDrop;
 import io.github.rosemoe.sora.widget.style.builtin.HandleStyleSideDrop;
@@ -259,6 +262,8 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     private boolean undoEnabled;
     private boolean layoutBusy;
     private boolean displayLnPanel;
+    private int lnPanelPosition;
+    private int lnPanelPositionMode;
     private boolean lineNumberEnabled;
     private boolean blockLineEnabled;
     private boolean forceHorizontalScrollable;
@@ -319,7 +324,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     public CodeEditor(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, R.attr.codeEditorStyle);
     }
 
     public CodeEditor(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -475,6 +480,16 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
 
         eventManager = new EventManager();
         renderer = onCreateRenderer();
+
+        var array = getContext().obtainStyledAttributes(attrs, R.styleable.CodeEditor, defStyleAttr, defStyleRes);
+        setHorizontalScrollbarThumbDrawable(array.getDrawable(R.styleable.CodeEditor_android_scrollbarThumbHorizontal));
+        setHorizontalScrollbarTrackDrawable(array.getDrawable(R.styleable.CodeEditor_android_scrollbarTrackHorizontal));
+        setVerticalScrollbarThumbDrawable(array.getDrawable(R.styleable.CodeEditor_android_scrollbarThumbVertical));
+        setVerticalScrollbarTrackDrawable(array.getDrawable(R.styleable.CodeEditor_android_scrollbarTrackVertical));
+        setLnPanelPositionMode(array.getInt(R.styleable.CodeEditor_lnPanelPositionMode, LineInfoPanelPositionMode.FOLLOW));
+        setLnPanelPosition(array.getInt(R.styleable.CodeEditor_lnPanelPosition, LineInfoPanelPosition.CENTER));
+        array.recycle();
+
         styleDelegate = new EditorStyleDelegate(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -487,7 +502,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
                     a.recycle();
                 }
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Failed to get scroll factor", e);
+                Log.e(LOG_TAG, "Failed to get scroll factor, using default.", e);
                 verticalScrollFactor = 32;
             }
         }
@@ -654,6 +669,11 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      * <p>
      * This method allows you to insert texts externally to the content of editor.
      * The content of {@param text} is not checked to be exactly characters of symbols.
+     * <p>
+     * Note that this still works when the editor is not editable. But you should not
+     * call it at that time due to possible problems, especially when {@link #getEditable()} returns
+     * true but {@link #isEditable()} returns false
+     * </p>
      *
      * @param text            Text to insert, usually a text of symbols
      * @param selectionOffset New selection position relative to the start of text to insert.
@@ -1009,6 +1029,42 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         invalidate();
     }
 
+    public void setHorizontalScrollbarThumbDrawable(@Nullable Drawable drawable) {
+        renderer.setHorizontalScrollbarThumbDrawable(drawable);
+    }
+
+    @Nullable
+    public Drawable getHorizontalScrollbarThumbDrawable() {
+        return renderer.getHorizontalScrollbarThumbDrawable();
+    }
+
+    public void setHorizontalScrollbarTrackDrawable(@Nullable Drawable drawable) {
+        renderer.setHorizontalScrollbarTrackDrawable(drawable);
+    }
+
+    @Nullable
+    public Drawable getHorizontalScrollbarTrackDrawable() {
+        return renderer.getHorizontalScrollbarTrackDrawable();
+    }
+
+    public void setVerticalScrollbarThumbDrawable(@Nullable Drawable drawable) {
+        renderer.setVerticalScrollbarThumbDrawable(drawable);
+    }
+
+    @Nullable
+    public Drawable getVerticalScrollbarThumbDrawable() {
+        return renderer.getVerticalScrollbarThumbDrawable();
+    }
+
+    public void setVerticalScrollbarTrackDrawable(@Nullable Drawable drawable) {
+        renderer.setVerticalScrollbarTrackDrawable(drawable);
+    }
+
+    @Nullable
+    public Drawable getVerticalScrollbarTrackDrawable() {
+        return renderer.getVerticalScrollbarTrackDrawable();
+    }
+
     /**
      * @return Enabled / disabled
      * @see CodeEditor#setDisplayLnPanel(boolean)
@@ -1025,6 +1081,45 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      */
     public void setDisplayLnPanel(boolean displayLnPanel) {
         this.displayLnPanel = displayLnPanel;
+        invalidate();
+    }
+
+    /**
+     * @return LineInfoPanelPosition.FOLLOW or LineInfoPanelPosition.FIXED
+     * @see CodeEditor#setLnPanelPosition(int)
+     */
+    public int getLnPanelPositionMode() {
+        return lnPanelPositionMode;
+    }
+
+    /**
+     * Set display position mode the line number panel beside vertical scroll bar
+     *
+     * @param mode Default LineInfoPanelPosition.FOLLOW
+     * @see io.github.rosemoe.sora.widget.style.LineInfoPanelPositionMode
+     */
+    public void setLnPanelPositionMode(int mode) {
+        this.lnPanelPositionMode = mode;
+        invalidate();
+    }
+
+    /**
+     * @return position
+     * @see CodeEditor#setLnPanelPosition(int)
+     */
+    public int getLnPanelPosition() {
+        return lnPanelPosition;
+    }
+
+    /**
+     * Set display position the line number panel beside vertical scroll bar <br/>
+     * Only TOP,CENTER and BOTTOM will be effective when position mode is follow.
+     *
+     * @param position default TOP|RIGHT
+     * @see io.github.rosemoe.sora.widget.style.LineInfoPanelPosition
+     */
+    public void setLnPanelPosition(int position) {
+        this.lnPanelPosition = position;
         invalidate();
     }
 
@@ -1049,21 +1144,33 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         invalidate();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isHorizontalScrollBarEnabled() {
         return horizontalScrollBarEnabled;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setHorizontalScrollBarEnabled(boolean horizontalScrollBarEnabled) {
         this.horizontalScrollBarEnabled = horizontalScrollBarEnabled;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isVerticalScrollBarEnabled() {
         return verticalScrollBarEnabled;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setVerticalScrollBarEnabled(boolean verticalScrollBarEnabled) {
         this.verticalScrollBarEnabled = verticalScrollBarEnabled;
@@ -2698,12 +2805,19 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
                     scroller.getCurrY(), 0, (int) afterScrollY, ScrollEvent.CAUSE_SCALE_TEXT));
             scroller.startScroll(0, (int) afterScrollY, 0, 0, 0);
             scroller.abortAnimation();
+            restartInput();
             postInvalidate();
         }
         this.layoutBusy = busy;
     }
 
     /**
+     * Check whether the editor is actually editable. This is not only related to user
+     * property 'editable', but also editor states. When the editor is busy at initializing
+     * its layout or awaiting the result of format, it is also not editable.
+     * <p>
+     * Do not modify the text externally in editor when this method returns false.
+     *
      * @return Whether the editor is editable, actually.
      * @see CodeEditor#setEditable(boolean)
      * @see CodeEditor#setLayoutBusy(boolean)
@@ -2729,6 +2843,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         this.editable = editable;
         if (!editable) {
             hideSoftInput();
+            snippetController.stopSnippet();
         }
     }
 
@@ -2888,7 +3003,12 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     public void moveSelectionEnd() {
         if (selectionAnchor == null) {
             int line = cursor.getLeftLine();
-            setSelection(line, getText().getColumnCount(line));
+            if (props.enhancedHomeAndEnd && cursor.getLeftColumn() == getText().getColumnCount(line)) {
+                int column = IntPair.getSecond(TextUtils.findLeadingAndTrailingWhitespacePos(text.getLine(cursor.getLeftLine())));
+                setSelection(cursor.getLeftLine(), column);
+            } else {
+                setSelection(line, getText().getColumnCount(line));
+            }
         } else {
             int line = getSelectingTarget().line;
             setSelectionRegion(selectionAnchor.line, selectionAnchor.column, line, getText().getColumnCount(line), false);
@@ -2901,7 +3021,12 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      */
     public void moveSelectionHome() {
         if (selectionAnchor == null) {
-            setSelection(cursor.getLeftLine(), 0);
+            if (props.enhancedHomeAndEnd && cursor.getLeftColumn() == 0) {
+                int column = IntPair.getFirst(TextUtils.findLeadingAndTrailingWhitespacePos(text.getLine(cursor.getLeftLine())));
+                setSelection(cursor.getLeftLine(), column);
+            } else if (cursor.getLeftColumn() != 0) {
+                setSelection(cursor.getLeftLine(), 0);
+            }
         } else {
             setSelectionRegion(selectionAnchor.line, selectionAnchor.column, getSelectingTarget().line, 0, false);
             ensureSelectingTargetVisible();
@@ -2960,10 +3085,11 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         }
         updateCursor();
         updateSelection();
-        if (!touchHandler.hasAnyHeldHandle() && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
+        if (editable && !touchHandler.hasAnyHeldHandle() && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
             cursorAnimator.markEndPos();
             cursorAnimator.start();
         }
+        renderer.invalidateRenderNodes();
         if (makeItVisible) {
             ensurePositionVisible(line, column);
         } else {
@@ -3064,6 +3190,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         updateCursor();
         updateSelection();
         completionWindow.hide();
+        renderer.invalidateRenderNodes();
         if (makeRightVisible) {
             ensurePositionVisible(lineRight, columnRight);
         } else {
@@ -3551,15 +3678,15 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     }
 
     @UiThread
-    public void updateStyles(@NonNull Styles styles, StyleUpdateRange range) {
-        if (textStyles != styles) {
+    public void updateStyles(@NonNull Styles styles, @Nullable StyleUpdateRange range) {
+        if (textStyles != styles || range == null) {
             setStyles(styles);
             return;
         }
         if (highlightCurrentBlock) {
             cursorPosition = findCursorBlock();
         }
-        renderer.invalidateInRegion(range.getStartLine(), range.getEndLine());
+        renderer.invalidateInRegion(range);
         renderer.updateTimestamp();
         invalidate();
     }
@@ -4119,9 +4246,10 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         waitForNextChange = false;
 
         // Auto completion
+        var needCompletion = false;
         if (completionWindow.isEnabled() && !text.isUndoManagerWorking()) {
             if ((!inputConnection.composingText.isComposing() || props.autoCompletionOnComposing) && endColumn != 0 && startLine == endLine) {
-                completionWindow.requireCompletion();
+                needCompletion = true;
             } else {
                 completionWindow.hide();
             }
@@ -4137,13 +4265,16 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
 
         editorLanguage.getAnalyzeManager().insert(start, end, insertedContent);
         touchHandler.hideInsertHandle();
-        if (!cursor.isSelected() && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
+        if (editable && !cursor.isSelected() && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
             cursorAnimator.markEndPos();
             cursorAnimator.start();
         }
         dispatchEvent(new ContentChangeEvent(this, ContentChangeEvent.ACTION_INSERT, start, end, insertedContent));
         onSelectionChanged(SelectionChangeEvent.CAUSE_TEXT_MODIFICATION);
         lastInsertion = new TextRange(start.fromThis(), end.fromThis());
+        if (needCompletion) {
+            completionWindow.requireCompletion();
+        }
     }
 
     @Override
@@ -4172,12 +4303,13 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
 
         updateCursor();
 
+        var needCompletion = false;
         if (completionWindow.isEnabled() && !text.isUndoManagerWorking()) {
             if (!inputConnection.composingText.isComposing() && completionWindow.isShowing()) {
                 if (startLine != endLine || startColumn != endColumn - 1) {
                     completionWindow.hide();
                 } else {
-                    completionWindow.requireCompletion();
+                    needCompletion = true;
                     updateCompletionWindowPosition();
                 }
             }
@@ -4192,13 +4324,16 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             ensureSelectionVisible();
             touchHandler.hideInsertHandle();
         }
-        if (!cursor.isSelected() && !waitForNextChange && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
+        if (editable && !cursor.isSelected() && !waitForNextChange && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
             cursorAnimator.markEndPos();
             cursorAnimator.start();
         }
         editorLanguage.getAnalyzeManager().delete(start, end, deletedContent);
         dispatchEvent(new ContentChangeEvent(this, ContentChangeEvent.ACTION_DELETE, start, end, deletedContent));
         onSelectionChanged(SelectionChangeEvent.CAUSE_TEXT_MODIFICATION);
+        if (needCompletion) {
+            completionWindow.requireCompletion();
+        }
     }
 
     @Override
@@ -4238,6 +4373,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             // Ensure the scroll offset is valid
             touchHandler.scrollBy(0, 0);
             inputConnection.reset();
+            restartInput();
         });
     }
 

@@ -62,6 +62,8 @@ public class Styles {
 
     public int suppressSwitch = Integer.MAX_VALUE;
 
+    public boolean indentCountMode = false;
+
     public Styles() {
         this(null);
     }
@@ -223,9 +225,29 @@ public class Styles {
         }
     }
 
+    /**
+     * Remove all line styles
+     */
     public void eraseAllLineStyles() {
         lineStyles.clear();
         styleTypeCount.clear();
+    }
+
+    /**
+     * @param indentCountMode true if the column in {@link #blocks} is the count of spaces.
+     *                                 In other words, the indentation level. false if the column in
+     *                                 {@link #blocks} are based on actual characters.
+     * @see #isIndentCountMode()
+     */
+    public void setIndentCountMode(boolean indentCountMode) {
+        this.indentCountMode = indentCountMode;
+    }
+
+    /**
+     * @see #setIndentCountMode(boolean)
+     */
+    public boolean isIndentCountMode() {
+        return indentCountMode;
     }
 
     /**

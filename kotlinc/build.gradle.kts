@@ -26,14 +26,14 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.ANDROIDX_ANNOTATION)
-    implementation(Dependencies.JAVAC)
-    implementation(Dependencies.LSPOSED)
+    implementation("androidx.annotation:annotation:1.5.0-beta01")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 
-    runtimeOnly(Dependencies.KOTLIN_REFLECT)
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20-RC")
 
-    api(Dependencies.TROVE4J)
+    api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
     api(files("libs/kotlin-compiler-1.7.20-RC.jar"))
 

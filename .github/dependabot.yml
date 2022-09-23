@@ -2,16 +2,12 @@
 version: 2
 updates:
 
-# enable dependabot updates for project dependencies
-
   - package-ecosystem: gradle
     directory: '/'
     schedule:
       interval: daily
       time: '05:00'
     target-branch: main
-
-# enable dependabot updates for workflow versions
 
   - package-ecosystem: github-actions
     directory: '/'

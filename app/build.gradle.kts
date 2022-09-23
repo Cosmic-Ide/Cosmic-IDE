@@ -105,19 +105,19 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    debugImplementation(Dependencies.LEAK_CANARY)
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.9.1")
 
-    implementation(Dependencies.JAVAC)
-    implementation(Dependencies.MATERIAL)
-    implementation(Dependencies.APPCOMPAT)
-    implementation(Dependencies.RECYCLERVIEW)
-    implementation(Dependencies.SWIPE_REFRESH_LAYOUT)
-    implementation(Dependencies.DEXLIB2)
-    implementation(Dependencies.BAKSMALI)
-    implementation(Dependencies.GUAVA)
-    implementation(Dependencies.PREFERENCEX)
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
+    implementation("com.google.android.material:material:1.7.0-beta01")
+    implementation("androidx.appcompat:appcompat:1.6.0-beta01")
+    implementation("androidx.recyclerview:recyclerview:1.3.0-beta02")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+    implementation("org.smali:dexlib2:2.5.2")
+    implementation("org.smali:baksmali:2.5.2")
+    implementation("com.google.guava:guava:31.1-jre")
+    implementation("com.takisoft.preferencex:preferencex:1.1.0")
     implementation(projects.common)
     implementation(projects.soraEditor)
     implementation(projects.kotlinc)

@@ -9,8 +9,8 @@ java {
 }
 
 dependencies {
-    compileOnly(Dependencies.GUAVA)
-    implementation(Dependencies.AUTO_VALUE_ANNOTATIONS)
-    annotationProcessor(Dependencies.AUTO_VALUE)
-    implementation(Dependencies.JAVAC)
+    compileOnly("com.google.guava:guava:31.1-jre")
+    implementation("com.google.auto.value:auto-value-annotations:1.9")
+    annotationProcessor("com.google.auto.value:auto-value:1.9")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
 }

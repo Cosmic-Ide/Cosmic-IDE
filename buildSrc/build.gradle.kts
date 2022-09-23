@@ -9,14 +9,8 @@ repositories {
     maven("https://jitpack.io")
 }
 
-object PluginsVersions {
-    const val GRADLE_ANDROID = "7.4.0-alpha10"
-    const val KOTLIN = "1.7.20-RC"
-    const val KTLINT = "10.3.0"
-}
-
 dependencies {
-    implementation("com.android.tools.build:gradle:${PluginsVersions.GRADLE_ANDROID}")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${PluginsVersions.KOTLIN}")
-    implementation("org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:${PluginsVersions.KTLINT}")
+    implementation("com.android.tools.build:gradle:8.0.0-alpha01")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20-RC")
+    implementation("org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:10.3.0")
 }

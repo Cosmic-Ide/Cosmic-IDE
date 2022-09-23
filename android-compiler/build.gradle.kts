@@ -33,12 +33,12 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(Dependencies.CORE_LIBRARY_DESUGARING)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    implementation(Dependencies.PREFERENCE_KTX)
-    implementation(Dependencies.R8)
-    implementation(Dependencies.JAVAC)
-    implementation(Dependencies.FERNFLOWER)
+    implementation("androidx.preference:preference-ktx:1.2.0")
+    implementation("com.android.tools:r8:3.3.75")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
+    implementation("com.github.Cosmic-Ide:fernflower:48c5d1a740")
     implementation(projects.googleJavaFormat)
     implementation(projects.eclipseJdt)
     implementation(projects.common)

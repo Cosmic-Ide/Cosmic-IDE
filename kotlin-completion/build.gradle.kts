@@ -25,8 +25,8 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.ANDROIDX_ANNOTATION)
-    implementation(Dependencies.GUAVA)
+    implementation("androidx.annotation:annotation:1.5.0-beta01")
+    implementation("com.google.guava:guava:31.1-jre")
     implementation(projects.common)
     implementation(projects.soraEditor)
     implementation(projects.projectCreator)

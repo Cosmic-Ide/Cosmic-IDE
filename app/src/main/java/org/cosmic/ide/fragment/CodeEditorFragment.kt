@@ -202,7 +202,7 @@ class CodeEditorFragment : Fragment() {
             }
             if (oldContents.equals(binding.editor.getText().toString())) return
             try {
-                FileUtil.writeFile(currentFile, binding.editor.getText().toString())
+                FileUtil.writeFile(currentFile.absolutePath, binding.editor.getText().toString())
             } catch (e: IOException) {
                 // ignored
             }

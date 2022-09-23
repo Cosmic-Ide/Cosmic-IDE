@@ -122,7 +122,6 @@ dependencies {
     implementation(projects.common)
     implementation(projects.soraEditor)
     implementation(projects.kotlinc)
-    implementation(projects.kotlinCompletion)
     implementation(projects.androidCompiler)
     implementation(projects.project)
 }

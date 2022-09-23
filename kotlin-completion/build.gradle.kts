@@ -29,6 +29,6 @@ dependencies {
     implementation("com.google.guava:guava:31.1-jre")
     implementation(projects.common)
     implementation(projects.soraEditor)
-    implementation(projects.projectCreator)
+    implementation(projects.project)
     implementation(projects.kotlinc)
 }

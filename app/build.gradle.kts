@@ -98,6 +98,7 @@ android {
                 "JavaSE_compact*-1.8.profile",
                 "OSGi_Minimum-*.profile",
                 "OSGI-OPT/**",
+                "src/**",
                 "jdtCompilerAdapter.jar"
             )
         )
@@ -123,5 +124,5 @@ dependencies {
     implementation(projects.kotlinc)
     implementation(projects.kotlinCompletion)
     implementation(projects.androidCompiler)
-    implementation(projects.projectCreator)
+    implementation(projects.project)
 }

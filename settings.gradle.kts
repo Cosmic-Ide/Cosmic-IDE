@@ -9,7 +9,7 @@ include(
     ":eclipse-jdt",
     ":google-java-format",
     ":sora-editor",
-    ":project-creator",
+    ":project",
     ":kotlinc",
     ":jaxp",
     ":kotlin-completion"

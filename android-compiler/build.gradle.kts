@@ -42,7 +42,7 @@ dependencies {
     implementation(projects.googleJavaFormat)
     implementation(projects.eclipseJdt)
     implementation(projects.common)
-    implementation(projects.projectCreator)
+    implementation(projects.project)
     implementation(projects.kotlinc)
     implementation(projects.soraEditor)
 }

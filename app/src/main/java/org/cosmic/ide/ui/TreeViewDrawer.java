@@ -166,6 +166,7 @@ public class TreeViewDrawer extends Fragment {
             TreeNode<TreeFile> node = treeView.getAllNodes().get(0);
             TreeUtil.updateNode(node);
             treeView.refreshTreeView();
+            
         }
     }
 
@@ -306,7 +307,7 @@ public class TreeViewDrawer extends Fragment {
                                                         + fileNameString
                                                         + ".java");
 
-                                FileUtil.writeFileFromString(
+                                FileUtil.writeFile(
                                         node.getContent().getFile().getPath()
                                                 + "/"
                                                 + fileNameString
@@ -364,7 +365,7 @@ public class TreeViewDrawer extends Fragment {
                                                         + fileNameString
                                                         + ".kt");
 
-                                FileUtil.writeFileFromString(
+                                FileUtil.writeFile(
                                         node.getContent().getFile().getPath()
                                                 + "/"
                                                 + fileNameString

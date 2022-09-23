@@ -103,6 +103,7 @@ public class MainActivity extends BaseActivity {
         fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
+        indexer = new Indexer(javaProject.getProjectName(), javaProject.getCacheDirPath());
 
         setSupportActionBar(binding.toolbar);
 
@@ -166,7 +167,7 @@ public class MainActivity extends BaseActivity {
 
         fileViewModel.refreshNode(getProject().getRootFile());
 
-        mainViewModel.setFiles(new ArrayList<>());
+        mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
         mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
         mainViewModel.setToolbarTitle(getProject().getProjectName());
         binding.viewPager.setAdapter(tabsAdapter);
@@ -355,6 +356,12 @@ public class MainActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        indexer.put("lastOpenedFiles", mainViewModel.getFiles().getValue());
     }
 
     private void unzipFiles() {

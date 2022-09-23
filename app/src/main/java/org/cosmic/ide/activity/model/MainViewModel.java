@@ -40,6 +40,9 @@ public class MainViewModel extends ViewModel {
         if (mFiles == null) {
             mFiles = new MutableLiveData<>(new ArrayList<>());
         }
+        if (mFiles.getValue() == files) {
+            return;
+        }
         mFiles.setValue(files);
     }
 

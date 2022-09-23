@@ -30,10 +30,10 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.7.0-beta01")
+    implementation("com.google.android.material:material:1.8.0-alpha01")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.yaml:snakeyaml:1.32")
-    implementation("org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.600")
+    implementation("org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.700")
     implementation("com.google.code.gson:gson:2.9.1")
     implementation("org.jruby.jcodings:jcodings:1.0.57")
     implementation("org.jruby.joni:joni:2.1.43")

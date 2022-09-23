@@ -49,7 +49,7 @@ class Indexer {
     fun getList(key: String): List<String> {
         val jsonData = getString(key)
         try {
-            return Gson().fromJson(jsonData, ArrayList<String>::class.java)
+            return Gson().fromJson(jsonData, typeOf<ArrayList<String>>().javaType)
         } catch (ignored: JsonSyntaxException) {
             return listOf()
         }

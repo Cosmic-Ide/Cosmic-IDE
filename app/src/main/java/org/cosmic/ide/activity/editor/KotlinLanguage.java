@@ -30,6 +30,7 @@ import org.eclipse.tm4e.core.registry.IThemeSource;
 import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.File;
+import java.util.List;
 import java.util.Collection;
 import java.io.InputStreamReader;
 

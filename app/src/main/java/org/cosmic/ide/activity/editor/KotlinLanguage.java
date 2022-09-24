@@ -3,8 +3,8 @@ package org.cosmic.ide.activity.editor;
 import android.content.res.AssetManager;
 import androidx.annotation.WorkerThread;
 import android.os.Bundle;
-import com.tyron.kotlin_completion.util.PsiUtils;
-import com.tyron.kotlin.completion.KotlinCompletionUtils;
+import com.tyron.kotlin.completion.KotlinFile;
+import com.tyron.kotlin.completion.KotlinEnvironment;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
@@ -76,22 +76,17 @@ public class KotlinLanguage extends TextMateLanguage {
 //            return;
 //        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
-        try {
-            FileUtil.writeFile(FileUtil.getDataDir() + "KotlinLanguage.txt", "Seems like this method actually gets called");
-        } catch (IOException e) {}
-        publisher.addItem(new SimpleCompletionItem(prefix.length(), "joe"));
-        PsiElement psiElement = KotlinCompletionUtils.INSTANCE
-                .getPsiElement(mCurrentFile, mProject, mEditor, mEditor.getCursor().getLeft());
-        KtSimpleNameExpression parent =
-                PsiUtils.findParent(psiElement, KtSimpleNameExpression.class);
+        KotlinEnvironment kotlinEnvironment = KotlinEnvironment.Companion.get(currentModule);
+        if (kotlinEnvironment == null) {
+            return null;
+        }
 
-        Collection<DeclarationDescriptor> referenceVariants = KotlinCompletionUtils.INSTANCE
-                .getReferenceVariants(parent, name -> true, mCurrentFile, prefix);
-        String[] items = referenceVariants.stream().map(it -> it.getName().toString()).toArray(String[]::new);
-        setCompleterKeywords(items);
-        try {
-            FileUtil.writeFile(FileUtil.getDataDir() + "Kotlin_completion.txt", items.toString());
-        } catch (IOException e) {}
+        KotlinFile updatedFile =
+                kotlinEnvironment.updateKotlinFile(mCurrentFile.absolutePath,
+                        mEditor.getContent().toString());
+        List<SimpleCompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
+                position.getLine(),
+                position.getColumn() - 1);
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }
 

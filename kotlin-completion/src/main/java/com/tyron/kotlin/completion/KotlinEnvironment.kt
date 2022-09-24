@@ -133,7 +133,7 @@ data class KotlinEnvironment(
         position = completionText.indexOf(":")
         if (position != -1) completionText = completionText.substring(0, position - 1)
         return if (prefix.isEmpty() || fullName.startsWith(prefix)) {
-            SimpleCompletionItem(fullName, tail, completionText.length, completionText)
+            SimpleCompletionItem(fullName, tail, prefix.length, completionText)
         } else null
     }
 
@@ -156,7 +156,7 @@ data class KotlinEnvironment(
     private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
         keywords.types.mapNotNull {
             if (it is KtKeywordToken && it.value.startsWith(prefix)) {
-                SimpleCompletionItem(it.value, "Keyword", it.value.length, it.value)
+                SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             } else {
                 null
             }

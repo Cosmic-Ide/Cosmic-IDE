@@ -89,6 +89,9 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 ## Special Thanks
 
+
+- [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc) and [Kotlin auto-complete library](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion)
+
 - [TheRemakerMan](https://github.com/TheRemakerMan)
 
 - [AidosZhaqyp](https://github.com/AidosZhaqyp)
@@ -96,8 +99,6 @@ If you have any questions, ideas, need help or want to propose a change just ope
 - [TheWolfProd](https://github.com/TheWolfProd)
 
 - [MikeAndrson](https://github.com/MikeAndrson)
-
-- [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc)
 
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 

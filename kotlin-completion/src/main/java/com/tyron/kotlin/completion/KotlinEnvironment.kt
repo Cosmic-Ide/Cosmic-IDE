@@ -4,6 +4,7 @@ package com.tyron.kotlin.completion
 
 import org.cosmic.ide.project.KotlinProject
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
+import io.github.rosemoe.sora.lang.completion.CompletionItem
 import com.tyron.kotlin.completion.codeInsight.ReferenceVariantsHelper
 import com.tyron.kotlin.completion.model.Analysis
 import com.tyron.kotlin.completion.util.*
@@ -119,7 +120,7 @@ data class KotlinEnvironment(
     private fun completionVariantFor(
         prefix: String,
         descriptor: DeclarationDescriptor
-    ): SimpleCompletionItem? {
+    ): CompletionItem? {
         val (name, tail) = descriptor.presentableName()
         val fullName: String = formatName(name, 40)
         var completionText = fullName

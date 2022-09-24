@@ -18,6 +18,7 @@ import io.github.rosemoe.sora.lang.completion.CompletionCancelledException;
 import io.github.rosemoe.sora.lang.completion.CompletionHelper;
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher;
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem;
+import io.github.rosemoe.sora.lang.completion.CompletionItem;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
@@ -30,7 +31,7 @@ import org.eclipse.tm4e.core.registry.IThemeSource;
 import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 import java.util.Collection;
 import java.io.InputStreamReader;
 
@@ -85,7 +86,7 @@ public class KotlinLanguage extends TextMateLanguage {
         KotlinFile updatedFile =
                 kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
                         mEditor.getText().toString());
-        List<SimpleCompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
+        Collection<CompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
                 position.getLine(),
                 position.getColumn() - 1);
         publisher.addItems(itemList);

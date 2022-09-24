@@ -76,17 +76,18 @@ public class KotlinLanguage extends TextMateLanguage {
 //            return;
 //        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
-        KotlinEnvironment kotlinEnvironment = KotlinEnvironment.Companion.get(currentModule);
+        KotlinEnvironment kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
         if (kotlinEnvironment == null) {
-            return null;
-        }
+            return;
+       }
 
         KotlinFile updatedFile =
-                kotlinEnvironment.updateKotlinFile(mCurrentFile.absolutePath,
-                        mEditor.getContent().toString());
+                kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
+                        mEditor.getText().toString());
         List<SimpleCompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
                 position.getLine(),
                 position.getColumn() - 1);
+        publisher.addItems(itemList);
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }
 

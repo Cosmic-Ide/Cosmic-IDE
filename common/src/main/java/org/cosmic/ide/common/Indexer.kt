@@ -38,18 +38,16 @@ class Indexer {
 
     @Throws(JSONException::class)
     fun put(key: String, items: List<File>): Indexer {
-        val value = Gson().toJson(items.stream()
-                        .map(File::getAbsolutePath)
-                        .toList())
+        val value = Gson().toJson(items)
         json.put(key, value)
         return this
     }
 
     @Throws(JSONException::class)
-    fun getList(key: String): List<String> {
+    fun getList(key: String): List<File> {
         val jsonData = getString(key)
         try {
-            return Gson().fromJson(jsonData, Array<String>::class.java).toList()
+            return Gson().fromJson(jsonData, Array<File>::class.java).toList()
         } catch (ignored: JsonSyntaxException) {
             return listOf()
         }

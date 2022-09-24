@@ -43,12 +43,11 @@ class Indexer {
         return this
     }
 
-    @Throws(JSONException::class)
     fun getList(key: String): List<File> {
-        val jsonData = getString(key)
         try {
+            val jsonData = getString(key)
             return Gson().fromJson(jsonData, Array<File>::class.java).toList()
-        } catch (ignored: JsonSyntaxException) {
+        } catch (ignored: Exception) {
             return listOf()
         }
     }

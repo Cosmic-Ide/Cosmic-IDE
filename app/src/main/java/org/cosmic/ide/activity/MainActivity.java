@@ -70,6 +70,7 @@ import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.ClassDef;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +104,9 @@ public class MainActivity extends BaseActivity {
         fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
-        indexer = new Indexer(javaProject.getProjectName(), javaProject.getCacheDirPath());
+        try {
+            indexer = new Indexer(javaProject.getProjectName(), javaProject.getCacheDirPath());
+        } catch (JSONException ignore) {}
 
         setSupportActionBar(binding.toolbar);
 
@@ -361,7 +364,13 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        indexer.put("lastOpenedFiles", mainViewModel.getFiles().getValue());
+        try {
+            indexer
+                    .put("lastOpenedFiles",
+                        mainViewModel.getFiles()
+                        .getValue())
+                    .flush();
+        } catch (JSONException ignore) {}
     }
 
     private void unzipFiles() {

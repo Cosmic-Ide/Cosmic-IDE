@@ -385,6 +385,9 @@ data class KotlinEnvironment(
         }
 
         fun get(module: KotlinProject): KotlinEnvironment? {
+            val jars = File(module.getLibDirPath()).walkBottomUp().filter {
+                it.exists()
+            }
             val environment = with(jars)
             File(module.getSrcDirPath()).walkBottomUp().forEach {
                 if (it.extension == "kt") {

@@ -74,9 +74,9 @@ public class KotlinLanguage extends TextMateLanguage {
                                     CompletionPublisher publisher,
                                     Bundle extraArguments) throws CompletionCancelledException {
         char c = content.charAt(position.getIndex() - 1);
-//        if (!isAutoCompleteChar(c)) {
-//            return;
-//        }
+        if (!isAutoCompleteChar(c)) {
+            return;
+        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
         KotlinEnvironment kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
         if (kotlinEnvironment == null) {

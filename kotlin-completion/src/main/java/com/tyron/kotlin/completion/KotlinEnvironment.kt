@@ -114,7 +114,7 @@ data class KotlinEnvironment(
                     )
                 } + keywordsCompletionVariants(
                     KtTokens.KEYWORDS, prefix
-                ) + keywordsCompletionVariants(KtTokens.SOFT_KEYWORDS, prefix)
+                )// + keywordsCompletionVariants(KtTokens.SOFT_KEYWORDS, prefix)
             } ?: emptyList()
         }
 

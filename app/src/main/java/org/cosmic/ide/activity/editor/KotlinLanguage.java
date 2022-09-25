@@ -88,12 +88,12 @@ public class KotlinLanguage extends TextMateLanguage {
                         mEditor.getText().toString());
         Collection<CompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
                 position.getLine(),
-                position.getColumn() - 1);
+                position.getColumn());
         publisher.addItems(itemList);
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }
 
     public boolean isAutoCompleteChar(char p1) {
-        return true;
+        return p1 == '.' || MyCharacter.isJavaIdentifierPart(p1);
     }
 }

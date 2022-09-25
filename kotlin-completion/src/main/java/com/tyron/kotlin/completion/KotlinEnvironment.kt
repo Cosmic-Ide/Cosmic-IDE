@@ -133,7 +133,7 @@ data class KotlinEnvironment(
         }
         position = completionText.indexOf(":")
         if (position != -1) completionText = completionText.substring(0, position - 1)
-        return if (prefix.isEmpty() || fullName.startsWith(prefix)) {
+        return if (fullName.startsWith(prefix)) {
             SimpleCompletionItem(fullName, tail, prefix.length, completionText)
         } else null
     }

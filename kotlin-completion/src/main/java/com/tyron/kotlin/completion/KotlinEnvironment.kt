@@ -3,6 +3,7 @@
 package com.tyron.kotlin.completion
 
 import org.cosmic.ide.project.KotlinProject
+import org.cosmic.ide.common.util.FileUtil
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import com.tyron.kotlin.completion.codeInsight.ReferenceVariantsHelper
@@ -388,7 +389,10 @@ data class KotlinEnvironment(
         fun get(module: KotlinProject): KotlinEnvironment? {
             val jars = File(module.getLibDirPath()).walkBottomUp().filter {
                 it.exists()
-            }.toList()
+            }.toMutableList()
+            jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar"))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar"))
             val environment = with(jars)
             File(module.getSrcDirPath()).walkBottomUp().forEach {
                 if (it.extension == "kt") {

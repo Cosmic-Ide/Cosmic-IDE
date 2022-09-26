@@ -5,7 +5,7 @@ import androidx.annotation.WorkerThread;
 import android.os.Bundle;
 import com.tyron.kotlin.completion.KotlinFile;
 import com.tyron.kotlin.completion.KotlinEnvironment;
-import org.cosmic.ide.common.util.FileUtil;
+import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
@@ -82,14 +82,18 @@ public class KotlinLanguage extends TextMateLanguage {
         if (kotlinEnvironment == null) {
             return;
        }
-
-        KotlinFile updatedFile =
-                kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
-                        mEditor.getText().toString());
-        Collection<CompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
-                position.getLine(),
-                position.getColumn());
-        publisher.addItems(itemList);
+       
+       CoroutineUtil.execute(() -> {
+            try {
+                KotlinFile updatedFile =
+                        kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
+                                mEditor.getText().toString());
+                Collection<CompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
+                        position.getLine(),
+                        position.getColumn());
+                publisher.addItems(itemList);
+            } catch (Throwable ignore) {}
+        });
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }
 

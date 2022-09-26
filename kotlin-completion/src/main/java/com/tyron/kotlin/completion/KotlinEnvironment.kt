@@ -379,6 +379,7 @@ data class KotlinEnvironment(
                     put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, true)
 
                     with(K2JVMCompilerArguments()) {
+                        k2 = true
                         put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, noParamAssertions)
                         put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, noCallAssertions)
                     }

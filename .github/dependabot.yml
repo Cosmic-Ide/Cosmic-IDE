@@ -6,12 +6,14 @@ updates:
     directory: '/'
     schedule:
       interval: daily
-      time: '05:00'
+      time: '10:00'
+    open-pull-requests-limit: 50
     target-branch: main
 
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
       interval: daily
-      time: '05:00'
+      time: '10:00'
+    open-pull-requests-limit: 50
     target-branch: main

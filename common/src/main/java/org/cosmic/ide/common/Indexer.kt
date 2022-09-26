@@ -46,7 +46,7 @@ class Indexer {
     fun getList(key: String): List<File> {
         try {
             val jsonData = getString(key)
-            return Gson().fromJson(jsonData, Array<File>::class.java).toList()
+            return Gson().fromJson(jsonData, Array<File>::class.java).toMutableList()
         } catch (ignored: Exception) {
             return mutableListOf()
         }

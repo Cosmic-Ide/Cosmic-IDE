@@ -4,6 +4,7 @@
     <!-- Strings used by MainActivity -->
     <string name="run">Compilar</string>
     <string name="compilation_running">Compilando o projeto</string>
+    <string name="advanced">Avançado</string>
     <string name="file_name">Nome do arquivo</string>
     <string name="directory_name">Nome do diretório</string>
     <string name="create">Criar</string>
@@ -14,6 +15,11 @@
     <string name="delete_file">Deletar %1$s?</string>
     <string name="delete">Deletar</string>
     <string name="rename">Renomear</string>
+    <string name="close">Fechar</string>
+    <string name="close_others">Fechar outros</string>
+    <string name="close_all">Fechar tudo </string>
+    <string name="no_open_files">Nenhum arquivo aberto</string>
+    <string name="open_the_file">Abra o arquivo através do menu à esquerda</string>
 
     <!-- Strings used by ProjectActivity -->
     <string name="projects">Projetos</string>
@@ -23,11 +29,12 @@
     <string name="no_projects_title">Projetos não encontrados</string>
     <string name="no_projects_suggestion">Crie um projeto clicando no botão abaixo</string>
     <string name="project_delete_warning">Você deseja deletar %1$s?</string>
+    <string name="package_name">Nome do pacote</string>
 
     <!-- Strings used by PreferenceSettingsFragment -->
     <string name="java_version">Versão do Java</string>
-    <string name="java_compiler">Compilador Java</string>
-    <string name="java_formatter">Formatador Java</string>
+    <string name="java_compiler">Compilador do Java</string>
+    <string name="java_formatter">Formatador do Java</string>
     <string name="java_disassembler">Java Decompiler</string>
     <string name="format">Formatar</string>
     <string name="settings">Definições</string>
@@ -40,7 +47,7 @@
     <string name="view_github_repository">Veja nosso repositório do Github</string>
  
     <string name="app_version_text">Versão</string>
-    <string name="follow_system">Follow System</string>
+    <string name="follow_system">Tema do sistema</string>
     <string name="off">Desligado</string>
     <string name="on">Ligado</string>
     <string name="javac">Javac Compiler for Java</string>
@@ -49,12 +56,13 @@
     <string name="eclipse_java_formatter">Eclipse Java Formatter</string>
     <string name="javap">Javap Decompiler</string>
     <string name="eclipse_class_disassembler">Eclipse Decompiler</string>
-
+    <string name="program_arguments">Argumentos do programa</string>
+    
     <!-- Strings used by CompilerTask Class -->
-    <string name="stage">Stage</string>
-    <string name="stage_clean">Cleaning build&#8230;</string>
-    <string name="stage_kotlinc">Compiling with Kotlinc&#8230;</string>
-    <string name="stage_javac">Compiling with Javac&#8230;</string>
-    <string name="stage_ecj">Compiling with ECJ&#8230;</string>
-    <string name="stage_d8">Dexing class files with D8&#8230;</string>
+    <string name="stage">Estado</string>
+    <string name="stage_clean">Limpando código &#8230;</string>
+    <string name="stage_kotlinc">Compilando com Kotlinc&#8230;</string>
+    <string name="stage_javac">Compilando com Javac&#8230;</string>
+    <string name="stage_ecj">Compilando com ECJ&#8230;</string>
+    <string name="stage_d8">Criando arquivo Dex de classes com D8&#8230;</string>
 </resources>

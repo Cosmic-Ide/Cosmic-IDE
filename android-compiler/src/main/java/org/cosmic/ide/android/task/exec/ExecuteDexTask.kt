@@ -25,13 +25,17 @@ class ExecuteDexTask(
     val inputStream: InputStream,
     val outputStream: PrintStream,
     val errorStream: PrintStream,
-    val postRunnable: Runnable
+    var postRunnable: Runnable?
 ) : Task {
 
     private var result: Any? = null
 
     override fun getTaskName(): String {
         return "Execute Java Task"
+    }
+
+    fun release() {
+        postRunnable = null
     }
 
     /*

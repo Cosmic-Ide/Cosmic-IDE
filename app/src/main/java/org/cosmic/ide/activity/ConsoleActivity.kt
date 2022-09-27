@@ -22,6 +22,7 @@ class ConsoleActivity : BaseActivity() {
     private lateinit var binding: ActivityConsoleBinding
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
+    private var task: ExecuteDexTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +61,7 @@ class ConsoleActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         binding.console.release()
+        task?.release()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -85,7 +87,7 @@ class ConsoleActivity : BaseActivity() {
         val console = binding.console
         console.flushInputStream()
         getSupportActionBar()?.setSubtitle("Running")
-        val task = ExecuteDexTask(
+        task = ExecuteDexTask(
             ApplicationLoader.getDefaultSharedPreferences(),
             classToExecute,
             console.getInputStream(),
@@ -96,6 +98,6 @@ class ConsoleActivity : BaseActivity() {
                 getSupportActionBar()?.setSubtitle("Stopped")
             }
         )
-        task.doFullTask(project)
+        task?.doFullTask(project)
     }
 }

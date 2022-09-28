@@ -90,7 +90,7 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun configureEditor(editor: CodeEditorView) {
-        editor.with {
+        with(editor) {
             setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
             setTextSize(12F)
             setEdgeEffectColor(Color.TRANSPARENT)

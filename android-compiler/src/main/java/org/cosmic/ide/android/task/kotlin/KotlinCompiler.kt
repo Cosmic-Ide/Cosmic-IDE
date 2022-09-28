@@ -120,19 +120,19 @@ class KotlinCompiler : Task {
 
     private fun getKotlinCompilerPlugins(project: Project): List<File> {
         val pluginDir = File(project.getProjectDirPath(), "kt_plugins")
-        
+
         if (!pluginDir.exists() || pluginDir.isFile) {
             return listOf<File>()
         }
-        
+
         val plugins = pluginDir.listFiles { file ->
             file.extension.equals("jar")
         }
-        
+
         if (plugins == null) {
             return listOf<File>()
         }
-        
+
         return plugins.toList()
     }
 

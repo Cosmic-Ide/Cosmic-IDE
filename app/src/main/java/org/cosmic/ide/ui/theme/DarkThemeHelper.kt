@@ -58,7 +58,7 @@ object DarkThemeHelper {
      * @see androidx.appcompat.app.AppCompatDelegateImpl#updateForNightMode(int, boolean)
      */
     private fun getUiModeNight(nightMode: Int, activity: AppCompatActivity): Int =
-        when (AppCompatDelegateCompat.mapNightMode(activity.delegate, ApplicationLoader.applicationContext(), nightMode)) {
+        when (AppCompatDelegateCompat.mapNightMode(activity.delegate, activity, nightMode)) {
             AppCompatDelegate.MODE_NIGHT_YES -> Configuration.UI_MODE_NIGHT_YES
             AppCompatDelegate.MODE_NIGHT_NO -> Configuration.UI_MODE_NIGHT_NO
             else ->

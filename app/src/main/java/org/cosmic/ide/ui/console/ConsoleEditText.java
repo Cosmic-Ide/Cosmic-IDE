@@ -122,7 +122,7 @@ public class ConsoleEditText extends AppCompatEditText {
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStdout(out);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignore) {}
     }
 
     private void writeStderrToScreen() {
@@ -134,7 +134,7 @@ public class ConsoleEditText extends AppCompatEditText {
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStderr(out);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignore) {}
     }
 
     @WorkerThread

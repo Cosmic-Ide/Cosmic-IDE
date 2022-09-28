@@ -105,7 +105,7 @@ data class KotlinEnvironment(
                     sortWith { a, b ->
                         val (a1, a2) = a.presentableName()
                         val (b1, b2) = b.presentableName()
-                        ("$a1$a2").compareTo("$b1$b2", true)
+                        "$a1$a2".compareTo("$b1$b2", true)
                     }
                 }.mapNotNull { descriptor ->
                     completionVariantFor(
@@ -287,13 +287,13 @@ data class KotlinEnvironment(
     private fun DeclarationDescriptor.presentableName() = when (this) {
         is FunctionDescriptor -> name.asString() + renderer.renderFunctionParameters(this) to when {
             returnType != null -> renderer.renderType(returnType!!)
-            else -> (extensionReceiverParameter?.let { param ->
+            else -> extensionReceiverParameter?.let { param ->
                 " for ${renderer.renderType(param.type)} in ${
                     DescriptorUtils.getFqName(
                         containingDeclaration
                     )
                 }"
-            } ?: "")
+            } ?: ""
         }
         else -> name.asString() to when (this) {
             is VariableDescriptor -> renderer.renderType(type)

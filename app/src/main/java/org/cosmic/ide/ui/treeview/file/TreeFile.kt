@@ -17,7 +17,7 @@ open class TreeFile {
             if (file.isDirectory()) {
                 return TreeFolder(file)
             }
-            if (file.getName().endsWith(".java")) {
+            if (file.extension.equals("java")) {
                 return TreeJavaFile(file)
             }
             return TreeFile(file)

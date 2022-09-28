@@ -21,10 +21,8 @@ object DarkThemeHelper {
     fun initialize(application: Application) {
         application.registerActivityLifecycleCallbacks(object : SimpleActivityLifecycleCallbacks {
             override fun onActivityDestroyed(activity: Activity) {
-                try {
-                    activities -= activity as AppCompatActivity
-                } catch (e: ClassCastException) {
-                    // Caused by LeakCanary's LeakActivity that doesn't extend AppCompatActivity
+                if (activity is AppCompatActivity) {
+                    activities.remove(activity)
                 }
             }
         })
@@ -32,7 +30,7 @@ object DarkThemeHelper {
 
     @JvmStatic
     fun apply(activity: AppCompatActivity) {
-        activities += activity
+        activities.add(activity)
         activity.delegate.localNightMode = darkTheme
     }
 

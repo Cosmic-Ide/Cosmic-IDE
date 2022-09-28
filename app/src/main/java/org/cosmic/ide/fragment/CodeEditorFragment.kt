@@ -58,7 +58,7 @@ class CodeEditorFragment : Fragment() {
 
         if (currentFile.exists()) {
             try {
-                binding.editor.setText(FileUtil.readFile(currentFile))
+                binding.editor.setText(currentFile.readText())
             } catch (e: IOException) {
                 (requireActivity() as MainActivity).dialog("Failed to open file", e.toString(), true)
             }
@@ -90,10 +90,12 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun configureEditor(editor: CodeEditorView) {
-        editor.setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
-        editor.setTextSize(12F)
-        editor.setEdgeEffectColor(Color.TRANSPARENT)
-        editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+        editor.with {
+            setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
+            setTextSize(12F)
+            setEdgeEffectColor(Color.TRANSPARENT)
+            setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+        }
 
         var props = editor.getProps().apply {
             overScrollEnabled = false
@@ -163,11 +165,11 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun getKotlinLanguage(): Language {
-//        try {
+        try {
             return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
-//        } catch (e: IOException) {
-//            return EmptyLanguage()
-//        }
+        } catch (e: IOException) {
+            return EmptyLanguage()
+        }
     }
 
     private fun getSmaliLanguage(): Language {
@@ -193,13 +195,14 @@ class CodeEditorFragment : Fragment() {
         if (currentFile.exists()) {
             var oldContents = ""
             try {
-                oldContents = FileUtil.readFile(currentFile)
+                oldContents = currentFile.readText()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            if (oldContents.equals(binding.editor.getText().toString())) return
+            val newContents = binding.editor.getText().toString()
+            if (oldContents.equals(newContents)) return
             try {
-                FileUtil.writeFile(currentFile.absolutePath, binding.editor.getText().toString())
+                currentFile.writeText(newContents)
             } catch (e: IOException) {
                 // ignored
             }

@@ -41,9 +41,9 @@ object DescriptorToSourceUtilsIde {
     }
 
     private fun findDecompiledDeclaration(
-//        project: Project,
-//        effectiveReferenced: DeclarationDescriptor,
-//        builtInsSearchScope: GlobalSearchScope?
+        project: Project,
+        effectiveReferenced: DeclarationDescriptor,
+        builtInsSearchScope: GlobalSearchScope?
     ): PsiElement? {
         return null
     }

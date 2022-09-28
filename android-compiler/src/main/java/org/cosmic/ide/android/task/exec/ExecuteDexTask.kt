@@ -112,7 +112,7 @@ class ExecuteDexTask(
             } catch (e: Error) {
                 e.printStackTrace(errorStream)
             }
-            Handler(Looper.getMainLooper()).post(postRunnable);
+            Handler(Looper.getMainLooper()).post(postRunnable!!);
         }
     }
 }

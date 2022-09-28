@@ -176,8 +176,7 @@ class CodeEditorFragment : Fragment() {
                 IGrammarSource.fromInputStream(
                     requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.json"),
                     "smali.tmLanguage.json",
-                    null
-                ), 
+                    null), 
                 InputStreamReader(
                     requireContext().assets.open("textmate/smali/language-configuration.json")
                 ),
@@ -188,9 +187,7 @@ class CodeEditorFragment : Fragment() {
         }
     }
 
-    fun getEditor(): CodeEditorView {
-        return binding.editor
-    }
+    fun getEditor() = binding.editor
 
     fun save() {
         if (currentFile.exists()) {
@@ -213,11 +210,10 @@ class CodeEditorFragment : Fragment() {
         const val LANGUAGE_JAVA = 0
         const val LANGUAGE_KOTLIN = 1
         const val LANGUAGE_SMALI = 2
-        const val TAG = "CodeEditorFragment"
 
         fun newInstance(file: File): CodeEditorFragment {
             val args: Bundle = Bundle()
-            args.putString("path", file.getAbsolutePath())
+            args.putString("path", file.absolutePath)
             val fragment = CodeEditorFragment()
             fragment.arguments = args
             return fragment

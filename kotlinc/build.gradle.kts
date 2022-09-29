@@ -4,7 +4,7 @@ plugins {
     id(BuildPlugins.KTLINT)
 }
 android {
-    namespace = "org.jetbrains.kotlin.android"
+    namespace = "org.jetbrains.kotlin"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
@@ -49,9 +49,9 @@ dependencies {
     api("com.jetbrains.intellij.java:java-psi:$intellijVersion") { isTransitive = false }
     api("com.jetbrains.intellij.java:java-psi-impl:$intellijVersion") { isTransitive = false }
     implementation("org.fusesource.jansi:jansi:1.16")
-    implementation("org.jetbrains.intellij.deps.fastutil:intellij-deps-fastutil:8.5.2-6")
-    implementation("org.jetbrains.intellij.deps:asm-all:9.1")
-    implementation("org.jetbrains.intellij.deps:jdom:2.0.6")
+    implementation("it.unimi.dsi:fastutil:8.5.9")
+    implementation("org.ow2.asm:asm:9.3")
+    implementation("org.jdom:jdom2:2.0.6.1")
     implementation("org.jline:jline:3.3.1")
     implementation("one.util:streamex:0.7.3")
 

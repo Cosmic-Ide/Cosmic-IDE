@@ -25,6 +25,8 @@ android {
     }
 }
 
+val intellijVersion = "203.8084.24"
+
 dependencies {
     implementation("androidx.annotation:annotation:1.5.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
@@ -32,6 +34,26 @@ dependencies {
     implementation(projects.jaxp)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20-RC")
+
+    // Intellij dependencies required by kotlinc
+    api("com.jetbrains.intellij.platform:util-rt:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util-class-loader:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util-text-matching:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util-diagnostic:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:core:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:core-impl:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:extensions:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util-strings:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.platform:util-collections:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.java:java-psi:$intellijVersion") { isTransitive = false }
+    api("com.jetbrains.intellij.java:java-psi-impl:$intellijVersion") { isTransitive = false }
+    implementation("org.fusesource.jansi:jansi:1.16")
+    implementation("org.jetbrains.intellij.deps.fastutil:intellij-deps-fastutil:8.5.2-6")
+    implementation("org.jetbrains.intellij.deps:asm-all:9.1")
+    implementation("org.jetbrains.intellij.deps:jdom:2.0.6")
+    implementation("org.jline:jline:3.3.1")
+    implementation("one.util:streamex:0.7.3")
 
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 

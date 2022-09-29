@@ -35,25 +35,11 @@ dependencies {
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20-RC")
 
-    // Intellij dependencies required by kotlinc
-    api("com.jetbrains.intellij.platform:util-rt:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util-class-loader:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util-text-matching:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util-diagnostic:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:core:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:core-impl:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:extensions:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util-strings:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.platform:util-collections:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.java:java-psi:$intellijVersion") { isTransitive = false }
-    api("com.jetbrains.intellij.java:java-psi-impl:$intellijVersion") { isTransitive = false }
-    implementation("org.fusesource.jansi:jansi:1.16")
+    implementation("org.fusesource.jansi:jansi:1.18")
     implementation("it.unimi.dsi:fastutil:8.5.9")
-    implementation("org.ow2.asm:asm:9.3")
-    implementation("org.jdom:jdom2:2.0.6.1")
-    implementation("org.jline:jline:3.3.1")
-    implementation("one.util:streamex:0.7.3")
+    implementation("com.jetbrains.intellij.platform:util-jdom:222.4167.35")
+    implementation("org.jline:jline:3.21.0")
+    implementation("one.util:streamex:0.8.1")
 
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 

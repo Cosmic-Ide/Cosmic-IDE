@@ -33,7 +33,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20-RC")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 
     implementation("org.fusesource.jansi:jansi:1.18")
     implementation("it.unimi.dsi:fastutil:8.5.9")
@@ -43,7 +43,7 @@ dependencies {
 
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
-    api(files("libs/kotlin-compiler-1.7.20-RC.jar"))
+    api(files("libs/kotlin-compiler-1.7.20.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
 }

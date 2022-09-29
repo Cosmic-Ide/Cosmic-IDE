@@ -4,6 +4,7 @@ allprojects {
         mavenCentral()
         maven("https://jitpack.io")
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+        maven("https://www.jetbrains.com/intellij-repository/releases")
     }
 }
 

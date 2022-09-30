@@ -12,7 +12,7 @@ class BooleanSettingLiveData(
     @BoolRes defaultValueRes: Int
 ) : SettingLiveData<Boolean>(keyRes, keySuffix, defaultValueRes) {
     constructor(@StringRes keyRes: Int, @BoolRes defaultValueRes: Int) : this(
-        null, keyRes, null, defaultValueRes
+        keyRes, null, defaultValueRes
     )
 
     init {
@@ -46,7 +46,7 @@ class EnumSettingLiveData<E : Enum<E>>(
         @StringRes keyRes: Int,
         @StringRes defaultValueRes: Int,
         enumClass: Class<E>
-    ) : this(null, keyRes, null, defaultValueRes, enumClass)
+    ) : this(keyRes, null, defaultValueRes, enumClass)
 
     init {
         init()

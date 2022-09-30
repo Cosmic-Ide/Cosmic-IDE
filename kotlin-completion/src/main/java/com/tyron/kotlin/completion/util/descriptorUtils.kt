@@ -63,8 +63,8 @@ private fun compareDescriptorsText(project: Project, d1: DeclarationDescriptor, 
     val renderedD2 = IdeDescriptorRenderersScripting.SOURCE_CODE.render(d2)
     if (renderedD1 == renderedD2) return true
 
-    val declarations1 = DescriptorToSourceUtilsIde.getAllDeclarations(project, d1)
-    val declarations2 = DescriptorToSourceUtilsIde.getAllDeclarations(project, d2)
+    val declarations1 = DescriptorToSourceUtilsIde.getAllDeclarations(d1)
+    val declarations2 = DescriptorToSourceUtilsIde.getAllDeclarations(d2)
     if (declarations1 == declarations2 && declarations1.isNotEmpty()) return true
 
     return false

@@ -17,7 +17,7 @@ abstract class SettingLiveData<T>(
     private var defaultValue: T? = null
 
     constructor(@StringRes keyRes: Int, @AnyRes defaultValueRes: Int) : this(
-        null, keyRes, null, defaultValueRes
+        keyRes, null, defaultValueRes
     )
 
     protected fun init() {

@@ -7,11 +7,10 @@ import androidx.core.content.edit
 import org.cosmic.ide.ApplicationLoader
 
 class BooleanSettingLiveData(
-    nameSuffix: String?,
     @StringRes keyRes: Int,
     keySuffix: String?,
     @BoolRes defaultValueRes: Int
-) : SettingLiveData<Boolean>(nameSuffix, keyRes, keySuffix, defaultValueRes) {
+) : SettingLiveData<Boolean>(keyRes, keySuffix, defaultValueRes) {
     constructor(@StringRes keyRes: Int, @BoolRes defaultValueRes: Int) : this(
         null, keyRes, null, defaultValueRes
     )
@@ -36,12 +35,11 @@ class BooleanSettingLiveData(
 
 // Use string resource for default value so that we can support ListPreference.
 class EnumSettingLiveData<E : Enum<E>>(
-    nameSuffix: String?,
     @StringRes keyRes: Int,
     keySuffix: String?,
     @StringRes defaultValueRes: Int,
     enumClass: Class<E>
-) : SettingLiveData<E>(nameSuffix, keyRes, keySuffix, defaultValueRes) {
+) : SettingLiveData<E>(keyRes, keySuffix, defaultValueRes) {
     private val enumValues = enumClass.enumConstants!!
 
     constructor(

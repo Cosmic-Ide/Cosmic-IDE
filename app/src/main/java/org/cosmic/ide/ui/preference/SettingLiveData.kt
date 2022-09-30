@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import org.cosmic.ide.ApplicationLoader
 
 abstract class SettingLiveData<T>(
-    nameSuffix: String?,
     @StringRes keyRes: Int,
     keySuffix: String?,
     @AnyRes private val defaultValueRes: Int

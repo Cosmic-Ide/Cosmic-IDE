@@ -15,10 +15,12 @@ import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
 import org.cosmic.ide.util.Constants.GITHUB_URL
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val viewLifecycleOwner = viewLifecycleOwner
-        Settings.DARK_THEME.observe(viewLifecycleOwner, this::onDarkThemeChanged)
+        Settings.DARK_THEME.observe(viewLifecycleOwner, { _ ->
+            DarkThemeHelper.sync()
+        })
     }
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
@@ -44,9 +46,5 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
         } else {
             super.onDisplayPreferenceDialog(preference)
         }
-    }
-
-    private fun onDarkThemeChanged(darkTheme: DarkTheme) {
-        DarkThemeHelper.sync()
     }
 }

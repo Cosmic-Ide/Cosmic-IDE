@@ -34,7 +34,7 @@ class CodeEditorFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        currentFile = File(arguments?.getString("path", ""))
+        currentFile = File(arguments?.getString("path", "")!!)
     }
 
     override fun onCreateView(
@@ -97,7 +97,7 @@ class CodeEditorFragment : Fragment() {
             setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
         }
 
-        var props = editor.getProps().apply {
+        editor.getProps().apply {
             overScrollEnabled = false
             allowFullscreen = false
             deleteEmptyLineFast = false

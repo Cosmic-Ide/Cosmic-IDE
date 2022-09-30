@@ -27,7 +27,7 @@ import java.io.Writer
 class JavacLogger(
     context: Context,
     errorWriter: PrintWriter,
-    warningWriter: PrintWriter,
+    @Suppress("UNUSED_PARAMETER") warningWriter: PrintWriter,
     infoWriter: PrintWriter
 ) : Log(context, infoWriter, errorWriter) {
 

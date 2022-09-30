@@ -34,17 +34,8 @@ object DescriptorToSourceUtilsIde {
             // References in library sources should be resolved to corresponding decompiled declarations,
             // therefore we put both source declaration and decompiled declaration to stream, and afterwards we filter it in getAllDeclarations
             sequenceOfLazyValues(
-                { DescriptorToSourceUtils.getSourceFromDescriptor(effectiveReferenced) },
-                { findDecompiledDeclaration(project, effectiveReferenced, builtInsSearchScope) }
+                { DescriptorToSourceUtils.getSourceFromDescriptor(effectiveReferenced) }
             )
         }.filterNotNull()
-    }
-
-    private fun findDecompiledDeclaration(
-        project: Project,
-        effectiveReferenced: DeclarationDescriptor,
-        builtInsSearchScope: GlobalSearchScope?
-    ): PsiElement? {
-        return null
     }
 }

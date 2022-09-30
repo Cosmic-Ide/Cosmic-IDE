@@ -3,6 +3,7 @@ package org.cosmic.ide.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,7 +35,13 @@ class ConsoleActivity : BaseActivity() {
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)
         }
-        binding.toolbar.setNavigationOnClickListener { _ -> onBackPressed() }
+        binding.toolbar.setNavigationOnClickListener { _ ->
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    finish()
+                }
+            })
+        }
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)

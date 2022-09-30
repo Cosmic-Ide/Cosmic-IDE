@@ -40,7 +40,6 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
     implementation("com.github.Cosmic-Ide:fernflower:5bfc64b")
     implementation(projects.googleJavaFormat)
-    implementation(projects.eclipseJdt)
     implementation(projects.common)
     implementation(projects.project)
     implementation(projects.kotlinc)

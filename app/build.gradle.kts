@@ -76,31 +76,12 @@ android {
     packagingOptions {
         resources.excludes.addAll(
             arrayOf(
-                "plugin.xml",
-                ".options",
                 "about.xml",
-                "plugin.properties",
                 "baksmali.properties",
-                ".api_description",
-                "META-INF/eclipse.inf",
                 "README.md",
                 "SECURITY.md",
-                "about_files/*",
-                "OSGI-INF/*",
-                "ant_tasks/*",
-                "api_database/*",
                 "license/*",
-                "systembundle.properties",
-                "CDC-*_Foundation-*.profile",
-                "JRE-1.1.profile",
-                "DebugProbesKt.bin",
-                "J2SE-*.profile",
-                "JavaSE-*.profile",
-                "JavaSE_compact*-1.8.profile",
-                "OSGi_Minimum-*.profile",
-                "OSGI-OPT/**",
-                "src/**",
-                "jdtCompilerAdapter.jar"
+                "DebugProbesKt.bin"
             )
         )
     }

@@ -6,7 +6,6 @@ include(
     ":app", 
     ":android-compiler",
     ":common",
-    ":eclipse-jdt",
     ":google-java-format",
     ":sora-editor",
     ":project",

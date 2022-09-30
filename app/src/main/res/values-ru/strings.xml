@@ -33,9 +33,6 @@
 
     <!-- Строки, используемые PreferenceSettingsFragment -->
     <string name="java_version">Версия Java</string>
-    <string name="java_compiler">Компилятор Java</string>
-    <string name="java_formatter">Форматировщик Java</string>
-    <string name="java_disassembler">Дизассемблер Java</string>
     <string name="format">Формат</string>
     <string name="settings">Настройки</string>
     <string name="appearance">Вид</string>
@@ -51,12 +48,6 @@
     <string name="follow_system">Использовать системную тему</string>
     <string name="off">Выключить</string>
     <string name="on">Включить</string>
-    <string name="javac">Компилятор Javac</string>
-    <string name="eclipse_compiler_for_java">Компилятор Eclipse</string>
-    <string name="google_java_formatter">Форматировщик Google</string>
-    <string name="eclipse_java_formatter">Форматировщик Eclipse</string>
-    <string name="javap">Дизассемблер Javap</string>
-    <string name="eclipse_class_disassembler">Дизассемблер Eclipse</string>
     <string name="program_arguments">Аргументы программы</string>
 
     <!-- Строки, используемые CompilerTask -->
@@ -64,6 +55,5 @@
     <string name="stage_clean">Очистка сборки&#8230;</string>
     <string name="stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
     <string name="stage_javac">Компиляция с Javac&#8230;</string>
-    <string name="stage_ecj">Компиляция с ECJ&#8230;</string>
     <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
 </resources>

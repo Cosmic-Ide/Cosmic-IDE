@@ -24,30 +24,6 @@
             android:entryValues="@array/settings_java_version_entries"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference 
-            android:key="@string/pref_key_java_compiler"
-            android:title="@string/java_compiler"
-            android:defaultValue="@string/javac"
-            android:entries="@array/settings_java_compiler_entries"
-            android:entryValues="@array/settings_java_compiler_entries"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference 
-            android:key="@string/pref_key_java_formatter"
-            android:title="@string/java_formatter"
-            android:defaultValue="@string/google_java_formatter"
-            android:entries="@array/settings_java_formatter_entries"
-            android:entryValues="@array/settings_java_formatter_entries"
-            app:useSimpleSummaryProvider="true" />
-
-        <ListPreference 
-            android:key="@string/pref_key_java_disassembler"
-            android:title="@string/java_disassembler"
-            android:defaultValue="@string/javap"
-            android:entries="@array/settings_java_disassembler_entries"
-            android:entryValues="@array/settings_java_disassembler_entries"
-            app:useSimpleSummaryProvider="true" />
-
         <EditTextPreference
             android:key="@string/pref_key_program_arguments"
             android:title="@string/program_arguments"

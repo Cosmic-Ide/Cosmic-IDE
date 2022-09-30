@@ -10,7 +10,7 @@ import org.cosmic.ide.activity.ConsoleActivity;
 import org.cosmic.ide.activity.MainActivity;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.dex.D8Task;
-import org.cosmic.ide.android.task.java.*;
+import org.cosmic.ide.android.task.java.JavacCompilationTask;
 import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
 import org.cosmic.ide.util.Constants;
 
@@ -25,7 +25,6 @@ public class CompileTask extends Thread {
     private final String STAGE_CLEAN;
     private final String STAGE_KOTLINC;
     private final String STAGE_JAVAC;
-    private final String STAGE_ECJ;
     private final String STAGE_D8;
 
     public CompileTask(MainActivity context, boolean isExecuteMethod, CompilerListeners listener) {
@@ -36,7 +35,6 @@ public class CompileTask extends Thread {
         STAGE_CLEAN = context.getString(R.string.stage_clean);
         STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);
         STAGE_JAVAC = context.getString(R.string.stage_javac);
-        STAGE_ECJ = context.getString(R.string.stage_ecj);
         STAGE_D8 = context.getString(R.string.stage_d8);
     }
 
@@ -80,14 +78,8 @@ public class CompileTask extends Thread {
     private void compileJava() {
         final var prefs = ApplicationLoader.getDefaultSharedPreferences();
         try {
-            if (prefs.getString("key_java_compiler", activity.getString(R.string.javac))
-                    .equals(activity.getString(R.string.javac))) {
-                listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-                new JavacCompilationTask(prefs).doFullTask(activity.getProject());
-            } else {
-                listener.onCurrentBuildStageChanged(STAGE_ECJ);
-                new ECJCompilationTask(prefs).doFullTask(activity.getProject());
-            }
+            listener.onCurrentBuildStageChanged(STAGE_JAVAC);
+            new JavacCompilationTask(prefs).doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getMessage());
         } catch (Throwable e) {

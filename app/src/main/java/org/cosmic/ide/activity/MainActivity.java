@@ -302,26 +302,13 @@ public class MainActivity extends BaseActivity {
                 if (fragment instanceof CodeEditorFragment) {
                     CoroutineUtil.execute(
                             () -> {
-                                if (settings.getString(
-                                                "key_java_formatter",
-                                                getString(R.string.google_java_formatter))
-                                        .equals(getString(R.string.google_java_formatter))) {
-                                    var formatter =
-                                            new GoogleJavaFormatter(
-                                                    ((CodeEditorFragment) fragment)
-                                                            .getEditor()
-                                                            .getText()
-                                                            .toString());
-                                    temp = formatter.format();
-                                } else {
-                                    var formatter =
-                                            new EclipseJavaFormatter(
-                                                    ((CodeEditorFragment) fragment)
-                                                            .getEditor()
-                                                            .getText()
-                                                            .toString());
-                                    temp = formatter.format();
-                                }
+                                var formatter =
+                                        new GoogleJavaFormatter(
+                                                ((CodeEditorFragment) fragment)
+                                                        .getEditor()
+                                                        .getText()
+                                                        .toString());
+                                temp = formatter.format();
                             });
                     ((CodeEditorFragment) fragment).getEditor().setText(temp);
                 }
@@ -685,26 +672,14 @@ public class MainActivity extends BaseActivity {
 
                     var disassembled = "";
                     try {
-                        if (settings.getString("key_java_disassembler", getString(R.string.javap))
-                                .equals(getString(R.string.javap))) {
-                            disassembled =
-                                    new JavapDisassembler(
-                                                    getProject().getBinDirPath()
-                                                            + "classes"
-                                                            + "/"
-                                                            + claz
-                                                            + ".class")
-                                            .disassemble();
-                        } else {
-                            disassembled =
-                                    new EclipseDisassembler(
-                                                    getProject().getBinDirPath()
-                                                            + "classes"
-                                                            + "/"
-                                                            + claz
-                                                            + ".class")
-                                            .disassemble();
-                        }
+                        disassembled =
+                                new JavapDisassembler(
+                                                getProject().getBinDirPath()
+                                                        + "classes"
+                                                        + "/"
+                                                        + claz
+                                                        + ".class")
+                                        .disassemble();
                     } catch (Throwable e) {
                         dialog("Failed to disassemble", getString(e), true);
                     }

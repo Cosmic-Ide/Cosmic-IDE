@@ -33,9 +33,6 @@
 
     <!-- PreferenceSettingsFragment-те қолданылатын жолдар -->
     <string name="java_version">Java нұсқасы</string>
-    <string name="java_compiler">Java компилятор</string>
-    <string name="java_formatter">Java пішімдеуші</string>
-    <string name="java_disassembler">Java дизассемблер</string>
     <string name="format">Пішімдеу</string>
     <string name="settings">Баптаулар</string>
     <string name="appearance">Түр</string>
@@ -51,12 +48,6 @@
     <string name="follow_system">Жүйедегі теманы қолдану</string>
     <string name="off">Өшіру</string>
     <string name="on">Қосу</string>
-    <string name="javac">Javac компиляторы</string>
-    <string name="eclipse_compiler_for_java">Eclipse компиляторы</string>
-    <string name="google_java_formatter">Google пішімдеушісі</string>
-    <string name="eclipse_java_formatter">Eclipse пішімдеушісі</string>
-    <string name="javap">Javap дизассемблері</string>
-    <string name="eclipse_class_disassembler">Eclipse дизассемблері</string>
     <string name="program_arguments">Программаның аргументтері</string>
 
     <!-- CompilerTask-те қолданылатын жолдар-->

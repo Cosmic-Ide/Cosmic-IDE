@@ -3,6 +3,7 @@ package org.cosmic.ide.ui.preference
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
+import android.view.View
 import androidx.core.net.toUri
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -15,8 +16,8 @@ import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
 import org.cosmic.ide.util.Constants.GITHUB_URL
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
-    override fun onViewCreated(view: View) {
-        super.onViewCreated(view)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val viewLifecycleOwner = viewLifecycleOwner
         Settings.DARK_THEME.observe(viewLifecycleOwner, { _ ->
             DarkThemeHelper.sync()

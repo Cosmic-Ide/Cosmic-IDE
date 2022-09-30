@@ -35,18 +35,6 @@
         <item>@string/off</item>
         <item>@string/on</item>
     </string-array>
-    <string-array name="settings_java_compiler_entries">
-        <item>@string/javac</item>
-        <item>@string/eclipse_compiler_for_java</item>
-    </string-array>
-    <string-array name="settings_java_formatter_entries">
-        <item>@string/google_java_formatter</item>
-        <item>@string/eclipse_java_formatter</item>
-    </string-array>
-    <string-array name="settings_java_disassembler_entries">
-        <item>@string/javap</item>
-        <item>@string/eclipse_class_disassembler</item>
-    </string-array>
 
     <!-- Entry values -->
     <string-array name="pref_entry_values_dark_theme">

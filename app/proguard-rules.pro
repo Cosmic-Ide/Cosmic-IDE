@@ -8,7 +8,7 @@
 # -keep class jdk.internal.** { *; }
 -keep class org.osgi.** { *; }
 -keep class javax.** { *; }
--keep class com.intellij.core.** { *; }
+-keep class com.intellij.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
 -keep class com.sun.xml.internal.stream.** { *; }

@@ -15,8 +15,8 @@ import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
 import org.cosmic.ide.util.Constants.GITHUB_URL
 
 class SettingsPreferenceFragment : PreferenceFragmentCompat() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(savedInstanceState: Bundle?) {
+        super.onViewCreated(savedInstanceState)
         val viewLifecycleOwner = viewLifecycleOwner
         Settings.DARK_THEME.observe(viewLifecycleOwner, { _ ->
             DarkThemeHelper.sync()

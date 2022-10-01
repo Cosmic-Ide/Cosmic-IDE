@@ -35,7 +35,7 @@ dependencies {
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
 
-    implementation("org.fusesource.jansi:jansi:1.18")
+    implementation("org.fusesource.jansi:jansi:2.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.9")
     implementation("org.jline:jline:3.21.0")
     implementation("one.util:streamex:0.8.1")

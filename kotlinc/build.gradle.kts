@@ -37,10 +37,10 @@ dependencies {
 
     implementation("org.fusesource.jansi:jansi:1.18")
     implementation("it.unimi.dsi:fastutil:8.5.9")
-    implementation("com.jetbrains.intellij.platform:util-jdom:222.4167.35")
     implementation("org.jline:jline:3.21.0")
     implementation("one.util:streamex:0.8.1")
 
+    api("com.jetbrains.intellij.platform:util-jdom:222.4167.35")
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
     api(files("libs/kotlin-compiler-1.7.20.jar"))

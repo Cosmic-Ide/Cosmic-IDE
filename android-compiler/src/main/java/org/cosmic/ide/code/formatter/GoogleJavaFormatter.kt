@@ -3,13 +3,9 @@ package org.cosmic.ide.code.formatter
 import com.google.googlejavaformat.java.Formatter
 import com.google.googlejavaformat.java.JavaFormatterOptions
 
-class GoogleJavaFormatter(input: String) {
-
+class GoogleJavaFormatter(
     private val source: String
-
-    init {
-        source = input
-    }
+) {
 
     fun format(): String {
         val options =

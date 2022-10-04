@@ -3,13 +3,9 @@ package org.cosmic.ide.code.disassembler
 import com.sun.tools.javap.JavapTask
 import java.io.StringWriter
 
-class JavapDisassembler(filePath: String) {
-
+class JavapDisassembler(
     private val path: String
-
-    init {
-        path = filePath
-    }
+) {
 
     @Throws(Throwable::class)
     fun disassemble(): String {

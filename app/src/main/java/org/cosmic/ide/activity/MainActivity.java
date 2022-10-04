@@ -313,7 +313,11 @@ public class MainActivity extends BaseActivity {
                                 temp = formatter.format();
                                 } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
                                     new ktfmtFormatter(current).format();
-                                    temp = FileUtil.readFile(new File(current));
+                                    try {
+                                        temp = FileUtil.readFile(new File(current));
+                                    } catch (IOException ignore) {
+                                        // no way, this is impossible
+                                    }
                                 } else {
                                     temp = ((CodeEditorFragment) fragment)
                                             .getEditor()

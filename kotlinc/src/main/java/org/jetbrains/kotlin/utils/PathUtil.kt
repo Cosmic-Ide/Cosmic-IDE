@@ -1,12 +1,26 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+/*
+ * Copyright 2010-2017 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package org.jetbrains.kotlin.utils
 
-import org.jetbrains.jps.model.java.impl.JavaSdkUtil
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
+import org.jetbrains.jps.model.java.impl.JavaSdkUtil
+
 import java.io.File
-import java.lang.IllegalStateException
 import java.util.regex.Pattern
 
 object PathUtil {
@@ -115,7 +129,8 @@ object PathUtil {
             // PathUtil.clazz is located not in the kotlin-compiler*.jar, so it must be a test and we'll take KotlinPaths from "dist/"
             // (when running tests, PathUtil.clazz is in its containing module's artifact, i.e. util-{version}.jar)
             kotlinPathsForDistDirectory
-        } else KotlinPathsFromHomeDir(compilerPathForCompilerJar)
+        }
+        else KotlinPathsFromHomeDir(compilerPathForCompilerJar)
 
     @JvmStatic
     val kotlinPathsForDistDirectory: KotlinPaths
@@ -127,12 +142,8 @@ object PathUtil {
             if (!jar.exists()) return NO_PATH
 
             if (jar.name == KOTLIN_COMPILER_JAR) {
-                val lib = jar.parentFile ?: return NO_PATH
-                return if (lib.parentFile != null) {
-                    NO_PATH
-                } else {
-                    lib.parentFile!!
-                }
+                val lib = jar.parentFile
+                return lib.parentFile
             }
 
             return NO_PATH
@@ -145,7 +156,7 @@ object PathUtil {
 
             if (jar.name == "kotlin-plugin.jar") {
                 val lib = jar.parentFile
-                val pluginHome = lib!!.parentFile
+                val pluginHome = lib.parentFile
 
                 return File(pluginHome, HOME_FOLDER_NAME)
             }
@@ -158,24 +169,20 @@ object PathUtil {
 
     @JvmStatic
     fun getResourcePathForClass(aClass: Class<*>): File {
-        val resourceRoot = PathManager.getResourceRoot(aClass, aClass.name)
-        if (resourceRoot != null) {
-            return File(resourceRoot).absoluteFile
-        }
         val path = "/" + aClass.name.replace('.', '/') + ".clazz"
-        val modified = PathManager.getResourceRoot(aClass, path) ?: throw IllegalStateException("Unable to find resource $path")
-        return File(modified).absoluteFile
+        val resourceRoot = PathManager.getResourceRoot(aClass, path) ?: throw IllegalStateException("Resource not found: $path")
+        return File(resourceRoot).absoluteFile
     }
 
     @JvmStatic
     fun getJdkClassesRootsFromCurrentJre(): List<File> =
-        getJdkClassesRootsFromJre(System.getProperty("java.home")!!)
+            getJdkClassesRootsFromJre(System.getProperty("java.home"))
 
     @JvmStatic
     fun getJdkClassesRootsFromJre(javaHome: String): List<File> =
-        JavaSdkUtil.getJdkClassesRoots(File(javaHome), true)
+            JavaSdkUtil.getJdkClassesRoots(File(javaHome), true)
 
     @JvmStatic
     fun getJdkClassesRoots(jdkHome: File): List<File> =
-        JavaSdkUtil.getJdkClassesRoots(jdkHome, false)
+            JavaSdkUtil.getJdkClassesRoots(jdkHome, false)
 }

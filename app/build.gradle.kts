@@ -81,7 +81,10 @@ android {
                 "README.md",
                 "SECURITY.md",
                 "license/*",
-                "DebugProbesKt.bin"
+                "DebugProbesKt.bin",
+                "api_database/*",
+                "src/**",
+                "bundle.properties"
             )
         )
     }

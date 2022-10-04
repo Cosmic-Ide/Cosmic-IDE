@@ -1,6 +1,7 @@
 plugins {
     id(BuildPlugins.JAVA_LIBRARY)
     id(BuildPlugins.KOTLIN_JAVA)
+    id(BuildPlugins.KTLINT)
     id(BuildPlugins.LINT)
 }
 

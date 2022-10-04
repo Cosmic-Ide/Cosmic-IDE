@@ -43,6 +43,6 @@ dependencies {
     implementation(projects.common)
     implementation(projects.project)
     implementation(projects.kotlinc)
-    implementation(projects.kotlinFormatter)
+    implementation(projects.ktfmt)
     implementation(projects.soraEditor)
 }

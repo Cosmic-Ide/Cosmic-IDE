@@ -12,5 +12,5 @@ include(
     ":kotlinc",
     ":jaxp",
     ":kotlin-completion",
-    ":kotlin-formatter"
+    ":ktfmt"
 ) 

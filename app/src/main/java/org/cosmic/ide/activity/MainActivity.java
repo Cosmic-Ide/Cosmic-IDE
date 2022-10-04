@@ -48,9 +48,9 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.editor.adapter.PageAdapter;
 import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.activity.model.MainViewModel;
-import org.cosmic.ide.android.code.decompiler.FernFlowerDecompiler;
-import org.cosmic.ide.android.code.disassembler.*;
-import org.cosmic.ide.android.code.formatter.*;
+import org.cosmic.ide.code.decompiler.FernFlowerDecompiler;
+import org.cosmic.ide.code.disassembler.JavapDisassembler;
+import org.cosmic.ide.code.formatter.*;
 import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
@@ -302,6 +302,8 @@ public class MainActivity extends BaseActivity {
                 if (fragment instanceof CodeEditorFragment) {
                     CoroutineUtil.execute(
                             () -> {
+                                String current = mainViewModel.getCurrentFile().getAbsolutePath();
+                                if (current.endsWith(".java") || current.endsWith(".jav")) {
                                 var formatter =
                                         new GoogleJavaFormatter(
                                                 ((CodeEditorFragment) fragment)
@@ -309,6 +311,15 @@ public class MainActivity extends BaseActivity {
                                                         .getText()
                                                         .toString());
                                 temp = formatter.format();
+                                } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
+                                    new ktfmtFormatter(current).format();
+                                    temp = FileUtil.readFile(new File(current));
+                                } else {
+                                    temp = ((CodeEditorFragment) fragment)
+                                            .getEditor()
+                                            .getText()
+                                            .toString();
+                                }
                             });
                     ((CodeEditorFragment) fragment).getEditor().setText(temp);
                 }
@@ -450,7 +461,7 @@ public class MainActivity extends BaseActivity {
         final var notifChannel =
                 new NotificationChannel(
                         BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_NONE);
-        notifChannel.setDescription("Foreground notification for the compiler");
+        notifChannel.setDescription("Foreground notification for the compiler status");
 
         final var notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notifManager.createNotificationChannel(notifChannel);

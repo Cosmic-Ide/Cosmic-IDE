@@ -31,7 +31,7 @@ object FileUtil {
     @JvmStatic
     @Throws(IOException::class)
     fun writeFile(inp: InputStream, path: String) {
-        va/ filePath = Paths.get(path).normalize()
+        val filePath = Paths.get(path).normalize()
         Files.copy(inp, filePath, StandardCopyOption.REPLACE_EXISTING)
     }
 
@@ -40,12 +40,12 @@ object FileUtil {
     fun writeFile(file: String, content: String) {
         val path = Paths.get(file);
         Files.createDirectories(path.parent)
-        Files.write(file, content.getBytes())
+        Files.write(path, content.getByteArray())
     }
 
     @JvmStatic
     @Throws(IOException::class)
-    fun writeFile(file: String, byte[] content) {
+    fun writeFile(file: String, content: ByteArray) {
         val path = Paths.get(path)
         Files.createDirectories(parent.path)
         Files.write(path, content);
@@ -66,7 +66,7 @@ object FileUtil {
                 return
             }
 
-            path.deleteRecursively()
+            File(p).deleteRecursively()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -86,11 +86,15 @@ object FileUtil {
 
     @JvmStatic
     fun createOrExistsDir(file: File) : Boolean {
-        return if (file.exists()) file.isDirectory() else file.mkdirs())
+        return if (file.exists()) {
+            file.isDirectory() 
+        } else {
+            file.mkdirs()
+        }
     }
 
     @JvmStatic
-    fun getFileByPath(filePath: String): File {
+    fun getFileByPath(filePath: String): File? {
         return if (isSpace(filePath)) null else File(filePath)
     }
 

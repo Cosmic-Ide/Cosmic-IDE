@@ -10,6 +10,7 @@ import org.cosmic.ide.android.interfaces.*;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.Project;
+import org.cosmic.ide.CompilerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class JavacCompilationTask implements Task {
         standardJavaFileManager.setLocation(
                 StandardLocation.CLASS_OUTPUT, Collections.singletonList(output));
         standardJavaFileManager.setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath());
+                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.getPlatformClasspath());
         standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(project));
         standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles);
 
@@ -179,15 +180,6 @@ public class JavacCompilationTask implements Task {
                 classpath.add(lib);
             }
         }
-        return classpath;
-    }
-
-    public ArrayList<File> getPlatformClasspath() {
-        var classpath = new ArrayList<File>();
-        classpath.add(new File(FileUtil.getClasspathDir(), "android.jar"));
-        classpath.add(new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"));
-        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar"));
-        classpath.add(new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar"));
         return classpath;
     }
 }

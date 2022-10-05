@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
+import com.intellij.openapi.util.Disposer
 import org.jetbrains.kotlin.config.*
 import org.jetbrains.kotlin.container.getService
 import org.jetbrains.kotlin.descriptors.*
@@ -114,7 +115,7 @@ data class KotlinEnvironment(
                     )
                 } + keywordsCompletionVariants(
                     KtTokens.KEYWORDS, prefix
-                )// + keywordsCompletionVariants(KtTokens.SOFT_KEYWORDS, prefix)
+                ) + keywordsCompletionVariants(KtTokens.SOFT_KEYWORDS, prefix)
             } ?: emptyList()
         }
 
@@ -138,18 +139,6 @@ data class KotlinEnvironment(
         } else null
     }
 
-//    private fun iconFrom(descriptor: DeclarationDescriptor) = when (descriptor) {
-//        is FunctionDescriptor -> DrawableKind.Method
-//        is PropertyDescriptor -> DrawableKind.Attribute
-//        is LocalVariableDescriptor -> DrawableKind.LocalVariable
-//        is ClassDescriptor -> DrawableKind.Class
-//        is PackageFragmentDescriptor -> DrawableKind.Package
-//        is PackageViewDescriptor -> DrawableKind.Package
-//        is ValueParameterDescriptor -> DrawableKind.LocalVariable
-//        is TypeParameterDescriptorImpl -> DrawableKind.Class
-//        else -> DrawableKind.Snippet
-//    }
-
     private fun formatName(builder: String, symbols: Int) =
         if (builder.length > symbols) builder.substring(0, symbols) + "..." else builder
 
@@ -157,7 +146,18 @@ data class KotlinEnvironment(
     private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
         keywords.types.mapNotNull {
             if (it is KtKeywordToken && it.value.startsWith(prefix)) {
-                SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
+                val type = when (it) {
+                    is ClassDescriptor -> "Class"
+                    is FunctionDescriptor -> "Method"
+                    is PropertyDescriptor -> "Property"
+                    is LocalVariableDescriptor -> "Local variable"
+                    is PackageFragmentDescriptor -> "Package"
+                    is PackageViewDescriptor -> "Package"
+                    is ValueParameterDescriptor -> "Parameter"
+                    is TypeParameterDescriptorImpl -> "Class"
+                    else -> "Keyword"
+                }
+                SimpleCompletionItem(it.value, type, prefix.length, it.value)
             } else {
                 null
             }
@@ -355,7 +355,7 @@ data class KotlinEnvironment(
             setIdeaIoUseFallback()
             setupIdeaStandaloneExecution()
             return KotlinEnvironment(classpath, KotlinCoreEnvironment.createForProduction(
-                parentDisposable = {},
+                parentDisposable = Disposer.newDisposable(),
                 configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
                 configuration = CompilerConfiguration().apply {
                     addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
@@ -376,13 +376,9 @@ data class KotlinEnvironment(
                         CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
                         languageVersionSettings
                     )
-                    put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, true)
-
-                    with(K2JVMCompilerArguments()) {
-                        useK2 = true
-                        put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, noParamAssertions)
-                        put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, noCallAssertions)
-                    }
+                    put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
+                    put(JVMConfigurationKeys.NO_JDK, true)
+                    put(JVMConfigurationKeys.NO_REFLECT, true)
                 }
             ))
         }
@@ -392,8 +388,8 @@ data class KotlinEnvironment(
                 it.exists()
             }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
-            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar"))
-            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar"))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar"))
             val environment = with(jars)
             File(module.getSrcDirPath()).walkBottomUp().forEach {
                 if (it.extension == "kt") {

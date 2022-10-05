@@ -6,6 +6,7 @@ import com.android.tools.r8.OutputMode
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.Project
+import org.cosmic.ide.CompilerUtil
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -19,7 +20,7 @@ class D8Task : Task {
             D8.run(
                 D8Command.builder()
                     .setMinApiLevel(26)
-                    .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                    .addClasspathFiles(CompilerUtil.getPlatformPaths())
                     .addProgramFiles(Paths.get(jarFile))
                     .setOutput(Paths.get(outputDex), OutputMode.DexIndexed)
                     .build()
@@ -32,7 +33,7 @@ class D8Task : Task {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(26)
-                .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                .addClasspathFiles(CompilerUtil.getPlatformPaths())
                 .addProgramFiles(
                     getClassFiles(File(project.getBinDirPath(), "classes"))
                 )

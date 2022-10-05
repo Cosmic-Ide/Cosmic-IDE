@@ -25,9 +25,10 @@ object ZipUtil {
 
     private fun unzip(stream: InputStream, targetDir: Path) {
         ZipInputStream(stream).use { zipIn ->
-            for (ze in zipIn.entries()) {
-                val resolvedPath = targetDir.resolve(ze.name).normalize()
-                if (!resolvedPath.startsWith(targetDir)) {
+            var ze: ZipEntry? = zipIn.nextEntry
+            while (ze != null) {
+              val resolvedPath = targetDir.resolve(ze.name).normalize()
+              if (!resolvedPath.startsWith(targetDir)) {
                     // see: https://snyk.io/research/zip-slip-vulnerability
                     throw SecurityException("Entry with an illegal path: " + ze.name)
                 }
@@ -37,8 +38,11 @@ object ZipUtil {
                     Files.createDirectories(resolvedPath.parent)
                     Files.copy(zipIn, resolvedPath)
                 }
+
+                ze = zipIn.nextEntry
             }
         }
+
         stream.close()
     }
 }

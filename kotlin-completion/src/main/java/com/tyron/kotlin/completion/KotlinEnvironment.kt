@@ -145,17 +145,8 @@ data class KotlinEnvironment(
 
     private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
         keywords.types.mapNotNull {
-            if (it is KtKeywordToken && it.value.startsWith(prefix)) {
-                val type = when (it) {
-                    is ClassDescriptor -> "Class"
-                    is FunctionDescriptor -> "Method"
-                    is PropertyDescriptor -> "Property"
-                    is PackageFragmentDescriptor -> "Package"
-                    is PackageViewDescriptor -> "Package"
-                    is ValueParameterDescriptor -> "Parameter"
-                    else -> "Keyword"
-                }
-                SimpleCompletionItem(it.value, type, prefix.length, it.value)
+            if (it.value.startsWith(prefix)) {
+                SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             } else {
                 null
             }
@@ -381,7 +372,7 @@ data class KotlinEnvironment(
             ))
         }
 
-        fun get(module: KotlinProject): KotlinEnvironment? {
+        fun get(module: KotlinProject): KotlinEnvironment {
             val jars = File(module.getLibDirPath()).walkBottomUp().filter {
                 it.exists()
             }.toMutableList()

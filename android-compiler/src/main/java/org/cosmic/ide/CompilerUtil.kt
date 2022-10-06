@@ -18,9 +18,6 @@ object CompilerUtil {
     }
 
     @JvmStatic
-    fun getPlatformClasspath() = platformClasspath
-
-    @JvmStatic
     fun getPlatformPaths(): ArrayList<Path> {
        val paths = arrayListOf<Path>()
        for (file in platformClasspath) {

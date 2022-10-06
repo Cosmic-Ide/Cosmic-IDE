@@ -7,7 +7,9 @@ import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
 import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.CompilerUtil
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -35,7 +37,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
     fun analyze() {
         val output = File(project.getBinDirPath(), "classes")
         output.mkdirs()
-        val version = prefs.getString("key_java_version", "7")
+        val version = prefs.getString("key_java_version", "8")
         val files = getSourceFiles(File(project.getSrcDirPath()))
 
         val javaFileObjects = arrayListOf<JavaFileObject>()
@@ -56,9 +58,9 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
             tool.getStandardFileManager(
                 diagnostics, Locale.getDefault(), Charset.defaultCharset()
             )
-        standardJavaFileManager.apply {
+        with(standardJavaFileManager) {
             setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, getPlatformClasspath()
+                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
             )
             setLocation(StandardLocation.CLASS_PATH, getClasspath())
             setLocation(
@@ -73,10 +75,6 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         args.add(version!!)
         args.add("-target")
         args.add(version)
-        if (version.toInt() >= 9) {
-            args.add("--system")
-            args.add(FileUtil.getDataDir() + "compiler-modules")
-        }
 
         val task =
             tool.getTask(
@@ -132,14 +130,6 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         return classpath
     }
 
-    private fun getPlatformClasspath(): ArrayList<File> {
-        val classpath = arrayListOf<File>()
-        classpath.add(File(FileUtil.getClasspathDir(), "android.jar"))
-        classpath.add(File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"))
-        classpath.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.10.jar"))
-        return classpath
-    }
-
     private fun getSourceFiles(path: File): ArrayList<File> {
         val sourceFiles = arrayListOf<File>()
         val files = path.listFiles()
@@ -148,7 +138,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         }
         for (file in files) {
             if (file.isFile()) {
-                if (file.name.endsWith(".java")) {
+                if (file.extension.equals("java")) {
                     sourceFiles.add(file)
                 }
             } else {

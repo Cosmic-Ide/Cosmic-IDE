@@ -36,6 +36,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
     implementation("androidx.preference:preference-ktx:1.2.0")
+    implementation("com.facebook:ktfmt:0.41") { isTransitive = false }
     implementation("com.android.tools:r8:3.3.75")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
     implementation("com.github.Cosmic-Ide:fernflower:5bfc64b")
@@ -43,6 +44,5 @@ dependencies {
     implementation(projects.common)
     implementation(projects.project)
     implementation(projects.kotlinc)
-    implementation(projects.ktfmt)
     implementation(projects.soraEditor)
 }

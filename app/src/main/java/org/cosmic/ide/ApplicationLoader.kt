@@ -30,8 +30,7 @@ class ApplicationLoader : Application() {
         val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = applicationContext.getResources()
         JavacConfigProvider.disableModules()
-//        System.setProperty(JavacConfigProvider.PROP_ANDROIDIDE_JAVA_HOME, dataDirectory)
-        FileUtil.setDataDirectory(dataDirectory)
+        FileUtil.setDataDirectory(dataDirectory!!)
         dpToPx.initalizeResources(resources)
         CoroutineUtil.inParallel {
             DynamicColors.applyToActivitiesIfAvailable(this)
@@ -53,7 +52,7 @@ class ApplicationLoader : Application() {
     }
 
     companion object {
-        public var instance: ApplicationLoader? = null
+        private var instance: ApplicationLoader? = null
 
         fun applicationContext(): Context {
             return instance!!.applicationContext

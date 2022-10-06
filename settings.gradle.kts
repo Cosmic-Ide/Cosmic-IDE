@@ -11,6 +11,5 @@ include(
     ":project",
     ":kotlinc",
     ":jaxp",
-    ":kotlin-completion",
-    ":ktfmt"
+    ":kotlin-completion"
 ) 

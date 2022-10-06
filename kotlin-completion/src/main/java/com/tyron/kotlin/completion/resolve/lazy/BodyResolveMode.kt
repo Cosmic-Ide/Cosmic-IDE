@@ -19,8 +19,7 @@ enum class BodyResolveMode(val bindingTraceFilter: BindingTraceFilter, val doCon
     PARTIAL(BindingTraceFilter.NO_DIAGNOSTICS, doControlFlowAnalysis = false),
 
     // Resolve mode to resolve only the element itself without the additional elements (annotation resolve would not lead to function resolve or default parameters)
-    PARTIAL_NO_ADDITIONAL(BindingTraceFilter.NO_DIAGNOSTICS, doControlFlowAnalysis = false, resolveAdditionals = false)
-    ;
+    PARTIAL_NO_ADDITIONAL(BindingTraceFilter.NO_DIAGNOSTICS, doControlFlowAnalysis = false, resolveAdditionals = false);
 
     fun doesNotLessThan(other: BodyResolveMode): Boolean {
         return this <= other && this.bindingTraceFilter.includesEverythingIn(other.bindingTraceFilter)

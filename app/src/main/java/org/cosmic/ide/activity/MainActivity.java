@@ -379,21 +379,21 @@ public class MainActivity extends BaseActivity {
         if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
             ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
         }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20-RC.jar");
+        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar");
         if (!stdlib.exists()) {
             try {
                 FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-1.7.20-RC.jar"),
+                        getAssets().open("kotlin-stdlib-1.7.20.jar"),
                         stdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));
             }
         }
-        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20-RC.jar");
+        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar");
         if (!commonStdlib.exists()) {
             try {
                 FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-common-1.7.20-RC.jar"),
+                        getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));

@@ -4,6 +4,7 @@ import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.Project
+import org.cosmic.ide.CompilerUtil
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
@@ -57,23 +58,11 @@ class KotlinCompiler : Task {
         val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
 
         val args = K2JVMCompilerArguments().apply {
-            useJavac = false
-            compileJava = false
             includeRuntime = false
             noReflect = true
             noStdlib = true
             classpath =
-                FileUtil.getClasspathDir() +
-                "android.jar" +
-                File.pathSeparator +
-                FileUtil.getClasspathDir() +
-                "core-lambda-stubs.jar" +
-                File.pathSeparator +
-                FileUtil.getClasspathDir() +
-                "kotlin-stdlib-1.7.20-RC.jar" +
-                File.pathSeparator +
-                FileUtil.getClasspathDir() +
-                "kotlin-stdlib-common-1.7.20-RC.jar" +
+                CompilerUtil.platformClasspath.joinToString(separator = File.pathSeparator) { it.absolutePath } +
                 claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath

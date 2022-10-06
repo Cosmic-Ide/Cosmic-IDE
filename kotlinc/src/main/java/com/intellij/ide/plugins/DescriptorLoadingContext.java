@@ -1,8 +1,4 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
+// Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package com.intellij.ide.plugins;
 
 import com.itsaky.androidide.zipfs.ZipFileSystemProvider;
@@ -19,6 +15,8 @@ import java.util.Map;
  * I have modified this class to use {@link com.itsaky.androidide.zipfs.ZipFileSystem} because
  * android doesn't provide a ZipFileSystem
  */
+
+// parentContext is null only for CoreApplicationEnvironment - it is not valid otherwise because in this case XML is not interned.
 final class DescriptorLoadingContext implements AutoCloseable {
     private final Map<Path, FileSystem> openedFiles = new THashMap<>();
     final DescriptorListLoadingContext parentContext;
@@ -27,10 +25,6 @@ final class DescriptorLoadingContext implements AutoCloseable {
 
     final PathBasedJdomXIncluder.PathResolver<?> pathResolver;
 
-    /**
-     * parentContext is null only for CoreApplicationEnvironment - it is not valid otherwise because
-     * in this case XML is not interned.
-     */
     DescriptorLoadingContext(
             DescriptorListLoadingContext parentContext,
             boolean isBundled,

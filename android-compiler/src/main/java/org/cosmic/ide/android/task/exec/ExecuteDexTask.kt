@@ -11,6 +11,7 @@ import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.Project
+import org.cosmic.ide.CompilerUtil
 import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
@@ -64,7 +65,7 @@ class ExecuteDexTask(
                         D8.run(
                             D8Command.builder()
                                 .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
-                                .addLibraryFiles(Paths.get(FileUtil.getClasspathDir(), "android.jar"))
+                                .addClasspathFiles(CompilerUtil.getPlatformPaths())
                                 .addProgramFiles(lib.toPath())
                                 .build()
                         )
@@ -76,9 +77,9 @@ class ExecuteDexTask(
             }
         }
 
-        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-common-1.7.20-RC.jar")
+        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-common-1.7.20.jar")
 
-        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20-RC.jar")
+        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20.jar")
 
         val args = prefs.getString("key_program_arguments", "")!!.trim()
 

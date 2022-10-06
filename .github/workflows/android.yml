@@ -3,13 +3,14 @@ name: Android CI
 
 on:
   push:
+    branches-ignore:
+      - dependabot/**
     paths-ignore:
       - LICENSE
       - README.md
       - SECURITY.md
       - CODE_OF_CONDUCT.md
-      - .github/workflows/*
-      - .github/ISSUE_TEMPLATE/*
+      - .github/**
       - fastlane/*
   pull_request:
     path-ignore:

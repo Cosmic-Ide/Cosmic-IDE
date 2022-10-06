@@ -45,7 +45,7 @@ class KotlinCompiler : Task {
             }
 
             override fun toString() = diagnostics
-                .joinToString(System.lineSeparator.repeat(2)) { it.toString() }
+                .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
         }
         val claspath = arrayListOf<File>()
         val libs = File(project.getLibDirPath()).listFiles()

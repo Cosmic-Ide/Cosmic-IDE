@@ -82,10 +82,10 @@ object FileUtil {
     fun getClasspathDir() = getDataDir() + "classpath/"
 
     @JvmStatic
-    fun createOrExistsDir(dirPath: String) = createOrExistsDir(getFileByPath(dirPath))
+    fun createOrExistsDir(dirPath: String): Boolean? = createOrExistsDir(getFileByPath(dirPath))
 
     @JvmStatic
-    fun createOrExistsDir(file: File?) = if (file?.exists()) file?.isDirectory() else file?.mkdirs()
+    fun createOrExistsDir(file: File?): Boolean? = if (file?.exists()) file?.isDirectory() else file?.mkdirs()
 
     @JvmStatic
     fun getFileByPath(filePath: String): File? {

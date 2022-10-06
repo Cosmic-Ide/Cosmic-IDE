@@ -1,8 +1,11 @@
 package org.cosmic.ide
 
+import org.cosmic.ide.common.util.FileUtil
+
 import java.util.ArrayList
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.io.File
 
 object CompilerUtil {
     private val platformClasspath: ArrayList<File> by lazy {
@@ -23,6 +26,6 @@ object CompilerUtil {
        for (file in platformClasspath) {
            paths.add(file.toPath())
        }
-       paths
+       return paths
    }
 }

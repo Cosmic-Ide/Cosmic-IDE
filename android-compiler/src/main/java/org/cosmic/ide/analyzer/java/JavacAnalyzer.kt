@@ -58,7 +58,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
             tool.getStandardFileManager(
                 diagnostics, Locale.getDefault(), Charset.defaultCharset()
             )
-        standardJavaFileManager.with {
+        with(standardJavaFileManager) {
             setLocation(
                 StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.getPlatformClasspath()
             )

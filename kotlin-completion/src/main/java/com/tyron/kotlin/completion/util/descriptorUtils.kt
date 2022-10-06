@@ -55,7 +55,7 @@ private fun DeclarationDescriptorWithVisibility.isVisible(
     }
 }
 
-private fun compareDescriptorsText(project: Project, d1: DeclarationDescriptor, d2: DeclarationDescriptor): Boolean {
+private fun compareDescriptorsText(d1: DeclarationDescriptor, d2: DeclarationDescriptor): Boolean {
     if (d1 == d2) return true
     if (d1.name != d2.name) return false
 
@@ -80,7 +80,7 @@ fun compareDescriptors(project: Project, currentDescriptor: DeclarationDescripto
         return compareDescriptors(project, currentDescriptor.getMethod, originalDescriptor.getMethod)
     }
 
-    if (compareDescriptorsText(project, currentDescriptor, originalDescriptor)) return true
+    if (compareDescriptorsText(currentDescriptor, originalDescriptor)) return true
 
     if (originalDescriptor is CallableDescriptor && currentDescriptor is CallableDescriptor) {
         val overriddenOriginalDescriptor = originalDescriptor.findOriginalTopMostOverriddenDescriptors()
@@ -88,7 +88,7 @@ fun compareDescriptors(project: Project, currentDescriptor: DeclarationDescripto
 
         if (overriddenOriginalDescriptor.size != overriddenCurrentDescriptor.size) return false
         return overriddenCurrentDescriptor.zip(overriddenOriginalDescriptor).all {
-            compareDescriptorsText(project, it.first, it.second)
+            compareDescriptorsText(it.first, it.second)
         }
     }
 

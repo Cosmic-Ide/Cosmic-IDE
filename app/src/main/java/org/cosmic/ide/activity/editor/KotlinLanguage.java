@@ -40,6 +40,8 @@ public class KotlinLanguage extends TextMateLanguage {
     private final CodeEditor mEditor;
     private final KotlinProject mProject;
     private final File mCurrentFile;
+    private final KotlinEnvironment kotlinEnvironment;
+    private final String fileName;
 
     public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme) throws IOException {
         super(
@@ -59,7 +61,11 @@ public class KotlinLanguage extends TextMateLanguage {
         } else {
             mProject = new KotlinProject(project.getRootFile());
         }
-        setAutoCompleteEnabled(true);
+        kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
+        final KotlinFile ktFile =
+                kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
+                        mEditor.getText().toString());
+        fileName = ktFile.getName();
     }
 
     @Override
@@ -73,22 +79,11 @@ public class KotlinLanguage extends TextMateLanguage {
                                     CharPosition position,
                                     CompletionPublisher publisher,
                                     Bundle extraArguments) throws CompletionCancelledException {
-        char c = content.charAt(position.getIndex() - 1);
-        if (!isAutoCompleteChar(c)) {
-            return;
-        }
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
-        KotlinEnvironment kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
-        if (kotlinEnvironment == null) {
-            return;
-       }
-       
-       CoroutineUtil.execute(() -> {
+        final KotlinFile ktFile = kotlinEnvironment.updateKotlinFile(fileName, mEditor.getText().toString());
+        CoroutineUtil.execute(() -> {
             try {
-                KotlinFile updatedFile =
-                        kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
-                                mEditor.getText().toString());
-                Collection<CompletionItem> itemList = kotlinEnvironment.complete(updatedFile,
+                Collection<CompletionItem> itemList = kotlinEnvironment.complete(ktFile,
                         position.getLine(),
                         position.getColumn());
                 publisher.addItems(itemList);
@@ -98,6 +93,6 @@ public class KotlinLanguage extends TextMateLanguage {
     }
 
     public boolean isAutoCompleteChar(char p1) {
-        return p1 == '.' || MyCharacter.isJavaIdentifierPart(p1);
+        return true;
     }
 }

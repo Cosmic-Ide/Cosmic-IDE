@@ -1,7 +1,7 @@
 package javax.swing.text.html
 
-class HTMLEditorKit {
-    fun getContentType() = "text/html"
+open class HTMLEditorKit {
+    open fun getContentType() = "text/html"
 
-    class ParserCallback {}
+    open class ParserCallback {}
 }

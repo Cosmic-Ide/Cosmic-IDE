@@ -8,6 +8,7 @@ import java.nio.file.Paths
 import java.io.File
 
 object CompilerUtil {
+    @JvmStatic
     val platformClasspath: ArrayList<File> by lazy {
         arrayListOf(
                 File(FileUtil.getClasspathDir(), "android.jar"),

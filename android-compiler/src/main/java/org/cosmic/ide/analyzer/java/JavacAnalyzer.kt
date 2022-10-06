@@ -60,7 +60,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
             )
         with(standardJavaFileManager) {
             setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.getPlatformClasspath()
+                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
             )
             setLocation(StandardLocation.CLASS_PATH, getClasspath())
             setLocation(

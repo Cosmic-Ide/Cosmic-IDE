@@ -69,11 +69,6 @@ public class KotlinLanguage extends TextMateLanguage {
     }
 
     @Override
-    public int getInterruptionLevel() {
-        return INTERRUPTION_LEVEL_STRONG;
-    }
-
-    @Override
     @WorkerThread
     public void requireAutoComplete(ContentReference content,
                                     CharPosition position,

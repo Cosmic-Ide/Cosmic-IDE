@@ -40,14 +40,14 @@ object FileUtil {
     fun writeFile(file: String, content: String) {
         val path = Paths.get(file);
         Files.createDirectories(path.parent)
-        Files.write(path, content.getByteArray())
+        Files.write(path, content.toByteArray())
     }
 
     @JvmStatic
     @Throws(IOException::class)
     fun writeFile(file: String, content: ByteArray) {
-        val path = Paths.get(path)
-        Files.createDirectories(parent.path)
+        val path = Paths.get(file)
+        Files.createDirectories(path.parent)
         Files.write(path, content);
     }
 
@@ -85,11 +85,13 @@ object FileUtil {
     fun createOrExistsDir(dirPath: String) = createOrExistsDir(getFileByPath(dirPath))
 
     @JvmStatic
-    fun createOrExistsDir(file: File) : Boolean {
-        return if (file.exists()) {
-            file.isDirectory() 
+    fun createOrExistsDir(file: File?) : Boolean {
+        return if (file == null) {
+            return null
+        } else if (file?.exists) {
+            file?.isDirectory() 
         } else {
-            file.mkdirs()
+            file?.mkdirs()
         }
     }
 

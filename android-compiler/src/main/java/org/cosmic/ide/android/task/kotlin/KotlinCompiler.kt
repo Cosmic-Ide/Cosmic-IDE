@@ -45,7 +45,7 @@ class KotlinCompiler : Task {
             }
 
             override fun toString() = diagnostics
-                .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
+                .joinToString(System.lineSeparator.repeat(2)) { it.toString() }
         }
         val claspath = arrayListOf<File>()
         val libs = File(project.getLibDirPath()).listFiles()
@@ -58,13 +58,11 @@ class KotlinCompiler : Task {
         val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
 
         val args = K2JVMCompilerArguments().apply {
-            useJavac = false
-            compileJava = false
             includeRuntime = false
             noReflect = true
             noStdlib = true
             classpath =
-                CompilerUtil.getPlatformClasspath().joinToString(separator = File.pathSeparator) { it.absolutePath } +
+                CompilerUtil.platformClasspath.joinToString(separator = File.pathSeparator) { it.absolutePath } +
                 claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
             kotlinHome = mKotlinHome.absolutePath
             destination = mClassOutput.absolutePath

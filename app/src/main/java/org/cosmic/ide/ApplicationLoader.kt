@@ -30,7 +30,7 @@ class ApplicationLoader : Application() {
         val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
         val resources = applicationContext.getResources()
         JavacConfigProvider.disableModules()
-        FileUtil.setDataDirectory(dataDirectory)
+        FileUtil.setDataDirectory(dataDirectory!!)
         dpToPx.initalizeResources(resources)
         CoroutineUtil.inParallel {
             DynamicColors.applyToActivitiesIfAvailable(this)

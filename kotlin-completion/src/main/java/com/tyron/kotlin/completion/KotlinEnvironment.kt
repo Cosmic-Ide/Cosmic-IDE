@@ -145,7 +145,7 @@ data class KotlinEnvironment(
 
     private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
         keywords.types.mapNotNull {
-            if (it.value.startsWith(prefix)) {
+            if (it is KtKeywordToken && it.value.startsWith(prefix)) {
                 SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             } else {
                 null

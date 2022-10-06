@@ -150,11 +150,9 @@ data class KotlinEnvironment(
                     is ClassDescriptor -> "Class"
                     is FunctionDescriptor -> "Method"
                     is PropertyDescriptor -> "Property"
-                    is LocalVariableDescriptor -> "Local variable"
                     is PackageFragmentDescriptor -> "Package"
                     is PackageViewDescriptor -> "Package"
                     is ValueParameterDescriptor -> "Parameter"
-                    is TypeParameterDescriptorImpl -> "Class"
                     else -> "Keyword"
                 }
                 SimpleCompletionItem(it.value, type, prefix.length, it.value)

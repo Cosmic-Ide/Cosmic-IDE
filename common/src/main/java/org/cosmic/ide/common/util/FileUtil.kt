@@ -85,15 +85,7 @@ object FileUtil {
     fun createOrExistsDir(dirPath: String) = createOrExistsDir(getFileByPath(dirPath))
 
     @JvmStatic
-    fun createOrExistsDir(file: File?) : Boolean {
-        return if (file == null) {
-            return null
-        } else if (file?.exists) {
-            file?.isDirectory() 
-        } else {
-            file?.mkdirs()
-        }
-    }
+    fun createOrExistsDir(file: File?) = if (file?.exists) file?.isDirectory() else file?.mkdirs()
 
     @JvmStatic
     fun getFileByPath(filePath: String): File? {

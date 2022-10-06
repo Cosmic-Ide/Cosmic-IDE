@@ -340,7 +340,7 @@ data class KotlinEnvironment(
     }
 
     companion object {
-        private const val COMPLETION_SUFFIX = "IntellijIdeaRulezzz"
+        private const val COMPLETION_SUFFIX = "COMPLETION_SUFFIX"
 
         private val excludedFromCompletion: List<String> = listOf(
             "kotlin.jvm.internal",

@@ -88,9 +88,6 @@ object FileUtil {
     fun createOrExistsDir(file: File) = if (file.exists()) file.isDirectory() else file.mkdirs()
 
     private fun isSpace(s: String): Boolean {
-        if (s == null) {
-            return true
-        }
         for (c in s.toCharArray()) {
             if (!Character.isWhitespace(c)) {
                 return false

@@ -104,6 +104,7 @@ dependencies {
     implementation("org.smali:baksmali:2.5.2")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("com.takisoft.preferencex:preferencex:1.1.0")
+    implementation(projects.lynx)
     implementation(projects.common)
     implementation(projects.soraEditor)
     implementation(projects.kotlinc)

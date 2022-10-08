@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.WorkerThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.github.pedrovgs.lynx.LynxConfig;
+import com.github.pedrovgs.lynx.LynxActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
@@ -92,6 +94,9 @@ public class ProjectActivity extends BaseActivity {
             case R.id.settings:
                 startActivity(new Intent(this, SettingActivity.class));
                 break;
+            case R.id.logcat:
+                var lynxConfig = new LynxConfig();
+                startActivity(LynxActivity.getIntent(this, lynxConfig));
             default:
                 break;
         }

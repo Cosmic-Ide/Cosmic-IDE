@@ -28,6 +28,7 @@
     <string name="open_the_file">Open the file through the left menu</string>
 
     <!-- Strings used by ProjectActivity -->
+    <string name="logcat">Logcat</string>
     <string name="projects">Projects</string>
     <string name="new_project">New Project</string>
     <string name="delete_project">Delete Project</string>

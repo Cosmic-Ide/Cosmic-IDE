@@ -43,7 +43,7 @@ private fun chooseMoreSpecific(type1: KotlinType, type2: KotlinType): KotlinType
 
         !type1IsSubtype && !type2IsSubtype -> return null
 
-        else -> { // type1IsSubtype && type2IsSubtype
+        else -> {
             val flexible1 = type1.unwrap() as? FlexibleType
             val flexible2 = type2.unwrap() as? FlexibleType
             return when {

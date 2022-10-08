@@ -8,4 +8,8 @@
         android:title="@string/settings"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/logcat"
+        android:title="@string/logcat"
+        app:showAsAction="always" />
 </menu>

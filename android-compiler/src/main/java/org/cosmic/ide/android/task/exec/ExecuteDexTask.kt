@@ -30,6 +30,9 @@ class ExecuteDexTask(
 ) : Task {
 
     private var result: Any? = null
+    private lateinit var sysIn: InputStream
+    private lateinit var sysOut: PrintStream
+    private lateinit var sysErr: PrintStream
 
     override fun getTaskName(): String {
         return "Execute Java Task"
@@ -37,6 +40,9 @@ class ExecuteDexTask(
 
     fun release() {
         postRunnable = null
+        System.setIn(sysIn)
+        System.setOut(sysOut)
+        System.setErr(sysErr)
     }
 
     /*
@@ -45,6 +51,11 @@ class ExecuteDexTask(
      */
     override fun doFullTask(project: Project) {
         val dexFile = project.getBinDirPath() + "classes.dex"
+
+        sysIn = System.`in`
+        sysOut = System.`out`
+        sysErr = System.err
+
         System.setOut(outputStream)
         System.setErr(errorStream)
         System.setIn(inputStream)

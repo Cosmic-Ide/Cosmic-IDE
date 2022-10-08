@@ -36,7 +36,7 @@ fun PsiElement.getResolutionScope(bindingContext: BindingContext): LexicalScope?
 
 fun PsiElement.getResolutionScope(
     bindingContext: BindingContext,
-    resolutionFacade: ResolutionFacade/*TODO: get rid of this parameter*/
+    resolutionFacade: ResolutionFacade
 ): LexicalScope = getResolutionScope(bindingContext) ?: when (containingFile) {
     is KtFile -> resolutionFacade.getFileResolutionScope(containingFile as KtFile)
     else -> error("Not in KtFile")

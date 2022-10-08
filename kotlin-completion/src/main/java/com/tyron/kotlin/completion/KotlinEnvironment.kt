@@ -349,7 +349,7 @@ data class KotlinEnvironment(
                 configuration = CompilerConfiguration().apply {
                     addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
                     put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
-                    put(CommonConfigurationKeys.MODULE_NAME, UUID.randomUUID().toString())
+                    put(CommonConfigurationKeys.MODULE_NAME, "codeCompletion")
 
                     val langFeatures = mutableMapOf<LanguageFeature, LanguageFeature.State>()
                     for (langFeature in LanguageFeature.values()) {

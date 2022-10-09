@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
-    android:background="?attr/colorSurface"
+    android:layout_height="50dp"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="@dimen/spacing_tiny">
+    android:gravity="center_vertical">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/result_item_image"
         android:layout_height="match_parent"
-        android:layout_width="30dp"
-        android:layout_marginHorizontal="@dimen/spacing_tiny"
+        android:layout_width="20dp"
+        android:layout_marginStart="@dimen/spacing_tiny"
         android:fontFamily="@font/mono_font"
         android:gravity="center"
-        android:paddingHorizontal="@dimen/spacing_small"
         android:text="K"
         android:textStyle="bold" />
 
@@ -22,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical"
+        android:background="?attr/colorSurface"
         android:gravity="center_vertical">
 
         <com.google.android.material.textview.MaterialTextView
@@ -38,7 +36,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:layout_marginEnd="@dimen/spacing_small"
             android:singleLine="true" />
 
     </LinearLayout>

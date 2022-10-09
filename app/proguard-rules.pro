@@ -4,7 +4,8 @@
 -keep class com.intellij.** { *; }
 -keep class org.jetbrains.kotlin.** { *; }
 -keepnames class org.xml.sax.** { *; }
--keepnames class com.sun.xml.internal.stream.** { *; }
+-keep public class * extends javax.xml.stream.XMLInputFactory
+-keep public class * extends javax.xml.stream.XMLOutputFactory
 -keepnames class com.google.googlejavaformat.** { *; }
 -keepnames class com.sun.tools.classfile.** { *; }
 

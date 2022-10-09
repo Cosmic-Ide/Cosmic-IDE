@@ -12,6 +12,7 @@ on:
       - CODE_OF_CONDUCT.md
       - .github/**
       - fastlane/*
+      - app/proguard-rules.pro
   pull_request:
     path-ignore:
       - LICENSE
@@ -21,6 +22,7 @@ on:
       - .github/workflows/*
       - .github/ISSUE_TEMPLATE/*
       - fastlane/*
+      - app/proguard-rules.pro
   workflow_dispatch:
 
 jobs:

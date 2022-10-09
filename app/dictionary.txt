@@ -2,3 +2,7 @@ Il
 lI
 II
 ll
+ab
+ba
+aa
+bb

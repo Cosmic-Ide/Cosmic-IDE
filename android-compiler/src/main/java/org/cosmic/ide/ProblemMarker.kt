@@ -35,7 +35,7 @@ class ProblemMarker(
         analyze(editor.getText())
     }
 
-    override fun beforeReplace(content: Content)
+    override fun beforeReplace(content: Content) {}
 
     override fun afterInsert(
         content: Content,

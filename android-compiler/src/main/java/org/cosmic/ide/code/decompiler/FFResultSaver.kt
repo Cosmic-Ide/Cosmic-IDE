@@ -32,20 +32,20 @@ class FFResultSaver(val className: String) : IResultSaver {
         saveClass(qualifiedName, content)
     }
 
-    override fun saveFolder(path: String?)
+    override fun saveFolder(path: String?) {}
 
-    override fun copyFile(source: String?, path: String?, entryName: String?)
+    override fun copyFile(source: String?, path: String?, entryName: String?) {}
 
-    override fun createArchive(path: String?, archiveName: String?, manifest: Manifest?)
+    override fun createArchive(path: String?, archiveName: String?, manifest: Manifest?) {}
 
-    override fun saveDirEntry(path: String?, archiveName: String?, entryName: String?)
+    override fun saveDirEntry(path: String?, archiveName: String?, entryName: String?) {}
 
     override fun copyEntry(
         source: String?,
         path: String?,
         archiveName: String?,
         entry: String?
-    )
+    ) {}
 
-    override fun closeArchive(path: String?, archiveName: String?)
+    override fun closeArchive(path: String?, archiveName: String?) {}
 }

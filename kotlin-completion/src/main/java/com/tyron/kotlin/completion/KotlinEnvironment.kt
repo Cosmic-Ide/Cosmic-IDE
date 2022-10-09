@@ -341,13 +341,13 @@ data class KotlinEnvironment(
         )
 
         fun with(classpath: List<File>): KotlinEnvironment {
-            logTime("classpath") {
-                setIdeaIoUseFallback()
-                setupIdeaStandaloneExecution()
-                return KotlinEnvironment(classpath, KotlinCoreEnvironment.createForProduction(
-                    parentDisposable = Disposer.newDisposable(),
-                    configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
-                    configuration = CompilerConfiguration().apply {
+            setIdeaIoUseFallback()
+            setupIdeaStandaloneExecution()
+            return KotlinEnvironment(classpath, KotlinCoreEnvironment.createForProduction(
+                parentDisposable = Disposer.newDisposable(),
+                configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
+                configuration = CompilerConfiguration().apply {
+                    logTime("compilerConfig") {
                         addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
                         put(CommonConfigurationKeys.MODULE_NAME, "codeCompletion")
@@ -370,8 +370,8 @@ data class KotlinEnvironment(
                         put(JVMConfigurationKeys.NO_JDK, true)
                         put(JVMConfigurationKeys.NO_REFLECT, true)
                     }
-                ))
-            }
+                }
+            ))
         }
 
         fun get(module: KotlinProject): KotlinEnvironment {

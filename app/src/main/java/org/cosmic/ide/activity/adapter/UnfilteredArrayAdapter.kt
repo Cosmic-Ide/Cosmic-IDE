@@ -9,7 +9,7 @@ class UnfilteredArrayAdapter<T> : ArrayAdapter<T> {
     private val filter = object : Filter() {
         override fun performFiltering(constraint: CharSequence): FilterResults = FilterResults()
 
-        override fun publishResults(constraint: CharSequence, results: FilterResults)
+        override fun publishResults(constraint: CharSequence, results: FilterResults) {}
     }
 
     constructor(

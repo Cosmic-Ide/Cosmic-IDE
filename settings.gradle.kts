@@ -12,5 +12,6 @@ include(
     ":kotlinc",
     ":jaxp",
     ":kotlin-completion",
-    ":lynx"
+    ":lynx",
+    "ktfmt"
 )

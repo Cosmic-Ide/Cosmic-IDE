@@ -89,7 +89,6 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 ## Special Thanks
 
-
 - [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc) and [Kotlin auto-complete library](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion)
 
 - [TheRemakerMan](https://github.com/TheRemakerMan)

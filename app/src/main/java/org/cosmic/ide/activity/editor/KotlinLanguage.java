@@ -62,7 +62,7 @@ public class KotlinLanguage extends TextMateLanguage {
             mProject = new KotlinProject(project.getRootFile());
         }
         kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
-        final KotlinFile ktFile =
+        final var ktFile =
                 kotlinEnvironment.updateKotlinFile(mCurrentFile.getAbsolutePath(),
                         mEditor.getText().toString());
         fileName = ktFile.getName();
@@ -75,9 +75,11 @@ public class KotlinLanguage extends TextMateLanguage {
                                     CompletionPublisher publisher,
                                     Bundle extraArguments) throws CompletionCancelledException {
         String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
-        final KotlinFile ktFile = kotlinEnvironment.updateKotlinFile(fileName, mEditor.getText().toString());
+        final var text = mEditor.getText().toString();
+
         CoroutineUtil.execute(() -> {
             try {
+                final var ktFile = kotlinEnvironment.updateKotlinFile(fileName, text);
                 Collection<CompletionItem> itemList = kotlinEnvironment.complete(ktFile,
                         position.getLine(),
                         position.getColumn());

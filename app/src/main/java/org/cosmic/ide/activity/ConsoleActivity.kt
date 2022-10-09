@@ -45,7 +45,7 @@ class ConsoleActivity : BaseActivity() {
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
-        
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
             val isKeyboardVisible = insets.isVisible(Type.ime())
             val keyboardHeight = insets.getInsets(Type.ime()).bottom

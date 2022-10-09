@@ -178,7 +178,7 @@ class CodeEditorFragment : Fragment() {
                 IGrammarSource.fromInputStream(
                     requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.json"),
                     "smali.tmLanguage.json",
-                    null), 
+                    null),
                 InputStreamReader(
                     requireContext().assets.open("textmate/smali/language-configuration.json")
                 ),

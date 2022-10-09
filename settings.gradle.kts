@@ -3,7 +3,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "Cosmic-Ide"
 
 include(
-    ":app", 
+    ":app",
     ":android-compiler",
     ":common",
     ":google-java-format",
@@ -13,4 +13,4 @@ include(
     ":jaxp",
     ":kotlin-completion",
     ":lynx"
-) 
+)

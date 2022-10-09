@@ -16,7 +16,7 @@ class FernFlowerDecompiler {
         val resultSaver = FFResultSaver(className)
 
         val logger = object : IFernflowerLogger() {
-            override fun writeMessage(p0: String?, p1: Severity?) {}
+            override fun writeMessage(p0: String?, p1: Severity?)
 
             override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {
                 throw p2!!

@@ -341,35 +341,37 @@ data class KotlinEnvironment(
         )
 
         fun with(classpath: List<File>): KotlinEnvironment {
-            setIdeaIoUseFallback()
-            setupIdeaStandaloneExecution()
-            return KotlinEnvironment(classpath, KotlinCoreEnvironment.createForProduction(
-                parentDisposable = Disposer.newDisposable(),
-                configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
-                configuration = CompilerConfiguration().apply {
-                    addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
-                    put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
-                    put(CommonConfigurationKeys.MODULE_NAME, "codeCompletion")
+            logTime("classpath") {
+                setIdeaIoUseFallback()
+                setupIdeaStandaloneExecution()
+                return KotlinEnvironment(classpath, KotlinCoreEnvironment.createForProduction(
+                    parentDisposable = Disposer.newDisposable(),
+                    configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
+                    configuration = CompilerConfiguration().apply {
+                        addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
+                        put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
+                        put(CommonConfigurationKeys.MODULE_NAME, "codeCompletion")
 
-                    val langFeatures = mutableMapOf<LanguageFeature, LanguageFeature.State>()
-                    for (langFeature in LanguageFeature.values()) {
-                        langFeatures[langFeature] = LanguageFeature.State.ENABLED
+                        val langFeatures = mutableMapOf<LanguageFeature, LanguageFeature.State>()
+                        for (langFeature in LanguageFeature.values()) {
+                            langFeatures[langFeature] = LanguageFeature.State.ENABLED
+                        }
+                        val languageVersionSettings = LanguageVersionSettingsImpl(
+                            LanguageVersion.LATEST_STABLE,
+                            ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
+                            emptyMap(),
+                            langFeatures
+                        )
+                        put(
+                            CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
+                            languageVersionSettings
+                        )
+                        put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
+                        put(JVMConfigurationKeys.NO_JDK, true)
+                        put(JVMConfigurationKeys.NO_REFLECT, true)
                     }
-                    val languageVersionSettings = LanguageVersionSettingsImpl(
-                        LanguageVersion.LATEST_STABLE,
-                        ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
-                        emptyMap(),
-                        langFeatures
-                    )
-                    put(
-                        CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
-                        languageVersionSettings
-                    )
-                    put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
-                    put(JVMConfigurationKeys.NO_JDK, true)
-                    put(JVMConfigurationKeys.NO_REFLECT, true)
-                }
-            ))
+                ))
+            }
         }
 
         fun get(module: KotlinProject): KotlinEnvironment {

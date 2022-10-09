@@ -81,7 +81,7 @@ class ExecuteDexTask(
                                 .build()
                         )
                         File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
-                    } 
+                    }
                 }
                 // load library into ClassLoader
                 dexLoader.loadDex(outDex)
@@ -100,7 +100,7 @@ class ExecuteDexTask(
         CoroutineUtil.inParallel {
             try {
                 val calledClass = loader.loadClass(clazz)
- 
+
                 val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.getModifiers())) {
                     // If the method is static, directly call it
@@ -116,7 +116,7 @@ class ExecuteDexTask(
                     println(result.toString())
                 }
             } catch (e: InvocationTargetException) {
-                e.getTargetException().printStackTrace(errorStream) 
+                e.getTargetException().printStackTrace(errorStream)
             } catch (e: Throwable) {
                 e.printStackTrace(errorStream)
             } catch (e: RuntimeException) {

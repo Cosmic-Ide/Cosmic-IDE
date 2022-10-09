@@ -13,7 +13,7 @@ import org.cosmic.ide.R
 class CustomCompletionItemAdapter : EditorCompletionAdapter() {
 
     override fun getItemHeight(): Int {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, getContext().getResources().getDisplayMetrics()).toInt()
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50f, getContext().getResources().getDisplayMetrics()).toInt()
     }
 
     override fun getView(pos: Int, v: View?, parent: ViewGroup, isCurrentCursorPosition: Boolean): View {

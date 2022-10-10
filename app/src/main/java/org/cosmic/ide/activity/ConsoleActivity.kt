@@ -9,7 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import androidx.core.view.WindowCompat
-import org.cosmic.ide.ApplicationLoader
+import org.cosmic.ide.App
 import org.cosmic.ide.R
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
 import org.cosmic.ide.databinding.ActivityConsoleBinding
@@ -95,7 +95,7 @@ class ConsoleActivity : BaseActivity() {
         console.flushInputStream()
         getSupportActionBar()?.setSubtitle("Running")
         task = ExecuteDexTask(
-            ApplicationLoader.getDefaultSharedPreferences(),
+            App.getDefaultSharedPreferences(),
             classToExecute,
             console.getInputStream(),
             console.getOutputStream(),

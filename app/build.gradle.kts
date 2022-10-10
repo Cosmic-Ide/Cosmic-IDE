@@ -77,7 +77,8 @@ android {
                 "DebugProbesKt.bin",
                 "api_database/*",
                 "src/**",
-                "bundle.properties"
+                "bundle.properties",
+                "**/*.kotlin_module"
             )
         )
     }

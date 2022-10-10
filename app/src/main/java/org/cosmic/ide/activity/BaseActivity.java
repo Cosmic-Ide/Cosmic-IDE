@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.WindowCompat;
 
-import org.cosmic.ide.ApplicationLoader;
+import org.cosmic.ide.App;
 import org.cosmic.ide.ui.theme.DarkThemeHelper;
 import org.cosmic.ide.util.UiUtilsKt;
 
@@ -23,7 +23,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        settings = ApplicationLoader.getDefaultSharedPreferences();
+        settings = App.getDefaultSharedPreferences();
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         UiUtilsKt.addSystemWindowInsetToPadding(getRootActivityView(), true, false, true, false);

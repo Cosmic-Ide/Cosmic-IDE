@@ -5,14 +5,14 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.annotation.AnyRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
-import org.cosmic.ide.ApplicationLoader
+import org.cosmic.ide.App
 
 abstract class SettingLiveData<T>(
     @StringRes keyRes: Int,
     keySuffix: String?,
     @AnyRes private val defaultValueRes: Int
 ) : LiveData<T>(), OnSharedPreferenceChangeListener {
-    private val sharedPreferences = ApplicationLoader.getDefaultSharedPreferences()
+    private val sharedPreferences = App.getDefaultSharedPreferences()
     private val key = getKey(keyRes, keySuffix)
     private var defaultValue: T? = null
 
@@ -28,7 +28,7 @@ abstract class SettingLiveData<T>(
     }
 
     private fun getKey(@StringRes keyRes: Int, keySuffix: String?): String {
-        val key = ApplicationLoader.applicationContext().getString(keyRes)
+        val key = App.applicationContext().getString(keyRes)
         return if (keySuffix != null) "${key}_$keySuffix" else key
     }
 

@@ -43,7 +43,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import org.cosmic.ide.ApplicationLoader;
+import org.cosmic.ide.App;
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.editor.adapter.PageAdapter;
 import org.cosmic.ide.activity.model.FileViewModel;
@@ -527,7 +527,7 @@ public class MainActivity extends BaseActivity {
     private TextMateColorScheme getColorScheme() {
         try {
             IThemeSource themeSource;
-            if (ApplicationLoader.Companion.isDarkMode(this)) {
+            if (App.Companion.isDarkMode(this)) {
                 themeSource =
                         IThemeSource.fromInputStream(
                             getAssets().open("textmate/darcula.tmTheme.json"),

@@ -11,7 +11,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
-import org.cosmic.ide.ApplicationLoader
+import org.cosmic.ide.App
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
@@ -125,7 +125,7 @@ class CodeEditorFragment : Fragment() {
     private fun getColorScheme(): TextMateColorScheme {
         try {
             var themeSource: IThemeSource
-            if (ApplicationLoader.isDarkMode(requireContext())) {
+            if (App.isDarkMode(requireContext())) {
                 themeSource =
                     IThemeSource.fromInputStream(
                         requireContext().getAssets().open("textmate/darcula.tmTheme.json"),

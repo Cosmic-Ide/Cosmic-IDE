@@ -14,6 +14,7 @@
 -keep,allowoptimization class com.sun.xml.internal.stream.** { *; }
 -keep,allowoptimization class jdk.xml.internal.** { *; }
 # proguard's inlining breaks gson
--keep class org.jf.util.BitSetUtils { *; }
+-keep,allowoptimization class org.jf.util.BitSetUtils { *; }
+-keep,allowoptimization class org.jf.util.NibbleUtils { *; }
 # -keepnames class com.google.googlejavaformat.** { *; }
 # -keep,allowshrinking class com.sun.tools.classfile.** { *; }

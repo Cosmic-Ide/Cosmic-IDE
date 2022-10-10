@@ -8,8 +8,8 @@
 # so these will classes be needed by the programs when running.
 -keep,allowoptimization class kotlin.** { *; }
 # for kotlin compiler
--keep,allowoptimization,allowshrinking class com.intellij.** { *; }
--keep,allowoptimization class org.jetbrains.kotlin.** { *; }
+-keep,allowoptimization class com.intellij.** { *; }
+-keep,allowoptimization,allowshrinking class org.jetbrains.kotlin.** { *; }
 -keep,allowoptimization class org.xml.sax.** { *; }
 -keep,allowoptimization class com.sun.xml.internal.stream.** { *; }
 -keep,allowoptimization class jdk.xml.internal.** { *; }

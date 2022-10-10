@@ -5,6 +5,7 @@
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
 -keep class com.sun.xml.internal.stream.** { *; }
+-keep class com.sun.org.apache.** { *; }
 -keepnames class com.google.googlejavaformat.** { *; }
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }
 

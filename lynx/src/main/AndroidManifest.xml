@@ -22,4 +22,5 @@
         android:name=".LynxActivity"
         android:windowSoftInputMode="stateHidden"/>
   </application>
+
 </manifest>

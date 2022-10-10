@@ -1,3 +1,4 @@
+-dontobfuscate
 -allowaccessmodification
 
 -keep class javax.** { *; }
@@ -10,7 +11,3 @@
 -keep class jdk.xml.internal.** { *; }
 -keepnames class com.google.googlejavaformat.** { *; }
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }
-
--obfuscationdictionary dictionary.txt
--packageobfuscationdictionary dictionary.txt
--classobfuscationdictionary dictionary.txt

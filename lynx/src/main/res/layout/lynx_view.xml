@@ -69,7 +69,6 @@
           android:id="@+id/sp_filter"
           android:layout_width="0dp"
           android:layout_weight="4"
-          style="@style/Spinner"
           android:layout_height="match_parent"/>
     </LinearLayout>
   </RelativeLayout>

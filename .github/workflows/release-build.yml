@@ -38,4 +38,4 @@ jobs:
           name: apk-release
           path: |
             app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/proguard/release/mapping.txt
+            app/build/outputs/mapping/release/mapping.txt

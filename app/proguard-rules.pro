@@ -2,6 +2,7 @@
 -keepattributes LineNumberTable,SourceFile
 -allowaccessmodification
 -repackageclasses ''
+-optimizations library/gson,!code/merging
 
 -keep,allowoptimization class javax.** { *; }
 
@@ -19,6 +20,7 @@
 # proguard's inlining breaks gson
 -keep,allowoptimization,allowshrinking class org.jf.util.** { *; }
 -keep,allowoptimization,allowshrinking class org.jf.dexlib2.** { *; }
+-keep,allowoptimization,allowshrinking class org.fusesource.jansi.io.Colors { *; }
 
 # -keepnames class com.google.googlejavaformat.** { *; }
 # -keep,allowshrinking class com.sun.tools.classfile.** { *; }

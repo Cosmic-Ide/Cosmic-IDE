@@ -17,10 +17,11 @@
 -keep class com.sun.xml.internal.stream.** { *; }
 -keep class jdk.xml.internal.** { *; }
 
-# proguard's inlining breaks gson
+# proguard's merging breaks gson
 -keep,allowshrinking class org.jf.util.** { *; }
 -keep,allowshrinking class org.jf.dexlib2.** { *; }
 -keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
+-keep,allowshrinking class org.eclipse.tm4e.** { *; }
 
 # -keepnames class com.google.googlejavaformat.** { *; }
 # -keep,allowshrinking class com.sun.tools.classfile.** { *; }

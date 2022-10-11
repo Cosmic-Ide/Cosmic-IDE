@@ -18,6 +18,7 @@
 
 # proguard's inlining breaks gson
 -keep,allowoptimization,allowshrinking class org.jf.util.** { *; }
+-keep,allowoptimization,allowshrinking class org.jf.dexlib2.** { *; }
 
 # -keepnames class com.google.googlejavaformat.** { *; }
 # -keep,allowshrinking class com.sun.tools.classfile.** { *; }

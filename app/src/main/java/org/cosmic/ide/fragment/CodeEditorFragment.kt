@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.util.Log
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import io.github.rosemoe.sora.lang.EmptyLanguage
@@ -160,6 +161,7 @@ class CodeEditorFragment : Fragment() {
                 getColorScheme().themeSource
             )
         } catch (e: IOException) {
+            Log.e("CodeEditorFragment", "Failed to create instance of TextMateLanguage", e);
             return EmptyLanguage()
         }
     }
@@ -168,6 +170,7 @@ class CodeEditorFragment : Fragment() {
         try {
             return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
         } catch (e: IOException) {
+            Log.e("CodeEditorFragment", "Failed to create instance of KotlinLanguage", e);
             return EmptyLanguage()
         }
     }
@@ -204,7 +207,7 @@ class CodeEditorFragment : Fragment() {
             try {
                 currentFile.writeText(newContents)
             } catch (e: IOException) {
-                // ignored
+                Log.e("CodeEditorFragment", "Failed to save file", e);
             }
         }
     }

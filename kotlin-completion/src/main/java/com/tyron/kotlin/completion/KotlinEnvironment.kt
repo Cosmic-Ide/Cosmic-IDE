@@ -80,7 +80,7 @@ data class KotlinEnvironment(
     fun getPrefix(element: PsiElement): String {
         var text = (element as? KtSimpleNameExpression)?.text
         if (text == null) {
-            val type = PsiUtils.findParent(element, KtSimpleNameExpression::class.java)
+            val type = PsiUtils.findParent(element)
             if (type != null) {
                 text = type.text
             }

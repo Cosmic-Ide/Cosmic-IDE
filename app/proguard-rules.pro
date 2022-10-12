@@ -13,7 +13,7 @@
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
 -keep class com.sun.xml.internal.stream.** { *; }
--keep class jdk.xml.internal.** { *; }
+# -keep class jdk.xml.internal.** { *; }
 
 # proguard's merging breaks gson
 -keep,allowshrinking class org.jf.util.** { *; }

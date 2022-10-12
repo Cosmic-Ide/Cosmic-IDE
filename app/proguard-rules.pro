@@ -1,7 +1,6 @@
 -dontobfuscate
 -keepattributes LineNumberTable,SourceFile
 -allowaccessmodification
--repackageclasses ''
 -dontoptimize
 
 -keep class javax.** { *; }
@@ -24,4 +23,4 @@
 -keep,allowshrinking class org.eclipse.tm4e.** { *; }
 
 # -keepnames class com.google.googlejavaformat.** { *; }
-# -keep,allowshrinking class com.sun.tools.classfile.** { *; }
+-keep,allowshrinking class com.sun.tools.classfile.** { *; }

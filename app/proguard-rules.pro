@@ -1,6 +1,7 @@
 -dontobfuscate
 -keepattributes LineNumberTable,SourceFile
 -allowaccessmodification
+-optimizations !class/merging/*
 
 -keep class javax.** { *; }
 
@@ -20,7 +21,7 @@
 -keep,allowshrinking class org.jf.dexlib2.** { *; }
 -keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
 -keep,allowshrinking class org.eclipse.tm4e.** { *; }
--keep class com.google.gson.** { *; }
+-keep,allowshrinking class com.google.gson.** { *; }
 
 # for disassembler (javap)
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }

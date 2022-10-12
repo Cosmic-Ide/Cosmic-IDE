@@ -1,7 +1,6 @@
 -dontobfuscate
 -keepattributes LineNumberTable,SourceFile
 -allowaccessmodification
--dontoptimize
 
 -keep class javax.** { *; }
 
@@ -17,10 +16,5 @@
 -keep class jdk.xml.internal.** { *; }
 
 # proguard's merging breaks gson
--keep,allowshrinking class org.jf.util.** { *; }
--keep,allowshrinking class org.jf.dexlib2.** { *; }
--keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
--keep,allowshrinking class org.eclipse.tm4e.** { *; }
-
-# -keepnames class com.google.googlejavaformat.** { *; }
+-keep class com.google.gson.** { *; }
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }

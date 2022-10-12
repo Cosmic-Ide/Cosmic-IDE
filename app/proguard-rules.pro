@@ -1,7 +1,5 @@
 -dontobfuscate
--keepattributes LineNumberTable,SourceFile
--allowaccessmodification
--optimizations !class/merging/*
+-keepattributes LineNumberTable
 
 -keep class javax.** { *; }
 
@@ -14,14 +12,6 @@
 -keep class org.jetbrains.kotlin.** { *; }
 -keep class org.xml.sax.** { *; }
 -keep class com.sun.xml.internal.stream.** { *; }
-# -keep class jdk.xml.internal.** { *; }
-
-# proguard's merging breaks gson
--keep,allowshrinking class org.jf.util.** { *; }
--keep,allowshrinking class org.jf.dexlib2.** { *; }
--keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
--keep,allowshrinking class org.eclipse.tm4e.** { *; }
--keep,allowshrinking class com.google.gson.** { *; }
 
 # for disassembler (javap)
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }

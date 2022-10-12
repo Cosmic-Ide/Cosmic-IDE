@@ -16,5 +16,11 @@
 -keep class jdk.xml.internal.** { *; }
 
 # proguard's merging breaks gson
+--keep,allowshrinking class org.jf.util.** { *; }
+--keep,allowshrinking class org.jf.dexlib2.** { *; }
+--keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
+--keep,allowshrinking class org.eclipse.tm4e.** { *; }
 -keep class com.google.gson.** { *; }
+
+# for disassembler (javap)
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }

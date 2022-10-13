@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegateCompat
-import org.cosmic.ide.ApplicationLoader
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.SimpleActivityLifecycleCallbacks
 import org.cosmic.ide.util.valueCompat

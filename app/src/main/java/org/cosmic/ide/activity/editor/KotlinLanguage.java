@@ -1,6 +1,7 @@
 package org.cosmic.ide.activity.editor;
 
 import android.content.res.AssetManager;
+import android.util.Log;
 import androidx.annotation.WorkerThread;
 import android.os.Bundle;
 import com.tyron.kotlin.completion.KotlinFile;
@@ -84,7 +85,9 @@ public class KotlinLanguage extends TextMateLanguage {
                         position.getLine(),
                         position.getColumn());
                 publisher.addItems(itemList);
-            } catch (Throwable ignore) {}
+            } catch (Throwable e) {
+                Log.e("CodeCompletion", "Failed to fetch code suggestions", e);
+            }
         });
         super.requireAutoComplete(content, position, publisher, extraArguments);
     }

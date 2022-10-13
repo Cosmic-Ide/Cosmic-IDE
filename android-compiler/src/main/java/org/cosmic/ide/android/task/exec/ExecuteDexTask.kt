@@ -21,12 +21,12 @@ import java.lang.reflect.InvocationTargetException
 import java.nio.file.Paths
 
 class ExecuteDexTask(
-    val prefs: SharedPreferences,
-    val clazz: String,
-    val inputStream: InputStream,
-    val outputStream: PrintStream,
-    val errorStream: PrintStream,
-    var postRunnable: Runnable?
+    private val prefs: SharedPreferences,
+    private val clazz: String,
+    private val inputStream: InputStream,
+    private val outputStream: PrintStream,
+    private val errorStream: PrintStream,
+    private var postRunnable: Runnable?
 ) : Task {
 
     private var result: Any? = null
@@ -35,11 +35,12 @@ class ExecuteDexTask(
     private lateinit var sysErr: PrintStream
 
     override fun getTaskName(): String {
-        return "Execute Java Task"
+        return "Execute Dex Task"
     }
 
     fun release() {
         postRunnable = null
+
         System.setIn(sysIn)
         System.setOut(sysOut)
         System.setErr(sysErr)
@@ -88,10 +89,6 @@ class ExecuteDexTask(
             }
         }
 
-        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-common-1.7.20.jar")
-
-        val loader = dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.7.20.jar")
-
         val args = prefs.getString("key_program_arguments", "")!!.trim()
 
         // Split arguments into an array
@@ -99,7 +96,7 @@ class ExecuteDexTask(
 
         CoroutineUtil.inParallel {
             try {
-                val calledClass = loader.loadClass(clazz)
+                val calledClass = dexLoader.loader.loadClass(clazz)
 
                 val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.getModifiers())) {
@@ -118,8 +115,6 @@ class ExecuteDexTask(
             } catch (e: InvocationTargetException) {
                 e.getTargetException().printStackTrace(errorStream)
             } catch (e: Throwable) {
-                e.printStackTrace(errorStream)
-            } catch (e: RuntimeException) {
                 e.printStackTrace(errorStream)
             } catch (e: Error) {
                 e.printStackTrace(errorStream)

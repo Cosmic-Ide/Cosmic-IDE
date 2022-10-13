@@ -30,13 +30,6 @@ android {
             keyAlias = TESTKEY
             keyPassword = TESTKEY
         }
-
-        create(BuildType.RELEASE) {
-            storeFile = file("testkey.keystore")
-            storePassword = TESTKEY
-            keyAlias = TESTKEY
-            keyPassword = TESTKEY
-        }
     }
 
     buildTypes {
@@ -47,7 +40,7 @@ android {
         }
 
         getByName(BuildType.RELEASE) {
-            signingConfig = signingConfigs.getByName(BuildType.RELEASE)
+            signingConfig = signingConfigs.getByName(BuildType.DEBUG)
             isMinifyEnabled = BuildTypeRelease.isMinifyEnabled
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -84,7 +77,8 @@ android {
                 "DebugProbesKt.bin",
                 "api_database/*",
                 "src/**",
-                "bundle.properties"
+                "bundle.properties",
+                "**/*.kotlin_module"
             )
         )
     }

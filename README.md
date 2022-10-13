@@ -20,6 +20,7 @@ A next-gen Ide for JVM development on Android!
 
 - Java 17
 - Kotlin Language Support
+- Kotlin Auto Completion
 - Javac, Javap, D8
 - Eclipse Compiler for Java (ECJ)
 - Incremental Compilation
@@ -67,9 +68,7 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 
 - \[ \] Kotlin error/warning highlight in editor
 - \[ \] Git Support (possibly with JGit)
-- \[ \] Functions for external Jar/Dex files
 - \[ \] Java auto-complete
-- \[ \] Kotlin auto-complete
 
 ## Building
 

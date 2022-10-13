@@ -19,7 +19,7 @@ import org.cosmic.ide.util.dpToPx
 import java.io.File
 import kotlin.system.exitProcess
 
-class ApplicationLoader : Application() {
+class App : Application() {
 
     init {
         instance = this
@@ -52,7 +52,7 @@ class ApplicationLoader : Application() {
     }
 
     companion object {
-        private var instance: ApplicationLoader? = null
+        private var instance: App? = null
 
         fun applicationContext(): Context {
             return instance!!.applicationContext

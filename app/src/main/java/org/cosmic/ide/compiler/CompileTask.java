@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Looper;
 import android.util.Log;
 
-import org.cosmic.ide.ApplicationLoader;
+import org.cosmic.ide.App;
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.ConsoleActivity;
 import org.cosmic.ide.activity.MainActivity;
@@ -76,7 +76,7 @@ public class CompileTask extends Thread {
     }
 
     private void compileJava() {
-        final var prefs = ApplicationLoader.getDefaultSharedPreferences();
+        final var prefs = App.getDefaultSharedPreferences();
         try {
             listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             new JavacCompilationTask(prefs).doFullTask(activity.getProject());

@@ -10,7 +10,7 @@ java {
 
 dependencies {
     compileOnly("com.google.guava:guava:31.1-jre")
-    implementation("com.google.auto.value:auto-value-annotations:1.9")
+    implementation("com.google.auto.value:auto-value-annotations:1.10")
     annotationProcessor("com.google.auto.value:auto-value:1.9")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
 }

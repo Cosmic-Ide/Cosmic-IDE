@@ -8,7 +8,7 @@ updates:
       interval: daily
       time: '10:00'
     open-pull-requests-limit: 50
-    target-branch: main
+    target-branch: dev
 
   - package-ecosystem: github-actions
     directory: '/'
@@ -16,4 +16,4 @@ updates:
       interval: daily
       time: '10:00'
     open-pull-requests-limit: 50
-    target-branch: main
+    target-branch: dev

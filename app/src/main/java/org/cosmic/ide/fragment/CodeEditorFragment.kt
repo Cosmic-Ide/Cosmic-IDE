@@ -53,8 +53,8 @@ class CodeEditorFragment : Fragment() {
         val inputView = binding.inputView
         inputView.bindEditor(binding.editor)
         inputView.addSymbols(
-            arrayOf("->", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
-            arrayOf("\t", "{}", "}", "(", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
+            arrayOf("➜", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
+            arrayOf("\t", "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
         )
 
         if (currentFile.exists()) {

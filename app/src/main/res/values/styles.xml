@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="PrivateResource">
+
+    <style name="Widget.CosmicIde.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
+    </style>
+</resources>

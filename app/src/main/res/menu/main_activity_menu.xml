@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_undo"
+        android:icon="@drawable/action_undo"
+        app:showAsAction="always"
+        android:title="Undo" />
+
+    <item
+        android:id="@+id/action_redo"
+        android:icon="@drawable/action_redo"
+        app:showAsAction="always"
+        android:title="Redo" />
+
+    <item
+        android:icon="@drawable/play_arrow"
+        android:id="@+id/run_menu_button"
+        android:title="@string/run"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/format_menu_button"
+        android:title="@string/format" />
+
+    <item
+        android:id="@+id/action_advanced"
+        android:title="@string/advanced">
+        <menu>
+            <item
+                android:id="@+id/smali_menu_button"
+                android:title="@string/smali" />
+            <item
+                android:id="@+id/disassemble_menu_button"
+                android:title="@string/disassemble" />
+            <item
+                android:id="@+id/class2java_menu_button"
+                android:title="@string/class2java" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/settings_menu_button"
+        android:title="@string/settings" />
+</menu>

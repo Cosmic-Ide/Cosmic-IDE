@@ -1,0 +1,11 @@
+- JDK 8 Support
+- Eclipse Compiler for Java
+- Eclipse class disassembler
+- Eclipse Code Formatter
+- D8 tool
+- Dx tool
+- Smali tool
+- CFR decompiler
+- Run java code
+- Jar task
+- ZipAlign task

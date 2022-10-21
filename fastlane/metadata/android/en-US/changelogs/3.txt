@@ -1,0 +1,5 @@
+- Faster builds
+- Improved performance with kotlin coroutines
+- Fixed the bug that sometimes prevents settings activity to open by thewolfprod
+- New and better UI/UX by thewolfprod
+- Improved RTL support

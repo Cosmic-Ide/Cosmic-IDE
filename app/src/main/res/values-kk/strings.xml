@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MainActivity-де қолданылатын жолдар -->
+    <string name="run">Орындау</string>
+    <string name="advanced">Қосымша</string>
+    <string name="compilation_running">Жоба компиляциянуда</string>
+    <string name="file_name">Файлдың аты</string>
+    <string name="directory_name">Буманың аты</string>
+    <string name="create">Құру</string>
+    <string name="create_java_class">Java классын құру</string>
+    <string name="create_kotlin_class">Kotlin-классын құру</string>
+    <string name="class_kind">Түрі</string>
+    <string name="create_directory">Бума құру</string>
+    <string name="create_file">Файл құру</string>
+    <string name="delete_file">%1$s жою керек пе?</string>
+    <string name="delete">Жою</string>
+    <string name="rename">Қайта атау</string>
+    <string name="close">Жабу</string>
+    <string name="close_others">Басқаларын жабу</string>
+    <string name="close_all">Барлығын жабу</string>
+    <string name="no_open_files">Ашылған бірде-бір файл жоқ</string>
+    <string name="open_the_file">Сол жақтағы меню арқылы файлды ашыңыз</string>
+
+    <!-- ProjectActivity-де қолданылатын жолдар-->
+    <string name="projects">Жобалар</string>
+    <string name="new_project">Жаңа жоба</string>
+    <string name="delete_project">Жобаны жою</string>
+    <string name="project_name">Жобаның аты</string>
+    <string name="no_projects_title">Жобалар табылмады</string>
+    <string name="no_projects_suggestion">Астыңғы батырманы басу арқылы жоба құрыңыз</string>
+    <string name="project_delete_warning">%1$s өшіргіңіз келетіндігіне сенімдісіз бе?</string>
+    <string name="kotlin_template">Kotlin қалыпүлгі</string>
+
+    <!-- PreferenceSettingsFragment-те қолданылатын жолдар -->
+    <string name="java_version">Java нұсқасы</string>
+    <string name="format">Пішімдеу</string>
+    <string name="settings">Баптаулар</string>
+    <string name="appearance">Түр</string>
+    <string name="compiler">Компилятор</string>
+    <string name="dark_theme">Түнгі режим</string>
+    <string name="about">Бағдарлама туралы</string>
+    <string name="our_discord">Біздің Discord</string>
+    <string name="join_discord">Біздің Discord каналымызға қосылыңыздар</string>
+    <string name="our_github">Біздің Github</string>
+    <string name="view_github_repository">Біз Github repository-ді қарау</string>
+    <string name="app_version_text">Нұсқа</string>
+    <string name="follow_system">Жүйедегі теманы қолдану</string>
+    <string name="off">Өшіру</string>
+    <string name="on">Қосу</string>
+    <string name="program_arguments">Программаның аргументтері</string>
+
+    <!-- CompilerTask-те қолданылатын жолдар-->
+    <string name="stage">Кезең</string>
+
+</resources>

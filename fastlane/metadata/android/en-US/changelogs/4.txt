@@ -1,0 +1,11 @@
+- Added Javac compiler
+- Added Javap disassembler
+- Added google-java-format
+- Now you can switch between javac, ecj, javap, eclipse class disassembler, google-java-format, eclipse formatter
+- Added file tree viewer (@thewolfprod)
+- Updated sora-editor
+- Updated smali tool
+- Improved file operations with java nio
+- Last opened files will now be saved
+- Improved app performance
+- Builds will be 2x faster now

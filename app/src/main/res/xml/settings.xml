@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/appearance">
+
+        <ListPreference 
+            android:key="@string/pref_key_dark_theme"
+            android:title="@string/dark_theme"
+            android:defaultValue="@string/pref_default_value_dark_theme"
+            android:entries="@array/settings_dark_theme_entries"
+            android:entryValues="@array/pref_entry_values_dark_theme"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/compiler">
+
+        <ListPreference 
+            android:key="@string/pref_key_java_version"
+            android:title="@string/java_version"
+            android:defaultValue="7"
+            android:entries="@array/settings_java_version_entries"
+            android:entryValues="@array/settings_java_version_entries"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="@string/pref_key_program_arguments"
+            android:title="@string/program_arguments"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/about">
+
+        <Preference
+            android:key="@string/pref_key_app_version"
+            android:title="@string/app_version_text"
+            android:summary="@string/app_version" />
+
+        <Preference
+            android:key="@string/pref_key_discord"
+            android:title="@string/our_discord"
+            android:summary="@string/join_discord" />
+
+        <Preference
+            android:key="@string/pref_key_github"
+            android:title="@string/our_github"
+            android:summary="@string/view_github_repository" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

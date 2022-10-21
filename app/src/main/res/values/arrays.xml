@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="kind_class" translatable="false">
+        <item>Class</item>
+        <item>Interface</item>
+        <item>Enum</item>
+		<item>Abstract</item>
+    </string-array>
+	
+	<string-array name="kind_class_kotlin" translatable="false">
+        <item>Class</item>
+		<item>Data</item>
+		<item>Object</item>
+        <item>Interface</item>
+        <item>Enum</item>
+		<item>Abstract</item>
+    </string-array>
+
+</resources>

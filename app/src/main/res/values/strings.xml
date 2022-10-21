@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Cosmic IDE</string>
+
+    <!-- Strings used by MainActivity -->
+    <string name="run">Run</string>
+    <string name="smali" translatable="false">Smali</string>
+    <string name="advanced">Advanced</string>
+    <string name="disassemble" translatable="false">Disassemble</string>
+    <string name="class2java" translatable="false">Class2Java</string>
+    <string name="jar2dex" translatable="false">Jar2Dex</string>
+    <string name="compilation_running">Compiling a project</string>
+    <string name="file_name">File Name</string>
+    <string name="directory_name">Directory Name</string>
+    <string name="create">Create</string>
+    <string name="create_java_class">Create Java class</string>
+    <string name="create_kotlin_class">Create Kotlin class</string>
+    <string name="class_kind">Kind</string>
+    <string name="create_directory">Create Directory</string>
+    <string name="create_file">Create File</string>
+    <string name="delete_file">Delete %1$s?</string>
+    <string name="delete">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="close">Close</string>
+    <string name="close_others">Close others</string>
+    <string name="close_all">Close all</string>
+    <string name="no_open_files">No open files</string>
+    <string name="open_the_file">Open the file through the left menu</string>
+
+    <!-- Strings used by ProjectActivity -->
+    <string name="logcat">Logcat</string>
+    <string name="projects">Projects</string>
+    <string name="new_project">New Project</string>
+    <string name="delete_project">Delete Project</string>
+    <string name="project_name">Project Name</string>
+    <string name="no_projects_title">Projects not found</string>
+    <string name="no_projects_suggestion">Create a project by clicking on the button below</string>
+    <string name="project_delete_warning">Do you want to delete %1$s?</string>
+    <string name="package_name">Package Name</string>
+    <string name="kotlin_template">Kotlin Template</string>
+
+    <!-- Strings used by PreferenceSettingsFragment -->
+    <string name="java_version">Java Version</string>
+    <string name="format">Format</string>
+    <string name="settings">Settings</string>
+    <string name="appearance">Appearance</string>
+    <string name="compiler">Compiler</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="about">About app</string>
+    <string name="our_discord">Our Discord</string> 
+    <string name="join_discord">Join our discord channel</string>
+    <string name="our_github">Our Github</string>
+    <string name="view_github_repository">View our github repository</string>
+    <string name="app_version_text">Version</string>
+    <string name="follow_system">Follow System</string>
+    <string name="off">Off</string>
+    <string name="on">On</string>
+    <string name="program_arguments">Program Arguments</string>
+
+    <!-- Strings used by CompilerTask Class -->
+    <string name="stage">Stage</string>
+    <string name="console" translatable="false">Console</string>
+    <string name="recompile" translatable="false">Recompile</string>
+    <string name="stage_clean">Cleaning build&#8230;</string>
+    <string name="stage_kotlinc">Compiling with Kotlinc&#8230;</string>
+    <string name="stage_javac">Compiling with Javac&#8230;</string>
+    <string name="stage_d8">Dexing class files with D8&#8230;</string>
+</resources>

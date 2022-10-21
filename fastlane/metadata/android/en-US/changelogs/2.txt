@@ -1,0 +1,6 @@
+- Added support for java 9, 10, 11, 12, 13, 14, 15, 16 and 17.
+- Added an option to enable the latest d8 for compiling.
+- Faster Compilation.
+- Updated the eclipse jdt to v3.29.0.
+- Improved performance.
+- Fixed some bugs.

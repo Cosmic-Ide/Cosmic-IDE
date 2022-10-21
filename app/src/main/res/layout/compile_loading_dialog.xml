@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="?dialogPreferredPadding"
+    android:orientation="vertical"
+    tools:ignore="PrivateResource">
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:trackCornerRadius="@dimen/mtrl_progress_indicator_full_rounded_corner_radius" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_toEndOf="@id/progress_bar"
+        android:text="@string/compilation_running"
+        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/stage_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_medium"
+        android:layout_toEndOf="@id/progress_bar"
+        android:layout_below="@id/title"
+        android:gravity="center"
+        android:text="@string/stage"
+        android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+</RelativeLayout>

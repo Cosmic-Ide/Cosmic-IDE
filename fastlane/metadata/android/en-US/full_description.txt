@@ -1,0 +1,35 @@
+Cosmic Ide
+
+There are a lot of cases where you want to quickly test some Java code but don't have your computer open besides you. You open your browser and search for some website for this purpose. But you're neither guaranteed to have internet all the time (do you?), nor you are sure if the website sells your code or not.
+
+Cosmic-Ide is a program that aims to solve this issue. It is a completely offline, open source application that meets all your needs.
+
+<b>It currently features</b>
+
+- Support for JDK 18 and below
+- Kotlin Support
+- Javac for compiling the Java Code
+- Javap tool for viewing bytecode instructions
+- Eclipse Compiler for Java
+- Incremental kotlin compilation
+- Support for using external libraries
+- Support for Incremental Compilation
+- Support for running Java Code
+- Google Java Format
+- Eclipse Code Formatter
+- Realtime diagnostics highlight
+- CFR Decompiler
+- D8 tool for compiling JVM bytecode to Dalvik bytecode
+- Dex2Smali tool for viewing Dalvik bytecode for your code
+- High Performance Editor
+- Changing Java Versions
+- Custom classpath
+- Custom program arguments
+- Project System
+- Code Highlighting
+- TreeView for quickly Changing Java files
+- Light Mode
+- Dark Mode
+- Minimal Material Design
+
+Github: <a href='https://github.com/Cosmic-Ide/Cosmic-Ide'>https://github.com/Cosmic-Ide/Cosmic-Ide</a>

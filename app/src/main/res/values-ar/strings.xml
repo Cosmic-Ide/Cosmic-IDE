@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Strings used by MainActivity -->
+    <string name="run">تشغيل</string>
+    <string name="compilation_running">جارِ التشغيل</string>
+    <string name="create">إنشاء</string>
+    <string name="file_name">اسم الملف</string>
+    <string name="directory_name">اسم الدليل</string>
+    <string name="create_java_class">إنشاء صنف</string>
+    <string name="create_kotlin_class">إنشاء صنف كوتلن</string>
+    <string name="create_directory">إنشاء دليل</string>
+    <string name="delete_file">حذف %1$s?</string>
+    <string name="delete">حذف</string>
+    <string name="rename">إعادة تسمية</string>
+
+    <!-- Strings used by ProjectActivity -->
+    <string name="projects">المشاريع</string>
+    <string name="new_project">مشروع جديد</string>
+    <string name="delete_project">حذف المشروع</string> 
+    <string name="project_delete_warning">هل تريد حذف %1$s؟</string>
+    <string name="project_name">إسم المشروع</string>
+    <string name="no_projects_title">لم يتم العثور على مشاريع</string>
+    <string name="no_projects_suggestion">قم بإنشاء مشروع من خلال النقر على زر الإضافة أدناه</string>
+
+    <!-- Strings used by SettingActivity -->
+    <string name="java_version">إصدار جافا</string>g> 
+    <string name="format">تنسيق</string>
+    <string name="settings">الإعدادات</string>
+    <string name="appearance">مظهر</string>
+    <string name="dark_theme">سمة داكنة</string>
+    <string name="about">حول التطبيق</string>
+    <string name="our_discord">دسكورد</string>
+    <string name="join_discord">انضم إلى قناة الدسكورد الخاصة بنا</string>
+    <string name="our_github">جيتهوب</string>
+    <string name="view_github_repository">عرض مخزن جيتهوب الخاص بنا</string>
+
+    <string name="app_version_text">الإصدار</string>
+    <string name="follow_system">إتباع النظام</string>
+    <string name="off">أطفئ</string>
+    <string name="on">شغل</string>
+
+    <!-- Strings used by CompilerTask Class -->
+    <string name="stage">مرحلة التطوير</string>
+    <string name="stage_clean">تنظيف البناء&#8230;</string>
+    <string name="stage_kotlinc">التجميع بواسطة Kotlinc&#8230;</string>
+    <string name="stage_javac">التجميع بواسطة Javac&#8230;</string>
+    <string name="stage_d8">تحويل المصنفات إلى Dex بواسطة D8&#8230;</string>
+</resources>

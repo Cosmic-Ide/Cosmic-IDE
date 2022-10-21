@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/create_kotlin_class_menu_bttn"
+        android:title="@string/create_kotlin_class"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/create_java_class_menu_bttn"
+        android:title="@string/create_java_class"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/create_directory_bttn"
+        android:title="@string/create_directory"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/rename_menu_bttn"
+        android:title="@string/rename"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/delete_menu_bttn"
+        android:title="@string/delete"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/dex_menu_bttn"
+        android:title="@string/jar2dex"
+        android:visible="false"
+        app:showAsAction="never" />
+</menu>

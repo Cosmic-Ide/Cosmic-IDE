@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Strings used by MainActivity -->
+    <string name="run">Compilar</string>
+    <string name="compilation_running">Compilando o projeto</string>
+    <string name="advanced">Avançado</string>
+    <string name="file_name">Nome do arquivo</string>
+    <string name="directory_name">Nome do diretório</string>
+    <string name="create">Criar</string>
+    <string name="create_java_class">Criar uma classe Java</string>
+    <string name="create_kotlin_class">Criar uma classe Kotlin</string>
+    <string name="create_directory">Criar um diretório</string>
+    <string name="create_file">Criar um arquivo</string>
+    <string name="delete_file">Deletar %1$s?</string>
+    <string name="delete">Deletar</string>
+    <string name="rename">Renomear</string>
+    <string name="close">Fechar</string>
+    <string name="close_others">Fechar outros</string>
+    <string name="close_all">Fechar tudo </string>
+    <string name="no_open_files">Nenhum arquivo aberto</string>
+    <string name="open_the_file">Abra o arquivo através do menu à esquerda</string>
+
+    <!-- Strings used by ProjectActivity -->
+    <string name="projects">Projetos</string>
+    <string name="new_project">Novo Projeto</string>
+    <string name="delete_project">Deletar Projeto</string>
+    <string name="project_name">Nome do projeto</string>
+    <string name="no_projects_title">Projetos não encontrados</string>
+    <string name="no_projects_suggestion">Crie um projeto clicando no botão abaixo</string>
+    <string name="project_delete_warning">Você deseja deletar %1$s?</string>
+    <string name="package_name">Nome do pacote</string>
+
+    <!-- Strings used by PreferenceSettingsFragment -->
+    <string name="java_version">Versão do Java</string>
+    <string name="format">Formatar</string>
+    <string name="settings">Definições</string>
+    <string name="appearance">Aparência</string>
+    <string name="dark_theme">Tema escuro</string>
+    <string name="about">Sobre o aplicativo</string>
+    <string name="our_discord">Nosso Discord</string>
+    <string name="join_discord">Entre no nosso servidor do Discord</string>
+    <string name="our_github">Nosso Github</string>
+    <string name="view_github_repository">Veja nosso repositório do Github</string>
+ 
+    <string name="app_version_text">Versão</string>
+    <string name="follow_system">Tema do sistema</string>
+    <string name="off">Desligado</string>
+    <string name="on">Ligado</string>
+    <string name="program_arguments">Argumentos do programa</string>
+    
+    <!-- Strings used by CompilerTask Class -->
+    <string name="stage">Estado</string>
+    <string name="stage_clean">Limpando código &#8230;</string>
+    <string name="stage_kotlinc">Compilando com Kotlinc&#8230;</string>
+    <string name="stage_javac">Compilando com Javac&#8230;</string>
+    <string name="stage_d8">Criando arquivo Dex de classes com D8&#8230;</string>
+</resources>

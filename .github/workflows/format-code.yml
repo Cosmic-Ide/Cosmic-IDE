@@ -21,7 +21,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Format Kotlin Source
-        uses: gradle/gradle-build-action@v2.3.2
+        uses: gradle/gradle-build-action@v2.3.3
         with:
           arguments: ktlintFormat
 

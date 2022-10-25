@@ -18,6 +18,6 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 dependencies {
     api("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    api("com.google.code.gson:gson:2.9.1")
+    api("com.google.code.gson:gson:2.10")
     compileOnly(files("libs/android-stubs.jar"))
 }

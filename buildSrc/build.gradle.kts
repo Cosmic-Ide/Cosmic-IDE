@@ -11,6 +11,6 @@ repositories {
 
 dependencies {
     implementation("com.android.tools.build:gradle:8.0.0-alpha06")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20-mercury-607")
     implementation("org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:11.0.0")
 }

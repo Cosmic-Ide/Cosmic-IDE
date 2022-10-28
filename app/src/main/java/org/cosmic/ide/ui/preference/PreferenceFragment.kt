@@ -7,35 +7,36 @@ import android.view.View
 import androidx.core.net.toUri
 import androidx.preference.ListPreference
 import androidx.preference.Preference
-import com.takisoft.preferencex.PreferenceFragmentCompat
+import androidx.preference.PreferenceFragmentCompat
 import org.cosmic.ide.R
-import org.cosmic.ide.ui.theme.DarkTheme
-import org.cosmic.ide.ui.theme.DarkThemeHelper
+import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.cosmic.ide.util.Constants.DISCORD_URL
 import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
 import org.cosmic.ide.util.Constants.GITHUB_URL
 
-class SettingsPreferenceFragment : PreferenceFragmentCompat() {
+class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewLifecycleOwner = viewLifecycleOwner
-        Settings.DARK_THEME.observe(viewLifecycleOwner, { _ ->
-            DarkThemeHelper.sync()
-        })
+
+        view.findViewById<androidx.recyclerview.widget.RecyclerView>(androidx.preference.R.id.recycler_view).apply {
+            clipToPadding = false
+            addSystemWindowInsetToPadding(false, false, false, true)
+        }
     }
 
-    override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
-        addPreferencesFromResource(R.xml.settings)
-        findPreference<Preference>("key_app_version")?.setOnPreferenceClickListener {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.settings, rootKey)
+
+        findPreference<Preference>("ide_app_version")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_RELEASE_URL.toUri()))
             true
         }
-        findPreference<Preference>("key_discord")?.setOnPreferenceClickListener {
+        findPreference<Preference>("ide_discord")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, DISCORD_URL.toUri()))
             true
         }
 
-        findPreference<Preference>("key_github")?.setOnPreferenceClickListener {
+        findPreference<Preference>("ide_github")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
             true
         }

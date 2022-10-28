@@ -11,8 +11,8 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.preference.ListPreference
 import androidx.preference.ListPreferenceDialogFragmentCompat
+import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.takisoft.preferencex.PreferenceFragmentCompat
 
 class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

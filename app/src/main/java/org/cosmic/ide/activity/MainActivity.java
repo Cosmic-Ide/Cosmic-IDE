@@ -187,11 +187,7 @@ public class MainActivity extends BaseActivity {
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
-                    public void onTabUnselected(TabLayout.Tab p1) {
-                        /* There is no need to save the file
-                         * here as each time you enter text  
-                         * the file is automatically saved. */
-                    }
+                    public void onTabUnselected(TabLayout.Tab p1) {}
 
                     @Override
                     public void onTabReselected(TabLayout.Tab p1) {

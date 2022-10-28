@@ -15,7 +15,6 @@ import com.itsaky.androidide.config.JavacConfigProvider
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.dpToPx
 import java.io.File
 import kotlin.system.exitProcess
@@ -37,7 +36,6 @@ class App : Application() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;");
             }
-            DarkThemeHelper.initialize(this)
         }
 
         Thread.setDefaultUncaughtExceptionHandler {

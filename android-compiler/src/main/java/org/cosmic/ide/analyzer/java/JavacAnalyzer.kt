@@ -37,7 +37,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
     fun analyze() {
         val output = File(project.getBinDirPath(), "classes")
         output.mkdirs()
-        val version = prefs.getString("key_java_version", "8")
+        val version = prefs.getString("key_java_version", "7")
         val files = getSourceFiles(File(project.getSrcDirPath()))
 
         val javaFileObjects = arrayListOf<JavaFileObject>()

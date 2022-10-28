@@ -16,18 +16,11 @@
             app:title="@string/settings" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/content"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/preferenceFragment"
+        android:name="org.cosmic.ide.ui.preference.PreferenceFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/preferenceFragment"
-            android:name="org.cosmic.ide.ui.preference.SettingsPreferenceFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

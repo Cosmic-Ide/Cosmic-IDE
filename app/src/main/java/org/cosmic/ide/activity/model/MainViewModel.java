@@ -16,7 +16,7 @@ public class MainViewModel extends ViewModel {
 
     private final MutableLiveData<String> mToolbarTitle = new MutableLiveData<>();
 
-    // The current position of the CodeEditorView
+    // The current position of the CodeEditor
     private final MutableLiveData<Integer> currentPosition = new MutableLiveData<>(0);
 
     private final MutableLiveData<Boolean> mDrawerState = new MutableLiveData<>(false);

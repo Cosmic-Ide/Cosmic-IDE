@@ -12,14 +12,17 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmic.ide.App
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
-import org.cosmic.ide.activity.editor.CodeEditorView
 import org.cosmic.ide.activity.editor.KotlinLanguage
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
+import org.cosmic.ide.activity.editor.completion.CustomCompletionItemAdapter
+import org.cosmic.ide.activity.editor.completion.CustomCompletionLayout
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.File
@@ -90,8 +93,10 @@ class CodeEditorFragment : Fragment() {
         binding.editor.release()
     }
 
-    private fun configureEditor(editor: CodeEditorView) {
+    private fun configureEditor(editor: CodeEditor) {
         with(editor) {
+            getComponent(EditorAutoCompletion::class.java).setLayout(CustomCompletionLayout())
+            getComponent(EditorAutoCompletion::class.java).setAdapter(CustomCompletionItemAdapter())
             setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
             setTextSize(12F)
             setEdgeEffectColor(Color.TRANSPARENT)

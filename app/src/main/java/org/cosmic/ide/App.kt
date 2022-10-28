@@ -26,17 +26,14 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 class App : Application() {
 
-    init {
-        instance = this
-    }
-
     override fun onCreate() {
         super.onCreate()
+        context = applicationContext
         DynamicColors.applyToActivitiesIfAvailable(this)
-        FileUtil.setDataDirectory(applicationContext.getExternalFilesDir(null)?.getAbsolutePath()!!)
+        FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
-            dpToPx.initalizeResources(applicationContext.getResources())
+            dpToPx.initalizeResources(context.getResources())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;");
             }
@@ -45,10 +42,10 @@ class App : Application() {
 
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->
-            val intent = Intent(applicationContext, DebugActivity::class.java)
+            val intent = Intent(context, DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
-            val pendingIntent = PendingIntent.getActivity(applicationContext, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+            val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
             Timer().schedule(200L) {
                 pendingIntent.send()
@@ -59,12 +56,10 @@ class App : Application() {
     }
 
     companion object {
-        private var instance: App? = null
-
-        fun applicationContext() = instance!!.applicationContext
+        lateinit var context: Context
 
         @JvmStatic
-        fun getDefaultSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(applicationContext())
+        fun getDefaultSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
         fun isDarkMode(context: Context): Boolean {
             val darkModeFlag = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK

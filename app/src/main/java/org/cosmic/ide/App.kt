@@ -33,7 +33,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
-        FileUtil.setDataDirectory(applicationContext.getExternalFilesDir(null)?.getAbsolutePath())
+        FileUtil.setDataDirectory(applicationContext.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
             dpToPx.initalizeResources(applicationContext.getResources())

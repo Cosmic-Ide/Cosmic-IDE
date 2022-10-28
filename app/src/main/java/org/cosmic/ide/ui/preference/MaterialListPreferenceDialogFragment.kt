@@ -1,4 +1,4 @@
-/*
+/**
  * Taken as is from: https://stackoverflow.com/a/61424867/3969362
  *
  * Modified by @TheRemakerMan
@@ -37,7 +37,7 @@ class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat(
 
     /* Override the methods that access mWhichButtonClicked (because we cannot set it properly here) */
 
-    /** Which button was clicked.  */
+    // Which button was clicked.
     private var mWhichButtonClicked = 0
 
     override fun onClick(dialog: DialogInterface, which: Int) {

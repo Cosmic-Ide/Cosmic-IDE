@@ -46,9 +46,11 @@ class ExecuteDexTask(
         System.setErr(sysErr)
     }
 
-    /*
+    /**
      * Runs the main method of the program by loading it through
-     * PathClassLoader
+     * PathClassLoader.
+     *
+     * @property [project] A project that contains dex classes.
      */
     override fun doFullTask(project: Project) {
         val dexFile = project.getBinDirPath() + "classes.dex"
@@ -61,14 +63,14 @@ class ExecuteDexTask(
         System.setErr(errorStream)
         System.setIn(inputStream)
 
-        // Load the dex file into a ClassLoader
+        // Load the dex file into a [MultipleDexClassLoader]
         val dexLoader = MultipleDexClassLoader()
 
         dexLoader.loadDex(dexFile)
 
         val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
-            // check if all libs have been pre-dexed or not
+            // Check if all libs have been pre-dexed or not
             for (lib in libs) {
                 val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
 
@@ -108,7 +110,7 @@ class ExecuteDexTask(
                     val classInstance = calledClass.getConstructor().newInstance()
                     result = method.invoke(classInstance, param as? Any)
                 }
-                // print the value of the method if it's not null
+                // Print the value of the method if it's not null
                 if (result != null) {
                     println(result.toString())
                 }

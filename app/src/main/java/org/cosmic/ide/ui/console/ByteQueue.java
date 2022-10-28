@@ -1,6 +1,7 @@
 package org.cosmic.ide.ui.console;
 
-/** A multi-thread-safe produce-consumer byte array. Only allows one producer and one consumer. */
+// A multi-thread-safe produce-consumer byte array.
+// Only allows one producer and one consumer.
 public class ByteQueue {
     private byte[] mBuffer;
     private int mHead;

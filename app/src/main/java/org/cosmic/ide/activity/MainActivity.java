@@ -599,39 +599,22 @@ public class MainActivity extends BaseActivity {
             CoroutineUtil.execute(
                     () -> {
                             try {
-                            final var dexFile =
-                                    DexFileFactory.loadDexFile(
-                                            new File(getProject().getBinDirPath(), "classes.dex"),
-                                            opcodes);
-                            options.apiLevel = 32;
-                            Baksmali.disassembleDexFile(
-                                    dexFile,
-                                    new File(getProject().getBinDirPath(), "smali"),
-                                    1,
-                                    options);
-                          } catch (Throwable e) {
-            dialog("Failed to extract smali source", getString(e), true);
-        }
+                                final var dexFile =
+                                        DexFileFactory.loadDexFile(
+                                                new File(getProject().getBinDirPath(), "classes.dex"),
+                                                opcodes);
+                                options.apiLevel = 32;
+                                Baksmali.disassembleDexFile(
+                                        dexFile,
+                                        new File(getProject().getBinDirPath(), "smali"),
+                                        1,
+                                        options);
+                            } catch (Throwable e) {
+                                dialog("Failed to extract smali source", getString(e), true);
+                            }
                        });
 
-                        
-                        final var edi = new CodeEditor(this);
-                        edi.setTypefaceText(
-                                ResourcesCompat.getFont(this, R.font.jetbrains_mono_regular));
-                        edi.setColorScheme(getColorScheme());
-                        edi.setTextSize(12);
-                        edi.setEditorLanguage(getSmaliLanguage());
-
-                        try {
-                            edi.setText(FileUtil.readFile(smaliFile));
-                        } catch (IOException e) {
-                            dialog("Failed to open file", getString(e), true);
-                            return;
-                        }
-
-                        final var dialog = new AlertDialog.Builder(this).setView(edi).create();
-                        dialog.setCanceledOnTouchOutside(true);
-                        dialog.show();
+            mainViewModel.addFile(smaliFile);
                     });
     }
 

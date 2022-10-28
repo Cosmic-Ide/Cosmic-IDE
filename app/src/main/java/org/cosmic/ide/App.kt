@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Process
+import android.os.Build
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
@@ -18,6 +19,10 @@ import org.cosmic.ide.ui.theme.DarkThemeHelper
 import org.cosmic.ide.util.dpToPx
 import java.io.File
 import kotlin.system.exitProcess
+import kotlin.concurrent.schedule
+import java.util.Timer
+
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 
 class App : Application() {
 
@@ -27,13 +32,14 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val dataDirectory = applicationContext.getExternalFilesDir(null)?.getAbsolutePath()
-        val resources = applicationContext.getResources()
-        JavacConfigProvider.disableModules()
-        FileUtil.setDataDirectory(dataDirectory!!)
-        dpToPx.initalizeResources(resources)
+        DynamicColors.applyToActivitiesIfAvailable(this)
+        FileUtil.setDataDirectory(applicationContext.getExternalFilesDir(null)?.getAbsolutePath())
         CoroutineUtil.inParallel {
-            DynamicColors.applyToActivitiesIfAvailable(this)
+            JavacConfigProvider.disableModules()
+            dpToPx.initalizeResources(applicationContext.getResources())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;");
+            }
             DarkThemeHelper.initialize(this)
         }
 
@@ -44,8 +50,9 @@ class App : Application() {
             intent.putExtra("error", throwable.stackTraceToString())
             val pendingIntent = PendingIntent.getActivity(applicationContext, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
-            val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)
+            Timer().schedule(200L) {
+                pendingIntent.send()
+            }
             Process.killProcess(Process.myPid())
             exitProcess(0)
         }
@@ -54,14 +61,10 @@ class App : Application() {
     companion object {
         private var instance: App? = null
 
-        fun applicationContext(): Context {
-            return instance!!.applicationContext
-        }
+        fun applicationContext() = instance!!.applicationContext
 
         @JvmStatic
-        fun getDefaultSharedPreferences(): SharedPreferences {
-            return PreferenceManager.getDefaultSharedPreferences(applicationContext())
-        }
+        fun getDefaultSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(applicationContext())
 
         fun isDarkMode(context: Context): Boolean {
             val darkModeFlag = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK

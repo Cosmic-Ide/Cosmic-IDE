@@ -1552,7 +1552,6 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         private static int getAndAddInt(Object object, long offset, int v) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    HiddenApiBypass.setHiddenApiExemptions("Lsun/misc/Unsafe;");
                     return (int) HiddenApiBypass.invoke(Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
                 } else {
                     return theUnsafe.getAndAddInt(object, offset, v);

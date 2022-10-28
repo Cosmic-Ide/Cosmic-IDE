@@ -97,12 +97,6 @@ class CodeEditorFragment : Fragment() {
             setEdgeEffectColor(Color.TRANSPARENT)
             setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
         }
-
-        editor.getProps().apply {
-            overScrollEnabled = false
-            allowFullscreen = false
-            deleteEmptyLineFast = false
-        }
     }
 
     fun undo() {

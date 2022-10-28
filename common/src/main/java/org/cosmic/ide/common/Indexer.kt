@@ -17,8 +17,8 @@ class Indexer {
     private var filePath: String
 
     @Throws(JSONException::class)
-    constructor(projectName: String, projectCacheDirPath: String) {
-        filePath = projectCacheDirPath + projectName + ".json"
+    constructor(projectCachePath: String) {
+        filePath = projectCachePath + "lastOpenedFiles.json"
         load()
     }
 

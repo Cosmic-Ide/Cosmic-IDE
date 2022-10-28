@@ -47,7 +47,7 @@ public class JavacCompilationTask implements Task {
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
         var lastBuildTime =
-                new Indexer(project.getProjectName(), project.getCacheDirPath())
+                new Indexer(project.getCacheDirPath())
                         .getLong("lastBuildTime");
         if (!output.exists()) {
             lastBuildTime = 0;
@@ -142,7 +142,7 @@ public class JavacCompilationTask implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        new Indexer(project.getProjectName(), project.getCacheDirPath())
+        new Indexer(project.getCacheDirPath())
                 .put("lastBuildTime", System.currentTimeMillis());
     }
 

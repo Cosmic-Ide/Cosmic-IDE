@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity {
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
         try {
-            indexer = new Indexer(javaProject.getProjectName(), javaProject.getCacheDirPath());
+            indexer = new Indexer(javaProject.getCacheDirPath());
         } catch (JSONException ignore) {}
 
         setSupportActionBar(binding.toolbar);

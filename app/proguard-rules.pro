@@ -1,3 +1,4 @@
+-ignorewarnings
 -dontobfuscate
 -keepattributes LineNumberTable
 

@@ -29,18 +29,17 @@ class ConsoleActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityConsoleBinding.inflate(getLayoutInflater())
         setContentView(binding.root)
+        
+        binding.toolbar.setToolbarNavigationClickListener { _ ->
+            onBackPressedDispatcher.addCallback(this,
+                   object : OnBackPressedCallback(true) { finish() }
+            })
+        }
 
         setSupportActionBar(binding.toolbar)
         getSupportActionBar()?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)
-        }
-        binding.toolbar.setNavigationOnClickListener { _ ->
-            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    finish()
-                }
-            })
         }
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)

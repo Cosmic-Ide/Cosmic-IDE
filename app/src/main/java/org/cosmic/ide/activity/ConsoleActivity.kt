@@ -32,7 +32,11 @@ class ConsoleActivity : BaseActivity() {
         
         binding.toolbar.setToolbarNavigationClickListener { _ ->
             onBackPressedDispatcher.addCallback(this,
-                   object : OnBackPressedCallback(true) { finish() }
+               object : OnBackPressedCallback(true) {
+                   override fun handleOnBackPressed() {
+                      finish()
+                   }
+               }
             })
         }
 

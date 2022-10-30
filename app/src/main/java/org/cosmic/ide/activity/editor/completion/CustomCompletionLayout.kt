@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
+import com.google.android.material.color.MaterialColors
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
@@ -51,8 +52,7 @@ class CustomCompletionLayout : CompletionLayout {
     }
 
     override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
-        mBackground.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
-        mBackground.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND))
+        mBackground.setColor(MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorSurface, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)))
     }
 
     override fun setLoading(state: Boolean) {

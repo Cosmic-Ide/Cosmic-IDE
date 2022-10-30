@@ -3,7 +3,6 @@ package org.cosmic.ide.activity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.activity.OnBackPressedCallback
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -30,14 +29,7 @@ class ConsoleActivity : BaseActivity() {
         binding = ActivityConsoleBinding.inflate(getLayoutInflater())
         setContentView(binding.root)
         
-        binding.toolbar.setNavigationOnClickListener { _ ->
-            onBackPressedDispatcher.addCallback(this,
-               object : OnBackPressedCallback(true) {
-                   override fun handleOnBackPressed() {
-                      finish()
-                   }
-               })
-        }
+        binding.toolbar.setNavigationOnClickListener { _ -> finish() }
 
         setSupportActionBar(binding.toolbar)
         getSupportActionBar()?.apply {

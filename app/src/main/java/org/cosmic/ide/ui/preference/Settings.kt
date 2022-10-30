@@ -30,7 +30,6 @@ class Settings(
         inner.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    @JvmField
     val theme: Int
         get() =
             inner.getInt(

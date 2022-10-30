@@ -35,7 +35,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void setupTheme() {
-        var settingz = new Settings(this, null);
-        AppCompatDelegate.setDefaultNightMode(settingz.theme);
+        AppCompatDelegate.setDefaultNightMode(new Settings(this, null).getTheme());
     }
 }

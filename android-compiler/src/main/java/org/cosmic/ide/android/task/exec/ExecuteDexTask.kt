@@ -3,22 +3,18 @@ package org.cosmic.ide.android.task.exec
 import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
-import com.android.tools.r8.D8
-import com.android.tools.r8.D8Command
-import com.android.tools.r8.OutputMode
 import org.cosmic.ide.android.interfaces.Task
+import org.cosmic.ide.android.task.dex.D8Task
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.Project
 import org.cosmic.ide.CompilerUtil
 import java.io.File
-import java.io.OutputStream
 import java.io.PrintStream
 import java.io.InputStream
 import java.lang.reflect.Modifier
 import java.lang.reflect.InvocationTargetException
-import java.nio.file.Paths
 
 class ExecuteDexTask(
     private val prefs: SharedPreferences,
@@ -68,6 +64,7 @@ class ExecuteDexTask(
 
         dexLoader.loadDex(dexFile)
 
+        // TODO: Move to D8Task
         val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
             // Check if all libs have been pre-dexed or not
@@ -76,13 +73,7 @@ class ExecuteDexTask(
 
                 if (!File(outDex).exists()) {
                     CoroutineUtil.inParallel {
-                        D8.run(
-                            D8Command.builder()
-                                .setOutput(Paths.get(project.getBuildDirPath()), OutputMode.DexIndexed)
-                                .addClasspathFiles(CompilerUtil.getPlatformPaths())
-                                .addProgramFiles(lib.toPath())
-                                .build()
-                        )
+                        D8Task.compileJar(lib.absolutePath)
                         File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
                     }
                 }

@@ -1,5 +1,6 @@
 package org.cosmic.ide.android.task.dex
 
+import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
@@ -20,6 +21,7 @@ class D8Task : Task {
             D8.run(
                 D8Command.builder()
                     .setMinApiLevel(26)
+                    .setMode(CompilationMode.DEBUG)
                     .addClasspathFiles(CompilerUtil.getPlatformPaths())
                     .addProgramFiles(Paths.get(jarFile))
                     .setOutput(Paths.get(outputDex), OutputMode.DexIndexed)
@@ -33,6 +35,7 @@ class D8Task : Task {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(26)
+                .setMode(CompilationMode.DEBUG)
                 .addClasspathFiles(CompilerUtil.getPlatformPaths())
                 .addProgramFiles(
                     getClassFiles(File(project.getBinDirPath(), "classes"))

@@ -4,8 +4,10 @@ import android.os.Bundle
 import org.cosmic.ide.databinding.ActivitySettingBinding
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
+/**
+ * A container [Activity] for the settings menu
+ */
 class SettingActivity : BaseActivity() {
-
     private lateinit var binding: ActivitySettingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

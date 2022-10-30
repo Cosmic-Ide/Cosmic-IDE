@@ -21,10 +21,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupTheme();
 
         settings = App.getDefaultSharedPreferences();
 
-        setupTheme();
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         UiUtilsKt.addSystemWindowInsetToPadding(getRootActivityView(), true, false, true, false);
     }
@@ -35,6 +35,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void setupTheme() {
-        AppCompatDelegate.setDefaultNightMode(new Settings(this, null).getTheme());
+        var settingz = new Settings(this, null);
+        AppCompatDelegate.setDefaultNightMode(settingz.getTheme());
     }
 }

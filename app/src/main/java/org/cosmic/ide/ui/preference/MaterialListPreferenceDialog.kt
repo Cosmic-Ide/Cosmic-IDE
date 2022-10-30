@@ -1,6 +1,5 @@
 /**
  * Taken as is from: https://stackoverflow.com/a/61424867/3969362
- *
  * Modified by @TheRemakerMan
  */
 
@@ -14,7 +13,7 @@ import androidx.preference.ListPreferenceDialogFragmentCompat
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat() {
+class MaterialListPreferenceDialog : ListPreferenceDialogFragmentCompat() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         mWhichButtonClicked = DialogInterface.BUTTON_NEGATIVE
         val builder = MaterialAlertDialogBuilder(requireContext())
@@ -63,11 +62,11 @@ class MaterialListPreferenceDialogFragment : ListPreferenceDialogFragmentCompat(
 }
 
 fun PreferenceFragmentCompat.showListPreferenceDialog(preference: ListPreference) {
-    val dialogFragment = MaterialListPreferenceDialogFragment().apply {
+    val dialogFragment = MaterialListPreferenceDialog().apply {
         arguments = Bundle(1).apply {
             putString("key", preference.key)
         }
     }
     dialogFragment.setTargetFragment(this, 0)
-    dialogFragment.show(parentFragmentManager, "androidx.preference.PreferenceFragment.DIALOG")
+    dialogFragment.show(parentFragmentManager, "androidx.preference.PreferenceFragment.MaterialListPreferenceDialog")
 }

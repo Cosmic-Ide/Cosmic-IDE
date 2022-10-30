@@ -6,11 +6,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import org.cosmic.ide.R
 import org.cosmic.ide.App
 
-class Settings(
-    private val context: Context,
-    private val callback: Callback? = null
-) : SharedPreferences.OnSharedPreferenceChangeListener {
-    private val `inner` = App.getDefaultSharedPreferences()
+/**
+ * CosmicIde's Settings.
+ */
+class Settings(private val context: Context, private val callback: Callback? = null) :
+    SharedPreferences.OnSharedPreferenceChangeListener {
+    private val inner = App.getDefaultSharedPreferences()
 
     interface Callback {
         fun onSettingChanged(key: String)
@@ -30,9 +31,10 @@ class Settings(
         inner.unregisterOnSharedPreferenceChangeListener(this)
     }
 
+    // The current theme
     val theme: Int
         get() =
-            `inner`.getInt(
+            inner.getInt(
                 context.getString(R.string.key_theme),
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )

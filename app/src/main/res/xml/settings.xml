@@ -3,10 +3,10 @@
 
     <PreferenceCategory app:title="@string/appearance">
 
-        <ListPreference
+        <org.cosmic.ide.ui.preference.IntListPreference
             app:key="@string/key_theme"
             app:title="@string/dark_theme"
-            app:defaultValue="@string/follow_system"
+            app:defaultValue="@integer/theme_auto"
             app:entries="@array/entries_theme"
             app:entryValues="@array/values_theme" />
 

@@ -113,20 +113,20 @@ public class MainActivity extends BaseActivity {
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
         CoroutineUtil.inParallel(() -> {
-        ViewCompat.setOnApplyWindowInsetsListener(
-                binding.viewPager,
-                (vi, insets) -> {
-                    boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-
-                    Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    binding.viewPager.setPadding(0, 0, 0, in.bottom);
-                    if (imeVisible) {
-                        int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-                        binding.viewPager.setPadding(0, 0, 0, imeHeight);
-                    }
-                    return insets;
+            ViewCompat.setOnApplyWindowInsetsListener(
+                    binding.viewPager,
+                    (vi, insets) -> {
+                        boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+    
+                        Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                        binding.viewPager.setPadding(0, 0, 0, in.bottom);
+                        if (imeVisible) {
+                            int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                            binding.viewPager.setPadding(0, 0, 0, imeHeight);
+                        }
+                        return insets;
+            });
         });
-        })
 
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -168,15 +168,15 @@ public class MainActivity extends BaseActivity {
         }
 
         CoroutineUtil.inParallel(() -> {
-        unzipFiles();
-        buildLoadingDialog();
-
-        fileViewModel.refreshNode(getProject().getRootFile());
-
-        mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
-        mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
-        mainViewModel.setToolbarTitle(getProject().getProjectName());
-        })
+            unzipFiles();
+            buildLoadingDialog();
+    
+            fileViewModel.refreshNode(getProject().getRootFile());
+    
+            mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
+            mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
+            mainViewModel.setToolbarTitle(getProject().getProjectName());
+        });
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.registerOnPageChangeCallback(
@@ -220,7 +220,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onTabSelected(TabLayout.Tab p1) {
-                        updateTab(p1, p1.getPosition());
+                        // updateTab(p1, p1.getPosition());
                     }
                 });
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab)
@@ -415,25 +415,7 @@ public class MainActivity extends BaseActivity {
 
     private void updateTab(TabLayout.Tab tab, int pos) {
         File currentFile = Objects.requireNonNull(mainViewModel.getFiles().getValue()).get(pos);
-        tab.setText(currentFile != null ? getUniqueTabName(currentFile) : "Unknown");
-    }
-
-    private String getUniqueTabName(@NonNull File currentFile) {
-        int sameFileNameCount = 0;
-        UniqueNameBuilder<File> builder = new UniqueNameBuilder<>("", "/");
-
-        for (File file : Objects.requireNonNull(mainViewModel.getFiles().getValue())) {
-            if (file.getName().equals(currentFile.getName())) {
-                sameFileNameCount++;
-            }
-            builder.addPath(file, file.getPath());
-        }
-
-        if (sameFileNameCount > 1) {
-            return builder.getShortPath(currentFile);
-        } else {
-            return currentFile.getName();
-        }
+        tab.setText(currentFile != null ? currentFile.getName() : "Unknown");
     }
 
     private void buildLoadingDialog() {

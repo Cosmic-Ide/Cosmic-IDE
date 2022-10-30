@@ -10,7 +10,7 @@ class Settings(
     private val context: Context,
     private val callback: Callback? = null
 ) : SharedPreferences.OnSharedPreferenceChangeListener {
-    private val inner = App.getDefaultSharedPreferences()
+    private val `inner` = App.getDefaultSharedPreferences()
 
     interface Callback {
         fun onSettingChanged(key: String)
@@ -32,7 +32,7 @@ class Settings(
 
     val theme: Int
         get() =
-            inner.getInt(
+            `inner`.getInt(
                 context.getString(R.string.key_theme),
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )

@@ -6,7 +6,7 @@
         <ListPreference
             app:key="@string/key_theme"
             app:title="@string/dark_theme"
-            app:defaultValue="@integer/theme_auto"
+            app:defaultValue="@string/follow_system"
             app:entries="@array/entries_theme"
             app:entryValues="@array/values_theme" />
 

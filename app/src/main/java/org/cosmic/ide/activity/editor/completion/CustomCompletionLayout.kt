@@ -18,7 +18,6 @@ import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 class CustomCompletionLayout : CompletionLayout {
 
     private lateinit var mListView: ListView
-    private lateinit var mProgressBar: ProgressBar
     private lateinit var mBackground: GradientDrawable
     private lateinit var mEditorAutoCompletion: EditorAutoCompletion
 
@@ -29,13 +28,6 @@ class CustomCompletionLayout : CompletionLayout {
     override fun inflate(context: Context): View {
         val layout = RelativeLayout(context)
 
-        mProgressBar = ProgressBar(context)
-        layout.addView(mProgressBar)
-        val params =
-            mProgressBar.getLayoutParams() as RelativeLayout.LayoutParams
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-        params.width = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30f, context.getResources().getDisplayMetrics()).toInt()
-        params.height = params.width
         mBackground = GradientDrawable()
         mBackground.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.getResources().getDisplayMetrics()))
         layout.setBackground(mBackground)
@@ -47,17 +39,15 @@ class CustomCompletionLayout : CompletionLayout {
             _, _, position, _ ->
             mEditorAutoCompletion.select(position)
         }
-        setLoading(true)
         return layout
     }
 
     override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
-        mBackground.setColor(MaterialColors.getColor(getContext(), com.google.android.material.R.attr.colorSurface, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)))
+        mBackground.setColor(MaterialColors.getColor(mEditorAutoCompletion.getContext(), com.google.android.material.R.attr.colorSurface, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)))
     }
 
     override fun setLoading(state: Boolean) {
-        val visibility = if (state) View.VISIBLE else View.INVISIBLE
-        mProgressBar.setVisibility(visibility)
+        
     }
 
     override fun getCompletionList(): ListView {

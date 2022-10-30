@@ -4,10 +4,13 @@ import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.net.toUri
 import androidx.preference.ListPreference
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.children
 import org.cosmic.ide.R
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.cosmic.ide.util.Constants.DISCORD_URL
@@ -20,6 +23,9 @@ import org.cosmic.ide.util.Constants.GITHUB_URL
 class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        preferenceManager.onDisplayPreferenceDialogListener = this
+        preferenceScreen.children.forEach(::setupPreference)
 
         // Make the RecyclerView edge-to-edge capable
         view.findViewById<androidx.recyclerview.widget.RecyclerView>(androidx.preference.R.id.recycler_view).apply {
@@ -46,6 +52,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
+    @Suppress("Deprecation")
     override fun onDisplayPreferenceDialog(preference: Preference) {
         when (preference) {
             is ListPreference -> {
@@ -55,6 +62,28 @@ class PreferenceFragment : PreferenceFragmentCompat() {
                 showIntListPreferenceDialog(preference)
             }
             else -> super.onDisplayPreferenceDialog(preference)
+        }
+    }
+
+    private fun setupPreference(preference: Preference) {
+        val context = requireActivity()
+        val settings = Settings(context)
+
+        if (!preference.isVisible) return
+
+        if (preference is PreferenceCategory) {
+            preference.children.forEach(::setupPreference)
+            return
+        }
+
+        when (preference.key) {
+            context.getString(R.string.key_theme) -> {
+                preference.onPreferenceChangeListener =
+                    Preference.OnPreferenceChangeListener { _, value ->
+                        AppCompatDelegate.setDefaultNightMode(value as Int)
+                        true
+                    }
+            }
         }
     }
 }

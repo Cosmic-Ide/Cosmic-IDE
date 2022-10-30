@@ -2,6 +2,7 @@ package org.cosmic.ide.ui.preference
 
 import android.os.Bundle
 import androidx.preference.PreferenceDialogFragmentCompat
+import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.cosmic.ide.R
 

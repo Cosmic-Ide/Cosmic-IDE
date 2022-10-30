@@ -36,8 +36,7 @@ class ConsoleActivity : BaseActivity() {
                    override fun handleOnBackPressed() {
                       finish()
                    }
-               }
-            })
+               })
         }
 
         setSupportActionBar(binding.toolbar)

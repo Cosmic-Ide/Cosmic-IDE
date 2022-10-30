@@ -30,7 +30,7 @@ class ConsoleActivity : BaseActivity() {
         binding = ActivityConsoleBinding.inflate(getLayoutInflater())
         setContentView(binding.root)
         
-        binding.toolbar.setToolbarNavigationClickListener { _ ->
+        binding.toolbar.setNavigationOnClickListener { _ ->
             onBackPressedDispatcher.addCallback(this,
                object : OnBackPressedCallback(true) {
                    override fun handleOnBackPressed() {

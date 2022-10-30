@@ -112,6 +112,7 @@ public class MainActivity extends BaseActivity {
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
+        CoroutineUtil.inParallel(() -> {
         ViewCompat.setOnApplyWindowInsetsListener(
                 binding.viewPager,
                 (vi, insets) -> {
@@ -125,6 +126,7 @@ public class MainActivity extends BaseActivity {
                     }
                     return insets;
         });
+        })
 
         if (binding.root instanceof DrawerLayout) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -165,6 +167,7 @@ public class MainActivity extends BaseActivity {
             binding.toolbar.setNavigationIcon(null);
         }
 
+        CoroutineUtil.inParallel(() -> {
         unzipFiles();
         buildLoadingDialog();
 
@@ -173,6 +176,7 @@ public class MainActivity extends BaseActivity {
         mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
         mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
         mainViewModel.setToolbarTitle(getProject().getProjectName());
+        })
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.registerOnPageChangeCallback(

@@ -95,8 +95,7 @@ public class ProjectActivity extends BaseActivity {
                 startActivity(new Intent(this, SettingActivity.class));
                 break;
             case R.id.logcat:
-                var lynxConfig = new LynxConfig();
-                startActivity(LynxActivity.getIntent(this, lynxConfig));
+                startActivity(LynxActivity.getIntent(this, new LynxConfig()));
             default:
                 break;
         }
@@ -111,13 +110,13 @@ public class ProjectActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (createNewProjectDialog.isShowing()) {
             createNewProjectDialog.dismiss();
         }
         if (deleteProjectDialog.isShowing()) {
             deleteProjectDialog.dismiss();
         }
-        super.onDestroy();
     }
 
     private void buildCreateNewProjectDialog() {
@@ -164,6 +163,7 @@ public class ProjectActivity extends BaseActivity {
         }
     }
 
+    @WorkerThread
     private void showDeleteProjectDialog(JavaProject project) {
         if (!deleteProjectDialog.isShowing()) {
             deleteProjectDialog.show();
@@ -199,6 +199,7 @@ public class ProjectActivity extends BaseActivity {
         return true;
     }
 
+    @WorkerThread
     private void loadProjects() {
         CoroutineUtil.inParallel(
                 () -> {

@@ -103,8 +103,6 @@ public class MainActivity extends BaseActivity {
             indexer = new Indexer(javaProject.getCacheDirPath());
         } catch (JSONException ignore) {}
 
-        setSupportActionBar(binding.toolbar);
-
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
         CoroutineUtil.inParallel(() -> {
@@ -124,19 +122,8 @@ public class MainActivity extends BaseActivity {
         });
 
         if (binding.root instanceof DrawerLayout) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(false);
             DrawerLayout drawer = (DrawerLayout) binding.root;
             if (drawer != null) {
-                var toggle =
-                        new ActionBarDrawerToggle(
-                                this,
-                                drawer,
-                                binding.toolbar,
-                                R.string.app_name,
-                                R.string.app_name);
-                drawer.addDrawerListener(toggle);
-                toggle.syncState();
                 binding.toolbar.setNavigationOnClickListener(
                         v -> {
                             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -158,18 +145,16 @@ public class MainActivity extends BaseActivity {
                             }
                         });
             }
-        } else {
-            binding.toolbar.setNavigationIcon(null);
         }
 
         CoroutineUtil.inParallel(() -> {
             unzipFiles();
             buildLoadingDialog();
-    
+
             fileViewModel.refreshNode(getProject().getRootFile());
-    
+
             mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
-            mainViewModel.getToolbarTitle().observe(this, getSupportActionBar()::setTitle);
+            mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);
             mainViewModel.setToolbarTitle(getProject().getProjectName());
         });
         binding.viewPager.setAdapter(tabsAdapter);
@@ -259,6 +244,76 @@ public class MainActivity extends BaseActivity {
                             });
         }
 
+        binding.toolbar.inflateMenu(R.menu.main_menu);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_format:
+                    String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                    if (fragment instanceof CodeEditorFragment) {
+                        CoroutineUtil.execute(
+                                () -> {
+                                    String current = mainViewModel.getCurrentFile().getAbsolutePath();
+                                    if (current.endsWith(".java") || current.endsWith(".jav")) {
+                                    var formatter =
+                                            new GoogleJavaFormatter(
+                                                    ((CodeEditorFragment) fragment)
+                                                            .getEditor()
+                                                            .getText()
+                                                            .toString());
+                                    temp = formatter.format();
+                                    } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
+                                        new ktfmtFormatter(current).format();
+                                        try {
+                                            temp = FileUtil.readFile(new File(current));
+                                        } catch (IOException ignore) {
+                                            // no way, this is impossible
+                                        }
+                                    } else {
+                                        temp = ((CodeEditorFragment) fragment)
+                                                .getEditor()
+                                                .getText()
+                                                .toString();
+                                    }
+                                });
+                        ((CodeEditorFragment) fragment).getEditor().setText(temp);
+                    }
+                    break;
+                case R.id.action_settings:
+                    startActivity(new Intent(this, SettingActivity.class));
+                    break;
+                case R.id.action_run:
+                    compile(true, false);
+                    break;
+                case R.id.action_smali:
+                    smali();
+                    break;
+                case R.id.action_disassemble:
+                    disassemble();
+                    break;
+                case R.id.action_class2java:
+                    decompile();
+                    break;
+                case R.id.action_undo:
+                    String _tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                    Fragment _fragment = getSupportFragmentManager().findFragmentByTag(_tag);
+                    if (_fragment instanceof CodeEditorFragment) {
+                        ((CodeEditorFragment) _fragment).undo();
+                    }
+                    break;
+                case R.id.action_redo:
+                    String __tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                    Fragment __fragment = getSupportFragmentManager().findFragmentByTag(__tag);
+                    if (__fragment instanceof CodeEditorFragment) {
+                        ((CodeEditorFragment) __fragment).redo();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        });
+
         if (savedInstanceState != null) {
             restoreViewState(savedInstanceState);
         }
@@ -266,12 +321,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        saveAll();
         if (binding.root instanceof DrawerLayout) {
             outState.putBoolean(
                     Constants.DRAWER_STATE,
                     ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
         }
+        saveAll();
         super.onSaveInstanceState(outState);
     }
 
@@ -282,82 +337,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.format_menu_button:
-                String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment instanceof CodeEditorFragment) {
-                    CoroutineUtil.execute(
-                            () -> {
-                                String current = mainViewModel.getCurrentFile().getAbsolutePath();
-                                if (current.endsWith(".java") || current.endsWith(".jav")) {
-                                var formatter =
-                                        new GoogleJavaFormatter(
-                                                ((CodeEditorFragment) fragment)
-                                                        .getEditor()
-                                                        .getText()
-                                                        .toString());
-                                temp = formatter.format();
-                                } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
-                                    new ktfmtFormatter(current).format();
-                                    try {
-                                        temp = FileUtil.readFile(new File(current));
-                                    } catch (IOException ignore) {
-                                        // no way, this is impossible
-                                    }
-                                } else {
-                                    temp = ((CodeEditorFragment) fragment)
-                                            .getEditor()
-                                            .getText()
-                                            .toString();
-                                }
-                            });
-                    ((CodeEditorFragment) fragment).getEditor().setText(temp);
-                }
-                break;
-            case R.id.settings_menu_button:
-                startActivity(new Intent(this, SettingActivity.class));
-                break;
-            case R.id.run_menu_button:
-                compile(true, false);
-                break;
-            case R.id.smali_menu_button:
-                smali();
-                break;
-            case R.id.disassemble_menu_button:
-                disassemble();
-                break;
-            case R.id.class2java_menu_button:
-                decompile();
-                break;
-            case R.id.action_undo:
-                String _tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                Fragment _fragment = getSupportFragmentManager().findFragmentByTag(_tag);
-                if (_fragment instanceof CodeEditorFragment) {
-                    ((CodeEditorFragment) _fragment).undo();
-                }
-                break;
-            case R.id.action_redo:
-                String __tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                Fragment __fragment = getSupportFragmentManager().findFragmentByTag(__tag);
-                if (__fragment instanceof CodeEditorFragment) {
-                    ((CodeEditorFragment) __fragment).redo();
-                }
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-    
     @Override
     public void onDestroy() {
         super.onDestroy();

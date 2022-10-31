@@ -15,9 +15,6 @@ class SettingActivity : BaseActivity() {
         binding = ActivitySettingBinding.inflate(getLayoutInflater())
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()?.setHomeButtonEnabled(true)
         binding.toolbar.setNavigationOnClickListener { _ -> finish() }
 
         binding.appbar.apply {

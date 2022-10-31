@@ -18,7 +18,6 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 
 class ConsoleActivity : BaseActivity() {
-
     private lateinit var binding: ActivityConsoleBinding
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
@@ -28,13 +27,15 @@ class ConsoleActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityConsoleBinding.inflate(getLayoutInflater())
         setContentView(binding.root)
-        
-        binding.toolbar.setNavigationOnClickListener { _ -> finish() }
 
-        setSupportActionBar(binding.toolbar)
-        getSupportActionBar()?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
+        binding.toolbar.setNavigationOnClickListener { _ -> finish() }
+        binding.toolbar.inflateMenu(R.menu.console_menu)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_recompile -> executeDex()
+                R.id.action_cancel -> finish()
+            }
+            true
         }
 
         binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
@@ -65,29 +66,10 @@ class ConsoleActivity : BaseActivity() {
         task?.release()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.console_activity_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.getItemId()) {
-            R.id.recompile_menu_bttn -> {
-                executeDex()
-                true
-            }
-            R.id.cancel_menu_bttn -> {
-                finishAffinity()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun executeDex() {
         val console = binding.console
         console.flushInputStream()
-        getSupportActionBar()?.setSubtitle("Running")
+        binding.toolbar.setSubtitle("Running")
         task = ExecuteDexTask(
             App.getDefaultSharedPreferences(),
             classToExecute,
@@ -96,7 +78,7 @@ class ConsoleActivity : BaseActivity() {
             console.getErrorStream(),
             {
                 // console.stop()
-                getSupportActionBar()?.setSubtitle("Stopped")
+                binding.toolbar.setSubtitle("Stopped")
             }
         )
         task?.doFullTask(project)

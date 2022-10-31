@@ -30,14 +30,11 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 class CodeEditorFragment : Fragment() {
-
     private lateinit var binding: FragmentCodeEditorBinding
-
     private lateinit var currentFile: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         currentFile = File(arguments?.getString("path", "")!!)
     }
 
@@ -52,15 +49,6 @@ class CodeEditorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureEditor(binding.editor)
-
-        val useTab = binding.editor.getEditorLanguage().useTab()
-        val tabInsertText = if (useTab) "\t" else "    "
-        val inputView = binding.inputView
-        inputView.bindEditor(binding.editor)
-        inputView.addSymbols(
-            arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
-            arrayOf(tabInsertText, "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
-        )
 
         if (currentFile.exists()) {
             try {
@@ -87,6 +75,16 @@ class CodeEditorFragment : Fragment() {
                         (requireActivity() as MainActivity).getProject()
                     )
                 )
+        }
+
+        val useTab = binding.editor.getEditorLanguage().useTab()
+        val tabInsertText = if (useTab) "\t" else "    "
+        with(binding.inputView) {
+            bindEditor(binding.editor)
+            addSymbols(
+                arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
+                arrayOf(tabInsertText, "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
+            )
         }
     }
 

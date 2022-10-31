@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/logcat"
+        android:id="@+id/action_logcat"
         android:title="@string/logcat" />
 </menu>

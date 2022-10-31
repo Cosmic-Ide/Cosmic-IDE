@@ -6,7 +6,6 @@ import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class DebugActivity : BaseActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -32,4 +32,5 @@
         android:title="@string/jar2dex"
         android:visible="false"
         app:showAsAction="never" />
+
 </menu>

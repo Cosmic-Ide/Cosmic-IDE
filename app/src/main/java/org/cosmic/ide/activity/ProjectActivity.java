@@ -61,8 +61,6 @@ public class ProjectActivity extends BaseActivity {
         buildCreateNewProjectDialog();
         buildDeleteProjectDialog();
 
-        setSupportActionBar(binding.toolbar);
-
         projectAdapter = new ProjectAdapter();
         binding.projectRecycler.setAdapter(projectAdapter);
         binding.projectRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -80,26 +78,19 @@ public class ProjectActivity extends BaseActivity {
                     binding.refreshLayout.setRefreshing(false);
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.projects_activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
-                startActivity(new Intent(this, SettingActivity.class));
-                break;
-            case R.id.logcat:
-                startActivity(LynxActivity.getIntent(this, new LynxConfig()));
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+        binding.toolbar.inflateMenu(R.menu.projects_menu);
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_settings:
+                    startActivity(new Intent(this, SettingActivity.class));
+                    break;
+                case R.id.action_logcat:
+                    startActivity(LynxActivity.getIntent(this, new LynxConfig()));
+                default:
+                    break;
+            }
+            return true;
+        });
     }
 
     @Override

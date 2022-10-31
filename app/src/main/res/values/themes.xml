@@ -14,6 +14,8 @@
         <item name="textInputStyle">?textInputFilledStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Toolbar</item>
     </style>
-    <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde" />
+    <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde">
+        <item name="android:overScrollMode">never</item>
+    </style>
 
 </resources>

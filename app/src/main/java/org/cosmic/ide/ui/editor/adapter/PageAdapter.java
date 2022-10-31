@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.editor.adapter;
+package org.cosmic.ide.ui.editor.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

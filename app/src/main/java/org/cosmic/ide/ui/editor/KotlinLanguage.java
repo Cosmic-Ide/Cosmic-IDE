@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.editor;
+package org.cosmic.ide.ui.editor;
 
 import android.content.res.AssetManager;
 import android.util.Log;
@@ -9,6 +9,7 @@ import com.tyron.kotlin.completion.KotlinEnvironment;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
+import org.cosmic.ide.ui.preference.Settings;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
@@ -24,7 +25,6 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import org.eclipse.tm4e.core.registry.IThemeSource;
-
 import java.util.stream.Collectors;
 import java.io.IOException;
 import java.io.File;
@@ -90,5 +90,10 @@ public class KotlinLanguage extends TextMateLanguage {
 
     public boolean isAutoCompleteChar(char p1) {
         return true;
+    }
+
+    @Override
+    public boolean useTab() {
+        return new Settings(mEditor.getContext(), null).getUseSoftTab();
     }
 }

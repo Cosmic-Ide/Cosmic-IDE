@@ -41,7 +41,7 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.App;
 import org.cosmic.ide.R;
-import org.cosmic.ide.activity.editor.adapter.PageAdapter;
+import org.cosmic.ide.ui.editor.adapter.PageAdapter;
 import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.code.decompiler.FernFlowerDecompiler;
@@ -51,7 +51,6 @@ import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.common.util.UniqueNameBuilder;
 import org.cosmic.ide.common.util.ZipUtil;
 import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
@@ -442,7 +441,7 @@ public class MainActivity extends BaseActivity {
 
         final var notifChannel =
                 new NotificationChannel(
-                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_DRFAULT);
+                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_DEFAULT);
         notifChannel.setDescription("Foreground notification for the compiler status");
 
         final var notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

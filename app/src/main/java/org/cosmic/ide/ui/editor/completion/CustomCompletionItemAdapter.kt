@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.editor.completion
+package org.cosmic.ide.ui.editor.completion
 
 import android.graphics.Color
 import android.util.TypedValue

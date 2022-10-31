@@ -18,11 +18,11 @@ import org.cosmic.ide.App
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
-import org.cosmic.ide.activity.editor.KotlinLanguage
+import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
-import org.cosmic.ide.activity.editor.completion.CustomCompletionItemAdapter
-import org.cosmic.ide.activity.editor.completion.CustomCompletionLayout
+import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
+import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.File
@@ -53,11 +53,13 @@ class CodeEditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureEditor(binding.editor)
 
+        val useTab = binding.editor.getEditorLanguage().useTab()
+        val tabInsertText = if (useTab) "\t" else "    "
         val inputView = binding.inputView
         inputView.bindEditor(binding.editor)
         inputView.addSymbols(
             arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
-            arrayOf("\t", "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
+            arrayOf(tabInsertText, "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
         )
 
         if (currentFile.exists()) {

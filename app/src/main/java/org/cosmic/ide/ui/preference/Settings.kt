@@ -38,4 +38,18 @@ class Settings(private val context: Context, private val callback: Callback? = n
                 context.getString(R.string.key_theme),
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )
+
+    val javaVersion: Int
+        get() =
+            inner.getInt(
+                context.getString(R.string.key_java_version),
+                7
+            )
+
+    val useSoftTab: Boolean
+        get() =
+            inner.getBoolean(
+                context.getString(R.string.key_use_softtab),
+                true
+            )
 }

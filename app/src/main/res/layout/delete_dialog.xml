@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layoutDirection="locale"
@@ -10,6 +11,7 @@
         android:id="@android:id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/delete"
         android:textAppearance="?attr/textAppearanceTitleLarge" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -17,7 +19,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_medium"
-        android:layout_below="@android:id/title" />
+        android:layout_below="@android:id/title"
+        tools:text="Do you want to delete Abc?" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@android:id/button2"

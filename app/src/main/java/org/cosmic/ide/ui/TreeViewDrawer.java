@@ -4,14 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.HorizontalScrollView;
-import android.widget.TextView;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.ListAdapter;
-import android.widget.ArrayAdapter;
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
@@ -288,11 +281,11 @@ public class TreeViewDrawer extends Fragment {
             Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
             Spinner classType = createNewFileDialog.findViewById(R.id.class_kind);
-            
+
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class, android.R.layout.simple_spinner_item);   
-			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			classType.setAdapter(adapter);
-			
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            classType.setAdapter(adapter);
+
             cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
@@ -346,11 +339,11 @@ public class TreeViewDrawer extends Fragment {
             Button cancelBtn = createNewFileDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewFileDialog.findViewById(android.R.id.button1);
             Spinner classType = createNewFileDialog.findViewById(R.id.class_kind);
-			
-			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class_kotlin, android.R.layout.simple_spinner_item);   
-			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-			classType.setAdapter(adapter);
-			
+
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireActivity(), R.array.kind_class_kotlin, android.R.layout.simple_spinner_item);   
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            classType.setAdapter(adapter);
+
             cancelBtn.setOnClickListener(v -> createNewFileDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
@@ -437,12 +430,10 @@ public class TreeViewDrawer extends Fragment {
         if (!confirmDeleteDialog.isShowing()) {
             confirmDeleteDialog.show();
 
-            TextView title = confirmDeleteDialog.findViewById(android.R.id.title);
             TextView message = confirmDeleteDialog.findViewById(android.R.id.message);
             Button confirmBtn = confirmDeleteDialog.findViewById(android.R.id.button1);
             Button cancelBtn = confirmDeleteDialog.findViewById(android.R.id.button2);
 
-            title.setText(getString(R.string.delete));
             message.setText(getString(R.string.delete_file, node.getContent().getFile().getName()));
 
             confirmBtn.setOnClickListener(

@@ -4,11 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
@@ -446,7 +442,7 @@ public class MainActivity extends BaseActivity {
 
         final var notifChannel =
                 new NotificationChannel(
-                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_NONE);
+                        BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_DRFAULT);
         notifChannel.setDescription("Foreground notification for the compiler status");
 
         final var notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -622,7 +618,7 @@ public class MainActivity extends BaseActivity {
                                                                     getProject().getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
-                                    dialog("Failed to decompile...", getString(e), true);
+                                    dialog("Failed to decompile class", getString(e), true);
                                 }
                             });
 
@@ -661,7 +657,7 @@ public class MainActivity extends BaseActivity {
                                                         + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
-                        dialog("Failed to disassemble", getString(e), true);
+                        dialog("Failed to disassemble class", getString(e), true);
                     }
 
                     var edi = new CodeEditor(this);
@@ -727,7 +723,7 @@ public class MainActivity extends BaseActivity {
             }
             return classes.toArray(new String[0]);
         } catch (Exception e) {
-            dialog("Failed to get available classes in dex...", getString(e), true);
+            dialog("Failed to get available classes in dex", getString(e), true);
             return null;
         }
     }
@@ -735,7 +731,7 @@ public class MainActivity extends BaseActivity {
     /* Shows a snackbar indicating that there were problems during compilation */
     private void showError(String exception) {
         Snackbar.make(binding.snackbarContainer, "An error occurred", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Show error", v -> dialog("Failed...", exception.toString(), true))
+                .setAction("Show error", v -> dialog("Failed", exception.toString(), true))
                 .show();
     }
 

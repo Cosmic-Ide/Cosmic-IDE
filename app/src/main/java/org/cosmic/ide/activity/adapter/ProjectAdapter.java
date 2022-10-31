@@ -109,7 +109,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         private final TextView title;
         private final TextView path;
         public final View background;

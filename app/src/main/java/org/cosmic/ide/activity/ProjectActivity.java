@@ -167,12 +167,10 @@ public class ProjectActivity extends BaseActivity {
     private void showDeleteProjectDialog(JavaProject project) {
         if (!deleteProjectDialog.isShowing()) {
             deleteProjectDialog.show();
-            TextView title = deleteProjectDialog.findViewById(android.R.id.title);
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
             Button cancelBtn = deleteProjectDialog.findViewById(android.R.id.button2);
             Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
             cancelBtn.setOnClickListener(v -> deleteProjectDialog.dismiss());
-            title.setText(getString(R.string.delete_project));
             message.setText(getString(R.string.project_delete_warning, project.getProjectName()));
             deleteBtn.setOnClickListener(
                     v -> {

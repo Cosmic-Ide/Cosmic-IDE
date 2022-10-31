@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -19,7 +20,6 @@
         android:focusable="true"
         android:paddingVertical="@dimen/spacing_small"
         android:paddingHorizontal="@dimen/spacing_medium">
-
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/project_title"
             android:layout_width="wrap_content"
@@ -27,7 +27,8 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?attr/textAppearanceTitleLarge"
-            android:fadingEdge="horizontal" />
+            android:fadingEdge="horizontal"
+            tools:text="Abc" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/project_path"
@@ -36,8 +37,8 @@
             android:ellipsize="start"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?android:textColorSecondary"
-            android:maxLines="2" />
-
+            android:maxLines="2"
+            tools:text="../org.cosmic.ide/files/projects/Abc/" />
     </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider

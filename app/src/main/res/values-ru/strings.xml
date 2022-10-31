@@ -2,7 +2,7 @@
 <resources>
     <!-- Строки, используемые MainActivity -->
     <string name="run">Запустить</string>
-    <string name="advanced">Передовой</string>
+    <string name="advanced">Дополнительно</string>
     <string name="compilation_running">Компиляция проекта</string>
     <string name="file_name">Имя файла</string>
     <string name="directory_name">Имя папки</string>

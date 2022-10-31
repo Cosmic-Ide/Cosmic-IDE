@@ -3,12 +3,7 @@ package org.cosmic.ide.ui.treeview;
 import org.cosmic.ide.ui.treeview.file.TreeFile;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TreeUtil {
 

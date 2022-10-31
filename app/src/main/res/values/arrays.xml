@@ -5,16 +5,16 @@
         <item>Class</item>
         <item>Interface</item>
         <item>Enum</item>
-		<item>Abstract</item>
+        <item>Abstract</item>
     </string-array>
-	
-	<string-array name="kind_class_kotlin" translatable="false">
+
+    <string-array name="kind_class_kotlin" translatable="false">
         <item>Class</item>
-		<item>Data</item>
-		<item>Object</item>
+        <item>Data</item>
+        <item>Object</item>
         <item>Interface</item>
         <item>Enum</item>
-		<item>Abstract</item>
+        <item>Abstract</item>
     </string-array>
 
 </resources>

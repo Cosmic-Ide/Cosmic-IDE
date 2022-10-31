@@ -21,7 +21,6 @@
         android:layout_marginTop="@dimen/spacing_medium"
         android:hint="@string/project_name"
         android:textDirection="locale">
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"
             android:layout_width="match_parent"
@@ -42,7 +41,6 @@
         android:visibility="gone"
         android:textDirection="locale"
         app:placeholderText="com.example.project">
-
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text2"
             android:layout_width="match_parent"

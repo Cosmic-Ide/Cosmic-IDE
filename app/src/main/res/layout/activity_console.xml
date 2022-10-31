@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:liftOnScroll="true">
-
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -18,17 +17,15 @@
 
     <ScrollView
         android:id="@+id/scroll_view"
-        android:paddingHorizontal="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:paddingHorizontal="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fillViewport="true">
-
             <org.cosmic.ide.ui.console.ConsoleEditText
                 android:id="@+id/console"
                 android:layout_width="wrap_content"
@@ -38,7 +35,7 @@
                 android:gravity="top|start"
                 android:singleLine="false"
                 android:fontFamily="@font/mono_font" />
-            </HorizontalScrollView>
-        </ScrollView>
+        </HorizontalScrollView>
+    </ScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

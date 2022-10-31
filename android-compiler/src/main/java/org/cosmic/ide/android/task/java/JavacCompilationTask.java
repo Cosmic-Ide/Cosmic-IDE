@@ -1,6 +1,7 @@
 package org.cosmic.ide.android.task.java;
 
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
@@ -27,6 +28,7 @@ import javax.tools.StandardLocation;
 public class JavacCompilationTask implements Task {
 
     private final SharedPreferences prefs;
+    private final var TAG = "JavacCompilerTask";
 
     public JavacCompilationTask(SharedPreferences preferences) {
         prefs = preferences;
@@ -43,12 +45,13 @@ public class JavacCompilationTask implements Task {
         final var output = new File(project.getBinDirPath(), "classes");
 
         final var version = prefs.getString("key_java_version", "7");
+        
+        Log.d(TAG, "version=" + version);
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var lastBuildTime =
-                new Indexer(project.getCacheDirPath())
-                        .getLong("lastBuildTime");
+        final var indexer = new Indexer(project.getCacheDirPath());
+        var lastBuildTime = indexer.getLong("lastBuildTime");
         if (!output.exists()) {
             lastBuildTime = 0;
             output.mkdirs();
@@ -142,8 +145,7 @@ public class JavacCompilationTask implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        new Indexer(project.getCacheDirPath())
-                .put("lastBuildTime", System.currentTimeMillis());
+        indexer.put("lastBuildTime", System.currentTimeMillis()).flush();
     }
 
     public ArrayList<File> getSourceFiles(File path) {

@@ -122,7 +122,7 @@ public class MainActivity extends BaseActivity {
         });
 
         if (binding.root instanceof DrawerLayout) {
-            DrawerLayout drawer = (DrawerLayout) binding.root;
+            var drawer = (DrawerLayout) binding.root;
             if (drawer != null) {
                 binding.toolbar.setNavigationOnClickListener(
                         v -> {

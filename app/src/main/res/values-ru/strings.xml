@@ -36,10 +36,8 @@
     <string name="format">Формат</string>
     <string name="settings">Настройки</string>
     <string name="appearance">Вид</string>
-    <string name="editor">Редактор</string>
     <string name="compiler">Компилятор</string>
     <string name="dark_theme">Темная тема</string>
-    <string name="soft_tab">Мягкая вкладка</string>
     <string name="about">О приложении</string>
     <string name="our_discord">Наш Discord</string>
     <string name="join_discord">Присоединяйтесь к нашему Discord каналу</string>

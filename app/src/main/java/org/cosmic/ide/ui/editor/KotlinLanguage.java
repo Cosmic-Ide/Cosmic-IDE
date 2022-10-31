@@ -9,7 +9,6 @@ import com.tyron.kotlin.completion.KotlinEnvironment;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
-import org.cosmic.ide.ui.preference.Settings;
 import org.jetbrains.kotlin.psi.KtSimpleNameExpression;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.descriptors.DeclarationDescriptor;
@@ -90,10 +89,5 @@ public class KotlinLanguage extends TextMateLanguage {
 
     public boolean isAutoCompleteChar(char p1) {
         return true;
-    }
-
-    @Override
-    public boolean useTab() {
-        return new Settings(mEditor.getContext(), null).getUseSoftTab();
     }
 }

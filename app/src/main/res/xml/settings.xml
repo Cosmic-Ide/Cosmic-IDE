@@ -12,15 +12,6 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/editor">
-
-        <SwitchPreferenceCompat
-            app:key="@string/key_use_softtab"
-            app:title="@string/soft_tab"
-            app:defaultValue="false" />
-
-    </PreferenceCategory>
-
     <PreferenceCategory app:title="@string/compiler">
 
         <ListPreference

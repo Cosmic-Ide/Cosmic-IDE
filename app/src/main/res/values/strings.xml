@@ -45,9 +45,7 @@
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
     <string name="compiler">Compiler</string>
-    <string name="editor">Editor</string>
     <string name="dark_theme">Dark Theme</string>
-    <string name="soft_tab">Soft Tab</string>
     <string name="about">About app</string>
     <string name="our_discord">Our Discord</string> 
     <string name="join_discord">Join our discord channel</string>

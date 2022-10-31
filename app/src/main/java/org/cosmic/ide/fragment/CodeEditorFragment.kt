@@ -50,6 +50,14 @@ class CodeEditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureEditor(binding.editor)
 
+        with(binding.inputView) {
+            bindEditor(binding.editor)
+            addSymbols(
+                arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
+                arrayOf("\t", "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
+            )
+        }
+
         if (currentFile.exists()) {
             try {
                 binding.editor.setText(currentFile.readText())
@@ -75,16 +83,6 @@ class CodeEditorFragment : Fragment() {
                         (requireActivity() as MainActivity).getProject()
                     )
                 )
-        }
-
-        val useTab = binding.editor.getEditorLanguage().useTab()
-        val tabInsertText = if (useTab) "\t" else "    "
-        with(binding.inputView) {
-            bindEditor(binding.editor)
-            addSymbols(
-                arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),
-                arrayOf(tabInsertText, "{}", "}", "()", ")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/")
-            )
         }
     }
 

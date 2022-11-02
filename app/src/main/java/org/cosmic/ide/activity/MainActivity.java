@@ -200,7 +200,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onTabSelected(TabLayout.Tab p1) {
-                        // updateTab(p1, p1.getPosition());
+                        updateTab(p1, p1.getPosition());
                     }
                 });
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab)

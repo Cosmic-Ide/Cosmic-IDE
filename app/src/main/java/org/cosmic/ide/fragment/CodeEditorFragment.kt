@@ -50,7 +50,7 @@ class CodeEditorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureEditor(binding.editor)
 
-        with(binding.inputView) {
+        binding.inputView.apply {
             bindEditor(binding.editor)
             addSymbols(
                 arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"),

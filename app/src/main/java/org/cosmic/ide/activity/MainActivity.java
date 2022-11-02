@@ -146,10 +146,9 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        CoroutineUtil.inParallel(() -> {
-            unzipFiles();
-            buildLoadingDialog();
-        });
+        unzipFiles();
+        buildLoadingDialog();
+
         fileViewModel.refreshNode(getProject().getRootFile());
         mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
         mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);

@@ -21,7 +21,6 @@ jobs:
         run: chmod +x gradlew
 
       - name: Format Kotlin Source
-        continue-on-error: true
         uses: gradle/gradle-build-action@v2.3.3
         with:
           arguments: ktlintFormat

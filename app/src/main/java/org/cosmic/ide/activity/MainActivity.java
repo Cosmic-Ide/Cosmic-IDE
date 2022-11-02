@@ -105,20 +105,19 @@ public class MainActivity extends BaseActivity {
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
-        CoroutineUtil.inParallel(() -> {
-            ViewCompat.setOnApplyWindowInsetsListener(
-                    binding.viewPager,
-                    (vi, insets) -> {
-                        boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-    
-                        Insets in = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                        binding.viewPager.setPadding(0, 0, 0, in.bottom);
-                        if (imeVisible) {
-                            int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-                            binding.viewPager.setPadding(0, 0, 0, imeHeight);
-                        }
-                        return insets;
-            });
+        ViewCompat.setOnApplyWindowInsetsListener(
+                binding.viewPager,
+                (vi, insets) -> {
+                    boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+                    int bottomInset = 0;
+
+                    if (imeVisible) {
+                        bottomInset = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                    } else {
+                        bottomInset = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+                    }
+                    binding.viewPager.setPadding(0, 0, 0, bottomInset);
+                    return insets;
         });
 
         if (binding.root instanceof DrawerLayout) {
@@ -150,13 +149,12 @@ public class MainActivity extends BaseActivity {
         CoroutineUtil.inParallel(() -> {
             unzipFiles();
             buildLoadingDialog();
-
-            fileViewModel.refreshNode(getProject().getRootFile());
-
-            mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
-            mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);
-            mainViewModel.setToolbarTitle(getProject().getProjectName());
         });
+        fileViewModel.refreshNode(getProject().getRootFile());
+        mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
+        mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);
+        mainViewModel.setToolbarTitle(getProject().getProjectName());
+
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
         binding.viewPager.registerOnPageChangeCallback(
@@ -246,10 +244,10 @@ public class MainActivity extends BaseActivity {
 
         binding.toolbar.inflateMenu(R.menu.main_menu);
         binding.toolbar.setOnMenuItemClickListener(item -> {
+            final String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+            final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
             switch (item.getItemId()) {
                 case R.id.action_format:
-                    String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                    Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
                     if (fragment instanceof CodeEditorFragment) {
                         CoroutineUtil.execute(
                                 () -> {
@@ -295,17 +293,13 @@ public class MainActivity extends BaseActivity {
                     decompile();
                     break;
                 case R.id.action_undo:
-                    String _tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                    Fragment _fragment = getSupportFragmentManager().findFragmentByTag(_tag);
-                    if (_fragment instanceof CodeEditorFragment) {
-                        ((CodeEditorFragment) _fragment).undo();
+                    if (fragment instanceof CodeEditorFragment) {
+                        ((CodeEditorFragment) fragment).undo();
                     }
                     break;
                 case R.id.action_redo:
-                    String __tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                    Fragment __fragment = getSupportFragmentManager().findFragmentByTag(__tag);
-                    if (__fragment instanceof CodeEditorFragment) {
-                        ((CodeEditorFragment) __fragment).redo();
+                    if (fragment instanceof CodeEditorFragment) {
+                        ((CodeEditorFragment) fragment).redo();
                     }
                     break;
                 default:
@@ -399,7 +393,7 @@ public class MainActivity extends BaseActivity {
         loadingDialog.setCanceledOnTouchOutside(false);
     }
 
-    /* So, this method is also triggered from another thread (Compile.java)
+    /* So, this method is also triggered from another thread (CompileTask.java)
      * We need to make sure that this code is executed on main thread */
     private void changeLoadingDialogBuildStage(String currentStage) {
         if (loadingDialog.isShowing()) {
@@ -722,12 +716,14 @@ public class MainActivity extends BaseActivity {
     }
 
     public void saveAll() {
-        for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
-            String tag = "f" + tabsAdapter.getItemId(i);
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-            if (fragment instanceof CodeEditorFragment) {
-                ((CodeEditorFragment) fragment).save();
+        CoroutineUtil.inParallel(() -> {
+            for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
+                String tag = "f" + tabsAdapter.getItemId(i);
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                if (fragment instanceof CodeEditorFragment) {
+                    ((CodeEditorFragment) fragment).save();
+                }
             }
-        }
+        });
     }
 }

@@ -1,8 +1,7 @@
 plugins {
-    id(BuildPlugins.JAVA_LIBRARY)
-    id(BuildPlugins.KOTLIN_JAVA)
+    id(BuildPlugins.ANDROID_LIBRARY)
+    id(BuildPlugins.KOTLIN_ANDROID)
     id(BuildPlugins.KTLINT)
-    id(BuildPlugins.LINT)
 }
 
 java {

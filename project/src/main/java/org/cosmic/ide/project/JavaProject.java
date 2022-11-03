@@ -17,7 +17,9 @@ public class JavaProject implements Project {
         this.root = root;
         try {
             this.indexer = new Indexer(getCacheDirPath());
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+            this.indexer = null;
+        }
     }
 
     public static Project newProject(String projectName) throws IOException {

@@ -122,28 +122,26 @@ public class MainActivity extends BaseActivity {
 
         if (binding.root instanceof DrawerLayout) {
             var drawer = (DrawerLayout) binding.root;
-            if (drawer != null) {
-                binding.toolbar.setNavigationOnClickListener(
-                        v -> {
-                            if (drawer.isDrawerOpen(GravityCompat.START)) {
-                                mainViewModel.setDrawerState(false);
-                            } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                                mainViewModel.setDrawerState(true);
-                            }
-                        });
-                drawer.addDrawerListener(
-                        new DrawerLayout.SimpleDrawerListener() {
-                            @Override
-                            public void onDrawerOpened(@NonNull View p1) {
-                                mainViewModel.setDrawerState(true);
-                            }
+            binding.toolbar.setNavigationOnClickListener(
+                    v -> {
+                        if (drawer.isDrawerOpen(GravityCompat.START)) {
+                            mainViewModel.setDrawerState(false);
+                        } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                            mainViewModel.setDrawerState(true);
+                        }
+                    });
+           drawer.addDrawerListener(
+                    new DrawerLayout.SimpleDrawerListener() {
+                        @Override
+                        public void onDrawerOpened(@NonNull View p1) {
+                            mainViewModel.setDrawerState(true);
+                        }
 
-                            @Override
-                            public void onDrawerClosed(@NonNull View p1) {
-                                mainViewModel.setDrawerState(false);
-                            }
-                        });
-            }
+                        @Override
+                        public void onDrawerClosed(@NonNull View p1) {
+                            mainViewModel.setDrawerState(false);
+                        }
+                    });
         }
 
         buildLoadingDialog();
@@ -262,8 +260,8 @@ public class MainActivity extends BaseActivity {
                                         new ktfmtFormatter(current).format();
                                         try {
                                             temp = FileUtil.readFile(new File(current));
-                                        } catch (IOException ignore) {
-                                            // no way, this is impossible
+                                        } catch (IOException e) {
+                                            Log.d(TAG, "Cannot read file", e);
                                         }
                                     } else {
                                         temp = ((CodeEditorFragment) fragment)
@@ -540,9 +538,6 @@ public class MainActivity extends BaseActivity {
                                 new File(
                                         getProject().getBinDirPath(),
                                         "smali" + "/" + claz.replace(".", "/") + ".smali");
-                                        
-            final var opcodes = Opcodes.forApi(32);
-            final var options = new BaksmaliOptions();
 
             CoroutineUtil.execute(
                     () -> {
@@ -550,13 +545,13 @@ public class MainActivity extends BaseActivity {
                                 final var dexFile =
                                         DexFileFactory.loadDexFile(
                                                 new File(getProject().getBinDirPath(), "classes.dex"),
-                                                opcodes);
+                                                Opcodes.forApi(32));
                                 options.apiLevel = 32;
                                 Baksmali.disassembleDexFile(
                                         dexFile,
                                         new File(getProject().getBinDirPath(), "smali"),
                                         1,
-                                        options);
+                                        new BaksmaliOptions());
                             } catch (Throwable e) {
                                 dialog("Failed to extract smali source", getString(e), true);
                             }

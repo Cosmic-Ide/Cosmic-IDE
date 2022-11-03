@@ -120,7 +120,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             background = view.findViewById(R.id.background);
         }
 
-        public void bind(JavaProject project) {
+        public void bind(Project project) {
             title.setText(project.getProjectName());
             path.setText(project.getProjectDirPath());
         }

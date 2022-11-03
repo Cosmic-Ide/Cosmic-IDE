@@ -28,7 +28,7 @@ import javax.tools.StandardLocation;
 public class JavacCompilationTask implements Task {
 
     private final SharedPreferences prefs;
-    private final String TAG = "JavacCompilerTask";
+    private final String TAG = JavacCompilationTask.class.getSimpleName();
 
     public JavacCompilationTask(SharedPreferences preferences) {
         prefs = preferences;
@@ -36,9 +36,14 @@ public class JavacCompilationTask implements Task {
 
     @Override
     public String getTaskName() {
-        return "Javac Compilation Task";
+        return TAG;
     }
 
+    /*
+     * Compile the java files into classes.
+     *
+     * @param project the project to compile.
+     */
     @Override
     public void doFullTask(Project project) throws Exception {
 
@@ -46,12 +51,12 @@ public class JavacCompilationTask implements Task {
 
         final var version = prefs.getString("key_java_version", "7");
         
-        Log.d(TAG, "version=" + version);
+        Log.d(TAG, "java_version=" + version);
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        final var indexer = new Indexer(project.getCacheDirPath());
-        var lastBuildTime = indexer.getLong("lastBuildTime");
+        var lastBuildTime = project.getIndexer().getLong("lastBuildTime");
+        Log.d(TAG, "lastBuildTime=" + lastBuildTime);
         if (!output.exists()) {
             lastBuildTime = 0;
             output.mkdirs();
@@ -145,7 +150,7 @@ public class JavacCompilationTask implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        indexer.put("lastBuildTime", System.currentTimeMillis()).flush();
+        project.getIndexer().put("lastBuildTime", System.currentTimeMillis()).flush();
     }
 
     public ArrayList<File> getSourceFiles(File path) {

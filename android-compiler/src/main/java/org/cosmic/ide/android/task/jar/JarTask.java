@@ -29,9 +29,10 @@ public class JarTask implements Task {
         // Create the jar file
         var out = new JarOutputStream(stream, manifest);
 
-        // Add the files..
-        if (classesFolder.listFiles() != null) {
-            for (var clazz : classesFolder.listFiles()) {
+        // Add the files
+        var files = classesFolder.listFiles();
+        if (files != null) {
+            for (var clazz : files) {
                 add(classesFolder.getPath(), clazz, out);
             }
         }

@@ -5,9 +5,8 @@ public class CodeTemplate {
 	public static String getJavaClassTemplate(
 	String packageName, String className, boolean isCreateMainMethod,  String classType) {		
 		
-		String simpleJavaClass = 
-		"import java.util.*;\n\n"
-		+ "public class "
+		var simpleJavaClass = 
+		"public class "
 		+ className
 		+ " {\n"
 		+ (isCreateMainMethod
@@ -18,32 +17,29 @@ public class CodeTemplate {
 		+ "\n"
 		+ "}\n";
 		
-		String simpleJavaInterface =
-		"import java.util.*;\n\n"
-		+ "interface "
+		var simpleJavaInterface =
+		"interface "
 		+ className
 		+ " {\n"		
 		+ "\n"
 		+ "}\n";
 		
-		String simpleJavaAbstract =
-		"import java.util.*;\n\n"
-		+ "public abstract class "
+		var simpleJavaAbstract =
+		"public abstract class "
 		+ className
 		+ " {\n"		
 		+ "\n"
 		+ "}\n";
 		
-		String simpleJavaEnum =
-		"import java.util.*;\n\n"
-		+ "enum "
+		var simpleJavaEnum =
+		"enum "
 		+ className
 		+ " {\n"		
-		+ "\n"
+		+ "\t"
 		+ "}\n";
 		
-		String header = "";
-		String classBody = header + simpleJavaClass;
+		var header = "";
+		var classBody = header + simpleJavaClass;
 		
 		if (!isEmpty(packageName)) {
 			header = "package " + packageName + ";\n" + "\n";
@@ -70,9 +66,8 @@ public class CodeTemplate {
 	public static String getKotlinClassTemplate(
 	String packageName, String className, boolean isCreateMainMethod, String classType) {
 		
-		String simpleKotlinClass =
-		"import java.util.*\n\n"
-		+ "class "
+		var simpleKotlinClass =
+		"class "
 		+ className
 		+ " {\n\t"
 		+ (isCreateMainMethod
@@ -83,53 +78,45 @@ public class CodeTemplate {
 		+ "\n"
 		+ "}\n";
 		
-		String simpleKotlinDataClass =
-		"import java.util.*;\n\n"
-		+ "data class " + className + "()"
+		var simpleKotlinDataClass =
+		"data class " + className + "()"
 		+ "\n";
 		
-		String simpleKotlinObjectDeclaration =
-		"import java.util.*;\n\n"
-		+ "object " + className 
+		var simpleKotlinObjectDeclaration =
+		"object " + className 
 		+ " {\n"
 		+ "\n"
 		+ "}\n";
-		
-		String simpleKotlinInterface =
-		"import java.util.*;\n\n"
-		+ "interface "
+
+		var simpleKotlinInterface =
+		"interface "
 		+ className
 		+ " {\n"		
 		+ "\n"
 		+ "}\n";
-		
-		String simpleKotlinAbstract =
-		"import java.util.*;\n\n"
-		+ "abstract class "
+
+		var simpleKotlinAbstract =
+		"abstract class "
 		+ className
 		+ " {\n"		
 		+ "\n"
 		+ "}\n";
-		
-		String simpleKotlinEnum =
-		"import java.util.*;\n\n"
-		+ "enum class "
+
+		var simpleKotlinEnum =
+		"enum class "
 		+ className
-		+ " {\n"		
+		+ " {\n"
 		+ "\n"
-		+ "}\n";		
-		
-		String header = "";
-		String classBody = header + simpleKotlinClass;
-		
+		+ "}\n";
+
+		var header = "";
+		var classBody = header + simpleKotlinClass;
+
 		if (!isEmpty(packageName)) {
 			header = "package " + packageName + "\n" + "\n";
 		}
-		
+
 		switch (classType) {
-			case "Class":
-				classBody = header + simpleKotlinClass;
-			break;
 			case "Data":
 				classBody = header + simpleKotlinDataClass;
 			break;
@@ -145,10 +132,8 @@ public class CodeTemplate {
 			case "Enum":
 				classBody = header + simpleKotlinEnum;
 			break;
-			
 		}
 		return classBody;
-		
 	}
 	
 	public static boolean isEmpty(final CharSequence s) {

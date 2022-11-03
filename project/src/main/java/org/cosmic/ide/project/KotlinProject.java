@@ -1,5 +1,6 @@
 package org.cosmic.ide.project;
 
+import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.FileUtil;
 
 import java.io.File;
@@ -10,9 +11,13 @@ public class KotlinProject implements Project {
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
     private final File root;
+    private final Indexer indexer;
 
     public KotlinProject(File root) {
         this.root = root;
+        try {
+            this.indexer = new Indexer(getCacheDirPath());
+        } catch (Exception ignore) {}
     }
 
     public static Project newProject(String projectName) throws IOException {
@@ -53,6 +58,11 @@ public class KotlinProject implements Project {
     @Override
     public String getProjectName() {
         return getRootFile().getName();
+    }
+
+    @Override
+    public Indexer getIndexer() {
+        return indexer;
     }
 
     @Override

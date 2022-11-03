@@ -85,7 +85,6 @@ public class MainActivity extends BaseActivity {
     private MainViewModel mainViewModel;
     private FileViewModel fileViewModel;
     private PageAdapter tabsAdapter;
-    private Indexer indexer;
 
     public ActivityMainBinding binding;
 
@@ -99,9 +98,10 @@ public class MainActivity extends BaseActivity {
         fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
-        try {
-            indexer = new Indexer(javaProject.getCacheDirPath());
-        } catch (JSONException ignore) {}
+
+        CoroutineUtil.inParallel(() -> {
+            unzipFiles();
+        });
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
@@ -146,11 +146,10 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        unzipFiles();
         buildLoadingDialog();
 
         fileViewModel.refreshNode(getProject().getRootFile());
-        mainViewModel.setFiles(indexer.getList("lastOpenedFiles"));
+        mainViewModel.setFiles(getProject().getIndexer().getList("lastOpenedFiles"));
         mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);
         mainViewModel.setToolbarTitle(getProject().getProjectName());
 
@@ -334,7 +333,7 @@ public class MainActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         try {
-            indexer
+            getProject().getIndexer()
                     .put("lastOpenedFiles",
                         mainViewModel.getFiles()
                         .getValue())

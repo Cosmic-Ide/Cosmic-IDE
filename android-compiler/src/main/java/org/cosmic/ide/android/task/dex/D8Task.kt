@@ -15,6 +15,11 @@ import java.nio.file.Paths
 class D8Task : Task {
 
     companion object {
+        /*
+         * Compile a jar file to a Dalvik Executable (Dex) File.
+         *
+         * @param jarFile the jar file to compile
+         */
         @JvmStatic
         fun compileJar(jarFile: String) {
             val outputDex = jarFile.replaceAfterLast('.', "dex")
@@ -30,6 +35,11 @@ class D8Task : Task {
         }
     }
 
+    /*
+     * Compile class files of project to a Dalvik Executable (Dex) File.
+     *
+     * @param project the project to compile.
+     */
     @Throws(Exception::class)
     override fun doFullTask(project: Project) {
         D8.run(
@@ -45,6 +55,11 @@ class D8Task : Task {
         )
     }
 
+    /*
+     * Find all classes recursively in a directory.
+     *
+     * @param root directory to search in.
+     */
     private fun getClassFiles(root: File): ArrayList<Path> {
         val paths = arrayListOf<Path>()
 

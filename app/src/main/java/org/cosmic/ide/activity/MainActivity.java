@@ -546,12 +546,13 @@ public class MainActivity extends BaseActivity {
                                         DexFileFactory.loadDexFile(
                                                 new File(getProject().getBinDirPath(), "classes.dex"),
                                                 Opcodes.forApi(32));
+                                final var options = new BaksmaliOptions();
                                 options.apiLevel = 32;
                                 Baksmali.disassembleDexFile(
                                         dexFile,
                                         new File(getProject().getBinDirPath(), "smali"),
                                         1,
-                                        new BaksmaliOptions());
+                                        options);
                             } catch (Throwable e) {
                                 dialog("Failed to extract smali source", getString(e), true);
                             }

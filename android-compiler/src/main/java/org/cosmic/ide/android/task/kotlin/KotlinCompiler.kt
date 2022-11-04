@@ -61,7 +61,7 @@ class KotlinCompiler : Task {
 
         val appClass = Class.forName("org.cosmic.ide.App")
         val prefs = appClass.getDeclaredMethod("getDefaultSharedPreferences").invoke(null) as SharedPreferences
-        val useFastJarFS = prefs.getBoolean("key_fastjarfs", true)
+        val useFastJarFS = prefs.getBoolean("ide_fastjarfs", true)
 
         val args = K2JVMCompilerArguments().apply {
             includeRuntime = false

@@ -28,6 +28,7 @@
         <SwitchPreferenceCompat
             app:key="@string/key_fastjarfs"
             app:title="@string/fast_jar_fs"
+            app:defaultValue="true"
             app:summary="@string/desc_fast_jar_fs" />
 
     </PreferenceCategory>

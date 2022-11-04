@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProjectActivity extends BaseActivity {
+public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnProjectEventListener {
 
     public interface OnProjectCreatedListener {
         void onProjectCreated(Project project);
@@ -64,9 +64,8 @@ public class ProjectActivity extends BaseActivity {
         projectAdapter = new ProjectAdapter();
         binding.projectRecycler.setAdapter(projectAdapter);
         binding.projectRecycler.setLayoutManager(new LinearLayoutManager(this));
-        projectAdapter.setOnProjectSelectedListener(this::openProject);
-        projectAdapter.setOnProjectLongClickedListener(this::deleteProject);
-        setOnProjectCreatedListener(this::openProject);
+        projectAdapter.setOnProjectEventListener(this);
+        setOnProjectCreatedListener(this::onProjectClicked);
 
         UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
@@ -155,7 +154,7 @@ public class ProjectActivity extends BaseActivity {
     }
 
     @WorkerThread
-    private void showDeleteProjectDialog(JavaProject project) {
+    private void showDeleteProjectDialog(Project project) {
         if (!deleteProjectDialog.isShowing()) {
             deleteProjectDialog.show();
             TextView message = deleteProjectDialog.findViewById(android.R.id.message);
@@ -176,14 +175,16 @@ public class ProjectActivity extends BaseActivity {
         }
     }
 
-    private void openProject(Project project) {
+    @Override
+    public void onProjectClicked(Project project) {
         var projectPath = project.getProjectDirPath();
         var intent = new Intent(this, MainActivity.class);
         intent.putExtra(Constants.PROJECT_PATH, projectPath);
         startActivity(intent);
     }
 
-    private boolean deleteProject(JavaProject project) {
+    @Override
+    public boolean onProjectLongClicked(Project project) {
         showDeleteProjectDialog(project);
         return true;
     }
@@ -194,7 +195,7 @@ public class ProjectActivity extends BaseActivity {
                 () -> {
                     var projectDir = new File(JavaProject.getRootDirPath());
                     var directories = projectDir.listFiles(File::isDirectory);
-                    var projects = new ArrayList<JavaProject>();
+                    var projects = new ArrayList<Project>();
                     if (directories != null) {
                         Arrays.sort(directories, Comparator.comparingLong(File::lastModified));
                         for (var directory : directories) {
@@ -214,7 +215,7 @@ public class ProjectActivity extends BaseActivity {
                 });
     }
 
-    private void toggleNullProject(List<JavaProject> projects) {
+    private void toggleNullProject(List<Project> projects) {
         if (projects.size() == 0) {
             binding.projectRecycler.setVisibility(View.GONE);
             binding.emptyContainer.setVisibility(View.VISIBLE);

@@ -10,35 +10,26 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.cosmic.ide.R;
-import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.project.Project;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
-    public interface OnProjectSelectedListener {
-        void onProjectSelect(JavaProject project);
+    public interface OnProjectEventListener {
+        void onProjectClicked(Project project);
+        boolean onProjectLongClicked(Project project);
     }
 
-    public interface OnProjectLongClickedListener {
-        boolean onLongClicked(JavaProject project);
+    private final List<Project> mProjects = new ArrayList<>();
+    private OnProjectEventListener onProjectEventListener;
+
+    public void setOnProjectEventListener(OnProjectEventListener onProjectEventListener) {
+        this.onProjectEventListener = onProjectEventListener;
     }
 
-    private final List<JavaProject> mProjects = new ArrayList<>();
-    private OnProjectSelectedListener onProjectSelectedListener;
-    private OnProjectLongClickedListener onProjectLongClickedListener;
-
-    public void setOnProjectSelectedListener(OnProjectSelectedListener onProjectSelectedListener) {
-        this.onProjectSelectedListener = onProjectSelectedListener;
-    }
-
-    public void setOnProjectLongClickedListener(
-            OnProjectLongClickedListener onProjectLongClickedListener) {
-        this.onProjectLongClickedListener = onProjectLongClickedListener;
-    }
-
-    public void submitList(@NonNull List<JavaProject> projects) {
+    public void submitList(@NonNull List<Project> projects) {
         var diffResult =
                 DiffUtil.calculateDiff(
                         new DiffUtil.Callback() {
@@ -89,15 +80,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         holder.bind(mProjects.get(position));
         holder.background.setOnClickListener(
                 v -> {
-                    if (onProjectSelectedListener != null && position != RecyclerView.NO_POSITION) {
-                        onProjectSelectedListener.onProjectSelect(mProjects.get(position));
+                    if (onProjectEventListener != null && position != RecyclerView.NO_POSITION) {
+                        onProjectEventListener.onProjectClicked(mProjects.get(position));
                     }
                 });
         holder.background.setOnLongClickListener(
                 v -> {
-                    if (onProjectLongClickedListener != null
+                    if (onProjectEventListener != null
                             && position != RecyclerView.NO_POSITION) {
-                        return onProjectLongClickedListener.onLongClicked(mProjects.get(position));
+                        return onProjectEventListener.onProjectLongClicked(mProjects.get(position));
                     }
                     return false;
                 });

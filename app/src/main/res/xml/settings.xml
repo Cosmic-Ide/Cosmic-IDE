@@ -25,6 +25,11 @@
             app:key="@string/key_program_arguments"
             app:title="@string/program_arguments" />
 
+        <SwitchPreferenceCompat
+            app:key="@string/key_fastjarfs"
+            app:title="@string/fast_jar_fs"
+            app:summary="@string/desc_fast_jar_fs" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/about">

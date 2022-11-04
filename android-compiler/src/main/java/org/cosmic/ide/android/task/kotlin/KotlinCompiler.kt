@@ -1,5 +1,7 @@
 package org.cosmic.ide.android.task.kotlin
 
+import android.content.SharedPreferences
+
 import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.common.util.FileUtil
@@ -57,6 +59,10 @@ class KotlinCompiler : Task {
 
         val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
 
+        val appClass = Class.forName("org.cosmic.ide.App")
+        val prefs = appClass.getDeclaredMethod("getDefaultSharedPreferences").invoke(null) as SharedPreferences
+        val useFastJarFS = prefs.getBoolean("key_fastjarfs", true)
+
         val args = K2JVMCompilerArguments().apply {
             includeRuntime = false
             noReflect = true
@@ -73,7 +79,7 @@ class KotlinCompiler : Task {
             moduleName = project.getProjectName()
             pluginClasspaths = plugins
             noJdk = true
-            useFastJarFileSystem = true
+            useFastJarFileSystem = useFastJarFS
         }
 
         val cacheDir = File(project.getBinDirPath(), "caches")

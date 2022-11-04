@@ -4,6 +4,7 @@
     <string name="key_theme" translatable="false">ide_theme</string>
     <string name="key_java_version" translatable="false">ide_java_version</string>
     <string name="key_program_arguments" translatable="false">ide_program_arguments</string>
+    <string name="key_fastjarfs" translatable="false">ide_fastjarfs</string>
     <string name="key_app_version" translatable="false">ide_app_version</string>
     <string name="key_discord" translatable="false">ide_discord_link</string>
     <string name="key_github" translatable="false">ide_github_link</string>

@@ -44,6 +44,8 @@
     <string name="format">Format</string>
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
+    <string name="fast_jar_fs">Enable Fast Jar FS</string>
+    <string name="desc_fast_jar_fs">[Experimental] Use Fast Jar FS in kotlinc. Improves build speed.</string>
     <string name="compiler">Compiler</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="about">About app</string>

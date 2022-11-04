@@ -11,7 +11,7 @@ public class JavaProject implements Project {
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
     private final File root;
-    private final Indexer indexer;
+    private Indexer indexer;
 
     public JavaProject(File root) {
         this.root = root;

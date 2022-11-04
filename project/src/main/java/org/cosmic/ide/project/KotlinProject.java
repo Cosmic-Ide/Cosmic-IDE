@@ -11,13 +11,15 @@ public class KotlinProject implements Project {
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
     private final File root;
-    private final Indexer indexer;
+    private Indexer indexer;
 
     public KotlinProject(File root) {
         this.root = root;
         try {
             this.indexer = new Indexer(getCacheDirPath());
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+             this.indexer = null;
+        }
     }
 
     public static Project newProject(String projectName) throws IOException {

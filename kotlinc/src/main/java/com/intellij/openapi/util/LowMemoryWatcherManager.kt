@@ -5,7 +5,7 @@ import com.intellij.openapi.Disposable
 import androidx.annotation.NonNull
 import java.util.concurrent.ExecutorService
 
-class LowMemoryWatcherManager(@NonNull backendExecutorService: ExecutorService) : Disposable {
+class LowMemoryWatcherManager(@NonNull unused: ExecutorService) : Disposable {
 
   override fun dispose() {}
 }

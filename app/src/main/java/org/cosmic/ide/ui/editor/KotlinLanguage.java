@@ -42,14 +42,13 @@ public class KotlinLanguage extends TextMateLanguage {
     private final String fileName;
 
     public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme) throws Exception {
-        final var registry = GrammarRegistry.getInstance();
-        final var grammar = registry.findGrammar("source.kotlin");
         super(
-                grammar,
-                registry.findLanguageConfiguration("source.kotlin"),
-                registry,
-                ThemeRegistry.getInstance().loadTheme(theme),
+                GrammarRegistry.getInstance().findGrammar("source.kotlin"),
+                GrammarRegistry.getInstance().findLanguageConfiguration("source.kotlin"),
+                GrammarRegistry.getInstance(),
+                ThemeRegistry.getInstance(),
                 true);
+        ThemeRegistry.getInstance().loadTheme(theme)
         mEditor = editor;
         mCurrentFile = file;
         if (project instanceof KotlinProject) {

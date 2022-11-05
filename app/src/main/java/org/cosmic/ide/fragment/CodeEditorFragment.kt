@@ -147,15 +147,7 @@ class CodeEditorFragment : Fragment() {
     private fun getJavaLanguage(): Language {
         try {
             return TextMateLanguage.create(
-                IGrammarSource.fromInputStream(
-                    requireContext().assets.open("textmate/java/syntaxes/java.tmLanguage.json"),
-                    "java.tmLanguage.json",
-                    null
-                ),
-                InputStreamReader(
-                    requireContext().assets.open("textmate/java/language-configuration.json")
-                ),
-                getColorScheme().themeSource
+                "source.java", true
             )
         } catch (e: IOException) {
             Log.e("CodeEditorFragment", "Failed to create instance of TextMateLanguage", e);
@@ -175,14 +167,7 @@ class CodeEditorFragment : Fragment() {
     private fun getSmaliLanguage(): Language {
         try {
             return TextMateLanguage.create(
-                IGrammarSource.fromInputStream(
-                    requireContext().assets.open("textmate/smali/syntaxes/smali.tmLanguage.json"),
-                    "smali.tmLanguage.json",
-                    null),
-                InputStreamReader(
-                    requireContext().assets.open("textmate/smali/language-configuration.json")
-                ),
-                getColorScheme().themeSource
+                "source.smali", true
             )
         } catch (e: IOException) {
             return EmptyLanguage()

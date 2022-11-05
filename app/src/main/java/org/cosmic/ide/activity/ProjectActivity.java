@@ -79,14 +79,11 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
         binding.toolbar.inflateMenu(R.menu.projects_menu);
         binding.toolbar.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_settings:
-                    startActivity(new Intent(this, SettingActivity.class));
-                    break;
-                case R.id.action_logcat:
-                    startActivity(LynxActivity.getIntent(this, new LynxConfig()));
-                default:
-                    break;
+            final var id = item.getItemId();
+            if (id == R.id.action_settings) {
+                startActivity(new Intent(this, SettingActivity.class));
+            } else if (id == R.id.action_logcat) {
+                startActivity(LynxActivity.getIntent(this, new LynxConfig()));
             }
             return true;
         });

@@ -242,13 +242,13 @@ public class MainActivity extends BaseActivity {
         binding.toolbar.setOnMenuItemClickListener(item -> {
             final String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
             final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-            switch (item.getItemId()) {
-                case R.id.action_format:
-                    if (fragment instanceof CodeEditorFragment) {
-                        CoroutineUtil.execute(
-                                () -> {
-                                    String current = mainViewModel.getCurrentFile().getAbsolutePath();
-                                    if (current.endsWith(".java") || current.endsWith(".jav")) {
+            final var id = item.getItemId();
+            if (id == R.id.action_format) {
+                if (fragment instanceof CodeEditorFragment) {
+                    CoroutineUtil.execute(
+                            () -> {
+                                String current = mainViewModel.getCurrentFile().getAbsolutePath();
+                                if (current.endsWith(".java") || current.endsWith(".jav")) {
                                     var formatter =
                                             new GoogleJavaFormatter(
                                                     ((CodeEditorFragment) fragment)
@@ -256,8 +256,8 @@ public class MainActivity extends BaseActivity {
                                                             .getText()
                                                             .toString());
                                     temp = formatter.format();
-                                    } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
-                                        new ktfmtFormatter(current).format();
+                                } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
+                                    new ktfmtFormatter(current).format();
                                         try {
                                             temp = FileUtil.readFile(new File(current));
                                         } catch (IOException e) {
@@ -272,35 +272,26 @@ public class MainActivity extends BaseActivity {
                                 });
                         ((CodeEditorFragment) fragment).getEditor().setText(temp);
                     }
-                    break;
-                case R.id.action_settings:
-                    startActivity(new Intent(this, SettingActivity.class));
-                    break;
-                case R.id.action_run:
-                    compile(true, false);
-                    break;
-                case R.id.action_smali:
-                    smali();
-                    break;
-                case R.id.action_disassemble:
-                    disassemble();
-                    break;
-                case R.id.action_class2java:
-                    decompile();
-                    break;
-                case R.id.action_undo:
-                    if (fragment instanceof CodeEditorFragment) {
-                        ((CodeEditorFragment) fragment).undo();
-                    }
-                    break;
-                case R.id.action_redo:
-                    if (fragment instanceof CodeEditorFragment) {
-                        ((CodeEditorFragment) fragment).redo();
-                    }
-                    break;
-                default:
-                    break;
+            } else if (id == R.id.action_settings) {
+                startActivity(new Intent(this, SettingActivity.class));
+            } else if (id == R.id.action_run) {
+                compile(true, false);
+            } else if (id == R.id.action_smali) {
+                smali();
+            } else if (id == R.id.action_disassemble) {
+                disassemble();
+            } else if (id == R.id.action_class2java) {
+                decompile();
+            } else if (id == R.id.action_undo) {
+                if (fragment instanceof CodeEditorFragment) {
+                    ((CodeEditorFragment) fragment).undo();
+                }
+            } else if (id == R.id.action_redo) {
+                if (fragment instanceof CodeEditorFragment) {
+                    ((CodeEditorFragment) fragment).redo();
+                }
             }
+
             return true;
         });
 

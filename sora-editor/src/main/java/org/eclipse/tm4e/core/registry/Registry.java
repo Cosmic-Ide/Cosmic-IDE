@@ -24,6 +24,7 @@ import org.eclipse.tm4e.core.TMException;
 import org.eclipse.tm4e.core.grammar.IGrammar;
 import org.eclipse.tm4e.core.internal.grammar.BalancedBracketSelectors;
 import org.eclipse.tm4e.core.internal.grammar.GrammarReader;
+import org.eclipse.tm4e.core.internal.grammar.dependencies.AbsoluteRuleReference;
 import org.eclipse.tm4e.core.internal.grammar.dependencies.ScopeDependencyProcessor;
 import org.eclipse.tm4e.core.internal.registry.SyncRegistry;
 import org.eclipse.tm4e.core.internal.theme.IRawTheme;
@@ -40,9 +41,8 @@ import io.github.rosemoe.sora.util.Logger;
  * The registry that will hold all grammars.
  *
  * @see <a href=
- *      "https://github.com/microsoft/vscode-textmate/blob/e8d1fc5d04b2fc91384c7a895f6c9ff296a38ac8/src/main.ts#L51">
- *      github.com/microsoft/vscode-textmate/blob/main/src/main.ts</a>
- *
+ * "https://github.com/microsoft/vscode-textmate/blob/e8d1fc5d04b2fc91384c7a895f6c9ff296a38ac8/src/main.ts#L51">
+ * github.com/microsoft/vscode-textmate/blob/main/src/main.ts</a>
  */
 public final class Registry {
 
@@ -75,6 +75,10 @@ public final class Registry {
         } catch (final Exception ex) {
             throw new TMException("Loading theme from '" + source.getFilePath() + "' failed: " + ex.getMessage(), ex);
         }
+    }
+
+    public void setTheme(Theme theme) {
+        this._syncRegistry.setTheme(theme);
     }
 
 
@@ -139,7 +143,9 @@ public final class Registry {
             @Nullable final BalancedBracketSelectors balancedBracketSelectors) {
         final var dependencyProcessor = new ScopeDependencyProcessor(this._syncRegistry, initialScopeName);
         while (!dependencyProcessor.Q.isEmpty()) {
-            dependencyProcessor.Q.forEach(request -> this._loadSingleGrammar(request.scopeName));
+            for (AbsoluteRuleReference request : dependencyProcessor.Q) {
+                this._loadSingleGrammar(request.scopeName);
+            }
             dependencyProcessor.processQueue();
         }
 
@@ -219,4 +225,6 @@ public final class Registry {
                 tokenTypes,
                 balancedBracketSelectors);
     }
+
+
 }

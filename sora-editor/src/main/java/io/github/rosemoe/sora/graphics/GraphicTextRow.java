@@ -272,23 +272,22 @@ public class GraphicTextRow {
             paint.setFakeBoldText(false);
             paint.setTextSkewX(0f);
         }
-        if (currentPosition > advance && offset > start) {
-            offset--;
-            currentPosition -= measureText(offset, offset + 1);
-        }
         buffer[0] = offset;
         buffer[1] = currentPosition;
         return buffer;
     }
 
     public float measureText(int start, int end) {
+        if (start < 0) {
+            throw new IndexOutOfBoundsException("negative start position");
+        }
         if (start >= end) {
             if (start != end)
-                Log.w("GraphicTextRow", "start > end");
+                Log.w("GraphicTextRow", "start > end. if this is caused by editor, please provide feedback", new Throwable());
             return 0f;
         }
-        if (text.widthCache != null && useCache) {
-            var cache = text.widthCache;
+        var cache = text.widthCache;
+        if (cache != null && useCache && end <= cache.length) {
             return cache[end] - cache[start];
         }
         return measureTextInternal(start, end, null);

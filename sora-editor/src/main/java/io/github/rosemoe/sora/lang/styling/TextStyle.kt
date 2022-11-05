@@ -22,9 +22,7 @@
  *     additional information or have any questions
  ******************************************************************************/
 
-package io.github.rosemoe.sorakt
-
-import io.github.rosemoe.sora.lang.styling.TextStyle
+package io.github.rosemoe.sora.lang.styling
 
 /**
  * Make a text style

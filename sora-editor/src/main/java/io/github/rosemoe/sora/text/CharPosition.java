@@ -43,6 +43,19 @@ public final class CharPosition {
 
     public int column;
 
+    public CharPosition() {
+    }
+
+    public CharPosition(int line, int column) {
+        this(line, column, -1);
+    }
+
+    public CharPosition(int line, int column, int index) {
+        this.index = index;
+        this.line = line;
+        this.column = column;
+    }
+
     /**
      * Get the index
      *

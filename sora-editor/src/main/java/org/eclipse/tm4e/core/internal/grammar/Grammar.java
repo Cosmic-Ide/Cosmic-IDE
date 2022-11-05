@@ -48,6 +48,7 @@ import org.eclipse.tm4e.core.internal.types.IRawRule;
 import org.eclipse.tm4e.core.internal.utils.ObjectCloner;
 import org.eclipse.tm4e.core.internal.utils.StringUtils;
 
+import io.github.rosemoe.sora.langs.textmate.BuildConfig;
 import io.github.rosemoe.sora.util.Logger;
 
 /**
@@ -166,7 +167,7 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
             // add injection grammars contributed for the current scope
             final var injectionScopeNames = this._grammarRepository.injections(scopeName);
             if (injectionScopeNames != null) {
-                injectionScopeNames.forEach(injectionScopeName -> {
+                for (String injectionScopeName : injectionScopeNames) {
                     final var injectionGrammar = Grammar.this.getExternalGrammar(injectionScopeName, null);
                     if (injectionGrammar != null) {
                         final var selector = injectionGrammar.getInjectionSelector();
@@ -179,7 +180,7 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
                                     injectionGrammar);
                         }
                     }
-                });
+                }
             }
         }
 
@@ -192,6 +193,14 @@ public final class Grammar implements IGrammar, IRuleFactoryHelper {
         var injections = this._injections;
         if (injections == null) {
             injections = this._injections = this._collectInjections();
+
+            if (BuildConfig.DEBUG && !injections.isEmpty()) {
+                LOGGER.d(
+                        "Grammar " + rootScopeName + " contains the following injections:");
+                for (final var injection : injections) {
+                    LOGGER.d("  - " + injection.debugSelector);
+                }
+            }
         }
         return injections;
     }

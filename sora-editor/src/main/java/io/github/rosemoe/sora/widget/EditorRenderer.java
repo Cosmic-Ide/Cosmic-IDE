@@ -93,6 +93,17 @@ import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
 
 public class EditorRenderer {
 
+    /**
+     * When measuring text in wordwrap mode, we must use the max possible width of the character sequence
+     * so that no character will be invisible after its styles are applied on actual drawing.
+     * It's different from the {@link CodeEditor#defaultSpans}
+     */
+    private final static List<Span> sSpansForWordwrap = new ArrayList<>();
+
+    static {
+        sSpansForWordwrap.add(Span.obtain(0, TextStyle.makeStyle(0, 0, true, true, false)));
+    }
+
     private static final String LOG_TAG = "EditorPainter";
     private final static int[] sDiagnosticsColorMapping = {0, EditorColorScheme.PROBLEM_TYPO, EditorColorScheme.PROBLEM_WARNING, EditorColorScheme.PROBLEM_ERROR};
     protected final BufferedDrawPoints bufferedDrawPoints;
@@ -121,14 +132,14 @@ public class EditorRenderer {
     @Nullable
     private Drawable verticalScrollbarTrackDrawable;
     protected RenderNodeHolder renderNodeHolder;
-    private long displayTimestamp;
+    private volatile long displayTimestamp;
     private Paint.FontMetricsInt metricsLineNumber;
     private Paint.FontMetricsInt metricsGraph;
     private int cachedGutterWidth;
     private Cursor cursor;
     protected ContentLine lineBuf;
     protected Content content;
-    private boolean renderingFlag;
+    private volatile boolean renderingFlag;
     protected boolean basicDisplayMode;
     protected boolean forcedRecreateLayout;
 
@@ -159,14 +170,17 @@ public class EditorRenderer {
         tmpRect = new RectF();
         tmpPath = new Path();
 
-        notifyFullTextUpdate();
+        onEditorFullTextUpdate();
     }
 
     public boolean isBasicDisplayMode() {
         return basicDisplayMode;
     }
 
-    public void notifyFullTextUpdate() {
+    /**
+     * Called when the editor text is changed by {@link CodeEditor#setText}
+     */
+    public void onEditorFullTextUpdate() {
         cursor = editor.getCursor();
         content = editor.getText();
     }
@@ -673,6 +687,17 @@ public class EditorRenderer {
         drawFormatTip(canvas);
     }
 
+    protected void drawHardwrapMarker(Canvas canvas, float offset) {
+        int column = editor.getProps().hardwrapColumn;
+        if (!editor.isWordwrap() && column > 0) {
+            tmpRect.left = offset + paintGeneral.measureText("a") * column;
+            tmpRect.right = tmpRect.left + editor.getDpUnit() * 2f;
+            tmpRect.top = 0f;
+            tmpRect.bottom = viewRect.bottom;
+            drawColor(canvas, editor.getColorScheme().getColor(EditorColorScheme.HARD_WRAP_MARKER), tmpRect);
+        }
+    }
+
     protected void drawSideIcons(Canvas canvas, float offset) {
         if (!hasSideHintIcons()) {
             return;
@@ -1006,6 +1031,9 @@ public class EditorRenderer {
         // Background of snippets
         patchSnippetRegions(canvas, offset);
 
+        // Hard wrap marker
+        drawHardwrapMarker(canvas, offset);
+
         // Step 2 - Draw text and text decorations
         long lastStyle = 0;
         for (int row = firstVis; row <= editor.getLastVisibleRow() && rowIterator.hasNext(); row++) {
@@ -1291,13 +1319,13 @@ public class EditorRenderer {
                     var row = editor.getLayout().getRowAt(i);
                     var startX = 0f;
                     if (i == startRow) {
-                        startX = measureText(getLine(row.lineIndex), row.lineIndex, row.startColumn, start.column - row.startColumn);
+                        startX = measureText(getLine(row.lineIndex), row.lineIndex, row.startColumn, Math.max(start.column - row.startColumn, 0));
                     }
                     float endX;
                     if (i != endRow) {
                         endX = measureText(getLine(row.lineIndex), row.lineIndex, row.startColumn, row.endColumn - row.startColumn);
                     } else {
-                        endX = measureText(getLine(row.lineIndex), row.lineIndex, row.startColumn, end.column - row.startColumn);
+                        endX = measureText(getLine(row.lineIndex), row.lineIndex, row.startColumn, Math.max(0, end.column - row.startColumn));
                     }
                     startX += offset;
                     endX += offset;
@@ -1446,7 +1474,6 @@ public class EditorRenderer {
             var dirs = getLineDirections(line);
             var lineObj = getLine(line);
             var empty = true;
-            var layout = editor.getLayout();
             paintGeneral.setColor(color);
             float paintingOffset = editor.measureTextRegionOffset() - editor.getOffsetX();
             for (int i = 0; i < dirs.getRunCount(); i++) {
@@ -1457,7 +1484,7 @@ public class EditorRenderer {
                 }
                 var measureStart = Math.max(rowStart, dirs.getRunStart(i));
                 var measureEnd = Math.min(rowEnd, dirs.getRunEnd(i));
-                var runWidth = measureText(lineObj, line, measureStart, measureEnd - measureStart);
+                var runWidth = measureEnd <= measureStart ? 0f : measureText(lineObj, line, measureStart, measureEnd - measureStart);
                 if (sharedStart >= sharedEnd) {
                     paintingOffset += runWidth;
                     continue;
@@ -1586,8 +1613,9 @@ public class EditorRenderer {
             if (sharedEnd > sharedStart) {
                 drawRegionText(canvas, offsetX + width, baseline, line, sharedStart, sharedEnd, contextStart, contextEnd, directions.isRunRtl(i), columnCount, color);
             }
-            if (i + 1 < directions.getRunCount())
+            if (i + 1 < directions.getRunCount() && sharedEnd > sharedStart) {
                 width += measureText(getLine(line), line, sharedStart, sharedEnd - sharedStart);
+            }
         }
     }
 
@@ -1803,13 +1831,24 @@ public class EditorRenderer {
         if (!editor.getEventHandler().shouldDrawScrollBar()) {
             return;
         }
+        var size = editor.getDpUnit() * 10;
         if (editor.isHorizontalScrollBarEnabled() && !editor.isWordwrap() && editor.getScrollMaxX() > editor.getWidth() * 3 / 4) {
+            canvas.save();
+            canvas.translate(0f, size * editor.getEventHandler().getScrollBarMovementPercentage());
+
             drawScrollBarTrackHorizontal(canvas);
             drawScrollBarHorizontal(canvas);
+
+            canvas.restore();
         }
         if (editor.isVerticalScrollBarEnabled() && editor.getScrollMaxY() > editor.getHeight() / 2) {
+            canvas.save();
+            canvas.translate(size * editor.getEventHandler().getScrollBarMovementPercentage(), 0f);
+
             drawScrollBarTrackVertical(canvas);
             drawScrollBarVertical(canvas);
+
+            canvas.restore();
         }
     }
 
@@ -2313,10 +2352,7 @@ public class EditorRenderer {
             return new float[]{end, 0};
         }
         var gtr = GraphicTextRow.obtain(basicDisplayMode);
-        if (editor.defaultSpans.size() == 0) {
-            editor.defaultSpans.add(Span.obtain(0, EditorColorScheme.TEXT_NORMAL));
-        }
-        gtr.set(content, lineIndex, contextStart, end, editor.getTabWidth(), editor.defaultSpans, paint);
+        gtr.set(content, lineIndex, contextStart, end, editor.getTabWidth(), sSpansForWordwrap, paint);
         gtr.disableCache();
         var res = gtr.findOffsetByAdvance(start, target);
         gtr.recycle();
@@ -2367,7 +2403,8 @@ public class EditorRenderer {
      */
     @UnsupportedUserUsage
     public float measureText(ContentLine text, int line, int index, int count) {
-        if (text.timestamp < displayTimestamp && text.widthCache != null) {
+        var cache = text.widthCache;
+        if (text.timestamp < displayTimestamp && cache != null || (cache != null && cache.length >= index + count)) {
             buildMeasureCacheForLines(line, line);
         }
         var gtr = GraphicTextRow.obtain(basicDisplayMode);

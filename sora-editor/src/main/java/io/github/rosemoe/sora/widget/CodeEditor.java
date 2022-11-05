@@ -76,6 +76,7 @@ import java.util.Objects;
 
 import io.github.rosemoe.sora.R;
 import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+import io.github.rosemoe.sora.event.BuildEditorInfoEvent;
 import io.github.rosemoe.sora.event.ContentChangeEvent;
 import io.github.rosemoe.sora.event.Event;
 import io.github.rosemoe.sora.event.EventManager;
@@ -98,13 +99,13 @@ import io.github.rosemoe.sora.text.ContentLine;
 import io.github.rosemoe.sora.text.ContentListener;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.Cursor;
-import io.github.rosemoe.sora.text.ICUUtils;
 import io.github.rosemoe.sora.text.LineRemoveListener;
 import io.github.rosemoe.sora.text.LineSeparator;
 import io.github.rosemoe.sora.text.TextLayoutHelper;
 import io.github.rosemoe.sora.text.TextRange;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.text.method.KeyMetaStates;
+import io.github.rosemoe.sora.util.Chars;
 import io.github.rosemoe.sora.util.Floats;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.util.Logger;
@@ -130,6 +131,7 @@ import io.github.rosemoe.sora.widget.style.SelectionHandleStyle;
 import io.github.rosemoe.sora.widget.style.builtin.HandleStyleDrop;
 import io.github.rosemoe.sora.widget.style.builtin.HandleStyleSideDrop;
 import io.github.rosemoe.sora.widget.style.builtin.MoveCursorAnimator;
+import kotlin.text.StringsKt;
 
 /**
  * CodeEditor is an editor that can highlight text regions by doing basic syntax analyzing
@@ -255,6 +257,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     private float lineSpacingMultiplier = 1f;
     private float lineSpacingAdd = 0f;
     private float lineNumberMarginLeft;
+    private float verticalExtraSpaceFactor = 0.5f;
     private boolean waitForNextChange;
     private boolean scalable;
     private boolean editable;
@@ -273,6 +276,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     private boolean horizontalScrollBarEnabled;
     private boolean cursorAnimation;
     private boolean pinLineNumber;
+    private boolean antiWordBreaking;
     private boolean firstLineNumberAlwaysVisible;
     private boolean ligatureEnabled;
     private boolean lastCursorState;
@@ -921,21 +925,34 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      * @return <code>true</code> if the editor can handle the keybinding, <code>false</code> otherwise.
      */
     protected boolean canHandleKeyBinding(int keyCode, boolean ctrlPressed, boolean shiftPressed, boolean altPressed) {
-        if (ctrlPressed && !shiftPressed && altPressed) {
-            return keyCode == KeyEvent.KEYCODE_A || keyCode == KeyEvent.KEYCODE_C
-                    || keyCode == KeyEvent.KEYCODE_X || keyCode == KeyEvent.KEYCODE_V
-                    || keyCode == KeyEvent.KEYCODE_U || keyCode == KeyEvent.KEYCODE_R
-                    || keyCode == KeyEvent.KEYCODE_D || keyCode == KeyEvent.KEYCODE_W;
-        }
+        final var isDpadKey = keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                || keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT;
+        final var isHomeOrEnd = keyCode == KeyEvent.KEYCODE_MOVE_HOME || keyCode == KeyEvent.KEYCODE_MOVE_END;
 
-        if (shiftPressed && !altPressed) {
-            if (ctrlPressed) {
-                // Ctrl + Shift + J
-                return keyCode == KeyEvent.KEYCODE_J;
-            } else {
-                // Shift + Enter
+        if (ctrlPressed) {
+            if (shiftPressed) {
+                // Ctrl+Shift+[xx] keys
+                return isDpadKey || isHomeOrEnd || keyCode == KeyEvent.KEYCODE_J;
+            }
+
+            if (altPressed) {
+                // Ctrl+Alt+[xx] keys
                 return keyCode == KeyEvent.KEYCODE_ENTER;
             }
+
+            // Ctrl+[xx] keys
+            return isDpadKey || isHomeOrEnd
+                    || keyCode == KeyEvent.KEYCODE_A || keyCode == KeyEvent.KEYCODE_C
+                    || keyCode == KeyEvent.KEYCODE_X || keyCode == KeyEvent.KEYCODE_V
+                    || keyCode == KeyEvent.KEYCODE_U || keyCode == KeyEvent.KEYCODE_R
+                    || keyCode == KeyEvent.KEYCODE_D || keyCode == KeyEvent.KEYCODE_W
+                    || keyCode == KeyEvent.KEYCODE_ENTER;
+        }
+
+
+        if (shiftPressed) {
+            // Shift+[xx] keys
+            return isDpadKey || isHomeOrEnd || keyCode == KeyEvent.KEYCODE_ENTER;
         }
 
         return false;
@@ -963,19 +980,36 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
 
     /**
      * @see #setWordwrap(boolean)
+     * @see #setWordwrap(boolean, boolean)
      */
     public boolean isWordwrap() {
         return wordwrap;
     }
 
+
+    /**
+     * Set whether text in editor should be wrapped to fit its size, with anti-word-breaking enabled
+     * by default
+     *
+     * @param wordwrap Whether to wrap words
+     * @see #setWordwrap(boolean, boolean)
+     * @see #isWordwrap()
+     */
+    public void setWordwrap(boolean wordwrap) {
+        setWordwrap(wordwrap, true);
+    }
+
     /**
      * Set whether text in editor should be wrapped to fit its size
      *
-     * @param wordwrap Whether to wrap words
+     * @param wordwrap         Whether to wrap words
+     * @param antiWordBreaking Prevent English words to be split into two lines
+     * @see #isWordwrap()
      */
-    public void setWordwrap(boolean wordwrap) {
-        if (this.wordwrap != wordwrap) {
+    public void setWordwrap(boolean wordwrap, boolean antiWordBreaking) {
+        if (this.wordwrap != wordwrap || this.antiWordBreaking != antiWordBreaking) {
             this.wordwrap = wordwrap;
+            this.antiWordBreaking = antiWordBreaking;
             createLayout();
             if (!wordwrap) {
                 renderer.invalidateRenderNodes();
@@ -1557,7 +1591,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
                 return;
             }
             if (layout instanceof WordwrapLayout && wordwrap) {
-                var newLayout = new WordwrapLayout(this, text, ((WordwrapLayout) layout).getRowTable(), clearWordwrapCache);
+                var newLayout = new WordwrapLayout(this, text, antiWordBreaking, ((WordwrapLayout) layout).getRowTable(), clearWordwrapCache);
                 layout.destroyLayout();
                 layout = newLayout;
                 return;
@@ -1566,7 +1600,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         }
         if (wordwrap) {
             renderer.setCachedLineNumberWidth((int) measureLineNumber());
-            layout = new WordwrapLayout(this, text, null, false);
+            layout = new WordwrapLayout(this, text, antiWordBreaking, null, false);
         } else {
             layout = new LineBreakLayout(this, text);
         }
@@ -1578,10 +1612,23 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     /**
      * Commit a tab to cursor
      */
-    void commitTab() {
+    protected void commitTab() {
         if (inputConnection != null && isEditable()) {
-            inputConnection.commitTextInternal("\t", true);
+            inputConnection.commitTextInternal(createTabString(), true);
         }
+    }
+
+    /**
+     * Creates the string to insert when <code>KEYCODE_TAB</code> key event is received from the IME.
+     *
+     * @return The string to insert for tab character.
+     */
+    protected String createTabString() {
+        final var language = getEditorLanguage();
+        if (language.useTab()) {
+            return "\t";
+        }
+        return StringsKt.repeat(" ", getTabWidth());
     }
 
     protected void updateCompletionWindowPosition() {
@@ -1987,7 +2034,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      * @return max scroll y
      */
     public int getScrollMaxY() {
-        return Math.max(0, layout.getLayoutHeight() - getHeight() / 2);
+        return Math.max(0, layout.getLayoutHeight() - (int) (getHeight() * (1 - verticalExtraSpaceFactor)));
     }
 
     /**
@@ -1997,6 +2044,33 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      */
     public int getScrollMaxX() {
         return (int) Math.max(0, layout.getLayoutWidth() + measureTextRegionOffset() - getWidth() / 2f);
+    }
+
+    /**
+     * Set the factor of extra space in vertical direction. The factor is multiplied with editor
+     * height to compute the extra space of vertical viewport. Specially, when factor is zero, no
+     * extra space is added.
+     *
+     * @param extraSpaceFactor the factor. 0.5 by default.
+     * @throws IllegalArgumentException if the factor is negative or bigger than 1.0f
+     * @see #getVerticalExtraSpaceFactor()
+     */
+    public void setVerticalExtraSpaceFactor(float extraSpaceFactor) {
+        if (extraSpaceFactor < 0 || extraSpaceFactor > 1.0f) {
+            throw new IllegalArgumentException("the factor should be in range [0.0, 1.0]");
+        }
+        this.verticalExtraSpaceFactor = extraSpaceFactor;
+        // ensure offset is in scroll range
+        touchHandler.scrollBy(0, 0);
+    }
+
+    /**
+     * Get the factor used to compute extra space of vertical viewport.
+     *
+     * @see #setVerticalExtraSpaceFactor(float)
+     */
+    public float getVerticalExtraSpaceFactor() {
+        return verticalExtraSpaceFactor;
     }
 
     /**
@@ -2805,8 +2879,12 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
                     scroller.getCurrY(), 0, (int) afterScrollY, ScrollEvent.CAUSE_SCALE_TEXT));
             scroller.startScroll(0, (int) afterScrollY, 0, 0, 0);
             scroller.abortAnimation();
+            // IMPORTANT restart input after clearing the busy flag
+            // otherwise, the connection may fallback to inactive mode
+            this.layoutBusy = false;
             restartInput();
             postInvalidate();
+            return;
         }
         this.layoutBusy = busy;
     }
@@ -2887,7 +2965,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
     /**
      * Make sure the moving selection is visible
      */
-    private void ensureSelectingTargetVisible() {
+    void ensureSelectingTargetVisible() {
         if (cursor.left().equals(selectionAnchor)) {
             // Ensure right selection visible
             ensureSelectionVisible();
@@ -3085,7 +3163,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         }
         updateCursor();
         updateSelection();
-        if (editable && !touchHandler.hasAnyHeldHandle() && !inputConnection.composingText.isComposing() && !completionWindow.shouldRejectComposing()) {
+        if (editable && !touchHandler.hasAnyHeldHandle() && !completionWindow.shouldRejectComposing()) {
             cursorAnimator.markEndPos();
             cursorAnimator.start();
         }
@@ -3401,30 +3479,31 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      * @param column The column.
      */
     public void selectWord(int line, int column) {
-        // Find word edges
-        int startLine = line, endLine = line;
-        var lineObj = getText().getLine(line);
-        long edges = ICUUtils.getWordEdges(lineObj, column, props.useICULibToSelectWords);
-        int startColumn = IntPair.getFirst(edges);
-        int endColumn = IntPair.getSecond(edges);
-        if (startColumn == endColumn) {
-            if (endColumn < lineObj.length()) {
-                endColumn++;
-            } else if (startColumn > 0) {
-                startColumn--;
-            } else {
-                if (line > 0) {
-                    int lastColumn = getText().getColumnCount(line - 1);
-                    startLine = line - 1;
-                    startColumn = lastColumn;
-                } else if (line < getLineCount() - 1) {
-                    endLine = line + 1;
-                    endColumn = 0;
-                }
-            }
-        }
+        final var range = getWordRange(line, column);
+        final var start = range.getStart();
+        final var end = range.getEnd();
         requestFocusFromTouch();
-        setSelectionRegion(startLine, startColumn, endLine, endColumn, SelectionChangeEvent.CAUSE_LONG_PRESS);
+        setSelectionRegion(start.line, start.column, end.line, end.column, SelectionChangeEvent.CAUSE_LONG_PRESS);
+        selectionAnchor = getCursor().left();
+    }
+
+    /**
+     * @see #getWordRange(int, int, boolean)
+     */
+    public TextRange getWordRange(final int line, final int column) {
+        return getWordRange(line, column, props.useICULibToSelectWords);
+    }
+
+    /**
+     * Get the range of the word at given character position.
+     *
+     * @param line   The line.
+     * @param column The column.
+     * @param useIcu Whether to use the ICU library to get word edges.
+     * @return The word range.
+     */
+    public TextRange getWordRange(final int line, final int column, final boolean useIcu) {
+        return Chars.getWordRange(getText(), line, column, useIcu);
     }
 
     /**
@@ -3501,7 +3580,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
         this.text.addContentListener(this);
         this.text.setUndoEnabled(undoEnabled);
         this.text.setLineListener(this);
-        renderer.notifyFullTextUpdate();
+        renderer.onEditorFullTextUpdate();
 
         if (editorLanguage != null) {
             editorLanguage.getAnalyzeManager().reset(new ContentReference(this.text), this.extraArguments);
@@ -3835,7 +3914,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
      */
     public void restartInput() {
         if (inputConnection != null)
-            inputConnection.invalid();
+            inputConnection.reset();
         if (inputMethodManager != null)
             inputMethodManager.restartInput(this);
     }
@@ -4044,6 +4123,7 @@ public class CodeEditor extends View implements ContentListener, Formatter.Forma
             outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_FLAG_NO_FULLSCREEN;
         }
 
+        dispatchEvent(new BuildEditorInfoEvent(this, outAttrs));
         inputConnection.reset();
         text.resetBatchEdit();
         setExtracting(null);

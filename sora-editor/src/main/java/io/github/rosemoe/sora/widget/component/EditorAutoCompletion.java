@@ -59,8 +59,8 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
     protected CompletionThread completionThread;
     protected CompletionPublisher publisher;
     protected WeakReference<List<CompletionItem>> lastAttachedItems;
-    private int currentSelection = -1;
-    private EditorCompletionAdapter adapter;
+    protected int currentSelection = -1;
+    protected EditorCompletionAdapter adapter;
     private CompletionLayout layout;
     private long requestShow = 0;
     private long requestHide = -1;
@@ -200,20 +200,22 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
 
     /**
      * Select current position
+     *
+     * @return if the action is performed
      */
-    public void select() {
-        select(currentSelection);
+    public boolean select() {
+        return select(currentSelection);
     }
 
     /**
      * Select the given position
      *
      * @param pos Index of auto complete item
+     * @return if the action is performed
      */
-    public void select(int pos) {
+    public boolean select(int pos) {
         if (pos == -1) {
-            editor.commitText("\n");
-            return;
+            return false;
         }
         var adpView = layout.getCompletionList();
         var item = ((EditorCompletionAdapter) adpView.getAdapter()).getItem(pos);
@@ -230,6 +232,7 @@ public class EditorAutoCompletion extends EditorPopupWindow implements EditorBui
             editor.restartInput();
         }
         hide();
+        return true;
     }
 
     /**

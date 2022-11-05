@@ -28,8 +28,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:singleLine="true"
-            tools:text="import" />
+            android:textColor="?android:textColorPrimary"
+            android:singleLine="true" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/result_item_desc"
@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
+            android:textColor="?android:textColorSecondary"
             android:singleLine="true"
             tools:text="Identifier" />
     </LinearLayout>

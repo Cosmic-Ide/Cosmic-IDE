@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="?dialogPreferredPadding"
     android:orientation="vertical"
+    android:background="?attr/colorSurface"
     tools:ignore="PrivateResource">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -33,6 +34,7 @@
         android:layout_below="@id/title"
         android:gravity="center"
         android:text="@string/stage"
+        android:textColor="?android:textColorSecondary"
         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
 </RelativeLayout>

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="?attr/colorSurface">
 
     <io.github.rosemoe.sora.widget.CodeEditor
         android:id="@+id/editor"
@@ -14,8 +15,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="?attr/colorSurface">
+        android:layout_alignParentBottom="true">
         <io.github.rosemoe.sora.widget.SymbolInputView
             android:id="@+id/input_view"
             android:layout_width="wrap_content"

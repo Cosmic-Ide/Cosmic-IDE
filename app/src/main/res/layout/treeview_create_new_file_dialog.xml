@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layoutDirection="locale"
-    android:padding="?dialogPreferredPadding">
+    android:padding="?dialogPreferredPadding"
+    android:background="?attr/colorSurface">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@android:id/title"

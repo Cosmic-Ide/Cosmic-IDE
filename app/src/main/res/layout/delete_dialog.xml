@@ -19,8 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_medium"
-        android:layout_below="@android:id/title"
-        tools:text="Do you want to delete Abc?" />
+        android:layout_below="@android:id/title" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@android:id/button2"

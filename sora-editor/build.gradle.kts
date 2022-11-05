@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.18.1")
     implementation("com.google.android.material:material:1.8.0-alpha02")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.yaml:snakeyaml:1.33")

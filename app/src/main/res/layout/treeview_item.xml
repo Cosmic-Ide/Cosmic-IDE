@@ -6,7 +6,8 @@
     android:orientation="horizontal"
     android:gravity="start|center_vertical"
     android:paddingVertical="@dimen/spacing_tiny"
-    android:paddingHorizontal="@dimen/spacing_small">
+    android:paddingHorizontal="@dimen/spacing_small"
+    android:background="?attr/colorSurface">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/arrow"

@@ -5,7 +5,6 @@ plugins {
 android {
     namespace = "com.github.pedrovgs.lynx"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION

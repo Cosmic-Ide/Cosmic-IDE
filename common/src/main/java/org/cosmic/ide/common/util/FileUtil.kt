@@ -54,7 +54,7 @@ object FileUtil {
     @JvmStatic
     @Throws(IOException::class)
     fun readFile(file: File): String {
-        return String(Files.readAllBytes(file.toPath()))
+        return file.readText()
     }
 
     @JvmStatic
@@ -86,13 +86,4 @@ object FileUtil {
 
     @JvmStatic
     fun createOrExistsDir(file: File) = if (file.exists()) file.isDirectory() else file.mkdirs()
-
-    private fun isSpace(s: String): Boolean {
-        for (c in s.toCharArray()) {
-            if (!Character.isWhitespace(c)) {
-                return false
-            }
-        }
-        return true
-    }
 }

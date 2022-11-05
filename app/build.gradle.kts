@@ -7,7 +7,6 @@ plugins {
 android {
     namespace = BuildAndroidConfig.APPLICATION_ID
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         applicationId = BuildAndroidConfig.APPLICATION_ID

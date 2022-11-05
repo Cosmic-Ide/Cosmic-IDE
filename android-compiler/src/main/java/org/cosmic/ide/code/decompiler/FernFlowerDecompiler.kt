@@ -1,5 +1,6 @@
 package org.cosmic.ide.code.decompiler
 
+import android.util.Log
 import org.jetbrains.java.decompiler.main.decompiler.BaseDecompiler
 import org.jetbrains.java.decompiler.main.extern.IFernflowerLogger
 import org.jetbrains.java.decompiler.main.extern.IFernflowerPreferences
@@ -7,6 +8,7 @@ import java.io.File
 
 class FernFlowerDecompiler {
     private val options = defaultOptions()
+    private val TAG = FernFlowerDecompiler::class.simpleName
 
     fun decompile(
         className: String,
@@ -16,7 +18,9 @@ class FernFlowerDecompiler {
         val resultSaver = FFResultSaver(className)
 
         val logger = object : IFernflowerLogger() {
-            override fun writeMessage(p0: String?, p1: Severity?) {}
+            override fun writeMessage(p0: String?, p1: Severity?) {
+                Log.d(TAG, p0)
+            }
 
             override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {
                 throw p2!!

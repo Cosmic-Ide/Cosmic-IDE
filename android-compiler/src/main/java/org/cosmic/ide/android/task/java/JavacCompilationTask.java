@@ -49,7 +49,7 @@ public class JavacCompilationTask implements Task {
 
         final var output = new File(project.getBinDirPath(), "classes");
 
-        final var version = prefs.getString("key_java_version", "7");
+        final var version = prefs.getString("ide_java_version", "7");
         
         Log.d(TAG, "java_version=" + version);
 

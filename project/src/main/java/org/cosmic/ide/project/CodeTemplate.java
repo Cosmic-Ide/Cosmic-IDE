@@ -74,7 +74,7 @@ public class CodeTemplate {
 		? "fun main(args: Array<String>) {\n"
 		+ "\t\tprintln(\"Hello, World!\")\n"
 		+ "\t}"
-		: "    ")
+		: "\t")
 		+ "\n"
 		+ "}\n";
 		
@@ -83,7 +83,7 @@ public class CodeTemplate {
 		+ "\n";
 		
 		var simpleKotlinObjectDeclaration =
-		"object " + className 
+		"object " + className
 		+ " {\n"
 		+ "\n"
 		+ "}\n";

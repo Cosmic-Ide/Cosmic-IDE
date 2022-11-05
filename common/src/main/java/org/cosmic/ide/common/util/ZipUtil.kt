@@ -12,7 +12,7 @@ import java.nio.file.Files
 
 object ZipUtil {
 
-    const val BUFFER_SIZE = 1024 * 10
+    const val BUFFER_SIZE = 2048 * 10
 
     @JvmStatic
     fun unzipFromAssets(context: Context, zipFile: String, destination: String) {

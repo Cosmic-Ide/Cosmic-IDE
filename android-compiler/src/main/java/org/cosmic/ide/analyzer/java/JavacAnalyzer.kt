@@ -2,6 +2,7 @@ package org.cosmic.ide.analyzer.java
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.preference.PreferenceManager
 import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
@@ -25,19 +26,25 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private val prefs: SharedPreferences
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
+    private val tool = JavacTool.create()
+    private val standardFileManager = tool.getStandardFileManager(
+                diagnostics, Locale.getDefault(), Charset.defaultCharset()
+            )
     private var isFirstUse = true
     private val project: JavaProject
+    private val TAG = JavacAnalyzer::class.simpleName
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         project = javaProject
+        standardFileManager.setLocation(
+                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
+            )
     }
 
     @Throws(IOException::class)
     fun analyze() {
-        val output = File(project.getBinDirPath(), "classes")
-        output.mkdirs()
-        val version = prefs.getString("key_java_version", "7")
+        val version = prefs.getString("ide_java_version", "7")
         val files = getSourceFiles(File(project.getSrcDirPath()))
 
         val javaFileObjects = arrayListOf<JavaFileObject>()
@@ -52,16 +59,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
                 })
         }
 
-        val tool = JavacTool.create()
-
-        val standardJavaFileManager =
-            tool.getStandardFileManager(
-                diagnostics, Locale.getDefault(), Charset.defaultCharset()
-            )
         with(standardJavaFileManager) {
-            setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
-            )
             setLocation(StandardLocation.CLASS_PATH, getClasspath())
             setLocation(
                 StandardLocation.SOURCE_PATH, files
@@ -99,8 +97,10 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
     }
 
     fun getDiagnostics(): ArrayList<DiagnosticRegion> {
+        val diagnostic = diagnostics.getDiagnostics()
+        Log.d(TAG, "diagnostics=" + diagnostic)
         val problems = arrayListOf<DiagnosticRegion>()
-        for (it in diagnostics.getDiagnostics()) {
+        for (it in diagnostic) {
             if (it.getSource() == null) continue
             val severity = if (it.getKind() == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
             problems.add(

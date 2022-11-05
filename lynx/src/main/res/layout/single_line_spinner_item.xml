@@ -18,6 +18,8 @@
     android:id="@+id/tv_spinner_trace_level"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:textColor="@color/white"
+    android:marginBottom="1dp"
     android:singleLine="true"
     android:ellipsize="end">
 

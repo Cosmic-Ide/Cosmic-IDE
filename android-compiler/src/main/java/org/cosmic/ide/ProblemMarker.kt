@@ -3,6 +3,7 @@ package org.cosmic.ide
 import android.content.Context
 import android.os.Looper
 import android.os.Handler
+import android.util.Log
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentListener
@@ -25,6 +26,7 @@ class ProblemMarker(
     private var file: File
     private var project: JavaProject
     private val diagnostics = DiagnosticsContainer()
+    private val TAG = ProblemMarker::class.simpleName
 
     init {
         this.editor = editor
@@ -66,7 +68,7 @@ class ProblemMarker(
                 analyzer.reset()
             }
             try {
-                if (!(file.extension.equals(".java") || file.extension.equals(".jav"))) {
+                if (!(file.extension.equals(".java"))) {
                     Handler(Looper.getMainLooper()).post {
                         editor.setDiagnostics(DiagnosticsContainer())
                     }
@@ -78,7 +80,8 @@ class ProblemMarker(
                 Handler(Looper.getMainLooper()).post {
                     editor.setDiagnostics(diagnostics)
                 }
-            } catch (ignored: Exception) {
+            } catch (e: Exception) {
+                Log.d(TAG, "Error while marking diagnostics.", e)
             }
         }
     }

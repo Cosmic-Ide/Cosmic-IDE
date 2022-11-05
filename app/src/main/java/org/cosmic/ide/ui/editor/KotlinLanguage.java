@@ -20,7 +20,7 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult;
 import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry;
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
@@ -43,7 +43,7 @@ public class KotlinLanguage extends TextMateLanguage {
 
     public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme) throws Exception {
         final var registry = GrammarRegistry.getInstance();
-        final var grammar = registry.findGrammar("source.kotlin")
+        final var grammar = registry.findGrammar("source.kotlin");
         super(
                 grammar,
                 registry.findLanguageConfiguration("source.kotlin"),

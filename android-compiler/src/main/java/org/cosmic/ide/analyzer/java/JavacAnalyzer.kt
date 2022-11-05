@@ -59,7 +59,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
                 })
         }
 
-        with(standardJavaFileManager) {
+        with(standardFileManager) {
             setLocation(StandardLocation.CLASS_PATH, getClasspath())
             setLocation(
                 StandardLocation.SOURCE_PATH, files
@@ -77,7 +77,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         val task =
             tool.getTask(
                 null,
-                standardJavaFileManager,
+                standardFileManager,
                 diagnostics,
                 args,
                 null,
@@ -86,7 +86,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
         task.parse()
         task.analyze()
-        standardJavaFileManager.close()
+        standardFileManager.close()
         isFirstUse = false
     }
 

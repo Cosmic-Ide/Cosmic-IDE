@@ -19,7 +19,7 @@ class FernFlowerDecompiler {
 
         val logger = object : IFernflowerLogger() {
             override fun writeMessage(p0: String?, p1: Severity?) {
-                Log.d(TAG, p0)
+                Log.d(TAG, p0!!)
             }
 
             override fun writeMessage(p0: String?, p1: Severity?, p2: Throwable?) {

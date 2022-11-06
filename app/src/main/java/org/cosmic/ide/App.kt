@@ -13,6 +13,8 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
@@ -37,6 +39,11 @@ class App : Application() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;");
             }
+            FileProviderRegistry.getInstance().addFileProvider(
+                AssetsFileResolver(
+                    context.assets
+                )
+            )
             GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
         }
 

@@ -35,5 +35,5 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    implementation(files("libs/ktfmt-0.41.jar"))
+    api(files("libs/ktfmt-0.41.jar"))
 }

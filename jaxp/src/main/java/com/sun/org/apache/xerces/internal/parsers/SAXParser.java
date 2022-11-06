@@ -26,23 +26,21 @@ import com.sun.org.apache.xerces.internal.utils.XMLSecurityManager;
 import com.sun.org.apache.xerces.internal.utils.XMLSecurityPropertyManager;
 import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLParserConfiguration;
+
 import jdk.xml.internal.JdkConstants;
 import jdk.xml.internal.JdkProperty;
+
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 
 /**
- * This is the main Xerces SAX parser class. It uses the abstract SAX
- * parser with a document scanner, a dtd scanner, and a validator, as
- * well as a grammar pool.
+ * This is the main Xerces SAX parser class. It uses the abstract SAX parser with a document
+ * scanner, a dtd scanner, and a validator, as well as a grammar pool.
  *
- * @author Arnaud  Le Hors, IBM
- * @author Andy Clark, IBM
- *
- * @LastModified: May 2021
+ * @author Arnaud Le Hors, IBM
+ * @author Andy Clark, IBM @LastModified: May 2021
  */
-public class SAXParser
-    extends AbstractSAXParser {
+public class SAXParser extends AbstractSAXParser {
 
     //
     // Constants
@@ -52,63 +50,50 @@ public class SAXParser
 
     /** Feature identifier: notify built-in refereces. */
     protected static final String NOTIFY_BUILTIN_REFS =
-        Constants.XERCES_FEATURE_PREFIX + Constants.NOTIFY_BUILTIN_REFS_FEATURE;
+            Constants.XERCES_FEATURE_PREFIX + Constants.NOTIFY_BUILTIN_REFS_FEATURE;
 
     protected static final String REPORT_WHITESPACE =
-            Constants.SUN_SCHEMA_FEATURE_PREFIX + Constants.SUN_REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE;
+            Constants.SUN_SCHEMA_FEATURE_PREFIX
+                    + Constants.SUN_REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE;
 
     /** Recognized features. */
-    private static final String[] RECOGNIZED_FEATURES = {
-        NOTIFY_BUILTIN_REFS,
-        REPORT_WHITESPACE
-    };
+    private static final String[] RECOGNIZED_FEATURES = {NOTIFY_BUILTIN_REFS, REPORT_WHITESPACE};
 
     // properties
 
     /** Property identifier: symbol table. */
     protected static final String SYMBOL_TABLE =
-        Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY;
 
     /** Property identifier: XML grammar pool. */
     protected static final String XMLGRAMMAR_POOL =
-        Constants.XERCES_PROPERTY_PREFIX+Constants.XMLGRAMMAR_POOL_PROPERTY;
+            Constants.XERCES_PROPERTY_PREFIX + Constants.XMLGRAMMAR_POOL_PROPERTY;
 
     /** Recognized properties. */
     private static final String[] RECOGNIZED_PROPERTIES = {
-        SYMBOL_TABLE,
-        XMLGRAMMAR_POOL,
+        SYMBOL_TABLE, XMLGRAMMAR_POOL,
     };
-
 
     //
     // Constructors
     //
 
-    /**
-     * Constructs a SAX parser using the specified parser configuration.
-     */
+    /** Constructs a SAX parser using the specified parser configuration. */
     public SAXParser(XMLParserConfiguration config) {
         super(config);
     } // <init>(XMLParserConfiguration)
 
-    /**
-     * Constructs a SAX parser using the dtd/xml schema parser configuration.
-     */
+    /** Constructs a SAX parser using the dtd/xml schema parser configuration. */
     public SAXParser() {
         this(null, null);
     } // <init>()
 
-    /**
-     * Constructs a SAX parser using the specified symbol table.
-     */
+    /** Constructs a SAX parser using the specified symbol table. */
     public SAXParser(SymbolTable symbolTable) {
         this(symbolTable, null);
     } // <init>(SymbolTable)
 
-    /**
-     * Constructs a SAX parser using the specified symbol table and
-     * grammar pool.
-     */
+    /** Constructs a SAX parser using the specified symbol table and grammar pool. */
     public SAXParser(SymbolTable symbolTable, XMLGrammarPool grammarPool) {
         super(new XIncludeAwareParserConfiguration());
 
@@ -124,18 +109,14 @@ public class SAXParser
         if (grammarPool != null) {
             fConfiguration.setProperty(XMLGRAMMAR_POOL, grammarPool);
         }
-
     } // <init>(SymbolTable,XMLGrammarPool)
 
-    /**
-     * Sets the particular property in the underlying implementation of
-     * org.xml.sax.XMLReader.
-     */
+    /** Sets the particular property in the underlying implementation of org.xml.sax.XMLReader. */
     public void setProperty(String name, Object value)
-        throws SAXNotRecognizedException, SAXNotSupportedException {
+            throws SAXNotRecognizedException, SAXNotSupportedException {
         /**
-         * It's possible for users to set a security manager through the interface.
-         * If it's the old SecurityManager, convert it to the new XMLSecurityManager
+         * It's possible for users to set a security manager through the interface. If it's the old
+         * SecurityManager, convert it to the new XMLSecurityManager
          */
         if (name.equals(Constants.SECURITY_MANAGER)) {
             securityManager = XMLSecurityManager.convert(value, securityManager);
@@ -146,7 +127,7 @@ public class SAXParser
             if (value == null) {
                 securityPropertyManager = new XMLSecurityPropertyManager();
             } else {
-                securityPropertyManager = (XMLSecurityPropertyManager)value;
+                securityPropertyManager = (XMLSecurityPropertyManager) value;
             }
             super.setProperty(JdkConstants.XML_SECURITY_PROPERTY_MANAGER, securityPropertyManager);
             return;
@@ -165,15 +146,15 @@ public class SAXParser
         int index = securityPropertyManager.getIndex(name);
         if (index > -1) {
             /**
-             * this is a direct call to this parser, not a subclass since
-             * internally the support of this property is done through
-             * XMLSecurityPropertyManager
+             * this is a direct call to this parser, not a subclass since internally the support of
+             * this property is done through XMLSecurityPropertyManager
              */
-            securityPropertyManager.setValue(index, XMLSecurityPropertyManager.State.APIPROPERTY, (String)value);
+            securityPropertyManager.setValue(
+                    index, XMLSecurityPropertyManager.State.APIPROPERTY, (String) value);
         } else {
-            //check if the property is managed by security manager
+            // check if the property is managed by security manager
             if (!securityManager.setLimit(name, JdkProperty.State.APIPROPERTY, value)) {
-                //fall back to the default configuration to handle the property
+                // fall back to the default configuration to handle the property
                 super.setProperty(name, value);
             }
         }

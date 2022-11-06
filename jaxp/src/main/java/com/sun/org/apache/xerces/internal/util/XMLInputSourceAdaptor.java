@@ -21,35 +21,29 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-import javax.xml.transform.Source;
-
 import com.sun.org.apache.xerces.internal.impl.XMLEntityManager;
 import com.sun.org.apache.xerces.internal.util.URI.MalformedURIException;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 
+import javax.xml.transform.Source;
+
 /**
  * {@link Source} that represents an {@link XMLInputSource}.
  *
- * <p>
- * Ideally, we should be able to have {@link XMLInputSource}
- * derive from {@link Source}, but the way
- * the {@link XMLInputSource#getSystemId()} method works is
- * different from the way {@link Source#getSystemId()} method works.
+ * <p>Ideally, we should be able to have {@link XMLInputSource} derive from {@link Source}, but the
+ * way the {@link XMLInputSource#getSystemId()} method works is different from the way {@link
+ * Source#getSystemId()} method works.
  *
- * <p>
- * In a long run, we should make them consistent so that we can
- * get rid of this awkward adaptor class.
+ * <p>In a long run, we should make them consistent so that we can get rid of this awkward adaptor
+ * class.
  *
- * @author
- *     Kohsuke Kawaguchi
+ * @author Kohsuke Kawaguchi
  */
 public final class XMLInputSourceAdaptor implements Source {
-    /**
-     * the actual source information.
-     */
+    /** the actual source information. */
     public final XMLInputSource fSource;
 
-    public XMLInputSourceAdaptor( XMLInputSource core ) {
+    public XMLInputSourceAdaptor(XMLInputSource core) {
         fSource = core;
     }
 

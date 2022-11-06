@@ -25,54 +25,76 @@
 
 package jdk.xml.internal;
 
-import javax.xml.XMLConstants;
-import jdk.xml.internal.JdkProperty.ImplPropMap;
-import jdk.xml.internal.JdkProperty.State;
 import static jdk.xml.internal.JdkXmlUtils.SP_USE_CATALOG;
 
+import jdk.xml.internal.JdkProperty.ImplPropMap;
+import jdk.xml.internal.JdkProperty.State;
+
+import javax.xml.XMLConstants;
+
 /**
- * This class manages JDK's XML Features. Previously added features and properties
- * may be gradually moved to this class.
+ * This class manages JDK's XML Features. Previously added features and properties may be gradually
+ * moved to this class.
  */
 public class JdkXmlFeatures {
     public static final String ORACLE_JAXP_PROPERTY_PREFIX =
-        "http://www.oracle.com/xml/jaxp/properties/";
+            "http://www.oracle.com/xml/jaxp/properties/";
 
     public static final String XML_FEATURE_MANAGER =
             ORACLE_JAXP_PROPERTY_PREFIX + "XmlFeatureManager";
 
     public static final String CATALOG_FEATURES = "javax.xml.catalog.catalogFeatures";
 
-    public final static String PROPERTY_USE_CATALOG = XMLConstants.USE_CATALOG;
+    public static final String PROPERTY_USE_CATALOG = XMLConstants.USE_CATALOG;
 
     public static enum XmlFeature {
         /**
-         * Feature enableExtensionFunctions
-         * FSP: extension function is enforced by FSP. When FSP is on, extension
-         * function is disabled.
+         * Feature enableExtensionFunctions FSP: extension function is enforced by FSP. When FSP is
+         * on, extension function is disabled.
          */
-        ENABLE_EXTENSION_FUNCTION(ImplPropMap.ENABLEEXTFUNC, null, null, true,
-                null, null, true, false, true, true),
+        ENABLE_EXTENSION_FUNCTION(
+                ImplPropMap.ENABLEEXTFUNC, null, null, true, null, null, true, false, true, true),
         /**
-         * The {@link javax.xml.XMLConstants.USE_CATALOG} feature.
-         * FSP: USE_CATALOG is not enforced by FSP.
+         * The {@link javax.xml.XMLConstants.USE_CATALOG} feature. FSP: USE_CATALOG is not enforced
+         * by FSP.
          */
-        USE_CATALOG(null, PROPERTY_USE_CATALOG, SP_USE_CATALOG, false,
-                null, null, true, false, true, false),
+        USE_CATALOG(
+                null,
+                PROPERTY_USE_CATALOG,
+                SP_USE_CATALOG,
+                false,
+                null,
+                null,
+                true,
+                false,
+                true,
+                false),
 
-        /**
-         * Feature resetSymbolTable
-         * FSP: RESET_SYMBOL_TABLE_FEATURE is not enforced by FSP.
-         */
-        RESET_SYMBOL_TABLE_FEATURE(ImplPropMap.RESETSYMBOLTABLE, null, null, false,
-                null, null, false, false, true, false),
+        /** Feature resetSymbolTable FSP: RESET_SYMBOL_TABLE_FEATURE is not enforced by FSP. */
+        RESET_SYMBOL_TABLE_FEATURE(
+                ImplPropMap.RESETSYMBOLTABLE,
+                null,
+                null,
+                false,
+                null,
+                null,
+                false,
+                false,
+                true,
+                false),
 
-        /**
-         * Feature overrideDefaultParser
-         * FSP: not enforced by FSP.
-         */
-        JDK_OVERRIDE_PARSER(ImplPropMap.OVERRIDEPARSER, null, null, false,
-                null, null, false, false, true, false);
+        /** Feature overrideDefaultParser FSP: not enforced by FSP. */
+        JDK_OVERRIDE_PARSER(
+                ImplPropMap.OVERRIDEPARSER,
+                null,
+                null,
+                false,
+                null,
+                null,
+                false,
+                false,
+                true,
+                false);
 
         private final ImplPropMap implMap;
         private final String name;
@@ -87,22 +109,29 @@ public class JdkXmlFeatures {
 
         /**
          * Constructs an XmlFeature instance.
-         * @param implMap the Implementation specific properties map. When the
-         * map is specified, there is no need to repeat or enter other name
-         * parameters.
+         *
+         * @param implMap the Implementation specific properties map. When the map is specified,
+         *     there is no need to repeat or enter other name parameters.
          * @param name the name of the feature
          * @param nameSP the name of the System Property
          * @param nameOld the name of the corresponding legacy property
          * @param nameOldSP the system property of the legacy property
          * @param value the value of the feature
          * @param hasSystem a flag to indicate whether the feature is supported
-         * @param enforced a flag indicating whether the feature is
-         * FSP (Feature_Secure_Processing) enforced
-         * with a System property
+         * @param enforced a flag indicating whether the feature is FSP (Feature_Secure_Processing)
+         *     enforced with a System property
          */
-        XmlFeature(ImplPropMap implMap, String name, String nameSP, boolean differ,
-                String nameOld, String nameOldSP, boolean value, boolean valueEnforced,
-                boolean hasSystem, boolean enforced) {
+        XmlFeature(
+                ImplPropMap implMap,
+                String name,
+                String nameSP,
+                boolean differ,
+                String nameOld,
+                String nameOldSP,
+                boolean value,
+                boolean valueEnforced,
+                boolean hasSystem,
+                boolean enforced) {
             this.implMap = implMap;
             if (implMap != null) {
                 this.name = implMap.qName();
@@ -124,16 +153,15 @@ public class JdkXmlFeatures {
 
         /**
          * Checks whether the specified property is equal to the current property.
+         *
          * @param propertyName the name of a property
-         * @return true if the specified property is the current property, false
-         * otherwise
+         * @return true if the specified property is the current property, false otherwise
          */
         boolean equalsPropertyName(String propertyName) {
             if (implMap != null) {
                 return implMap.is(propertyName);
             }
-            return name.equals(propertyName) ||
-                    (nameOld != null && nameOld.equals(propertyName));
+            return name.equals(propertyName) || (nameOld != null && nameOld.equals(propertyName));
         }
 
         /**
@@ -165,6 +193,7 @@ public class JdkXmlFeatures {
 
         /**
          * Returns the default value of the property.
+         *
          * @return the default value of the property
          */
         public boolean defaultValue() {
@@ -173,6 +202,7 @@ public class JdkXmlFeatures {
 
         /**
          * Returns the FSP-enforced value.
+         *
          * @return the FSP-enforced value
          */
         public boolean enforcedValue() {
@@ -181,6 +211,7 @@ public class JdkXmlFeatures {
 
         /**
          * Checks whether System property is supported for the feature.
+         *
          * @return true it is supported, false otherwise
          */
         boolean hasSystemProperty() {
@@ -189,6 +220,7 @@ public class JdkXmlFeatures {
 
         /**
          * Checks whether the property is enforced by FSP
+         *
          * @return true it is, false otherwise
          */
         boolean enforced() {
@@ -196,9 +228,9 @@ public class JdkXmlFeatures {
         }
 
         /**
-         * Returns the state of a property name. By the specification as of JDK 17,
-         * the "jdk.xml." prefixed System property name is also the current API
-         * name. Both the URI-based qName and old name if any are legacy.
+         * Returns the state of a property name. By the specification as of JDK 17, the "jdk.xml."
+         * prefixed System property name is also the current API name. Both the URI-based qName and
+         * old name if any are legacy.
          *
          * @param name the property name
          * @return the state of the property name, null if no match
@@ -211,26 +243,20 @@ public class JdkXmlFeatures {
             }
             return null;
         }
-
     }
 
-    /**
-     * Values of the features
-     */
+    /** Values of the features */
     private final boolean[] featureValues;
 
-    /**
-     * States of the settings for each property
-     */
+    /** States of the settings for each property */
     private final State[] states;
 
-    /**
-     * Flag indicating if secure processing is set
-     */
+    /** Flag indicating if secure processing is set */
     boolean secureProcessing;
 
     /**
      * Instantiate JdkXmlFeatures and initialize the fields
+     *
      * @param secureProcessing
      */
     public JdkXmlFeatures(boolean secureProcessing) {
@@ -246,14 +272,13 @@ public class JdkXmlFeatures {
                 states[f.ordinal()] = State.DEFAULT;
             }
         }
-        //read system properties or jaxp.properties
+        // read system properties or jaxp.properties
         readSystemProperties();
     }
 
     /**
-     * Updates the JdkXmlFeatures instance by reading the system properties again.
-     * This will become necessary in case the system properties are set after
-     * the instance has been created.
+     * Updates the JdkXmlFeatures instance by reading the system properties again. This will become
+     * necessary in case the system properties are set after the instance has been created.
      */
     public void update() {
         readSystemProperties();
@@ -261,11 +286,11 @@ public class JdkXmlFeatures {
 
     /**
      * Set feature by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the JdkXmlFeatures instance;
-     *         false otherwise.
+     * @return true if the property is managed by the JdkXmlFeatures instance; false otherwise.
      */
     public boolean setFeature(String propertyName, State state, Object value) {
         State pState = state;
@@ -307,6 +332,7 @@ public class JdkXmlFeatures {
 
     /**
      * Return the value of a feature by its index (the Feature's ordinal)
+     *
      * @param index the index of a feature
      * @return value of a feature
      */
@@ -324,7 +350,7 @@ public class JdkXmlFeatures {
     public void setFeature(int index, State state, Object value) {
         boolean temp;
         if (Boolean.class.isAssignableFrom(value.getClass())) {
-            temp = (Boolean)value;
+            temp = (Boolean) value;
         } else {
             temp = Boolean.parseBoolean((String) value);
         }
@@ -339,7 +365,7 @@ public class JdkXmlFeatures {
      * @param value the value of the property
      */
     public void setFeature(int index, State state, boolean value) {
-        //only update if it shall override
+        // only update if it shall override
         if (state.compareTo(states[index]) >= 0) {
             featureValues[index] = value;
             states[index] = state;
@@ -370,20 +396,18 @@ public class JdkXmlFeatures {
     public int getIndex(String propertyName) {
         for (XmlFeature feature : XmlFeature.values()) {
             if (feature.equalsPropertyName(propertyName)) {
-                //internally, ordinal is used as index
+                // internally, ordinal is used as index
                 return feature.ordinal();
             }
         }
         return -1;
     }
 
-    /**
-     * Read from system properties, or those in jaxp.properties
-     */
+    /** Read from system properties, or those in jaxp.properties */
     private void readSystemProperties() {
         for (XmlFeature feature : XmlFeature.values()) {
             if (!getSystemProperty(feature, feature.systemProperty())) {
-                //if system property is not found, try the older form if any
+                // if system property is not found, try the older form if any
                 String oldName = feature.systemPropertyOld();
                 if (oldName != null) {
                     getSystemProperty(feature, oldName);
@@ -413,10 +437,10 @@ public class JdkXmlFeatures {
                 return true;
             }
         } catch (NumberFormatException e) {
-            //invalid setting
-            throw new NumberFormatException("Invalid setting for system property: " + feature.systemProperty());
+            // invalid setting
+            throw new NumberFormatException(
+                    "Invalid setting for system property: " + feature.systemProperty());
         }
         return false;
     }
-
 }

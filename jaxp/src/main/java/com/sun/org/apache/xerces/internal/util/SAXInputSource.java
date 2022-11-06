@@ -21,17 +21,15 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-import java.io.InputStream;
-import java.io.Reader;
-
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-/**
- * <p>An <code>XMLInputSource</code> analogue to <code>javax.xml.transform.sax.SAXSource</code>.</p>
- *
- */
+import java.io.InputStream;
+import java.io.Reader;
+
+/** An <code>XMLInputSource</code> analogue to <code>javax.xml.transform.sax.SAXSource</code>. */
 public final class SAXInputSource extends XMLInputSource {
 
     private XMLReader fXMLReader;
@@ -46,8 +44,10 @@ public final class SAXInputSource extends XMLInputSource {
     }
 
     public SAXInputSource(XMLReader reader, InputSource inputSource) {
-        super(inputSource != null ? inputSource.getPublicId() : null,
-                inputSource != null ? inputSource.getSystemId() : null, null,
+        super(
+                inputSource != null ? inputSource.getPublicId() : null,
+                inputSource != null ? inputSource.getSystemId() : null,
+                null,
                 false);
         if (inputSource != null) {
             setByteStream(inputSource.getByteStream());
@@ -73,8 +73,7 @@ public final class SAXInputSource extends XMLInputSource {
             setByteStream(inputSource.getByteStream());
             setCharacterStream(inputSource.getCharacterStream());
             setEncoding(inputSource.getEncoding());
-        }
-        else {
+        } else {
             setPublicId(null);
             setSystemId(null);
             setByteStream(null);
@@ -115,11 +114,10 @@ public final class SAXInputSource extends XMLInputSource {
     } // setSystemId(String)
 
     /**
-     * Sets the byte stream. If the byte stream is not already opened
-     * when this object is instantiated, then the code that opens the
-     * stream should also set the byte stream on this object. Also, if
-     * the encoding is auto-detected, then the encoding should also be
-     * set on this object.
+     * Sets the byte stream. If the byte stream is not already opened when this object is
+     * instantiated, then the code that opens the stream should also set the byte stream on this
+     * object. Also, if the encoding is auto-detected, then the encoding should also be set on this
+     * object.
      *
      * @param byteStream The new byte stream.
      */
@@ -132,14 +130,12 @@ public final class SAXInputSource extends XMLInputSource {
     } // setByteStream(InputStream)
 
     /**
-     * Sets the character stream. If the character stream is not already
-     * opened when this object is instantiated, then the code that opens
-     * the stream should also set the character stream on this object.
-     * Also, the encoding of the byte stream used by the reader should
-     * also be set on this object, if known.
+     * Sets the character stream. If the character stream is not already opened when this object is
+     * instantiated, then the code that opens the stream should also set the character stream on
+     * this object. Also, the encoding of the byte stream used by the reader should also be set on
+     * this object, if known.
      *
      * @param charStream The new character stream.
-     *
      * @see #setEncoding
      */
     public void setCharacterStream(Reader charStream) {
@@ -162,5 +158,4 @@ public final class SAXInputSource extends XMLInputSource {
         }
         fInputSource.setEncoding(encoding);
     } // setEncoding(String)
-
 } // SAXInputSource

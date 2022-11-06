@@ -28,46 +28,35 @@ import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
 import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBase;
 
 /**
- * Removes duplicates and sorts a source iterator. The nodes from the
- * source are collected in an array upon calling setStartNode(). This
- * array is later sorted and duplicates are ignored in next().
+ * Removes duplicates and sorts a source iterator. The nodes from the source are collected in an
+ * array upon calling setStartNode(). This array is later sorted and duplicates are ignored in
+ * next().
+ *
  * @author G. Todd Miller
  */
 public final class DupFilterIterator extends DTMAxisIteratorBase {
 
-    /**
-     * Reference to source iterator.
-     */
+    /** Reference to source iterator. */
     private DTMAxisIterator _source;
 
-    /**
-     * Array to cache all nodes from source.
-     */
+    /** Array to cache all nodes from source. */
     private IntegerArray _nodes = new IntegerArray();
 
-    /**
-     * Index in _nodes array to current node.
-     */
+    /** Index in _nodes array to current node. */
     private int _current = 0;
 
-    /**
-     * Cardinality of _nodes array.
-     */
+    /** Cardinality of _nodes array. */
     private int _nodesSize = 0;
 
-    /**
-     * Last value returned by next().
-     */
+    /** Last value returned by next(). */
     private int _lastNext = END;
 
-    /**
-     * Temporary variable to store _lastNext.
-     */
+    /** Temporary variable to store _lastNext. */
     private int _markedLastNext = END;
 
     public DupFilterIterator(DTMAxisIterator source) {
         _source = source;
-// System.out.println("DFI source = " + source + " this = " + this);
+        // System.out.println("DFI source = " + source + " this = " + this);
 
         // Cache contents of id() or key() index right away. Necessary for
         // union expressions containing multiple calls to the same index, and
@@ -79,6 +68,7 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
 
     /**
      * Set the start node for this iterator
+     *
      * @param node The start node
      * @return A reference to this node iterator
      */
@@ -88,8 +78,7 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
             // is never any point in re-reading the iterator (and we SHOULD NOT).
             boolean sourceIsKeyIndex = _source instanceof KeyIndex;
 
-            if (sourceIsKeyIndex
-                    && _startNode == DTMDefaultBase.ROOTNODE) {
+            if (sourceIsKeyIndex && _startNode == DTMDefaultBase.ROOTNODE) {
                 return this;
             }
 
@@ -127,16 +116,13 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
 
     public DTMAxisIterator cloneIterator() {
         try {
-            final DupFilterIterator clone =
-                (DupFilterIterator) super.clone();
+            final DupFilterIterator clone = (DupFilterIterator) super.clone();
             clone._nodes = (IntegerArray) _nodes.clone();
             clone._source = _source.cloneIterator();
             clone._isRestartable = false;
             return clone.reset();
-        }
-        catch (CloneNotSupportedException e) {
-            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR,
-                                      e.toString());
+        } catch (CloneNotSupportedException e) {
+            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
             return null;
         }
     }
@@ -148,12 +134,12 @@ public final class DupFilterIterator extends DTMAxisIteratorBase {
 
     public void setMark() {
         _markedNode = _current;
-        _markedLastNext = _lastNext;    // Bugzilla 25924
+        _markedLastNext = _lastNext; // Bugzilla 25924
     }
 
     public void gotoMark() {
         _current = _markedNode;
-        _lastNext = _markedLastNext;    // Bugzilla 25924
+        _lastNext = _markedLastNext; // Bugzilla 25924
     }
 
     public DTMAxisIterator reset() {

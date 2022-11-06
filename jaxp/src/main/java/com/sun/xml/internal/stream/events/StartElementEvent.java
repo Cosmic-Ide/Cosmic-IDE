@@ -26,12 +26,14 @@
 package com.sun.xml.internal.stream.events;
 
 import com.sun.xml.internal.stream.util.ReadOnlyIterator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
@@ -45,8 +47,7 @@ import javax.xml.stream.events.StartElement;
  * @author Neeraj Bajaj Sun Microsystems,Inc.
  * @author K.Venugopal Sun Microsystems,Inc.
  */
-public class StartElementEvent extends DummyEvent
-        implements StartElement {
+public class StartElementEvent extends DummyEvent implements StartElement {
 
     private Map<QName, Attribute> fAttributes;
     private List<Namespace> fNamespaces;
@@ -114,11 +115,11 @@ public class StartElementEvent extends DummyEvent
 
     @Override
     public String getNamespaceURI(String prefix) {
-        //check that URI was supplied when creating this startElement event and prefix matches
+        // check that URI was supplied when creating this startElement event and prefix matches
         if (getNamespace() != null && fQName.getPrefix().equals(prefix)) {
             return getNamespace();
         }
-        //else check the namespace context
+        // else check the namespace context
         if (fNamespaceContext != null) {
             return fNamespaceContext.getNamespaceURI(prefix);
         }
@@ -126,12 +127,11 @@ public class StartElementEvent extends DummyEvent
     }
 
     /**
-     * <p>
-     * Return a <code>String</code> representation of this
-     * <code>StartElement</code> formatted as XML.</p>
+     * Return a <code>String</code> representation of this <code>StartElement</code> formatted as
+     * XML.
      *
-     * @return <code>String</code> representation of this
-     * <code>StartElement</code> formatted as XML.
+     * @return <code>String</code> representation of this <code>StartElement</code> formatted as
+     *     XML.
      */
     @Override
     public String toString() {
@@ -181,17 +181,21 @@ public class StartElementEvent extends DummyEvent
             return fQName.getLocalPart();
         }
         if (fQName.getPrefix() != null) {
-            return "['" + fQName.getNamespaceURI() + "']:" + fQName.getPrefix()
-                    + ":" + fQName.getLocalPart();
+            return "['"
+                    + fQName.getNamespaceURI()
+                    + "']:"
+                    + fQName.getPrefix()
+                    + ":"
+                    + fQName.getLocalPart();
         } else {
             return "['" + fQName.getNamespaceURI() + "']:" + fQName.getLocalPart();
         }
     }
 
     /**
-     * Gets a read-only namespace context. If no context is available this
-     * method will return an empty namespace context. The NamespaceContext
-     * contains information about all namespaces in scope for this StartElement.
+     * Gets a read-only namespace context. If no context is available this method will return an
+     * empty namespace context. The NamespaceContext contains information about all namespaces in
+     * scope for this StartElement.
      *
      * @return the current namespace context
      */
@@ -205,8 +209,7 @@ public class StartElementEvent extends DummyEvent
     }
 
     @Override
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-            throws java.io.IOException {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write(toString());
     }
 
@@ -244,5 +247,4 @@ public class StartElementEvent extends DummyEvent
             fNamespaces.add(attr);
         }
     }
-
 }

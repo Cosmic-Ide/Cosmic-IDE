@@ -29,27 +29,22 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
- * The Normalizer is responsible for normalizing Public and System Identifiers
- * as specified in section 6.2, 6.3 and 6.4 of the specification
- *  * <a
- * href="https://www.oasis-open.org/committees/download.php/14809/xml-catalogs.html">
- * XML Catalogs, OASIS Standard V1.1, 7 October 2005</a>.
+ * The Normalizer is responsible for normalizing Public and System Identifiers as specified in
+ * section 6.2, 6.3 and 6.4 of the specification * <a
+ * href="https://www.oasis-open.org/committees/download.php/14809/xml-catalogs.html">XML Catalogs,
+ * OASIS Standard V1.1, 7 October 2005</a>.
  *
  * @since 9
  */
 class Normalizer {
 
     /**
-     * Normalize a public identifier in accordance with section 6.2 of the
-     * Catalog specification.
+     * Normalize a public identifier in accordance with section 6.2 of the Catalog specification.
      *
-     * <p>
-     * All strings of white space in public identifiers must be normalized to
-     * single space characters (#x20), and leading and trailing white space must
-     * be removed.
+     * <p>All strings of white space in public identifiers must be normalized to single space
+     * characters (#x20), and leading and trailing white space must be removed.
      *
      * @param publicId The unnormalized public identifier
-     *
      * @return The normalized identifier
      */
     static String normalizePublicId(String publicId) {
@@ -58,12 +53,12 @@ class Normalizer {
         StringBuilder sb = new StringBuilder(publicId.length());
         char last = 'a';
         for (char c : publicId.toCharArray()) {
-            //skip beginning and duplicate space
+            // skip beginning and duplicate space
             if ((c == ' ') && (sb.length() == 0 || last == ' ')) {
                 continue;
             }
 
-            //replace whitespace with space
+            // replace whitespace with space
             if (c == '\t' || c == '\r' || c == '\n') {
                 if (last != ' ') {
                     sb.append(' ');
@@ -74,7 +69,7 @@ class Normalizer {
                 last = c;
             }
         }
-        //remove the last space
+        // remove the last space
         if (last == ' ') {
             sb.deleteCharAt(sb.length() - 1);
         }
@@ -86,7 +81,6 @@ class Normalizer {
      * Encode a public identifier as a "publicid" URN.
      *
      * @param publicId The unnormalized public identifier
-     *
      * @return The normalized identifier
      * @throws CatalogException if encoding failed
      */
@@ -107,7 +101,6 @@ class Normalizer {
      * Decode a "publicid" URN into a public identifier.
      *
      * @param urn The urn:publicid: URN
-     *
      * @return The normalized identifier
      * @throws CatalogException if decoding failed
      */

@@ -39,10 +39,8 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
  * Base class for XSSimpleType wrapper implementations.
  *
  * @xerces.internal
- *
  */
-public class XSSimpleTypeDelegate
-    implements XSSimpleType {
+public class XSSimpleTypeDelegate implements XSSimpleType {
 
     protected final XSSimpleType type;
 
@@ -181,8 +179,9 @@ public class XSSimpleTypeDelegate
         return type.getType();
     }
 
-    public void applyFacets(XSFacets facets, short presentFacet, short fixedFacet, ValidationContext context)
-        throws InvalidDatatypeFacetException {
+    public void applyFacets(
+            XSFacets facets, short presentFacet, short fixedFacet, ValidationContext context)
+            throws InvalidDatatypeFacetException {
         type.applyFacets(facets, presentFacet, fixedFacet, context);
     }
 
@@ -203,17 +202,17 @@ public class XSSimpleTypeDelegate
     }
 
     public void validate(ValidationContext context, ValidatedInfo validatedInfo)
-        throws InvalidDatatypeValueException {
+            throws InvalidDatatypeValueException {
         type.validate(context, validatedInfo);
     }
 
     public Object validate(String content, ValidationContext context, ValidatedInfo validatedInfo)
-        throws InvalidDatatypeValueException {
+            throws InvalidDatatypeValueException {
         return type.validate(content, context, validatedInfo);
     }
 
     public Object validate(Object content, ValidationContext context, ValidatedInfo validatedInfo)
-        throws InvalidDatatypeValueException {
+            throws InvalidDatatypeValueException {
         return type.validate(content, context, validatedInfo);
     }
 

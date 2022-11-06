@@ -22,17 +22,14 @@
 package com.sun.org.apache.xerces.internal.dom;
 
 /**
- * Processing Instructions (PIs) permit documents to carry
- * processor-specific information alongside their actual content. PIs
- * are most common in XML, but they are supported in HTML as well.
+ * Processing Instructions (PIs) permit documents to carry processor-specific information alongside
+ * their actual content. PIs are most common in XML, but they are supported in HTML as well.
  *
  * @xerces.internal
- *
- * @since  PR-DOM-Level-1-19980818.
+ * @since PR-DOM-Level-1-19980818.
  */
-public class DeferredProcessingInstructionImpl
-    extends ProcessingInstructionImpl
-    implements DeferredNode {
+public class DeferredProcessingInstructionImpl extends ProcessingInstructionImpl
+        implements DeferredNode {
 
     //
     // Constants
@@ -53,16 +50,14 @@ public class DeferredProcessingInstructionImpl
     //
 
     /**
-     * This is the deferred constructor. Only the fNodeIndex is given here.
-     * All other data, can be requested from the ownerDocument via the index.
+     * This is the deferred constructor. Only the fNodeIndex is given here. All other data, can be
+     * requested from the ownerDocument via the index.
      */
-    DeferredProcessingInstructionImpl(DeferredDocumentImpl ownerDocument,
-                                      int nodeIndex) {
+    DeferredProcessingInstructionImpl(DeferredDocumentImpl ownerDocument, int nodeIndex) {
         super(ownerDocument, null, null);
 
         fNodeIndex = nodeIndex;
         needsSyncData(true);
-
     } // <init>(DeferredDocumentImpl,int)
 
     //
@@ -85,11 +80,8 @@ public class DeferredProcessingInstructionImpl
         needsSyncData(false);
 
         // fluff data
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl) this.ownerDocument();
-        target  = ownerDocument.getNodeName(fNodeIndex);
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) this.ownerDocument();
+        target = ownerDocument.getNodeName(fNodeIndex);
         data = ownerDocument.getNodeValueString(fNodeIndex);
-
     } // synchronizeData()
-
 } // class DeferredProcessingInstructionImpl

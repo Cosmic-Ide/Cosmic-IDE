@@ -19,35 +19,26 @@
  */
 package com.sun.org.apache.bcel.internal.util;
 
-import java.util.LinkedList;
-
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 
-/**
- * Utility class implementing a (typesafe) queue of JavaClass
- * objects.
- *
- * @LastModified: Jan 2020
- */
+import java.util.LinkedList;
+
+/** Utility class implementing a (typesafe) queue of JavaClass objects. @LastModified: Jan 2020 */
 public class ClassQueue {
 
     private final LinkedList<JavaClass> vec = new LinkedList<>();
 
-
-    public void enqueue( final JavaClass clazz ) {
+    public void enqueue(final JavaClass clazz) {
         vec.addLast(clazz);
     }
-
 
     public JavaClass dequeue() {
         return vec.removeFirst();
     }
 
-
     public boolean empty() {
         return vec.isEmpty();
     }
-
 
     @Override
     public String toString() {

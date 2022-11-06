@@ -26,8 +26,7 @@ import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarDescription;
 import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
 
 /**
- * <p>Filter {@link XMLGrammarPool} that exposes a
- * read-only view of the underlying pool.</p>
+ * Filter {@link XMLGrammarPool} that exposes a read-only view of the underlying pool.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -35,7 +34,7 @@ final class ReadOnlyGrammarPool implements XMLGrammarPool {
 
     private final XMLGrammarPool core;
 
-    public ReadOnlyGrammarPool( XMLGrammarPool pool ) {
+    public ReadOnlyGrammarPool(XMLGrammarPool pool) {
         this.core = pool;
     }
 
@@ -62,5 +61,4 @@ final class ReadOnlyGrammarPool implements XMLGrammarPool {
     public void unlockPool() {
         // noop. this pool is always read-only.
     }
-
 } // ReadOnlyGrammarPool

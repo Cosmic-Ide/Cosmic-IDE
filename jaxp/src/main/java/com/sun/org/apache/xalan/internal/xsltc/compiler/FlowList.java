@@ -23,14 +23,14 @@ package com.sun.org.apache.xalan.internal.xsltc.compiler;
 import com.sun.org.apache.bcel.internal.generic.BranchHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionHandle;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Jacek Ambroziak
- * @author Santiago Pericas-Geertsen
- * @LastModified: Oct 2017
+ * @author Santiago Pericas-Geertsen @LastModified: Oct 2017
  */
 public final class FlowList {
     private List<InstructionHandle> _elements;
@@ -59,8 +59,7 @@ public final class FlowList {
     public FlowList append(FlowList right) {
         if (_elements == null) {
             _elements = right._elements;
-        }
-        else {
+        } else {
             final List<InstructionHandle> temp = right._elements;
             if (temp != null) {
                 final int n = temp.size();
@@ -72,27 +71,23 @@ public final class FlowList {
         return this;
     }
 
-    /**
-     * Back patch a flow list. All instruction handles must be branch handles.
-     */
+    /** Back patch a flow list. All instruction handles must be branch handles. */
     public void backPatch(InstructionHandle target) {
         if (_elements != null) {
             final int n = _elements.size();
             for (int i = 0; i < n; i++) {
-                BranchHandle bh = (BranchHandle)_elements.get(i);
+                BranchHandle bh = (BranchHandle) _elements.get(i);
                 bh.setTarget(target);
             }
-            _elements.clear();          // avoid backpatching more than once
+            _elements.clear(); // avoid backpatching more than once
         }
     }
 
     /**
-     * Redirect the handles from oldList to newList. "This" flow list
-     * is assumed to be relative to oldList.
+     * Redirect the handles from oldList to newList. "This" flow list is assumed to be relative to
+     * oldList.
      */
-    public FlowList copyAndRedirect(InstructionList oldList,
-        InstructionList newList)
-    {
+    public FlowList copyAndRedirect(InstructionList oldList, InstructionList newList) {
         final FlowList result = new FlowList();
         if (_elements == null) {
             return result;

@@ -39,33 +39,18 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class BinaryHeap {
 
-    /**
-     * Lock for multi-thread reusing
-     */
+    /** Lock for multi-thread reusing */
     public final Lock lock = new ReentrantLock();
-    /**
-     * Map from id to its position in heap array
-     */
+    /** Map from id to its position in heap array */
     private final SparseIntArray idToPosition;
-    /**
-     * Id allocator
-     */
+    /** Id allocator */
     private int idAllocator = 1;
-    /**
-     * Current node count in heap
-     */
+    /** Current node count in heap */
     private int nodeCount;
-    /**
-     * Node array for heap.
-     * first:  id
-     * second: data
-     */
+    /** Node array for heap. first: id second: data */
     private long[] nodes;
 
-    /**
-     * Create a binary heap
-     * This heap maintains its max value in heap
-     */
+    /** Create a binary heap This heap maintains its max value in heap */
     public BinaryHeap() {
         idToPosition = new SparseIntArray();
         nodeCount = 0;
@@ -80,9 +65,7 @@ public class BinaryHeap {
         return getSecond(value);
     }
 
-    /**
-     * Clear all the nodes in the heap
-     */
+    /** Clear all the nodes in the heap */
     public void clear() {
         nodeCount = 0;
         idToPosition.clear();
@@ -119,9 +102,7 @@ public class BinaryHeap {
         return data(nodes[1]);
     }
 
-    /**
-     * Get total node count in heap
-     */
+    /** Get total node count in heap */
     public int getNodeCount() {
         return nodeCount;
     }
@@ -192,7 +173,7 @@ public class BinaryHeap {
     /**
      * Update the value of node with given id to newValue
      *
-     * @param id       ID returned by push()
+     * @param id ID returned by push()
      * @param newValue new value for this node
      * @throws IllegalArgumentException when the id is invalid
      */
@@ -222,11 +203,11 @@ public class BinaryHeap {
             throw new IllegalArgumentException("trying to remove with an invalid id");
         }
         idToPosition.delete(id);
-        //Replace removed node with last node
+        // Replace removed node with last node
         nodes[position] = nodes[nodeCount];
-        //Release node
+        // Release node
         nodes[nodeCount--] = 0;
-        //Do not update heap if it is just the last node
+        // Do not update heap if it is just the last node
         if (position == nodeCount + 1) {
             return;
         }
@@ -234,5 +215,4 @@ public class BinaryHeap {
         heapifyUp(position);
         heapifyDown(position);
     }
-
 }

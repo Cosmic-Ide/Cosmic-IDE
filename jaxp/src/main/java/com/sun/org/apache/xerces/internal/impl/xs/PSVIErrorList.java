@@ -21,16 +21,14 @@
 package com.sun.org.apache.xerces.internal.impl.xs;
 
 import com.sun.org.apache.xerces.internal.xs.StringList;
+
 import java.util.AbstractList;
 
 /**
  * StringList implementation for schema error codes and error messages.
  *
  * @xerces.internal
- *
- * @author Michael Glavassevich, IBM
- *
- * @LastModified: Oct 2017
+ * @author Michael Glavassevich, IBM @LastModified: Oct 2017
  */
 final class PSVIErrorList extends AbstractList<String> implements StringList {
 
@@ -51,8 +49,7 @@ final class PSVIErrorList extends AbstractList<String> implements StringList {
                     return true;
                 }
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < fLength; ++i) {
                 if (item.equals(fArray[(i << 1) + fOffset])) {
                     return true;
@@ -87,5 +84,4 @@ final class PSVIErrorList extends AbstractList<String> implements StringList {
     public int size() {
         return getLength();
     }
-
 } // class PSVIErrorList

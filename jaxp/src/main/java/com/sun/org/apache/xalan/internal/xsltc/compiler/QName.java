@@ -31,18 +31,19 @@ final class QName {
     private String _prefix;
     private String _namespace;
     private String _stringRep;
-    private int    _hashCode;
+    private int _hashCode;
 
     public QName(String namespace, String prefix, String localname) {
         _namespace = namespace;
-        _prefix    = prefix;
+        _prefix = prefix;
         _localname = localname;
 
         _stringRep =
-            (namespace != null && !namespace.equals(Constants.EMPTYSTRING)) ?
-            (namespace + ':' + localname) : localname;
+                (namespace != null && !namespace.equals(Constants.EMPTYSTRING))
+                        ? (namespace + ':' + localname)
+                        : localname;
 
-        _hashCode  = _stringRep.hashCode() + 19; // cached for speed
+        _hashCode = _stringRep.hashCode() + 19; // cached for speed
     }
 
     public void clearNamespace() {
@@ -59,8 +60,7 @@ final class QName {
 
     public boolean equals(Object other) {
         return (this == other)
-                   || (other instanceof QName
-                           && _stringRep.equals(((QName) other).getStringRep()));
+                || (other instanceof QName && _stringRep.equals(((QName) other).getStringRep()));
     }
 
     public String getLocalPart() {

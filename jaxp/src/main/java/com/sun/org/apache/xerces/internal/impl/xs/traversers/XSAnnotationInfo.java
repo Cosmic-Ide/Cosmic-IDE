@@ -21,33 +21,32 @@
 
 package com.sun.org.apache.xerces.internal.impl.xs.traversers;
 
-import org.w3c.dom.Element;
 import com.sun.org.apache.xerces.internal.impl.xs.opti.ElementImpl;
 
+import org.w3c.dom.Element;
+
 /**
- * Objects of this class contain the textual representation of
- * an XML schema annotation as well as information on the location
- * of the annotation in the document it originated from.
+ * Objects of this class contain the textual representation of an XML schema annotation as well as
+ * information on the location of the annotation in the document it originated from.
  *
  * @xerces.internal
- *
  * @author Michael Glavassevich, IBM
  */
 final class XSAnnotationInfo {
 
-    /** Textual representation of annotation. **/
+    /** Textual representation of annotation. * */
     String fAnnotation;
 
-    /** Line number of &lt;annotation&gt; element. **/
+    /** Line number of &lt;annotation&gt; element. * */
     int fLine;
 
-    /** Column number of &lt;annotation&gt; element. **/
+    /** Column number of &lt;annotation&gt; element. * */
     int fColumn;
 
-    /** Character offset of &lt;annotation&gt; element. **/
+    /** Character offset of &lt;annotation&gt; element. * */
     int fCharOffset;
 
-    /** Next annotation. **/
+    /** Next annotation. * */
     XSAnnotationInfo next;
 
     XSAnnotationInfo(String annotation, int line, int column, int charOffset) {
@@ -64,8 +63,7 @@ final class XSAnnotationInfo {
             fLine = annotationDeclImpl.getLineNumber();
             fColumn = annotationDeclImpl.getColumnNumber();
             fCharOffset = annotationDeclImpl.getCharacterOffset();
-        }
-        else {
+        } else {
             fLine = -1;
             fColumn = -1;
             fCharOffset = -1;

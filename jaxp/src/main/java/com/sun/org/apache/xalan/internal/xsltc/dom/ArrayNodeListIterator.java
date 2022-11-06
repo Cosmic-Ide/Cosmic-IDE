@@ -19,12 +19,11 @@
  * limitations under the License.
  */
 
-
 package com.sun.org.apache.xalan.internal.xsltc.dom;
 
 import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 
-public class ArrayNodeListIterator implements DTMAxisIterator  {
+public class ArrayNodeListIterator implements DTMAxisIterator {
 
     private int _pos = 0;
 
@@ -32,7 +31,7 @@ public class ArrayNodeListIterator implements DTMAxisIterator  {
 
     private int _nodes[];
 
-    private static final int[] EMPTY = { };
+    private static final int[] EMPTY = {};
 
     public ArrayNodeListIterator(int[] nodes) {
         _nodes = nodes;
@@ -80,11 +79,9 @@ public class ArrayNodeListIterator implements DTMAxisIterator  {
         return new ArrayNodeListIterator(_nodes);
     }
 
-    public void setRestartable(boolean isRestartable) {
-    }
+    public void setRestartable(boolean isRestartable) {}
 
     public int getNodeByPosition(int position) {
         return _nodes[position - 1];
     }
-
 }

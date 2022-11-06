@@ -21,16 +21,15 @@
 
 package com.sun.org.apache.bcel.internal.util;
 
+import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
-
 /**
- * Utility class implementing a (typesafe) set of JavaClass objects.
- * Since JavaClass has no equals() method, the name of the class is
- * used for comparison.
+ * Utility class implementing a (typesafe) set of JavaClass objects. Since JavaClass has no equals()
+ * method, the name of the class is used for comparison.
  *
  * @see ClassStack
  */
@@ -38,8 +37,7 @@ public class ClassSet {
 
     private final Map<String, JavaClass> map = new HashMap<>();
 
-
-    public boolean add( final JavaClass clazz ) {
+    public boolean add(final JavaClass clazz) {
         boolean result = false;
         if (!map.containsKey(clazz.getClassName())) {
             result = true;
@@ -48,16 +46,13 @@ public class ClassSet {
         return result;
     }
 
-
-    public void remove( final JavaClass clazz ) {
+    public void remove(final JavaClass clazz) {
         map.remove(clazz.getClassName());
     }
-
 
     public boolean empty() {
         return map.isEmpty();
     }
-
 
     public JavaClass[] toArray() {
         final Collection<JavaClass> values = map.values();
@@ -65,7 +60,6 @@ public class ClassSet {
         values.toArray(classes);
         return classes;
     }
-
 
     public String[] getClassNames() {
         return map.keySet().toArray(new String[map.size()]);

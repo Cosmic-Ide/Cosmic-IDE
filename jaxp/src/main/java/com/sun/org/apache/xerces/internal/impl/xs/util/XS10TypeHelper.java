@@ -30,7 +30,6 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
  * Class defining utility/helper methods to support XML Schema 1.0 implementation.
  *
  * @xerces.internal
- *
  * @author Mukul Gandhi, IBM
  */
 public class XS10TypeHelper {
@@ -39,8 +38,9 @@ public class XS10TypeHelper {
      * Class constructor.
      */
     private XS10TypeHelper() {
-       // a private constructor, to prohibit instantiating this class from an outside class/application.
-       // this is a good practice, since all methods of this class are "static".
+        // a private constructor, to prohibit instantiating this class from an outside
+        // class/application.
+        // this is a good practice, since all methods of this class are "static".
     }
 
     /*
@@ -52,14 +52,10 @@ public class XS10TypeHelper {
         String typeNameStr;
         if (typeDefn instanceof XSSimpleTypeDefinition) {
             typeNameStr = ((XSSimpleTypeDecl) typeDefn).getTypeName();
-        }
-        else {
+        } else {
             typeNameStr = ((XSComplexTypeDecl) typeDefn).getTypeName();
         }
 
         return typeNameStr;
-
     } // getSchemaTypeName
-
-
 } // class XS10TypeHelper

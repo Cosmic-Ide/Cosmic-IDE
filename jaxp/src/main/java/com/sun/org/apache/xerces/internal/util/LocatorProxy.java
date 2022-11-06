@@ -22,6 +22,7 @@
 package com.sun.org.apache.xerces.internal.util;
 
 import com.sun.org.apache.xerces.internal.xni.XMLLocator;
+
 import org.xml.sax.Locator;
 import org.xml.sax.ext.Locator2;
 
@@ -30,7 +31,6 @@ import org.xml.sax.ext.Locator2;
  *
  * @author Arnaud Le Hors, IBM
  * @author Andy Clark, IBM
- *
  */
 public class LocatorProxy implements Locator2 {
 
@@ -85,5 +85,4 @@ public class LocatorProxy implements Locator2 {
     public String getEncoding() {
         return fLocator.getEncoding();
     }
-
 }

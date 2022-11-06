@@ -21,24 +21,29 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
  * This class represents a MethodParameters attribute.
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.24">
- * The class File Format : The MethodParameters Attribute</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.24">The
+ *     class File Format : The MethodParameters Attribute</a>
  * @since 6.0
  */
 public class MethodParameters extends Attribute {
 
     private MethodParameter[] parameters = new MethodParameter[0];
 
-    MethodParameters(final int name_index, final int length, final DataInput input, final ConstantPool constant_pool) throws IOException {
+    MethodParameters(
+            final int name_index,
+            final int length,
+            final DataInput input,
+            final ConstantPool constant_pool)
+            throws IOException {
         super(Const.ATTR_METHOD_PARAMETERS, name_index, length, constant_pool);
 
         final int parameters_count = input.readUnsignedByte();
@@ -80,9 +85,9 @@ public class MethodParameters extends Attribute {
      * @throws IOException
      */
     @Override
-       public void dump(final DataOutputStream file) throws IOException {
-           super.dump(file);
-           file.writeByte(parameters.length);
+    public void dump(final DataOutputStream file) throws IOException {
+        super.dump(file);
+        file.writeByte(parameters.length);
         for (final MethodParameter parameter : parameters) {
             parameter.dump(file);
         }

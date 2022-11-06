@@ -20,24 +20,21 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-
 /**
- * This class represents the constant pool, i.e., a table of constants, of
- * a parsed classfile. It may contain null references, due to the JVM
- * specification that skips an entry after an 8-byte constant (double,
- * long) entry.  Those interested in generating constant pools
- * programatically should see <a href="../generic/ConstantPoolGen.html">
- * ConstantPoolGen</a>.
-
- * @see     Constant
- * @see     com.sun.org.apache.bcel.internal.generic.ConstantPoolGen
- * @LastModified: May 2022
+ * This class represents the constant pool, i.e., a table of constants, of a parsed classfile. It
+ * may contain null references, due to the JVM specification that skips an entry after an 8-byte
+ * constant (double, long) entry. Those interested in generating constant pools programatically
+ * should see <a href="../generic/ConstantPoolGen.html">ConstantPoolGen</a>.
+ *
+ * @see Constant
+ * @see com.sun.org.apache.bcel.internal.generic.ConstantPoolGen @LastModified: May 2022
  */
 public class ConstantPool implements Cloneable, Node {
 
@@ -81,24 +78,24 @@ public class ConstantPool implements Cloneable, Node {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitConstantPool(this);
     }
 
     /**
      * Resolves constant to a string representation.
      *
-     * @param  c Constant to be printed
+     * @param c Constant to be printed
      * @return String representation
      */
-    public String constantToString( Constant c ) throws ClassFormatException {
+    public String constantToString(Constant c) throws ClassFormatException {
         String str;
         int i;
         final byte tag = c.getTag();
@@ -129,25 +126,35 @@ public class ConstantPool implements Cloneable, Node {
                 str = String.valueOf(((ConstantInteger) c).getBytes());
                 break;
             case Const.CONSTANT_NameAndType:
-                str = constantToString(((ConstantNameAndType) c).getNameIndex(),
-                        Const.CONSTANT_Utf8)
-                        + " " + constantToString(((ConstantNameAndType) c).getSignatureIndex(),
-                        Const.CONSTANT_Utf8);
+                str =
+                        constantToString(
+                                        ((ConstantNameAndType) c).getNameIndex(),
+                                        Const.CONSTANT_Utf8)
+                                + " "
+                                + constantToString(
+                                        ((ConstantNameAndType) c).getSignatureIndex(),
+                                        Const.CONSTANT_Utf8);
                 break;
             case Const.CONSTANT_InterfaceMethodref:
             case Const.CONSTANT_Methodref:
             case Const.CONSTANT_Fieldref:
-                str = constantToString(((ConstantCP) c).getClassIndex(), Const.CONSTANT_Class)
-                        + "." + constantToString(((ConstantCP) c).getNameAndTypeIndex(),
-                        Const.CONSTANT_NameAndType);
+                str =
+                        constantToString(((ConstantCP) c).getClassIndex(), Const.CONSTANT_Class)
+                                + "."
+                                + constantToString(
+                                        ((ConstantCP) c).getNameAndTypeIndex(),
+                                        Const.CONSTANT_NameAndType);
                 break;
             case Const.CONSTANT_MethodHandle:
                 // Note that the ReferenceIndex may point to a Fieldref, Methodref or
                 // InterfaceMethodref - so we need to peek ahead to get the actual type.
                 final ConstantMethodHandle cmh = (ConstantMethodHandle) c;
-                str = Const.getMethodHandleName(cmh.getReferenceKind())
-                        + " " + constantToString(cmh.getReferenceIndex(),
-                        getConstant(cmh.getReferenceIndex()).getTag());
+                str =
+                        Const.getMethodHandleName(cmh.getReferenceKind())
+                                + " "
+                                + constantToString(
+                                        cmh.getReferenceIndex(),
+                                        getConstant(cmh.getReferenceIndex()).getTag());
                 break;
             case Const.CONSTANT_MethodType:
                 final ConstantMethodType cmt = (ConstantMethodType) c;
@@ -155,9 +162,11 @@ public class ConstantPool implements Cloneable, Node {
                 break;
             case Const.CONSTANT_InvokeDynamic:
                 final ConstantInvokeDynamic cid = (ConstantInvokeDynamic) c;
-                str = cid.getBootstrapMethodAttrIndex()
-                        + ":" + constantToString(cid.getNameAndTypeIndex(),
-                        Const.CONSTANT_NameAndType);
+                str =
+                        cid.getBootstrapMethodAttrIndex()
+                                + ":"
+                                + constantToString(
+                                        cid.getNameAndTypeIndex(), Const.CONSTANT_NameAndType);
                 break;
             case Const.CONSTANT_Module:
                 i = ((ConstantModule) c).getNameIndex();
@@ -175,7 +184,7 @@ public class ConstantPool implements Cloneable, Node {
         return str;
     }
 
-    private static String escape( final String str ) {
+    private static String escape(final String str) {
         final int len = str.length();
         final StringBuilder buf = new StringBuilder(len + 5);
         final char[] ch = str.toCharArray();
@@ -204,14 +213,13 @@ public class ConstantPool implements Cloneable, Node {
     }
 
     /**
-     * Retrieves constant at `index' from constant pool and resolve it to
-     * a string representation.
+     * Retrieves constant at `index' from constant pool and resolve it to a string representation.
      *
-     * @param  index of constant in constant pool
-     * @param  tag expected type
+     * @param index of constant in constant pool
+     * @param tag expected type
      * @return String representation
      */
-    public String constantToString( final int index, final byte tag ) throws ClassFormatException {
+    public String constantToString(final int index, final byte tag) throws ClassFormatException {
         final Constant c = getConstant(index, tag);
         return constantToString(c);
     }
@@ -222,14 +230,16 @@ public class ConstantPool implements Cloneable, Node {
      * @param file Output file stream
      * @throws IOException
      */
-    public void dump( final DataOutputStream file ) throws IOException {
+    public void dump(final DataOutputStream file) throws IOException {
         /*
          * Constants over the size of the constant pool shall not be written out.
          * This is a redundant measure as the ConstantPoolGen should have already
          * reported an error back in the situation.
-        */
-        int size = constantPool.length < ConstantPoolGen.CONSTANT_POOL_SIZE - 1 ?
-                constantPool.length : ConstantPoolGen.CONSTANT_POOL_SIZE - 1;
+         */
+        int size =
+                constantPool.length < ConstantPoolGen.CONSTANT_POOL_SIZE - 1
+                        ? constantPool.length
+                        : ConstantPoolGen.CONSTANT_POOL_SIZE - 1;
 
         file.writeShort(size);
         for (int i = 1; i < size; i++) {
@@ -242,63 +252,69 @@ public class ConstantPool implements Cloneable, Node {
     /**
      * Gets constant from constant pool.
      *
-     * @param  index Index in constant pool
+     * @param index Index in constant pool
      * @return Constant value
-     * @see    Constant
+     * @see Constant
      */
-    public Constant getConstant( final int index ) {
+    public Constant getConstant(final int index) {
         if (index >= constantPool.length || index < 0) {
-            throw new ClassFormatException("Invalid constant pool reference: " + index
-                    + ". Constant pool size is: " + constantPool.length);
+            throw new ClassFormatException(
+                    "Invalid constant pool reference: "
+                            + index
+                            + ". Constant pool size is: "
+                            + constantPool.length);
         }
         return constantPool[index];
     }
 
     /**
-     * Gets constant from constant pool and check whether it has the
-     * expected type.
+     * Gets constant from constant pool and check whether it has the expected type.
      *
-     * @param  index Index in constant pool
-     * @param  tag Tag of expected constant, i.e., its type
+     * @param index Index in constant pool
+     * @param tag Tag of expected constant, i.e., its type
      * @return Constant value
-     * @see    Constant
-     * @throws  ClassFormatException
+     * @see Constant
+     * @throws ClassFormatException
      */
-    public Constant getConstant( final int index, final byte tag ) throws ClassFormatException {
+    public Constant getConstant(final int index, final byte tag) throws ClassFormatException {
         Constant c;
         c = getConstant(index);
         if (c == null) {
             throw new ClassFormatException("Constant pool at index " + index + " is null.");
         }
         if (c.getTag() != tag) {
-            throw new ClassFormatException("Expected class `" + Const.getConstantName(tag)
-                    + "' at index " + index + " and got " + c);
+            throw new ClassFormatException(
+                    "Expected class `"
+                            + Const.getConstantName(tag)
+                            + "' at index "
+                            + index
+                            + " and got "
+                            + c);
         }
         return c;
     }
 
     /**
      * @return Array of constants.
-     * @see    Constant
+     * @see Constant
      */
     public Constant[] getConstantPool() {
         return constantPool;
     }
 
     /**
-     * Gets string from constant pool and bypass the indirection of
-     * `ConstantClass' and `ConstantString' objects. I.e. these classes have
-     * an index field that points to another entry of the constant pool of
-     * type `ConstantUtf8' which contains the real data.
+     * Gets string from constant pool and bypass the indirection of `ConstantClass' and
+     * `ConstantString' objects. I.e. these classes have an index field that points to another entry
+     * of the constant pool of type `ConstantUtf8' which contains the real data.
      *
-     * @param  index Index in constant pool
-     * @param  tag Tag of expected constant, either ConstantClass or ConstantString
+     * @param index Index in constant pool
+     * @param tag Tag of expected constant, either ConstantClass or ConstantString
      * @return Contents of string reference
-     * @see    ConstantClass
-     * @see    ConstantString
-     * @throws  ClassFormatException
+     * @see ConstantClass
+     * @see ConstantString
+     * @throws ClassFormatException
      */
-    public String getConstantString( final int index, final byte tag ) throws ClassFormatException {
+    public String getConstantString(final int index, final byte tag) throws ClassFormatException {
         Constant c;
         int i;
         c = getConstant(index, tag);
@@ -323,13 +339,13 @@ public class ConstantPool implements Cloneable, Node {
                 i = ((ConstantPackage) c).getNameIndex();
                 break;
             default:
-                throw new IllegalArgumentException("getConstantString called with illegal tag " + tag);
+                throw new IllegalArgumentException(
+                        "getConstantString called with illegal tag " + tag);
         }
         // Finally get the string from the constant pool
         c = getConstant(i, Const.CONSTANT_Utf8);
         return ((ConstantUtf8) c).getBytes();
     }
-
 
     /**
      * @return Length of constant pool.
@@ -338,22 +354,19 @@ public class ConstantPool implements Cloneable, Node {
         return constantPool == null ? 0 : constantPool.length;
     }
 
-
     /**
      * @param constant Constant to set
      */
-    public void setConstant( final int index, final Constant constant ) {
+    public void setConstant(final int index, final Constant constant) {
         constantPool[index] = constant;
     }
-
 
     /**
      * @param constantPool
      */
-    public void setConstantPool( final Constant[] constantPool ) {
+    public void setConstantPool(final Constant[] constantPool) {
         this.constantPool = constantPool;
     }
-
 
     /**
      * @return String representation.
@@ -366,7 +379,6 @@ public class ConstantPool implements Cloneable, Node {
         }
         return buf.toString();
     }
-
 
     /**
      * @return deep copy of this constant pool

@@ -24,11 +24,11 @@
  */
 package javax.xml.catalog;
 
-import java.net.URI;
+import jdk.xml.internal.SecuritySupport;
+
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import jdk.xml.internal.SecuritySupport;
 
 /**
  * Catalog Error messages
@@ -58,6 +58,7 @@ final class CatalogMessages {
 
     /**
      * Reports an error.
+     *
      * @param key the message key
      */
     static void reportError(String key) {
@@ -66,9 +67,10 @@ final class CatalogMessages {
 
     /**
      * Reports an error.
+     *
      * @param key the message key
-     * @param arguments the message replacement text arguments. The order of the
-     * arguments must match that of the placeholders in the actual message.
+     * @param arguments the message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      */
     static void reportError(String key, Object[] arguments) {
         throw new CatalogException(formatMessage(key, arguments));
@@ -76,9 +78,10 @@ final class CatalogMessages {
 
     /**
      * Reports a CatalogException.
+     *
      * @param key the message key
-     * @param arguments the message replacement text arguments. The order of the
-     * arguments must match that of the placeholders in the actual message.
+     * @param arguments the message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      */
     static void reportRunTimeError(String key, Object[] arguments) {
         throw new CatalogException(formatMessage(key, arguments));
@@ -86,7 +89,8 @@ final class CatalogMessages {
 
     /**
      * Reports a CatalogException.
-     * @param  key the message key
+     *
+     * @param key the message key
      * @param cause the cause if any
      */
     static void reportRunTimeError(String key, Throwable cause) {
@@ -95,9 +99,10 @@ final class CatalogMessages {
 
     /**
      * Reports a CatalogException.
-     * @param  key the message key
-     * @param arguments the message replacement text arguments. The order of the
-     * arguments must match that of the placeholders in the actual message.
+     *
+     * @param key the message key
+     * @param arguments the message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @param cause the cause if any
      */
     static void reportRunTimeError(String key, Object[] arguments, Throwable cause) {
@@ -113,7 +118,7 @@ final class CatalogMessages {
     static void reportIAEOnNull(String name, String value) {
         if (value == null) {
             throw new IllegalArgumentException(
-                    formatMessage(ERR_INVALID_ARGUMENT, new Object[]{null, name}));
+                    formatMessage(ERR_INVALID_ARGUMENT, new Object[] {null, name}));
         }
     }
 
@@ -125,51 +130,42 @@ final class CatalogMessages {
      */
     static void reportNPEOnNull(String name, Object value) {
         if (value == null) {
-            throw new NullPointerException(
-                    formatMessage(ERR_NULL_ARGUMENT, new Object[]{name}));
+            throw new NullPointerException(formatMessage(ERR_NULL_ARGUMENT, new Object[] {name}));
         }
     }
 
     /**
      * Reports IllegalArgumentException
+     *
      * @param arguments the arguments for formating the error message
      * @param cause the cause if any
      */
     static void reportIAE(String key, Object[] arguments, Throwable cause) {
-        throw new IllegalArgumentException(
-                formatMessage(key, arguments), cause);
+        throw new IllegalArgumentException(formatMessage(key, arguments), cause);
     }
 
     /**
-     * Format a message with the specified arguments using the default locale
-     * information.
+     * Format a message with the specified arguments using the default locale information.
      *
      * @param key the message key
-     * @param arguments the message replacement text arguments. The order of the
-     * arguments must match that of the placeholders in the actual message.
-     *
+     * @param arguments the message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @return the formatted message
-     *
-     * @throws MissingResourceException If the message with the specified key
-     * cannot be found
+     * @throws MissingResourceException If the message with the specified key cannot be found
      */
     static String formatMessage(String key, Object[] arguments) {
         return formatMessage(key, arguments, Locale.getDefault());
     }
 
     /**
-     * Format a message with the specified arguments using the given locale
-     * information.
+     * Format a message with the specified arguments using the given locale information.
      *
      * @param key the message key
-     * @param arguments the message replacement text arguments. The order of the
-     * arguments must match that of the placeholders in the actual message.
+     * @param arguments the message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @param locale the locale of the message
-     *
      * @return the formatted message
-     *
-     * @throws MissingResourceException If the message with the specified key
-     * cannot be found
+     * @throws MissingResourceException If the message with the specified key cannot be found
      */
     static String formatMessage(String key, Object[] arguments, Locale locale) {
         return SecuritySupport.getErrorMessage(locale, bundleName, key, arguments);
@@ -177,6 +173,7 @@ final class CatalogMessages {
 
     /**
      * Returns sanitized URI.
+     *
      * @param uri a URI to be sanitized
      */
     static String sanitize(String uri) {

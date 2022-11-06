@@ -1,6 +1,5 @@
 package org.cosmic.ide.activity;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;

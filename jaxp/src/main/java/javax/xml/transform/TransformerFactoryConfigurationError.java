@@ -26,26 +26,19 @@
 package javax.xml.transform;
 
 /**
- * Thrown when a problem with configuration with the Transformer Factories
- * exists. This error will typically be thrown when the class of a
- * transformation factory specified in the system properties cannot be found
- * or instantiated.
+ * Thrown when a problem with configuration with the Transformer Factories exists. This error will
+ * typically be thrown when the class of a transformation factory specified in the system properties
+ * cannot be found or instantiated.
  *
  * @since 1.4
  */
 public class TransformerFactoryConfigurationError extends Error {
     private static final long serialVersionUID = -6527718720676281516L;
 
-    /**
-     * <code>Exception</code> for the
-     *  <code>TransformerFactoryConfigurationError</code>.
-     */
+    /** <code>Exception</code> for the <code>TransformerFactoryConfigurationError</code>. */
     private Exception exception;
 
-    /**
-     * Create a new <code>TransformerFactoryConfigurationError</code> with no
-     * detail message.
-     */
+    /** Create a new <code>TransformerFactoryConfigurationError</code> with no detail message. */
     public TransformerFactoryConfigurationError() {
 
         super();
@@ -54,8 +47,8 @@ public class TransformerFactoryConfigurationError extends Error {
     }
 
     /**
-     * Create a new <code>TransformerFactoryConfigurationError</code> with
-     * the <code>String</code> specified as an error message.
+     * Create a new <code>TransformerFactoryConfigurationError</code> with the <code>String</code>
+     * specified as an error message.
      *
      * @param msg The error message for the exception.
      */
@@ -67,11 +60,10 @@ public class TransformerFactoryConfigurationError extends Error {
     }
 
     /**
-     * Create a new <code>TransformerFactoryConfigurationError</code> with a
-     * given <code>Exception</code> base cause of the error.
+     * Create a new <code>TransformerFactoryConfigurationError</code> with a given <code>Exception
+     * </code> base cause of the error.
      *
-     * @param e The exception to be encapsulated in a
-     * TransformerFactoryConfigurationError.
+     * @param e The exception to be encapsulated in a TransformerFactoryConfigurationError.
      */
     public TransformerFactoryConfigurationError(Exception e) {
 
@@ -81,11 +73,10 @@ public class TransformerFactoryConfigurationError extends Error {
     }
 
     /**
-     * Create a new <code>TransformerFactoryConfigurationError</code> with the
-     * given <code>Exception</code> base cause and detail message.
+     * Create a new <code>TransformerFactoryConfigurationError</code> with the given <code>Exception
+     * </code> base cause and detail message.
      *
-     * @param e The exception to be encapsulated in a
-     * TransformerFactoryConfigurationError
+     * @param e The exception to be encapsulated in a TransformerFactoryConfigurationError
      * @param msg The detail message.
      */
     public TransformerFactoryConfigurationError(Exception e, String msg) {
@@ -96,9 +87,8 @@ public class TransformerFactoryConfigurationError extends Error {
     }
 
     /**
-     * Return the message (if any) for this error . If there is no
-     * message for the exception and there is an encapsulated
-     * exception then the message of that exception will be returned.
+     * Return the message (if any) for this error . If there is no message for the exception and
+     * there is an encapsulated exception then the message of that exception will be returned.
      *
      * @return The error message.
      */
@@ -114,17 +104,14 @@ public class TransformerFactoryConfigurationError extends Error {
     }
 
     /**
-     * Return the actual exception (if any) that caused this exception to
-     * be raised.
+     * Return the actual exception (if any) that caused this exception to be raised.
      *
      * @return The encapsulated exception, or null if there is none.
      */
     public Exception getException() {
         return exception;
     }
-    /**
-     * use the exception chaining mechanism of JDK1.4
-    */
+    /** use the exception chaining mechanism of JDK1.4 */
     @Override
     public Throwable getCause() {
         return exception;

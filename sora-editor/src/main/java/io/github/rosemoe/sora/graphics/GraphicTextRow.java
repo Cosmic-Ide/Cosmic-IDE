@@ -32,8 +32,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentLine;
@@ -41,12 +39,12 @@ import io.github.rosemoe.sora.text.bidi.Directions;
 import io.github.rosemoe.sora.text.bidi.TextBidi;
 import io.github.rosemoe.sora.util.IntPair;
 
-/**
- * Manages graphical(actually measuring) operations of a text row
- */
+import java.util.List;
+
+/** Manages graphical(actually measuring) operations of a text row */
 public class GraphicTextRow {
 
-    private final static GraphicTextRow[] sCached = new GraphicTextRow[5];
+    private static final GraphicTextRow[] sCached = new GraphicTextRow[5];
     private final float[] buffer;
     private Paint paint;
     private ContentLine text;
@@ -58,7 +56,7 @@ public class GraphicTextRow {
     private boolean useCache = true;
     private List<Integer> softBreaks;
     private boolean quickMeasureMode;
-    private final Directions tmpDirections = new Directions(new long[]{IntPair.pack(0, 0)}, 0);
+    private final Directions tmpDirections = new Directions(new long[] {IntPair.pack(0, 0)}, 0);
 
     private GraphicTextRow() {
         buffer = new float[2];
@@ -103,7 +101,14 @@ public class GraphicTextRow {
         recycle(this);
     }
 
-    public void set(@NonNull Content content, int line, int start, int end, int tabWidth, @Nullable List<Span> spans, @NonNull Paint paint) {
+    public void set(
+            @NonNull Content content,
+            int line,
+            int start,
+            int end,
+            int tabWidth,
+            @Nullable List<Span> spans,
+            @NonNull Paint paint) {
         this.paint = paint;
         text = content.getLine(line);
         directions = content.getLineDirections(line);
@@ -114,7 +119,14 @@ public class GraphicTextRow {
         tmpDirections.setLength(text.length());
     }
 
-    public void set(@NonNull ContentLine text, @Nullable Directions dirs, int start, int end, int tabWidth, @Nullable List<Span> spans, @NonNull Paint paint) {
+    public void set(
+            @NonNull ContentLine text,
+            @Nullable Directions dirs,
+            int start,
+            int end,
+            int tabWidth,
+            @Nullable List<Span> spans,
+            @NonNull Paint paint) {
         this.paint = paint;
         this.text = text;
         directions = dirs;
@@ -133,9 +145,7 @@ public class GraphicTextRow {
         useCache = false;
     }
 
-    /**
-     * Build measure cache for the text
-     */
+    /** Build measure cache for the text */
     public void buildMeasureCache() {
         if (text.widthCache == null || text.widthCache.length < textEnd + 4) {
             text.widthCache = new float[Math.max(90, text.length() + 16)];
@@ -153,10 +163,10 @@ public class GraphicTextRow {
     }
 
     /**
-     * From {@code start} to measure characters, until measured width add next char's width is bigger
-     * than {@code advance}.
-     * <p>
-     * Note that the result array should not be stored.
+     * From {@code start} to measure characters, until measured width add next char's width is
+     * bigger than {@code advance}.
+     *
+     * <p>Note that the result array should not be stored.
      *
      * @return Element 0 is offset, Element 1 is measured width
      */
@@ -228,8 +238,22 @@ public class GraphicTextRow {
                         // Here is a tab
                         // Try to find advance
                         if (lastStart != i) {
-                            int idx = paint.findOffsetByRunAdvance(text, lastStart, i, advance - currentPosition, useCache, quickMeasureMode);
-                            currentPosition += paint.measureTextRunAdvance(chars, lastStart, idx, regionStart, regionEnd, quickMeasureMode);
+                            int idx =
+                                    paint.findOffsetByRunAdvance(
+                                            text,
+                                            lastStart,
+                                            i,
+                                            advance - currentPosition,
+                                            useCache,
+                                            quickMeasureMode);
+                            currentPosition +=
+                                    paint.measureTextRunAdvance(
+                                            chars,
+                                            lastStart,
+                                            idx,
+                                            regionStart,
+                                            regionEnd,
+                                            quickMeasureMode);
                             if (idx < i) {
                                 res = idx;
                                 break;
@@ -253,7 +277,14 @@ public class GraphicTextRow {
                     }
                 }
                 if (res == -1) {
-                    int idx = paint.findOffsetByRunAdvance(text, lastStart, regionEnd, advance - currentPosition, useCache, quickMeasureMode);
+                    int idx =
+                            paint.findOffsetByRunAdvance(
+                                    text,
+                                    lastStart,
+                                    regionEnd,
+                                    advance - currentPosition,
+                                    useCache,
+                                    quickMeasureMode);
                     currentPosition += measureText(lastStart, idx);
                     res = idx;
                 }
@@ -283,7 +314,10 @@ public class GraphicTextRow {
         }
         if (start >= end) {
             if (start != end)
-                Log.w("GraphicTextRow", "start > end. if this is caused by editor, please provide feedback", new Throwable());
+                Log.w(
+                        "GraphicTextRow",
+                        "start > end. if this is caused by editor, please provide feedback",
+                        new Throwable());
             return 0f;
         }
         var cache = text.widthCache;
@@ -325,7 +359,13 @@ public class GraphicTextRow {
                 }
                 lastStyle = style;
             }
-            width += measureTextInner(regionStart, regionEnd, regionItr.getSpanStart(), regionItr.getSpanEnd(), widths);
+            width +=
+                    measureTextInner(
+                            regionStart,
+                            regionEnd,
+                            regionItr.getSpanStart(),
+                            regionItr.getSpanEnd(),
+                            widths);
             if (regionEnd >= end) {
                 break;
             }
@@ -340,16 +380,27 @@ public class GraphicTextRow {
         if (start >= end) {
             return 0f;
         }
-        var dirs = directions == null ?
-                (text.mayNeedBidi() ? TextBidi.getDirections(text) : tmpDirections)
-                : directions;
+        var dirs =
+                directions == null
+                        ? (text.mayNeedBidi() ? TextBidi.getDirections(text) : tmpDirections)
+                        : directions;
         float width = 0;
         for (int i = 0; i < dirs.getRunCount(); i++) {
             int start1 = Math.max(start, dirs.getRunStart(i));
             int end1 = Math.min(end, dirs.getRunEnd(i));
             if (end1 > start1) {
                 // Can be called directly
-                width += paint.myGetTextRunAdvances(text.value, start1, end1 - start1, ctxStart, ctxEnd - ctxStart, dirs.isRunRtl(i), widths, widths == null ? 0 : start1, quickMeasureMode);
+                width +=
+                        paint.myGetTextRunAdvances(
+                                text.value,
+                                start1,
+                                end1 - start1,
+                                ctxStart,
+                                ctxEnd - ctxStart,
+                                dirs.isRunRtl(i),
+                                widths,
+                                widths == null ? 0 : start1,
+                                quickMeasureMode);
             }
             if (dirs.getRunStart(i) >= end) {
                 break;
@@ -368,6 +419,4 @@ public class GraphicTextRow {
         float extraWidth = tabCount == 0 ? 0 : tabWidth - paint.measureText("\t");
         return width + extraWidth * tabCount;
     }
-
-
 }

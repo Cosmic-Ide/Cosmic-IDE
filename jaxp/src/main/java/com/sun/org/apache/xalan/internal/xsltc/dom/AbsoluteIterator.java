@@ -27,28 +27,25 @@ import com.sun.org.apache.xml.internal.dtm.ref.DTMAxisIteratorBase;
 import com.sun.org.apache.xml.internal.dtm.ref.DTMDefaultBase;
 
 /**
- * Absolute iterators ignore the node that is passed to setStartNode().
- * Instead, they always start from the root node. The node passed to
- * setStartNode() is not totally useless, though. It is needed to obtain the
- * DOM mask, i.e. the index into the MultiDOM table that corresponds to the
- * DOM "owning" the node.
+ * Absolute iterators ignore the node that is passed to setStartNode(). Instead, they always start
+ * from the root node. The node passed to setStartNode() is not totally useless, though. It is
+ * needed to obtain the DOM mask, i.e. the index into the MultiDOM table that corresponds to the DOM
+ * "owning" the node.
  *
- * The DOM mask is cached, so successive calls to setStartNode() passing
- * nodes from other DOMs will have no effect (i.e. this iterator cannot
- * migrate between DOMs).
+ * <p>The DOM mask is cached, so successive calls to setStartNode() passing nodes from other DOMs
+ * will have no effect (i.e. this iterator cannot migrate between DOMs).
+ *
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
 public final class AbsoluteIterator extends DTMAxisIteratorBase {
 
-    /**
-     * Source for this iterator.
-     */
+    /** Source for this iterator. */
     private DTMAxisIterator _source;
 
     public AbsoluteIterator(DTMAxisIterator source) {
         _source = source;
-// System.out.println("AI source = " + source + " this = " + this);
+        // System.out.println("AI source = " + source + " this = " + this);
     }
 
     public void setRestartable(boolean isRestartable) {
@@ -72,14 +69,12 @@ public final class AbsoluteIterator extends DTMAxisIteratorBase {
     public DTMAxisIterator cloneIterator() {
         try {
             final AbsoluteIterator clone = (AbsoluteIterator) super.clone();
-            clone._source = _source.cloneIterator();    // resets source
+            clone._source = _source.cloneIterator(); // resets source
             clone.resetPosition();
             clone._isRestartable = false;
             return clone;
-        }
-        catch (CloneNotSupportedException e) {
-            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR,
-                                      e.toString());
+        } catch (CloneNotSupportedException e) {
+            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
             return null;
         }
     }

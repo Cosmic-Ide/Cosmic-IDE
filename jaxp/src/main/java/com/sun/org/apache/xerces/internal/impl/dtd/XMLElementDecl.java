@@ -21,11 +21,10 @@
 
 package com.sun.org.apache.xerces.internal.impl.dtd;
 
-import com.sun.org.apache.xerces.internal.xni.QName;
 import com.sun.org.apache.xerces.internal.impl.dtd.models.ContentModelValidator;
+import com.sun.org.apache.xerces.internal.xni.QName;
 
-/**
- */
+/** */
 public class XMLElementDecl {
 
     //
@@ -79,23 +78,25 @@ public class XMLElementDecl {
      * @param contentModelValidator
      * @param simpleType
      */
-    public void setValues(QName name, int scope, short type, ContentModelValidator contentModelValidator, XMLSimpleType simpleType) {
+    public void setValues(
+            QName name,
+            int scope,
+            short type,
+            ContentModelValidator contentModelValidator,
+            XMLSimpleType simpleType) {
         this.name.setValues(name);
-        this.scope                 = scope;
-        this.type                  = type;
+        this.scope = scope;
+        this.type = type;
         this.contentModelValidator = contentModelValidator;
         this.simpleType.setValues(simpleType);
     } // setValues
 
-    /**
-     * clear
-     */
+    /** clear */
     public void clear() {
         this.name.clear();
-        this.type          = -1;
-        this.scope         = -1;
+        this.type = -1;
+        this.scope = -1;
         this.contentModelValidator = null;
         this.simpleType.clear();
     } // clear
-
 } // class XMLElementDecl

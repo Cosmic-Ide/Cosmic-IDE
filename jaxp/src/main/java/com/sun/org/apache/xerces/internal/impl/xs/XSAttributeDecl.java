@@ -35,20 +35,19 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 import com.sun.org.apache.xerces.internal.xs.XSValue;
 
 /**
- * The XML representation for an attribute declaration
- * schema component is an <attribute> element information item
+ * The XML representation for an attribute declaration schema component is an <attribute> element
+ * information item
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
  * @author Sandy Gao, IBM
  */
 public class XSAttributeDecl implements XSAttributeDeclaration {
 
     // scopes
-    public final static short     SCOPE_ABSENT        = 0;
-    public final static short     SCOPE_GLOBAL        = 1;
-    public final static short     SCOPE_LOCAL         = 2;
+    public static final short SCOPE_ABSENT = 0;
+    public static final short SCOPE_GLOBAL = 1;
+    public static final short SCOPE_LOCAL = 2;
 
     // the name of the attribute
     String fName = null;
@@ -71,9 +70,14 @@ public class XSAttributeDecl implements XSAttributeDeclaration {
     // of the attribute declaration, if it is globally declared; or null otherwise.
     private XSNamespaceItem fNamespaceItem = null;
 
-    public void setValues(String name, String targetNamespace,
-            XSSimpleType simpleType, short constraintType, short scope,
-            ValidatedInfo valInfo, XSComplexTypeDecl enclosingCT,
+    public void setValues(
+            String name,
+            String targetNamespace,
+            XSSimpleType simpleType,
+            short constraintType,
+            short scope,
+            ValidatedInfo valInfo,
+            XSComplexTypeDecl enclosingCT,
             XSObjectList annotations) {
         fName = name;
         fTargetNamespace = targetNamespace;
@@ -85,7 +89,7 @@ public class XSAttributeDecl implements XSAttributeDeclaration {
         fAnnotations = annotations;
     }
 
-    public void reset(){
+    public void reset() {
         fName = null;
         fTargetNamespace = null;
         fType = null;
@@ -96,86 +100,70 @@ public class XSAttributeDecl implements XSAttributeDeclaration {
         fAnnotations = null;
     }
 
-    /**
-     * Get the type of the object, i.e ELEMENT_DECLARATION.
-     */
+    /** Get the type of the object, i.e ELEMENT_DECLARATION. */
     public short getType() {
         return XSConstants.ATTRIBUTE_DECLARATION;
     }
 
     /**
-     * The <code>name</code> of this <code>XSObject</code> depending on the
-     * <code>XSObject</code> type.
+     * The <code>name</code> of this <code>XSObject</code> depending on the <code>XSObject</code>
+     * type.
      */
     public String getName() {
         return fName;
     }
 
     /**
-     * The namespace URI of this node, or <code>null</code> if it is
-     * unspecified.  defines how a namespace URI is attached to schema
-     * components.
+     * The namespace URI of this node, or <code>null</code> if it is unspecified. defines how a
+     * namespace URI is attached to schema components.
      */
     public String getNamespace() {
         return fTargetNamespace;
     }
 
-    /**
-     * A simple type definition
-     */
+    /** A simple type definition */
     public XSSimpleTypeDefinition getTypeDefinition() {
         return fType;
     }
 
     /**
-     * Optional. Either global or a complex type definition (
-     * <code>ctDefinition</code>). This property is absent in the case of
-     * declarations within attribute group definitions: their scope will be
-     * determined when they are used in the construction of complex type
-     * definitions.
+     * Optional. Either global or a complex type definition ( <code>ctDefinition</code>). This
+     * property is absent in the case of declarations within attribute group definitions: their
+     * scope will be determined when they are used in the construction of complex type definitions.
      */
     public short getScope() {
         return fScope;
     }
 
     /**
-     * Locally scoped declarations are available for use only within the
-     * complex type definition identified by the <code>scope</code>
-     * property.
+     * Locally scoped declarations are available for use only within the complex type definition
+     * identified by the <code>scope</code> property.
      */
     public XSComplexTypeDefinition getEnclosingCTDefinition() {
         return fEnclosingCT;
     }
 
-    /**
-     * Value constraint: one of default, fixed.
-     */
+    /** Value constraint: one of default, fixed. */
     public short getConstraintType() {
         return fConstraintType;
     }
 
     /**
-     * Value constraint: The actual value (with respect to the {type
-     * definition}) Should we return Object instead of DOMString?
+     * Value constraint: The actual value (with respect to the {type definition}) Should we return
+     * Object instead of DOMString?
      */
     @Deprecated
     public String getConstraintValue() {
         // REVISIT: SCAPI: what's the proper representation
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.stringValue();
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.stringValue();
     }
 
-    /**
-     * Optional. Annotation.
-     */
+    /** Optional. Annotation. */
     public XSAnnotation getAnnotation() {
         return (fAnnotations != null) ? (XSAnnotation) fAnnotations.item(0) : null;
     }
 
-    /**
-     * Optional. Annotations.
-     */
+    /** Optional. Annotations. */
     public XSObjectList getAnnotations() {
         return (fAnnotations != null) ? fAnnotations : XSObjectListImpl.EMPTY_LIST;
     }
@@ -197,27 +185,22 @@ public class XSAttributeDecl implements XSAttributeDeclaration {
 
     @Deprecated
     public Object getActualVC() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.actualValue;
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.actualValue;
     }
 
     @Deprecated
     public short getActualVCType() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               XSConstants.UNAVAILABLE_DT :
-               fDefault.actualValueType;
+        return getConstraintType() == XSConstants.VC_NONE
+                ? XSConstants.UNAVAILABLE_DT
+                : fDefault.actualValueType;
     }
 
     @Deprecated
     public ShortList getItemValueTypes() {
-        return getConstraintType() == XSConstants.VC_NONE ?
-               null :
-               fDefault.itemValueTypes;
+        return getConstraintType() == XSConstants.VC_NONE ? null : fDefault.itemValueTypes;
     }
 
     public XSValue getValueConstraintValue() {
         return fDefault;
     }
-
 } // class XSAttributeDecl

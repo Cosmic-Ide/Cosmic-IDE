@@ -1,33 +1,29 @@
 package org.cosmic.ide
 
-import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.os.Process
 import android.os.Build
+import android.os.Process
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.util.dpToPx
 import org.eclipse.tm4e.core.registry.IThemeSource
-import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
-import java.io.File
-import kotlin.system.exitProcess
-import kotlin.concurrent.schedule
-import java.util.Timer
-
 import org.lsposed.hiddenapibypass.HiddenApiBypass
+import java.util.Timer
+import kotlin.concurrent.schedule
+import kotlin.system.exitProcess
 
 class App : Application() {
 
@@ -40,7 +36,7 @@ class App : Application() {
             JavacConfigProvider.disableModules()
             dpToPx.initalizeResources(context.getResources())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;");
+                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
             }
             FileProviderRegistry.getInstance().addFileProvider(
                 AssetsFileResolver(

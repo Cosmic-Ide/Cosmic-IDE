@@ -21,9 +21,6 @@
 
 package com.sun.org.apache.xerces.internal.impl.xs;
 
-import java.io.IOException;
-import java.io.StringReader;
-
 import com.sun.org.apache.xerces.internal.dom.CoreDocumentImpl;
 import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import com.sun.org.apache.xerces.internal.parsers.SAXParser;
@@ -37,6 +34,10 @@ import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.StringReader;
+
 /**
  * This is an implementation of the XSAnnotation schema component.
  *
@@ -61,68 +62,55 @@ public class XSAnnotationImpl implements XSAnnotation {
     }
 
     /**
-     *  Write contents of the annotation to the specified DOM object. If the
-     * specified <code>target</code> object is a DOM in-scope namespace
-     * declarations for <code>annotation</code> element are added as
-     * attributes nodes of the serialized <code>annotation</code>, otherwise
-     * the corresponding events for all in-scope namespace declaration are
-     * sent via specified document handler.
-     * @param target  A target pointer to the annotation target object, i.e.
-     *   <code>org.w3c.dom.Document</code>,
-     *   <code>org.xml.sax.ContentHandler</code>.
-     * @param targetType  A target type.
-     * @return If the <code>target</code> is recognized type and supported by
-     *   this implementation return true, otherwise return false.
+     * Write contents of the annotation to the specified DOM object. If the specified <code>target
+     * </code> object is a DOM in-scope namespace declarations for <code>annotation</code> element
+     * are added as attributes nodes of the serialized <code>annotation</code>, otherwise the
+     * corresponding events for all in-scope namespace declaration are sent via specified document
+     * handler.
+     *
+     * @param target A target pointer to the annotation target object, i.e. <code>
+     *     org.w3c.dom.Document</code>, <code>org.xml.sax.ContentHandler</code>.
+     * @param targetType A target type.
+     * @return If the <code>target</code> is recognized type and supported by this implementation
+     *     return true, otherwise return false.
      */
-    public boolean writeAnnotation(Object target,
-                                   short targetType) {
-        if(targetType == XSAnnotation.W3C_DOM_ELEMENT || targetType == XSAnnotation.W3C_DOM_DOCUMENT) {
-            writeToDOM((Node)target, targetType);
+    public boolean writeAnnotation(Object target, short targetType) {
+        if (targetType == XSAnnotation.W3C_DOM_ELEMENT
+                || targetType == XSAnnotation.W3C_DOM_DOCUMENT) {
+            writeToDOM((Node) target, targetType);
             return true;
         } else if (targetType == SAX_CONTENTHANDLER) {
-            writeToSAX((ContentHandler)target);
+            writeToSAX((ContentHandler) target);
             return true;
         }
         return false;
     }
 
-    /**
-     * A text representation of annotation.
-     */
+    /** A text representation of annotation. */
     public String getAnnotationString() {
         return fData;
     }
 
     // XSObject methods
 
-    /**
-     *  The <code>type</code> of this object, i.e.
-     * <code>ELEMENT_DECLARATION</code>.
-     */
+    /** The <code>type</code> of this object, i.e. <code>ELEMENT_DECLARATION</code>. */
     public short getType() {
         return XSConstants.ANNOTATION;
     }
 
-    /**
-     * The name of type <code>NCName</code> of this declaration as defined in
-     * XML Namespaces.
-     */
+    /** The name of type <code>NCName</code> of this declaration as defined in XML Namespaces. */
     public String getName() {
         return null;
     }
 
-    /**
-     *  The [target namespace] of this object, or <code>null</code> if it is
-     * unspecified.
-     */
+    /** The [target namespace] of this object, or <code>null</code> if it is unspecified. */
     public String getNamespace() {
         return null;
     }
 
     /**
-     * A namespace schema information item corresponding to the target
-     * namespace of the component, if it's globally declared; or null
-     * otherwise.
+     * A namespace schema information item corresponding to the target namespace of the component,
+     * if it's globally declared; or null otherwise.
      */
     public XSNamespaceItem getNamespaceItem() {
         return null;
@@ -137,13 +125,11 @@ public class XSAnnotationImpl implements XSAnnotation {
         parser.setContentHandler(handler);
         try {
             parser.parse(aSource);
-        }
-        catch (SAXException e) {
+        } catch (SAXException e) {
             // this should never happen!
             // REVISIT:  what to do with this?; should really not
             // eat it...
-        }
-        catch (IOException i) {
+        } catch (IOException i) {
             // ditto with above
         }
         // Release the reference to the user's ContentHandler.
@@ -153,20 +139,20 @@ public class XSAnnotationImpl implements XSAnnotation {
     // this creates the new Annotation element as the first child
     // of the Node
     private synchronized void writeToDOM(Node target, short type) {
-        Document futureOwner = (type == XSAnnotation.W3C_DOM_ELEMENT) ?
-                target.getOwnerDocument() : (Document)target;
+        Document futureOwner =
+                (type == XSAnnotation.W3C_DOM_ELEMENT)
+                        ? target.getOwnerDocument()
+                        : (Document) target;
         DOMParser parser = fGrammar.getDOMParser();
         StringReader aReader = new StringReader(fData);
         InputSource aSource = new InputSource(aReader);
         try {
             parser.parse(aSource);
-        }
-        catch (SAXException e) {
+        } catch (SAXException e) {
             // this should never happen!
             // REVISIT:  what to do with this?; should really not
             // eat it...
-        }
-        catch (IOException i) {
+        } catch (IOException i) {
             // ditto with above
         }
         Document aDocument = parser.getDocument();
@@ -179,11 +165,9 @@ public class XSAnnotationImpl implements XSAnnotation {
             if (newElem == null) {
                 newElem = futureOwner.importNode(annotation, true);
             }
-        }
-        else {
+        } else {
             newElem = futureOwner.importNode(annotation, true);
         }
         target.insertBefore(newElem, target.getFirstChild());
     }
-
 }

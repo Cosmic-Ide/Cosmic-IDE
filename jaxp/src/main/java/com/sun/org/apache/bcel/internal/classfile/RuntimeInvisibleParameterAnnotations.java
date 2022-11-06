@@ -21,14 +21,14 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * Represents a parameter annotation that is represented in the class file
- * but is not provided to the JVM.
+ * Represents a parameter annotation that is represented in the class file but is not provided to
+ * the JVM.
  *
  * @since 6.0
  */
@@ -40,8 +40,17 @@ public class RuntimeInvisibleParameterAnnotations extends ParameterAnnotations {
      * @param input Input stream
      * @param constant_pool Array of constants
      */
-    public RuntimeInvisibleParameterAnnotations(final int name_index, final int length, final DataInput input, final ConstantPool constant_pool)
+    public RuntimeInvisibleParameterAnnotations(
+            final int name_index,
+            final int length,
+            final DataInput input,
+            final ConstantPool constant_pool)
             throws IOException {
-        super(Const.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS, name_index, length, input, constant_pool);
+        super(
+                Const.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS,
+                name_index,
+                length,
+                input,
+                constant_pool);
     }
 }

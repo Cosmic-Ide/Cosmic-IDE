@@ -32,55 +32,55 @@ import com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;
 import com.sun.org.apache.xml.internal.dtm.DTMManager;
 import com.sun.org.apache.xml.internal.dtm.ref.EmptyIterator;
 import com.sun.org.apache.xml.internal.utils.SystemIDResolver;
-import java.io.FileNotFoundException;
-import javax.xml.transform.stream.StreamSource;
+
 import jdk.xml.internal.JdkConstants;
 import jdk.xml.internal.SecuritySupport;
 
+import java.io.FileNotFoundException;
+
+import javax.xml.transform.stream.StreamSource;
+
 /**
- * @author Morten Jorgensen
- * @LastModified: Sept 2021
+ * @author Morten Jorgensen @LastModified: Sept 2021
  */
 public final class LoadDocument {
 
-    private static final String NAMESPACE_FEATURE =
-       "http://xml.org/sax/features/namespaces";
+    private static final String NAMESPACE_FEATURE = "http://xml.org/sax/features/namespaces";
 
     /**
      * Interprets the arguments passed from the document() function (see
-     * com/sun/org/apache/xalan/internal/xsltc/compiler/DocumentCall.java) and returns an
-     * iterator containing the requested nodes. Builds a union-iterator if
-     * several documents are requested.
-     * 2 arguments arg1 and arg2.  document(Obj, node-set) call
+     * com/sun/org/apache/xalan/internal/xsltc/compiler/DocumentCall.java) and returns an iterator
+     * containing the requested nodes. Builds a union-iterator if several documents are requested. 2
+     * arguments arg1 and arg2. document(Obj, node-set) call
      */
-    public static DTMAxisIterator documentF(Object arg1, DTMAxisIterator arg2,
-                            String xslURI, AbstractTranslet translet, DOM dom)
-    throws TransletException {
+    public static DTMAxisIterator documentF(
+            Object arg1, DTMAxisIterator arg2, String xslURI, AbstractTranslet translet, DOM dom)
+            throws TransletException {
         String baseURI = null;
         final int arg2FirstNode = arg2.next();
         if (arg2FirstNode == DTMAxisIterator.END) {
             //  the second argument node-set is empty
             return EmptyIterator.getInstance();
         } else {
-            //System.err.println("arg2FirstNode name: "
+            // System.err.println("arg2FirstNode name: "
             //                   + dom.getNodeName(arg2FirstNode )+"["
             //                   +Integer.toHexString(arg2FirstNode )+"]");
             baseURI = dom.getDocumentURI(arg2FirstNode);
             if (!SystemIDResolver.isAbsoluteURI(baseURI))
-               baseURI = SystemIDResolver.getAbsoluteURIFromRelative(baseURI);
+                baseURI = SystemIDResolver.getAbsoluteURIFromRelative(baseURI);
         }
 
         try {
             if (arg1 instanceof String) {
-                if (((String)arg1).length() == 0) {
+                if (((String) arg1).length() == 0) {
                     return document(xslURI, "", translet, dom);
                 } else {
-                    return document((String)arg1, baseURI, translet, dom);
+                    return document((String) arg1, baseURI, translet, dom);
                 }
             } else if (arg1 instanceof DTMAxisIterator) {
-                return document((DTMAxisIterator)arg1, baseURI, translet, dom);
+                return document((DTMAxisIterator) arg1, baseURI, translet, dom);
             } else {
-                final String err = "document("+arg1.toString()+")";
+                final String err = "document(" + arg1.toString() + ")";
                 throw new IllegalArgumentException(err);
             }
         } catch (Exception e) {
@@ -89,30 +89,28 @@ public final class LoadDocument {
     }
     /**
      * Interprets the arguments passed from the document() function (see
-     * com/sun/org/apache/xalan/internal/xsltc/compiler/DocumentCall.java) and returns an
-     * iterator containing the requested nodes. Builds a union-iterator if
-     * several documents are requested.
-     * 1 arguments arg.  document(Obj) call
+     * com/sun/org/apache/xalan/internal/xsltc/compiler/DocumentCall.java) and returns an iterator
+     * containing the requested nodes. Builds a union-iterator if several documents are requested. 1
+     * arguments arg. document(Obj) call
      */
-    public static DTMAxisIterator documentF(Object arg, String xslURI,
-                    AbstractTranslet translet, DOM dom)
-    throws TransletException {
+    public static DTMAxisIterator documentF(
+            Object arg, String xslURI, AbstractTranslet translet, DOM dom)
+            throws TransletException {
         try {
             if (arg instanceof String) {
-                if (xslURI == null )
-                    xslURI = "";
+                if (xslURI == null) xslURI = "";
 
                 String baseURI = xslURI;
                 if (!SystemIDResolver.isAbsoluteURI(xslURI))
-                   baseURI = SystemIDResolver.getAbsoluteURIFromRelative(xslURI);
+                    baseURI = SystemIDResolver.getAbsoluteURIFromRelative(xslURI);
 
-                String href = (String)arg;
+                String href = (String) arg;
                 if (href.length() == 0) {
                     href = "";
                     // %OPT% Optimization to cache the stylesheet DOM.
                     // The stylesheet DOM is built once and cached
                     // in the Templates object.
-                    TemplatesImpl templates = (TemplatesImpl)translet.getTemplates();
+                    TemplatesImpl templates = (TemplatesImpl) translet.getTemplates();
                     DOM sdom = null;
                     if (templates != null) {
                         sdom = templates.getStylesheetDOM();
@@ -123,18 +121,16 @@ public final class LoadDocument {
                     // for the document.
                     if (sdom != null) {
                         return document(sdom, translet, dom);
-                    }
-                    else {
+                    } else {
                         return document(href, baseURI, translet, dom, true);
                     }
-                }
-                else {
+                } else {
                     return document(href, baseURI, translet, dom);
                 }
             } else if (arg instanceof DTMAxisIterator) {
-                return document((DTMAxisIterator)arg, null, translet, dom);
+                return document((DTMAxisIterator) arg, null, translet, dom);
             } else {
-                final String err = "document("+arg.toString()+")";
+                final String err = "document(" + arg.toString() + ")";
                 throw new IllegalArgumentException(err);
             }
         } catch (Exception e) {
@@ -142,159 +138,156 @@ public final class LoadDocument {
         }
     }
 
-    private static DTMAxisIterator document(String uri, String base,
-                    AbstractTranslet translet, DOM dom)
-        throws Exception
-    {
+    private static DTMAxisIterator document(
+            String uri, String base, AbstractTranslet translet, DOM dom) throws Exception {
         return document(uri, base, translet, dom, false);
     }
 
-    private static DTMAxisIterator document(String uri, String base,
-                    AbstractTranslet translet, DOM dom,
-                    boolean cacheDOM)
-    throws Exception
-    {
+    private static DTMAxisIterator document(
+            String uri, String base, AbstractTranslet translet, DOM dom, boolean cacheDOM)
+            throws Exception {
         try {
-        final String originalUri = uri;
-        MultiDOM multiplexer = (MultiDOM)dom;
+            final String originalUri = uri;
+            MultiDOM multiplexer = (MultiDOM) dom;
 
-        // Prepend URI base to URI (from context)
-        if (base != null && !base.equals("")) {
-            uri = SystemIDResolver.getAbsoluteURI(uri, base);
-        }
-
-        // Return an empty iterator if the URI is clearly invalid
-        // (to prevent some unncessary MalformedURL exceptions).
-        if (uri == null || uri.equals("")) {
-            return(EmptyIterator.getInstance());
-        }
-
-        // Check if this DOM has already been added to the multiplexer
-        int mask = multiplexer.getDocumentMask(uri);
-        if (mask != -1) {
-            DOM newDom = ((DOMAdapter)multiplexer.getDOMAdapter(uri))
-                                       .getDOMImpl();
-            if (newDom instanceof DOMEnhancedForDTM) {
-                return new SingletonIterator(((DOMEnhancedForDTM)newDom)
-                                                               .getDocument(),
-                                             true);
-            }
-        }
-
-        // Check if we can get the DOM from a DOMCache
-        DOMCache cache = translet.getDOMCache();
-        DOM newdom;
-
-        mask = multiplexer.nextMask(); // peek
-
-        if (cache != null) {
-            newdom = cache.retrieveDocument(base, originalUri, translet);
-            if (newdom == null) {
-                if (translet.getAccessError() != null) {
-                    throw new Exception(translet.getAccessError());
-                }
-                final Exception e = new FileNotFoundException(originalUri);
-                throw new TransletException(e);
-            }
-        } else {
-            String accessError = SecuritySupport.checkAccess(uri, translet.getAllowedProtocols(), JdkConstants.ACCESS_EXTERNAL_ALL);
-            if (accessError != null) {
-                ErrorMsg msg = new ErrorMsg(ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
-                        SecuritySupport.sanitizePath(uri), accessError);
-                throw new Exception(msg.toString());
+            // Prepend URI base to URI (from context)
+            if (base != null && !base.equals("")) {
+                uri = SystemIDResolver.getAbsoluteURI(uri, base);
             }
 
-            // Parse the input document and construct DOM object
-            // Trust the DTMManager to pick the right parser and
-            // set up the DOM correctly.
-            XSLTCDTMManager dtmManager = (XSLTCDTMManager)multiplexer
-                                                              .getDTMManager();
-            DOMEnhancedForDTM enhancedDOM =
-                    (DOMEnhancedForDTM) dtmManager.getDTM(new StreamSource(uri),
-                                            false, null, true, false,
-                                            translet.hasIdCall(), cacheDOM);
-            newdom = enhancedDOM;
+            // Return an empty iterator if the URI is clearly invalid
+            // (to prevent some unncessary MalformedURL exceptions).
+            if (uri == null || uri.equals("")) {
+                return (EmptyIterator.getInstance());
+            }
 
-            // Cache the stylesheet DOM in the Templates object
-            if (cacheDOM) {
-                TemplatesImpl templates = (TemplatesImpl)translet.getTemplates();
-                if (templates != null) {
-                    templates.setStylesheetDOM(enhancedDOM);
+            // Check if this DOM has already been added to the multiplexer
+            int mask = multiplexer.getDocumentMask(uri);
+            if (mask != -1) {
+                DOM newDom = ((DOMAdapter) multiplexer.getDOMAdapter(uri)).getDOMImpl();
+                if (newDom instanceof DOMEnhancedForDTM) {
+                    return new SingletonIterator(((DOMEnhancedForDTM) newDom).getDocument(), true);
                 }
             }
 
-            translet.prepassDocument(enhancedDOM);
-            enhancedDOM.setDocumentURI(uri);
-        }
+            // Check if we can get the DOM from a DOMCache
+            DOMCache cache = translet.getDOMCache();
+            DOM newdom;
 
-        // Wrap the DOM object in a DOM adapter and add to multiplexer
-        final DOMAdapter domAdapter = translet.makeDOMAdapter(newdom);
-        multiplexer.addDOMAdapter(domAdapter);
+            mask = multiplexer.nextMask(); // peek
 
-        // Create index for any key elements
-        translet.buildKeys(domAdapter, null, null, newdom.getDocument());
+            if (cache != null) {
+                newdom = cache.retrieveDocument(base, originalUri, translet);
+                if (newdom == null) {
+                    if (translet.getAccessError() != null) {
+                        throw new Exception(translet.getAccessError());
+                    }
+                    final Exception e = new FileNotFoundException(originalUri);
+                    throw new TransletException(e);
+                }
+            } else {
+                String accessError =
+                        SecuritySupport.checkAccess(
+                                uri,
+                                translet.getAllowedProtocols(),
+                                JdkConstants.ACCESS_EXTERNAL_ALL);
+                if (accessError != null) {
+                    ErrorMsg msg =
+                            new ErrorMsg(
+                                    ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
+                                    SecuritySupport.sanitizePath(uri),
+                                    accessError);
+                    throw new Exception(msg.toString());
+                }
 
-        // Return a singleton iterator containing the root node
-        return new SingletonIterator(newdom.getDocument(), true);
+                // Parse the input document and construct DOM object
+                // Trust the DTMManager to pick the right parser and
+                // set up the DOM correctly.
+                XSLTCDTMManager dtmManager = (XSLTCDTMManager) multiplexer.getDTMManager();
+                DOMEnhancedForDTM enhancedDOM =
+                        (DOMEnhancedForDTM)
+                                dtmManager.getDTM(
+                                        new StreamSource(uri),
+                                        false,
+                                        null,
+                                        true,
+                                        false,
+                                        translet.hasIdCall(),
+                                        cacheDOM);
+                newdom = enhancedDOM;
+
+                // Cache the stylesheet DOM in the Templates object
+                if (cacheDOM) {
+                    TemplatesImpl templates = (TemplatesImpl) translet.getTemplates();
+                    if (templates != null) {
+                        templates.setStylesheetDOM(enhancedDOM);
+                    }
+                }
+
+                translet.prepassDocument(enhancedDOM);
+                enhancedDOM.setDocumentURI(uri);
+            }
+
+            // Wrap the DOM object in a DOM adapter and add to multiplexer
+            final DOMAdapter domAdapter = translet.makeDOMAdapter(newdom);
+            multiplexer.addDOMAdapter(domAdapter);
+
+            // Create index for any key elements
+            translet.buildKeys(domAdapter, null, null, newdom.getDocument());
+
+            // Return a singleton iterator containing the root node
+            return new SingletonIterator(newdom.getDocument(), true);
         } catch (Exception e) {
             throw e;
         }
     }
 
-
-    private static DTMAxisIterator document(DTMAxisIterator arg1,
-                                            String baseURI,
-                                            AbstractTranslet translet, DOM dom)
-    throws Exception
-    {
+    private static DTMAxisIterator document(
+            DTMAxisIterator arg1, String baseURI, AbstractTranslet translet, DOM dom)
+            throws Exception {
         UnionIterator union = new UnionIterator(dom);
         int node = DTM.NULL;
 
         while ((node = arg1.next()) != DTM.NULL) {
             String uri = dom.getStringValueX(node);
-            //document(node-set) if true;  document(node-set,node-set) if false
-            if (baseURI  == null) {
-               baseURI = dom.getDocumentURI(node);
-               if (!SystemIDResolver.isAbsoluteURI(baseURI))
+            // document(node-set) if true;  document(node-set,node-set) if false
+            if (baseURI == null) {
+                baseURI = dom.getDocumentURI(node);
+                if (!SystemIDResolver.isAbsoluteURI(baseURI))
                     baseURI = SystemIDResolver.getAbsoluteURIFromRelative(baseURI);
             }
             union.addIterator(document(uri, baseURI, translet, dom));
         }
-        return(union);
+        return (union);
     }
 
     /**
-     * Create a DTMAxisIterator for the newdom. This is currently only
-     * used to create an iterator for the cached stylesheet DOM.
+     * Create a DTMAxisIterator for the newdom. This is currently only used to create an iterator
+     * for the cached stylesheet DOM.
      *
      * @param newdom the cached stylesheet DOM
      * @param translet the translet
      * @param the main dom (should be a MultiDOM)
      * @return a DTMAxisIterator from the document root
      */
-    private static DTMAxisIterator document(DOM newdom,
-                                            AbstractTranslet translet,
-                                            DOM dom)
-        throws Exception
-    {
-        DTMManager dtmManager = ((MultiDOM)dom).getDTMManager();
+    private static DTMAxisIterator document(DOM newdom, AbstractTranslet translet, DOM dom)
+            throws Exception {
+        DTMManager dtmManager = ((MultiDOM) dom).getDTMManager();
         // Need to migrate the cached DTM to the new DTMManager
         if (dtmManager != null && newdom instanceof DTM) {
-            ((DTM)newdom).migrateTo(dtmManager);
+            ((DTM) newdom).migrateTo(dtmManager);
         }
 
         translet.prepassDocument(newdom);
 
         // Wrap the DOM object in a DOM adapter and add to multiplexer
         final DOMAdapter domAdapter = translet.makeDOMAdapter(newdom);
-        ((MultiDOM)dom).addDOMAdapter(domAdapter);
+        ((MultiDOM) dom).addDOMAdapter(domAdapter);
 
         // Create index for any key elements
-        translet.buildKeys(domAdapter, null, null,
-                           newdom.getDocument());
+        translet.buildKeys(domAdapter, null, null, newdom.getDocument());
 
         // Return a singleton iterator containing the root node
         return new SingletonIterator(newdom.getDocument(), true);
     }
-
 }

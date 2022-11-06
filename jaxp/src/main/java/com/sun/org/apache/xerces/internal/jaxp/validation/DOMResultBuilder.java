@@ -45,9 +45,7 @@ import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentSource;
 import com.sun.org.apache.xerces.internal.xs.AttributePSVI;
 import com.sun.org.apache.xerces.internal.xs.ElementPSVI;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.transform.dom.DOMResult;
+
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -60,30 +58,38 @@ import org.w3c.dom.Notation;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.transform.dom.DOMResult;
 
 /**
- * <p>DOM result builder.</p>
+ * DOM result builder.
  *
- * @author Michael Glavassevich, IBM
- * @LastModified: Oct 2017
+ * @author Michael Glavassevich, IBM @LastModified: Oct 2017
  */
 final class DOMResultBuilder implements DOMDocumentHandler {
 
     /** Table for quick check of child insertion. */
-    private final static int[] kidOK;
+    private static final int[] kidOK;
 
     static {
         kidOK = new int[13];
         kidOK[Node.DOCUMENT_NODE] =
-            1 << Node.ELEMENT_NODE | 1 << Node.PROCESSING_INSTRUCTION_NODE |
-            1 << Node.COMMENT_NODE | 1 << Node.DOCUMENT_TYPE_NODE;
+                1 << Node.ELEMENT_NODE
+                        | 1 << Node.PROCESSING_INSTRUCTION_NODE
+                        | 1 << Node.COMMENT_NODE
+                        | 1 << Node.DOCUMENT_TYPE_NODE;
         kidOK[Node.DOCUMENT_FRAGMENT_NODE] =
-        kidOK[Node.ENTITY_NODE] =
-        kidOK[Node.ENTITY_REFERENCE_NODE] =
-        kidOK[Node.ELEMENT_NODE] =
-            1 << Node.ELEMENT_NODE | 1 << Node.PROCESSING_INSTRUCTION_NODE |
-            1 << Node.COMMENT_NODE | 1 << Node.TEXT_NODE |
-            1 << Node.CDATA_SECTION_NODE | 1 << Node.ENTITY_REFERENCE_NODE ;
+                kidOK[Node.ENTITY_NODE] =
+                        kidOK[Node.ENTITY_REFERENCE_NODE] =
+                                kidOK[Node.ELEMENT_NODE] =
+                                        1 << Node.ELEMENT_NODE
+                                                | 1 << Node.PROCESSING_INSTRUCTION_NODE
+                                                | 1 << Node.COMMENT_NODE
+                                                | 1 << Node.TEXT_NODE
+                                                | 1 << Node.CDATA_SECTION_NODE
+                                                | 1 << Node.ENTITY_REFERENCE_NODE;
         kidOK[Node.ATTRIBUTE_NODE] = 1 << Node.TEXT_NODE | 1 << Node.ENTITY_REFERENCE_NODE;
         kidOK[Node.DOCUMENT_TYPE_NODE] = 0;
         kidOK[Node.PROCESSING_INSTRUCTION_NODE] = 0;
@@ -127,8 +133,12 @@ final class DOMResultBuilder implements DOMDocumentHandler {
         if (result != null) {
             fTarget = result.getNode();
             fNextSibling = result.getNextSibling();
-            fDocument = (fTarget.getNodeType() == Node.DOCUMENT_NODE) ? (Document) fTarget : fTarget.getOwnerDocument();
-            fDocumentImpl = (fDocument instanceof CoreDocumentImpl) ? (CoreDocumentImpl) fDocument : null;
+            fDocument =
+                    (fTarget.getNodeType() == Node.DOCUMENT_NODE)
+                            ? (Document) fTarget
+                            : fTarget.getOwnerDocument();
+            fDocumentImpl =
+                    (fDocument instanceof CoreDocumentImpl) ? (CoreDocumentImpl) fDocument : null;
             fStorePSVI = (fDocument instanceof PSVIDocumentImpl);
             return;
         }
@@ -142,7 +152,9 @@ final class DOMResultBuilder implements DOMDocumentHandler {
     public void doctypeDecl(DocumentType node) throws XNIException {
         /** Create new DocumentType node for the target. */
         if (fDocumentImpl != null) {
-            DocumentType docType = fDocumentImpl.createDocumentType(node.getName(), node.getPublicId(), node.getSystemId());
+            DocumentType docType =
+                    fDocumentImpl.createDocumentType(
+                            node.getName(), node.getPublicId(), node.getSystemId());
             final String internalSubset = node.getInternalSubset();
             /** Copy internal subset. */
             if (internalSubset != null) {
@@ -154,7 +166,8 @@ final class DOMResultBuilder implements DOMDocumentHandler {
             int length = oldMap.getLength();
             for (int i = 0; i < length; ++i) {
                 Entity oldEntity = (Entity) oldMap.item(i);
-                EntityImpl newEntity = (EntityImpl) fDocumentImpl.createEntity(oldEntity.getNodeName());
+                EntityImpl newEntity =
+                        (EntityImpl) fDocumentImpl.createEntity(oldEntity.getNodeName());
                 newEntity.setPublicId(oldEntity.getPublicId());
                 newEntity.setSystemId(oldEntity.getSystemId());
                 newEntity.setNotationName(oldEntity.getNotationName());
@@ -166,7 +179,8 @@ final class DOMResultBuilder implements DOMDocumentHandler {
             length = oldMap.getLength();
             for (int i = 0; i < length; ++i) {
                 Notation oldNotation = (Notation) oldMap.item(i);
-                NotationImpl newNotation = (NotationImpl) fDocumentImpl.createNotation(oldNotation.getNodeName());
+                NotationImpl newNotation =
+                        (NotationImpl) fDocumentImpl.createNotation(oldNotation.getNodeName());
                 newNotation.setPublicId(oldNotation.getPublicId());
                 newNotation.setSystemId(oldNotation.getSystemId());
                 newMap.setNamedItem(newNotation);
@@ -190,8 +204,7 @@ final class DOMResultBuilder implements DOMDocumentHandler {
         append(fDocument.createComment(node.getNodeValue()));
     }
 
-    public void processingInstruction(ProcessingInstruction node)
-            throws XNIException {
+    public void processingInstruction(ProcessingInstruction node) throws XNIException {
         /** Create new ProcessingInstruction node for the target. */
         append(fDocument.createProcessingInstruction(node.getTarget(), node.getData()));
     }
@@ -204,30 +217,35 @@ final class DOMResultBuilder implements DOMDocumentHandler {
      * XMLDocumentHandler methods
      */
 
-    public void startDocument(XMLLocator locator, String encoding,
-            NamespaceContext namespaceContext, Augmentations augs)
+    public void startDocument(
+            XMLLocator locator,
+            String encoding,
+            NamespaceContext namespaceContext,
+            Augmentations augs)
             throws XNIException {}
 
-    public void xmlDecl(String version, String encoding, String standalone,
-            Augmentations augs) throws XNIException {}
+    public void xmlDecl(String version, String encoding, String standalone, Augmentations augs)
+            throws XNIException {}
 
-    public void doctypeDecl(String rootElement, String publicId,
-            String systemId, Augmentations augs) throws XNIException {}
+    public void doctypeDecl(
+            String rootElement, String publicId, String systemId, Augmentations augs)
+            throws XNIException {}
 
     public void comment(XMLString text, Augmentations augs) throws XNIException {}
 
-    public void processingInstruction(String target, XMLString data,
-            Augmentations augs) throws XNIException {}
+    public void processingInstruction(String target, XMLString data, Augmentations augs)
+            throws XNIException {}
 
-    public void startElement(QName element, XMLAttributes attributes,
-            Augmentations augs) throws XNIException {
+    public void startElement(QName element, XMLAttributes attributes, Augmentations augs)
+            throws XNIException {
         Element elem;
         int attrCount = attributes.getLength();
         if (fDocumentImpl == null) {
             elem = fDocument.createElementNS(element.uri, element.rawname);
             for (int i = 0; i < attrCount; ++i) {
                 attributes.getName(i, fAttributeQName);
-                elem.setAttributeNS(fAttributeQName.uri, fAttributeQName.rawname, attributes.getValue(i));
+                elem.setAttributeNS(
+                        fAttributeQName.uri, fAttributeQName.rawname, attributes.getValue(i));
             }
         }
         // If it's a Xerces DOM store type information for attributes, set idness, etc..
@@ -235,12 +253,18 @@ final class DOMResultBuilder implements DOMDocumentHandler {
             elem = fDocumentImpl.createElementNS(element.uri, element.rawname, element.localpart);
             for (int i = 0; i < attrCount; ++i) {
                 attributes.getName(i, fAttributeQName);
-                AttrImpl attr = (AttrImpl) fDocumentImpl.createAttributeNS(fAttributeQName.uri,
-                        fAttributeQName.rawname, fAttributeQName.localpart);
+                AttrImpl attr =
+                        (AttrImpl)
+                                fDocumentImpl.createAttributeNS(
+                                        fAttributeQName.uri,
+                                        fAttributeQName.rawname,
+                                        fAttributeQName.localpart);
                 attr.setValue(attributes.getValue(i));
 
                 // write type information to this attribute
-                AttributePSVI attrPSVI = (AttributePSVI) attributes.getAugmentations(i).getItem (Constants.ATTRIBUTE_PSVI);
+                AttributePSVI attrPSVI =
+                        (AttributePSVI)
+                                attributes.getAugmentations(i).getItem(Constants.ATTRIBUTE_PSVI);
                 if (attrPSVI != null) {
                     if (fStorePSVI) {
                         ((PSVIAttrNSImpl) attr).setPSVI(attrPSVI);
@@ -249,16 +273,15 @@ final class DOMResultBuilder implements DOMDocumentHandler {
                     if (type == null) {
                         type = attrPSVI.getTypeDefinition();
                         if (type != null) {
-                            attr.setType (type);
+                            attr.setType(type);
                             if (((XSSimpleType) type).isIDType()) {
-                                ((ElementImpl) elem).setIdAttributeNode (attr, true);
+                                ((ElementImpl) elem).setIdAttributeNode(attr, true);
                             }
                         }
-                    }
-                    else {
-                        attr.setType (type);
+                    } else {
+                        attr.setType(type);
                         if (((XSSimpleType) type).isIDType()) {
-                            ((ElementImpl) elem).setIdAttributeNode (attr, true);
+                            ((ElementImpl) elem).setIdAttributeNode(attr, true);
                         }
                     }
                 }
@@ -273,48 +296,43 @@ final class DOMResultBuilder implements DOMDocumentHandler {
         }
     }
 
-    public void emptyElement(QName element, XMLAttributes attributes,
-            Augmentations augs) throws XNIException {
+    public void emptyElement(QName element, XMLAttributes attributes, Augmentations augs)
+            throws XNIException {
         startElement(element, attributes, augs);
         endElement(element, augs);
     }
 
-    public void startGeneralEntity(String name,
-            XMLResourceIdentifier identifier, String encoding,
-            Augmentations augs) throws XNIException {}
-
-    public void textDecl(String version, String encoding, Augmentations augs)
+    public void startGeneralEntity(
+            String name, XMLResourceIdentifier identifier, String encoding, Augmentations augs)
             throws XNIException {}
 
-    public void endGeneralEntity(String name, Augmentations augs)
-            throws XNIException {}
+    public void textDecl(String version, String encoding, Augmentations augs) throws XNIException {}
 
-    public void characters(XMLString text, Augmentations augs)
-            throws XNIException {
+    public void endGeneralEntity(String name, Augmentations augs) throws XNIException {}
+
+    public void characters(XMLString text, Augmentations augs) throws XNIException {
         if (!fIgnoreChars) {
             append(fDocument.createTextNode(text.toString()));
         }
     }
 
-    public void ignorableWhitespace(XMLString text, Augmentations augs)
-            throws XNIException {
+    public void ignorableWhitespace(XMLString text, Augmentations augs) throws XNIException {
         characters(text, augs);
     }
 
-    public void endElement(QName element, Augmentations augs)
-            throws XNIException {
+    public void endElement(QName element, Augmentations augs) throws XNIException {
         // write type information to this element
         if (augs != null && fDocumentImpl != null) {
-            ElementPSVI elementPSVI = (ElementPSVI)augs.getItem(Constants.ELEMENT_PSVI);
+            ElementPSVI elementPSVI = (ElementPSVI) augs.getItem(Constants.ELEMENT_PSVI);
             if (elementPSVI != null) {
                 if (fStorePSVI) {
-                    ((PSVIElementNSImpl)fCurrentNode).setPSVI(elementPSVI);
+                    ((PSVIElementNSImpl) fCurrentNode).setPSVI(elementPSVI);
                 }
                 XSTypeDefinition type = elementPSVI.getMemberTypeDefinition();
                 if (type == null) {
                     type = elementPSVI.getTypeDefinition();
                 }
-                ((ElementNSImpl)fCurrentNode).setType(type);
+                ((ElementNSImpl) fCurrentNode).setType(type);
             }
         }
 
@@ -336,8 +354,7 @@ final class DOMResultBuilder implements DOMDocumentHandler {
             for (Node node : fTargetChildren) {
                 fTarget.appendChild(node);
             }
-        }
-        else {
+        } else {
             for (Node node : fTargetChildren) {
                 fTarget.insertBefore(node, fNextSibling);
             }
@@ -357,15 +374,15 @@ final class DOMResultBuilder implements DOMDocumentHandler {
     private void append(Node node) throws XNIException {
         if (fCurrentNode != null) {
             fCurrentNode.appendChild(node);
-        }
-        else {
+        } else {
             /** Check if this node can be attached to the target. */
             if ((kidOK[fTarget.getNodeType()] & (1 << node.getNodeType())) == 0) {
-                String msg = DOMMessageFormatter.formatMessage(DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
+                String msg =
+                        DOMMessageFormatter.formatMessage(
+                                DOMMessageFormatter.DOM_DOMAIN, "HIERARCHY_REQUEST_ERR", null);
                 throw new XNIException(msg);
             }
             fTargetChildren.add(node);
         }
     }
-
 } // DOMResultBuilder

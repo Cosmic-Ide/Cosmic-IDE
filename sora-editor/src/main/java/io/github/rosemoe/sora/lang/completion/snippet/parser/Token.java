@@ -37,10 +37,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return "Token{" +
-                "index=" + index +
-                ", length=" + length +
-                ", type=" + type +
-                '}';
+        return "Token{" + "index=" + index + ", length=" + length + ", type=" + type + '}';
     }
 }

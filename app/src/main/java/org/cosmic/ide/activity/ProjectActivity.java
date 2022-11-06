@@ -2,8 +2,6 @@ package org.cosmic.ide.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.WorkerThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.github.pedrovgs.lynx.LynxConfig;
 import com.github.pedrovgs.lynx.LynxActivity;
+import com.github.pedrovgs.lynx.LynxConfig;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
@@ -21,9 +19,9 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
-import org.cosmic.ide.project.Project;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
+import org.cosmic.ide.project.Project;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 
@@ -78,15 +76,16 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
         binding.toolbar.inflateMenu(R.menu.projects_menu);
-        binding.toolbar.setOnMenuItemClickListener(item -> {
-            final var id = item.getItemId();
-            if (id == R.id.action_settings) {
-                startActivity(new Intent(this, SettingActivity.class));
-            } else if (id == R.id.action_logcat) {
-                startActivity(LynxActivity.getIntent(this, new LynxConfig()));
-            }
-            return true;
-        });
+        binding.toolbar.setOnMenuItemClickListener(
+                item -> {
+                    final var id = item.getItemId();
+                    if (id == R.id.action_settings) {
+                        startActivity(new Intent(this, SettingActivity.class));
+                    } else if (id == R.id.action_logcat) {
+                        startActivity(LynxActivity.getIntent(this, new LynxConfig()));
+                    }
+                    return true;
+                });
     }
 
     @Override
@@ -123,7 +122,8 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
             Button cancelBtn = createNewProjectDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
-            MaterialSwitch kotlinTemplate = createNewProjectDialog.findViewById(R.id.use_kotlin_template);
+            MaterialSwitch kotlinTemplate =
+                    createNewProjectDialog.findViewById(R.id.use_kotlin_template);
             cancelBtn.setOnClickListener(v -> createNewProjectDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
@@ -133,7 +133,10 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                         }
                         boolean useKotlinTemplate = kotlinTemplate.isChecked();
                         try {
-                            var project = useKotlinTemplate ? KotlinProject.newProject(projectName) : JavaProject.newProject(projectName);
+                            var project =
+                                    useKotlinTemplate
+                                            ? KotlinProject.newProject(projectName)
+                                            : JavaProject.newProject(projectName);
                             if (mListener != null) {
                                 runOnUiThread(
                                         () -> {

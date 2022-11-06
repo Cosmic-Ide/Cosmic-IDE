@@ -34,7 +34,6 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
  * Schema identity constraint selector.
  *
  * @xerces.internal
- *
  * @author Andy Clark, IBM
  */
 public class Selector {
@@ -58,8 +57,7 @@ public class Selector {
     //
 
     /** Constructs a selector. */
-    public Selector(Selector.XPath xpath,
-                    IdentityConstraint identityConstraint) {
+    public Selector(Selector.XPath xpath, IdentityConstraint identityConstraint) {
         fXPath = xpath;
         fIdentityConstraint = identityConstraint;
     } // <init>(Selector.XPath,IdentityConstraint)
@@ -80,10 +78,12 @@ public class Selector {
 
     // factory method
 
-    /** Creates a selector matcher.
-     * @param activator     The activator for this selector's fields.
-     * @param initialDepth  The depth in the document at which this matcher began its life;
-     *                          used in correctly handling recursive elements.
+    /**
+     * Creates a selector matcher.
+     *
+     * @param activator The activator for this selector's fields.
+     * @param initialDepth The depth in the document at which this matcher began its life; used in
+     *     correctly handling recursive elements.
      */
     public XPathMatcher createMatcher(FieldActivator activator, int initialDepth) {
         return new Selector.Matcher(fXPath, activator, initialDepth);
@@ -107,26 +107,24 @@ public class Selector {
      *
      * @author Andy Clark, IBM
      */
-    public static class XPath
-    extends com.sun.org.apache.xerces.internal.impl.xpath.XPath {
+    public static class XPath extends com.sun.org.apache.xerces.internal.impl.xpath.XPath {
 
         //
         // Constructors
         //
 
         /** Constructs a selector XPath expression. */
-        public XPath(String xpath, SymbolTable symbolTable,
-                     NamespaceContext context) throws XPathException {
+        public XPath(String xpath, SymbolTable symbolTable, NamespaceContext context)
+                throws XPathException {
             super(normalize(xpath), symbolTable, context);
             // verify that an attribute is not selected
-            for (int i=0;i<fLocationPaths.length;i++) {
+            for (int i = 0; i < fLocationPaths.length; i++) {
                 com.sun.org.apache.xerces.internal.impl.xpath.XPath.Axis axis =
-                fLocationPaths[i].steps[fLocationPaths[i].steps.length-1].axis;
+                        fLocationPaths[i].steps[fLocationPaths[i].steps.length - 1].axis;
                 if (axis.type == XPath.Axis.ATTRIBUTE) {
                     throw new XPathException("c-selector-xpath");
                 }
             }
-
         } // <init>(String,SymbolTable,NamespacesScope)
 
         private static String normalize(String xpath) {
@@ -137,23 +135,22 @@ public class Selector {
             //       Unless xpath starts with a descendant node -Achille Fokoue
             //      ... or a '.' or a '/' - NG
             //  And we also need to prefix exprs to the right of | with ./ - NG
-            StringBuffer modifiedXPath = new StringBuffer(xpath.length()+5);
+            StringBuffer modifiedXPath = new StringBuffer(xpath.length() + 5);
             int unionIndex = -1;
             do {
-                if(!(XMLChar.trim(xpath).startsWith("/") || XMLChar.trim(xpath).startsWith("."))) {
+                if (!(XMLChar.trim(xpath).startsWith("/") || XMLChar.trim(xpath).startsWith("."))) {
                     modifiedXPath.append("./");
                 }
                 unionIndex = xpath.indexOf('|');
-                if(unionIndex == -1) {
+                if (unionIndex == -1) {
                     modifiedXPath.append(xpath);
                     break;
                 }
-                modifiedXPath.append(xpath.substring(0,unionIndex+1));
-                xpath = xpath.substring(unionIndex+1, xpath.length());
-            } while(true);
+                modifiedXPath.append(xpath.substring(0, unionIndex + 1));
+                xpath = xpath.substring(unionIndex + 1, xpath.length());
+            } while (true);
             return modifiedXPath.toString();
         }
-
     } // class Selector.XPath
 
     /**
@@ -161,8 +158,7 @@ public class Selector {
      *
      * @author Andy Clark, IBM
      */
-    public class Matcher
-    extends XPathMatcher {
+    public class Matcher extends XPathMatcher {
 
         //
         // Data
@@ -185,8 +181,7 @@ public class Selector {
         //
 
         /** Constructs a selector matcher. */
-        public Matcher(Selector.XPath xpath, FieldActivator activator,
-                int initialDepth) {
+        public Matcher(Selector.XPath xpath, FieldActivator activator, int initialDepth) {
             super(xpath);
             fFieldActivator = activator;
             fInitialDepth = initialDepth;
@@ -196,30 +191,29 @@ public class Selector {
         // XMLDocumentFragmentHandler methods
         //
 
-        public void startDocumentFragment(){
+        public void startDocumentFragment() {
             super.startDocumentFragment();
             fElementDepth = 0;
             fMatchedDepth = -1;
         } // startDocumentFragment()
 
         /**
-         * The start of an element. If the document specifies the start element
-         * by using an empty tag, then the startElement method will immediately
-         * be followed by the endElement method, with no intervening methods.
+         * The start of an element. If the document specifies the start element by using an empty
+         * tag, then the startElement method will immediately be followed by the endElement method,
+         * with no intervening methods.
          *
-         * @param element    The name of the element.
+         * @param element The name of the element.
          * @param attributes The element attributes.
-         *
          */
         public void startElement(QName element, XMLAttributes attributes) {
             super.startElement(element, attributes);
             fElementDepth++;
             // activate the fields, if selector is matched
-            //int matched = isMatched();
+            // int matched = isMatched();
 
             if (isMatched()) {
-/*            (fMatchedDepth == -1 && ((matched & MATCHED) == MATCHED)) ||
-                    ((matched & MATCHED_DESCENDANT) == MATCHED_DESCENDANT)) { */
+                /*            (fMatchedDepth == -1 && ((matched & MATCHED) == MATCHED)) ||
+                ((matched & MATCHED_DESCENDANT) == MATCHED_DESCENDANT)) { */
                 fMatchedDepth = fElementDepth;
                 fFieldActivator.startValueScopeFor(fIdentityConstraint, fInitialDepth);
                 int count = fIdentityConstraint.getFieldCount();
@@ -229,10 +223,15 @@ public class Selector {
                     matcher.startElement(element, attributes);
                 }
             }
-
         } // startElement(QName,XMLAttrList,int)
 
-        public void endElement(QName element, XSTypeDefinition type, boolean nillable, Object actualValue, short valueType, ShortList itemValueType) {
+        public void endElement(
+                QName element,
+                XSTypeDefinition type,
+                boolean nillable,
+                Object actualValue,
+                short valueType,
+                ShortList itemValueType) {
             super.endElement(element, type, nillable, actualValue, valueType, itemValueType);
             if (fElementDepth-- == fMatchedDepth) {
                 fMatchedDepth = -1;
@@ -249,8 +248,5 @@ public class Selector {
         public int getInitialDepth() {
             return fInitialDepth;
         } // getInitialDepth():  int
-
-
     } // class Matcher
-
 } // class Selector

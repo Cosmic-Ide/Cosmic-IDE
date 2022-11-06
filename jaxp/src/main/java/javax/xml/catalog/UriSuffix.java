@@ -37,17 +37,19 @@ final class UriSuffix extends BaseEntry {
 
     /**
      * Construct a group entry.
+     *
      * @param uriSuffix The uriSuffix attribute.
      * @param uri The uri attribute.
      */
     public UriSuffix(String base, String uriSuffix, String uri) {
         super(CatalogEntryType.URISUFFIX, base);
-        setURISuffix  (uriSuffix);
+        setURISuffix(uriSuffix);
         setURI(uri);
     }
 
     /**
      * Set the uriSuffix attribute.
+     *
      * @param uriSuffix The uriSuffix attribute value.
      */
     public void setURISuffix(String uriSuffix) {
@@ -56,9 +58,10 @@ final class UriSuffix extends BaseEntry {
     }
 
     /**
-     * Set the uri attribute. If the value of the uri attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
-     * The URI reference should not include a fragment identifier.
+     * Set the uri attribute. If the value of the uri attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect. The URI reference should not
+     * include a fragment identifier.
+     *
      * @param uri The uri attribute value.
      */
     public void setURI(String uri) {
@@ -67,13 +70,15 @@ final class UriSuffix extends BaseEntry {
 
     /**
      * Get the uriSuffix attribute.
+     *
      * @return The uriSuffix
      */
-    public String getURISuffix  () {
+    public String getURISuffix() {
         return uriSuffix;
     }
     /**
      * Get the uri attribute.
+     *
      * @return The uri attribute value.
      */
     public String getURI() {
@@ -81,9 +86,8 @@ final class UriSuffix extends BaseEntry {
     }
 
     /**
-     * Try to match the specified systemId with the entry. Return the match if it
-     * is successful and the length of the uriSuffix is longer than the longest
-     * of any previous match.
+     * Try to match the specified systemId with the entry. Return the match if it is successful and
+     * the length of the uriSuffix is longer than the longest of any previous match.
      *
      * @param systemId The systemId to be matched.
      * @param currentMatch The length of uriSuffix of previous match if any.
@@ -103,5 +107,4 @@ final class UriSuffix extends BaseEntry {
     public String match(String systemId) {
         return match(systemId, 0);
     }
-
 }

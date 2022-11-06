@@ -3,14 +3,14 @@ package com.intellij.codeInsight;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import gnu.trove.THashSet;
-
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+
+import gnu.trove.THashSet;
 
 import java.util.Collection;
 import java.util.Set;

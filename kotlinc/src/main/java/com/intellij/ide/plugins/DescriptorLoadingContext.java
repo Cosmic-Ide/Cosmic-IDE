@@ -1,4 +1,5 @@
-// Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+// Copyright 2000-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0
+// license that can be found in the LICENSE file.
 package com.intellij.ide.plugins;
 
 import com.itsaky.androidide.zipfs2.ZipFileSystemProvider;
@@ -16,7 +17,8 @@ import java.util.Map;
  * android doesn't provide a ZipFileSystem
  */
 
-// parentContext is null only for CoreApplicationEnvironment - it is not valid otherwise because in this case XML is not interned.
+// parentContext is null only for CoreApplicationEnvironment - it is not valid otherwise because in
+// this case XML is not interned.
 final class DescriptorLoadingContext implements AutoCloseable {
     private final Map<Path, FileSystem> openedFiles = new THashMap<>();
     final DescriptorListLoadingContext parentContext;

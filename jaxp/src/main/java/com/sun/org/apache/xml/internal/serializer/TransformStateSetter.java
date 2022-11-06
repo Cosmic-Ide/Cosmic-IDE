@@ -21,37 +21,33 @@
 
 package com.sun.org.apache.xml.internal.serializer;
 
+import org.w3c.dom.Node;
+
 import javax.xml.transform.Transformer;
 
-import org.w3c.dom.Node;
 /**
- * This interface is meant to be used by a base interface to
- * TransformState, but which as only the setters which have non Xalan
- * specific types in their signature, so that there are no dependancies
+ * This interface is meant to be used by a base interface to TransformState, but which as only the
+ * setters which have non Xalan specific types in their signature, so that there are no dependancies
  * of the serializer on Xalan.
  *
- * This interface is not a public API, it is only public because it is
- * used by Xalan.
+ * <p>This interface is not a public API, it is only public because it is used by Xalan.
  *
  * @see com.sun.org.apache.xalan.internal.transformer.TransformState
  * @xsl.usage internal
  */
-public interface TransformStateSetter
-{
+public interface TransformStateSetter {
 
+    /**
+     * Set the current node.
+     *
+     * @param n The current node.
+     */
+    void setCurrentNode(Node n);
 
-  /**
-   * Set the current node.
-   *
-   * @param n The current node.
-   */
-  void setCurrentNode(Node n);
-
-  /**
-   * Reset the state on the given transformer object.
-   *
-   * @param transformer
-   */
-  void resetState(Transformer transformer);
-
+    /**
+     * Reset the state on the given transformer object.
+     *
+     * @param transformer
+     */
+    void resetState(Transformer transformer);
 }

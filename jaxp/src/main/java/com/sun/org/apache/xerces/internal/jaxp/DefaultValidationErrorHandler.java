@@ -22,16 +22,16 @@
 package com.sun.org.apache.xerces.internal.jaxp;
 
 import com.sun.org.apache.xerces.internal.util.SAXMessageFormatter;
-import java.util.Locale;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-/**
- */
+import java.util.Locale;
 
+/** */
 class DefaultValidationErrorHandler extends DefaultHandler {
-    static private int ERROR_COUNT_LIMIT = 10;
+    private static int ERROR_COUNT_LIMIT = 10;
     private int errorCount = 0;
     private Locale locale = Locale.getDefault();
 
@@ -46,17 +46,17 @@ class DefaultValidationErrorHandler extends DefaultHandler {
             return;
         } else if (errorCount == 0) {
             // Print a warning before the first error
-            System.err.println(SAXMessageFormatter.formatMessage(locale,
-                        "errorHandlerNotSet", new Object [] {errorCount}));
+            System.err.println(
+                    SAXMessageFormatter.formatMessage(
+                            locale, "errorHandlerNotSet", new Object[] {errorCount}));
         }
 
         String systemId = e.getSystemId();
         if (systemId == null) {
             systemId = "null";
         }
-        String message = "Error: URI=" + systemId +
-            " Line=" + e.getLineNumber() +
-            ": " + e.getMessage();
+        String message =
+                "Error: URI=" + systemId + " Line=" + e.getLineNumber() + ": " + e.getMessage();
         System.err.println(message);
         errorCount++;
     }

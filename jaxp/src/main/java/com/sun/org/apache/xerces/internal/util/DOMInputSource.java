@@ -22,12 +22,10 @@
 package com.sun.org.apache.xerces.internal.util;
 
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+
 import org.w3c.dom.Node;
 
-/**
- * <p>An <code>XMLInputSource</code> analogue to <code>javax.xml.transform.dom.DOMSource</code>.</p>
- *
- */
+/** An <code>XMLInputSource</code> analogue to <code>javax.xml.transform.dom.DOMSource</code>. */
 public final class DOMInputSource extends XMLInputSource {
 
     private Node fNode;
@@ -73,5 +71,4 @@ public final class DOMInputSource extends XMLInputSource {
         }
         return null;
     }
-
 } // DOMInputSource

@@ -23,30 +23,27 @@ package com.sun.org.apache.xerces.internal.xinclude;
 import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
 import com.sun.org.apache.xerces.internal.util.XMLSymbols;
 import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+
 import java.util.Enumeration;
 
 /**
- * This implementation of NamespaceContext has the ability to maintain multiple
- * scopes of namespace/prefix bindings.  This is useful in situations when it is
- * not always appropriate for elements to inherit the namespace bindings of their
- * ancestors (such as included elements in XInclude).
+ * This implementation of NamespaceContext has the ability to maintain multiple scopes of
+ * namespace/prefix bindings. This is useful in situations when it is not always appropriate for
+ * elements to inherit the namespace bindings of their ancestors (such as included elements in
+ * XInclude).
  *
- * When searching for a URI to match a prefix, or a prefix to match a URI, it is
- * searched for in the current context, then the ancestors of the current context,
- * up to the beginning of the current scope.  Other scopes are not searched.
+ * <p>When searching for a URI to match a prefix, or a prefix to match a URI, it is searched for in
+ * the current context, then the ancestors of the current context, up to the beginning of the
+ * current scope. Other scopes are not searched.
  *
- * @author Peter McCracken, IBM
- *
- * @LastModified: Oct 2017
+ * @author Peter McCracken, IBM @LastModified: Oct 2017
  */
 public class MultipleScopeNamespaceSupport extends NamespaceSupport {
 
     protected int[] fScope = new int[8];
     protected int fCurrentScope;
 
-    /**
-     *
-     */
+    /** */
     public MultipleScopeNamespaceSupport() {
         super();
         fCurrentScope = 0;
@@ -74,9 +71,7 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
         }
         String prefix = null;
         boolean unique = true;
-        for (int i = fContext[fScope[fCurrentScope]];
-            i <= (fNamespaceSize - 2);
-            i += 2) {
+        for (int i = fContext[fScope[fCurrentScope]]; i <= (fNamespaceSize - 2); i += 2) {
             prefix = fNamespace[i];
             for (int k = 0; k < count; k++) {
                 if (fPrefixes[k] == prefix) {
@@ -115,11 +110,11 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
     }
 
     public String getPrefix(String uri, int context) {
-        return getPrefix(uri, fContext[context+1], fContext[fScope[getScopeForContext(context)]]);
+        return getPrefix(uri, fContext[context + 1], fContext[fScope[getScopeForContext(context)]]);
     }
 
     public String getURI(String prefix, int context) {
-        return getURI(prefix, fContext[context+1], fContext[fScope[getScopeForContext(context)]]);
+        return getURI(prefix, fContext[context + 1], fContext[fScope[getScopeForContext(context)]]);
     }
 
     public String getPrefix(String uri, int start, int end) {
@@ -134,8 +129,7 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
         // find uri in current context
         for (int i = start; i > end; i -= 2) {
             if (fNamespace[i - 1] == uri) {
-                if (getURI(fNamespace[i - 2]) == uri)
-                    return fNamespace[i - 2];
+                if (getURI(fNamespace[i - 2]) == uri) return fNamespace[i - 2];
             }
         }
 
@@ -164,8 +158,8 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
     }
 
     /**
-     * Only resets the current scope -- all namespaces defined in lower scopes
-     * remain valid after a call to reset.
+     * Only resets the current scope -- all namespaces defined in lower scopes remain valid after a
+     * call to reset.
      */
     public void reset() {
         fCurrentContext = fScope[fCurrentScope];
@@ -173,8 +167,8 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
     }
 
     /**
-     * Begins a new scope.  None of the previous namespace bindings will be used,
-     * until the new scope is popped with popScope()
+     * Begins a new scope. None of the previous namespace bindings will be used, until the new scope
+     * is popped with popScope()
      */
     public void pushScope() {
         if (fCurrentScope + 1 == fScope.length) {
@@ -187,8 +181,8 @@ public class MultipleScopeNamespaceSupport extends NamespaceSupport {
     }
 
     /**
-     * Pops the current scope.  The namespace bindings from the new current scope
-     * are then used for searching for namespaces and prefixes.
+     * Pops the current scope. The namespace bindings from the new current scope are then used for
+     * searching for namespaces and prefixes.
      */
     public void popScope() {
         fCurrentContext = fScope[fCurrentScope--];

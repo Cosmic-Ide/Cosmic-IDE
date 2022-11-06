@@ -21,27 +21,24 @@
 package com.sun.org.apache.xerces.internal.impl.msg;
 
 import com.sun.org.apache.xerces.internal.util.MessageFormatter;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+
 import jdk.xml.internal.SecuritySupport;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 /**
- * XMLMessageFormatter provides error messages for the XML 1.0 Recommendation and for
- * the Namespaces Recommendation
+ * XMLMessageFormatter provides error messages for the XML 1.0 Recommendation and for the Namespaces
+ * Recommendation
  *
  * @xerces.internal
- *
- * @author Eric Ye, IBM
- *
- * @LastModified: Sep 2017
+ * @author Eric Ye, IBM @LastModified: Sep 2017
  */
 public class XMLMessageFormatter_de implements MessageFormatter {
-    /**
-     * The domain of messages concerning the XML 1.0 specification.
-     */
+    /** The domain of messages concerning the XML 1.0 specification. */
     public static final String XML_DOMAIN = "http://www.w3.org/TR/1998/REC-xml-19980210";
+
     public static final String XMLNS_DOMAIN = "http://www.w3.org/TR/1999/REC-xml-names-19990114";
 
     // private objects to cache the locale and resource bundle
@@ -53,31 +50,31 @@ public class XMLMessageFormatter_de implements MessageFormatter {
     //
 
     /**
-     * Formats a message with the specified arguments using the given
-     * locale information.
+     * Formats a message with the specified arguments using the given locale information.
      *
-     * @param locale    The locale of the message.
-     * @param key       The message key.
-     * @param arguments The message replacement text arguments. The order
-     *                  of the arguments must match that of the placeholders
-     *                  in the actual message.
-     *
+     * @param locale The locale of the message.
+     * @param key The message key.
+     * @param arguments The message replacement text arguments. The order of the arguments must
+     *     match that of the placeholders in the actual message.
      * @return Returns the formatted message.
-     *
-     * @throws MissingResourceException Thrown if the message with the
-     *                                  specified key cannot be found.
+     * @throws MissingResourceException Thrown if the message with the specified key cannot be
+     *     found.
      */
     public String formatMessage(Locale locale, String key, Object[] arguments)
-        throws MissingResourceException {
+            throws MissingResourceException {
 
         if (fResourceBundle == null || locale != fLocale) {
             if (locale != null) {
-                fResourceBundle = SecuritySupport.getResourceBundle("com.sun.org.apache.xerces.internal.impl.msg.XMLMessages", locale);
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "com.sun.org.apache.xerces.internal.impl.msg.XMLMessages", locale);
                 // memorize the most-recent locale
                 fLocale = locale;
             }
             if (fResourceBundle == null)
-                fResourceBundle = SecuritySupport.getResourceBundle("com.sun.org.apache.xerces.internal.impl.msg.XMLMessages");
+                fResourceBundle =
+                        SecuritySupport.getResourceBundle(
+                                "com.sun.org.apache.xerces.internal.impl.msg.XMLMessages");
         }
 
         // format message
@@ -87,8 +84,7 @@ public class XMLMessageFormatter_de implements MessageFormatter {
             if (arguments != null) {
                 try {
                     msg = java.text.MessageFormat.format(msg, arguments);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     msg = fResourceBundle.getString("FormatFailed");
                     msg += " " + fResourceBundle.getString(key);
                 }
@@ -118,5 +114,4 @@ public class XMLMessageFormatter_de implements MessageFormatter {
 
         return msg;
     }
-
 }

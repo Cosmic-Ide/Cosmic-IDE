@@ -28,5 +28,4 @@
  *
  * @since 1.6
  */
-
 package javax.xml.stream.events;

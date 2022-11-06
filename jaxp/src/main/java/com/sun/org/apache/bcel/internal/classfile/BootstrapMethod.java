@@ -21,20 +21,19 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * This class represents a bootstrap method attribute, i.e., the bootstrap
- * method ref, the number of bootstrap arguments and an array of the
- * bootstrap arguments.
+ * This class represents a bootstrap method attribute, i.e., the bootstrap method ref, the number of
+ * bootstrap arguments and an array of the bootstrap arguments.
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.23">
- * The class File Format : The BootstrapMethods Attribute</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.23">The
+ *     class File Format : The BootstrapMethods Attribute</a>
  * @since 6.0
  */
 public class BootstrapMethod implements Cloneable {
@@ -45,10 +44,7 @@ public class BootstrapMethod implements Cloneable {
     /** Array of references to the constant_pool table */
     private int[] bootstrapArguments;
 
-
-    /**
-     * Initialize from another object.
-     */
+    /** Initialize from another object. */
     public BootstrapMethod(final BootstrapMethod c) {
         this(c.getBootstrapMethodRef(), c.getBootstrapArguments());
     }
@@ -121,25 +117,32 @@ public class BootstrapMethod implements Cloneable {
      */
     @Override
     public final String toString() {
-        return "BootstrapMethod(" + bootstrapMethodRef + ", " + bootstrapArguments.length + ", "
-               + Arrays.toString(bootstrapArguments) + ")";
+        return "BootstrapMethod("
+                + bootstrapMethodRef
+                + ", "
+                + bootstrapArguments.length
+                + ", "
+                + Arrays.toString(bootstrapArguments)
+                + ")";
     }
 
     /**
      * @return Resolved string representation
      */
-    public final String toString( final ConstantPool constantPool ) {
+    public final String toString(final ConstantPool constantPool) {
         final StringBuilder buf = new StringBuilder();
         String bootstrap_method_name;
-        bootstrap_method_name = constantPool.constantToString(bootstrapMethodRef,
-                Const.CONSTANT_MethodHandle);
+        bootstrap_method_name =
+                constantPool.constantToString(bootstrapMethodRef, Const.CONSTANT_MethodHandle);
         buf.append(Utility.compactClassName(bootstrap_method_name, false));
         final int num_bootstrap_arguments = bootstrapArguments.length;
         if (num_bootstrap_arguments > 0) {
             buf.append("\nMethod Arguments:");
             for (int i = 0; i < num_bootstrap_arguments; i++) {
                 buf.append("\n  ").append(i).append(": ");
-                buf.append(constantPool.constantToString(constantPool.getConstant(bootstrapArguments[i])));
+                buf.append(
+                        constantPool.constantToString(
+                                constantPool.getConstant(bootstrapArguments[i])));
             }
         }
         return buf.toString();

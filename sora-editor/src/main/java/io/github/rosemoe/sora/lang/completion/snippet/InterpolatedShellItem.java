@@ -50,5 +50,4 @@ public class InterpolatedShellItem extends SnippetItem {
         n.setIndex(getStartIndex(), getEndIndex());
         return n;
     }
-
 }

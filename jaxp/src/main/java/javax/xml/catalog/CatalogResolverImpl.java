@@ -25,27 +25,28 @@
 package javax.xml.catalog;
 
 import com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
+
 import org.w3c.dom.ls.LSInput;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+
 /**
  * Implements CatalogResolver.
  *
- * <p>
- * This class implements a SAX EntityResolver, StAX XMLResolver,
- * Schema Validation LSResourceResolver and Transform URIResolver.
- *
+ * <p>This class implements a SAX EntityResolver, StAX XMLResolver, Schema Validation
+ * LSResourceResolver and Transform URIResolver.
  *
  * @since 9
  */
@@ -66,14 +67,16 @@ final class CatalogResolverImpl implements CatalogResolver {
     */
     @Override
     public InputSource resolveEntity(String publicId, String systemId) {
-        //8150187: NPE expected if the system identifier is null for CatalogResolver
+        // 8150187: NPE expected if the system identifier is null for CatalogResolver
         CatalogMessages.reportNPEOnNull("systemId", systemId);
 
-        //Normalize publicId and systemId
+        // Normalize publicId and systemId
         systemId = Normalizer.normalizeURI(Util.getNotNullOrEmpty(systemId));
-        publicId = Normalizer.normalizePublicId(Normalizer.decodeURN(Util.getNotNullOrEmpty(publicId)));
+        publicId =
+                Normalizer.normalizePublicId(
+                        Normalizer.decodeURN(Util.getNotNullOrEmpty(publicId)));
 
-        //check whether systemId is a urn
+        // check whether systemId is a urn
         if (systemId != null && systemId.startsWith(Util.URN)) {
             systemId = Normalizer.decodeURN(systemId);
             if (publicId != null && !publicId.equals(systemId)) {
@@ -84,7 +87,7 @@ final class CatalogResolverImpl implements CatalogResolver {
             }
         }
 
-        CatalogImpl c = (CatalogImpl)catalog;
+        CatalogImpl c = (CatalogImpl) catalog;
         String resolvedSystemId = Util.resolve(c, publicId, systemId);
 
         if (resolvedSystemId != null) {
@@ -96,11 +99,11 @@ final class CatalogResolverImpl implements CatalogResolver {
             case IGNORE:
                 return new InputSource(new StringReader(""));
             case STRICT:
-                CatalogMessages.reportError(CatalogMessages.ERR_NO_MATCH,
-                        new Object[]{publicId, systemId});
+                CatalogMessages.reportError(
+                        CatalogMessages.ERR_NO_MATCH, new Object[] {publicId, systemId});
         }
 
-        //no action, allow the parser to continue
+        // no action, allow the parser to continue
         return null;
     }
 
@@ -117,13 +120,13 @@ final class CatalogResolverImpl implements CatalogResolver {
         base = Util.getNotNullOrEmpty(base);
 
         String result = null;
-        CatalogImpl c = (CatalogImpl)catalog;
+        CatalogImpl c = (CatalogImpl) catalog;
         String uri = Normalizer.normalizeURI(href);
         if (uri == null) {
             return null;
         }
 
-        //check whether uri is a urn
+        // check whether uri is a urn
         if (uri != null && uri.startsWith(Util.URN)) {
             String publicId = Normalizer.decodeURN(uri);
             if (publicId != null) {
@@ -131,27 +134,27 @@ final class CatalogResolverImpl implements CatalogResolver {
             }
         }
 
-        //if no match with a public id, continue search for a URI
+        // if no match with a public id, continue search for a URI
         if (result == null) {
-            //remove fragment if any.
+            // remove fragment if any.
             int hashPos = uri.indexOf("#");
             if (hashPos >= 0) {
                 uri = uri.substring(0, hashPos);
             }
 
-            //search the current catalog
+            // search the current catalog
             result = Util.resolve(c, null, uri);
         }
 
-        //Report error or return the URI as is when no match is found
+        // Report error or return the URI as is when no match is found
         if (result == null) {
             GroupEntry.ResolveType resolveType = c.getResolve();
             switch (resolveType) {
                 case IGNORE:
                     return new SAXSource(new InputSource(new StringReader("")));
                 case STRICT:
-                    CatalogMessages.reportError(CatalogMessages.ERR_NO_URI_MATCH,
-                            new Object[]{href, base});
+                    CatalogMessages.reportError(
+                            CatalogMessages.ERR_NO_URI_MATCH, new Object[] {href, base});
             }
             try {
                 URL url = null;
@@ -165,8 +168,8 @@ final class CatalogResolverImpl implements CatalogResolver {
                     result = url.toString();
                 }
             } catch (java.net.MalformedURLException mue) {
-                    CatalogMessages.reportError(CatalogMessages.ERR_CREATING_URI,
-                            new Object[]{href, base});
+                CatalogMessages.reportError(
+                        CatalogMessages.ERR_CREATING_URI, new Object[] {href, base});
             }
         }
 
@@ -178,21 +181,17 @@ final class CatalogResolverImpl implements CatalogResolver {
 
     /**
      * Establish an entityResolver for newly resolved URIs.
-     * <p>
-     * This is called from the URIResolver to set an EntityResolver on the SAX
-     * parser to be used for new XML documents that are encountered as a result
-     * of the document() function, xsl:import, or xsl:include. This is done
-     * because the XSLT processor calls out to the SAXParserFactory itself to
-     * create a new SAXParser to parse the new document. The new parser does not
-     * automatically inherit the EntityResolver of the original (although
-     * arguably it should). Quote from JAXP specification on Class
-     * SAXTransformerFactory:
-     * <p>
-     * {@code If an application wants to set the ErrorHandler or EntityResolver
-     * for an XMLReader used during a transformation, it should use a URIResolver
-     * to return the SAXSource which provides (with getXMLReader) a reference to
-     * the XMLReader}
      *
+     * <p>This is called from the URIResolver to set an EntityResolver on the SAX parser to be used
+     * for new XML documents that are encountered as a result of the document() function,
+     * xsl:import, or xsl:include. This is done because the XSLT processor calls out to the
+     * SAXParserFactory itself to create a new SAXParser to parse the new document. The new parser
+     * does not automatically inherit the EntityResolver of the original (although arguably it
+     * should). Quote from JAXP specification on Class SAXTransformerFactory:
+     *
+     * <p>{@code If an application wants to set the ErrorHandler or EntityResolver for an XMLReader
+     * used during a transformation, it should use a URIResolver to return the SAXSource which
+     * provides (with getXMLReader) a reference to the XMLReader}
      */
     private void setEntityResolver(SAXSource source) {
         XMLReader reader = source.getXMLReader();
@@ -213,7 +212,8 @@ final class CatalogResolverImpl implements CatalogResolver {
     }
 
     @Override
-    public InputStream resolveEntity(String publicId, String systemId, String baseUri, String namespace) {
+    public InputStream resolveEntity(
+            String publicId, String systemId, String baseUri, String namespace) {
         InputSource is = resolveEntity(publicId, systemId);
 
         if (is != null && !is.isEmpty()) {
@@ -221,9 +221,8 @@ final class CatalogResolverImpl implements CatalogResolver {
             try {
                 return new URL(is.getSystemId()).openStream();
             } catch (IOException ex) {
-                //considered as no mapping.
+                // considered as no mapping.
             }
-
         }
 
         GroupEntry.ResolveType resolveType = ((CatalogImpl) catalog).getResolve();
@@ -231,16 +230,17 @@ final class CatalogResolverImpl implements CatalogResolver {
             case IGNORE:
                 return null;
             case STRICT:
-                CatalogMessages.reportError(CatalogMessages.ERR_NO_MATCH,
-                        new Object[]{publicId, systemId});
+                CatalogMessages.reportError(
+                        CatalogMessages.ERR_NO_MATCH, new Object[] {publicId, systemId});
         }
 
-        //no action, allow the parser to continue
+        // no action, allow the parser to continue
         return null;
     }
 
     @Override
-    public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+    public LSInput resolveResource(
+            String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         InputSource is = resolveEntity(publicId, systemId);
 
         if (is != null && !is.isEmpty()) {
@@ -252,17 +252,17 @@ final class CatalogResolverImpl implements CatalogResolver {
             case IGNORE:
                 return null;
             case STRICT:
-                CatalogMessages.reportError(CatalogMessages.ERR_NO_MATCH,
-                        new Object[]{publicId, systemId});
+                CatalogMessages.reportError(
+                        CatalogMessages.ERR_NO_MATCH, new Object[] {publicId, systemId});
         }
 
-        //no action, allow the parser to continue
+        // no action, allow the parser to continue
         return null;
     }
 
     /**
-     * Implements LSInput. All that we need is the systemId since the Catalog
-     * has already resolved it.
+     * Implements LSInput. All that we need is the systemId since the Catalog has already resolved
+     * it.
      */
     class LSInputImpl implements LSInput {
 
@@ -278,8 +278,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setCharacterStream(Reader characterStream) {
-        }
+        public void setCharacterStream(Reader characterStream) {}
 
         @Override
         public InputStream getByteStream() {
@@ -287,8 +286,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setByteStream(InputStream byteStream) {
-        }
+        public void setByteStream(InputStream byteStream) {}
 
         @Override
         public String getStringData() {
@@ -296,8 +294,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setStringData(String stringData) {
-        }
+        public void setStringData(String stringData) {}
 
         @Override
         public String getSystemId() {
@@ -315,8 +312,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setPublicId(String publicId) {
-        }
+        public void setPublicId(String publicId) {}
 
         @Override
         public String getBaseURI() {
@@ -324,8 +320,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setBaseURI(String baseURI) {
-        }
+        public void setBaseURI(String baseURI) {}
 
         @Override
         public String getEncoding() {
@@ -333,8 +328,7 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setEncoding(String encoding) {
-        }
+        public void setEncoding(String encoding) {}
 
         @Override
         public boolean getCertifiedText() {
@@ -342,8 +336,6 @@ final class CatalogResolverImpl implements CatalogResolver {
         }
 
         @Override
-        public void setCertifiedText(boolean certifiedText) {
-        }
+        public void setCertifiedText(boolean certifiedText) {}
     }
-
 }

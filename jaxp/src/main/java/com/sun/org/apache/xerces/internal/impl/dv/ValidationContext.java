@@ -24,11 +24,10 @@ package com.sun.org.apache.xerces.internal.impl.dv;
 import java.util.Locale;
 
 /**
- * ValidationContext has all the information required for the
- * validation of: id, idref, entity, notation, qname
+ * ValidationContext has all the information required for the validation of: id, idref, entity,
+ * notation, qname
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
  */
 public interface ValidationContext {
@@ -45,23 +44,24 @@ public interface ValidationContext {
     public boolean useNamespaces();
 
     // entity
-    public boolean isEntityDeclared (String name);
-    public boolean isEntityUnparsed (String name);
+    public boolean isEntityDeclared(String name);
+
+    public boolean isEntityUnparsed(String name);
 
     // id
-    public boolean isIdDeclared (String name);
-    public void    addId(String name);
+    public boolean isIdDeclared(String name);
+
+    public void addId(String name);
 
     // idref
     public void addIdRef(String name);
 
     // get symbol from symbol table
-    public String getSymbol (String symbol);
+    public String getSymbol(String symbol);
 
     // qname
     public String getURI(String prefix);
 
     // Locale
     public Locale getLocale();
-
 }

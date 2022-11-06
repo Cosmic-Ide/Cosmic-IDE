@@ -48,9 +48,7 @@ import com.sun.org.apache.xml.internal.dtm.Axis;
 final class CastExpr extends Expression {
     private final Expression _left;
 
-    /**
-     * Legal conversions between internal types.
-     */
+    /** Legal conversions between internal types. */
     private static final MultiHashtable<Type, Type> InternalTypeMap = new MultiHashtable<>();
 
     static {
@@ -125,17 +123,15 @@ final class CastExpr extends Expression {
     private boolean _typeTest = false;
 
     /**
-     * Construct a cast expression and check that the conversion is
-     * valid by calling typeCheck().
+     * Construct a cast expression and check that the conversion is valid by calling typeCheck().
      */
     public CastExpr(Expression left, Type type) throws TypeCheckError {
         _left = left;
-        _type = type;           // use inherited field
+        _type = type; // use inherited field
 
         if ((_left instanceof Step) && (_type == Type.Boolean)) {
-            Step step = (Step)_left;
-            if ((step.getAxis() == Axis.SELF) && (step.getNodeType() != -1))
-                _typeTest = true;
+            Step step = (Step) _left;
+            if ((step.getAxis() == Axis.SELF) && (step.getNodeType() != -1)) _typeTest = true;
         }
 
         // check if conversion is valid
@@ -150,15 +146,15 @@ final class CastExpr extends Expression {
     }
 
     /**
-     * Returns true if this expressions contains a call to position(). This is
-     * needed for context changes in node steps containing multiple predicates.
+     * Returns true if this expressions contains a call to position(). This is needed for context
+     * changes in node steps containing multiple predicates.
      */
     public boolean hasPositionCall() {
-        return(_left.hasPositionCall());
+        return (_left.hasPositionCall());
     }
 
     public boolean hasLastCall() {
-        return(_left.hasLastCall());
+        return (_left.hasLastCall());
     }
 
     public String toString() {
@@ -166,9 +162,8 @@ final class CastExpr extends Expression {
     }
 
     /**
-     * Type checking a cast expression amounts to verifying that the
-     * type conversion is legal. Cast expressions are created during
-     * type checking, but typeCheck() is usually not called on them.
+     * Type checking a cast expression amounts to verifying that the type conversion is legal. Cast
+     * expressions are created during type checking, but typeCheck() is usually not called on them.
      * As a result, this method is called from the constructor.
      */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
@@ -177,21 +172,19 @@ final class CastExpr extends Expression {
             tleft = _left.typeCheck(stable);
         }
         if (tleft instanceof NodeType) {
-            tleft = Type.Node;  // multiple instances
-        }
-        else if (tleft instanceof ResultTreeType) {
+            tleft = Type.Node; // multiple instances
+        } else if (tleft instanceof ResultTreeType) {
             tleft = Type.ResultTree; // multiple instances
         }
         if (InternalTypeMap.maps(tleft, _type) != null) {
             return _type;
         }
         // throw new TypeCheckError(this);
-        throw new TypeCheckError(new ErrorMsg(
-            ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));
+        throw new TypeCheckError(
+                new ErrorMsg(ErrorMsg.DATA_CONVERSION_ERR, tleft.toString(), _type.toString()));
     }
 
-    public void translateDesynthesized(ClassGenerator classGen,
-                                       MethodGenerator methodGen) {
+    public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
         FlowList fl;
         final Type ltype = _left.getType();
 
@@ -202,28 +195,23 @@ final class CastExpr extends Expression {
             final ConstantPoolGen cpg = classGen.getConstantPool();
             final InstructionList il = methodGen.getInstructionList();
 
-            final int idx = cpg.addInterfaceMethodref(DOM_INTF,
-                                                      "getExpandedTypeID",
-                                                      "(I)I");
-            il.append(new SIPUSH((short)((Step)_left).getNodeType()));
+            final int idx = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
+            il.append(new SIPUSH((short) ((Step) _left).getNodeType()));
             il.append(methodGen.loadDOM());
             il.append(methodGen.loadContextNode());
             il.append(new INVOKEINTERFACE(idx, 2));
             _falseList.add(il.append(new IF_ICMPNE(null)));
-        }
-        else {
+        } else {
 
             _left.translate(classGen, methodGen);
             if (_type != ltype) {
                 _left.startIterator(classGen, methodGen);
                 if (_type instanceof BooleanType) {
-                    fl = ltype.translateToDesynthesized(classGen, methodGen,
-                                                        _type);
+                    fl = ltype.translateToDesynthesized(classGen, methodGen, _type);
                     if (fl != null) {
                         _falseList.append(fl);
                     }
-                }
-                else {
+                } else {
                     ltype.translateTo(classGen, methodGen, _type);
                 }
             }

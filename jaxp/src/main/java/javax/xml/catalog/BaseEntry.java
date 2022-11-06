@@ -24,10 +24,11 @@
  */
 package javax.xml.catalog;
 
+import static javax.xml.catalog.CatalogMessages.ERR_INVALID_ARGUMENT;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
-import static javax.xml.catalog.CatalogMessages.ERR_INVALID_ARGUMENT;
 
 /**
  * Represents a general Catalog entry.
@@ -39,23 +40,20 @@ abstract class BaseEntry {
 
     CatalogEntryType type;
 
-    //The id attribute
+    // The id attribute
     String id;
 
-    //The attribute to be matched, e.g. systemId
+    // The attribute to be matched, e.g. systemId
     String matchId;
 
-    //The baseURI attribute
+    // The baseURI attribute
     URL baseURI;
 
-    //Indicates whether the base attribute is specified
+    // Indicates whether the base attribute is specified
     boolean baseSpecified = false;
 
-    /**
-     * CatalogEntryType represents catalog entry types.
-     */
+    /** CatalogEntryType represents catalog entry types. */
     static enum CatalogEntryType {
-
         CATALOG("catalogfile"),
         CATALOGENTRY("catalog"),
         GROUP("group"),
@@ -81,7 +79,7 @@ abstract class BaseEntry {
             return literal.equals(type);
         }
 
-        static public CatalogEntryType getType(String entryType) {
+        public static CatalogEntryType getType(String entryType) {
             for (CatalogEntryType type : CatalogEntryType.values()) {
                 if (type.isType(entryType)) {
                     return type;
@@ -176,6 +174,7 @@ abstract class BaseEntry {
 
     /**
      * Sets the matchId field
+     *
      * @param matchId The value of the Id
      */
     public void setMatchId(String matchId) {
@@ -193,9 +192,8 @@ abstract class BaseEntry {
     }
 
     /**
-     * Try to match the specified id with the entry. Return the match if it
-     * is successful and the length of the start String is longer than the
-     * longest of any previous match.
+     * Try to match the specified id with the entry. Return the match if it is successful and the
+     * length of the start String is longer than the longest of any previous match.
      *
      * @param id The id to be matched.
      * @param currentMatch The length of start String of previous match if any.
@@ -212,8 +210,8 @@ abstract class BaseEntry {
      * @param uri The URI to be verified
      * @return The URI created from the specified uri
      * @throws NullPointerException if the specified uri is null
-     * @throws IllegalArgumentException if a URL can not be created based on
-     * the specified base and uri
+     * @throws IllegalArgumentException if a URL can not be created based on the specified base and
+     *     uri
      */
     URL verifyURI(String arg, URL base, String uri) {
         CatalogMessages.reportNPEOnNull(arg, uri);
@@ -228,8 +226,7 @@ abstract class BaseEntry {
                 url = new URL(uri);
             }
         } catch (MalformedURLException e) {
-            CatalogMessages.reportIAE(ERR_INVALID_ARGUMENT,
-                    new Object[]{uri, arg}, e);
+            CatalogMessages.reportIAE(ERR_INVALID_ARGUMENT, new Object[] {uri, arg}, e);
         }
         return url;
     }

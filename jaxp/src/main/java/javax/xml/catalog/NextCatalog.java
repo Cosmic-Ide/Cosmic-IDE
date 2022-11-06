@@ -33,6 +33,7 @@ final class NextCatalog extends AltCatalog {
 
     /**
      * Construct a nextCatalog entry.
+     *
      * @param catalog The catalog attribute.
      */
     public NextCatalog(String base, String catalog) {
@@ -44,5 +45,4 @@ final class NextCatalog extends AltCatalog {
     public String match(String match) {
         throw new UnsupportedOperationException("Not supported.");
     }
-
 }

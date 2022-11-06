@@ -30,9 +30,8 @@ public abstract class FileBasedSnippetVariableResolver implements ISnippetVariab
     @NonNull
     @Override
     public String[] getResolvableNames() {
-        return new String[]{
-                "TM_FILENAME", "TM_FILENAME_BASE", "TM_DIRECTORY", "TM_FILEPATH", "RELATIVE_PATH"
+        return new String[] {
+            "TM_FILENAME", "TM_FILENAME_BASE", "TM_DIRECTORY", "TM_FILEPATH", "RELATIVE_PATH"
         };
     }
-
 }

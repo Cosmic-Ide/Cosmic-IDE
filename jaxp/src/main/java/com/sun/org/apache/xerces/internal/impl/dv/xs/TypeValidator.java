@@ -23,26 +23,25 @@ package com.sun.org.apache.xerces.internal.impl.dv.xs;
 import com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
 import com.sun.org.apache.xerces.internal.util.XMLChar;
+
 import jdk.xml.internal.SecuritySupport;
 
 /**
- * All primitive types plus ID/IDREF/ENTITY/INTEGER are derived from this abstract
- * class. It provides extra information XSSimpleTypeDecl requires from each
- * type: allowed facets, converting String to actual value, check equality,
- * comparison, etc.
+ * All primitive types plus ID/IDREF/ENTITY/INTEGER are derived from this abstract class. It
+ * provides extra information XSSimpleTypeDecl requires from each type: allowed facets, converting
+ * String to actual value, check equality, comparison, etc.
  *
  * @xerces.internal
- *
  * @author Neeraj Bajaj, Sun Microsystems, inc.
- * @author Sandy Gao, IBM
- *
- * @LastModified: Apr 2019
+ * @author Sandy Gao, IBM @LastModified: Apr 2019
  */
 public abstract class TypeValidator {
 
     private static final boolean USE_CODE_POINT_COUNT_FOR_STRING_LENGTH =
-            Boolean.parseBoolean(SecuritySupport.getSystemProperty(
-                    "com.sun.org.apache.xerces.internal.impl.dv.xs.useCodePointCountForStringLength", "false"));
+            Boolean.parseBoolean(
+                    SecuritySupport.getSystemProperty(
+                            "com.sun.org.apache.xerces.internal.impl.dv.xs.useCodePointCountForStringLength",
+                            "false"));
 
     // which facets are allowed for this type
     public abstract short getAllowedFacets();
@@ -52,30 +51,30 @@ public abstract class TypeValidator {
     // get the BigDecimal, Double, Flout object.
     // for some types (string and derived), they just return the string itself
     public abstract Object getActualValue(String content, ValidationContext context)
-        throws InvalidDatatypeValueException;
+            throws InvalidDatatypeValueException;
 
     // for ID/IDREF/ENTITY types, do some extra checking after the value is
     // checked to be valid with respect to both lexical representation and
     // facets
-    public void checkExtraRules(Object value, ValidationContext context) throws InvalidDatatypeValueException {
-    }
+    public void checkExtraRules(Object value, ValidationContext context)
+            throws InvalidDatatypeValueException {}
 
     // the following methods might not be supported by every DV.
     // but XSSimpleTypeDecl should know which type supports which methods,
     // and it's an *internal* error if a method is called on a DV that
     // doesn't support it.
 
-    //order constants
-    public static final short LESS_THAN     = -1;
-    public static final short EQUAL         = 0;
-    public static final short GREATER_THAN  = 1;
+    // order constants
+    public static final short LESS_THAN = -1;
+    public static final short EQUAL = 0;
+    public static final short GREATER_THAN = 1;
     public static final short INDETERMINATE = 2;
 
     // where there is distinction between identity and equality, this method
     // will be overwritten
     // checks whether the two values are identical; for ex, this distinguishes
     // -0.0 from 0.0
-    public boolean isIdentical (Object value1, Object value2) {
+    public boolean isIdentical(Object value1, Object value2) {
         return value1.equals(value2);
     }
 
@@ -89,7 +88,7 @@ public abstract class TypeValidator {
     // the parameters are in compiled form (from getActualValue)
     public int getDataLength(Object value) {
         if (value instanceof String) {
-            final String str = (String)value;
+            final String str = (String) value;
             if (!USE_CODE_POINT_COUNT_FOR_STRING_LENGTH) {
                 return str.length();
             }
@@ -120,8 +119,7 @@ public abstract class TypeValidator {
             if (XMLChar.isHighSurrogate(value.charAt(i))) {
                 if (XMLChar.isLowSurrogate(value.charAt(++i))) {
                     ++surrogatePairCount;
-                }
-                else {
+                } else {
                     --i;
                 }
             }
@@ -139,5 +137,4 @@ public abstract class TypeValidator {
     public static final int getDigit(char ch) {
         return isDigit(ch) ? ch - '0' : -1;
     }
-
 } // interface TypeValidator

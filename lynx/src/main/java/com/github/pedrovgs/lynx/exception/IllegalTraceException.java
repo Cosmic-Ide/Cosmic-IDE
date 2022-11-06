@@ -25,7 +25,7 @@ package com.github.pedrovgs.lynx.exception;
  */
 public class IllegalTraceException extends Exception {
 
-  public IllegalTraceException(String detailMessage) {
-    super(detailMessage);
-  }
+    public IllegalTraceException(String detailMessage) {
+        super(detailMessage);
+    }
 }

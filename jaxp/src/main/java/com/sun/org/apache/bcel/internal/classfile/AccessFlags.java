@@ -22,21 +22,17 @@ package com.sun.org.apache.bcel.internal.classfile;
 import com.sun.org.apache.bcel.internal.Const;
 
 /**
- * Super class for all objects that have modifiers like private, final, ... I.e.
- * classes, fields, and methods.
- *
- * @LastModified: Jan 2020
+ * Super class for all objects that have modifiers like private, final, ... I.e. classes, fields,
+ * and methods. @LastModified: Jan 2020
  */
 public abstract class AccessFlags {
 
     private int access_flags;
 
-    public AccessFlags() {
-    }
+    public AccessFlags() {}
 
     /**
-     * @param a
-     *            inital access flags
+     * @param a inital access flags
      */
     public AccessFlags(final int a) {
         access_flags = a;
@@ -59,8 +55,7 @@ public abstract class AccessFlags {
     /**
      * Set access flags aka "modifiers".
      *
-     * @param access_flags
-     *            Access flags of the object.
+     * @param access_flags Access flags of the object.
      */
     public final void setAccessFlags(final int access_flags) {
         this.access_flags = access_flags;
@@ -69,8 +64,7 @@ public abstract class AccessFlags {
     /**
      * Set access flags aka "modifiers".
      *
-     * @param access_flags
-     *            Access flags of the object.
+     * @param access_flags Access flags of the object.
      */
     public final void setModifiers(final int access_flags) {
         setAccessFlags(access_flags);

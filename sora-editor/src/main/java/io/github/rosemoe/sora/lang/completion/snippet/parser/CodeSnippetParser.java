@@ -25,11 +25,6 @@ package io.github.rosemoe.sora.lang.completion.snippet.parser;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import io.github.rosemoe.sora.lang.completion.snippet.CodeSnippet;
 import io.github.rosemoe.sora.lang.completion.snippet.ConditionalFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.FormatString;
@@ -37,6 +32,11 @@ import io.github.rosemoe.sora.lang.completion.snippet.NextUpperCaseFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.NoFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.PlaceholderDefinition;
 import io.github.rosemoe.sora.lang.completion.snippet.Transform;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class CodeSnippetParser {
 
@@ -109,22 +109,27 @@ public class CodeSnippetParser {
     private void parse() {
         token = tokenizer.nextToken();
         while (parseInternal()) {
-            //empty
+            // empty
         }
     }
 
     private boolean parseInternal() {
-        return parseEscaped() ||
-                parseTabStopOrVariableName() ||
-                parseComplexVariable() ||
-                parseComplexPlaceholder() ||
-                parseInterpolatedShell() ||
-                parseAnything();
+        return parseEscaped()
+                || parseTabStopOrVariableName()
+                || parseComplexVariable()
+                || parseComplexPlaceholder()
+                || parseInterpolatedShell()
+                || parseAnything();
     }
 
     private boolean parseEscaped() {
         if (accept(TokenType.Backslash)) {
-            var escaped = _accept(TokenType.CurlyClose, TokenType.Dollar, TokenType.Backslash, TokenType.Backtick);
+            var escaped =
+                    _accept(
+                            TokenType.CurlyClose,
+                            TokenType.Dollar,
+                            TokenType.Backslash,
+                            TokenType.Backtick);
             if (escaped == null) {
                 escaped = "\\";
             }
@@ -180,7 +185,9 @@ public class CodeSnippetParser {
     private boolean parseComplexVariable() {
         var backup = token;
         String text;
-        if (accept(TokenType.Dollar) && accept(TokenType.CurlyOpen) && (text = _accept(TokenType.VariableName)) != null) {
+        if (accept(TokenType.Dollar)
+                && accept(TokenType.CurlyOpen)
+                && (text = _accept(TokenType.VariableName)) != null) {
             var variableName = text;
             String defaultValue = null;
             if (accept(TokenType.Colon)) {
@@ -188,7 +195,12 @@ public class CodeSnippetParser {
                 var sb = new StringBuilder();
                 while (!accept(TokenType.CurlyClose)) {
                     if (accept(TokenType.Backslash)) {
-                        if ((text = _accept(TokenType.Backslash, TokenType.Dollar, TokenType.CurlyClose)) != null) {
+                        if ((text =
+                                        _accept(
+                                                TokenType.Backslash,
+                                                TokenType.Dollar,
+                                                TokenType.CurlyClose))
+                                != null) {
                             sb.append(text);
                         } else {
                             sb.append('\\');
@@ -228,14 +240,21 @@ public class CodeSnippetParser {
     private boolean parseComplexPlaceholder() {
         var backup = token;
         String text;
-        if (accept(TokenType.Dollar) && accept(TokenType.CurlyOpen) && (text = _accept(TokenType.Int)) != null) {
+        if (accept(TokenType.Dollar)
+                && accept(TokenType.CurlyOpen)
+                && (text = _accept(TokenType.Int)) != null) {
             var idText = text;
             if (accept(TokenType.Colon)) {
                 // ${1:xxx}
                 var sb = new StringBuilder();
                 while (!accept(TokenType.CurlyClose)) {
                     if (accept(TokenType.Backslash)) {
-                        if ((text = _accept(TokenType.Backslash, TokenType.Dollar, TokenType.CurlyClose)) != null) {
+                        if ((text =
+                                        _accept(
+                                                TokenType.Backslash,
+                                                TokenType.Dollar,
+                                                TokenType.CurlyClose))
+                                != null) {
                             sb.append(text);
                         } else {
                             sb.append('\\');
@@ -295,7 +314,8 @@ public class CodeSnippetParser {
         String text;
         while (token.type != TokenType.Comma && token.type != TokenType.Pipe) {
             if (accept(TokenType.Backslash)) {
-                if ((text = _accept(TokenType.Pipe, TokenType.Comma, TokenType.Backslash)) != null) {
+                if ((text = _accept(TokenType.Pipe, TokenType.Comma, TokenType.Backslash))
+                        != null) {
                     sb.append(text);
                 } else {
                     sb.append('\\');
@@ -410,7 +430,8 @@ public class CodeSnippetParser {
             if (accept(TokenType.Colon)) {
                 if (accept(TokenType.Forwardslash)) {
                     // ${1:/upcase}
-                    if ((text = _accept(TokenType.VariableName)) != null && accept(TokenType.CurlyClose)) {
+                    if ((text = _accept(TokenType.VariableName)) != null
+                            && accept(TokenType.CurlyClose)) {
                         format.setShorthand(text);
                         formatStrings.add(format);
                         return true;
@@ -490,7 +511,12 @@ public class CodeSnippetParser {
             } else {
                 String text;
                 if (accept(TokenType.Backslash)) {
-                    if ((text = _accept(TokenType.Backslash, TokenType.Dollar, TokenType.CurlyClose)) != null) {
+                    if ((text =
+                                    _accept(
+                                            TokenType.Backslash,
+                                            TokenType.Dollar,
+                                            TokenType.CurlyClose))
+                            != null) {
                         sb.append(text);
                     } else {
                         backTo(backup);
@@ -508,10 +534,10 @@ public class CodeSnippetParser {
         return parse(snippet, new ArrayList<>());
     }
 
-    public static CodeSnippet parse(@NonNull String snippet, @NonNull List<PlaceholderDefinition> definitions) {
+    public static CodeSnippet parse(
+            @NonNull String snippet, @NonNull List<PlaceholderDefinition> definitions) {
         var parser = new CodeSnippetParser(snippet, definitions);
         parser.parse();
         return parser.builder.build();
     }
-
 }

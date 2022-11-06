@@ -24,59 +24,59 @@
  */
 package javax.xml.catalog;
 
-import java.io.StringReader;
-import javax.xml.catalog.BaseEntry.CatalogEntryType;
-import javax.xml.parsers.SAXParser;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.sax.SAXSource;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.StringReader;
+
+import javax.xml.catalog.BaseEntry.CatalogEntryType;
+import javax.xml.parsers.SAXParser;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.sax.SAXSource;
+
 /**
- * CatalogReader handles SAX events while parsing through a catalog file to
- * create a catalog object.
+ * CatalogReader handles SAX events while parsing through a catalog file to create a catalog object.
  *
  * @since 9
  */
 class CatalogReader extends DefaultHandler implements EntityResolver, URIResolver {
     /** URI of the W3C XML Schema for OASIS XML Catalog files. */
-    public static final String xmlCatalogXSD = "http://www.oasis-open.org/committees/entity/release/1.0/catalog.xsd";
+    public static final String xmlCatalogXSD =
+            "http://www.oasis-open.org/committees/entity/release/1.0/catalog.xsd";
 
     /** Public identifier for OASIS XML Catalog files. */
     public static final String xmlCatalogPubId = "-//OASIS//DTD XML Catalogs V1.0//EN";
 
-    /**
-     * The namespace name defined by the OASIS Standard
-     */
+    /** The namespace name defined by the OASIS Standard */
     public static final String NAMESPACE_OASIS = "urn:oasis:names:tc:entity:xmlns:xml:catalog";
 
-    //Indicate whether the root element has been found
+    // Indicate whether the root element has been found
     boolean seenRoot;
 
-    //Indicate that the parser is in a group entry
+    // Indicate that the parser is in a group entry
     boolean inGroup;
 
-    //The Catalog instance
+    // The Catalog instance
     CatalogImpl catalog;
 
-    //The parser for reading the catalog
+    // The parser for reading the catalog
     SAXParser parser;
 
-    //The current catalog entry
+    // The current catalog entry
     CatalogEntry catalogEntry;
 
-    //The current group
+    // The current group
     GroupEntry group;
 
-    //The current entry
+    // The current entry
     BaseEntry entry;
 
-    //remove this variable once 8136778 is committed
+    // remove this variable once 8136778 is committed
     boolean ignoreTheCatalog = false;
 
     /**
@@ -91,26 +91,22 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
     }
 
     @Override
-    public void startElement(String namespaceURI,
-            String localName,
-            String qName,
-            Attributes atts)
+    public void startElement(String namespaceURI, String localName, String qName, Attributes atts)
             throws SAXException {
 
-        //ignore the catalog if it's not compliant. See section 8, item 3 of the spec.
+        // ignore the catalog if it's not compliant. See section 8, item 3 of the spec.
         if (ignoreTheCatalog) return;
         if (!NAMESPACE_OASIS.equals(namespaceURI)) {
-//wait till 8136778 is committed
-//            parser.stop();
+            // wait till 8136778 is committed
+            //            parser.stop();
             ignoreTheCatalog = true;
             return;
         }
 
-
         CatalogEntryType type = CatalogEntryType.getType(localName);
         if (type == null) {
-            CatalogMessages.reportError(CatalogMessages.ERR_INVALID_ENTRY_TYPE,
-                    new Object[]{localName});
+            CatalogMessages.reportError(
+                    CatalogMessages.ERR_INVALID_ENTRY_TYPE, new Object[] {localName});
         }
         if (type != CatalogEntryType.CATALOGENTRY) {
             if (!seenRoot) {
@@ -133,19 +129,22 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
             base = Normalizer.normalizeURI(base);
         }
 
-        //parse the catalog and group entries
-        if (type == CatalogEntryType.CATALOGENTRY
-                || type == CatalogEntryType.GROUP) {
+        // parse the catalog and group entries
+        if (type == CatalogEntryType.CATALOGENTRY || type == CatalogEntryType.GROUP) {
             String prefer = atts.getValue("prefer");
             if (prefer == null) {
                 if (type == CatalogEntryType.CATALOGENTRY) {
-                    //use the general setting
-                    prefer = catalog.isPreferPublic() ?
-                            CatalogFeatures.PREFER_PUBLIC : CatalogFeatures.PREFER_SYSTEM;
+                    // use the general setting
+                    prefer =
+                            catalog.isPreferPublic()
+                                    ? CatalogFeatures.PREFER_PUBLIC
+                                    : CatalogFeatures.PREFER_SYSTEM;
                 } else {
-                    //Group inherit from the catalog entry
-                    prefer = catalogEntry.isPreferPublic() ?
-                            CatalogFeatures.PREFER_PUBLIC : CatalogFeatures.PREFER_SYSTEM;
+                    // Group inherit from the catalog entry
+                    prefer =
+                            catalogEntry.isPreferPublic()
+                                    ? CatalogFeatures.PREFER_PUBLIC
+                                    : CatalogFeatures.PREFER_SYSTEM;
                 }
             }
 
@@ -155,13 +154,15 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
                     String defer = atts.getValue("defer");
                     String resolve = atts.getValue("resolve");
                     if (defer == null) {
-                        defer = catalog.isDeferred() ?
-                                CatalogFeatures.DEFER_TRUE : CatalogFeatures.DEFER_FALSE;
+                        defer =
+                                catalog.isDeferred()
+                                        ? CatalogFeatures.DEFER_TRUE
+                                        : CatalogFeatures.DEFER_FALSE;
                     }
                     if (resolve == null) {
                         resolve = catalog.getResolve().literal;
                     }
-                    //override property settings with those from the catalog file
+                    // override property settings with those from the catalog file
                     catalog.setResolve(resolve);
                     catalog.setDeferred(defer);
                     catalogEntry = new CatalogEntry(base, prefer, defer, resolve);
@@ -178,7 +179,7 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
             }
         }
 
-        //parse entries other than the catalog and group entries
+        // parse entries other than the catalog and group entries
         switch (type) {
             case PUBLIC:
                 entry = new PublicEntry(base, atts.getValue("publicId"), atts.getValue("uri"));
@@ -187,28 +188,48 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
                 entry = new SystemEntry(base, atts.getValue("systemId"), atts.getValue("uri"));
                 break;
             case REWRITESYSTEM:
-                entry = new RewriteSystem(base, atts.getValue("systemIdStartString"), atts.getValue("rewritePrefix"));
+                entry =
+                        new RewriteSystem(
+                                base,
+                                atts.getValue("systemIdStartString"),
+                                atts.getValue("rewritePrefix"));
                 break;
             case SYSTEMSUFFIX:
-                entry = new SystemSuffix(base, atts.getValue("systemIdSuffix"), atts.getValue("uri"));
+                entry =
+                        new SystemSuffix(
+                                base, atts.getValue("systemIdSuffix"), atts.getValue("uri"));
                 break;
             case DELEGATEPUBLIC:
-                entry = new DelegatePublic(base, atts.getValue("publicIdStartString"), atts.getValue("catalog"));
+                entry =
+                        new DelegatePublic(
+                                base,
+                                atts.getValue("publicIdStartString"),
+                                atts.getValue("catalog"));
                 break;
             case DELEGATESYSTEM:
-                entry = new DelegateSystem(base, atts.getValue("systemIdStartString"), atts.getValue("catalog"));
+                entry =
+                        new DelegateSystem(
+                                base,
+                                atts.getValue("systemIdStartString"),
+                                atts.getValue("catalog"));
                 break;
             case URI:
                 entry = new UriEntry(base, atts.getValue("name"), atts.getValue("uri"));
                 break;
             case REWRITEURI:
-                entry = new RewriteUri(base, atts.getValue("uriStartString"), atts.getValue("rewritePrefix"));
+                entry =
+                        new RewriteUri(
+                                base,
+                                atts.getValue("uriStartString"),
+                                atts.getValue("rewritePrefix"));
                 break;
             case URISUFFIX:
                 entry = new UriSuffix(base, atts.getValue("uriSuffix"), atts.getValue("uri"));
                 break;
             case DELEGATEURI:
-                entry = new DelegateUri(base, atts.getValue("uriStartString"), atts.getValue("catalog"));
+                entry =
+                        new DelegateUri(
+                                base, atts.getValue("uriStartString"), atts.getValue("catalog"));
                 break;
             case NEXTCATALOG:
                 entry = new NextCatalog(base, atts.getValue("catalog"));
@@ -222,12 +243,9 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
         } else {
             catalog.addEntry(entry);
         }
-
     }
 
-    /**
-     * Handles endElement event
-     */
+    /** Handles endElement event */
     @Override
     public void endElement(String namespaceURI, String localName, String qName)
             throws SAXException {
@@ -239,24 +257,15 @@ class CatalogReader extends DefaultHandler implements EntityResolver, URIResolve
         }
     }
 
-
-    /**
-     * Skips external DTD since resolving external DTD is not required
-     * by the specification.
-     */
+    /** Skips external DTD since resolving external DTD is not required by the specification. */
     @Override
     public InputSource resolveEntity(String publicId, String systemId) {
         return new InputSource(new StringReader(""));
     }
 
-    /**
-     * Skips external references since resolution is not required
-     * by the specification.
-     */
+    /** Skips external references since resolution is not required by the specification. */
     @Override
-    public Source resolve(String href, String base)
-            throws TransformerException {
+    public Source resolve(String href, String base) throws TransformerException {
         return new SAXSource(new InputSource(new StringReader("")));
     }
-
 }

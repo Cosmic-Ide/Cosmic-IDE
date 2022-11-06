@@ -21,9 +21,9 @@
 
 package com.sun.org.apache.bcel.internal.util;
 
-import java.util.Stack;
-
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+
+import java.util.Stack;
 
 /**
  * Utility class implementing a (typesafe) stack of JavaClass objects.
@@ -34,21 +34,17 @@ public class ClassStack {
 
     private final Stack<JavaClass> stack = new Stack<>();
 
-
-    public void push( final JavaClass clazz ) {
+    public void push(final JavaClass clazz) {
         stack.push(clazz);
     }
-
 
     public JavaClass pop() {
         return stack.pop();
     }
 
-
     public JavaClass top() {
         return stack.peek();
     }
-
 
     public boolean empty() {
         return stack.empty();

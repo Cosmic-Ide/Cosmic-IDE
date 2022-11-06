@@ -22,50 +22,69 @@
 package com.sun.org.apache.xerces.internal.util;
 
 import com.sun.org.apache.xerces.internal.xni.XMLLocator;
+
 import org.xml.sax.Locator;
 
 /**
  * Wraps SAX {@link Locator} into Xerces {@link XMLLocator}.
  *
- * @author
- *     Kohsuke Kawaguchi
+ * @author Kohsuke Kawaguchi
  */
 public class LocatorWrapper implements XMLLocator {
 
     private final Locator locator;
 
-    public LocatorWrapper( Locator _loc ) { this.locator=_loc; }
+    public LocatorWrapper(Locator _loc) {
+        this.locator = _loc;
+    }
 
-    public int getColumnNumber()  { return locator.getColumnNumber(); }
-    public int getLineNumber()    { return locator.getLineNumber(); }
-    public String getBaseSystemId() { return null; }
-    public String getExpandedSystemId() { return locator.getSystemId(); }
-    public String getLiteralSystemId() { return locator.getSystemId(); }
-    public String getPublicId()   { return locator.getPublicId(); }
-    public String getEncoding() { return null; }
+    public int getColumnNumber() {
+        return locator.getColumnNumber();
+    }
+
+    public int getLineNumber() {
+        return locator.getLineNumber();
+    }
+
+    public String getBaseSystemId() {
+        return null;
+    }
+
+    public String getExpandedSystemId() {
+        return locator.getSystemId();
+    }
+
+    public String getLiteralSystemId() {
+        return locator.getSystemId();
+    }
+
+    public String getPublicId() {
+        return locator.getPublicId();
+    }
+
+    public String getEncoding() {
+        return null;
+    }
 
     /**
-     * <p>Returns the character offset,
-     * or <code>-1</code>,
-     * if no character offset is available.<p>
+     * Returns the character offset, or <code>-1</code>, if no character offset is available.
      *
-     * <p>As this information is not available from
-     * {@link org.xml.sax.Locator},
-     * always return <code>-1</code>.</p>
+     * <p>
+     *
+     * <p>As this information is not available from {@link org.xml.sax.Locator}, always return
+     * <code>-1</code>.
      */
     public int getCharacterOffset() {
         return -1;
     }
 
     /**
-     * <p>Returns the XML version of the current entity.</p>
+     * Returns the XML version of the current entity.
      *
-     * <p>As this information is not available from
-     * {@link org.xml.sax.Locator},
-     * always return <code>null</code>.</p>
+     * <p>As this information is not available from {@link org.xml.sax.Locator}, always return
+     * <code>null</code>.
      */
     public String getXMLVersion() {
         return null;
     }
-
 }

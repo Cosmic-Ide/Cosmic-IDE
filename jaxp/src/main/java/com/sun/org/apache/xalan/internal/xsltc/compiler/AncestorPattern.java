@@ -44,7 +44,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
  */
 final class AncestorPattern extends RelativePathPattern {
 
-    private final Pattern _left;        // may be null
+    private final Pattern _left; // may be null
     private final RelativePathPattern _right;
     private InstructionHandle _loop;
 
@@ -73,7 +73,7 @@ final class AncestorPattern extends RelativePathPattern {
     }
 
     public boolean isWildcard() {
-        //!!! can be wildcard
+        // !!! can be wildcard
         return false;
     }
 
@@ -102,13 +102,12 @@ final class AncestorPattern extends RelativePathPattern {
          * a another pattern may decide to jump back into the loop
          */
         final LocalVariableGen local =
-            methodGen.addLocalVariable2("app", Util.getJCRefType(NODE_SIG),
-                                        il.getEnd());
+                methodGen.addLocalVariable2("app", Util.getJCRefType(NODE_SIG), il.getEnd());
 
         final com.sun.org.apache.bcel.internal.generic.Instruction loadLocal =
-            new ILOAD(local.getIndex());
+                new ILOAD(local.getIndex());
         final com.sun.org.apache.bcel.internal.generic.Instruction storeLocal =
-            new ISTORE(local.getIndex());
+                new ISTORE(local.getIndex());
 
         if (_right instanceof StepPattern) {
             il.append(DUP);
@@ -116,8 +115,7 @@ final class AncestorPattern extends RelativePathPattern {
             _right.translate(classGen, methodGen);
             il.append(methodGen.loadDOM());
             il.append(loadLocal);
-        }
-        else {
+        } else {
             _right.translate(classGen, methodGen);
 
             if (_right instanceof AncestorPattern) {
@@ -127,9 +125,7 @@ final class AncestorPattern extends RelativePathPattern {
         }
 
         if (_left != null) {
-            final int getParent = cpg.addInterfaceMethodref(DOM_INTF,
-                                                            GET_PARENT,
-                                                            GET_PARENT_SIG);
+            final int getParent = cpg.addInterfaceMethodref(DOM_INTF, GET_PARENT, GET_PARENT_SIG);
             parent = il.append(new INVOKEINTERFACE(getParent, 2));
 
             il.append(DUP);
@@ -140,12 +136,9 @@ final class AncestorPattern extends RelativePathPattern {
             _left.translate(classGen, methodGen);
 
             final SyntaxTreeNode p = getParent();
-            if (p == null || p instanceof Instruction ||
-                p instanceof TopLevelElement)
-            {
+            if (p == null || p instanceof Instruction || p instanceof TopLevelElement) {
                 // do nothing
-            }
-            else {
+            } else {
                 il.append(loadLocal);
             }
 
@@ -158,8 +151,7 @@ final class AncestorPattern extends RelativePathPattern {
             _left.backPatchFalseList(_loop);
 
             _trueList.append(_left._trueList);
-        }
-        else {
+        } else {
             il.append(POP2);
         }
 
@@ -169,7 +161,7 @@ final class AncestorPattern extends RelativePathPattern {
          */
         if (_right instanceof AncestorPattern) {
             final AncestorPattern ancestor = (AncestorPattern) _right;
-            _falseList.backPatch(ancestor.getLoopHandle());    // clears list
+            _falseList.backPatch(ancestor.getLoopHandle()); // clears list
         }
 
         _trueList.append(_right._trueList);

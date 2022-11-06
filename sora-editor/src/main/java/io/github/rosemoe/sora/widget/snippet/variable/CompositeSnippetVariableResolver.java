@@ -74,5 +74,4 @@ public final class CompositeSnippetVariableResolver implements ISnippetVariableR
         }
         return "";
     }
-
 }

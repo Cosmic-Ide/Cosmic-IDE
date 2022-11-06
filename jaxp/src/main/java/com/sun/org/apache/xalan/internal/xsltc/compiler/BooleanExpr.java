@@ -31,8 +31,8 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 
 /**
- * This class implements inlined calls to the XSLT standard functions
- * true() and false().
+ * This class implements inlined calls to the XSLT standard functions true() and false().
+ *
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  */
@@ -66,13 +66,11 @@ final class BooleanExpr extends Expression {
         il.append(new PUSH(cpg, _value));
     }
 
-    public void translateDesynthesized(ClassGenerator classGen,
-                                       MethodGenerator methodGen) {
+    public void translateDesynthesized(ClassGenerator classGen, MethodGenerator methodGen) {
         final InstructionList il = methodGen.getInstructionList();
         if (_value) {
-            il.append(NOP);     // true list falls through
-        }
-        else {
+            il.append(NOP); // true list falls through
+        } else {
             _falseList.add(il.append(new GOTO(null)));
         }
     }

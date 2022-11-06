@@ -36,24 +36,20 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ReferenceType;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+
 import java.util.List;
 
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Morten Jorgensen
- * @LastModified: Nov 2017
+ * @author Morten Jorgensen @LastModified: Nov 2017
  */
 class FilterExpr extends Expression {
 
-    /**
-     * Primary expression of this filter. I.e., 'e' in '(e)[p1]...[pn]'.
-     */
-    private Expression   _primary;
+    /** Primary expression of this filter. I.e., 'e' in '(e)[p1]...[pn]'. */
+    private Expression _primary;
 
-    /**
-     * Array of predicates in '(e)[p1]...[pn]'.
-     */
+    /** Array of predicates in '(e)[p1]...[pn]'. */
     private final List<Expression> _predicates;
 
     public FilterExpr(Expression primary, List<Expression> predicates) {
@@ -63,10 +59,8 @@ class FilterExpr extends Expression {
     }
 
     protected Expression getExpr() {
-        if (_primary instanceof CastExpr)
-            return ((CastExpr)_primary).getExpr();
-        else
-            return _primary;
+        if (_primary instanceof CastExpr) return ((CastExpr) _primary).getExpr();
+        else return _primary;
     }
 
     public void setParser(Parser parser) {
@@ -87,10 +81,9 @@ class FilterExpr extends Expression {
     }
 
     /**
-     * Type check a FilterParentPath. If the filter is not a node-set add a
-     * cast to node-set only if it is of reference type. This type coercion
-     * is needed for expressions like $x where $x is a parameter reference.
-     * All optimizations are turned off before type checking underlying
+     * Type check a FilterParentPath. If the filter is not a node-set add a cast to node-set only if
+     * it is of reference type. This type coercion is needed for expressions like $x where $x is a
+     * parameter reference. All optimizations are turned off before type checking underlying
      * predicates.
      */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
@@ -98,10 +91,9 @@ class FilterExpr extends Expression {
         boolean canOptimize = _primary instanceof KeyCall;
 
         if (ptype instanceof NodeSetType == false) {
-            if (ptype instanceof ReferenceType)  {
+            if (ptype instanceof ReferenceType) {
                 _primary = new CastExpr(_primary, Type.NodeSet);
-            }
-            else {
+            } else {
                 throw new TypeCheckError(this);
             }
         }
@@ -119,42 +111,34 @@ class FilterExpr extends Expression {
         return _type = Type.NodeSet;
     }
 
-    /**
-     * Translate a filter expression by pushing the appropriate iterator
-     * onto the stack.
-     */
+    /** Translate a filter expression by pushing the appropriate iterator onto the stack. */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         translateFilterExpr(classGen, methodGen, _predicates == null ? -1 : _predicates.size() - 1);
     }
 
-    private void translateFilterExpr(ClassGenerator classGen,
-                                     MethodGenerator methodGen,
-                                     int predicateIndex) {
+    private void translateFilterExpr(
+            ClassGenerator classGen, MethodGenerator methodGen, int predicateIndex) {
         if (predicateIndex >= 0) {
             translatePredicates(classGen, methodGen, predicateIndex);
-        }
-        else {
+        } else {
             _primary.translate(classGen, methodGen);
         }
     }
 
     /**
-     * Translate a sequence of predicates. Each predicate is translated
-     * by constructing an instance of <code>CurrentNodeListIterator</code>
-     * which is initialized from another iterator (recursive call), a
-     * filter and a closure (call to translate on the predicate) and "this".
+     * Translate a sequence of predicates. Each predicate is translated by constructing an instance
+     * of <code>CurrentNodeListIterator</code> which is initialized from another iterator (recursive
+     * call), a filter and a closure (call to translate on the predicate) and "this".
      */
-    public void translatePredicates(ClassGenerator classGen,
-                                    MethodGenerator methodGen,
-                                    int predicateIndex) {
+    public void translatePredicates(
+            ClassGenerator classGen, MethodGenerator methodGen, int predicateIndex) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
 
         // If not predicates left, translate primary expression
         if (predicateIndex < 0) {
             translateFilterExpr(classGen, methodGen, predicateIndex);
-        }
-        else {
+        } else {
             // Get the next predicate to be translated
             Predicate predicate = (Predicate) _predicates.get(predicateIndex--);
 
@@ -162,9 +146,9 @@ class FilterExpr extends Expression {
             translatePredicates(classGen, methodGen, predicateIndex);
 
             if (predicate.isNthPositionFilter()) {
-                int nthIteratorIdx = cpg.addMethodref(NTH_ITERATOR_CLASS,
-                                       "<init>",
-                                       "("+NODE_ITERATOR_SIG+"I)V");
+                int nthIteratorIdx =
+                        cpg.addMethodref(
+                                NTH_ITERATOR_CLASS, "<init>", "(" + NODE_ITERATOR_SIG + "I)V");
 
                 // Backwards branches are prohibited if an uninitialized object
                 // is on the stack by section 4.9.4 of the JVM Specification,
@@ -177,35 +161,38 @@ class FilterExpr extends Expression {
                 // constructor first, store them in temporary variables, create
                 // the object and reload the arguments from the temporaries to
                 // avoid the problem.
-                LocalVariableGen iteratorTemp
-                        = methodGen.addLocalVariable("filter_expr_tmp1",
-                                         Util.getJCRefType(NODE_ITERATOR_SIG),
-                                         null, null);
-                iteratorTemp.setStart(
-                        il.append(new ASTORE(iteratorTemp.getIndex())));
+                LocalVariableGen iteratorTemp =
+                        methodGen.addLocalVariable(
+                                "filter_expr_tmp1",
+                                Util.getJCRefType(NODE_ITERATOR_SIG),
+                                null,
+                                null);
+                iteratorTemp.setStart(il.append(new ASTORE(iteratorTemp.getIndex())));
 
                 predicate.translate(classGen, methodGen);
-                LocalVariableGen predicateValueTemp
-                        = methodGen.addLocalVariable("filter_expr_tmp2",
-                                         Util.getJCRefType("I"),
-                                         null, null);
-                predicateValueTemp.setStart(
-                        il.append(new ISTORE(predicateValueTemp.getIndex())));
+                LocalVariableGen predicateValueTemp =
+                        methodGen.addLocalVariable(
+                                "filter_expr_tmp2", Util.getJCRefType("I"), null, null);
+                predicateValueTemp.setStart(il.append(new ISTORE(predicateValueTemp.getIndex())));
 
                 il.append(new NEW(cpg.addClass(NTH_ITERATOR_CLASS)));
                 il.append(DUP);
-                iteratorTemp.setEnd(
-                        il.append(new ALOAD(iteratorTemp.getIndex())));
-                predicateValueTemp.setEnd(
-                        il.append(new ILOAD(predicateValueTemp.getIndex())));
+                iteratorTemp.setEnd(il.append(new ALOAD(iteratorTemp.getIndex())));
+                predicateValueTemp.setEnd(il.append(new ILOAD(predicateValueTemp.getIndex())));
                 il.append(new INVOKESPECIAL(nthIteratorIdx));
             } else {
-                    // Translate predicates from right to left
-                final int initCNLI = cpg.addMethodref(CURRENT_NODE_LIST_ITERATOR,
-                                                      "<init>",
-                                                      "("+NODE_ITERATOR_SIG+"Z"+
-                                                      CURRENT_NODE_LIST_FILTER_SIG +
-                                                      NODE_SIG+TRANSLET_SIG+")V");
+                // Translate predicates from right to left
+                final int initCNLI =
+                        cpg.addMethodref(
+                                CURRENT_NODE_LIST_ITERATOR,
+                                "<init>",
+                                "("
+                                        + NODE_ITERATOR_SIG
+                                        + "Z"
+                                        + CURRENT_NODE_LIST_FILTER_SIG
+                                        + NODE_SIG
+                                        + TRANSLET_SIG
+                                        + ")V");
 
                 // Backwards branches are prohibited if an uninitialized object is
                 // on the stack by section 4.9.4 of the JVM Specification, 2nd Ed.
@@ -216,19 +203,21 @@ class FilterExpr extends Expression {
                 // in temporary variables, create the object and reload the
                 // arguments from the temporaries to avoid the problem.
 
-
                 LocalVariableGen nodeIteratorTemp =
-                    methodGen.addLocalVariable("filter_expr_tmp1",
-                                               Util.getJCRefType(NODE_ITERATOR_SIG),
-                                               null, null);
-                nodeIteratorTemp.setStart(
-                        il.append(new ASTORE(nodeIteratorTemp.getIndex())));
+                        methodGen.addLocalVariable(
+                                "filter_expr_tmp1",
+                                Util.getJCRefType(NODE_ITERATOR_SIG),
+                                null,
+                                null);
+                nodeIteratorTemp.setStart(il.append(new ASTORE(nodeIteratorTemp.getIndex())));
 
                 predicate.translate(classGen, methodGen);
                 LocalVariableGen filterTemp =
-                    methodGen.addLocalVariable("filter_expr_tmp2",
-                                  Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG),
-                                  null, null);
+                        methodGen.addLocalVariable(
+                                "filter_expr_tmp2",
+                                Util.getJCRefType(CURRENT_NODE_LIST_FILTER_SIG),
+                                null,
+                                null);
                 filterTemp.setStart(il.append(new ASTORE(filterTemp.getIndex())));
 
                 // Create a CurrentNodeListIterator
@@ -236,8 +225,7 @@ class FilterExpr extends Expression {
                 il.append(DUP);
 
                 // Initialize CurrentNodeListIterator
-                nodeIteratorTemp.setEnd(
-                        il.append(new ALOAD(nodeIteratorTemp.getIndex())));
+                nodeIteratorTemp.setEnd(il.append(new ALOAD(nodeIteratorTemp.getIndex())));
                 il.append(ICONST_1);
                 filterTemp.setEnd(il.append(new ALOAD(filterTemp.getIndex())));
                 il.append(methodGen.loadCurrentNode());

@@ -21,6 +21,7 @@ import com.github.pedrovgs.lynx.model.Trace;
 import com.github.pedrovgs.lynx.model.TraceLevel;
 import com.pedrogomez.renderers.Renderer;
 import com.pedrogomez.renderers.RendererBuilder;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,50 +30,51 @@ import java.util.List;
  * trace level. This builder will use six different {@code Renderer<Trace>} implementations, one for
  * each TraceLevel type.
  *
- * To learn more about Renderers library take a look to the repository:
+ * <p>To learn more about Renderers library take a look to the repository:
  * https://github.com/pedrovgs/Renderers
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
 public class TraceRendererBuilder extends RendererBuilder<Trace> {
 
-  public TraceRendererBuilder(LynxConfig lynxConfig) {
-    List<Renderer<Trace>> prototypes = new LinkedList<Renderer<Trace>>();
-    prototypes.add(new TraceRenderer(lynxConfig));
-    prototypes.add(new AssertTraceRenderer(lynxConfig));
-    prototypes.add(new DebugTraceRenderer(lynxConfig));
-    prototypes.add(new InfoTraceRenderer(lynxConfig));
-    prototypes.add(new WarningTraceRenderer(lynxConfig));
-    prototypes.add(new ErrorTraceRenderer(lynxConfig));
-    prototypes.add(new WtfTraceRenderer(lynxConfig));
-    setPrototypes(prototypes);
-  }
-
-  @Override protected Class getPrototypeClass(Trace content) {
-    Class rendererClass = null;
-    TraceLevel traceLevel = content.getLevel();
-    switch (traceLevel) {
-      case ASSERT:
-        rendererClass = AssertTraceRenderer.class;
-        break;
-      case DEBUG:
-        rendererClass = DebugTraceRenderer.class;
-        break;
-      case INFO:
-        rendererClass = InfoTraceRenderer.class;
-        break;
-      case WARNING:
-        rendererClass = WarningTraceRenderer.class;
-        break;
-      case ERROR:
-        rendererClass = ErrorTraceRenderer.class;
-        break;
-      case WTF:
-        rendererClass = WtfTraceRenderer.class;
-        break;
-      default:
-        rendererClass = TraceRenderer.class;
+    public TraceRendererBuilder(LynxConfig lynxConfig) {
+        List<Renderer<Trace>> prototypes = new LinkedList<Renderer<Trace>>();
+        prototypes.add(new TraceRenderer(lynxConfig));
+        prototypes.add(new AssertTraceRenderer(lynxConfig));
+        prototypes.add(new DebugTraceRenderer(lynxConfig));
+        prototypes.add(new InfoTraceRenderer(lynxConfig));
+        prototypes.add(new WarningTraceRenderer(lynxConfig));
+        prototypes.add(new ErrorTraceRenderer(lynxConfig));
+        prototypes.add(new WtfTraceRenderer(lynxConfig));
+        setPrototypes(prototypes);
     }
-    return rendererClass;
-  }
+
+    @Override
+    protected Class getPrototypeClass(Trace content) {
+        Class rendererClass = null;
+        TraceLevel traceLevel = content.getLevel();
+        switch (traceLevel) {
+            case ASSERT:
+                rendererClass = AssertTraceRenderer.class;
+                break;
+            case DEBUG:
+                rendererClass = DebugTraceRenderer.class;
+                break;
+            case INFO:
+                rendererClass = InfoTraceRenderer.class;
+                break;
+            case WARNING:
+                rendererClass = WarningTraceRenderer.class;
+                break;
+            case ERROR:
+                rendererClass = ErrorTraceRenderer.class;
+                break;
+            case WTF:
+                rendererClass = WtfTraceRenderer.class;
+                break;
+            default:
+                rendererClass = TraceRenderer.class;
+        }
+        return rendererClass;
+    }
 }

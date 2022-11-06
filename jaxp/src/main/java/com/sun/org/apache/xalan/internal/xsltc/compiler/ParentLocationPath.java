@@ -69,11 +69,11 @@ final class ParentLocationPath extends RelativeLocationPath {
     }
 
     public RelativeLocationPath getPath() {
-        return(_path);
+        return (_path);
     }
 
     public Expression getStep() {
-        return(_step);
+        return (_step);
     }
 
     public void setParser(Parser parser) {
@@ -98,57 +98,50 @@ final class ParentLocationPath extends RelativeLocationPath {
     public void enableNodeOrdering() {
         SyntaxTreeNode parent = getParent();
         if (parent instanceof ParentLocationPath)
-            ((ParentLocationPath)parent).enableNodeOrdering();
+            ((ParentLocationPath) parent).enableNodeOrdering();
         else {
             _orderNodes = true;
         }
     }
 
     /**
-     * This method is used to determine if this parent location path is a
-     * combination of two step's with axes that will create duplicate or
-     * unordered nodes.
+     * This method is used to determine if this parent location path is a combination of two step's
+     * with axes that will create duplicate or unordered nodes.
      */
     public boolean checkAxisMismatch() {
 
         int left = _path.getAxis();
-        int right = ((Step)_step).getAxis();
+        int right = ((Step) _step).getAxis();
 
-        if (((left == Axis.ANCESTOR) || (left == Axis.ANCESTORORSELF)) &&
-            ((right == Axis.CHILD) ||
-             (right == Axis.DESCENDANT) ||
-             (right == Axis.DESCENDANTORSELF) ||
-             (right == Axis.PARENT) ||
-             (right == Axis.PRECEDING) ||
-             (right == Axis.PRECEDINGSIBLING)))
-            return true;
+        if (((left == Axis.ANCESTOR) || (left == Axis.ANCESTORORSELF))
+                && ((right == Axis.CHILD)
+                        || (right == Axis.DESCENDANT)
+                        || (right == Axis.DESCENDANTORSELF)
+                        || (right == Axis.PARENT)
+                        || (right == Axis.PRECEDING)
+                        || (right == Axis.PRECEDINGSIBLING))) return true;
 
-        if ((left == Axis.CHILD) &&
-            (right == Axis.ANCESTOR) ||
-            (right == Axis.ANCESTORORSELF) ||
-            (right == Axis.PARENT) ||
-            (right == Axis.PRECEDING))
-            return true;
+        if ((left == Axis.CHILD) && (right == Axis.ANCESTOR)
+                || (right == Axis.ANCESTORORSELF)
+                || (right == Axis.PARENT)
+                || (right == Axis.PRECEDING)) return true;
 
-        if ((left == Axis.DESCENDANT) || (left == Axis.DESCENDANTORSELF))
-            return true;
+        if ((left == Axis.DESCENDANT) || (left == Axis.DESCENDANTORSELF)) return true;
 
-        if (((left == Axis.FOLLOWING) || (left == Axis.FOLLOWINGSIBLING)) &&
-            ((right == Axis.FOLLOWING) ||
-             (right == Axis.PARENT) ||
-             (right == Axis.PRECEDING) ||
-             (right == Axis.PRECEDINGSIBLING)))
-            return true;
+        if (((left == Axis.FOLLOWING) || (left == Axis.FOLLOWINGSIBLING))
+                && ((right == Axis.FOLLOWING)
+                        || (right == Axis.PARENT)
+                        || (right == Axis.PRECEDING)
+                        || (right == Axis.PRECEDINGSIBLING))) return true;
 
-        if (((left == Axis.PRECEDING) || (left == Axis.PRECEDINGSIBLING)) &&
-            ((right == Axis.DESCENDANT) ||
-             (right == Axis.DESCENDANTORSELF) ||
-             (right == Axis.FOLLOWING) ||
-             (right == Axis.FOLLOWINGSIBLING) ||
-             (right == Axis.PARENT) ||
-             (right == Axis.PRECEDING) ||
-             (right == Axis.PRECEDINGSIBLING)))
-            return true;
+        if (((left == Axis.PRECEDING) || (left == Axis.PRECEDINGSIBLING))
+                && ((right == Axis.DESCENDANT)
+                        || (right == Axis.DESCENDANTORSELF)
+                        || (right == Axis.FOLLOWING)
+                        || (right == Axis.FOLLOWINGSIBLING)
+                        || (right == Axis.PARENT)
+                        || (right == Axis.PRECEDING)
+                        || (right == Axis.PRECEDINGSIBLING))) return true;
 
         if ((right == Axis.FOLLOWING) && (left == Axis.CHILD)) {
             // Special case for '@*/following::*' expressions. The resulting
@@ -156,7 +149,7 @@ final class ParentLocationPath extends RelativeLocationPath {
             // can cause duplicates in the output if the parent has more than
             // one attribute that matches the left step.
             if (_path instanceof Step) {
-                int type = ((Step)_path).getNodeType();
+                int type = ((Step) _path).getNodeType();
                 if (type == DTM.ATTRIBUTE_NODE) return true;
             }
         }
@@ -185,26 +178,29 @@ final class ParentLocationPath extends RelativeLocationPath {
         // in temporary variables, create the object and reload the
         // arguments from the temporaries to avoid the problem.
 
-        LocalVariableGen pathTemp
-                = methodGen.addLocalVariable("parent_location_path_tmp1",
-                                         Util.getJCRefType(NODE_ITERATOR_SIG),
-                                         null, null);
+        LocalVariableGen pathTemp =
+                methodGen.addLocalVariable(
+                        "parent_location_path_tmp1",
+                        Util.getJCRefType(NODE_ITERATOR_SIG),
+                        null,
+                        null);
         pathTemp.setStart(il.append(new ASTORE(pathTemp.getIndex())));
 
         _step.translate(classGen, methodGen);
-        LocalVariableGen stepTemp
-                = methodGen.addLocalVariable("parent_location_path_tmp2",
-                                         Util.getJCRefType(NODE_ITERATOR_SIG),
-                                         null, null);
+        LocalVariableGen stepTemp =
+                methodGen.addLocalVariable(
+                        "parent_location_path_tmp2",
+                        Util.getJCRefType(NODE_ITERATOR_SIG),
+                        null,
+                        null);
         stepTemp.setStart(il.append(new ASTORE(stepTemp.getIndex())));
 
         // Create new StepIterator
-        final int initSI = cpg.addMethodref(STEP_ITERATOR_CLASS,
-                                            "<init>",
-                                            "("
-                                            +NODE_ITERATOR_SIG
-                                            +NODE_ITERATOR_SIG
-                                            +")V");
+        final int initSI =
+                cpg.addMethodref(
+                        STEP_ITERATOR_CLASS,
+                        "<init>",
+                        "(" + NODE_ITERATOR_SIG + NODE_ITERATOR_SIG + ")V");
         il.append(new NEW(cpg.addClass(STEP_ITERATOR_CLASS)));
         il.append(DUP);
 
@@ -216,17 +212,16 @@ final class ParentLocationPath extends RelativeLocationPath {
 
         // This is a special case for the //* path with or without predicates
         Expression stp = _step;
-        if (stp instanceof ParentLocationPath)
-            stp = ((ParentLocationPath)stp).getStep();
+        if (stp instanceof ParentLocationPath) stp = ((ParentLocationPath) stp).getStep();
 
         if ((_path instanceof Step) && (stp instanceof Step)) {
-            final int path = ((Step)_path).getAxis();
-            final int step = ((Step)stp).getAxis();
-            if ((path == Axis.DESCENDANTORSELF && step == Axis.CHILD) ||
-                (path == Axis.PRECEDING        && step == Axis.PARENT)) {
-                final int incl = cpg.addMethodref(NODE_ITERATOR_BASE,
-                                                  "includeSelf",
-                                                  "()" + NODE_ITERATOR_SIG);
+            final int path = ((Step) _path).getAxis();
+            final int step = ((Step) stp).getAxis();
+            if ((path == Axis.DESCENDANTORSELF && step == Axis.CHILD)
+                    || (path == Axis.PRECEDING && step == Axis.PARENT)) {
+                final int incl =
+                        cpg.addMethodref(
+                                NODE_ITERATOR_BASE, "includeSelf", "()" + NODE_ITERATOR_SIG);
                 il.append(new INVOKEVIRTUAL(incl));
             }
         }
@@ -238,9 +233,8 @@ final class ParentLocationPath extends RelativeLocationPath {
          * and prevent returning a single node multiple times.
          */
         if (_orderNodes) {
-            final int order = cpg.addInterfaceMethodref(DOM_INTF,
-                                                        ORDER_ITERATOR,
-                                                        ORDER_ITERATOR_SIG);
+            final int order =
+                    cpg.addInterfaceMethodref(DOM_INTF, ORDER_ITERATOR, ORDER_ITERATOR_SIG);
             il.append(methodGen.loadDOM());
             il.append(SWAP);
             il.append(methodGen.loadContextNode());

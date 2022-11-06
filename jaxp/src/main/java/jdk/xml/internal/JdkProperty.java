@@ -24,28 +24,28 @@
  */
 package jdk.xml.internal;
 
+import static jdk.xml.internal.JdkConstants.CDATA_CHUNK_SIZE;
 import static jdk.xml.internal.JdkConstants.FQ_IS_STANDALONE;
 import static jdk.xml.internal.JdkConstants.JDK_DEBUG_LIMIT;
 import static jdk.xml.internal.JdkConstants.JDK_ENTITY_COUNT_INFO;
 import static jdk.xml.internal.JdkConstants.JDK_EXTENSION_CLASSLOADER;
 import static jdk.xml.internal.JdkConstants.JDK_EXT_CLASSLOADER;
 import static jdk.xml.internal.JdkConstants.JDK_IS_STANDALONE;
-import static jdk.xml.internal.JdkConstants.ORACLE_IS_STANDALONE;
-import static jdk.xml.internal.JdkConstants.SP_IS_STANDALONE;
-import static jdk.xml.internal.JdkConstants.SP_XSLTC_IS_STANDALONE;
 import static jdk.xml.internal.JdkConstants.ORACLE_ENABLE_EXTENSION_FUNCTION;
 import static jdk.xml.internal.JdkConstants.ORACLE_FEATURE_SERVICE_MECHANISM;
-import static jdk.xml.internal.JdkConstants.SP_ENABLE_EXTENSION_FUNCTION;
-import static jdk.xml.internal.JdkConstants.SP_ENABLE_EXTENSION_FUNCTION_SPEC;
-import static jdk.xml.internal.JdkConstants.CDATA_CHUNK_SIZE;
+import static jdk.xml.internal.JdkConstants.ORACLE_IS_STANDALONE;
 import static jdk.xml.internal.JdkConstants.OVERRIDE_PARSER;
 import static jdk.xml.internal.JdkConstants.RESET_SYMBOL_TABLE;
+import static jdk.xml.internal.JdkConstants.SP_ENABLE_EXTENSION_FUNCTION;
+import static jdk.xml.internal.JdkConstants.SP_ENABLE_EXTENSION_FUNCTION_SPEC;
+import static jdk.xml.internal.JdkConstants.SP_IS_STANDALONE;
+import static jdk.xml.internal.JdkConstants.SP_XSLTC_IS_STANDALONE;
 
 /**
- * Represents a JDK Implementation Specific Property. This class holds the name
- * and value of a property along with a state indicating the means through which
- * the property has been set. The value may change only if the setter has a state
- * that represents an equal or higher overriding order.
+ * Represents a JDK Implementation Specific Property. This class holds the name and value of a
+ * property along with a state indicating the means through which the property has been set. The
+ * value may change only if the setter has a state that represents an equal or higher overriding
+ * order.
  *
  * @param <T> the type of the property value.
  */
@@ -58,6 +58,7 @@ public final class JdkProperty<T> {
 
     /**
      * Constructs a JDkProperty.
+     *
      * @param name the name of the property
      * @param type the type of the value
      * @param value the initial value
@@ -71,9 +72,7 @@ public final class JdkProperty<T> {
         readSystemProperty();
     }
 
-    /**
-     * Read from system properties, or those in jaxp.properties
-     */
+    /** Read from system properties, or those in jaxp.properties */
     private void readSystemProperty() {
         if (pState == State.DEFAULT) {
             T value = null;
@@ -81,7 +80,9 @@ public final class JdkProperty<T> {
                 value = SecuritySupport.getJAXPSystemProperty(pType, pName.systemProperty(), null);
             }
             if (value == null && pName.systemPropertyOld() != null) {
-                value = SecuritySupport.getJAXPSystemProperty(pType, pName.systemPropertyOld(), null);
+                value =
+                        SecuritySupport.getJAXPSystemProperty(
+                                pType, pName.systemPropertyOld(), null);
             }
             if (value != null) {
                 pValue = value;
@@ -92,6 +93,7 @@ public final class JdkProperty<T> {
 
     /**
      * Returns the property value.
+     *
      * @return the property value
      */
     public T getValue() {
@@ -99,13 +101,13 @@ public final class JdkProperty<T> {
     }
 
     /**
-     * Sets the property value. The value is set only if the setter has a higher
-     * overriding order.
+     * Sets the property value. The value is set only if the setter has a higher overriding order.
+     *
      * @param name the property name
      * @param value the value
      * @param state the state of the specified property
-     * @return true if the value is set successfully (because the setter has a
-     * higher order); false otherwise.
+     * @return true if the value is set successfully (because the setter has a higher order); false
+     *     otherwise.
      */
     public boolean setValue(String name, T value, State state) {
         State pState1;
@@ -120,30 +122,47 @@ public final class JdkProperty<T> {
     }
 
     /**
-     * Properties Name Map that includes Implementation-Specific Features and
-     * Properties except the limits that are defined in XMLSecurityManager.
-     * The purpose of the map is to provide a map between the new property names
-     * with a prefix "jdk.xml" as defined in the module summary and legacy names
-     * with URL style prefixes. The new names are the same as those of their
-     * System Properties.
+     * Properties Name Map that includes Implementation-Specific Features and Properties except the
+     * limits that are defined in XMLSecurityManager. The purpose of the map is to provide a map
+     * between the new property names with a prefix "jdk.xml" as defined in the module summary and
+     * legacy names with URL style prefixes. The new names are the same as those of their System
+     * Properties.
      */
     @SuppressWarnings("deprecation")
     public static enum ImplPropMap {
-
         ISSTANDALONE("isStandalone", FQ_IS_STANDALONE, SP_IS_STANDALONE, true, null, null),
-        XSLTCISSTANDALONE("xsltcIsStandalone", JDK_IS_STANDALONE, SP_XSLTC_IS_STANDALONE,
-            true, ORACLE_IS_STANDALONE, null),
+        XSLTCISSTANDALONE(
+                "xsltcIsStandalone",
+                JDK_IS_STANDALONE,
+                SP_XSLTC_IS_STANDALONE,
+                true,
+                ORACLE_IS_STANDALONE,
+                null),
         CDATACHUNKSIZE("cdataChunkSize", CDATA_CHUNK_SIZE, CDATA_CHUNK_SIZE, false, null, null),
-        EXTCLSLOADER("extensionClassLoader", JDK_EXT_CLASSLOADER, null,
-            true, JDK_EXTENSION_CLASSLOADER, null),
-        ENABLEEXTFUNC("enableExtensionFunctions", ORACLE_ENABLE_EXTENSION_FUNCTION,
-            SP_ENABLE_EXTENSION_FUNCTION_SPEC, true, null, SP_ENABLE_EXTENSION_FUNCTION),
-        OVERRIDEPARSER("overrideDefaultParser", OVERRIDE_PARSER, OVERRIDE_PARSER,
-            false, ORACLE_FEATURE_SERVICE_MECHANISM, ORACLE_FEATURE_SERVICE_MECHANISM),
-        RESETSYMBOLTABLE("resetSymbolTable", RESET_SYMBOL_TABLE, RESET_SYMBOL_TABLE,
-            false, null, null),
-        ENTITYCOUNT("getEntityCountInfo", JDK_DEBUG_LIMIT, null, true, JDK_ENTITY_COUNT_INFO, null)
-        ;
+        EXTCLSLOADER(
+                "extensionClassLoader",
+                JDK_EXT_CLASSLOADER,
+                null,
+                true,
+                JDK_EXTENSION_CLASSLOADER,
+                null),
+        ENABLEEXTFUNC(
+                "enableExtensionFunctions",
+                ORACLE_ENABLE_EXTENSION_FUNCTION,
+                SP_ENABLE_EXTENSION_FUNCTION_SPEC,
+                true,
+                null,
+                SP_ENABLE_EXTENSION_FUNCTION),
+        OVERRIDEPARSER(
+                "overrideDefaultParser",
+                OVERRIDE_PARSER,
+                OVERRIDE_PARSER,
+                false,
+                ORACLE_FEATURE_SERVICE_MECHANISM,
+                ORACLE_FEATURE_SERVICE_MECHANISM),
+        RESETSYMBOLTABLE(
+                "resetSymbolTable", RESET_SYMBOL_TABLE, RESET_SYMBOL_TABLE, false, null, null),
+        ENTITYCOUNT("getEntityCountInfo", JDK_DEBUG_LIMIT, null, true, JDK_ENTITY_COUNT_INFO, null);
 
         private final String name;
         private final String qName;
@@ -154,6 +173,7 @@ public final class JdkProperty<T> {
 
         /**
          * Constructs an instance.
+         *
          * @param name the property name
          * @param qName the qualified property name
          * @param spName the corresponding System Property
@@ -161,8 +181,13 @@ public final class JdkProperty<T> {
          * @param oldName the legacy property name, null if N/A
          * @param oldSPName the legacy System Property name, null if N/A
          */
-        ImplPropMap(String name, String qName, String spName, boolean differ,
-                String oldQName, String oldSPName) {
+        ImplPropMap(
+                String name,
+                String qName,
+                String spName,
+                boolean differ,
+                String oldQName,
+                String oldSPName) {
             this.name = name;
             this.qName = qName;
             this.spName = spName;
@@ -172,24 +197,26 @@ public final class JdkProperty<T> {
         }
 
         /**
-         * Checks whether the specified name is the property. Checks both the
-         * property and System Property if they differ. Checks also the legacy
-         * name if applicable.
+         * Checks whether the specified name is the property. Checks both the property and System
+         * Property if they differ. Checks also the legacy name if applicable.
          *
          * @param name the specified name
          * @return true if there is a match, false otherwise
          */
         public boolean is(String name) {
             // current spec calls for using a name same as spName
-            return (spName != null && spName.equals(name)) ||
-                   // check qName only if it differs from spName
-                   (differ && qName.equals(name)) ||
-                   // check the legacy name if applicable
-                   (oldQName != null && oldQName.equals(name));
+            return (spName != null && spName.equals(name))
+                    ||
+                    // check qName only if it differs from spName
+                    (differ && qName.equals(name))
+                    ||
+                    // check the legacy name if applicable
+                    (oldQName != null && oldQName.equals(name));
         }
 
         /**
          * Returns the value indicating whether the qName and spName are different.
+         *
          * @return the value indicating whether the qName and spName are different
          */
         public boolean isNameDiffer() {
@@ -197,20 +224,19 @@ public final class JdkProperty<T> {
         }
 
         /**
-         * Returns the state of a property name. By the specification as of JDK 17,
-         * the "jdk.xml." prefixed System property name is also the current API
-         * name. Both the URI-based qName and old name if any are legacy.
+         * Returns the state of a property name. By the specification as of JDK 17, the "jdk.xml."
+         * prefixed System property name is also the current API name. Both the URI-based qName and
+         * old name if any are legacy.
          *
          * @param name the property name
          * @return the state of the property name, null if no match
          */
         public State getState(String name) {
-            if ((spName != null && spName.equals(name)) ||
-                    (spName == null && qName.equals(name))) {
+            if ((spName != null && spName.equals(name)) || (spName == null && qName.equals(name))) {
                 return State.APIPROPERTY;
-            } else if ((differ && qName.equals(name)) ||
-                   (oldQName != null && oldQName.equals(name))) {
-                //both the URI-style qName and an old name if any are legacy
+            } else if ((differ && qName.equals(name))
+                    || (oldQName != null && oldQName.equals(name))) {
+                // both the URI-style qName and an old name if any are legacy
                 return State.LEGACY_APIPROPERTY;
             }
             return null;
@@ -254,18 +280,22 @@ public final class JdkProperty<T> {
     }
 
     /**
-     * Represents the state of the settings of a property. The states are in
-     * descending order: the default value, value set by FEATURE_SECURE_PROCESSING (FSP),
-     * in jaxp.properties, by legacy or new system property, and on factories
-     * using legacy or new property names.
+     * Represents the state of the settings of a property. The states are in descending order: the
+     * default value, value set by FEATURE_SECURE_PROCESSING (FSP), in jaxp.properties, by legacy or
+     * new system property, and on factories using legacy or new property names.
      */
     public static enum State {
-        //this order reflects the overriding order
-        DEFAULT("default"), FSP("FEATURE_SECURE_PROCESSING"), JAXPDOTPROPERTIES("jaxp.properties"),
-        LEGACY_SYSTEMPROPERTY("legacy system property"), SYSTEMPROPERTY("system property"),
-        LEGACY_APIPROPERTY("legacy property"), APIPROPERTY("property");
+        // this order reflects the overriding order
+        DEFAULT("default"),
+        FSP("FEATURE_SECURE_PROCESSING"),
+        JAXPDOTPROPERTIES("jaxp.properties"),
+        LEGACY_SYSTEMPROPERTY("legacy system property"),
+        SYSTEMPROPERTY("system property"),
+        LEGACY_APIPROPERTY("legacy property"),
+        APIPROPERTY("property");
 
         final String literal;
+
         State(String literal) {
             this.literal = literal;
         }

@@ -41,8 +41,8 @@ class AltCatalog extends BaseEntry {
     }
 
     /**
-     * Set the catalog attribute. If the value of the catalog attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
+     * Set the catalog attribute. If the value of the catalog attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect.
      *
      * @param catalog The catalog attribute value.
      * @throws CatalogException if converting to catalog URI failed
@@ -54,11 +54,11 @@ class AltCatalog extends BaseEntry {
         } catch (URISyntaxException ex) {
             CatalogMessages.reportRunTimeError(CatalogMessages.ERR_OTHER, ex);
         }
-
     }
 
     /**
      * Returns the catalog attribute as a URI String.
+     *
      * @return The value of the catalog attribute
      */
     String getCatalogId() {
@@ -67,6 +67,7 @@ class AltCatalog extends BaseEntry {
 
     /**
      * Returns the catalog attribute as a URI.
+     *
      * @return The value of the catalog attribute
      */
     URI getCatalogURI() {
@@ -74,9 +75,8 @@ class AltCatalog extends BaseEntry {
     }
 
     /**
-     * Matches the specified id with the entry. Returns the match if it
-     * is successful and the length of the start String is longer than the
-     * longest of any previous match.
+     * Matches the specified id with the entry. Returns the match if it is successful and the length
+     * of the start String is longer than the longest of any previous match.
      *
      * @param id The id to be matched.
      * @param currentMatch The length of start String of previous match if any.

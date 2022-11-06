@@ -20,76 +20,64 @@
 
 package com.sun.org.apache.xml.internal.utils;
 
-import java.util.HashMap;
-import javax.xml.XMLConstants;
-import javax.xml.catalog.CatalogFeatures;
 import jdk.xml.internal.JdkConstants;
 import jdk.xml.internal.JdkXmlFeatures;
 import jdk.xml.internal.JdkXmlUtils;
 import jdk.xml.internal.SecuritySupport;
 import jdk.xml.internal.XMLSecurityManager;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
+import java.util.HashMap;
+
+import javax.xml.XMLConstants;
+import javax.xml.catalog.CatalogFeatures;
+
 /**
- * Creates XMLReader objects and caches them for re-use.
- * This class follows the singleton pattern.
- *
- * @LastModified: Jan 2022
+ * Creates XMLReader objects and caches them for re-use. This class follows the singleton
+ * pattern. @LastModified: Jan 2022
  */
 public class XMLReaderManager {
 
-    private static final XMLReaderManager m_singletonManager =
-                                                     new XMLReaderManager();
+    private static final XMLReaderManager m_singletonManager = new XMLReaderManager();
     private static final String property = "org.xml.sax.driver";
 
-    /**
-     * Cache of XMLReader objects
-     */
+    /** Cache of XMLReader objects */
     private ThreadLocal<ReaderWrapper> m_readers;
 
-    /**
-     * Keeps track of whether an XMLReader object is in use.
-     */
+    /** Keeps track of whether an XMLReader object is in use. */
     private HashMap<XMLReader, Boolean> m_inUse;
 
     private boolean m_overrideDefaultParser;
 
     private boolean _secureProcessing;
-     /**
-     * protocols allowed for external DTD references in source file and/or stylesheet.
-     */
+    /** protocols allowed for external DTD references in source file and/or stylesheet. */
     private String _accessExternalDTD = JdkConstants.EXTERNAL_ACCESS_DEFAULT;
 
     private XMLSecurityManager _xmlSecurityManager;
 
-    //Catalog Feature
+    // Catalog Feature
     private boolean _useCatalog;
     private CatalogFeatures _catalogFeatures;
 
     private int _cdataChunkSize;
 
-    /**
-     * Hidden constructor
-     */
-    private XMLReaderManager() {
-    }
+    /** Hidden constructor */
+    private XMLReaderManager() {}
 
-    /**
-     * Retrieves the singleton reader manager
-     */
+    /** Retrieves the singleton reader manager */
     public static XMLReaderManager getInstance(boolean overrideDefaultParser) {
         m_singletonManager.setOverrideDefaultParser(overrideDefaultParser);
         return m_singletonManager;
     }
 
     /**
-     * Retrieves a cached XMLReader for this thread, or creates a new
-     * XMLReader, if the existing reader is in use.  When the caller no
-     * longer needs the reader, it must release it with a call to
-     * {@link #releaseXMLReader}.
+     * Retrieves a cached XMLReader for this thread, or creates a new XMLReader, if the existing
+     * reader is in use. When the caller no longer needs the reader, it must release it with a call
+     * to {@link #releaseXMLReader}.
      */
     public synchronized XMLReader getXMLReader() throws SAXException {
         XMLReader reader;
@@ -105,21 +93,20 @@ public class XMLReaderManager {
         }
 
         /**
-         * Constructs a new XMLReader if:
-         * (1) the cached reader for this thread is in use, or
-         * (2) the requirement for overriding has changed,
-         * (3) the cached reader isn't an instance of the class set in the
-         * 'org.xml.sax.driver' property
+         * Constructs a new XMLReader if: (1) the cached reader for this thread is in use, or (2)
+         * the requirement for overriding has changed, (3) the cached reader isn't an instance of
+         * the class set in the 'org.xml.sax.driver' property
          *
-         * otherwise, returns the cached reader
+         * <p>otherwise, returns the cached reader
          */
         ReaderWrapper rw = m_readers.get();
         boolean threadHasReader = (rw != null);
         reader = threadHasReader ? rw.reader : null;
         String factory = SecuritySupport.getSystemProperty(property);
-        if (threadHasReader && m_inUse.get(reader) != Boolean.TRUE &&
-                (rw.overrideDefaultParser == m_overrideDefaultParser) &&
-                ( factory == null || reader.getClass().getName().equals(factory))) {
+        if (threadHasReader
+                && m_inUse.get(reader) != Boolean.TRUE
+                && (rw.overrideDefaultParser == m_overrideDefaultParser)
+                && (factory == null || reader.getClass().getName().equals(factory))) {
             m_inUse.put(reader, Boolean.TRUE);
         } else {
             reader = JdkXmlUtils.getXMLReader(m_overrideDefaultParser, _secureProcessing);
@@ -132,12 +119,12 @@ public class XMLReaderManager {
             }
         }
 
-        //reader is cached, but this property might have been reset
-        JdkXmlUtils.setXMLReaderPropertyIfSupport(reader, XMLConstants.ACCESS_EXTERNAL_DTD,
-                _accessExternalDTD, true);
+        // reader is cached, but this property might have been reset
+        JdkXmlUtils.setXMLReaderPropertyIfSupport(
+                reader, XMLConstants.ACCESS_EXTERNAL_DTD, _accessExternalDTD, true);
 
-        JdkXmlUtils.setXMLReaderPropertyIfSupport(reader, JdkConstants.CDATA_CHUNK_SIZE,
-                _cdataChunkSize, false);
+        JdkXmlUtils.setXMLReaderPropertyIfSupport(
+                reader, JdkConstants.CDATA_CHUNK_SIZE, _cdataChunkSize, false);
 
         String lastProperty = "";
         try {
@@ -145,8 +132,8 @@ public class XMLReaderManager {
                 for (XMLSecurityManager.Limit limit : XMLSecurityManager.Limit.values()) {
                     if (limit.isSupported(XMLSecurityManager.Processor.PARSER)) {
                         lastProperty = limit.apiProperty();
-                        reader.setProperty(lastProperty,
-                                _xmlSecurityManager.getLimitValueAsString(limit));
+                        reader.setProperty(
+                                lastProperty, _xmlSecurityManager.getLimitValueAsString(limit));
                     }
                 }
                 if (_xmlSecurityManager.printEntityCountInfo()) {
@@ -161,8 +148,7 @@ public class XMLReaderManager {
         boolean supportCatalog = true;
         try {
             reader.setFeature(JdkXmlUtils.USE_CATALOG, _useCatalog);
-        }
-        catch (SAXNotRecognizedException | SAXNotSupportedException e) {
+        } catch (SAXNotRecognizedException | SAXNotSupportedException e) {
             supportCatalog = false;
         }
 
@@ -172,15 +158,15 @@ public class XMLReaderManager {
                     reader.setProperty(f.getPropertyName(), _catalogFeatures.get(f));
                 }
             } catch (SAXNotRecognizedException e) {
-                //shall not happen for internal settings
+                // shall not happen for internal settings
             }
         }
         return reader;
     }
 
     /**
-     * Mark the cached XMLReader as available.  If the reader was not
-     * actually in the cache, do nothing.
+     * Mark the cached XMLReader as available. If the reader was not actually in the cache, do
+     * nothing.
      *
      * @param reader The XMLReader that's being released.
      */
@@ -192,23 +178,17 @@ public class XMLReaderManager {
             m_inUse.remove(reader);
         }
     }
-    /**
-     * Return the state of the services mechanism feature.
-     */
+    /** Return the state of the services mechanism feature. */
     public boolean overrideDefaultParser() {
         return m_overrideDefaultParser;
     }
 
-    /**
-     * Set the state of the services mechanism feature.
-     */
+    /** Set the state of the services mechanism feature. */
     public void setOverrideDefaultParser(boolean flag) {
         m_overrideDefaultParser = flag;
     }
 
-    /**
-     * Set feature
-     */
+    /** Set feature */
     public void setFeature(String name, boolean value) {
         if (name.equals(XMLConstants.FEATURE_SECURE_PROCESSING)) {
             _secureProcessing = value;
@@ -217,9 +197,7 @@ public class XMLReaderManager {
         }
     }
 
-    /**
-     * Get property value
-     */
+    /** Get property value */
     public Object getProperty(String name) {
         if (name.equals(XMLConstants.ACCESS_EXTERNAL_DTD)) {
             return _accessExternalDTD;
@@ -229,16 +207,14 @@ public class XMLReaderManager {
         return null;
     }
 
-    /**
-     * Set property.
-     */
+    /** Set property. */
     public void setProperty(String name, Object value) {
         if (name.equals(XMLConstants.ACCESS_EXTERNAL_DTD)) {
-            _accessExternalDTD = (String)value;
+            _accessExternalDTD = (String) value;
         } else if (name.equals(JdkConstants.SECURITY_MANAGER)) {
-            _xmlSecurityManager = (XMLSecurityManager)value;
+            _xmlSecurityManager = (XMLSecurityManager) value;
         } else if (JdkXmlFeatures.CATALOG_FEATURES.equals(name)) {
-            _catalogFeatures = (CatalogFeatures)value;
+            _catalogFeatures = (CatalogFeatures) value;
         } else if (JdkConstants.CDATA_CHUNK_SIZE.equals(name)) {
             _cdataChunkSize = JdkXmlUtils.getValue(value, _cdataChunkSize);
         }

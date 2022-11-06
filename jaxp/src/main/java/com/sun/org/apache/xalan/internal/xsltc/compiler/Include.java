@@ -29,19 +29,22 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import com.sun.org.apache.xml.internal.utils.SystemIDResolver;
-import java.util.Iterator;
-import javax.xml.XMLConstants;
+
 import jdk.xml.internal.JdkConstants;
 import jdk.xml.internal.SecuritySupport;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
+
+import java.util.Iterator;
+
+import javax.xml.XMLConstants;
 
 /**
  * @author Jacek Ambroziak
  * @author Morten Jorgensen
  * @author Erwin Bolwidt <ejb@klomp.org>
- * @author Gunnlaugur Briem <gthb@dimon.is>
- * @LastModified: May 2021
+ * @author Gunnlaugur Briem <gthb@dimon.is> @LastModified: May 2021
  */
 final class Include extends TopLevelElement {
 
@@ -58,8 +61,7 @@ final class Include extends TopLevelElement {
         String docToLoad = getAttribute("href");
         try {
             if (context.checkForLoop(docToLoad)) {
-                final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR,
-                                                  docToLoad, this);
+                final ErrorMsg msg = new ErrorMsg(ErrorMsg.CIRCULAR_INCLUDE_ERR, docToLoad, this);
                 parser.reportError(Constants.FATAL, msg);
                 return;
             }
@@ -83,14 +85,19 @@ final class Include extends TopLevelElement {
             // No SourceLoader or not resolved by SourceLoader
             if (input == null) {
                 docToLoad = SystemIDResolver.getAbsoluteURI(docToLoad, currLoadedDoc);
-                String accessError = SecuritySupport.checkAccess(docToLoad,
-                        (String)xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET),
-                        JdkConstants.ACCESS_EXTERNAL_ALL);
+                String accessError =
+                        SecuritySupport.checkAccess(
+                                docToLoad,
+                                (String) xsltc.getProperty(XMLConstants.ACCESS_EXTERNAL_STYLESHEET),
+                                JdkConstants.ACCESS_EXTERNAL_ALL);
 
                 if (accessError != null) {
-                    final ErrorMsg msg = new ErrorMsg(ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
-                                        SecuritySupport.sanitizePath(docToLoad), accessError,
-                                        this);
+                    final ErrorMsg msg =
+                            new ErrorMsg(
+                                    ErrorMsg.ACCESSING_XSLT_TARGET_ERR,
+                                    SecuritySupport.sanitizePath(docToLoad),
+                                    accessError,
+                                    this);
                     parser.reportError(Constants.FATAL, msg);
                     return;
                 }
@@ -99,17 +106,15 @@ final class Include extends TopLevelElement {
 
             // Return if we could not resolve the URL
             if (input == null) {
-                final ErrorMsg msg =
-                    new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
+                final ErrorMsg msg = new ErrorMsg(ErrorMsg.FILE_NOT_FOUND_ERR, docToLoad, this);
                 parser.reportError(Constants.FATAL, msg);
                 return;
             }
 
             final SyntaxTreeNode root;
             if (reader != null) {
-                root = parser.parse(reader,input);
-            }
-            else {
+                root = parser.parse(reader, input);
+            } else {
                 root = parser.parse(input);
             }
 
@@ -137,20 +142,16 @@ final class Include extends TopLevelElement {
                 if (element instanceof TopLevelElement) {
                     if (element instanceof Variable) {
                         topStylesheet.addVariable((Variable) element);
-                    }
-                    else if (element instanceof Param) {
+                    } else if (element instanceof Param) {
                         topStylesheet.addParam((Param) element);
-                    }
-                    else {
+                    } else {
                         topStylesheet.addElement((TopLevelElement) element);
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             parser.setCurrentStylesheet(context);
         }
     }

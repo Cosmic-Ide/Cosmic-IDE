@@ -33,8 +33,8 @@ import android.text.TextDirectionHeuristics;
 import android.text.TextPaint;
 
 /**
- * Helper class for indirectly calling Paint#getTextRunCursor(), which is
- * responsible for cursor controlling.
+ * Helper class for indirectly calling Paint#getTextRunCursor(), which is responsible for cursor
+ * controlling.
  *
  * @author Rosemoe
  */
@@ -48,12 +48,19 @@ public class TextLayoutHelper {
 
     private final Editable text = Editable.Factory.getInstance().newEditable("");
     private final DynamicLayout layout;
-    private final static int CHAR_FACTOR = 64;
+    private static final int CHAR_FACTOR = 64;
 
     private TextLayoutHelper() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            layout = new DynamicLayout(text, new TextPaint(), Integer.MAX_VALUE / 2,
-                    Layout.Alignment.ALIGN_NORMAL, 0, 0, true);
+            layout =
+                    new DynamicLayout(
+                            text,
+                            new TextPaint(),
+                            Integer.MAX_VALUE / 2,
+                            Layout.Alignment.ALIGN_NORMAL,
+                            0,
+                            0,
+                            true);
             try {
                 @SuppressLint("DiscouragedPrivateApi")
                 var field = Layout.class.getDeclaredField("mTextDir");
@@ -63,12 +70,13 @@ public class TextLayoutHelper {
                 e.printStackTrace();
             }
         } else {
-            layout = DynamicLayout.Builder.obtain(text, new TextPaint(), Integer.MAX_VALUE / 2)
-                    .setIncludePad(true)
-                    .setLineSpacing(0, 0)
-                    .setTextDirection(TextDirectionHeuristics.LTR)
-                    .setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                    .build();
+            layout =
+                    DynamicLayout.Builder.obtain(text, new TextPaint(), Integer.MAX_VALUE / 2)
+                            .setIncludePad(true)
+                            .setLineSpacing(0, 0)
+                            .setTextDirection(TextDirectionHeuristics.LTR)
+                            .setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                            .build();
         }
     }
 
@@ -104,5 +112,4 @@ public class TextLayoutHelper {
         Selection.removeSelection(text);
         return left + index;
     }
-
 }

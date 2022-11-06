@@ -21,14 +21,14 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.sun.org.apache.bcel.internal.Const;
 
 /**
  * represents one annotation in the annotation table
@@ -52,20 +52,28 @@ public class AnnotationEntry implements Node {
      * @return the entry
      * @throws IOException
      */
-    public static AnnotationEntry read(final DataInput input, final ConstantPool constant_pool, final boolean isRuntimeVisible) throws IOException {
+    public static AnnotationEntry read(
+            final DataInput input, final ConstantPool constant_pool, final boolean isRuntimeVisible)
+            throws IOException {
 
-        final AnnotationEntry annotationEntry = new AnnotationEntry(input.readUnsignedShort(), constant_pool, isRuntimeVisible);
+        final AnnotationEntry annotationEntry =
+                new AnnotationEntry(input.readUnsignedShort(), constant_pool, isRuntimeVisible);
         final int num_element_value_pairs = input.readUnsignedShort();
         annotationEntry.elementValuePairs = new ArrayList<>();
         for (int i = 0; i < num_element_value_pairs; i++) {
             annotationEntry.elementValuePairs.add(
-                    new ElementValuePair(input.readUnsignedShort(), ElementValue.readElementValue(input, constant_pool),
-                    constant_pool));
+                    new ElementValuePair(
+                            input.readUnsignedShort(),
+                            ElementValue.readElementValue(input, constant_pool),
+                            constant_pool));
         }
         return annotationEntry;
     }
 
-    public AnnotationEntry(final int type_index, final ConstantPool constant_pool, final boolean isRuntimeVisible) {
+    public AnnotationEntry(
+            final int type_index,
+            final ConstantPool constant_pool,
+            final boolean isRuntimeVisible) {
         this.typeIndex = type_index;
         this.constantPool = constant_pool;
         this.isRuntimeVisible = isRuntimeVisible;
@@ -84,8 +92,9 @@ public class AnnotationEntry implements Node {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class.
-     * I.e., the hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
@@ -98,7 +107,8 @@ public class AnnotationEntry implements Node {
      * @return the annotation type name
      */
     public String getAnnotationType() {
-        final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(typeIndex, Const.CONSTANT_Utf8);
+        final ConstantUtf8 c =
+                (ConstantUtf8) constantPool.getConstant(typeIndex, Const.CONSTANT_Utf8);
         return c.getBytes();
     }
 
@@ -163,7 +173,8 @@ public class AnnotationEntry implements Node {
         for (final Attribute attribute : attrs) {
             if (attribute instanceof Annotations) {
                 final Annotations runtimeAnnotations = (Annotations) attribute;
-                Collections.addAll(accumulatedAnnotations, runtimeAnnotations.getAnnotationEntries());
+                Collections.addAll(
+                        accumulatedAnnotations, runtimeAnnotations.getAnnotationEntries());
             }
         }
         return accumulatedAnnotations.toArray(new AnnotationEntry[accumulatedAnnotations.size()]);

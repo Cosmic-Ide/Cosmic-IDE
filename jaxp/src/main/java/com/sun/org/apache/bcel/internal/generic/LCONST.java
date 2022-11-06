@@ -24,20 +24,13 @@ package com.sun.org.apache.bcel.internal.generic;
  * LCONST - Push 0 or 1, other values cause an exception
  *
  * <PRE>Stack: ... -&gt; ..., </PRE>
- *
  */
 public class LCONST extends Instruction implements ConstantPushInstruction {
 
     private long value;
 
-
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    LCONST() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    LCONST() {}
 
     public LCONST(final long l) {
         super(com.sun.org.apache.bcel.internal.Const.LCONST_0, (short) 1);
@@ -51,31 +44,28 @@ public class LCONST extends Instruction implements ConstantPushInstruction {
         value = l;
     }
 
-
     @Override
     public Number getValue() {
         return Long.valueOf(value);
     }
 
-
-    /** @return Type.LONG
+    /**
+     * @return Type.LONG
      */
     @Override
-    public Type getType( final ConstantPoolGen cp ) {
+    public Type getType(final ConstantPoolGen cp) {
         return Type.LONG;
     }
 
-
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
      * i.e., the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitPushInstruction(this);
         v.visitStackProducer(this);
         v.visitTypedInstruction(this);

@@ -29,10 +29,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Reference of a content due to be accessed in read-only mode.
- * Access can be validated during accesses.
- * {@link io.github.rosemoe.sora.text.TextReference.ValidateFailedException} may be thrown if the check is failed.
- * The result of methods may be dirty when the content is modified.
+ * Reference of a content due to be accessed in read-only mode. Access can be validated during
+ * accesses. {@link io.github.rosemoe.sora.text.TextReference.ValidateFailedException} may be thrown
+ * if the check is failed. The result of methods may be dirty when the content is modified.
  *
  * @author Rosemoe
  */
@@ -111,9 +110,7 @@ public class ContentReference extends TextReference {
         content.getLine(line).appendTo(sb);
     }
 
-    /**
-     * Create a reader to read the text
-     */
+    /** Create a reader to read the text */
     public Reader createReader() {
         return new RefReader();
     }
@@ -153,8 +150,11 @@ public class ContentReference extends TextReference {
                 }
                 column += toRead;
                 read += toRead;
-                while (read < length && columnCount <= column && column < columnCount + separatorLength) {
-                    chars[offset + read] = targetLine.getLineSeparator().getContent().charAt(column - columnCount);
+                while (read < length
+                        && columnCount <= column
+                        && column < columnCount + separatorLength) {
+                    chars[offset + read] =
+                            targetLine.getLineSeparator().getContent().charAt(column - columnCount);
                     read++;
                     column++;
                 }

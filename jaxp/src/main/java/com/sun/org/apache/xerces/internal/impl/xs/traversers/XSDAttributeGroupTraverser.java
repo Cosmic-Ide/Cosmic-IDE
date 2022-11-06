@@ -30,55 +30,50 @@ import com.sun.org.apache.xerces.internal.util.DOMUtil;
 import com.sun.org.apache.xerces.internal.util.XMLSymbols;
 import com.sun.org.apache.xerces.internal.xni.QName;
 import com.sun.org.apache.xerces.internal.xs.XSObjectList;
+
 import org.w3c.dom.Element;
 
 /**
  * The attribute group definition schema component traverser.
  *
- * <attributeGroup
- *   id = ID
- *   name = NCName
- *   ref = QName
- *   {any attributes with non-schema namespace . . .}>
- *   Content: (annotation?, ((attribute | attributeGroup)*, anyAttribute?))
- * </attributeGroup>
+ * <p><attributeGroup id = ID name = NCName ref = QName {any attributes with non-schema namespace .
+ * . .}> Content: (annotation?, ((attribute | attributeGroup)*, anyAttribute?)) </attributeGroup>
  *
  * @xerces.internal
- *
  * @author Rahul Srivastava, Sun Microsystems Inc.
  * @author Sandy Gao, IBM
- *
  */
 class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
 
-    XSDAttributeGroupTraverser (XSDHandler handler,
-            XSAttributeChecker gAttrCheck) {
+    XSDAttributeGroupTraverser(XSDHandler handler, XSAttributeChecker gAttrCheck) {
 
         super(handler, gAttrCheck);
     }
 
-
-    XSAttributeGroupDecl traverseLocal(Element elmNode,
-            XSDocumentInfo schemaDoc,
-            SchemaGrammar grammar) {
+    XSAttributeGroupDecl traverseLocal(
+            Element elmNode, XSDocumentInfo schemaDoc, SchemaGrammar grammar) {
 
         // General Attribute Checking for elmNode declared locally
         Object[] attrValues = fAttrChecker.checkAttributes(elmNode, false, schemaDoc);
 
         // get attribute
-        QName   refAttr = (QName)   attrValues[XSAttributeChecker.ATTIDX_REF];
+        QName refAttr = (QName) attrValues[XSAttributeChecker.ATTIDX_REF];
 
         XSAttributeGroupDecl attrGrp = null;
 
         // ref should be here.
         if (refAttr == null) {
-            reportSchemaError("s4s-att-must-appear", new Object[]{"attributeGroup (local)", "ref"}, elmNode);
+            reportSchemaError(
+                    "s4s-att-must-appear", new Object[] {"attributeGroup (local)", "ref"}, elmNode);
             fAttrChecker.returnAttrArray(attrValues, schemaDoc);
             return null;
         }
 
         // get global decl
-        attrGrp = (XSAttributeGroupDecl)fSchemaHandler.getGlobalDecl(schemaDoc, XSDHandler.ATTRIBUTEGROUP_TYPE, refAttr, elmNode);
+        attrGrp =
+                (XSAttributeGroupDecl)
+                        fSchemaHandler.getGlobalDecl(
+                                schemaDoc, XSDHandler.ATTRIBUTEGROUP_TYPE, refAttr, elmNode);
 
         // no children are allowed here except annotation, which is optional.
         Element child = DOMUtil.getFirstChildElement(elmNode);
@@ -95,30 +90,34 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
             }
 
             if (child != null) {
-                Object[] args = new Object [] {refAttr.rawname, "(annotation?)", DOMUtil.getLocalName(child)};
+                Object[] args =
+                        new Object[] {
+                            refAttr.rawname, "(annotation?)", DOMUtil.getLocalName(child)
+                        };
                 reportSchemaError("s4s-elt-must-match.1", args, child);
             }
         } // if
 
         fAttrChecker.returnAttrArray(attrValues, schemaDoc);
         return attrGrp;
-
     } // traverseLocal
 
-    XSAttributeGroupDecl traverseGlobal(Element elmNode,
-            XSDocumentInfo schemaDoc,
-            SchemaGrammar grammar) {
+    XSAttributeGroupDecl traverseGlobal(
+            Element elmNode, XSDocumentInfo schemaDoc, SchemaGrammar grammar) {
 
         XSAttributeGroupDecl attrGrp = new XSAttributeGroupDecl();
 
         // General Attribute Checking for elmNode declared globally
         Object[] attrValues = fAttrChecker.checkAttributes(elmNode, true, schemaDoc);
 
-        String  nameAttr   = (String) attrValues[XSAttributeChecker.ATTIDX_NAME];
+        String nameAttr = (String) attrValues[XSAttributeChecker.ATTIDX_NAME];
 
         // global declaration must have a name
         if (nameAttr == null) {
-            reportSchemaError("s4s-att-must-appear", new Object[]{"attributeGroup (global)", "name"}, elmNode);
+            reportSchemaError(
+                    "s4s-att-must-appear",
+                    new Object[] {"attributeGroup (global)", "name"},
+                    elmNode);
             nameAttr = NO_NAME;
         }
 
@@ -129,14 +128,14 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
         Element child = DOMUtil.getFirstChildElement(elmNode);
         XSAnnotationImpl annotation = null;
 
-        if (child!=null && DOMUtil.getLocalName(child).equals(SchemaSymbols.ELT_ANNOTATION)) {
+        if (child != null && DOMUtil.getLocalName(child).equals(SchemaSymbols.ELT_ANNOTATION)) {
             annotation = traverseAnnotationDecl(child, attrValues, false, schemaDoc);
             child = DOMUtil.getNextSiblingElement(child);
-        }
-        else {
+        } else {
             String text = DOMUtil.getSyntheticAnnotation(elmNode);
             if (text != null) {
-                annotation = traverseSyntheticAnnotation(elmNode, text, attrValues, false, schemaDoc);
+                annotation =
+                        traverseSyntheticAnnotation(elmNode, text, attrValues, false, schemaDoc);
             }
         }
 
@@ -144,9 +143,14 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
         // attributeGroup structure
 
         Element nextNode = traverseAttrsAndAttrGrps(child, attrGrp, schemaDoc, grammar, null);
-        if (nextNode!=null) {
+        if (nextNode != null) {
             // An invalid element was found...
-            Object[] args = new Object [] {nameAttr, "(annotation?, ((attribute | attributeGroup)*, anyAttribute?))", DOMUtil.getLocalName(nextNode)};
+            Object[] args =
+                    new Object[] {
+                        nameAttr,
+                        "(annotation?, ((attribute | attributeGroup)*, anyAttribute?))",
+                        DOMUtil.getLocalName(nextNode)
+                    };
             reportSchemaError("s4s-elt-must-match.1", args, nextNode);
         }
 
@@ -160,22 +164,32 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
         attrGrp.removeProhibitedAttrs();
 
         // check for restricted redefine:
-        XSAttributeGroupDecl redefinedAttrGrp = (XSAttributeGroupDecl)fSchemaHandler.getGrpOrAttrGrpRedefinedByRestriction(
-                XSDHandler.ATTRIBUTEGROUP_TYPE,
-                new QName(XMLSymbols.EMPTY_STRING, nameAttr, nameAttr, schemaDoc.fTargetNamespace),
-                schemaDoc, elmNode);
-        if(redefinedAttrGrp != null) {
+        XSAttributeGroupDecl redefinedAttrGrp =
+                (XSAttributeGroupDecl)
+                        fSchemaHandler.getGrpOrAttrGrpRedefinedByRestriction(
+                                XSDHandler.ATTRIBUTEGROUP_TYPE,
+                                new QName(
+                                        XMLSymbols.EMPTY_STRING,
+                                        nameAttr,
+                                        nameAttr,
+                                        schemaDoc.fTargetNamespace),
+                                schemaDoc,
+                                elmNode);
+        if (redefinedAttrGrp != null) {
             Object[] errArgs = attrGrp.validRestrictionOf(nameAttr, redefinedAttrGrp);
             if (errArgs != null) {
-                reportSchemaError((String)errArgs[errArgs.length-1], errArgs, child);
-                reportSchemaError("src-redefine.7.2.2", new Object [] {nameAttr, errArgs[errArgs.length-1]}, child);
+                reportSchemaError((String) errArgs[errArgs.length - 1], errArgs, child);
+                reportSchemaError(
+                        "src-redefine.7.2.2",
+                        new Object[] {nameAttr, errArgs[errArgs.length - 1]},
+                        child);
             }
         }
 
         XSObjectList annotations;
         if (annotation != null) {
             annotations = new XSObjectListImpl();
-            ((XSObjectListImpl)annotations).addXSObject (annotation);
+            ((XSObjectListImpl) annotations).addXSObject(annotation);
         } else {
             annotations = XSObjectListImpl.EMPTY_LIST;
         }
@@ -189,7 +203,8 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
 
         // also add it to extended map
         final String loc = fSchemaHandler.schemaDocument2SystemId(schemaDoc);
-        final XSAttributeGroupDecl attrGrp2 = grammar.getGlobalAttributeGroupDecl(attrGrp.fName, loc);
+        final XSAttributeGroupDecl attrGrp2 =
+                grammar.getGlobalAttributeGroupDecl(attrGrp.fName, loc);
         if (attrGrp2 == null) {
             grammar.addGlobalAttributeGroupDecl(attrGrp, loc);
         }
@@ -204,7 +219,5 @@ class XSDAttributeGroupTraverser extends XSDAbstractTraverser {
 
         fAttrChecker.returnAttrArray(attrValues, schemaDoc);
         return attrGrp;
-
     } // traverseGlobal
-
 } // XSDAttributeGroupTraverser

@@ -25,9 +25,7 @@ package io.github.rosemoe.sora.widget.snippet.variable;
 
 import androidx.annotation.NonNull;
 
-/**
- * Interface for resolving code snippet variables
- */
+/** Interface for resolving code snippet variables */
 public interface ISnippetVariableResolver {
 
     /**
@@ -39,10 +37,7 @@ public interface ISnippetVariableResolver {
     @NonNull
     String resolve(@NonNull String name);
 
-    /**
-     * Get variable names supported by this resolver
-     */
+    /** Get variable names supported by this resolver */
     @NonNull
     String[] getResolvableNames();
-
 }

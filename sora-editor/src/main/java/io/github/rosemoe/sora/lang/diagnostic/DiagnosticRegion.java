@@ -30,26 +30,20 @@ package io.github.rosemoe.sora.lang.diagnostic;
  */
 public final class DiagnosticRegion implements Comparable<DiagnosticRegion> {
 
-    public final static short SEVERITY_NONE = 0;
-    public final static short SEVERITY_TYPO = 1;
-    public final static short SEVERITY_WARNING = 2;
-    public final static short SEVERITY_ERROR = 3;
+    public static final short SEVERITY_NONE = 0;
+    public static final short SEVERITY_TYPO = 1;
+    public static final short SEVERITY_WARNING = 2;
+    public static final short SEVERITY_ERROR = 3;
 
-    /**
-     * Id specified by diagnostic provider
-     */
+    /** Id specified by diagnostic provider */
     public long id;
     /*
      * The description of the problem
      * public String description;
      */
-    /**
-     * The start index of the diagnostic
-     */
+    /** The start index of the diagnostic */
     public int startIndex;
-    /**
-     * The end index of the diagnostic
-     */
+    /** The end index of the diagnostic */
     public int endIndex;
     /**
      * One diagnostic has only one severity specification
@@ -69,7 +63,7 @@ public final class DiagnosticRegion implements Comparable<DiagnosticRegion> {
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.severity = severity;
-        //this.description = description;
+        // this.description = description;
         this.id = id;
     }
 

@@ -21,9 +21,8 @@
 package com.sun.org.apache.xerces.internal.utils;
 
 /**
- * A configuration error. This was an internal class in ObjectFactory previously
- *
- * @LastModified: Oct 2017
+ * A configuration error. This was an internal class in ObjectFactory previously @LastModified: Oct
+ * 2017
  */
 public final class ConfigurationError extends Error {
     private static final long serialVersionUID = 8095902236393167968L;
@@ -39,10 +38,7 @@ public final class ConfigurationError extends Error {
     // Constructors
     //
 
-    /**
-     * Construct a new instance with the specified detail string and
-     * exception.
-     */
+    /** Construct a new instance with the specified detail string and exception. */
     ConfigurationError(String msg, Exception x) {
         super(msg);
         this.exception = x;
@@ -56,5 +52,4 @@ public final class ConfigurationError extends Error {
     public Exception getException() {
         return exception;
     } // getException():Exception
-
 } // class ConfigurationError

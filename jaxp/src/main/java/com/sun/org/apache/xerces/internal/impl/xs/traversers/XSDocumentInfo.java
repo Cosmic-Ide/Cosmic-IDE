@@ -26,24 +26,23 @@ import com.sun.org.apache.xerces.internal.impl.xs.SchemaSymbols;
 import com.sun.org.apache.xerces.internal.impl.xs.XMLSchemaException;
 import com.sun.org.apache.xerces.internal.impl.xs.util.XInt;
 import com.sun.org.apache.xerces.internal.util.SymbolTable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 /**
- * Objects of this class hold all information pecular to a
- * particular XML Schema document.  This is needed because
- * namespace bindings and other settings on the <schema/> element
- * affect the contents of that schema document alone.
+ * Objects of this class hold all information pecular to a particular XML Schema document. This is
+ * needed because namespace bindings and other settings on the <schema/> element affect the contents
+ * of that schema document alone.
  *
  * @xerces.internal
- *
- * @author Neil Graham, IBM
- * @LastModified: Oct 2017
+ * @author Neil Graham, IBM @LastModified: Oct 2017
  */
 class XSDocumentInfo {
 
@@ -65,7 +64,8 @@ class XSDocumentInfo {
     // targetNamespace
     String fTargetNamespace;
 
-    // represents whether this is a chameleon schema (i.e., whether its TNS is natural or comes from without)
+    // represents whether this is a chameleon schema (i.e., whether its TNS is natural or comes from
+    // without)
     protected boolean fIsChameleonSchema;
 
     // the root of the schema Document tree itself
@@ -84,7 +84,7 @@ class XSDocumentInfo {
 
     // array of objects on the schema's root element.  This is null
     // once returnSchemaAttrs has been called.
-    protected Object [] fSchemaAttrs;
+    protected Object[] fSchemaAttrs;
 
     // list of annotations contained in the schema document. This is null
     // once removeAnnotations has been called.
@@ -92,8 +92,8 @@ class XSDocumentInfo {
 
     // note that the caller must ensure to call returnSchemaAttrs()
     // to avoid memory leaks!
-    XSDocumentInfo (Element schemaRoot, XSAttributeChecker attrChecker, SymbolTable symbolTable)
-                    throws XMLSchemaException {
+    XSDocumentInfo(Element schemaRoot, XSAttributeChecker attrChecker, SymbolTable symbolTable)
+            throws XMLSchemaException {
         fSchemaElement = schemaRoot;
         initNamespaceSupport(schemaRoot);
         fIsChameleonSchema = false;
@@ -111,49 +111,49 @@ class XSDocumentInfo {
                 throw new XMLSchemaException(null, null);
             }
             fAreLocalAttributesQualified =
-                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_AFORMDEFAULT]).intValue() == SchemaSymbols.FORM_QUALIFIED;
+                    ((XInt) fSchemaAttrs[XSAttributeChecker.ATTIDX_AFORMDEFAULT]).intValue()
+                            == SchemaSymbols.FORM_QUALIFIED;
             fAreLocalElementsQualified =
-                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_EFORMDEFAULT]).intValue() == SchemaSymbols.FORM_QUALIFIED;
+                    ((XInt) fSchemaAttrs[XSAttributeChecker.ATTIDX_EFORMDEFAULT]).intValue()
+                            == SchemaSymbols.FORM_QUALIFIED;
             fBlockDefault =
-                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_BLOCKDEFAULT]).shortValue();
+                    ((XInt) fSchemaAttrs[XSAttributeChecker.ATTIDX_BLOCKDEFAULT]).shortValue();
             fFinalDefault =
-                ((XInt)fSchemaAttrs[XSAttributeChecker.ATTIDX_FINALDEFAULT]).shortValue();
-            fTargetNamespace =
-                (String)fSchemaAttrs[XSAttributeChecker.ATTIDX_TARGETNAMESPACE];
+                    ((XInt) fSchemaAttrs[XSAttributeChecker.ATTIDX_FINALDEFAULT]).shortValue();
+            fTargetNamespace = (String) fSchemaAttrs[XSAttributeChecker.ATTIDX_TARGETNAMESPACE];
             if (fTargetNamespace != null)
                 fTargetNamespace = symbolTable.addSymbol(fTargetNamespace);
 
             fNamespaceSupportRoot = new SchemaNamespaceSupport(fNamespaceSupport);
 
-            //set namespace support
+            // set namespace support
             fValidationContext.setNamespaceSupport(fNamespaceSupport);
             fValidationContext.setSymbolTable(symbolTable);
             // pass null as the schema document, so that the namespace
             // context is not popped.
 
             // don't return the attribute array yet!
-            //attrChecker.returnAttrArray(schemaAttrs, null);
+            // attrChecker.returnAttrArray(schemaAttrs, null);
         }
     }
 
     /**
-     * Initialize namespace support by collecting all of the namespace
-     * declarations in the root's ancestors. This is necessary to
-     * support schemas fragments, i.e. schemas embedded in other
+     * Initialize namespace support by collecting all of the namespace declarations in the root's
+     * ancestors. This is necessary to support schemas fragments, i.e. schemas embedded in other
      * documents. See,
      *
-     * https://jaxp.dev.java.net/issues/show_bug.cgi?id=43
+     * <p>https://jaxp.dev.java.net/issues/show_bug.cgi?id=43
      *
-     * Requires the DOM to be created with namespace support enabled.
+     * <p>Requires the DOM to be created with namespace support enabled.
      */
     private void initNamespaceSupport(Element schemaRoot) {
         fNamespaceSupport = new SchemaNamespaceSupport();
         fNamespaceSupport.reset();
 
         Node parent = schemaRoot.getParentNode();
-        while (parent != null && parent.getNodeType() == Node.ELEMENT_NODE
-                && !parent.getNodeName().equals("DOCUMENT_NODE"))
-        {
+        while (parent != null
+                && parent.getNodeType() == Node.ELEMENT_NODE
+                && !parent.getNodeName().equals("DOCUMENT_NODE")) {
             Element eparent = (Element) parent;
             NamedNodeMap map = eparent.getAttributes();
             int length = (map != null) ? map.getLength() : 0;
@@ -167,8 +167,7 @@ class XSDocumentInfo {
                     if (prefix == "xmlns") prefix = "";
                     // Declare prefix if not set -- moving upwards
                     if (fNamespaceSupport.getURI(prefix) == null) {
-                        fNamespaceSupport.declarePrefix(prefix,
-                                attr.getValue().intern());
+                        fNamespaceSupport.declarePrefix(prefix, attr.getValue().intern());
                     }
                 }
             }
@@ -180,8 +179,7 @@ class XSDocumentInfo {
     // if no ns support is passed-in, use the one for <schema> element
     void backupNSSupport(SchemaNamespaceSupport nsSupport) {
         SchemaNamespaceSupportStack.push(fNamespaceSupport);
-        if (nsSupport == null)
-            nsSupport = fNamespaceSupportRoot;
+        if (nsSupport == null) nsSupport = fNamespaceSupportRoot;
         fNamespaceSupport = new SchemaNamespaceSupport(nsSupport);
 
         fValidationContext.setNamespaceSupport(fNamespaceSupport);
@@ -194,7 +192,9 @@ class XSDocumentInfo {
 
     // some Object methods
     public String toString() {
-        return fTargetNamespace == null?"no targetNamspace":"targetNamespace is " + fTargetNamespace;
+        return fTargetNamespace == null
+                ? "no targetNamspace"
+                : "targetNamespace is " + fTargetNamespace;
     }
 
     public void addAllowedNS(String namespace) {
@@ -212,23 +212,21 @@ class XSDocumentInfo {
     // if we have reported an error, then we don't need to report again;
     // otherwise we reported the error, and remember this fact.
     final boolean needReportTNSError(String uri) {
-        if (fReportedTNS == null)
-            fReportedTNS = new ArrayList<>();
-        else if (fReportedTNS.contains(uri))
-            return false;
+        if (fReportedTNS == null) fReportedTNS = new ArrayList<>();
+        else if (fReportedTNS.contains(uri)) return false;
         fReportedTNS.add(uri);
         return true;
     }
 
     // return the attributes on the schema element itself:
-    Object [] getSchemaAttrs () {
+    Object[] getSchemaAttrs() {
         return fSchemaAttrs;
     }
 
     // deallocate the storage set aside for the schema element's
     // attributes
-    void returnSchemaAttrs () {
-        fAttrChecker.returnAttrArray (fSchemaAttrs, null);
+    void returnSchemaAttrs() {
+        fAttrChecker.returnAttrArray(fSchemaAttrs, null);
         fSchemaAttrs = null;
     }
 
@@ -248,5 +246,4 @@ class XSDocumentInfo {
     void removeAnnotations() {
         fAnnotations = null;
     }
-
 } // XSDocumentInfo

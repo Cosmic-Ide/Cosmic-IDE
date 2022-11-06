@@ -26,12 +26,12 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMsg;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
 import java.util.List;
 
 /**
  * @author Jacek Ambroziak
- * @author Santiago Pericas-Geertsen
- * @LastModified: Oct 2017
+ * @author Santiago Pericas-Geertsen @LastModified: Oct 2017
  */
 final class StringCall extends FunctionCall {
     public StringCall(QName fname, List<Expression> arguments) {
@@ -58,8 +58,7 @@ final class StringCall extends FunctionCall {
         if (argumentCount() == 0) {
             il.append(methodGen.loadContextNode());
             targ = Type.Node;
-        }
-        else {
+        } else {
             final Expression arg = argument();
             arg.translate(classGen, methodGen);
             arg.startIterator(classGen, methodGen);

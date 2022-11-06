@@ -68,16 +68,19 @@ public class CodeSnippetTokenizer {
 
         if (isVariableChar(ch)) {
             length = 1;
-            while (index + length < value.length() && (isVariableChar(ch = value.charAt(index + length)) || isDigitChar(ch))) {
+            while (index + length < value.length()
+                    && (isVariableChar(ch = value.charAt(index + length)) || isDigitChar(ch))) {
                 length++;
             }
             return TokenType.VariableName;
         }
 
-        while (index + length < value.length() && !isDigitChar(ch) && !isVariableChar(ch) && staticTypes.get(ch) == null) {
+        while (index + length < value.length()
+                && !isDigitChar(ch)
+                && !isVariableChar(ch)
+                && staticTypes.get(ch) == null) {
             length++;
-            if (index + length < value.length())
-                ch = value.charAt(index + length);
+            if (index + length < value.length()) ch = value.charAt(index + length);
         }
         return TokenType.Format;
     }
@@ -122,9 +125,6 @@ public class CodeSnippetTokenizer {
     }
 
     private static boolean isVariableChar(char ch) {
-        return (ch >= 'a' && ch <= 'z') ||
-                (ch >= 'A' && ch <= 'Z') ||
-                ch == '_';
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_';
     }
-
 }

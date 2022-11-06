@@ -21,54 +21,49 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import com.sun.org.apache.bcel.internal.Const;
 
 /**
  * an annotation's element value pair
  *
  * @since 6.0
  */
-public class ElementValuePair
-{
+public class ElementValuePair {
     private final ElementValue elementValue;
 
     private final ConstantPool constantPool;
 
     private final int elementNameIndex;
 
-    public ElementValuePair(final int elementNameIndex, final ElementValue elementValue,
-            final ConstantPool constantPool)
-    {
+    public ElementValuePair(
+            final int elementNameIndex,
+            final ElementValue elementValue,
+            final ConstantPool constantPool) {
         this.elementValue = elementValue;
         this.elementNameIndex = elementNameIndex;
         this.constantPool = constantPool;
     }
 
-    public String getNameString()
-    {
-        final ConstantUtf8 c = (ConstantUtf8) constantPool.getConstant(
-                elementNameIndex, Const.CONSTANT_Utf8);
+    public String getNameString() {
+        final ConstantUtf8 c =
+                (ConstantUtf8) constantPool.getConstant(elementNameIndex, Const.CONSTANT_Utf8);
         return c.getBytes();
     }
 
-    public final ElementValue getValue()
-    {
+    public final ElementValue getValue() {
         return elementValue;
     }
 
-    public int getNameIndex()
-    {
+    public int getNameIndex() {
         return elementNameIndex;
     }
 
-    public String toShortString()
-    {
+    public String toShortString() {
         final StringBuilder result = new StringBuilder();
-        result.append(getNameString()).append("=").append(
-                getValue().toShortString());
+        result.append(getNameString()).append("=").append(getValue().toShortString());
         return result.toString();
     }
 

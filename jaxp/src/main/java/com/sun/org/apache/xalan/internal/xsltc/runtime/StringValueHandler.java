@@ -21,9 +21,9 @@
 
 package com.sun.org.apache.xalan.internal.xsltc.runtime;
 
-import org.xml.sax.SAXException;
-
 import com.sun.org.apache.xml.internal.serializer.EmptySerializer;
+
+import org.xml.sax.SAXException;
 
 /**
  * @author Jacek Ambroziak
@@ -38,11 +38,8 @@ public final class StringValueHandler extends EmptySerializer {
     private boolean m_escaping = false;
     private int _nestedLevel = 0;
 
-    public void characters(char[] ch, int off, int len)
-        throws SAXException
-    {
-        if (_nestedLevel > 0)
-            return;
+    public void characters(char[] ch, int off, int len) throws SAXException {
+        if (_nestedLevel > 0) return;
 
         if (_str != null) {
             _buffer.append(_str);
@@ -56,8 +53,7 @@ public final class StringValueHandler extends EmptySerializer {
             String result = _buffer.toString();
             _buffer.setLength(0);
             return result;
-        }
-        else {
+        } else {
             String result = _str;
             _str = null;
             return (result != null) ? result : EMPTY_STR;
@@ -65,13 +61,11 @@ public final class StringValueHandler extends EmptySerializer {
     }
 
     public void characters(String characters) throws SAXException {
-        if (_nestedLevel > 0)
-            return;
+        if (_nestedLevel > 0) return;
 
         if (_str == null && _buffer.length() == 0) {
             _str = characters;
-        }
-        else {
+        } else {
             if (_str != null) {
                 _buffer.append(_str);
                 _str = null;
@@ -99,8 +93,8 @@ public final class StringValueHandler extends EmptySerializer {
     }
 
     /**
-     * The value of a PI must not contain the substring "?>". Should
-     * that substring be present, replace it by "? >".
+     * The value of a PI must not contain the substring "?>". Should that substring be present,
+     * replace it by "? >".
      */
     public String getValueOfPI() {
         final String value = getValue();
@@ -109,12 +103,12 @@ public final class StringValueHandler extends EmptySerializer {
             final int n = value.length();
             final StringBuilder valueOfPI = new StringBuilder();
 
-            for (int i = 0; i < n;) {
+            for (int i = 0; i < n; ) {
                 final char ch = value.charAt(i++);
                 if (ch == '?' && value.charAt(i) == '>') {
-                    valueOfPI.append("? >"); i++;
-                }
-                else {
+                    valueOfPI.append("? >");
+                    i++;
+                } else {
                     valueOfPI.append(ch);
                 }
             }

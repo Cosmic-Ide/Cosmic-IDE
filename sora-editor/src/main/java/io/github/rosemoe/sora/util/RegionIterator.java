@@ -44,7 +44,8 @@ public class RegionIterator {
         int minNext = max;
         for (int i = 0; i < providers.length; i++) {
             int next, value;
-            if (pointers[i] < providers[i].getPointCount() && (value = providers[i].getPointAt(pointers[i])) <= max) {
+            if (pointers[i] < providers[i].getPointCount()
+                    && (value = providers[i].getPointAt(pointers[i])) <= max) {
                 next = value;
             } else {
                 next = max;
@@ -53,7 +54,8 @@ public class RegionIterator {
         }
         endIndex = minNext;
         for (int i = 0; i < providers.length; i++) {
-            if (pointers[i] < providers[i].getPointCount() && providers[i].getPointAt(pointers[i]) == minNext) {
+            if (pointers[i] < providers[i].getPointCount()
+                    && providers[i].getPointAt(pointers[i]) == minNext) {
                 pointers[i]++;
                 pointerStates[i] = true;
             } else {
@@ -71,8 +73,11 @@ public class RegionIterator {
     }
 
     public int getRegionSourcePointer(int i) {
-        var pointerValue = pointers[i] < providers[i].getPointCount() ? providers[i].getPointAt(i) : max;
-        return (endIndex <= pointerValue && pointerValue < max || pointerStates[i]) ? pointers[i] - 1 : pointers[i];
+        var pointerValue =
+                pointers[i] < providers[i].getPointCount() ? providers[i].getPointAt(i) : max;
+        return (endIndex <= pointerValue && pointerValue < max || pointerStates[i])
+                ? pointers[i] - 1
+                : pointers[i];
     }
 
     public int getPointerValue(int i, int j) {
@@ -104,7 +109,5 @@ public class RegionIterator {
         int getPointCount();
 
         int getPointAt(int index);
-
     }
-
 }

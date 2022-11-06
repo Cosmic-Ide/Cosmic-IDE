@@ -25,11 +25,11 @@ package io.github.rosemoe.sora.lang.styling;
 
 import androidx.annotation.NonNull;
 
+import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
 import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 /**
  * The span model
@@ -45,6 +45,7 @@ public class Span {
      * @see TextStyle
      */
     public long style;
+
     public int underlineColor;
 
     public Object extra;
@@ -53,7 +54,7 @@ public class Span {
      * Create a new span
      *
      * @param column Start column of span
-     * @param style  Style made from {@link TextStyle}
+     * @param style Style made from {@link TextStyle}
      * @see Span#obtain(int, long)
      * @see TextStyle
      */
@@ -63,8 +64,8 @@ public class Span {
     }
 
     /**
-     * Get an available Span object from either cache or new instance.
-     * The result object will be initialized with the given arguments.
+     * Get an available Span object from either cache or new instance. The result object will be
+     * initialized with the given arguments.
      */
     public static Span obtain(int column, long style) {
         Span span = cacheQueue.poll();
@@ -77,9 +78,7 @@ public class Span {
         }
     }
 
-    /**
-     * Recycle all spans in the given collection
-     */
+    /** Recycle all spans in the given collection */
     public static void recycleAll(Collection<Span> spans) {
         for (Span span : spans) {
             if (!span.recycle()) {
@@ -89,8 +88,7 @@ public class Span {
     }
 
     /**
-     * Set a underline for this region
-     * Zero for no underline
+     * Set a underline for this region Zero for no underline
      *
      * @param color Color for this underline (not color id of {@link EditorColorScheme})
      */
@@ -108,17 +106,13 @@ public class Span {
         return column;
     }
 
-    /**
-     * Set column of this span
-     */
+    /** Set column of this span */
     public Span setColumn(int column) {
         this.column = column;
         return this;
     }
 
-    /**
-     * Make a copy of this span
-     */
+    /** Make a copy of this span */
     public Span copy() {
         var copy = obtain(column, style);
         copy.setUnderlineColor(underlineColor);
@@ -153,7 +147,9 @@ public class Span {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         var span = (Span) o;
-        return column == span.column && style == span.style && underlineColor == span.underlineColor;
+        return column == span.column
+                && style == span.style
+                && underlineColor == span.underlineColor;
     }
 
     @Override
@@ -167,11 +163,13 @@ public class Span {
     @NonNull
     @Override
     public String toString() {
-        return "Span{" +
-                "column=" + column +
-                ", style=" + style +
-                ", underlineColor=" + underlineColor +
-                "}";
+        return "Span{"
+                + "column="
+                + column
+                + ", style="
+                + style
+                + ", underlineColor="
+                + underlineColor
+                + "}";
     }
-
 }

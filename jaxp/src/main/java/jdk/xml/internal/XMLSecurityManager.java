@@ -24,49 +24,105 @@
  */
 package jdk.xml.internal;
 
-
 import com.sun.org.apache.xerces.internal.util.SecurityManager;
-import java.util.concurrent.CopyOnWriteArrayList;
-import jdk.xml.internal.JdkProperty.State;
+
 import jdk.xml.internal.JdkProperty.ImplPropMap;
+import jdk.xml.internal.JdkProperty.State;
+
 import org.xml.sax.SAXException;
 
-/**
- * This class manages standard and implementation-specific limitations.
- *
- */
+import java.util.concurrent.CopyOnWriteArrayList;
+
+/** This class manages standard and implementation-specific limitations. */
 public final class XMLSecurityManager {
 
-    /**
-     * Limits managed by the security manager
-     */
+    /** Limits managed by the security manager */
     @SuppressWarnings("deprecation")
     public static enum Limit {
-        ENTITY_EXPANSION_LIMIT("EntityExpansionLimit", JdkConstants.JDK_ENTITY_EXPANSION_LIMIT,
-            JdkConstants.SP_ENTITY_EXPANSION_LIMIT, 0, 64000, Processor.PARSER),
-        MAX_OCCUR_NODE_LIMIT("MaxOccurLimit", JdkConstants.JDK_MAX_OCCUR_LIMIT,
-            JdkConstants.SP_MAX_OCCUR_LIMIT, 0, 5000, Processor.PARSER),
-        ELEMENT_ATTRIBUTE_LIMIT("ElementAttributeLimit", JdkConstants.JDK_ELEMENT_ATTRIBUTE_LIMIT,
-            JdkConstants.SP_ELEMENT_ATTRIBUTE_LIMIT, 0, 10000, Processor.PARSER),
-        TOTAL_ENTITY_SIZE_LIMIT("TotalEntitySizeLimit", JdkConstants.JDK_TOTAL_ENTITY_SIZE_LIMIT,
-            JdkConstants.SP_TOTAL_ENTITY_SIZE_LIMIT, 0, 50000000, Processor.PARSER),
-        GENERAL_ENTITY_SIZE_LIMIT("MaxEntitySizeLimit", JdkConstants.JDK_GENERAL_ENTITY_SIZE_LIMIT,
-            JdkConstants.SP_GENERAL_ENTITY_SIZE_LIMIT, 0, 0, Processor.PARSER),
-        PARAMETER_ENTITY_SIZE_LIMIT("MaxEntitySizeLimit", JdkConstants.JDK_PARAMETER_ENTITY_SIZE_LIMIT,
-            JdkConstants.SP_PARAMETER_ENTITY_SIZE_LIMIT, 0, 1000000, Processor.PARSER),
-        MAX_ELEMENT_DEPTH_LIMIT("MaxElementDepthLimit", JdkConstants.JDK_MAX_ELEMENT_DEPTH,
-            JdkConstants.SP_MAX_ELEMENT_DEPTH, 0, 0, Processor.PARSER),
-        MAX_NAME_LIMIT("MaxXMLNameLimit", JdkConstants.JDK_XML_NAME_LIMIT,
-            JdkConstants.SP_XML_NAME_LIMIT, 1000, 1000, Processor.PARSER),
-        ENTITY_REPLACEMENT_LIMIT("EntityReplacementLimit", JdkConstants.JDK_ENTITY_REPLACEMENT_LIMIT,
-            JdkConstants.SP_ENTITY_REPLACEMENT_LIMIT, 0, 3000000, Processor.PARSER),
-        XPATH_GROUP_LIMIT("XPathGroupLimit", JdkConstants.XPATH_GROUP_LIMIT,
-            JdkConstants.XPATH_GROUP_LIMIT, 10, 10, Processor.XPATH),
-        XPATH_OP_LIMIT("XPathExprOpLimit", JdkConstants.XPATH_OP_LIMIT,
-            JdkConstants.XPATH_OP_LIMIT, 100, 100, Processor.XPATH),
-        XPATH_TOTALOP_LIMIT("XPathTotalOpLimit", JdkConstants.XPATH_TOTALOP_LIMIT,
-            JdkConstants.XPATH_TOTALOP_LIMIT, 10000, 10000, Processor.XPATH)
-        ;
+        ENTITY_EXPANSION_LIMIT(
+                "EntityExpansionLimit",
+                JdkConstants.JDK_ENTITY_EXPANSION_LIMIT,
+                JdkConstants.SP_ENTITY_EXPANSION_LIMIT,
+                0,
+                64000,
+                Processor.PARSER),
+        MAX_OCCUR_NODE_LIMIT(
+                "MaxOccurLimit",
+                JdkConstants.JDK_MAX_OCCUR_LIMIT,
+                JdkConstants.SP_MAX_OCCUR_LIMIT,
+                0,
+                5000,
+                Processor.PARSER),
+        ELEMENT_ATTRIBUTE_LIMIT(
+                "ElementAttributeLimit",
+                JdkConstants.JDK_ELEMENT_ATTRIBUTE_LIMIT,
+                JdkConstants.SP_ELEMENT_ATTRIBUTE_LIMIT,
+                0,
+                10000,
+                Processor.PARSER),
+        TOTAL_ENTITY_SIZE_LIMIT(
+                "TotalEntitySizeLimit",
+                JdkConstants.JDK_TOTAL_ENTITY_SIZE_LIMIT,
+                JdkConstants.SP_TOTAL_ENTITY_SIZE_LIMIT,
+                0,
+                50000000,
+                Processor.PARSER),
+        GENERAL_ENTITY_SIZE_LIMIT(
+                "MaxEntitySizeLimit",
+                JdkConstants.JDK_GENERAL_ENTITY_SIZE_LIMIT,
+                JdkConstants.SP_GENERAL_ENTITY_SIZE_LIMIT,
+                0,
+                0,
+                Processor.PARSER),
+        PARAMETER_ENTITY_SIZE_LIMIT(
+                "MaxEntitySizeLimit",
+                JdkConstants.JDK_PARAMETER_ENTITY_SIZE_LIMIT,
+                JdkConstants.SP_PARAMETER_ENTITY_SIZE_LIMIT,
+                0,
+                1000000,
+                Processor.PARSER),
+        MAX_ELEMENT_DEPTH_LIMIT(
+                "MaxElementDepthLimit",
+                JdkConstants.JDK_MAX_ELEMENT_DEPTH,
+                JdkConstants.SP_MAX_ELEMENT_DEPTH,
+                0,
+                0,
+                Processor.PARSER),
+        MAX_NAME_LIMIT(
+                "MaxXMLNameLimit",
+                JdkConstants.JDK_XML_NAME_LIMIT,
+                JdkConstants.SP_XML_NAME_LIMIT,
+                1000,
+                1000,
+                Processor.PARSER),
+        ENTITY_REPLACEMENT_LIMIT(
+                "EntityReplacementLimit",
+                JdkConstants.JDK_ENTITY_REPLACEMENT_LIMIT,
+                JdkConstants.SP_ENTITY_REPLACEMENT_LIMIT,
+                0,
+                3000000,
+                Processor.PARSER),
+        XPATH_GROUP_LIMIT(
+                "XPathGroupLimit",
+                JdkConstants.XPATH_GROUP_LIMIT,
+                JdkConstants.XPATH_GROUP_LIMIT,
+                10,
+                10,
+                Processor.XPATH),
+        XPATH_OP_LIMIT(
+                "XPathExprOpLimit",
+                JdkConstants.XPATH_OP_LIMIT,
+                JdkConstants.XPATH_OP_LIMIT,
+                100,
+                100,
+                Processor.XPATH),
+        XPATH_TOTALOP_LIMIT(
+                "XPathTotalOpLimit",
+                JdkConstants.XPATH_TOTALOP_LIMIT,
+                JdkConstants.XPATH_TOTALOP_LIMIT,
+                10000,
+                10000,
+                Processor.XPATH);
 
         final String key;
         final String apiProperty;
@@ -75,8 +131,13 @@ public final class XMLSecurityManager {
         final int secureValue;
         final Processor processor;
 
-        Limit(String key, String apiProperty, String systemProperty, int value,
-                int secureValue, Processor processor) {
+        Limit(
+                String key,
+                String apiProperty,
+                String systemProperty,
+                int value,
+                int secureValue,
+                Processor processor) {
             this.key = key;
             this.apiProperty = apiProperty;
             this.systemProperty = systemProperty;
@@ -86,23 +147,24 @@ public final class XMLSecurityManager {
         }
 
         /**
-         * Checks whether the specified name is a limit. Checks both the
-         * property and System Property which is now the new property name.
+         * Checks whether the specified name is a limit. Checks both the property and System
+         * Property which is now the new property name.
          *
          * @param name the specified name
          * @return true if there is a match, false otherwise
          */
         public boolean is(String name) {
             // current spec: new property name == systemProperty
-            return (systemProperty != null && systemProperty.equals(name)) ||
-                   // current spec: apiProperty is legacy
-                   (apiProperty.equals(name));
+            return (systemProperty != null && systemProperty.equals(name))
+                    ||
+                    // current spec: apiProperty is legacy
+                    (apiProperty.equals(name));
         }
 
         /**
-         * Returns the state of a property name. By the specification as of JDK 17,
-         * the "jdk.xml." prefixed System property name is also the current API
-         * name. The URI-based qName is legacy.
+         * Returns the state of a property name. By the specification as of JDK 17, the "jdk.xml."
+         * prefixed System property name is also the current API name. The URI-based qName is
+         * legacy.
          *
          * @param name the property name
          * @return the state of the property name, null if no match
@@ -111,7 +173,7 @@ public final class XMLSecurityManager {
             if (systemProperty != null && systemProperty.equals(name)) {
                 return State.APIPROPERTY;
             } else if (apiProperty.equals(name)) {
-                //the URI-style qName is legacy
+                // the URI-style qName is legacy
                 return State.LEGACY_APIPROPERTY;
             }
             return null;
@@ -142,14 +204,13 @@ public final class XMLSecurityManager {
         }
     }
 
-    /**
-     * Map old property names with the new ones
-     */
+    /** Map old property names with the new ones */
     public static enum NameMap {
-
-        ENTITY_EXPANSION_LIMIT(JdkConstants.SP_ENTITY_EXPANSION_LIMIT, JdkConstants.ENTITY_EXPANSION_LIMIT),
+        ENTITY_EXPANSION_LIMIT(
+                JdkConstants.SP_ENTITY_EXPANSION_LIMIT, JdkConstants.ENTITY_EXPANSION_LIMIT),
         MAX_OCCUR_NODE_LIMIT(JdkConstants.SP_MAX_OCCUR_LIMIT, JdkConstants.MAX_OCCUR_LIMIT),
-        ELEMENT_ATTRIBUTE_LIMIT(JdkConstants.SP_ELEMENT_ATTRIBUTE_LIMIT, JdkConstants.ELEMENT_ATTRIBUTE_LIMIT);
+        ELEMENT_ATTRIBUTE_LIMIT(
+                JdkConstants.SP_ELEMENT_ATTRIBUTE_LIMIT, JdkConstants.ELEMENT_ATTRIBUTE_LIMIT);
         final String newName;
         final String oldName;
 
@@ -166,9 +227,7 @@ public final class XMLSecurityManager {
         }
     }
 
-    /**
-     * Supported processors
-     */
+    /** Supported processors */
     public static enum Processor {
         PARSER,
         XPATH,
@@ -176,44 +235,31 @@ public final class XMLSecurityManager {
 
     private static final int NO_LIMIT = 0;
 
-    /**
-     * Values of the properties
-     */
+    /** Values of the properties */
     private final int[] values;
 
-    /**
-     * States of the settings for each property
-     */
+    /** States of the settings for each property */
     private State[] states;
 
-    /**
-     * Flag indicating if secure processing is set
-     */
+    /** Flag indicating if secure processing is set */
     boolean secureProcessing;
 
-    /**
-     * States that determine if properties are set explicitly
-     */
+    /** States that determine if properties are set explicitly */
     private boolean[] isSet;
 
-
-    /**
-     * Index of the special entityCountInfo property
-     */
+    /** Index of the special entityCountInfo property */
     private final int indexEntityCountInfo = 10000;
+
     private String printEntityCountInfo = "";
 
-    /**
-     * Default constructor. Establishes default values for known security
-     * vulnerabilities.
-     */
+    /** Default constructor. Establishes default values for known security vulnerabilities. */
     public XMLSecurityManager() {
         this(false);
     }
 
     /**
-     * Instantiate Security Manager in accordance with the status of
-     * secure processing
+     * Instantiate Security Manager in accordance with the status of secure processing
+     *
      * @param secureProcessing
      */
     public XMLSecurityManager(boolean secureProcessing) {
@@ -230,13 +276,11 @@ public final class XMLSecurityManager {
                 states[limit.ordinal()] = State.DEFAULT;
             }
         }
-        //read system properties or jaxp.properties
+        // read system properties or jaxp.properties
         readSystemProperties();
     }
 
-    /**
-     * Setting FEATURE_SECURE_PROCESSING explicitly
-     */
+    /** Setting FEATURE_SECURE_PROCESSING explicitly */
     public void setSecureProcessing(boolean secure) {
         secureProcessing = secure;
         for (Limit limit : Limit.values()) {
@@ -250,6 +294,7 @@ public final class XMLSecurityManager {
 
     /**
      * Return the state of secure processing
+     *
      * @return the state of secure processing
      */
     public boolean isSecureProcessing() {
@@ -258,6 +303,7 @@ public final class XMLSecurityManager {
 
     /**
      * Finds a limit's new name with the given property name.
+     *
      * @param propertyName the property name specified
      * @return the limit's new name if found, null otherwise
      */
@@ -268,7 +314,7 @@ public final class XMLSecurityManager {
                 return limit.systemProperty();
             }
         }
-        //ENTITYCOUNT's new name is qName
+        // ENTITYCOUNT's new name is qName
         if (ImplPropMap.ENTITYCOUNT.is(propertyName)) {
             return ImplPropMap.ENTITYCOUNT.qName();
         }
@@ -277,11 +323,11 @@ public final class XMLSecurityManager {
 
     /**
      * Set limit by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the security manager; false
-     *              if otherwise.
+     * @return true if the property is managed by the security manager; false if otherwise.
      */
     public boolean setLimit(String propertyName, State state, Object value) {
         int index = getIndex(propertyName);
@@ -316,11 +362,11 @@ public final class XMLSecurityManager {
      */
     public void setLimit(int index, State state, Object value) {
         if (index == indexEntityCountInfo) {
-            printEntityCountInfo = (String)value;
+            printEntityCountInfo = (String) value;
         } else {
             int temp;
             if (value instanceof Integer) {
-                temp = (Integer)value;
+                temp = (Integer) value;
             } else {
                 temp = Integer.parseInt((String) value);
                 if (temp < 0) {
@@ -340,10 +386,10 @@ public final class XMLSecurityManager {
      */
     public void setLimit(int index, State state, int value) {
         if (index == indexEntityCountInfo) {
-            //if it's explicitly set, it's treated as yes no matter the value
+            // if it's explicitly set, it's treated as yes no matter the value
             printEntityCountInfo = JdkConstants.JDK_YES;
         } else {
-            //only update if it shall override
+            // only update if it shall override
             if (state.compareTo(states[index]) >= 0) {
                 values[index] = value;
                 states[index] = state;
@@ -356,8 +402,8 @@ public final class XMLSecurityManager {
      * Return the value of the specified property
      *
      * @param propertyName the property name
-     * @return the value of the property as a string. If a property is managed
-     * by this manager, its value shall not be null.
+     * @return the value of the property as a string. If a property is managed by this manager, its
+     *     value shall not be null.
      */
     public String getLimitAsString(String propertyName) {
         int index = getIndex(propertyName);
@@ -431,11 +477,11 @@ public final class XMLSecurityManager {
         for (Limit limit : Limit.values()) {
             // see JDK-8265248, accept both the URL and jdk.xml as prefix
             if (limit.is(propertyName)) {
-                //internally, ordinal is used as index
+                // internally, ordinal is used as index
                 return limit.ordinal();
             }
         }
-        //special property to return entity count info
+        // special property to return entity count info
         if (ImplPropMap.ENTITYCOUNT.is(propertyName)) {
             return indexEntityCountInfo;
         }
@@ -444,6 +490,7 @@ public final class XMLSecurityManager {
 
     /**
      * Check if there's no limit defined by the Security Manager
+     *
      * @param limit
      * @return
      */
@@ -451,30 +498,28 @@ public final class XMLSecurityManager {
         return limit == NO_LIMIT;
     }
     /**
-     * Check if the size (length or count) of the specified limit property is
-     * over the limit
+     * Check if the size (length or count) of the specified limit property is over the limit
      *
      * @param limit the type of the limit property
      * @param entityName the name of the entity
      * @param size the size (count or length) of the entity
      * @return true if the size is over the limit, false otherwise
      */
-    public boolean isOverLimit(Limit limit, String entityName, int size,
-            XMLLimitAnalyzer limitAnalyzer) {
+    public boolean isOverLimit(
+            Limit limit, String entityName, int size, XMLLimitAnalyzer limitAnalyzer) {
         return isOverLimit(limit.ordinal(), entityName, size, limitAnalyzer);
     }
 
     /**
-     * Check if the value (length or count) of the specified limit property is
-     * over the limit
+     * Check if the value (length or count) of the specified limit property is over the limit
      *
      * @param index the index of the limit property
      * @param entityName the name of the entity
      * @param size the size (count or length) of the entity
      * @return true if the size is over the limit, false otherwise
      */
-    public boolean isOverLimit(int index, String entityName, int size,
-            XMLLimitAnalyzer limitAnalyzer) {
+    public boolean isOverLimit(
+            int index, String entityName, int size, XMLLimitAnalyzer limitAnalyzer) {
         if (values[index] == NO_LIMIT) {
             return false;
         }
@@ -501,13 +546,12 @@ public final class XMLSecurityManager {
             return false;
         }
 
-        if (index == Limit.ELEMENT_ATTRIBUTE_LIMIT.ordinal() ||
-                index == Limit.ENTITY_EXPANSION_LIMIT.ordinal() ||
-                index == Limit.TOTAL_ENTITY_SIZE_LIMIT.ordinal() ||
-                index == Limit.ENTITY_REPLACEMENT_LIMIT.ordinal() ||
-                index == Limit.MAX_ELEMENT_DEPTH_LIMIT.ordinal() ||
-                index == Limit.MAX_NAME_LIMIT.ordinal()
-                ) {
+        if (index == Limit.ELEMENT_ATTRIBUTE_LIMIT.ordinal()
+                || index == Limit.ENTITY_EXPANSION_LIMIT.ordinal()
+                || index == Limit.TOTAL_ENTITY_SIZE_LIMIT.ordinal()
+                || index == Limit.ENTITY_REPLACEMENT_LIMIT.ordinal()
+                || index == Limit.MAX_ELEMENT_DEPTH_LIMIT.ordinal()
+                || index == Limit.MAX_NAME_LIMIT.ordinal()) {
             return (limitAnalyzer.getTotalValue(index) > values[index]);
         } else {
             return (limitAnalyzer.getValue(index) > values[index]);
@@ -520,9 +564,9 @@ public final class XMLSecurityManager {
         }
     }
 
-
     /**
      * Indicate if a property is set explicitly
+     *
      * @param index
      * @return
      */
@@ -534,14 +578,12 @@ public final class XMLSecurityManager {
         return printEntityCountInfo.equals(JdkConstants.JDK_YES);
     }
 
-    /**
-     * Read from system properties, or those in jaxp.properties
-     */
+    /** Read from system properties, or those in jaxp.properties */
     private void readSystemProperties() {
 
         for (Limit limit : Limit.values()) {
             if (!getSystemProperty(limit, limit.systemProperty())) {
-                //if system property is not found, try the older form if any
+                // if system property is not found, try the older form if any
                 for (NameMap nameMap : NameMap.values()) {
                     String oldName = nameMap.getOldName(limit.systemProperty());
                     if (oldName != null) {
@@ -550,11 +592,11 @@ public final class XMLSecurityManager {
                 }
             }
         }
-
     }
 
     // Array list to store printed warnings for each SAX parser used
-    private static final CopyOnWriteArrayList<String> printedWarnings = new CopyOnWriteArrayList<>();
+    private static final CopyOnWriteArrayList<String> printedWarnings =
+            new CopyOnWriteArrayList<>();
 
     /**
      * Prints out warnings if a parser does not support the specified feature/property.
@@ -563,10 +605,11 @@ public final class XMLSecurityManager {
      * @param propertyName the property name
      * @param exception the exception thrown by the parser
      */
-    public static void printWarning(String parserClassName, String propertyName, SAXException exception) {
-        String key = parserClassName+":"+propertyName;
+    public static void printWarning(
+            String parserClassName, String propertyName, SAXException exception) {
+        String key = parserClassName + ":" + propertyName;
         if (printedWarnings.addIfAbsent(key)) {
-            System.err.println( "Warning: "+parserClassName+": "+exception.getMessage());
+            System.err.println("Warning: " + parserClassName + ": " + exception.getMessage());
         }
     }
 
@@ -592,17 +635,17 @@ public final class XMLSecurityManager {
                 return true;
             }
         } catch (NumberFormatException e) {
-            //invalid setting
-            throw new NumberFormatException("Invalid setting for system property: " + limit.systemProperty());
+            // invalid setting
+            throw new NumberFormatException(
+                    "Invalid setting for system property: " + limit.systemProperty());
         }
         return false;
     }
 
-
     /**
-     * Convert a value set through setProperty to XMLSecurityManager.
-     * If the value is an instance of XMLSecurityManager, use it to override the default;
-     * If the value is an old SecurityManager, convert to the new XMLSecurityManager.
+     * Convert a value set through setProperty to XMLSecurityManager. If the value is an instance of
+     * XMLSecurityManager, use it to override the default; If the value is an old SecurityManager,
+     * convert to the new XMLSecurityManager.
      *
      * @param value user specified security manager
      * @param securityManager an instance of XMLSecurityManager
@@ -616,16 +659,25 @@ public final class XMLSecurityManager {
             return securityManager;
         }
         if (value instanceof XMLSecurityManager) {
-            return (XMLSecurityManager)value;
+            return (XMLSecurityManager) value;
         } else {
             if (securityManager == null) {
                 securityManager = new XMLSecurityManager(true);
             }
             if (value instanceof SecurityManager) {
-                SecurityManager origSM = (SecurityManager)value;
-                securityManager.setLimit(Limit.MAX_OCCUR_NODE_LIMIT, State.APIPROPERTY, origSM.getMaxOccurNodeLimit());
-                securityManager.setLimit(Limit.ENTITY_EXPANSION_LIMIT, State.APIPROPERTY, origSM.getEntityExpansionLimit());
-                securityManager.setLimit(Limit.ELEMENT_ATTRIBUTE_LIMIT, State.APIPROPERTY, origSM.getElementAttrLimit());
+                SecurityManager origSM = (SecurityManager) value;
+                securityManager.setLimit(
+                        Limit.MAX_OCCUR_NODE_LIMIT,
+                        State.APIPROPERTY,
+                        origSM.getMaxOccurNodeLimit());
+                securityManager.setLimit(
+                        Limit.ENTITY_EXPANSION_LIMIT,
+                        State.APIPROPERTY,
+                        origSM.getEntityExpansionLimit());
+                securityManager.setLimit(
+                        Limit.ELEMENT_ATTRIBUTE_LIMIT,
+                        State.APIPROPERTY,
+                        origSM.getElementAttrLimit());
             }
             return securityManager;
         }

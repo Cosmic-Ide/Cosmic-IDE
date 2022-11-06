@@ -21,6 +21,7 @@
 package com.sun.org.apache.xalan.internal.xsltc.runtime;
 
 import com.sun.org.apache.xalan.internal.xsltc.DOM;
+
 import org.xml.sax.AttributeList;
 
 /**

@@ -23,23 +23,18 @@
  * questions.
  */
 
-package com.sun.xml.internal.stream.events ;
+package com.sun.xml.internal.stream.events;
 
-import java.io.Writer;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.ProcessingInstruction;
 
-/** Implements Processing Instruction Event
+/**
+ * Implements Processing Instruction Event
  *
- *@author Neeraj Bajaj, Sun Microsystems.
- *
+ * @author Neeraj Bajaj, Sun Microsystems.
  */
-
-
-public class ProcessingInstructionEvent extends DummyEvent
-implements ProcessingInstruction {
+public class ProcessingInstructionEvent extends DummyEvent implements ProcessingInstruction {
 
     /** Processing Instruction Name */
     private String fName;
@@ -51,10 +46,10 @@ implements ProcessingInstruction {
     }
 
     public ProcessingInstructionEvent(String targetName, String data) {
-        this(targetName,data,null);
+        this(targetName, data, null);
     }
 
-    public ProcessingInstructionEvent(String targetName, String data,Location loc) {
+    public ProcessingInstructionEvent(String targetName, String data, Location loc) {
         init();
         this.fName = targetName;
         fContent = data;
@@ -82,20 +77,13 @@ implements ProcessingInstruction {
     }
 
     public String toString() {
-        if(fContent != null && fName != null)
-            return "<?" + fName + " " + fContent + "?>";
-        if(fName != null)
-            return "<?" + fName + "?>";
-        if(fContent != null)
-            return "<?" + fContent + "?>";
-        else
-            return "<??>";
+        if (fContent != null && fName != null) return "<?" + fName + " " + fContent + "?>";
+        if (fName != null) return "<?" + fName + "?>";
+        if (fContent != null) return "<?" + fContent + "?>";
+        else return "<??>";
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write(toString());
     }
-
 }

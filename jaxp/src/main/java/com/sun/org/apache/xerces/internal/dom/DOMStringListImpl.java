@@ -20,35 +20,30 @@
 
 package com.sun.org.apache.xerces.internal.dom;
 
+import org.w3c.dom.DOMStringList;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.w3c.dom.DOMStringList;
 
 /**
  * DOM Level 3
  *
- * This class implements the DOM Level 3 Core interface DOMStringList.
+ * <p>This class implements the DOM Level 3 Core interface DOMStringList.
  *
  * @xerces.internal
- *
- * @author Neil Delima, IBM
- * @LastModified: Nov 2017
+ * @author Neil Delima, IBM @LastModified: Nov 2017
  */
 public class DOMStringListImpl implements DOMStringList {
 
     // A collection of DOMString values
     private final List<String> fStrings;
 
-    /**
-     * Construct an empty list of DOMStringListImpl
-     */
+    /** Construct an empty list of DOMStringListImpl */
     public DOMStringListImpl() {
         fStrings = new ArrayList<>();
     }
 
-    /**
-     * Construct a DOMStringListImpl from an ArrayList
-     */
+    /** Construct a DOMStringListImpl from an ArrayList */
     public DOMStringListImpl(List<String> params) {
         fStrings = params;
     }
@@ -68,7 +63,7 @@ public class DOMStringListImpl implements DOMStringList {
      * @see org.w3c.dom.DOMStringList#getLength()
      */
     public int getLength() {
-            return fStrings.size();
+        return fStrings.size();
     }
 
     /**
@@ -79,13 +74,11 @@ public class DOMStringListImpl implements DOMStringList {
     }
 
     /**
-     * DOM Internal:
-     * Add a <code>DOMString</code> to the list.
+     * DOM Internal: Add a <code>DOMString</code> to the list.
      *
      * @param domString A string to add to the list
      */
     public void add(String param) {
         fStrings.add(param);
     }
-
 }

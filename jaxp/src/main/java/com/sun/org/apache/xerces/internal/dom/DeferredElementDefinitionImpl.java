@@ -24,18 +24,15 @@ package com.sun.org.apache.xerces.internal.dom;
 import org.w3c.dom.Node;
 
 /**
- * NON-DOM CLASS: Describe one of the Elements (and its associated
- * Attributes) defined in this Document Type.
- * <p>
- * I've included this in Level 1 purely as an anchor point for default
- * attributes. In Level 2 it should enable the ChildRule support.
+ * NON-DOM CLASS: Describe one of the Elements (and its associated Attributes) defined in this
+ * Document Type.
+ *
+ * <p>I've included this in Level 1 purely as an anchor point for default attributes. In Level 2 it
+ * should enable the ChildRule support.
  *
  * @xerces.internal
- *
  */
-public class DeferredElementDefinitionImpl
-    extends ElementDefinitionImpl
-    implements DeferredNode {
+public class DeferredElementDefinitionImpl extends ElementDefinitionImpl implements DeferredNode {
 
     //
     // Constants
@@ -56,17 +53,15 @@ public class DeferredElementDefinitionImpl
     //
 
     /**
-     * This is the deferred constructor. Only the fNodeIndex is given here.
-     * All other data, can be requested from the ownerDocument via the index.
+     * This is the deferred constructor. Only the fNodeIndex is given here. All other data, can be
+     * requested from the ownerDocument via the index.
      */
-    DeferredElementDefinitionImpl(DeferredDocumentImpl ownerDocument,
-                                  int nodeIndex) {
+    DeferredElementDefinitionImpl(DeferredDocumentImpl ownerDocument, int nodeIndex) {
         super(ownerDocument, null);
 
         fNodeIndex = nodeIndex;
         needsSyncData(true);
         needsSyncChildren(true);
-
     } // <init>(DeferredDocumentImpl,int)
 
     //
@@ -89,10 +84,8 @@ public class DeferredElementDefinitionImpl
         needsSyncData(false);
 
         // fluff data
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl)this.ownerDocument;
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) this.ownerDocument;
         name = ownerDocument.getNodeName(fNodeIndex);
-
     } // synchronizeData()
 
     /** Synchronizes the default attribute values. */
@@ -106,22 +99,19 @@ public class DeferredElementDefinitionImpl
         needsSyncChildren(false);
 
         // create attributes node map
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl)this.ownerDocument;
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) this.ownerDocument;
         attributes = new NamedNodeMapImpl(ownerDocument);
 
         // Default attributes dangle as children of the element
         // definition "node" in the internal fast table.
         for (int nodeIndex = ownerDocument.getLastChild(fNodeIndex);
-             nodeIndex != -1;
-             nodeIndex = ownerDocument.getPrevSibling(nodeIndex)) {
+                nodeIndex != -1;
+                nodeIndex = ownerDocument.getPrevSibling(nodeIndex)) {
             Node attr = ownerDocument.getNodeObject(nodeIndex);
             attributes.setNamedItem(attr);
         }
 
         // set mutation events flag back to its original value
         ownerDocument.setMutationEvents(orig);
-
     } // synchronizeChildren()
-
 } // class DeferredElementDefinitionImpl

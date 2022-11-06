@@ -34,17 +34,12 @@ import io.github.rosemoe.sora.text.bidi.TextBidi;
 
 public class ContentLine implements CharSequence, GetChars, BidiRequirementChecker {
 
-    @UnsupportedUserUsage
-    public char[] value;
-    /**
-     * Width of each character inside
-     */
-    @UnsupportedUserUsage
-    public float[] widthCache;
-    @UnsupportedUserUsage
-    public long timestamp;
-    @UnsupportedUserUsage
-    public int styleHash;
+    @UnsupportedUserUsage public char[] value;
+    /** Width of each character inside */
+    @UnsupportedUserUsage public float[] widthCache;
+
+    @UnsupportedUserUsage public long timestamp;
+    @UnsupportedUserUsage public int styleHash;
     private int length;
 
     private int rtlAffectingCount;
@@ -96,89 +91,77 @@ public class ContentLine implements CharSequence, GetChars, BidiRequirementCheck
 
     /**
      * Inserts the specified {@code CharSequence} into this sequence.
-     * <p>
-     * The characters of the {@code CharSequence} argument are inserted,
-     * in order, into this sequence at the indicated offset, moving up
-     * any characters originally above that position and increasing the length
-     * of this sequence by the length of the argument s.
-     * <p>
-     * The result of this method is exactly the same as if it were an
-     * invocation of this object's
-     * {@link #insert(int, CharSequence, int, int) insert}(dstOffset, s, 0, s.length())
-     * method.
      *
-     * <p>If {@code s} is {@code null}, then the four characters
-     * {@code "null"} are inserted into this sequence.
+     * <p>The characters of the {@code CharSequence} argument are inserted, in order, into this
+     * sequence at the indicated offset, moving up any characters originally above that position and
+     * increasing the length of this sequence by the length of the argument s.
+     *
+     * <p>The result of this method is exactly the same as if it were an invocation of this object's
+     * {@link #insert(int, CharSequence, int, int) insert}(dstOffset, s, 0, s.length()) method.
+     *
+     * <p>If {@code s} is {@code null}, then the four characters {@code "null"} are inserted into
+     * this sequence.
      *
      * @param dstOffset the offset.
-     * @param s         the sequence to be inserted
+     * @param s the sequence to be inserted
      * @return a reference to this object.
      * @throws IndexOutOfBoundsException if the offset is invalid.
      */
     public ContentLine insert(int dstOffset, CharSequence s) {
-        if (s == null)
-            s = "null";
+        if (s == null) s = "null";
         return this.insert(dstOffset, s, 0, s.length());
     }
 
     /**
-     * Inserts a subsequence of the specified {@code CharSequence} into
-     * this sequence.
-     * <p>
-     * The subsequence of the argument {@code s} specified by
-     * {@code start} and {@code end} are inserted,
-     * in order, into this sequence at the specified destination offset, moving
-     * up any characters originally above that position. The length of this
-     * sequence is increased by {@code end - start}.
-     * <p>
-     * The character at index <i>k</i> in this sequence becomes equal to:
-     * <ul>
-     * <li>the character at index <i>k</i> in this sequence, if
-     * <i>k</i> is less than {@code dstOffset}
-     * <li>the character at index <i>k</i>{@code +start-dstOffset} in
-     * the argument {@code s}, if <i>k</i> is greater than or equal to
-     * {@code dstOffset} but is less than {@code dstOffset+end-start}
-     * <li>the character at index <i>k</i>{@code -(end-start)} in this
-     * sequence, if <i>k</i> is greater than or equal to
-     * {@code dstOffset+end-start}
-     * </ul><p>
-     * The {@code dstOffset} argument must be greater than or equal to
-     * {@code 0}, and less than or equal to the {@linkplain #length() length}
-     * of this sequence.
-     * <p>The start argument must be nonnegative, and not greater than
-     * {@code end}.
-     * <p>The end argument must be greater than or equal to
-     * {@code start}, and less than or equal to the length of s.
+     * Inserts a subsequence of the specified {@code CharSequence} into this sequence.
      *
-     * <p>If {@code s} is {@code null}, then this method inserts
-     * characters as if the s parameter was a sequence containing the four
-     * characters {@code "null"}.
+     * <p>The subsequence of the argument {@code s} specified by {@code start} and {@code end} are
+     * inserted, in order, into this sequence at the specified destination offset, moving up any
+     * characters originally above that position. The length of this sequence is increased by {@code
+     * end - start}.
+     *
+     * <p>The character at index <i>k</i> in this sequence becomes equal to:
+     *
+     * <ul>
+     *   <li>the character at index <i>k</i> in this sequence, if <i>k</i> is less than {@code
+     *       dstOffset}
+     *   <li>the character at index <i>k</i>{@code +start-dstOffset} in the argument {@code s}, if
+     *       <i>k</i> is greater than or equal to {@code dstOffset} but is less than {@code
+     *       dstOffset+end-start}
+     *   <li>the character at index <i>k</i>{@code -(end-start)} in this sequence, if <i>k</i> is
+     *       greater than or equal to {@code dstOffset+end-start}
+     * </ul>
+     *
+     * <p>The {@code dstOffset} argument must be greater than or equal to {@code 0}, and less than
+     * or equal to the {@linkplain #length() length} of this sequence.
+     *
+     * <p>The start argument must be nonnegative, and not greater than {@code end}.
+     *
+     * <p>The end argument must be greater than or equal to {@code start}, and less than or equal to
+     * the length of s.
+     *
+     * <p>If {@code s} is {@code null}, then this method inserts characters as if the s parameter
+     * was a sequence containing the four characters {@code "null"}.
      *
      * @param dstOffset the offset in this sequence.
-     * @param s         the sequence to be inserted.
-     * @param start     the starting index of the subsequence to be inserted.
-     * @param end       the end index of the subsequence to be inserted.
+     * @param s the sequence to be inserted.
+     * @param start the starting index of the subsequence to be inserted.
+     * @param end the end index of the subsequence to be inserted.
      * @return a reference to this object.
-     * @throws IndexOutOfBoundsException if {@code dstOffset}
-     *                                   is negative or greater than {@code this.length()}, or
-     *                                   {@code start} or {@code end} are negative, or
-     *                                   {@code start} is greater than {@code end} or
-     *                                   {@code end} is greater than {@code s.length()}
+     * @throws IndexOutOfBoundsException if {@code dstOffset} is negative or greater than {@code
+     *     this.length()}, or {@code start} or {@code end} are negative, or {@code start} is greater
+     *     than {@code end} or {@code end} is greater than {@code s.length()}
      */
-    public ContentLine insert(int dstOffset, CharSequence s,
-                              int start, int end) {
-        if (s == null)
-            s = "null";
+    public ContentLine insert(int dstOffset, CharSequence s, int start, int end) {
+        if (s == null) s = "null";
         if ((dstOffset < 0) || (dstOffset > this.length()))
             throw new IndexOutOfBoundsException("dstOffset " + dstOffset);
         if ((start < 0) || (end < 0) || (start > end) || (end > s.length()))
             throw new IndexOutOfBoundsException(
-                    "start " + start + ", end " + end + ", s.length() "
-                            + s.length());
+                    "start " + start + ", end " + end + ", s.length() " + s.length());
         int len = end - start;
         ensureCapacity(length + len);
-        System.arraycopy(value, dstOffset, value, dstOffset + len,
-                length - dstOffset);
+        System.arraycopy(value, dstOffset, value, dstOffset + len, length - dstOffset);
         for (int i = start; i < end; i++) {
             var ch = s.charAt(i);
             value[dstOffset++] = ch;
@@ -204,26 +187,21 @@ public class ContentLine implements CharSequence, GetChars, BidiRequirementCheck
     }
 
     /**
-     * Removes the characters in a substring of this sequence.
-     * The substring begins at the specified {@code start} and extends to
-     * the character at index {@code end - 1} or to the end of the
-     * sequence if no such character exists. If
-     * {@code start} is equal to {@code end}, no changes are made.
+     * Removes the characters in a substring of this sequence. The substring begins at the specified
+     * {@code start} and extends to the character at index {@code end - 1} or to the end of the
+     * sequence if no such character exists. If {@code start} is equal to {@code end}, no changes
+     * are made.
      *
      * @param start The beginning index, inclusive.
-     * @param end   The ending index, exclusive.
+     * @param end The ending index, exclusive.
      * @return This object.
-     * @throws StringIndexOutOfBoundsException if {@code start}
-     *                                         is negative, greater than {@code length()}, or
-     *                                         greater than {@code end}.
+     * @throws StringIndexOutOfBoundsException if {@code start} is negative, greater than {@code
+     *     length()}, or greater than {@code end}.
      */
     public ContentLine delete(int start, int end) {
-        if (start < 0)
-            throw new StringIndexOutOfBoundsException(start);
-        if (end > length)
-            end = length;
-        if (start > end)
-            throw new StringIndexOutOfBoundsException();
+        if (start < 0) throw new StringIndexOutOfBoundsException(start);
+        if (end > length) end = length;
+        if (start > end) throw new StringIndexOutOfBoundsException();
         int len = end - start;
         if (len > 0) {
             for (int i = start; i < end; i++) {
@@ -250,17 +228,16 @@ public class ContentLine implements CharSequence, GetChars, BidiRequirementCheck
         return length;
     }
 
-    /**
-     * {@inheritDoc}
-     * <strong>Index is unchecked for performance</strong>
-     */
+    /** {@inheritDoc} <strong>Index is unchecked for performance</strong> */
     @Override
     @UnsupportedUserUsage
     public char charAt(int index) {
         // checkIndex(index);
         if (index >= length) {
             var separator = getLineSeparator();
-            return separator.getLength() > 0 ? getLineSeparator().getContent().charAt(index - length) : '\n';
+            return separator.getLength() > 0
+                    ? getLineSeparator().getContent().charAt(index - length)
+                    : '\n';
         }
         return value[index];
     }
@@ -290,9 +267,7 @@ public class ContentLine implements CharSequence, GetChars, BidiRequirementCheck
         return res;
     }
 
-    /**
-     * A quick method to append itself to a StringBuilder
-     */
+    /** A quick method to append itself to a StringBuilder */
     public void appendTo(StringBuilder sb) {
         sb.append(value, 0, length);
     }
@@ -316,12 +291,9 @@ public class ContentLine implements CharSequence, GetChars, BidiRequirementCheck
     }
 
     public void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin) {
-        if (srcBegin < 0)
-            throw new StringIndexOutOfBoundsException(srcBegin);
-        if ((srcEnd < 0) || (srcEnd > length))
-            throw new StringIndexOutOfBoundsException(srcEnd);
-        if (srcBegin > srcEnd)
-            throw new StringIndexOutOfBoundsException("srcBegin > srcEnd");
+        if (srcBegin < 0) throw new StringIndexOutOfBoundsException(srcBegin);
+        if ((srcEnd < 0) || (srcEnd > length)) throw new StringIndexOutOfBoundsException(srcEnd);
+        if (srcBegin > srcEnd) throw new StringIndexOutOfBoundsException("srcBegin > srcEnd");
         System.arraycopy(value, srcBegin, dst, dstBegin, srcEnd - srcBegin);
     }
 

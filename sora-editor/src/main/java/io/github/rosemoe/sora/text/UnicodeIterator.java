@@ -76,5 +76,4 @@ public class UnicodeIterator {
     public int getEndIndex() {
         return end;
     }
-
 }

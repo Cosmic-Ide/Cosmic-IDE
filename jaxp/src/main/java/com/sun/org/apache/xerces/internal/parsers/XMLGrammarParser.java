@@ -25,10 +25,8 @@ import com.sun.org.apache.xerces.internal.impl.Constants;
 import com.sun.org.apache.xerces.internal.impl.dv.DTDDVFactory;
 import com.sun.org.apache.xerces.internal.util.SymbolTable;
 
-/**
- */
-public abstract class XMLGrammarParser
-    extends XMLParser {
+/** */
+public abstract class XMLGrammarParser extends XMLParser {
 
     //
     // Data
@@ -48,7 +46,7 @@ public abstract class XMLGrammarParser
      */
     protected XMLGrammarParser(SymbolTable symbolTable) {
         super(new XIncludeAwareParserConfiguration());
-        fConfiguration.setProperty(Constants.XERCES_PROPERTY_PREFIX+Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
+        fConfiguration.setProperty(
+                Constants.XERCES_PROPERTY_PREFIX + Constants.SYMBOL_TABLE_PROPERTY, symbolTable);
     }
-
 } // class XMLGrammarParser

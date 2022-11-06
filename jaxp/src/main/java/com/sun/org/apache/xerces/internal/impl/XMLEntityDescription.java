@@ -24,13 +24,10 @@ package com.sun.org.apache.xerces.internal.impl;
 import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 
 /**
- * <p>This interface describes the properties of entities--their
- * physical location and their name.</p>
+ * This interface describes the properties of entities--their physical location and their name.
  *
  * @xerces.internal
- *
  * @author Michael Glavassevich, IBM
- *
  */
 public interface XMLEntityDescription extends XMLResourceIdentifier {
 
@@ -47,5 +44,4 @@ public interface XMLEntityDescription extends XMLResourceIdentifier {
      * @return the name of the entity
      */
     public String getEntityName();
-
 } // XMLEntityDescription

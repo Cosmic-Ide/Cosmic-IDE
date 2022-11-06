@@ -19,7 +19,6 @@
  * limitations under the License.
  */
 
-
 package com.sun.org.apache.xalan.internal.xsltc.compiler;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
@@ -40,6 +39,7 @@ final class LiteralExpr extends Expression {
 
     /**
      * Creates a new literal expression node.
+     *
      * @param value the literal expression content/value.
      */
     public LiteralExpr(String value) {
@@ -49,6 +49,7 @@ final class LiteralExpr extends Expression {
 
     /**
      * Creates a new literal expression node.
+     *
      * @param value the literal expression content/value.
      * @param namespace the namespace in which the expression exists.
      */

@@ -21,183 +21,151 @@
 
 package com.sun.org.apache.xml.internal.utils;
 
-
 /**
  * Simple stack for boolean values.
+ *
  * @xsl.usage internal
  */
-public final class BoolStack implements Cloneable
-{
+public final class BoolStack implements Cloneable {
 
-  /** Array of boolean values          */
-  private boolean m_values[];
+    /** Array of boolean values */
+    private boolean m_values[];
 
-  /** Array size allocated           */
-  private int m_allocatedSize;
+    /** Array size allocated */
+    private int m_allocatedSize;
 
-  /** Index into the array of booleans          */
-  private int m_index;
+    /** Index into the array of booleans */
+    private int m_index;
 
-  /**
-   * Default constructor.  Note that the default
-   * block size is very small, for small lists.
-   */
-  public BoolStack()
-  {
-    this(32);
-  }
+    /** Default constructor. Note that the default block size is very small, for small lists. */
+    public BoolStack() {
+        this(32);
+    }
 
-  /**
-   * Construct a IntVector, using the given block size.
-   *
-   * @param size array size to allocate
-   */
-  public BoolStack(int size)
-  {
+    /**
+     * Construct a IntVector, using the given block size.
+     *
+     * @param size array size to allocate
+     */
+    public BoolStack(int size) {
 
-    m_allocatedSize = size;
-    m_values = new boolean[size];
-    m_index = -1;
-  }
-
-  /**
-   * Get the length of the list.
-   *
-   * @return Current length of the list
-   */
-  public final int size()
-  {
-    return m_index + 1;
-  }
-
-  /**
-   * Clears the stack.
-   *
-   */
-  public final void clear()
-  {
+        m_allocatedSize = size;
+        m_values = new boolean[size];
         m_index = -1;
-  }
+    }
 
-  /**
-   * Pushes an item onto the top of this stack.
-   *
-   *
-   * @param val the boolean to be pushed onto this stack.
-   * @return  the <code>item</code> argument.
-   */
-  public final boolean push(boolean val)
-  {
+    /**
+     * Get the length of the list.
+     *
+     * @return Current length of the list
+     */
+    public final int size() {
+        return m_index + 1;
+    }
 
-    if (m_index == m_allocatedSize - 1)
-      grow();
+    /** Clears the stack. */
+    public final void clear() {
+        m_index = -1;
+    }
 
-    return (m_values[++m_index] = val);
-  }
+    /**
+     * Pushes an item onto the top of this stack.
+     *
+     * @param val the boolean to be pushed onto this stack.
+     * @return the <code>item</code> argument.
+     */
+    public final boolean push(boolean val) {
 
-  /**
-   * Removes the object at the top of this stack and returns that
-   * object as the value of this function.
-   *
-   * @return     The object at the top of this stack.
-   * @throws  EmptyStackException  if this stack is empty.
-   */
-  public final boolean pop()
-  {
-    return m_values[m_index--];
-  }
+        if (m_index == m_allocatedSize - 1) grow();
 
-  /**
-   * Removes the object at the top of this stack and returns the
-   * next object at the top as the value of this function.
-   *
-   *
-   * @return Next object to the top or false if none there
-   */
-  public final boolean popAndTop()
-  {
+        return (m_values[++m_index] = val);
+    }
 
-    m_index--;
+    /**
+     * Removes the object at the top of this stack and returns that object as the value of this
+     * function.
+     *
+     * @return The object at the top of this stack.
+     * @throws EmptyStackException if this stack is empty.
+     */
+    public final boolean pop() {
+        return m_values[m_index--];
+    }
 
-    return (m_index >= 0) ? m_values[m_index] : false;
-  }
+    /**
+     * Removes the object at the top of this stack and returns the next object at the top as the
+     * value of this function.
+     *
+     * @return Next object to the top or false if none there
+     */
+    public final boolean popAndTop() {
 
-  /**
-   * Set the item at the top of this stack
-   *
-   *
-   * @param b Object to set at the top of this stack
-   */
-  public final void setTop(boolean b)
-  {
-    m_values[m_index] = b;
-  }
+        m_index--;
 
-  /**
-   * Looks at the object at the top of this stack without removing it
-   * from the stack.
-   *
-   * @return     the object at the top of this stack.
-   * @throws  EmptyStackException  if this stack is empty.
-   */
-  public final boolean peek()
-  {
-    return m_values[m_index];
-  }
+        return (m_index >= 0) ? m_values[m_index] : false;
+    }
 
-  /**
-   * Looks at the object at the top of this stack without removing it
-   * from the stack.  If the stack is empty, it returns false.
-   *
-   * @return     the object at the top of this stack.
-   */
-  public final boolean peekOrFalse()
-  {
-    return (m_index > -1) ? m_values[m_index] : false;
-  }
+    /**
+     * Set the item at the top of this stack
+     *
+     * @param b Object to set at the top of this stack
+     */
+    public final void setTop(boolean b) {
+        m_values[m_index] = b;
+    }
 
-  /**
-   * Looks at the object at the top of this stack without removing it
-   * from the stack.  If the stack is empty, it returns true.
-   *
-   * @return     the object at the top of this stack.
-   */
-  public final boolean peekOrTrue()
-  {
-    return (m_index > -1) ? m_values[m_index] : true;
-  }
+    /**
+     * Looks at the object at the top of this stack without removing it from the stack.
+     *
+     * @return the object at the top of this stack.
+     * @throws EmptyStackException if this stack is empty.
+     */
+    public final boolean peek() {
+        return m_values[m_index];
+    }
 
-  /**
-   * Tests if this stack is empty.
-   *
-   * @return  <code>true</code> if this stack is empty;
-   *          <code>false</code> otherwise.
-   */
-  public boolean isEmpty()
-  {
-    return (m_index == -1);
-  }
+    /**
+     * Looks at the object at the top of this stack without removing it from the stack. If the stack
+     * is empty, it returns false.
+     *
+     * @return the object at the top of this stack.
+     */
+    public final boolean peekOrFalse() {
+        return (m_index > -1) ? m_values[m_index] : false;
+    }
 
-  /**
-   * Grows the size of the stack
-   *
-   */
-  private void grow()
-  {
+    /**
+     * Looks at the object at the top of this stack without removing it from the stack. If the stack
+     * is empty, it returns true.
+     *
+     * @return the object at the top of this stack.
+     */
+    public final boolean peekOrTrue() {
+        return (m_index > -1) ? m_values[m_index] : true;
+    }
 
-    m_allocatedSize *= 2;
+    /**
+     * Tests if this stack is empty.
+     *
+     * @return <code>true</code> if this stack is empty; <code>false</code> otherwise.
+     */
+    public boolean isEmpty() {
+        return (m_index == -1);
+    }
 
-    boolean newVector[] = new boolean[m_allocatedSize];
+    /** Grows the size of the stack */
+    private void grow() {
 
-    System.arraycopy(m_values, 0, newVector, 0, m_index + 1);
+        m_allocatedSize *= 2;
 
-    m_values = newVector;
-  }
+        boolean newVector[] = new boolean[m_allocatedSize];
 
-  public Object clone()
-    throws CloneNotSupportedException
-  {
-    return super.clone();
-  }
+        System.arraycopy(m_values, 0, newVector, 0, m_index + 1);
 
+        m_values = newVector;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

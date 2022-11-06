@@ -25,14 +25,16 @@
 package com.sun.xml.internal.stream.events;
 
 import com.sun.org.apache.xerces.internal.impl.PropertyManager;
-import java.util.List;
-import javax.xml.stream.util.XMLEventAllocator;
-import javax.xml.stream.*;
-import javax.xml.stream.events.*;
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
 import com.sun.org.apache.xerces.internal.util.NamespaceContextWrapper;
 import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
+
+import java.util.List;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.*;
+import javax.xml.stream.events.*;
+import javax.xml.stream.util.XMLEventAllocator;
 import javax.xml.stream.util.XMLEventConsumer;
 
 /**
@@ -42,17 +44,15 @@ import javax.xml.stream.util.XMLEventConsumer;
  */
 public class XMLEventAllocatorImpl implements XMLEventAllocator {
 
-    /**
-     * Creates a new instance of XMLEventAllocator
-     */
-    public XMLEventAllocatorImpl() {
-    }
+    /** Creates a new instance of XMLEventAllocator */
+    public XMLEventAllocatorImpl() {}
 
     public XMLEvent allocate(XMLStreamReader xMLStreamReader) throws XMLStreamException {
         if (xMLStreamReader == null) {
             throw new XMLStreamException("Reader cannot be null");
         }
-        //        allocate is not supposed to change the state of the reader so we shouldn't be calling next.
+        //        allocate is not supposed to change the state of the reader so we shouldn't be
+        // calling next.
         //        return getNextEvent(xMLStreamReader);
         return getXMLEvent(xMLStreamReader);
     }
@@ -71,126 +71,145 @@ public class XMLEventAllocatorImpl implements XMLEventAllocator {
         return new XMLEventAllocatorImpl();
     }
 
-    //REVISIT: shouldn't we be using XMLEventFactory to create events.
+    // REVISIT: shouldn't we be using XMLEventFactory to create events.
     XMLEvent getXMLEvent(XMLStreamReader streamReader) {
         XMLEvent event = null;
-        //returns the current event
+        // returns the current event
         int eventType = streamReader.getEventType();
         switch (eventType) {
+            case XMLEvent.START_ELEMENT:
+                {
+                    StartElementEvent startElementEvent =
+                            new StartElementEvent(getQName(streamReader));
+                    fillAttributes(startElementEvent, streamReader);
+                    // we might have different XMLStreamReader so check every time for
+                    // the namespace aware property. we should be setting namespace
+                    // related values only when isNamespaceAware is 'true'
+                    if (((Boolean) streamReader.getProperty(XMLInputFactory.IS_NAMESPACE_AWARE))) {
+                        fillNamespaceAttributes(startElementEvent, streamReader);
+                        setNamespaceContext(startElementEvent, streamReader);
+                    }
 
-            case XMLEvent.START_ELEMENT: {
-                StartElementEvent startElementEvent = new StartElementEvent(getQName(streamReader));
-                fillAttributes(startElementEvent, streamReader);
-                //we might have different XMLStreamReader so check every time for
-                //the namespace aware property. we should be setting namespace
-                //related values only when isNamespaceAware is 'true'
-                if (((Boolean) streamReader.getProperty(XMLInputFactory.IS_NAMESPACE_AWARE))) {
-                    fillNamespaceAttributes(startElementEvent, streamReader);
-                    setNamespaceContext(startElementEvent, streamReader);
+                    startElementEvent.setLocation(streamReader.getLocation());
+                    event = startElementEvent;
+                    break;
                 }
+            case XMLEvent.END_ELEMENT:
+                {
+                    EndElementEvent endElementEvent = new EndElementEvent(getQName(streamReader));
+                    endElementEvent.setLocation(streamReader.getLocation());
 
-                startElementEvent.setLocation(streamReader.getLocation());
-                event = startElementEvent;
-                break;
-            }
-            case XMLEvent.END_ELEMENT: {
-                EndElementEvent endElementEvent = new EndElementEvent(getQName(streamReader));
-                endElementEvent.setLocation(streamReader.getLocation());
-
-                if (((Boolean) streamReader.getProperty(XMLInputFactory.IS_NAMESPACE_AWARE))) {
-                    fillNamespaceAttributes(endElementEvent, streamReader);
+                    if (((Boolean) streamReader.getProperty(XMLInputFactory.IS_NAMESPACE_AWARE))) {
+                        fillNamespaceAttributes(endElementEvent, streamReader);
+                    }
+                    event = endElementEvent;
+                    break;
                 }
-                event = endElementEvent;
-                break;
-            }
-            case XMLEvent.PROCESSING_INSTRUCTION: {
-                ProcessingInstructionEvent piEvent = new ProcessingInstructionEvent(
-                        streamReader.getPITarget(), streamReader.getPIData());
-                piEvent.setLocation(streamReader.getLocation());
-                event = piEvent;
-                break;
-            }
-            case XMLEvent.CHARACTERS: {
-                CharacterEvent cDataEvent = new CharacterEvent(streamReader.getText());
-                cDataEvent.setLocation(streamReader.getLocation());
-                event = cDataEvent;
-                break;
-            }
-            case XMLEvent.COMMENT: {
-                CommentEvent commentEvent = new CommentEvent(streamReader.getText());
-                commentEvent.setLocation(streamReader.getLocation());
-                event = commentEvent;
-                break;
-            }
-            case XMLEvent.START_DOCUMENT: {
-                StartDocumentEvent sdEvent = new StartDocumentEvent();
-                sdEvent.setVersion(streamReader.getVersion());
-                sdEvent.setEncoding(streamReader.getEncoding());
-                if (streamReader.getCharacterEncodingScheme() != null) {
-                    sdEvent.setDeclaredEncoding(true);
-                } else {
-                    sdEvent.setDeclaredEncoding(false);
+            case XMLEvent.PROCESSING_INSTRUCTION:
+                {
+                    ProcessingInstructionEvent piEvent =
+                            new ProcessingInstructionEvent(
+                                    streamReader.getPITarget(), streamReader.getPIData());
+                    piEvent.setLocation(streamReader.getLocation());
+                    event = piEvent;
+                    break;
                 }
-                sdEvent.setStandalone(streamReader.isStandalone(), streamReader.standaloneSet());
-                sdEvent.setLocation(streamReader.getLocation());
-                event = sdEvent;
-                break;
-            }
-            case XMLEvent.END_DOCUMENT: {
-                EndDocumentEvent endDocumentEvent = new EndDocumentEvent();
-                endDocumentEvent.setLocation(streamReader.getLocation());
-                event = endDocumentEvent;
-                break;
-            }
-            case XMLEvent.ENTITY_REFERENCE: {
-                EntityReferenceEvent entityEvent = new EntityReferenceEvent(streamReader.getLocalName(),
-                        new EntityDeclarationImpl(streamReader.getLocalName(), streamReader.getText()));
-                entityEvent.setLocation(streamReader.getLocation());
-                event = entityEvent;
-                break;
-
-            }
-            case XMLEvent.ATTRIBUTE: {
-                event = null;
-                break;
-            }
-            case XMLEvent.DTD: {
-                DTDEvent dtdEvent = new DTDEvent(streamReader.getText());
-                dtdEvent.setLocation(streamReader.getLocation());
-                @SuppressWarnings("unchecked")
-                List<EntityDeclaration> entities = (List<EntityDeclaration>)
-                        streamReader.getProperty(PropertyManager.STAX_ENTITIES);
-                if (entities != null && entities.size() != 0) {
-                    dtdEvent.setEntities(entities);
+            case XMLEvent.CHARACTERS:
+                {
+                    CharacterEvent cDataEvent = new CharacterEvent(streamReader.getText());
+                    cDataEvent.setLocation(streamReader.getLocation());
+                    event = cDataEvent;
+                    break;
                 }
-                @SuppressWarnings("unchecked")
-                List<NotationDeclaration> notations = (List<NotationDeclaration>)
-                        streamReader.getProperty(PropertyManager.STAX_NOTATIONS);
-                if (notations != null && !notations.isEmpty()) {
-                    dtdEvent.setNotations(notations);
+            case XMLEvent.COMMENT:
+                {
+                    CommentEvent commentEvent = new CommentEvent(streamReader.getText());
+                    commentEvent.setLocation(streamReader.getLocation());
+                    event = commentEvent;
+                    break;
                 }
-                event = dtdEvent;
-                break;
-            }
-            case XMLEvent.CDATA: {
-                CharacterEvent cDataEvent = new CharacterEvent(streamReader.getText(), true);
-                cDataEvent.setLocation(streamReader.getLocation());
-                event = cDataEvent;
-                break;
-            }
-            case XMLEvent.SPACE: {
-                CharacterEvent spaceEvent = new CharacterEvent(streamReader.getText(), false, true);
-                spaceEvent.setLocation(streamReader.getLocation());
-                event = spaceEvent;
-                break;
-            }
+            case XMLEvent.START_DOCUMENT:
+                {
+                    StartDocumentEvent sdEvent = new StartDocumentEvent();
+                    sdEvent.setVersion(streamReader.getVersion());
+                    sdEvent.setEncoding(streamReader.getEncoding());
+                    if (streamReader.getCharacterEncodingScheme() != null) {
+                        sdEvent.setDeclaredEncoding(true);
+                    } else {
+                        sdEvent.setDeclaredEncoding(false);
+                    }
+                    sdEvent.setStandalone(
+                            streamReader.isStandalone(), streamReader.standaloneSet());
+                    sdEvent.setLocation(streamReader.getLocation());
+                    event = sdEvent;
+                    break;
+                }
+            case XMLEvent.END_DOCUMENT:
+                {
+                    EndDocumentEvent endDocumentEvent = new EndDocumentEvent();
+                    endDocumentEvent.setLocation(streamReader.getLocation());
+                    event = endDocumentEvent;
+                    break;
+                }
+            case XMLEvent.ENTITY_REFERENCE:
+                {
+                    EntityReferenceEvent entityEvent =
+                            new EntityReferenceEvent(
+                                    streamReader.getLocalName(),
+                                    new EntityDeclarationImpl(
+                                            streamReader.getLocalName(), streamReader.getText()));
+                    entityEvent.setLocation(streamReader.getLocation());
+                    event = entityEvent;
+                    break;
+                }
+            case XMLEvent.ATTRIBUTE:
+                {
+                    event = null;
+                    break;
+                }
+            case XMLEvent.DTD:
+                {
+                    DTDEvent dtdEvent = new DTDEvent(streamReader.getText());
+                    dtdEvent.setLocation(streamReader.getLocation());
+                    @SuppressWarnings("unchecked")
+                    List<EntityDeclaration> entities =
+                            (List<EntityDeclaration>)
+                                    streamReader.getProperty(PropertyManager.STAX_ENTITIES);
+                    if (entities != null && entities.size() != 0) {
+                        dtdEvent.setEntities(entities);
+                    }
+                    @SuppressWarnings("unchecked")
+                    List<NotationDeclaration> notations =
+                            (List<NotationDeclaration>)
+                                    streamReader.getProperty(PropertyManager.STAX_NOTATIONS);
+                    if (notations != null && !notations.isEmpty()) {
+                        dtdEvent.setNotations(notations);
+                    }
+                    event = dtdEvent;
+                    break;
+                }
+            case XMLEvent.CDATA:
+                {
+                    CharacterEvent cDataEvent = new CharacterEvent(streamReader.getText(), true);
+                    cDataEvent.setLocation(streamReader.getLocation());
+                    event = cDataEvent;
+                    break;
+                }
+            case XMLEvent.SPACE:
+                {
+                    CharacterEvent spaceEvent =
+                            new CharacterEvent(streamReader.getText(), false, true);
+                    spaceEvent.setLocation(streamReader.getLocation());
+                    event = spaceEvent;
+                    break;
+                }
         }
         return event;
     }
 
-    //this function is not used..
+    // this function is not used..
     protected XMLEvent getNextEvent(XMLStreamReader streamReader) throws XMLStreamException {
-        //advance the reader to next event.
+        // advance the reader to next event.
         streamReader.next();
         return getXMLEvent(streamReader);
     }
@@ -203,17 +222,17 @@ public class XMLEventAllocatorImpl implements XMLEventAllocator {
         NamespaceImpl nattr = null;
         for (int i = 0; i < len; i++) {
             qname = xmlr.getAttributeName(i);
-            //this method doesn't include namespace declarations
-            //so we can be sure that there wont be any namespace declaration as part of this function call
-            //we can avoid this check - nb.
+            // this method doesn't include namespace declarations
+            // so we can be sure that there wont be any namespace declaration as part of this
+            // function call
+            // we can avoid this check - nb.
             /**
              * prefix = qname.getPrefix(); localpart = qname.getLocalPart(); if
              * (prefix.equals(XMLConstants.XMLNS_ATTRIBUTE) ) { attr = new
              * NamespaceImpl(localpart,xmlr.getAttributeValue(i)); }else if
              * (prefix.equals(XMLConstants.DEFAULT_NS_PREFIX)){ attr = new
-             * NamespaceImpl(xmlr.getAttributeValue(i)); }else{ attr = new
-             * AttributeImpl(); attr.setName(qname); }
-             *
+             * NamespaceImpl(xmlr.getAttributeValue(i)); }else{ attr = new AttributeImpl();
+             * attr.setName(qname); }
              */
             attr = new AttributeImpl();
             attr.setName(qname);
@@ -256,16 +275,16 @@ public class XMLEventAllocatorImpl implements XMLEventAllocator {
         }
     }
 
-    //Revisit : Creating a new Namespacecontext for now.
-    //see if we can do better job.
+    // Revisit : Creating a new Namespacecontext for now.
+    // see if we can do better job.
     private void setNamespaceContext(StartElementEvent event, XMLStreamReader xmlr) {
-        NamespaceContextWrapper contextWrapper = (NamespaceContextWrapper) xmlr.getNamespaceContext();
+        NamespaceContextWrapper contextWrapper =
+                (NamespaceContextWrapper) xmlr.getNamespaceContext();
         NamespaceSupport ns = new NamespaceSupport(contextWrapper.getNamespaceContext());
         event.setNamespaceContext(new NamespaceContextWrapper(ns));
     }
 
     private QName getQName(XMLStreamReader xmlr) {
-        return new QName(xmlr.getNamespaceURI(), xmlr.getLocalName(),
-                xmlr.getPrefix());
+        return new QName(xmlr.getNamespaceURI(), xmlr.getLocalName(), xmlr.getPrefix());
     }
 }

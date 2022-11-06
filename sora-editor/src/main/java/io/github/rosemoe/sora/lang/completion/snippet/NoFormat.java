@@ -38,5 +38,4 @@ public class NoFormat implements FormatString {
     public String getText() {
         return text;
     }
-
 }

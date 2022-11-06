@@ -21,10 +21,6 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.Reader;
-
 import com.sun.org.apache.xerces.internal.impl.ExternalSubsetResolver;
 import com.sun.org.apache.xerces.internal.impl.XMLEntityDescription;
 import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
@@ -32,18 +28,20 @@ import com.sun.org.apache.xerces.internal.xni.XNIException;
 import com.sun.org.apache.xerces.internal.xni.grammars.XMLDTDDescription;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 
-import org.xml.sax.ext.EntityResolver2;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.EntityResolver2;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
 /**
- * <p>This class wraps a SAX entity resolver (EntityResolver2) in an XNI entity resolver.</p>
+ * This class wraps a SAX entity resolver (EntityResolver2) in an XNI entity resolver.
  *
  * @author Michael Glavassevich, IBM
- *
  */
-public class EntityResolver2Wrapper
-    implements ExternalSubsetResolver {
+public class EntityResolver2Wrapper implements ExternalSubsetResolver {
 
     //
     // Data
@@ -60,7 +58,7 @@ public class EntityResolver2Wrapper
     public EntityResolver2Wrapper() {}
 
     /**
-     * <p>Creates a new instance wrapping the given SAX entity resolver.</p>
+     * Creates a new instance wrapping the given SAX entity resolver.
      *
      * @param entityResolver the SAX entity resolver to wrap
      */
@@ -73,7 +71,7 @@ public class EntityResolver2Wrapper
     //
 
     /**
-     * <p>Sets the SAX entity resolver wrapped by this object.</p>
+     * Sets the SAX entity resolver wrapped by this object.
      *
      * @param entityResolver the SAX entity resolver to wrap
      */
@@ -82,7 +80,7 @@ public class EntityResolver2Wrapper
     } // setEntityResolver(EntityResolver2)
 
     /**
-     * <p>Returns the SAX entity resolver wrapped by this object.</p>
+     * Returns the SAX entity resolver wrapped by this object.
      *
      * @return the SAX entity resolver wrapped by this object
      */
@@ -95,15 +93,13 @@ public class EntityResolver2Wrapper
     //
 
     /**
-     * <p>Locates an external subset for documents which do not explicitly
-     * provide one. If no external subset is provided, this method should
-     * return <code>null</code>.</p>
+     * Locates an external subset for documents which do not explicitly provide one. If no external
+     * subset is provided, this method should return <code>null</code>.
      *
      * @param grammarDescription a description of the DTD
-     *
      * @throws XNIException Thrown on general error.
-     * @throws IOException  Thrown if resolved entity stream cannot be
-     *                      opened or some other i/o error occurs.
+     * @throws IOException Thrown if resolved entity stream cannot be opened or some other i/o error
+     *     occurs.
      */
     public XMLInputSource getExternalSubset(XMLDTDDescription grammarDescription)
             throws XNIException, IOException {
@@ -130,7 +126,6 @@ public class EntityResolver2Wrapper
 
         // unable to resolve external subset
         return null;
-
     } // getExternalSubset(XMLDTDDescription):XMLInputSource
 
     //
@@ -138,14 +133,13 @@ public class EntityResolver2Wrapper
     //
 
     /**
-     * Resolves an external parsed entity. If the entity cannot be
-     * resolved, this method should return null.
+     * Resolves an external parsed entity. If the entity cannot be resolved, this method should
+     * return null.
      *
      * @param resourceIdentifier contains the physical co-ordinates of the resource to be resolved
-     *
      * @throws XNIException Thrown on general error.
-     * @throws IOException  Thrown if resolved entity stream cannot be
-     *                      opened or some other i/o error occurs.
+     * @throws IOException Thrown if resolved entity stream cannot be opened or some other i/o error
+     *     occurs.
      */
     public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
             throws XNIException, IOException {
@@ -158,8 +152,7 @@ public class EntityResolver2Wrapper
             String name = null;
             if (resourceIdentifier instanceof XMLDTDDescription) {
                 name = "[dtd]";
-            }
-            else if (resourceIdentifier instanceof XMLEntityDescription) {
+            } else if (resourceIdentifier instanceof XMLEntityDescription) {
                 name = ((XMLEntityDescription) resourceIdentifier).getEntityName();
             }
 
@@ -175,7 +168,7 @@ public class EntityResolver2Wrapper
             // Resolve using EntityResolver2
             try {
                 InputSource inputSource =
-                    fEntityResolver.resolveEntity(name, pubId, baseURI, sysId);
+                        fEntityResolver.resolveEntity(name, pubId, baseURI, sysId);
                 return (inputSource != null) ? createXMLInputSource(inputSource, baseURI) : null;
             }
             // error resolving entity
@@ -190,12 +183,9 @@ public class EntityResolver2Wrapper
 
         // unable to resolve entity
         return null;
-
     } // resolveEntity(XMLResourceIdentifier):XMLInputSource
 
-    /**
-     * Creates an XMLInputSource from a SAX InputSource.
-     */
+    /** Creates an XMLInputSource from a SAX InputSource. */
     private XMLInputSource createXMLInputSource(InputSource source, String baseURI) {
 
         String publicId = source.getPublicId();
@@ -204,13 +194,10 @@ public class EntityResolver2Wrapper
         InputStream byteStream = source.getByteStream();
         Reader charStream = source.getCharacterStream();
         String encoding = source.getEncoding();
-        XMLInputSource xmlInputSource =
-            new XMLInputSource(publicId, systemId, baseSystemId, false);
+        XMLInputSource xmlInputSource = new XMLInputSource(publicId, systemId, baseSystemId, false);
         xmlInputSource.setByteStream(byteStream);
         xmlInputSource.setCharacterStream(charStream);
         xmlInputSource.setEncoding(encoding);
         return xmlInputSource;
-
     } // createXMLInputSource(InputSource,String):XMLInputSource
-
 } // class EntityResolver2Wrapper

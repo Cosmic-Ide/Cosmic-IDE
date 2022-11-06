@@ -22,22 +22,24 @@
 package com.sun.org.apache.xerces.internal.xni.parser;
 
 import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
-import java.io.InputStream;
-import java.io.Reader;
+
 import org.xml.sax.InputSource;
 
+import java.io.InputStream;
+import java.io.Reader;
+
 /**
- * This class represents an input source for an XML document. The
- * basic properties of an input source are the following:
+ * This class represents an input source for an XML document. The basic properties of an input
+ * source are the following:
+ *
  * <ul>
- *  <li>public identifier</li>
- *  <li>system identifier</li>
- *  <li>byte stream or character stream</li>
- *  <li>
+ *   <li>public identifier
+ *   <li>system identifier
+ *   <li>byte stream or character stream
+ *   <li>
  * </ul>
  *
  * @author Andy Clark, IBM
- *
  */
 public class XMLInputSource {
 
@@ -63,31 +65,26 @@ public class XMLInputSource {
     /** Encoding. */
     protected String fEncoding;
 
-    //indicates whether the source is created by a resolver
+    // indicates whether the source is created by a resolver
     boolean fIsCreatedByResolver = false;
     //
     // Constructors
     //
 
     /**
-     * Constructs an input source from just the public and system
-     * identifiers, leaving resolution of the entity and opening of
-     * the input stream up to the caller.
+     * Constructs an input source from just the public and system identifiers, leaving resolution of
+     * the entity and opening of the input stream up to the caller.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
-     * @param isCreatedByResolver a flag to indicate whether the source is
-     * created by a resolver
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
+     * @param isCreatedByResolver a flag to indicate whether the source is created by a resolver
      */
-    public XMLInputSource(String publicId, String systemId,
-                          String baseSystemId, boolean isCreatedByResolver) {
+    public XMLInputSource(
+            String publicId, String systemId, String baseSystemId, boolean isCreatedByResolver) {
         fPublicId = publicId;
         fSystemId = systemId;
         fBaseSystemId = baseSystemId;
@@ -95,11 +92,10 @@ public class XMLInputSource {
     } // <init>(String,String,String)
 
     /**
-     * Constructs an input source from a XMLResourceIdentifier
-     * object, leaving resolution of the entity and opening of
-     * the input stream up to the caller.
+     * Constructs an input source from a XMLResourceIdentifier object, leaving resolution of the
+     * entity and opening of the input stream up to the caller.
      *
-     * @param resourceIdentifier    the XMLResourceIdentifier containing the information
+     * @param resourceIdentifier the XMLResourceIdentifier containing the information
      */
     public XMLInputSource(XMLResourceIdentifier resourceIdentifier) {
 
@@ -109,12 +105,10 @@ public class XMLInputSource {
     } // <init>(XMLResourceIdentifier)
 
     /**
-     * Constructs an input source from a SAX InputSource
-     * object.
+     * Constructs an input source from a SAX InputSource object.
      *
-     * @param inputSource  a SAX InputSource
-     * @param isCreatedByResolver a flag to indicate whether the source is
-     * created by a resolver
+     * @param inputSource a SAX InputSource
+     * @param isCreatedByResolver a flag to indicate whether the source is created by a resolver
      */
     public XMLInputSource(InputSource inputSource, boolean isCreatedByResolver) {
         fPublicId = inputSource.getPublicId();
@@ -128,21 +122,21 @@ public class XMLInputSource {
     /**
      * Constructs an input source from a byte stream.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
-     * @param byteStream   The byte stream.
-     * @param encoding     The encoding of the byte stream, if known.
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
+     * @param byteStream The byte stream.
+     * @param encoding The encoding of the byte stream, if known.
      */
-    public XMLInputSource(String publicId, String systemId,
-                          String baseSystemId, InputStream byteStream,
-                          String encoding) {
+    public XMLInputSource(
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            InputStream byteStream,
+            String encoding) {
         fPublicId = publicId;
         fSystemId = systemId;
         fBaseSystemId = baseSystemId;
@@ -153,22 +147,21 @@ public class XMLInputSource {
     /**
      * Constructs an input source from a character stream.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
-     * @param charStream   The character stream.
-     * @param encoding     The original encoding of the byte stream
-     *                     used by the reader, if known.
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
+     * @param charStream The character stream.
+     * @param encoding The original encoding of the byte stream used by the reader, if known.
      */
-    public XMLInputSource(String publicId, String systemId,
-                          String baseSystemId, Reader charStream,
-                          String encoding) {
+    public XMLInputSource(
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            Reader charStream,
+            String encoding) {
         fPublicId = publicId;
         fSystemId = systemId;
         fBaseSystemId = baseSystemId;
@@ -223,11 +216,10 @@ public class XMLInputSource {
     } // getBaseSystemId():String
 
     /**
-     * Sets the byte stream. If the byte stream is not already opened
-     * when this object is instantiated, then the code that opens the
-     * stream should also set the byte stream on this object. Also, if
-     * the encoding is auto-detected, then the encoding should also be
-     * set on this object.
+     * Sets the byte stream. If the byte stream is not already opened when this object is
+     * instantiated, then the code that opens the stream should also set the byte stream on this
+     * object. Also, if the encoding is auto-detected, then the encoding should also be set on this
+     * object.
      *
      * @param byteStream The new byte stream.
      */
@@ -241,14 +233,12 @@ public class XMLInputSource {
     } // getByteStream():InputStream
 
     /**
-     * Sets the character stream. If the character stream is not already
-     * opened when this object is instantiated, then the code that opens
-     * the stream should also set the character stream on this object.
-     * Also, the encoding of the byte stream used by the reader should
-     * also be set on this object, if known.
+     * Sets the character stream. If the character stream is not already opened when this object is
+     * instantiated, then the code that opens the stream should also set the character stream on
+     * this object. Also, the encoding of the byte stream used by the reader should also be set on
+     * this object, if known.
      *
      * @param charStream The new character stream.
-     *
      * @see #setEncoding
      */
     public void setCharacterStream(Reader charStream) {
@@ -276,6 +266,7 @@ public class XMLInputSource {
 
     /**
      * Sets the flag to indicate whether this source is created by a resolver
+     *
      * @param createdByResolver the flag
      */
     public void setCreatedByResolver(boolean createdByResolver) {
@@ -283,10 +274,10 @@ public class XMLInputSource {
     }
     /**
      * Returns a boolean to indicate whether this source is created by a resolver.
+     *
      * @return true if the source is created by a resolver, false otherwise
      */
     public boolean isCreatedByResolver() {
         return fIsCreatedByResolver;
     }
-
 } // class XMLInputSource

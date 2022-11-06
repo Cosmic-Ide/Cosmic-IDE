@@ -23,6 +23,7 @@ package com.sun.org.apache.xerces.internal.util;
 
 import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.HashMap;
@@ -30,16 +31,12 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * This class represents an input source for an XML resource
- * retrievable over HTTP. In addition to the properties
- * provided by an <code>XMLInputSource</code> an HTTP input
- * source also has HTTP request properties and a preference
- * whether HTTP redirects will be followed. Note that these
- * properties will only be used if reading this input source
- * will induce an HTTP connection.
+ * This class represents an input source for an XML resource retrievable over HTTP. In addition to
+ * the properties provided by an <code>XMLInputSource</code> an HTTP input source also has HTTP
+ * request properties and a preference whether HTTP redirects will be followed. Note that these
+ * properties will only be used if reading this input source will induce an HTTP connection.
  *
  * @author Michael Glavassevich, IBM
- *
  */
 public final class HTTPInputSource extends XMLInputSource {
 
@@ -47,10 +44,10 @@ public final class HTTPInputSource extends XMLInputSource {
     // Data
     //
 
-    /** Preference for whether HTTP redirects should be followed. **/
+    /** Preference for whether HTTP redirects should be followed. * */
     protected boolean fFollowRedirects = true;
 
-    /** HTTP request properties. **/
+    /** HTTP request properties. * */
     protected Map<String, String> fHTTPRequestProperties = new HashMap<>();
 
     //
@@ -58,28 +55,23 @@ public final class HTTPInputSource extends XMLInputSource {
     //
 
     /**
-     * Constructs an input source from just the public and system
-     * identifiers, leaving resolution of the entity and opening of
-     * the input stream up to the caller.
+     * Constructs an input source from just the public and system identifiers, leaving resolution of
+     * the entity and opening of the input stream up to the caller.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
      */
     public HTTPInputSource(String publicId, String systemId, String baseSystemId) {
         super(publicId, systemId, baseSystemId, false);
     } // <init>(String,String,String)
 
     /**
-     * Constructs an input source from a XMLResourceIdentifier
-     * object, leaving resolution of the entity and opening of
-     * the input stream up to the caller.
+     * Constructs an input source from a XMLResourceIdentifier object, leaving resolution of the
+     * entity and opening of the input stream up to the caller.
      *
      * @param resourceIdentifier the XMLResourceIdentifier containing the information
      */
@@ -90,41 +82,42 @@ public final class HTTPInputSource extends XMLInputSource {
     /**
      * Constructs an input source from a byte stream.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
-     * @param byteStream   The byte stream.
-     * @param encoding     The encoding of the byte stream, if known.
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
+     * @param byteStream The byte stream.
+     * @param encoding The encoding of the byte stream, if known.
      */
-    public HTTPInputSource(String publicId, String systemId,
-            String baseSystemId, InputStream byteStream, String encoding) {
+    public HTTPInputSource(
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            InputStream byteStream,
+            String encoding) {
         super(publicId, systemId, baseSystemId, byteStream, encoding);
     } // <init>(String,String,String,InputStream,String)
 
     /**
      * Constructs an input source from a character stream.
      *
-     * @param publicId     The public identifier, if known.
-     * @param systemId     The system identifier. This value should
-     *                     always be set, if possible, and can be
-     *                     relative or absolute. If the system identifier
-     *                     is relative, then the base system identifier
-     *                     should be set.
-     * @param baseSystemId The base system identifier. This value should
-     *                     always be set to the fully expanded URI of the
-     *                     base system identifier, if possible.
-     * @param charStream   The character stream.
-     * @param encoding     The original encoding of the byte stream
-     *                     used by the reader, if known.
+     * @param publicId The public identifier, if known.
+     * @param systemId The system identifier. This value should always be set, if possible, and can
+     *     be relative or absolute. If the system identifier is relative, then the base system
+     *     identifier should be set.
+     * @param baseSystemId The base system identifier. This value should always be set to the fully
+     *     expanded URI of the base system identifier, if possible.
+     * @param charStream The character stream.
+     * @param encoding The original encoding of the byte stream used by the reader, if known.
      */
-    public HTTPInputSource(String publicId, String systemId,
-            String baseSystemId, Reader charStream, String encoding) {
+    public HTTPInputSource(
+            String publicId,
+            String systemId,
+            String baseSystemId,
+            Reader charStream,
+            String encoding) {
         super(publicId, systemId, baseSystemId, charStream, encoding);
     } // <init>(String,String,String,Reader,String)
 
@@ -133,52 +126,45 @@ public final class HTTPInputSource extends XMLInputSource {
     //
 
     /**
-     * Returns the preference whether HTTP redirects should
-     * be followed. By default HTTP redirects will be followed.
+     * Returns the preference whether HTTP redirects should be followed. By default HTTP redirects
+     * will be followed.
      */
     public boolean getFollowHTTPRedirects() {
         return fFollowRedirects;
     } // getFollowHTTPRedirects():boolean
 
-
     /**
-     * Sets the preference whether HTTP redirects should
-     * be followed. By default HTTP redirects will be followed.
+     * Sets the preference whether HTTP redirects should be followed. By default HTTP redirects will
+     * be followed.
      */
     public void setFollowHTTPRedirects(boolean followRedirects) {
         fFollowRedirects = followRedirects;
     } // setFollowHTTPRedirects(boolean)
 
     /**
-     * Returns the value of the request property
-     * associated with the given property name.
+     * Returns the value of the request property associated with the given property name.
      *
      * @param key the name of the request property
-     * @return the value of the request property or
-     * <code>null</code> if this property has not
-     * been set
+     * @return the value of the request property or <code>null</code> if this property has not been
+     *     set
      */
     public String getHTTPRequestProperty(String key) {
         return fHTTPRequestProperties.get(key);
     } // getHTTPRequestProperty(String):String
 
     /**
-     * Returns an iterator for the request properties this
-     * input source contains. Each object returned by the
-     * iterator is an instance of <code>java.util.Map.Entry</code>
-     * where each key and value are a pair of strings corresponding
-     * to the name and value of a request property.
+     * Returns an iterator for the request properties this input source contains. Each object
+     * returned by the iterator is an instance of <code>java.util.Map.Entry</code> where each key
+     * and value are a pair of strings corresponding to the name and value of a request property.
      *
-     * @return an iterator for the request properties this
-     * input source contains
+     * @return an iterator for the request properties this input source contains
      */
     public Iterator<Map.Entry<String, String>> getHTTPRequestProperties() {
         return fHTTPRequestProperties.entrySet().iterator();
     } // getHTTPRequestProperties():Iterator
 
     /**
-     * Sets the value of the request property
-     * associated with the given property name.
+     * Sets the value of the request property associated with the given property name.
      *
      * @param key the name of the request property
      * @param value the value of the request property
@@ -186,10 +172,8 @@ public final class HTTPInputSource extends XMLInputSource {
     public void setHTTPRequestProperty(String key, String value) {
         if (value != null) {
             fHTTPRequestProperties.put(key, value);
-        }
-        else {
+        } else {
             fHTTPRequestProperties.remove(key);
         }
     } // setHTTPRequestProperty(String,String)
-
 } // class HTTPInputSource

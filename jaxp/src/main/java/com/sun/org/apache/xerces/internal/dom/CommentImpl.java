@@ -29,12 +29,9 @@ import org.w3c.dom.Node;
  * Represents an XML (or HTML) comment.
  *
  * @xerces.internal
- *
- * @since  PR-DOM-Level-1-19980818.
+ * @since PR-DOM-Level-1-19980818.
  */
-public class CommentImpl
-    extends CharacterDataImpl
-    implements CharacterData, Comment {
+public class CommentImpl extends CharacterDataImpl implements CharacterData, Comment {
 
     //
     // Constants
@@ -57,8 +54,8 @@ public class CommentImpl
     //
 
     /**
-     * A short integer indicating what type of node this is. The named
-     * constants for this value are defined in the org.w3c.dom.Node interface.
+     * A short integer indicating what type of node this is. The named constants for this value are
+     * defined in the org.w3c.dom.Node interface.
      */
     public short getNodeType() {
         return Node.COMMENT_NODE;
@@ -68,5 +65,4 @@ public class CommentImpl
     public String getNodeName() {
         return "#comment";
     }
-
 } // class CommentImpl

@@ -20,22 +20,19 @@
 
 package com.sun.org.apache.xerces.internal.utils;
 
-import java.util.function.Supplier;
 import jdk.xml.internal.SecuritySupport;
 
+import java.util.function.Supplier;
+
 /**
- * This class is duplicated for each JAXP subpackage so keep it in sync.
- * It is package private and therefore is not exposed as part of the JAXP
- * API.
- * <p>
- * This code is designed to implement the JAXP 1.1 spec pluggability
- * feature and is designed to run on JDK version 1.1 and
- * later, and to compile on JDK 1.2 and onward.
- * The code also runs both as part of an unbundled jar file and
- * when bundled as part of the JDK.
- * <p>
+ * This class is duplicated for each JAXP subpackage so keep it in sync. It is package private and
+ * therefore is not exposed as part of the JAXP API.
  *
- * @LastModified: Oct 2017
+ * <p>This code is designed to implement the JAXP 1.1 spec pluggability feature and is designed to
+ * run on JDK version 1.1 and later, and to compile on JDK 1.2 and onward. The code also runs both
+ * as part of an unbundled jar file and when bundled as part of the JDK.
+ *
+ * <p>@LastModified: Oct 2017
  */
 public final class ObjectFactory {
 
@@ -48,7 +45,6 @@ public final class ObjectFactory {
     /** Set to true for debugging */
     private static final boolean DEBUG = isDebugEnabled();
 
-
     //
     // Private static methods
     //
@@ -59,8 +55,8 @@ public final class ObjectFactory {
             String val = SecuritySupport.getSystemProperty("xerces.debug");
             // Allow simply setting the prop to turn on debug
             return (val != null && (!"false".equals(val)));
+        } catch (SecurityException se) {
         }
-        catch (SecurityException se) {}
         return false;
     } // isDebugEnabled()
 
@@ -71,16 +67,11 @@ public final class ObjectFactory {
         }
     } // debugPrintln(String)
 
-    /**
-     * Figure out which ClassLoader to use.  For JDK 1.2 and later use
-     * the context ClassLoader.
-     */
+    /** Figure out which ClassLoader to use. For JDK 1.2 and later use the context ClassLoader. */
     @SuppressWarnings("removal")
-    public static ClassLoader findClassLoader()
-        throws ConfigurationError
-    {
-        if (System.getSecurityManager()!=null) {
-            //this will ensure bootclassloader is used
+    public static ClassLoader findClassLoader() throws ConfigurationError {
+        if (System.getSecurityManager() != null) {
+            // this will ensure bootclassloader is used
             return null;
         }
         // Figure out which ClassLoader to use for loading the provider
@@ -135,69 +126,54 @@ public final class ObjectFactory {
     } // findClassLoader():ClassLoader
 
     /**
-     * Create an instance of a class using the same classloader for the ObjectFactory by default
-     * or bootclassloader when Security Manager is in place
+     * Create an instance of a class using the same classloader for the ObjectFactory by default or
+     * bootclassloader when Security Manager is in place
      */
     @SuppressWarnings("removal")
     public static Object newInstance(String className, boolean doFallback)
-        throws ConfigurationError
-    {
-        if (System.getSecurityManager()!=null) {
+            throws ConfigurationError {
+        if (System.getSecurityManager() != null) {
             return newInstance(className, null, doFallback);
         } else {
-            return newInstance(className,
-                findClassLoader (), doFallback);
+            return newInstance(className, findClassLoader(), doFallback);
         }
     }
 
-    /**
-     * Create an instance of a class using the specified ClassLoader
-     */
-    public static Object newInstance(String className, ClassLoader cl,
-                                      boolean doFallback)
-        throws ConfigurationError
-    {
+    /** Create an instance of a class using the specified ClassLoader */
+    public static Object newInstance(String className, ClassLoader cl, boolean doFallback)
+            throws ConfigurationError {
         // assert(className != null);
-        try{
+        try {
             Class<?> providerClass = findProviderClass(className, cl, doFallback);
             Object instance = providerClass.getConstructor().newInstance();
-            debugPrintln(()->"created new instance of " + providerClass +
-                             " using ClassLoader: " + cl);
+            debugPrintln(
+                    () -> "created new instance of " + providerClass + " using ClassLoader: " + cl);
             return instance;
         } catch (ClassNotFoundException x) {
-            throw new ConfigurationError(
-                "Provider " + className + " not found", x);
+            throw new ConfigurationError("Provider " + className + " not found", x);
         } catch (Exception x) {
             throw new ConfigurationError(
-                "Provider " + className + " could not be instantiated: " + x,
-                x);
+                    "Provider " + className + " could not be instantiated: " + x, x);
         }
     }
 
     /**
-     * Find a Class using the same classloader for the ObjectFactory by default
-     * or bootclassloader when Security Manager is in place
+     * Find a Class using the same classloader for the ObjectFactory by default or bootclassloader
+     * when Security Manager is in place
      */
     public static Class<?> findProviderClass(String className, boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        return findProviderClass (className,
-                findClassLoader (), doFallback);
+            throws ClassNotFoundException, ConfigurationError {
+        return findProviderClass(className, findClassLoader(), doFallback);
     }
-    /**
-     * Find a Class using the specified ClassLoader
-     */
-    public static Class<?> findProviderClass(String className, ClassLoader cl,
-                                      boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        //throw security exception if the calling thread is not allowed to access the package
-        //restrict the access to package as speicified in java.security policy
+    /** Find a Class using the specified ClassLoader */
+    public static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
+            throws ClassNotFoundException, ConfigurationError {
+        // throw security exception if the calling thread is not allowed to access the package
+        // restrict the access to package as speicified in java.security policy
         @SuppressWarnings("removal")
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
-            if (className.startsWith(JAXP_INTERNAL) ||
-                    className.startsWith(STAX_INTERNAL)) {
+            if (className.startsWith(JAXP_INTERNAL) || className.startsWith(STAX_INTERNAL)) {
                 cl = null;
             } else {
                 final int lastDot = className.lastIndexOf(".");
@@ -208,7 +184,7 @@ public final class ObjectFactory {
         }
         Class<?> providerClass;
         if (cl == null) {
-            //use the bootstrap ClassLoader.
+            // use the bootstrap ClassLoader.
             providerClass = Class.forName(className, false, ObjectFactory.class.getClassLoader());
         } else {
             try {
@@ -233,5 +209,4 @@ public final class ObjectFactory {
 
         return providerClass;
     }
-
 } // class ObjectFactory

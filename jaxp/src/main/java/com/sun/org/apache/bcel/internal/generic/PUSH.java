@@ -23,15 +23,12 @@ package com.sun.org.apache.bcel.internal.generic;
 import com.sun.org.apache.bcel.internal.Const;
 
 /**
- * Wrapper class for push operations, which are implemented either as BIPUSH,
- * LDC or xCONST_n instructions.
- *
- * @LastModified: Jan 2020
+ * Wrapper class for push operations, which are implemented either as BIPUSH, LDC or xCONST_n
+ * instructions. @LastModified: Jan 2020
  */
 public final class PUSH implements CompoundInstruction, VariableLengthInstruction {
 
     private Instruction instruction;
-
 
     /**
      * This constructor also applies for values of type short, char, byte
@@ -51,7 +48,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         }
     }
 
-
     /**
      * @param cp Constant pool
      * @param value to be pushed
@@ -59,7 +55,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
     public PUSH(final ConstantPoolGen cp, final boolean value) {
         instruction = InstructionConst.getInstruction(Const.ICONST_0 + (value ? 1 : 0));
     }
-
 
     /**
      * @param cp Constant pool
@@ -77,7 +72,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         }
     }
 
-
     /**
      * @param cp Constant pool
      * @param value to be pushed
@@ -91,7 +85,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
             instruction = new LDC2_W(cp.addLong(value));
         }
     }
-
 
     /**
      * @param cp Constant pool
@@ -107,7 +100,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         }
     }
 
-
     /**
      * @param cp Constant pool
      * @param value to be pushed
@@ -121,7 +113,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
     }
 
     /**
-     *
      * @param cp
      * @param value
      * @since 6.0
@@ -152,7 +143,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         }
     }
 
-
     /**
      * creates a push object from a Character value. Warning: Make sure not to attempt to allow
      * autoboxing to create this value parameter, as an alternative constructor will be called
@@ -164,7 +154,6 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         this(cp, value.charValue());
     }
 
-
     /**
      * @param cp Constant pool
      * @param value to be pushed
@@ -173,17 +162,14 @@ public final class PUSH implements CompoundInstruction, VariableLengthInstructio
         this(cp, value.booleanValue());
     }
 
-
     @Override
     public InstructionList getInstructionList() {
         return new InstructionList(instruction);
     }
 
-
     public Instruction getInstruction() {
         return instruction;
     }
-
 
     /**
      * @return mnemonic for instruction

@@ -22,6 +22,7 @@ package com.sun.org.apache.xerces.internal.impl.xs.util;
 
 import com.sun.org.apache.xerces.internal.xs.XSObject;
 import com.sun.org.apache.xerces.internal.xs.XSObjectList;
+
 import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.Iterator;
@@ -32,48 +33,54 @@ import java.util.NoSuchElementException;
  * Containts a list of XSObject's.
  *
  * @xerces.internal
- *
- * @author Sandy Gao, IBM
- *
- * @LastModified: Oct 2017
+ * @author Sandy Gao, IBM @LastModified: Oct 2017
  */
 @SuppressWarnings("unchecked") // method <T>toArray(T[])
 public class XSObjectListImpl extends AbstractList<XSObject> implements XSObjectList {
 
-    /**
-     * An immutable empty list.
-     */
+    /** An immutable empty list. */
     public static final XSObjectListImpl EMPTY_LIST = new XSObjectListImpl(new XSObject[0], 0);
+
     private static final ListIterator<XSObject> EMPTY_ITERATOR = new EmptyIterator();
+
     static class EmptyIterator implements ListIterator<XSObject> {
         public boolean hasNext() {
             return false;
         }
+
         public XSObject next() {
             throw new NoSuchElementException();
         }
+
         public boolean hasPrevious() {
             return false;
         }
+
         public XSObject previous() {
             throw new NoSuchElementException();
         }
+
         public int nextIndex() {
             return 0;
         }
+
         public int previousIndex() {
             return -1;
         }
+
         public void remove() {
             throw new UnsupportedOperationException();
         }
+
         public void set(XSObject object) {
             throw new UnsupportedOperationException();
         }
+
         public void add(XSObject object) {
             throw new UnsupportedOperationException();
         }
     }
+
     private static final int DEFAULT_SIZE = 4;
 
     // The array to hold all data
@@ -89,8 +96,8 @@ public class XSObjectListImpl extends AbstractList<XSObject> implements XSObject
     /**
      * Construct an XSObjectList implementation
      *
-     * @param array     the data array
-     * @param length    the number of elements
+     * @param array the data array
+     * @param length the number of elements
      */
     public XSObjectListImpl(XSObject[] array, int length) {
         fArray = array;
@@ -98,21 +105,21 @@ public class XSObjectListImpl extends AbstractList<XSObject> implements XSObject
     }
 
     /**
-     * The number of <code>XSObjects</code> in the list. The range of valid
-     * child node indices is 0 to <code>length-1</code> inclusive.
+     * The number of <code>XSObjects</code> in the list. The range of valid child node indices is 0
+     * to <code>length-1</code> inclusive.
      */
     public int getLength() {
         return fLength;
     }
 
     /**
-     * Returns the <code>index</code>th item in the collection. The index
-     * starts at 0. If <code>index</code> is greater than or equal to the
-     * number of nodes in the list, this returns <code>null</code>.
+     * Returns the <code>index</code>th item in the collection. The index starts at 0. If <code>
+     * index</code> is greater than or equal to the number of nodes in the list, this returns <code>
+     * null</code>.
+     *
      * @param index index into the collection.
-     * @return The XSObject at the <code>index</code>th position in the
-     *   <code>XSObjectList</code>, or <code>null</code> if that is not a
-     *   valid index.
+     * @return The XSObject at the <code>index</code>th position in the <code>XSObjectList</code>,
+     *     or <code>null</code> if that is not a valid index.
      */
     public XSObject item(int index) {
         if (index < 0 || index >= fLength) {
@@ -123,7 +130,7 @@ public class XSObjectListImpl extends AbstractList<XSObject> implements XSObject
 
     // clear this object
     public void clearXSObjectList() {
-        for (int i=0; i<fLength; i++) {
+        for (int i = 0; i < fLength; i++) {
             fArray[i] = null;
         }
         fArray = null;
@@ -131,12 +138,12 @@ public class XSObjectListImpl extends AbstractList<XSObject> implements XSObject
     }
 
     public void addXSObject(XSObject object) {
-       if (fLength == fArray.length) {
-           XSObject[] temp = new XSObject[fLength + 4];
-           System.arraycopy(fArray, 0, temp, 0, fLength);
-           fArray = temp;
-       }
-       fArray[fLength++] = object;
+        if (fLength == fArray.length) {
+            XSObject[] temp = new XSObject[fLength + 4];
+            System.arraycopy(fArray, 0, temp, 0, fLength);
+            fArray = temp;
+        }
+        fArray[fLength++] = object;
     }
 
     public void addXSObject(int index, XSObject object) {
@@ -226,42 +233,51 @@ public class XSObjectListImpl extends AbstractList<XSObject> implements XSObject
 
     private final class XSObjectListIterator implements ListIterator<XSObject> {
         private int index;
+
         public XSObjectListIterator(int index) {
             this.index = index;
         }
+
         public boolean hasNext() {
             return (index < fLength);
         }
+
         public XSObject next() {
             if (index < fLength) {
                 return fArray[index++];
             }
             throw new NoSuchElementException();
         }
+
         public boolean hasPrevious() {
             return (index > 0);
         }
+
         public XSObject previous() {
             if (index > 0) {
                 return fArray[--index];
             }
             throw new NoSuchElementException();
         }
+
         public int nextIndex() {
             return index;
         }
+
         public int previousIndex() {
             return index - 1;
         }
+
         public void remove() {
             throw new UnsupportedOperationException();
         }
+
         public void set(XSObject o) {
             throw new UnsupportedOperationException();
         }
+
         public void add(XSObject o) {
             throw new UnsupportedOperationException();
         }
     }
-
 } // class XSObjectListImpl

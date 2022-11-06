@@ -35,8 +35,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Morten Jorgensen
- * @LastModified: Nov 2017
+ * @author Morten Jorgensen @LastModified: Nov 2017
  */
 final class Message extends Instruction {
     private boolean _terminate = false;
@@ -65,7 +64,7 @@ final class Message extends Instruction {
         switch (elementCount()) {
             case 0:
                 il.append(new PUSH(cpg, ""));
-            break;
+                break;
             case 1:
                 SyntaxTreeNode child = elementAt(0);
                 if (child instanceof Text) {
@@ -85,84 +84,89 @@ final class Message extends Instruction {
                 il.append(new NEW(cpg.addClass(STRING_WRITER)));
                 il.append(DUP);
                 il.append(DUP);
-                il.append(new INVOKESPECIAL(
-                    cpg.addMethodref(STRING_WRITER, "<init>", "()V")));
+                il.append(new INVOKESPECIAL(cpg.addMethodref(STRING_WRITER, "<init>", "()V")));
 
                 // Load ToXMLStream
                 il.append(methodGen.loadHandler());
-                il.append(new INVOKESPECIAL(
-                    cpg.addMethodref(STREAM_XML_OUTPUT, "<init>",
-                                     "()V")));
+                il.append(new INVOKESPECIAL(cpg.addMethodref(STREAM_XML_OUTPUT, "<init>", "()V")));
 
                 // Invoke output.setWriter(STRING_WRITER)
                 il.append(methodGen.loadHandler());
                 il.append(SWAP);
-                il.append(new INVOKEINTERFACE(
-                    cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                              "setWriter",
-                                              "("+WRITER_SIG+")V"), 2));
+                il.append(
+                        new INVOKEINTERFACE(
+                                cpg.addInterfaceMethodref(
+                                        TRANSLET_OUTPUT_INTERFACE,
+                                        "setWriter",
+                                        "(" + WRITER_SIG + ")V"),
+                                2));
 
                 // Invoke output.setEncoding("UTF-8")
                 il.append(methodGen.loadHandler());
-                il.append(new PUSH(cpg, "UTF-8"));   // other encodings?
-                il.append(new INVOKEINTERFACE(
-                    cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                              "setEncoding",
-                                              "("+STRING_SIG+")V"), 2));
+                il.append(new PUSH(cpg, "UTF-8")); // other encodings?
+                il.append(
+                        new INVOKEINTERFACE(
+                                cpg.addInterfaceMethodref(
+                                        TRANSLET_OUTPUT_INTERFACE,
+                                        "setEncoding",
+                                        "(" + STRING_SIG + ")V"),
+                                2));
 
                 // Invoke output.setOmitXMLDeclaration(true)
                 il.append(methodGen.loadHandler());
                 il.append(ICONST_1);
-                il.append(new INVOKEINTERFACE(
-                    cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                              "setOmitXMLDeclaration",
-                                              "(Z)V"), 2));
+                il.append(
+                        new INVOKEINTERFACE(
+                                cpg.addInterfaceMethodref(
+                                        TRANSLET_OUTPUT_INTERFACE, "setOmitXMLDeclaration", "(Z)V"),
+                                2));
 
                 il.append(methodGen.loadHandler());
-                il.append(new INVOKEINTERFACE(
-                    cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                              "startDocument",
-                                              "()V"), 1));
+                il.append(
+                        new INVOKEINTERFACE(
+                                cpg.addInterfaceMethodref(
+                                        TRANSLET_OUTPUT_INTERFACE, "startDocument", "()V"),
+                                1));
 
                 // Inline translation of contents
                 translateContents(classGen, methodGen);
 
                 il.append(methodGen.loadHandler());
-                il.append(new INVOKEINTERFACE(
-                    cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                              "endDocument",
-                                              "()V"), 1));
+                il.append(
+                        new INVOKEINTERFACE(
+                                cpg.addInterfaceMethodref(
+                                        TRANSLET_OUTPUT_INTERFACE, "endDocument", "()V"),
+                                1));
 
                 // Call toString() on StringWriter
-                il.append(new INVOKEVIRTUAL(
-                    cpg.addMethodref(STRING_WRITER, "toString",
-                                     "()" + STRING_SIG)));
+                il.append(
+                        new INVOKEVIRTUAL(
+                                cpg.addMethodref(STRING_WRITER, "toString", "()" + STRING_SIG)));
 
                 // Restore old output handler
                 il.append(SWAP);
                 il.append(methodGen.storeHandler());
-            break;
+                break;
         }
 
         // Send the resulting string to the message handling method
-        il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS,
-                                                     "displayMessage",
-                                                     "("+STRING_SIG+")V")));
+        il.append(
+                new INVOKEVIRTUAL(
+                        cpg.addMethodref(
+                                TRANSLET_CLASS, "displayMessage", "(" + STRING_SIG + ")V")));
 
         // If 'terminate' attribute is set to 'yes': Instanciate a
         // RunTimeException, but it on the stack and throw an exception
         if (_terminate == true) {
             // Create a new instance of RunTimeException
-            final int einit = cpg.addMethodref("java.lang.RuntimeException",
-                                               "<init>",
-                                               "(Ljava/lang/String;)V");
+            final int einit =
+                    cpg.addMethodref(
+                            "java.lang.RuntimeException", "<init>", "(Ljava/lang/String;)V");
             il.append(new NEW(cpg.addClass("java.lang.RuntimeException")));
             il.append(DUP);
-            il.append(new PUSH(cpg,"Termination forced by an " +
-                                   "xsl:message instruction"));
+            il.append(new PUSH(cpg, "Termination forced by an " + "xsl:message instruction"));
             il.append(new INVOKESPECIAL(einit));
             il.append(ATHROW);
         }
     }
-
 }

@@ -21,11 +21,6 @@
 
 package com.sun.org.apache.bcel.internal.util;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.BitSet;
-
 import com.sun.org.apache.bcel.internal.Const;
 import com.sun.org.apache.bcel.internal.classfile.Attribute;
 import com.sun.org.apache.bcel.internal.classfile.Code;
@@ -41,26 +36,31 @@ import com.sun.org.apache.bcel.internal.classfile.LocalVariableTable;
 import com.sun.org.apache.bcel.internal.classfile.Method;
 import com.sun.org.apache.bcel.internal.classfile.Utility;
 
-/**
- * Convert code into HTML file.
- *
- *
- */
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.BitSet;
+
+/** Convert code into HTML file. */
 final class CodeHTML {
 
     private final String className; // name of current class
-//    private Method[] methods; // Methods to print
+    //    private Method[] methods; // Methods to print
     private final PrintWriter file; // file to write to
     private BitSet gotoSet;
     private final ConstantPool constantPool;
     private final ConstantHTML constantHtml;
     private static boolean wide = false;
 
-
-    CodeHTML(final String dir, final String class_name, final Method[] methods, final ConstantPool constant_pool,
-            final ConstantHTML constant_html) throws IOException {
+    CodeHTML(
+            final String dir,
+            final String class_name,
+            final Method[] methods,
+            final ConstantPool constant_pool,
+            final ConstantHTML constant_html)
+            throws IOException {
         this.className = class_name;
-//        this.methods = methods;
+        //        this.methods = methods;
         this.constantPool = constant_pool;
         this.constantHtml = constant_html;
         file = new PrintWriter(new FileOutputStream(dir + class_name + "_code.html"));
@@ -72,15 +72,14 @@ final class CodeHTML {
         file.close();
     }
 
-
     /**
-     * Disassemble a stream of byte codes and return the
-     * string representation.
+     * Disassemble a stream of byte codes and return the string representation.
      *
-     * @param  stream data input stream
+     * @param stream data input stream
      * @return String representation of byte code
      */
-    private String codeToHTML( final ByteSequence bytes, final int method_number ) throws IOException {
+    private String codeToHTML(final ByteSequence bytes, final int method_number)
+            throws IOException {
         final short opcode = (short) bytes.readUnsignedByte();
         String name;
         String signature;
@@ -123,16 +122,25 @@ final class CodeHTML {
                 }
                 buf.append("<TH>default</TH></TR>\n<TR>");
                 // Print target and default indices in second row
-            for (final int element : jump_table) {
-                buf.append("<TD><A HREF=\"#code").append(method_number).append("@").append(
-                        element).append("\">").append(element).append("</A></TD>");
-            }
-                buf.append("<TD><A HREF=\"#code").append(method_number).append("@").append(
-                        default_offset).append("\">").append(default_offset).append(
-                        "</A></TD></TR>\n</TABLE>\n");
+                for (final int element : jump_table) {
+                    buf.append("<TD><A HREF=\"#code")
+                            .append(method_number)
+                            .append("@")
+                            .append(element)
+                            .append("\">")
+                            .append(element)
+                            .append("</A></TD>");
+                }
+                buf.append("<TD><A HREF=\"#code")
+                        .append(method_number)
+                        .append("@")
+                        .append(default_offset)
+                        .append("\">")
+                        .append(default_offset)
+                        .append("</A></TD></TR>\n</TABLE>\n");
                 break;
-            /* Lookup switch has variable length arguments.
-             */
+                /* Lookup switch has variable length arguments.
+                 */
             case Const.LOOKUPSWITCH:
                 final int npairs = bytes.readInt();
                 offset = bytes.getIndex() - 8 - no_pad_bytes - 1;
@@ -148,16 +156,25 @@ final class CodeHTML {
                 buf.append("<TH>default</TH></TR>\n<TR>");
                 // Print target and default indices in second row
                 for (int i = 0; i < npairs; i++) {
-                    buf.append("<TD><A HREF=\"#code").append(method_number).append("@").append(
-                            jump_table[i]).append("\">").append(jump_table[i]).append("</A></TD>");
+                    buf.append("<TD><A HREF=\"#code")
+                            .append(method_number)
+                            .append("@")
+                            .append(jump_table[i])
+                            .append("\">")
+                            .append(jump_table[i])
+                            .append("</A></TD>");
                 }
-                buf.append("<TD><A HREF=\"#code").append(method_number).append("@").append(
-                        default_offset).append("\">").append(default_offset).append(
-                        "</A></TD></TR>\n</TABLE>\n");
+                buf.append("<TD><A HREF=\"#code")
+                        .append(method_number)
+                        .append("@")
+                        .append(default_offset)
+                        .append("\">")
+                        .append(default_offset)
+                        .append("</A></TD></TR>\n</TABLE>\n");
                 break;
-            /* Two address bytes + offset from start of byte stream form the
-             * jump target.
-             */
+                /* Two address bytes + offset from start of byte stream form the
+                 * jump target.
+                 */
             case Const.GOTO:
             case Const.IFEQ:
             case Const.IFGE:
@@ -177,19 +194,29 @@ final class CodeHTML {
             case Const.IF_ICMPNE:
             case Const.JSR:
                 index = bytes.getIndex() + bytes.readShort() - 1;
-                buf.append("<A HREF=\"#code").append(method_number).append("@").append(index)
-                        .append("\">").append(index).append("</A>");
+                buf.append("<A HREF=\"#code")
+                        .append(method_number)
+                        .append("@")
+                        .append(index)
+                        .append("\">")
+                        .append(index)
+                        .append("</A>");
                 break;
-            /* Same for 32-bit wide jumps
-             */
+                /* Same for 32-bit wide jumps
+                 */
             case Const.GOTO_W:
             case Const.JSR_W:
                 final int windex = bytes.getIndex() + bytes.readInt() - 1;
-                buf.append("<A HREF=\"#code").append(method_number).append("@").append(windex)
-                        .append("\">").append(windex).append("</A>");
+                buf.append("<A HREF=\"#code")
+                        .append(method_number)
+                        .append("@")
+                        .append(windex)
+                        .append("\">")
+                        .append(windex)
+                        .append("</A>");
                 break;
-            /* Index byte references local variable (register)
-             */
+                /* Index byte references local variable (register)
+                 */
             case Const.ALOAD:
             case Const.ASTORE:
             case Const.DLOAD:
@@ -209,54 +236,61 @@ final class CodeHTML {
                 }
                 buf.append("%").append(vindex);
                 break;
-            /*
-             * Remember wide byte which is used to form a 16-bit address in the
-             * following instruction. Relies on that the method is called again with
-             * the following opcode.
-             */
+                /*
+                 * Remember wide byte which is used to form a 16-bit address in the
+                 * following instruction. Relies on that the method is called again with
+                 * the following opcode.
+                 */
             case Const.WIDE:
                 wide = true;
                 buf.append("(wide)");
                 break;
-            /* Array of basic type.
-             */
+                /* Array of basic type.
+                 */
             case Const.NEWARRAY:
-                buf.append("<FONT COLOR=\"#00FF00\">").append(Const.getTypeName(bytes.readByte())).append(
-                        "</FONT>");
+                buf.append("<FONT COLOR=\"#00FF00\">")
+                        .append(Const.getTypeName(bytes.readByte()))
+                        .append("</FONT>");
                 break;
-            /* Access object/class fields.
-             */
+                /* Access object/class fields.
+                 */
             case Const.GETFIELD:
             case Const.GETSTATIC:
             case Const.PUTFIELD:
             case Const.PUTSTATIC:
                 index = bytes.readShort();
-                final ConstantFieldref c1 = (ConstantFieldref) constantPool.getConstant(index,
-                        Const.CONSTANT_Fieldref);
+                final ConstantFieldref c1 =
+                        (ConstantFieldref) constantPool.getConstant(index, Const.CONSTANT_Fieldref);
                 class_index = c1.getClassIndex();
                 name = constantPool.getConstantString(class_index, Const.CONSTANT_Class);
                 name = Utility.compactClassName(name, false);
                 index = c1.getNameAndTypeIndex();
-                final String field_name = constantPool.constantToString(index, Const.CONSTANT_NameAndType);
+                final String field_name =
+                        constantPool.constantToString(index, Const.CONSTANT_NameAndType);
                 if (name.equals(className)) { // Local field
-                    buf.append("<A HREF=\"").append(className).append("_methods.html#field")
-                            .append(field_name).append("\" TARGET=Methods>").append(field_name)
+                    buf.append("<A HREF=\"")
+                            .append(className)
+                            .append("_methods.html#field")
+                            .append(field_name)
+                            .append("\" TARGET=Methods>")
+                            .append(field_name)
                             .append("</A>\n");
                 } else {
-                    buf.append(constantHtml.referenceConstant(class_index)).append(".").append(
-                            field_name);
+                    buf.append(constantHtml.referenceConstant(class_index))
+                            .append(".")
+                            .append(field_name);
                 }
                 break;
-            /* Operands are references to classes in constant pool
-             */
+                /* Operands are references to classes in constant pool
+                 */
             case Const.CHECKCAST:
             case Const.INSTANCEOF:
             case Const.NEW:
                 index = bytes.readShort();
                 buf.append(constantHtml.referenceConstant(index));
                 break;
-            /* Operands are references to methods in constant pool
-             */
+                /* Operands are references to methods in constant pool
+                 */
             case Const.INVOKESPECIAL:
             case Const.INVOKESTATIC:
             case Const.INVOKEVIRTUAL:
@@ -267,41 +301,56 @@ final class CodeHTML {
                 if (opcode == Const.INVOKEINTERFACE) { // Special treatment needed
                     bytes.readUnsignedByte(); // Redundant
                     bytes.readUnsignedByte(); // Reserved
-//                    int nargs = bytes.readUnsignedByte(); // Redundant
-//                    int reserved = bytes.readUnsignedByte(); // Reserved
-                    final ConstantInterfaceMethodref c = (ConstantInterfaceMethodref) constantPool
-                            .getConstant(m_index, Const.CONSTANT_InterfaceMethodref);
+                    //                    int nargs = bytes.readUnsignedByte(); // Redundant
+                    //                    int reserved = bytes.readUnsignedByte(); // Reserved
+                    final ConstantInterfaceMethodref c =
+                            (ConstantInterfaceMethodref)
+                                    constantPool.getConstant(
+                                            m_index, Const.CONSTANT_InterfaceMethodref);
                     class_index = c.getClassIndex();
                     index = c.getNameAndTypeIndex();
                     name = Class2HTML.referenceClass(class_index);
                 } else if (opcode == Const.INVOKEDYNAMIC) { // Special treatment needed
                     bytes.readUnsignedByte(); // Reserved
                     bytes.readUnsignedByte(); // Reserved
-                    final ConstantInvokeDynamic c = (ConstantInvokeDynamic) constantPool
-                            .getConstant(m_index, Const.CONSTANT_InvokeDynamic);
+                    final ConstantInvokeDynamic c =
+                            (ConstantInvokeDynamic)
+                                    constantPool.getConstant(m_index, Const.CONSTANT_InvokeDynamic);
                     index = c.getNameAndTypeIndex();
                     name = "#" + c.getBootstrapMethodAttrIndex();
                 } else {
                     // UNDONE: Java8 now allows INVOKESPECIAL and INVOKESTATIC to
                     // reference EITHER a Methodref OR an InterfaceMethodref.
                     // Not sure if that affects this code or not.  (markro)
-                    final ConstantMethodref c = (ConstantMethodref) constantPool.getConstant(m_index,
-                            Const.CONSTANT_Methodref);
+                    final ConstantMethodref c =
+                            (ConstantMethodref)
+                                    constantPool.getConstant(m_index, Const.CONSTANT_Methodref);
                     class_index = c.getClassIndex();
                     index = c.getNameAndTypeIndex();
-                name = Class2HTML.referenceClass(class_index);
+                    name = Class2HTML.referenceClass(class_index);
                 }
-                str = Class2HTML.toHTML(constantPool.constantToString(constantPool.getConstant(
-                        index, Const.CONSTANT_NameAndType)));
+                str =
+                        Class2HTML.toHTML(
+                                constantPool.constantToString(
+                                        constantPool.getConstant(
+                                                index, Const.CONSTANT_NameAndType)));
                 // Get signature, i.e., types
-                final ConstantNameAndType c2 = (ConstantNameAndType) constantPool.getConstant(index,
-                        Const.CONSTANT_NameAndType);
-                signature = constantPool.constantToString(c2.getSignatureIndex(), Const.CONSTANT_Utf8);
+                final ConstantNameAndType c2 =
+                        (ConstantNameAndType)
+                                constantPool.getConstant(index, Const.CONSTANT_NameAndType);
+                signature =
+                        constantPool.constantToString(c2.getSignatureIndex(), Const.CONSTANT_Utf8);
                 final String[] args = Utility.methodSignatureArgumentTypes(signature, false);
                 final String type = Utility.methodSignatureReturnType(signature, false);
-                buf.append(name).append(".<A HREF=\"").append(className).append("_cp.html#cp")
-                        .append(m_index).append("\" TARGET=ConstantPool>").append(str).append(
-                                "</A>").append("(");
+                buf.append(name)
+                        .append(".<A HREF=\"")
+                        .append(className)
+                        .append("_cp.html#cp")
+                        .append(m_index)
+                        .append("\" TARGET=ConstantPool>")
+                        .append(str)
+                        .append("</A>")
+                        .append("(");
                 // List arguments
                 for (int i = 0; i < args.length; i++) {
                     buf.append(Class2HTML.referenceType(args[i]));
@@ -312,39 +361,53 @@ final class CodeHTML {
                 // Attach return type
                 buf.append("):").append(Class2HTML.referenceType(type));
                 break;
-            /* Operands are references to items in constant pool
-             */
+                /* Operands are references to items in constant pool
+                 */
             case Const.LDC_W:
             case Const.LDC2_W:
                 index = bytes.readShort();
-                buf.append("<A HREF=\"").append(className).append("_cp.html#cp").append(index)
-                        .append("\" TARGET=\"ConstantPool\">").append(
-                                Class2HTML.toHTML(constantPool.constantToString(index,
-                                        constantPool.getConstant(index).getTag()))).append("</a>");
+                buf.append("<A HREF=\"")
+                        .append(className)
+                        .append("_cp.html#cp")
+                        .append(index)
+                        .append("\" TARGET=\"ConstantPool\">")
+                        .append(
+                                Class2HTML.toHTML(
+                                        constantPool.constantToString(
+                                                index, constantPool.getConstant(index).getTag())))
+                        .append("</a>");
                 break;
             case Const.LDC:
                 index = bytes.readUnsignedByte();
-                buf.append("<A HREF=\"").append(className).append("_cp.html#cp").append(index)
-                        .append("\" TARGET=\"ConstantPool\">").append(
-                                Class2HTML.toHTML(constantPool.constantToString(index,
-                                        constantPool.getConstant(index).getTag()))).append("</a>");
+                buf.append("<A HREF=\"")
+                        .append(className)
+                        .append("_cp.html#cp")
+                        .append(index)
+                        .append("\" TARGET=\"ConstantPool\">")
+                        .append(
+                                Class2HTML.toHTML(
+                                        constantPool.constantToString(
+                                                index, constantPool.getConstant(index).getTag())))
+                        .append("</a>");
                 break;
-            /* Array of references.
-             */
+                /* Array of references.
+                 */
             case Const.ANEWARRAY:
                 index = bytes.readShort();
                 buf.append(constantHtml.referenceConstant(index));
                 break;
-            /* Multidimensional array of references.
-             */
+                /* Multidimensional array of references.
+                 */
             case Const.MULTIANEWARRAY:
                 index = bytes.readShort();
                 final int dimensions = bytes.readByte();
-                buf.append(constantHtml.referenceConstant(index)).append(":").append(dimensions)
+                buf.append(constantHtml.referenceConstant(index))
+                        .append(":")
+                        .append(dimensions)
                         .append("-dimensional");
                 break;
-            /* Increment local variable.
-             */
+                /* Increment local variable.
+                 */
             case Const.IINC:
                 if (wide) {
                     vindex = bytes.readShort();
@@ -371,8 +434,8 @@ final class CodeHTML {
                                 break;
                             default: // Never reached
                                 throw new IllegalStateException(
-                                        "Unreachable default case reached! " +
-                                                Const.getOperandType(opcode, i));
+                                        "Unreachable default case reached! "
+                                                + Const.getOperandType(opcode, i));
                         }
                         buf.append("&nbsp;");
                     }
@@ -382,12 +445,11 @@ final class CodeHTML {
         return buf.toString();
     }
 
-
     /**
-     * Find all target addresses in code, so that they can be marked
-     * with &lt;A NAME = ...&gt;. Target addresses are kept in an BitSet object.
+     * Find all target addresses in code, so that they can be marked with &lt;A NAME = ...&gt;.
+     * Target addresses are kept in an BitSet object.
      */
-    private void findGotos( final ByteSequence bytes, final Code code ) throws IOException {
+    private void findGotos(final ByteSequence bytes, final Code code) throws IOException {
         int index;
         gotoSet = new BitSet(bytes.available());
         int opcode;
@@ -405,8 +467,8 @@ final class CodeHTML {
             final Attribute[] attributes = code.getAttributes();
             for (final Attribute attribute : attributes) {
                 if (attribute.getTag() == Const.ATTR_LOCAL_VARIABLE_TABLE) {
-                    final LocalVariable[] vars = ((LocalVariableTable) attribute)
-                            .getLocalVariableTable();
+                    final LocalVariable[] vars =
+                            ((LocalVariableTable) attribute).getLocalVariableTable();
                     for (final LocalVariable var : vars) {
                         final int start = var.getStartPC();
                         final int end = start + var.getLength();
@@ -418,13 +480,13 @@ final class CodeHTML {
             }
         }
         // Get target addresses from GOTO, JSR, TABLESWITCH, etc.
-        for (; bytes.available() > 0;) {
+        for (; bytes.available() > 0; ) {
             opcode = bytes.readUnsignedByte();
-            //System.out.println(getOpcodeName(opcode));
+            // System.out.println(getOpcodeName(opcode));
             switch (opcode) {
                 case Const.TABLESWITCH:
                 case Const.LOOKUPSWITCH:
-                    //bytes.readByte(); // Skip already read byte
+                    // bytes.readByte(); // Skip already read byte
                     final int remainder = bytes.getIndex() % 4;
                     final int no_pad_bytes = (remainder == 0) ? 0 : 4 - remainder;
                     int default_offset;
@@ -450,7 +512,7 @@ final class CodeHTML {
                         default_offset += offset;
                         gotoSet.set(default_offset);
                         for (int j = 0; j < npairs; j++) {
-//                            int match = bytes.readInt();
+                            //                            int match = bytes.readInt();
                             bytes.readInt();
                             index = offset + bytes.readInt();
                             gotoSet.set(index);
@@ -475,13 +537,13 @@ final class CodeHTML {
                 case Const.IF_ICMPLT:
                 case Const.IF_ICMPNE:
                 case Const.JSR:
-                    //bytes.readByte(); // Skip already read byte
+                    // bytes.readByte(); // Skip already read byte
                     index = bytes.getIndex() + bytes.readShort() - 1;
                     gotoSet.set(index);
                     break;
                 case Const.GOTO_W:
                 case Const.JSR_W:
-                    //bytes.readByte(); // Skip already read byte
+                    // bytes.readByte(); // Skip already read byte
                     index = bytes.getIndex() + bytes.readInt() - 1;
                     gotoSet.set(index);
                     break;
@@ -492,11 +554,8 @@ final class CodeHTML {
         }
     }
 
-
-    /**
-     * Write a single method with the byte code associated with it.
-     */
-    private void writeMethod( final Method method, final int method_number ) throws IOException {
+    /** Write a single method with the byte code associated with it. */
+    private void writeMethod(final Method method, final int method_number) throws IOException {
         // Get raw signature
         final String signature = method.getSignature();
         // Get array of strings containing the argument types
@@ -511,10 +570,21 @@ final class CodeHTML {
         access = Utility.replace(access, " ", "&nbsp;");
         // Get the method's attributes, the Code Attribute in particular
         final Attribute[] attributes = method.getAttributes();
-        file.print("<P><B><FONT COLOR=\"#FF0000\">" + access + "</FONT>&nbsp;" + "<A NAME=method"
-                + method_number + ">" + Class2HTML.referenceType(type) + "</A>&nbsp<A HREF=\""
-                + className + "_methods.html#method" + method_number + "\" TARGET=Methods>"
-                + html_name + "</A>(");
+        file.print(
+                "<P><B><FONT COLOR=\"#FF0000\">"
+                        + access
+                        + "</FONT>&nbsp;"
+                        + "<A NAME=method"
+                        + method_number
+                        + ">"
+                        + Class2HTML.referenceType(type)
+                        + "</A>&nbsp<A HREF=\""
+                        + className
+                        + "_methods.html#method"
+                        + method_number
+                        + "\" TARGET=Methods>"
+                        + html_name
+                        + "</A>(");
         for (int i = 0; i < args.length; i++) {
             file.print(Class2HTML.referenceType(args[i]));
             if (i < args.length - 1) {
@@ -529,9 +599,16 @@ final class CodeHTML {
             for (int i = 0; i < attributes.length; i++) {
                 byte tag = attributes[i].getTag();
                 if (tag != Const.ATTR_UNKNOWN) {
-                    file.print("<LI><A HREF=\"" + className + "_attributes.html#method"
-                            + method_number + "@" + i + "\" TARGET=Attributes>"
-                            + Const.getAttributeName(tag) + "</A></LI>\n");
+                    file.print(
+                            "<LI><A HREF=\""
+                                    + className
+                                    + "_attributes.html#method"
+                                    + method_number
+                                    + "@"
+                                    + i
+                                    + "\" TARGET=Attributes>"
+                                    + Const.getAttributeName(tag)
+                                    + "</A></LI>\n");
                 } else {
                     file.print("<LI>" + attributes[i] + "</LI>");
                 }
@@ -542,9 +619,19 @@ final class CodeHTML {
                     file.print("<UL>");
                     for (int j = 0; j < attributes2.length; j++) {
                         tag = attributes2[j].getTag();
-                        file.print("<LI><A HREF=\"" + className + "_attributes.html#" + "method"
-                                + method_number + "@" + i + "@" + j + "\" TARGET=Attributes>"
-                                + Const.getAttributeName(tag) + "</A></LI>\n");
+                        file.print(
+                                "<LI><A HREF=\""
+                                        + className
+                                        + "_attributes.html#"
+                                        + "method"
+                                        + method_number
+                                        + "@"
+                                        + i
+                                        + "@"
+                                        + j
+                                        + "\" TARGET=Attributes>"
+                                        + Const.getAttributeName(tag)
+                                        + "</A></LI>\n");
                     }
                     file.print("</UL>");
                 }
@@ -552,15 +639,16 @@ final class CodeHTML {
             file.println("</UL>");
         }
         if (code != null) { // No code, an abstract method, e.g.
-            //System.out.println(name + "\n" + Utility.codeToString(code, constantPool, 0, -1));
+            // System.out.println(name + "\n" + Utility.codeToString(code, constantPool, 0, -1));
             // Print the byte code
             try (ByteSequence stream = new ByteSequence(code)) {
                 stream.mark(stream.available());
                 findGotos(stream, c);
                 stream.reset();
-                file.println("<TABLE BORDER=0><TR><TH ALIGN=LEFT>Byte<BR>offset</TH>"
-                        + "<TH ALIGN=LEFT>Instruction</TH><TH ALIGN=LEFT>Argument</TH>");
-                for (; stream.available() > 0;) {
+                file.println(
+                        "<TABLE BORDER=0><TR><TH ALIGN=LEFT>Byte<BR>offset</TH>"
+                                + "<TH ALIGN=LEFT>Instruction</TH><TH ALIGN=LEFT>Argument</TH>");
+                for (; stream.available() > 0; ) {
                     final int offset = stream.getIndex();
                     final String str = codeToHTML(stream, method_number);
                     String anchor = "";
@@ -573,11 +661,19 @@ final class CodeHTML {
                     }
                     String anchor2;
                     if (stream.getIndex() == code.length) {
-                        anchor2 = "<A NAME=code" + method_number + "@" + code.length + ">" + offset + "</A>";
+                        anchor2 =
+                                "<A NAME=code"
+                                        + method_number
+                                        + "@"
+                                        + code.length
+                                        + ">"
+                                        + offset
+                                        + "</A>";
                     } else {
                         anchor2 = "" + offset;
                     }
-                    file.println("<TR VALIGN=TOP><TD>" + anchor2 + "</TD><TD>" + anchor + str + "</TR>");
+                    file.println(
+                            "<TR VALIGN=TOP><TD>" + anchor2 + "</TD><TD>" + anchor + str + "</TR>");
                 }
             }
             // Mark last line, may be targetted from Attributes window

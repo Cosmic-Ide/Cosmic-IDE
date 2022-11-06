@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ListView
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import com.google.android.material.color.MaterialColors
 import io.github.rosemoe.sora.widget.component.CompletionLayout
@@ -47,7 +46,6 @@ class CustomCompletionLayout : CompletionLayout {
     }
 
     override fun setLoading(state: Boolean) {
-        
     }
 
     override fun getCompletionList(): ListView {

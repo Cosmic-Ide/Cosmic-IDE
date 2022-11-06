@@ -22,8 +22,8 @@
 package com.sun.org.apache.bcel.internal.generic;
 
 /**
- * Denote that a class targets InstructionHandles within an InstructionList. Namely
- * the following implementers:
+ * Denote that a class targets InstructionHandles within an InstructionList. Namely the following
+ * implementers:
  *
  * @see BranchHandle
  * @see LocalVariableGen
@@ -31,9 +31,7 @@ package com.sun.org.apache.bcel.internal.generic;
  */
 public interface InstructionTargeter {
 
-    /**
-     * Checks whether this targeter targets the specified instruction handle.
-     */
+    /** Checks whether this targeter targets the specified instruction handle. */
     boolean containsTarget(InstructionHandle ih);
 
     /**

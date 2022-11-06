@@ -24,39 +24,31 @@ package com.sun.org.apache.xerces.internal.impl.dtd.models;
  * A content model node.
  *
  * @xerces.internal
- *
  */
-public abstract class CMNode
-{
+public abstract class CMNode {
     // -------------------------------------------------------------------
     //  Constructors
     // -------------------------------------------------------------------
-    public CMNode(int type)
-    {
+    public CMNode(int type) {
         fType = type;
     }
-
 
     // -------------------------------------------------------------------
     //  Package, abstract methods
     // -------------------------------------------------------------------
     // made this public so it could be implemented and used outside this package -neilg.
-    public abstract boolean isNullable() ;
-
+    public abstract boolean isNullable();
 
     // -------------------------------------------------------------------
     //  Package final methods
     // -------------------------------------------------------------------
-    public final int type()
-    {
+    public final int type() {
         return fType;
     }
 
     // made this public so it could be implemented and used outside this package -neilg.
-    public final CMStateSet firstPos()
-    {
-        if (fFirstPos == null)
-        {
+    public final CMStateSet firstPos() {
+        if (fFirstPos == null) {
             fFirstPos = new CMStateSet(fMaxStates);
             calcFirstPos(fFirstPos);
         }
@@ -64,23 +56,19 @@ public abstract class CMNode
     }
 
     // made this public so it could be implemented and used outside this package -neilg.
-    public final CMStateSet lastPos()
-    {
-        if (fLastPos == null)
-        {
+    public final CMStateSet lastPos() {
+        if (fLastPos == null) {
             fLastPos = new CMStateSet(fMaxStates);
             calcLastPos(fLastPos);
         }
         return fLastPos;
     }
 
-    final void setFollowPos(CMStateSet setToAdopt)
-    {
+    final void setFollowPos(CMStateSet setToAdopt) {
         fFollowPos = setToAdopt;
     }
 
-    public final void setMaxStates(int maxStates)
-    {
+    public final void setMaxStates(int maxStates) {
         fMaxStates = maxStates;
     }
 
@@ -93,18 +81,16 @@ public abstract class CMNode
     }
 
     /**
-     * Allows the user to set arbitrary data on this content model
-     * node. This is used by the a{n,m} optimization that runs
-     * in constant space.
+     * Allows the user to set arbitrary data on this content model node. This is used by the a{n,m}
+     * optimization that runs in constant space.
      */
     public void setUserData(Object userData) {
         fUserData = userData;
     }
 
     /**
-     * Allows the user to get arbitrary data set on this content
-     * model node. This is used by the a{n,m} optimization that runs
-     * in constant space.
+     * Allows the user to get arbitrary data set on this content model node. This is used by the
+     * a{n,m} optimization that runs in constant space.
      */
     public Object getUserData() {
         return fUserData;
@@ -113,10 +99,9 @@ public abstract class CMNode
     // -------------------------------------------------------------------
     //  Protected, abstract methods
     // -------------------------------------------------------------------
-    protected abstract void calcFirstPos(CMStateSet toSet) ;
+    protected abstract void calcFirstPos(CMStateSet toSet);
 
-    protected abstract void calcLastPos(CMStateSet toSet) ;
-
+    protected abstract void calcLastPos(CMStateSet toSet);
 
     // -------------------------------------------------------------------
     //  Private data members
@@ -148,16 +133,17 @@ public abstract class CMNode
     //      init to to -1 so it will cause an error if its used without
     //      being initialized.
     // -------------------------------------------------------------------
-    private final int  fType;
-    private CMStateSet fFirstPos   = null;
-    private CMStateSet fFollowPos  = null;
-    private CMStateSet fLastPos    = null;
-    private int        fMaxStates  = -1;
-    private Object      fUserData   = null;
+    private final int fType;
+    private CMStateSet fFirstPos = null;
+    private CMStateSet fFollowPos = null;
+    private CMStateSet fLastPos = null;
+    private int fMaxStates = -1;
+    private Object fUserData = null;
     /*
      * This boolean is true if the model represented by the CMNode does not represent
      * the true model from the schema, but has had its min/maxOccurs modified for a
      * more compact representation (for purposes of UPA).
      */
     private boolean fCompactedForUPA = false;
-};
+}
+;

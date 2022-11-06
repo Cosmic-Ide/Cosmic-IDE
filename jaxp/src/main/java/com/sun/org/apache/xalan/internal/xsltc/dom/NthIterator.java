@@ -48,13 +48,11 @@ public final class NthIterator extends DTMAxisIteratorBase {
     public DTMAxisIterator cloneIterator() {
         try {
             final NthIterator clone = (NthIterator) super.clone();
-            clone._source = _source.cloneIterator();    // resets source
+            clone._source = _source.cloneIterator(); // resets source
             clone._isRestartable = false;
             return clone;
-        }
-        catch (CloneNotSupportedException e) {
-            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR,
-                                      e.toString());
+        } catch (CloneNotSupportedException e) {
+            BasisLibrary.runTimeError(BasisLibrary.ITERATOR_CLONE_ERR, e.toString());
             return null;
         }
     }

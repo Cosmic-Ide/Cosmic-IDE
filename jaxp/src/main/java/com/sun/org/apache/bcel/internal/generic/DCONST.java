@@ -31,14 +31,8 @@ public class DCONST extends Instruction implements ConstantPushInstruction {
 
     private double value;
 
-
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    DCONST() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    DCONST() {}
 
     public DCONST(final double f) {
         super(com.sun.org.apache.bcel.internal.Const.DCONST_0, (short) 1);
@@ -52,31 +46,28 @@ public class DCONST extends Instruction implements ConstantPushInstruction {
         value = f;
     }
 
-
     @Override
     public Number getValue() {
         return value;
     }
 
-
-    /** @return Type.DOUBLE
+    /**
+     * @return Type.DOUBLE
      */
     @Override
-    public Type getType( final ConstantPoolGen cp ) {
+    public Type getType(final ConstantPoolGen cp) {
         return Type.DOUBLE;
     }
 
-
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
      * i.e., the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitPushInstruction(this);
         v.visitStackProducer(this);
         v.visitTypedInstruction(this);

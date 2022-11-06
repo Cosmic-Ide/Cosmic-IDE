@@ -24,10 +24,9 @@ package com.sun.org.apache.xerces.internal.util;
 /**
  * A simple integer based stack.
  *
- * moved to com.sun.org.apache.xerces.internal.util by neilg to support the
- * XPathMatcher.
- * @author  Andy Clark, IBM
+ * <p>moved to com.sun.org.apache.xerces.internal.util by neilg to support the XPathMatcher.
  *
+ * @author Andy Clark, IBM
  */
 public final class IntStack {
 
@@ -106,12 +105,10 @@ public final class IntStack {
     private void ensureCapacity(int size) {
         if (fData == null) {
             fData = new int[32];
-        }
-        else if (fData.length <= size) {
+        } else if (fData.length <= size) {
             int[] newdata = new int[fData.length * 2];
             System.arraycopy(fData, 0, newdata, 0, fData.length);
             fData = newdata;
         }
     }
-
 } // class IntStack

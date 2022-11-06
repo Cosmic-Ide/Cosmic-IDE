@@ -28,11 +28,9 @@ import com.sun.org.apache.xerces.internal.impl.dtd.models.CMStateSet;
  * Content model leaf node.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
  */
-public class XSCMLeaf
-    extends CMNode {
+public class XSCMLeaf extends CMNode {
 
     //
     // Data
@@ -41,15 +39,12 @@ public class XSCMLeaf
     /** This is the leaf: element decl or wildcard decl. */
     private Object fLeaf = null;
 
-    /**
-     * Identify the particle: for UPA checking
-     */
+    /** Identify the particle: for UPA checking */
     private int fParticleId = -1;
 
     /**
-     * Part of the algorithm to convert a regex directly to a DFA
-     * numbers each leaf sequentially. If its -1, that means its an
-     * epsilon node. Zero and greater are non-epsilon positions.
+     * Part of the algorithm to convert a regex directly to a DFA numbers each leaf sequentially. If
+     * its -1, that means its an epsilon node. Zero and greater are non-epsilon positions.
      */
     private int fPosition = -1;
 
@@ -58,7 +53,7 @@ public class XSCMLeaf
     //
 
     /** Constructs a content model leaf. */
-    public XSCMLeaf(int type, Object leaf, int id, int position)  {
+    public XSCMLeaf(int type, Object leaf, int id, int position) {
         super(type);
 
         // Store the element index and position
@@ -101,12 +96,7 @@ public class XSCMLeaf
     public String toString() {
         StringBuffer strRet = new StringBuffer(fLeaf.toString());
         if (fPosition >= 0) {
-            strRet.append
-            (
-                " (Pos:"
-                + Integer.toString(fPosition)
-                + ")"
-            );
+            strRet.append(" (Pos:" + Integer.toString(fPosition) + ")");
         }
         return strRet.toString();
     }
@@ -115,22 +105,17 @@ public class XSCMLeaf
 
     protected void calcFirstPos(CMStateSet toSet) {
         // If we are an epsilon node, then the first pos is an empty set
-        if (fPosition == -1)
-            toSet.zeroBits();
+        if (fPosition == -1) toSet.zeroBits();
 
         // Otherwise, its just the one bit of our position
-        else
-            toSet.setBit(fPosition);
+        else toSet.setBit(fPosition);
     }
 
     protected void calcLastPos(CMStateSet toSet) {
         // If we are an epsilon node, then the last pos is an empty set
-        if (fPosition == -1)
-            toSet.zeroBits();
+        if (fPosition == -1) toSet.zeroBits();
 
         // Otherwise, its just the one bit of our position
-        else
-            toSet.setBit(fPosition);
+        else toSet.setBit(fPosition);
     }
-
 } // class XSCMLeaf

@@ -25,37 +25,29 @@
 
 package org.xml.sax;
 
-
 /**
  * Exception class for an unrecognized identifier.
  *
- * <p>An XMLReader will throw this exception when it finds an
- * unrecognized feature or property identifier; SAX applications and
- * extensions may use this class for other, similar purposes.</p>
+ * <p>An XMLReader will throw this exception when it finds an unrecognized feature or property
+ * identifier; SAX applications and extensions may use this class for other, similar purposes.
  *
  * @since 1.4, SAX 2.0
  * @author David Megginson
  * @see org.xml.sax.SAXNotSupportedException
  */
-public class SAXNotRecognizedException extends SAXException
-{
+public class SAXNotRecognizedException extends SAXException {
 
-    /**
-     * Default constructor.
-     */
-    public SAXNotRecognizedException ()
-    {
+    /** Default constructor. */
+    public SAXNotRecognizedException() {
         super();
     }
-
 
     /**
      * Construct a new exception with the given message.
      *
      * @param message The text message of the exception.
      */
-    public SAXNotRecognizedException (String message)
-    {
+    public SAXNotRecognizedException(String message) {
         super(message);
     }
 

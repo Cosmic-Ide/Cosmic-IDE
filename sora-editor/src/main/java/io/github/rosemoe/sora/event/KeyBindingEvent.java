@@ -30,18 +30,14 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 /**
  * Keybinding event in editor.
  *
- * <p> This is different from {@link EditorKeyEvent}.
- * An {@code EditorKeyEvent} is dispatched by the editor whenever there is a key event.
- * However, a {@code KeyBindingEvent} is dispatched only for keybindings i.e.
- * when multiple keys are pressed at once.
- * For example, <b>Ctrl + X, Ctrl + D, Ctrl + Alt + O, etc.</b>
- * </p>
+ * <p>This is different from {@link EditorKeyEvent}. An {@code EditorKeyEvent} is dispatched by the
+ * editor whenever there is a key event. However, a {@code KeyBindingEvent} is dispatched only for
+ * keybindings i.e. when multiple keys are pressed at once. For example, <b>Ctrl + X, Ctrl + D, Ctrl
+ * + Alt + O, etc.</b>
  *
- * <p>
- * This event is dispatched <strong>after</strong> the {@link EditorKeyEvent}.
- * So, if any {@code EditorKeyEvent} consumes the event (sets the {@link InterceptTarget#TARGET_EDITOR} flag),
- * {@code KeyBindingEvent} will not be called.
- * </p>
+ * <p>This event is dispatched <strong>after</strong> the {@link EditorKeyEvent}. So, if any {@code
+ * EditorKeyEvent} consumes the event (sets the {@link InterceptTarget#TARGET_EDITOR} flag), {@code
+ * KeyBindingEvent} will not be called.
  *
  * @author Akash Yadav
  */
@@ -52,13 +48,15 @@ public class KeyBindingEvent extends EditorKeyEvent {
     /**
      * Creates a new {@code KeyBindingEvent} instance.
      *
-     * @param editor             The editor.
-     * @param src                The source {@link KeyEvent}.
-     * @param keyCode            The key code.
-     * @param type               The key event type.
-     * @param editorAbleToHandle <code>true</code> if the editor can handle this event, <code>false</code> otherwise.
+     * @param editor The editor.
+     * @param src The source {@link KeyEvent}.
+     * @param keyCode The key code.
+     * @param type The key event type.
+     * @param editorAbleToHandle <code>true</code> if the editor can handle this event, <code>false
+     *     </code> otherwise.
      */
-    public KeyBindingEvent(CodeEditor editor, KeyEvent src, Type type, int keyCode, boolean editorAbleToHandle) {
+    public KeyBindingEvent(
+            CodeEditor editor, KeyEvent src, Type type, int keyCode, boolean editorAbleToHandle) {
         super(editor, src, type);
         this.editorAbleToHandle = editorAbleToHandle;
     }
@@ -71,5 +69,4 @@ public class KeyBindingEvent extends EditorKeyEvent {
     public boolean canEditorHandle() {
         return this.editorAbleToHandle;
     }
-
 }

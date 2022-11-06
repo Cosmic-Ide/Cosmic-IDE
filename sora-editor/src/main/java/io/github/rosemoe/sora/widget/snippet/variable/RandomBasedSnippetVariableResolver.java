@@ -33,9 +33,7 @@ public class RandomBasedSnippetVariableResolver implements ISnippetVariableResol
     @NonNull
     @Override
     public String[] getResolvableNames() {
-        return new String[]{
-                "RANDOM", "RANDOM_HEX", "UUID"
-        };
+        return new String[] {"RANDOM", "RANDOM_HEX", "UUID"};
     }
 
     @NonNull

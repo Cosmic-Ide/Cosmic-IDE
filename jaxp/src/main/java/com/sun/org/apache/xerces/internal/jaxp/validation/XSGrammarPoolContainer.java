@@ -24,34 +24,32 @@ package com.sun.org.apache.xerces.internal.jaxp.validation;
 import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
 
 /**
- * <p>A container for grammar pools which only contain schema grammars.</p>
+ * A container for grammar pools which only contain schema grammars.
  *
  * @author Michael Glavassevich, IBM
  */
 public interface XSGrammarPoolContainer {
 
     /**
-     * <p>Returns the grammar pool contained inside the container.</p>
+     * Returns the grammar pool contained inside the container.
      *
      * @return the grammar pool contained inside the container
      */
     public XMLGrammarPool getGrammarPool();
 
     /**
-     * <p>Returns whether the schema components contained in this object
-     * can be considered to be a fully composed schema and should be
-     * used to the exclusion of other schema components which may be
-     * present elsewhere.</p>
+     * Returns whether the schema components contained in this object can be considered to be a
+     * fully composed schema and should be used to the exclusion of other schema components which
+     * may be present elsewhere.
      *
-     * @return whether the schema components contained in this object
-     * can be considered to be a fully composed schema
+     * @return whether the schema components contained in this object can be considered to be a
+     *     fully composed schema
      */
     public boolean isFullyComposed();
 
     /**
-     * Returns the initial value of a feature for validators created
-     * using this grammar pool container or null if the validators
-     * should use the default value.
+     * Returns the initial value of a feature for validators created using this grammar pool
+     * container or null if the validators should use the default value.
      */
     public Boolean getFeature(String featureId);
 
@@ -61,9 +59,8 @@ public interface XSGrammarPoolContainer {
     public void setFeature(String featureId, boolean state);
 
     /**
-     * Returns the initial value of a property for validators created
-     * using this grammar pool container or null if the validators
-     * should use the default value.
+     * Returns the initial value of a property for validators created using this grammar pool
+     * container or null if the validators should use the default value.
      */
     public Object getProperty(String propertyId);
 
@@ -71,5 +68,4 @@ public interface XSGrammarPoolContainer {
      * Set a property on the schema
      */
     public void setProperty(String propertyId, Object state);
-
 }

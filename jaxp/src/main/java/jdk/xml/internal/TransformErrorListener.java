@@ -29,10 +29,9 @@ import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
 /**
- * Implements an ErrorListener for use by the JDK as the default ErrorListener.
- * For compatibility, this implementation retains the behavior as was implemented
- * by TransformerFactoryImpl and TransformerImpl where both the error and
- * fatalError methods re-throw the exception.
+ * Implements an ErrorListener for use by the JDK as the default ErrorListener. For compatibility,
+ * this implementation retains the behavior as was implemented by TransformerFactoryImpl and
+ * TransformerImpl where both the error and fatalError methods re-throw the exception.
  */
 public class TransformErrorListener implements ErrorListener {
     /**
@@ -42,24 +41,19 @@ public class TransformErrorListener implements ErrorListener {
      * @throws TransformerException not thrown in this implementation
      */
     @Override
-    public void warning(TransformerException e)
-        throws TransformerException
-    {
+    public void warning(TransformerException e) throws TransformerException {
         // no op
     }
 
     /**
-     * Receives notification of an error.
-     * The transformer may continue the process if the error is recoverable.
-     * It may decide not to if it can not continue after the error.
+     * Receives notification of an error. The transformer may continue the process if the error is
+     * recoverable. It may decide not to if it can not continue after the error.
      *
      * @param e The error information encapsulated in a TransformerException.
      * @throws TransformerException re-throws the exception.
      */
     @Override
-    public void error(TransformerException e)
-        throws TransformerException
-    {
+    public void error(TransformerException e) throws TransformerException {
         throw e;
     }
 
@@ -70,9 +64,7 @@ public class TransformErrorListener implements ErrorListener {
      * @throws TransformerException re-throws the exception.
      */
     @Override
-    public void fatalError(TransformerException e)
-        throws TransformerException
-    {
+    public void fatalError(TransformerException e) throws TransformerException {
         throw e;
     }
 }

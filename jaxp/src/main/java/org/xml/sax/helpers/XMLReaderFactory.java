@@ -25,6 +25,11 @@
 
 package org.xml.sax.helpers;
 
+import jdk.xml.internal.SecuritySupport;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,16 +40,12 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
-import jdk.xml.internal.SecuritySupport;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
 
 /**
  * Factory for creating an XML reader.
  *
- * <p>This class contains static methods for creating an XML reader
- * from an explicit class name, or based on runtime defaults:
+ * <p>This class contains static methods for creating an XML reader from an explicit class name, or
+ * based on runtime defaults:
  *
  * <pre>
  * try {
@@ -54,84 +55,68 @@ import org.xml.sax.XMLReader;
  * }
  * </pre>
  *
- * <p><strong>Note to Distributions bundled with parsers:</strong>
- * You should modify the implementation of the no-arguments
- * <em>createXMLReader</em> to handle cases where the external
- * configuration mechanisms aren't set up.  That method should do its
- * best to return a parser when one is in the class path, even when
- * nothing bound its class name to {@code org.xml.sax.driver} so
+ * <p><strong>Note to Distributions bundled with parsers:</strong> You should modify the
+ * implementation of the no-arguments <em>createXMLReader</em> to handle cases where the external
+ * configuration mechanisms aren't set up. That method should do its best to return a parser when
+ * one is in the class path, even when nothing bound its class name to {@code org.xml.sax.driver} so
  * those configuration mechanisms would see it.
  *
  * @since 1.4, SAX 2.0
  * @author David Megginson, David Brownell
  * @version 2.0.1 (sax2r2)
- *
- * @deprecated It is recommended to use {@link javax.xml.parsers.SAXParserFactory}
- * instead.
+ * @deprecated It is recommended to use {@link javax.xml.parsers.SAXParserFactory} instead.
  */
-@Deprecated(since="9")
-final public class XMLReaderFactory
-{
+@Deprecated(since = "9")
+public final class XMLReaderFactory {
     /**
      * Private constructor.
      *
      * <p>This constructor prevents the class from being instantiated.
      */
-    private XMLReaderFactory ()
-    {
-    }
+    private XMLReaderFactory() {}
 
     private static final String property = "org.xml.sax.driver";
 
     /**
-     * Obtains a new instance of a {@link org.xml.sax.XMLReader}.
-     * This method uses the following ordered lookup procedure to find and load
-     * the {@link org.xml.sax.XMLReader} implementation class:
+     * Obtains a new instance of a {@link org.xml.sax.XMLReader}. This method uses the following
+     * ordered lookup procedure to find and load the {@link org.xml.sax.XMLReader} implementation
+     * class:
+     *
      * <ol>
-     * <li>If the system property {@code org.xml.sax.driver}
-     * has a value, that is used as an XMLReader class name. </li>
-     * <li>
-     * Use the service-provider loading facility, defined by the
-     * {@link java.util.ServiceLoader} class, to attempt to locate and load an
-     * implementation of the service {@link org.xml.sax.XMLReader} by using the
-     * {@linkplain java.lang.Thread#getContextClassLoader() current thread's context class loader}.
-     * If the context class loader is null, the
-     * {@linkplain ClassLoader#getSystemClassLoader() system class loader} will
-     * be used.
-     * </li>
-     * <li>
-     * Deprecated. Look for a class name in the {@code META-INF/services/org.xml.sax.driver}
-     * file in a jar file available to the runtime.</li>
-     * <li>
-     * <p>
-     * Otherwise, the system-default implementation is returned.
-     * </li>
+     *   <li>If the system property {@code org.xml.sax.driver} has a value, that is used as an
+     *       XMLReader class name.
+     *   <li>Use the service-provider loading facility, defined by the {@link
+     *       java.util.ServiceLoader} class, to attempt to locate and load an implementation of the
+     *       service {@link org.xml.sax.XMLReader} by using the {@linkplain
+     *       java.lang.Thread#getContextClassLoader() current thread's context class loader}. If the
+     *       context class loader is null, the {@linkplain ClassLoader#getSystemClassLoader() system
+     *       class loader} will be used.
+     *   <li>Deprecated. Look for a class name in the {@code META-INF/services/org.xml.sax.driver}
+     *       file in a jar file available to the runtime.
+     *   <li>
+     *       <p>Otherwise, the system-default implementation is returned.
      * </ol>
      *
-     * @apiNote
-     * The process that looks for a class name in the
-     * {@code META-INF/services/org.xml.sax.driver} file in a jar file does not
-     * conform to the specification of the service-provider loading facility
-     * as defined in {@link java.util.ServiceLoader} and therefore does not
-     * support modularization. It is deprecated as of Java SE 9 and subject to
-     * removal in a future release.
-     *
+     * @apiNote The process that looks for a class name in the {@code
+     *     META-INF/services/org.xml.sax.driver} file in a jar file does not conform to the
+     *     specification of the service-provider loading facility as defined in {@link
+     *     java.util.ServiceLoader} and therefore does not support modularization. It is deprecated
+     *     as of Java SE 9 and subject to removal in a future release.
      * @return a new XMLReader.
-     * @throws org.xml.sax.SAXException If no default XMLReader class
-     *            can be identified and instantiated.
+     * @throws org.xml.sax.SAXException If no default XMLReader class can be identified and
+     *     instantiated.
      * @see #createXMLReader(java.lang.String)
      */
-    public static XMLReader createXMLReader ()
-        throws SAXException
-    {
-        String          className = null;
-        ClassLoader     cl = SecuritySupport.getClassLoader();
+    public static XMLReader createXMLReader() throws SAXException {
+        String className = null;
+        ClassLoader cl = SecuritySupport.getClassLoader();
 
         // 1. try the JVM-instance-wide system property
         try {
             className = SecuritySupport.getSystemProperty(property);
+        } catch (RuntimeException e) {
+            /* continue searching */
         }
-        catch (RuntimeException e) { /* continue searching */ }
 
         // 2. try the ServiceLoader
         if (className == null) {
@@ -152,55 +137,51 @@ final public class XMLReaderFactory
             return new com.sun.org.apache.xerces.internal.parsers.SAXParser();
         }
 
-        return loadClass (cl, className);
+        return loadClass(cl, className);
     }
-
 
     /**
      * Attempt to create an XML reader from a class name.
      *
-     * <p>Given a class name, this method attempts to load
-     * and instantiate the class as an XML reader.
+     * <p>Given a class name, this method attempts to load and instantiate the class as an XML
+     * reader.
      *
-     * <p>Note that this method will not be usable in environments where
-     * the caller (perhaps an applet) is not permitted to load classes
-     * dynamically.
+     * <p>Note that this method will not be usable in environments where the caller (perhaps an
+     * applet) is not permitted to load classes dynamically.
      *
      * @param className a class name
      * @return A new XML reader.
-     * @throws org.xml.sax.SAXException If the class cannot be
-     *            loaded, instantiated, and cast to XMLReader.
+     * @throws org.xml.sax.SAXException If the class cannot be loaded, instantiated, and cast to
+     *     XMLReader.
      * @see #createXMLReader()
      */
-    public static XMLReader createXMLReader (String className)
-        throws SAXException
-    {
-        return loadClass (SecuritySupport.getClassLoader(), className);
+    public static XMLReader createXMLReader(String className) throws SAXException {
+        return loadClass(SecuritySupport.getClassLoader(), className);
     }
 
-    private static XMLReader loadClass (ClassLoader loader, String className)
-    throws SAXException
-    {
+    private static XMLReader loadClass(ClassLoader loader, String className) throws SAXException {
         try {
-            return NewInstance.newInstance (XMLReader.class, loader, className);
+            return NewInstance.newInstance(XMLReader.class, loader, className);
         } catch (ClassNotFoundException e1) {
-            throw new SAXException("SAX2 driver class " + className +
-                                   " not found", e1);
+            throw new SAXException("SAX2 driver class " + className + " not found", e1);
         } catch (IllegalAccessException e2) {
-            throw new SAXException("SAX2 driver class " + className +
-                                   " found but cannot be loaded", e2);
+            throw new SAXException(
+                    "SAX2 driver class " + className + " found but cannot be loaded", e2);
         } catch (InstantiationException e3) {
-            throw new SAXException("SAX2 driver class " + className +
-           " loaded but cannot be instantiated (no empty public constructor?)",
-                                   e3);
+            throw new SAXException(
+                    "SAX2 driver class "
+                            + className
+                            + " loaded but cannot be instantiated (no empty public constructor?)",
+                    e3);
         } catch (ClassCastException e4) {
-            throw new SAXException("SAX2 driver class " + className +
-                                   " does not implement XMLReader", e4);
+            throw new SAXException(
+                    "SAX2 driver class " + className + " does not implement XMLReader", e4);
         }
     }
 
     /**
      * Locates a provider by directly reading the jar service file.
+     *
      * @param loader the ClassLoader to be used to read the service file
      * @return the name of the provider, or null if nothing is found
      */
@@ -209,7 +190,7 @@ final public class XMLReaderFactory
         String clsFromJar = null;
         String service = "META-INF/services/" + property;
         InputStream in;
-        BufferedReader      reader;
+        BufferedReader reader;
 
         try {
             in = SecuritySupport.getResourceAsStream(cl, service);
@@ -220,9 +201,9 @@ final public class XMLReaderFactory
             }
 
             if (in != null) {
-                reader = new BufferedReader (new InputStreamReader (in, "UTF8"));
-                clsFromJar = reader.readLine ();
-                in.close ();
+                reader = new BufferedReader(new InputStreamReader(in, "UTF8"));
+                clsFromJar = reader.readLine();
+                in.close();
             }
         } catch (IOException e) {
         }
@@ -241,22 +222,22 @@ final public class XMLReaderFactory
             throws SAXException {
         ClassLoader cl = Objects.requireNonNull(loader);
         try {
-            return AccessController.doPrivileged((PrivilegedAction<T>) () -> {
-                final ServiceLoader<T> serviceLoader;
-                serviceLoader = ServiceLoader.load(type, cl);
-                final Iterator<T> iterator = serviceLoader.iterator();
-                if (iterator.hasNext()) {
-                    return iterator.next();
-                } else {
-                    return null;
-                }
-            });
-        } catch(ServiceConfigurationError e) {
-            final RuntimeException x = new RuntimeException(
-                    "Provider for " + type + " cannot be created", e);
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<T>)
+                            () -> {
+                                final ServiceLoader<T> serviceLoader;
+                                serviceLoader = ServiceLoader.load(type, cl);
+                                final Iterator<T> iterator = serviceLoader.iterator();
+                                if (iterator.hasNext()) {
+                                    return iterator.next();
+                                } else {
+                                    return null;
+                                }
+                            });
+        } catch (ServiceConfigurationError e) {
+            final RuntimeException x =
+                    new RuntimeException("Provider for " + type + " cannot be created", e);
             throw new SAXException("Provider for " + type + " cannot be created", x);
-
-          }
-      }
-
+        }
+    }
 }

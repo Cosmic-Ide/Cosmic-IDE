@@ -24,22 +24,16 @@
  */
 
 /**
- * Provides the interfaces for the Simple API for XML (SAX). Supports both
- * the SAX1 and SAX2 APIs.
+ * Provides the interfaces for the Simple API for XML (SAX). Supports both the SAX1 and SAX2 APIs.
  *
- * <h2> SAX2 Standard Feature Flags </h2>
+ * <h2>SAX2 Standard Feature Flags </h2>
  *
- * <p>
- * One of the essential characteristics of SAX2 is that it added
- * feature flags which can be used to examine and perhaps modify
- * parser modes, in particular modes such as validation.
- * Since features are identified by (absolute) URIs, anyone
- * can define such features.
- * Currently defined standard feature URIs have the prefix
- * <code>http://xml.org/sax/features/</code> before an identifier such as
- * <code>validation</code>.  Turn features on or off using
- * <em>setFeature</em>.  Those standard identifiers are:
- *
+ * <p>One of the essential characteristics of SAX2 is that it added feature flags which can be used
+ * to examine and perhaps modify parser modes, in particular modes such as validation. Since
+ * features are identified by (absolute) URIs, anyone can define such features. Currently defined
+ * standard feature URIs have the prefix <code>http://xml.org/sax/features/</code> before an
+ * identifier such as <code>validation</code>. Turn features on or off using <em>setFeature</em>.
+ * Those standard identifiers are:
  *
  * <table class="striped">
  *     <caption>Standard Features</caption>
@@ -232,33 +226,20 @@
  *     </tbody>
  * </table>
  *
- * <p>
- * Support for the default values of the
- * <em>namespaces</em> and <em>namespace-prefixes</em>
- * properties is required.
- * Support for any other feature flags is entirely optional.
+ * <p>Support for the default values of the <em>namespaces</em> and <em>namespace-prefixes</em>
+ * properties is required. Support for any other feature flags is entirely optional.
  *
+ * <p>For default values not specified by SAX2, each XMLReader implementation specifies its default,
+ * or may choose not to expose the feature flag. Unless otherwise specified here, implementations
+ * may support changing current values of these standard feature flags, but not while parsing.
  *
- * <p>
- * For default values not specified by SAX2,
- * each XMLReader implementation specifies its default,
- * or may choose not to expose the feature flag.
- * Unless otherwise specified here,
- * implementations may support changing current values
- * of these standard feature flags, but not while parsing.
+ * <h2>SAX2 Standard Handler and Property IDs </h2>
  *
- *
- * <h2> SAX2 Standard Handler and Property IDs </h2>
- *
- * <p>
- * For parser interface characteristics that are described
- * as objects, a separate namespace is defined.  The
- * objects in this namespace are again identified by URI, and
- * the standard property URIs have the prefix
- * <code>http://xml.org/sax/properties/</code> before an identifier such as
- * <code>lexical-handler</code> or
- * <code>dom-node</code>.  Manage those properties using
- * <em>setProperty()</em>.  Those identifiers are:
+ * <p>For parser interface characteristics that are described as objects, a separate namespace is
+ * defined. The objects in this namespace are again identified by URI, and the standard property
+ * URIs have the prefix <code>http://xml.org/sax/properties/</code> before an identifier such as
+ * <code>lexical-handler</code> or <code>dom-node</code>. Manage those properties using
+ * <em>setProperty()</em>. Those identifiers are:
  *
  * <table class="striped">
  *     <caption>Standard Property IDs</caption>
@@ -319,15 +300,11 @@
  *     </tbody>
  * </table>
  *
- * <p>
- * All of these standard properties are optional.
- * XMLReader implementations are not required to support them.
+ * <p>All of these standard properties are optional. XMLReader implementations are not required to
+ * support them.
  *
- * @apiNote The SAX API, originally developed at
- * <a href="http://www.saxproject.org">the SAX Project</a>,
- * has been defined by Java SE since 1.4.
- *
+ * @apiNote The SAX API, originally developed at <a href="http://www.saxproject.org">the SAX
+ *     Project</a>, has been defined by Java SE since 1.4.
  * @since 1.4
  */
-
 package org.xml.sax;

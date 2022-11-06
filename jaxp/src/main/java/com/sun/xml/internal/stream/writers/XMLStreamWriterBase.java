@@ -28,9 +28,7 @@ package com.sun.xml.internal.stream.writers;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-/**
- * Base class for shared methods among XMLStreamWriter implementations.
- */
+/** Base class for shared methods among XMLStreamWriter implementations. */
 public interface XMLStreamWriterBase extends XMLStreamWriter {
     /**
      * Writes the XML declaration.
@@ -41,7 +39,7 @@ public interface XMLStreamWriterBase extends XMLStreamWriter {
      * @param standaloneSet the flag indicating whether the standalone attribute is set
      * @throws XMLStreamException in case of an IOException
      */
-    public void writeStartDocument(String encoding, String version,
-            boolean standalone, boolean standaloneSet)
+    public void writeStartDocument(
+            String encoding, String version, boolean standalone, boolean standaloneSet)
             throws XMLStreamException;
 }

@@ -20,25 +20,24 @@
 package com.sun.org.apache.bcel.internal.classfile;
 
 import com.sun.org.apache.bcel.internal.Const;
+
+import jdk.xml.internal.SecuritySupport;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import jdk.xml.internal.SecuritySupport;
 
 /**
- * This class represents a table of line numbers for debugging
- * purposes. This attribute is used by the <em>Code</em> attribute. It
- * contains pairs of PCs and line numbers.
+ * This class represents a table of line numbers for debugging purposes. This attribute is used by
+ * the <em>Code</em> attribute. It contains pairs of PCs and line numbers.
  *
- * @see     Code
- * @see LineNumber
- * @LastModified: May 2021
+ * @see Code
+ * @see LineNumber @LastModified: May 2021
  */
 public final class LineNumberTable extends Attribute {
 
     private static final int MAX_LINE_LENGTH = 72;
     private LineNumber[] lineNumberTable; // Table of line/numbers pairs
-
 
     /*
      * Initialize from another object. Note that both objects use the same
@@ -48,14 +47,16 @@ public final class LineNumberTable extends Attribute {
         this(c.getNameIndex(), c.getLength(), c.getLineNumberTable(), c.getConstantPool());
     }
 
-
     /*
      * @param name_index Index of name
      * @param length Content length in bytes
      * @param lineNumberTable Table of line/numbers pairs
      * @param constant_pool Array of constants
      */
-    public LineNumberTable(final int name_index, final int length, final LineNumber[] line_number_table,
+    public LineNumberTable(
+            final int name_index,
+            final int length,
+            final LineNumber[] line_number_table,
             final ConstantPool constant_pool) {
         super(Const.ATTR_LINE_NUMBER_TABLE, name_index, length, constant_pool);
         this.lineNumberTable = line_number_table;
@@ -63,13 +64,18 @@ public final class LineNumberTable extends Attribute {
 
     /**
      * Construct object from input stream.
+     *
      * @param name_index Index of name
      * @param length Content length in bytes
      * @param input Input stream
      * @param constant_pool Array of constants
      * @throws IOException if an I/O Exception occurs in readUnsignedShort
      */
-    LineNumberTable(final int name_index, final int length, final DataInput input, final ConstantPool constant_pool)
+    LineNumberTable(
+            final int name_index,
+            final int length,
+            final DataInput input,
+            final ConstantPool constant_pool)
             throws IOException {
         this(name_index, length, (LineNumber[]) null, constant_pool);
         final int line_number_table_length = input.readUnsignedShort();
@@ -80,14 +86,14 @@ public final class LineNumberTable extends Attribute {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitLineNumberTable(this);
     }
 
@@ -98,7 +104,7 @@ public final class LineNumberTable extends Attribute {
      * @throws IOException if an I/O Exception occurs in writeShort
      */
     @Override
-    public void dump( final DataOutputStream file ) throws IOException {
+    public void dump(final DataOutputStream file) throws IOException {
         super.dump(file);
         file.writeShort(lineNumberTable.length);
         for (final LineNumber lineNumber : lineNumberTable) {
@@ -116,7 +122,7 @@ public final class LineNumberTable extends Attribute {
     /**
      * @param lineNumberTable the line number entries for this table
      */
-    public void setLineNumberTable( final LineNumber[] lineNumberTable ) {
+    public void setLineNumberTable(final LineNumber[] lineNumberTable) {
         this.lineNumberTable = lineNumberTable;
     }
 
@@ -149,7 +155,7 @@ public final class LineNumberTable extends Attribute {
      * @param pos byte code offset
      * @return corresponding line in source code
      */
-    public int getSourceLine( final int pos ) {
+    public int getSourceLine(final int pos) {
         int l = 0;
         int r = lineNumberTable.length - 1;
         if (r < 0) {
@@ -191,7 +197,7 @@ public final class LineNumberTable extends Attribute {
      * @return deep copy of this attribute
      */
     @Override
-    public Attribute copy( final ConstantPool _constant_pool ) {
+    public Attribute copy(final ConstantPool _constant_pool) {
         // TODO could use the lower level constructor and thereby allow
         // lineNumberTable to be made final
         final LineNumberTable c = (LineNumberTable) clone();
@@ -202,7 +208,6 @@ public final class LineNumberTable extends Attribute {
         c.setConstantPool(_constant_pool);
         return c;
     }
-
 
     public int getTableLength() {
         return lineNumberTable == null ? 0 : lineNumberTable.length;

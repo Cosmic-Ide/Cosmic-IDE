@@ -21,13 +21,10 @@
 
 package com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.util.Enumeration;
 
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
-import com.sun.org.apache.bcel.internal.generic.INVOKESPECIAL;
 import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
@@ -36,8 +33,8 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 
 final class ApplyImports extends Instruction {
 
-    private QName      _modeName;
-    private int        _precedence;
+    private QName _modeName;
+    private int _precedence;
 
     public void display(int indent) {
         indent(indent);
@@ -49,19 +46,16 @@ final class ApplyImports extends Instruction {
         }
     }
 
-    /**
-     * Returns true if this <xsl:apply-imports/> element has parameters
-     */
+    /** Returns true if this <xsl:apply-imports/> element has parameters */
     public boolean hasWithParams() {
         return hasContents();
     }
 
     /**
-     * Determine the lowest import precedence for any stylesheet imported
-     * or included by the stylesheet in which this <xsl:apply-imports/>
-     * element occured. The templates that are imported by the stylesheet in
-     * which this element occured will all have higher import precedence than
-     * the integer returned by this method.
+     * Determine the lowest import precedence for any stylesheet imported or included by the
+     * stylesheet in which this <xsl:apply-imports/> element occured. The templates that are
+     * imported by the stylesheet in which this element occured will all have higher import
+     * precedence than the integer returned by this method.
      */
     private int getMinPrecedence(int max) {
         // Move to root of include tree
@@ -73,9 +67,7 @@ final class ApplyImports extends Instruction {
         return includeRoot.getMinimumDescendantPrecedence();
     }
 
-    /**
-     * Parse the attributes and contents of an <xsl:apply-imports/> element.
-     */
+    /** Parse the attributes and contents of an <xsl:apply-imports/> element. */
     public void parseContents(Parser parser) {
         // Indicate to the top-level stylesheet that all templates must be
         // compiled into separate methods.
@@ -90,20 +82,18 @@ final class ApplyImports extends Instruction {
         // Get the method name for <xsl:apply-imports/> in this mode
         stylesheet = parser.getTopLevelStylesheet();
 
-        parseChildren(parser);  // with-params
+        parseChildren(parser); // with-params
     }
 
-    /**
-     * Type-check the attributes/contents of an <xsl:apply-imports/> element.
-     */
+    /** Type-check the attributes/contents of an <xsl:apply-imports/> element. */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
-        typeCheckContents(stable);              // with-params
+        typeCheckContents(stable); // with-params
         return Type.Void;
     }
 
     /**
-     * Translate call-template. A parameter frame is pushed only if
-     * some template in the stylesheet uses parameters.
+     * Translate call-template. A parameter frame is pushed only if some template in the stylesheet
+     * uses parameters.
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final Stylesheet stylesheet = classGen.getStylesheet();
@@ -114,17 +104,16 @@ final class ApplyImports extends Instruction {
         // Push the arguments that are passed to applyTemplates()
         il.append(classGen.loadTranslet());
         il.append(methodGen.loadDOM());
-    il.append(methodGen.loadIterator());
+        il.append(methodGen.loadIterator());
         il.append(methodGen.loadHandler());
-    il.append(methodGen.loadCurrentNode());
+        il.append(methodGen.loadCurrentNode());
 
         // Push a new parameter frame in case imported template might expect
         // parameters.  The apply-imports has nothing that it can pass.
         if (stylesheet.hasLocalParams()) {
             il.append(classGen.loadTranslet());
-            final int pushFrame = cpg.addMethodref(TRANSLET_CLASS,
-                                                   PUSH_PARAM_FRAME,
-                                                   PUSH_PARAM_FRAME_SIG);
+            final int pushFrame =
+                    cpg.addMethodref(TRANSLET_CLASS, PUSH_PARAM_FRAME, PUSH_PARAM_FRAME_SIG);
             il.append(new INVOKEVIRTUAL(pushFrame));
         }
 
@@ -141,19 +130,15 @@ final class ApplyImports extends Instruction {
         // Construct the translet class-name and the signature of the method
         final String className = classGen.getStylesheet().getClassName();
         final String signature = classGen.getApplyTemplatesSigForImport();
-        final int applyTemplates = cpg.addMethodref(className,
-                                                    functionName,
-                                                    signature);
+        final int applyTemplates = cpg.addMethodref(className, functionName, signature);
         il.append(new INVOKEVIRTUAL(applyTemplates));
 
         // Pop any parameter frame that was pushed above.
         if (stylesheet.hasLocalParams()) {
             il.append(classGen.loadTranslet());
-            final int pushFrame = cpg.addMethodref(TRANSLET_CLASS,
-                                                   POP_PARAM_FRAME,
-                                                   POP_PARAM_FRAME_SIG);
+            final int pushFrame =
+                    cpg.addMethodref(TRANSLET_CLASS, POP_PARAM_FRAME, POP_PARAM_FRAME_SIG);
             il.append(new INVOKEVIRTUAL(pushFrame));
         }
     }
-
 }

@@ -29,9 +29,9 @@ import com.sun.org.apache.bcel.internal.generic.Type;
  */
 final class SlotAllocator {
 
-    private int   _firstAvailableSlot;
-    private int   _size = 8;
-    private int   _free = 0;
+    private int _firstAvailableSlot;
+    private int _size = 8;
+    private int _free = 0;
     private int[] _slotsTaken = new int[_size];
 
     public void initialize(LocalVariableGen[] vars) {
@@ -39,9 +39,9 @@ final class SlotAllocator {
         int slot = 0, size, index;
 
         for (int i = 0; i < length; i++) {
-            size  = vars[i].getType().getSize();
+            size = vars[i].getType().getSize();
             index = vars[i].getIndex();
-            slot  = Math.max(slot, index + size);
+            slot = Math.max(slot, index + size);
         }
         _firstAvailableSlot = slot;
     }
@@ -53,25 +53,21 @@ final class SlotAllocator {
 
         if (_free + size > _size) {
             final int[] array = new int[_size *= 2];
-            for (int j = 0; j < limit; j++)
-                array[j] = _slotsTaken[j];
+            for (int j = 0; j < limit; j++) array[j] = _slotsTaken[j];
             _slotsTaken = array;
         }
 
         while (where < limit) {
             if (slot + size <= _slotsTaken[where]) {
                 // insert
-                for (int j = limit - 1; j >= where; j--)
-                    _slotsTaken[j + size] = _slotsTaken[j];
+                for (int j = limit - 1; j >= where; j--) _slotsTaken[j + size] = _slotsTaken[j];
                 break;
-            }
-            else {
+            } else {
                 slot = _slotsTaken[where++] + 1;
             }
         }
 
-        for (int j = 0; j < size; j++)
-            _slotsTaken[where + j] = slot + j;
+        for (int j = 0; j < size; j++) _slotsTaken[where + j] = slot + j;
 
         _free += size;
         return slot;
@@ -92,8 +88,15 @@ final class SlotAllocator {
                 return;
             }
         }
-        String state = "Variable slot allocation error"+
-                       "(size="+size+", slot="+slot+", limit="+limit+")";
+        String state =
+                "Variable slot allocation error"
+                        + "(size="
+                        + size
+                        + ", slot="
+                        + slot
+                        + ", limit="
+                        + limit
+                        + ")";
         ErrorMsg err = new ErrorMsg(ErrorMsg.INTERNAL_ERR, state);
         throw new Error(err.toString());
     }

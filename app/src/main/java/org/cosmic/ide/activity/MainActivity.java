@@ -8,17 +8,13 @@ import android.content.*;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -41,14 +37,12 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.App;
 import org.cosmic.ide.R;
-import org.cosmic.ide.ui.editor.adapter.PageAdapter;
 import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.activity.model.MainViewModel;
+import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.code.decompiler.FernFlowerDecompiler;
 import org.cosmic.ide.code.disassembler.JavapDisassembler;
 import org.cosmic.ide.code.formatter.*;
-import org.cosmic.ide.android.task.jar.JarTask;
-import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.common.util.ZipUtil;
@@ -56,10 +50,11 @@ import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.fragment.CodeEditorFragment;
 import org.cosmic.ide.project.JavaProject;
+import org.cosmic.ide.ui.editor.adapter.PageAdapter;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
-import org.eclipse.tm4e.core.registry.IThemeSource;
 import org.eclipse.tm4e.core.registry.IGrammarSource;
+import org.eclipse.tm4e.core.registry.IThemeSource;
 import org.jf.baksmali.Baksmali;
 import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
@@ -99,9 +94,10 @@ public class MainActivity extends BaseActivity {
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 
-        CoroutineUtil.inParallel(() -> {
-            unzipFiles();
-        });
+        CoroutineUtil.inParallel(
+                () -> {
+                    unzipFiles();
+                });
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
 
@@ -118,7 +114,7 @@ public class MainActivity extends BaseActivity {
                     }
                     binding.viewPager.setPadding(0, 0, 0, bottomInset);
                     return insets;
-        });
+                });
 
         if (binding.root instanceof DrawerLayout) {
             var drawer = (DrawerLayout) binding.root;
@@ -130,7 +126,7 @@ public class MainActivity extends BaseActivity {
                             mainViewModel.setDrawerState(true);
                         }
                     });
-           drawer.addDrawerListener(
+            drawer.addDrawerListener(
                     new DrawerLayout.SimpleDrawerListener() {
                         @Override
                         public void onDrawerOpened(@NonNull View p1) {
@@ -160,7 +156,6 @@ public class MainActivity extends BaseActivity {
                         mainViewModel.setCurrentPosition(position);
                     }
                 });
-
 
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
@@ -239,61 +234,66 @@ public class MainActivity extends BaseActivity {
         }
 
         binding.toolbar.inflateMenu(R.menu.main_menu);
-        binding.toolbar.setOnMenuItemClickListener(item -> {
-            final String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-            final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-            final var id = item.getItemId();
-            if (id == R.id.action_format) {
-                if (fragment instanceof CodeEditorFragment) {
-                    CoroutineUtil.execute(
-                            () -> {
-                                String current = mainViewModel.getCurrentFile().getAbsolutePath();
-                                if (current.endsWith(".java") || current.endsWith(".jav")) {
-                                    var formatter =
-                                            new GoogleJavaFormatter(
+        binding.toolbar.setOnMenuItemClickListener(
+                item -> {
+                    final String tag =
+                            "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+                    final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                    final var id = item.getItemId();
+                    if (id == R.id.action_format) {
+                        if (fragment instanceof CodeEditorFragment) {
+                            CoroutineUtil.execute(
+                                    () -> {
+                                        String current =
+                                                mainViewModel.getCurrentFile().getAbsolutePath();
+                                        if (current.endsWith(".java") || current.endsWith(".jav")) {
+                                            var formatter =
+                                                    new GoogleJavaFormatter(
+                                                            ((CodeEditorFragment) fragment)
+                                                                    .getEditor()
+                                                                    .getText()
+                                                                    .toString());
+                                            temp = formatter.format();
+                                        } else if (current.endsWith(".kt")
+                                                || current.endsWith(".kts")) {
+                                            new ktfmtFormatter(current).format();
+                                            try {
+                                                temp = FileUtil.readFile(new File(current));
+                                            } catch (IOException e) {
+                                                Log.d(TAG, "Cannot read file", e);
+                                            }
+                                        } else {
+                                            temp =
                                                     ((CodeEditorFragment) fragment)
                                                             .getEditor()
                                                             .getText()
-                                                            .toString());
-                                    temp = formatter.format();
-                                } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
-                                    new ktfmtFormatter(current).format();
-                                        try {
-                                            temp = FileUtil.readFile(new File(current));
-                                        } catch (IOException e) {
-                                            Log.d(TAG, "Cannot read file", e);
+                                                            .toString();
                                         }
-                                    } else {
-                                        temp = ((CodeEditorFragment) fragment)
-                                                .getEditor()
-                                                .getText()
-                                                .toString();
-                                    }
-                                });
-                        ((CodeEditorFragment) fragment).getEditor().setText(temp);
+                                    });
+                            ((CodeEditorFragment) fragment).getEditor().setText(temp);
+                        }
+                    } else if (id == R.id.action_settings) {
+                        startActivity(new Intent(this, SettingActivity.class));
+                    } else if (id == R.id.action_run) {
+                        compile(true, false);
+                    } else if (id == R.id.action_smali) {
+                        smali();
+                    } else if (id == R.id.action_disassemble) {
+                        disassemble();
+                    } else if (id == R.id.action_class2java) {
+                        decompile();
+                    } else if (id == R.id.action_undo) {
+                        if (fragment instanceof CodeEditorFragment) {
+                            ((CodeEditorFragment) fragment).undo();
+                        }
+                    } else if (id == R.id.action_redo) {
+                        if (fragment instanceof CodeEditorFragment) {
+                            ((CodeEditorFragment) fragment).redo();
+                        }
                     }
-            } else if (id == R.id.action_settings) {
-                startActivity(new Intent(this, SettingActivity.class));
-            } else if (id == R.id.action_run) {
-                compile(true, false);
-            } else if (id == R.id.action_smali) {
-                smali();
-            } else if (id == R.id.action_disassemble) {
-                disassemble();
-            } else if (id == R.id.action_class2java) {
-                decompile();
-            } else if (id == R.id.action_undo) {
-                if (fragment instanceof CodeEditorFragment) {
-                    ((CodeEditorFragment) fragment).undo();
-                }
-            } else if (id == R.id.action_redo) {
-                if (fragment instanceof CodeEditorFragment) {
-                    ((CodeEditorFragment) fragment).redo();
-                }
-            }
 
-            return true;
-        });
+                    return true;
+                });
 
         if (savedInstanceState != null) {
             restoreViewState(savedInstanceState);
@@ -322,12 +322,12 @@ public class MainActivity extends BaseActivity {
     public void onDestroy() {
         super.onDestroy();
         try {
-            getProject().getIndexer()
-                    .put("lastOpenedFiles",
-                        mainViewModel.getFiles()
-                        .getValue())
+            getProject()
+                    .getIndexer()
+                    .put("lastOpenedFiles", mainViewModel.getFiles().getValue())
                     .flush();
-        } catch (JSONException ignore) {}
+        } catch (JSONException ignore) {
+        }
     }
 
     private void unzipFiles() {
@@ -338,13 +338,13 @@ public class MainActivity extends BaseActivity {
         if (!stdlib.exists()) {
             try {
                 FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-1.7.20.jar"),
-                        stdlib.getAbsolutePath());
+                        getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
                 showError(getString(e));
             }
         }
-        final var commonStdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar");
+        final var commonStdlib =
+                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar");
         if (!commonStdlib.exists()) {
             try {
                 FileUtil.writeFile(
@@ -467,17 +467,13 @@ public class MainActivity extends BaseActivity {
             if (App.Companion.isDarkMode(this)) {
                 themeSource =
                         IThemeSource.fromInputStream(
-                            getAssets().open("textmate/darcula.tmTheme.json"),
-                            "darcula.tmTheme.json",
-                            null
-                        );
+                                getAssets().open("textmate/darcula.tmTheme.json"),
+                                "darcula.tmTheme.json",
+                                null);
             } else {
                 themeSource =
                         IThemeSource.fromInputStream(
-                            getAssets().open("textmate/light.tmTheme"),
-                            "light.tmTheme",
-                            null
-                        );
+                                getAssets().open("textmate/light.tmTheme"), "light.tmTheme", null);
             }
             return TextMateColorScheme.create(themeSource);
         } catch (Exception e) {
@@ -489,10 +485,9 @@ public class MainActivity extends BaseActivity {
         try {
             return TextMateLanguage.create(
                     IGrammarSource.fromInputStream(
-                        getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                        "java.tmLanguage.json",
-                        null
-                    ), 
+                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
+                            "java.tmLanguage.json",
+                            null),
                     new InputStreamReader(
                             getAssets().open("textmate/java/language-configuration.json")),
                     getColorScheme().getThemeSource());
@@ -505,10 +500,9 @@ public class MainActivity extends BaseActivity {
         try {
             return TextMateLanguage.create(
                     IGrammarSource.fromInputStream(
-                        getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
-                        "smali.tmLanguage.json",
-                        null
-                    ),
+                            getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
+                            "smali.tmLanguage.json",
+                            null),
                     new InputStreamReader(
                             getAssets().open("textmate/smali/language-configuration.json")),
                     getColorScheme().getThemeSource());
@@ -518,39 +512,41 @@ public class MainActivity extends BaseActivity {
     }
 
     private void smali() {
-            final var classes = getClassesFromDex();
-            if (classes == null) return;
-            listDialog(
-                    "Select a class to show smali",
-                    classes,
-                    (d, pos) -> {
-                        final var claz = classes[pos];
-                        final var smaliFile =
-                                new File(
-                                        getProject().getBinDirPath(),
-                                        "smali" + "/" + claz.replace(".", "/") + ".smali");
+        final var classes = getClassesFromDex();
+        if (classes == null) return;
+        listDialog(
+                "Select a class to show smali",
+                classes,
+                (d, pos) -> {
+                    final var claz = classes[pos];
+                    final var smaliFile =
+                            new File(
+                                    getProject().getBinDirPath(),
+                                    "smali" + "/" + claz.replace(".", "/") + ".smali");
 
-            CoroutineUtil.execute(
-                    () -> {
-                            try {
-                                final var dexFile =
-                                        DexFileFactory.loadDexFile(
-                                                new File(getProject().getBinDirPath(), "classes.dex"),
-                                                Opcodes.forApi(32));
-                                final var options = new BaksmaliOptions();
-                                options.apiLevel = 32;
-                                Baksmali.disassembleDexFile(
-                                        dexFile,
-                                        new File(getProject().getBinDirPath(), "smali"),
-                                        1,
-                                        options);
-                            } catch (Throwable e) {
-                                dialog("Failed to extract smali source", getString(e), true);
-                            }
-                       });
+                    CoroutineUtil.execute(
+                            () -> {
+                                try {
+                                    final var dexFile =
+                                            DexFileFactory.loadDexFile(
+                                                    new File(
+                                                            getProject().getBinDirPath(),
+                                                            "classes.dex"),
+                                                    Opcodes.forApi(32));
+                                    final var options = new BaksmaliOptions();
+                                    options.apiLevel = 32;
+                                    Baksmali.disassembleDexFile(
+                                            dexFile,
+                                            new File(getProject().getBinDirPath(), "smali"),
+                                            1,
+                                            options);
+                                } catch (Throwable e) {
+                                    dialog("Failed to extract smali source", getString(e), true);
+                                }
+                            });
 
-            mainViewModel.addFile(smaliFile);
-                    });
+                    mainViewModel.addFile(smaliFile);
+                });
     }
 
     private void decompile() {
@@ -701,14 +697,15 @@ public class MainActivity extends BaseActivity {
     }
 
     public void saveAll() {
-        CoroutineUtil.inParallel(() -> {
-            for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
-                String tag = "f" + tabsAdapter.getItemId(i);
-                Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                if (fragment instanceof CodeEditorFragment) {
-                    ((CodeEditorFragment) fragment).save();
-                }
-            }
-        });
+        CoroutineUtil.inParallel(
+                () -> {
+                    for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
+                        String tag = "f" + tabsAdapter.getItemId(i);
+                        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+                        if (fragment instanceof CodeEditorFragment) {
+                            ((CodeEditorFragment) fragment).save();
+                        }
+                    }
+                });
     }
 }

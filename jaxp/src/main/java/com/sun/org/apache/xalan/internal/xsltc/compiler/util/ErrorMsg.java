@@ -22,18 +22,19 @@ package com.sun.org.apache.xalan.internal.xsltc.compiler.util;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.Stylesheet;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.SyntaxTreeNode;
+
+import jdk.xml.internal.SecuritySupport;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import jdk.xml.internal.SecuritySupport;
 
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author G. Todd Miller
  * @author Erwin Bolwidt <ejb@klomp.org>
- * @author Morten Jorgensen
- * @LastModified: Jul 2022
+ * @author Morten Jorgensen @LastModified: Jul 2022
  */
 public final class ErrorMsg {
 
@@ -155,19 +156,15 @@ public final class ErrorMsg {
     public static final String TRANSFORM_WITH_TRANSLET_STR = "TRANSFORM_WITH_TRANSLET_STR";
     public static final String TRANSFORM_WITH_JAR_STR = "TRANSFORM_WITH_JAR_STR";
     public static final String COULD_NOT_CREATE_TRANS_FACT = "COULD_NOT_CREATE_TRANS_FACT";
-    public static final String TRANSLET_NAME_JAVA_CONFLICT =
-                                                 "TRANSLET_NAME_JAVA_CONFLICT";
+    public static final String TRANSLET_NAME_JAVA_CONFLICT = "TRANSLET_NAME_JAVA_CONFLICT";
     public static final String INVALID_QNAME_ERR = "INVALID_QNAME_ERR";
     public static final String INVALID_NCNAME_ERR = "INVALID_NCNAME_ERR";
     public static final String INVALID_METHOD_IN_OUTPUT = "INVALID_METHOD_IN_OUTPUT";
 
     public static final String OUTLINE_ERR_TRY_CATCH = "OUTLINE_ERR_TRY_CATCH";
-    public static final String OUTLINE_ERR_UNBALANCED_MARKERS =
-                                            "OUTLINE_ERR_UNBALANCED_MARKERS";
-    public static final String OUTLINE_ERR_DELETED_TARGET =
-                                            "OUTLINE_ERR_DELETED_TARGET";
-    public static final String OUTLINE_ERR_METHOD_TOO_BIG =
-                                            "OUTLINE_ERR_METHOD_TOO_BIG";
+    public static final String OUTLINE_ERR_UNBALANCED_MARKERS = "OUTLINE_ERR_UNBALANCED_MARKERS";
+    public static final String OUTLINE_ERR_DELETED_TARGET = "OUTLINE_ERR_DELETED_TARGET";
+    public static final String OUTLINE_ERR_METHOD_TOO_BIG = "OUTLINE_ERR_METHOD_TOO_BIG";
 
     public static final String DESERIALIZE_TRANSLET_ERR = "DESERIALIZE_TRANSLET_ERR";
 
@@ -180,15 +177,16 @@ public final class ErrorMsg {
     // This array and the following 4 strings are read from that bundle.
     private static ResourceBundle _bundle;
 
-    public final static String ERROR_MESSAGES_KEY   = "ERROR_MESSAGES_KEY";
-    public final static String COMPILER_ERROR_KEY   = "COMPILER_ERROR_KEY";
-    public final static String COMPILER_WARNING_KEY = "COMPILER_WARNING_KEY";
-    public final static String RUNTIME_ERROR_KEY    = "RUNTIME_ERROR_KEY";
+    public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES_KEY";
+    public static final String COMPILER_ERROR_KEY = "COMPILER_ERROR_KEY";
+    public static final String COMPILER_WARNING_KEY = "COMPILER_WARNING_KEY";
+    public static final String RUNTIME_ERROR_KEY = "RUNTIME_ERROR_KEY";
 
     static {
-        _bundle = SecuritySupport.getResourceBundle(
-                          "com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages",
-                          Locale.getDefault());
+        _bundle =
+                SecuritySupport.getResourceBundle(
+                        "com.sun.org.apache.xalan.internal.xsltc.compiler.util.ErrorMessages",
+                        Locale.getDefault());
     }
 
     public ErrorMsg(String code) {
@@ -213,9 +211,9 @@ public final class ErrorMsg {
         _code = code;
         _line = line;
         if (param instanceof Object[]) {
-            _params = (Object[])param;
+            _params = (Object[]) param;
         } else {
-            _params = new Object[] { param };
+            _params = new Object[] {param};
         }
     }
 
@@ -234,22 +232,21 @@ public final class ErrorMsg {
 
     public ErrorMsg(String code, SyntaxTreeNode node) {
         _code = code;
-        _url  = getFileName(node);
+        _url = getFileName(node);
         _line = node.getLineNumber();
     }
 
     public ErrorMsg(String code, Object param1, SyntaxTreeNode node) {
         _code = code;
-        _url  = getFileName(node);
+        _url = getFileName(node);
         _line = node.getLineNumber();
         _params = new Object[1];
         _params[0] = param1;
     }
 
-    public ErrorMsg(String code, Object param1, Object param2,
-                    SyntaxTreeNode node) {
+    public ErrorMsg(String code, Object param1, Object param2, SyntaxTreeNode node) {
         _code = code;
-        _url  = getFileName(node);
+        _url = getFileName(node);
         _line = node.getLineNumber();
         _params = new Object[2];
         _params[0] = param1;
@@ -262,10 +259,8 @@ public final class ErrorMsg {
 
     private String getFileName(SyntaxTreeNode node) {
         Stylesheet stylesheet = node.getStylesheet();
-        if (stylesheet != null)
-            return stylesheet.getSystemId();
-        else
-            return null;
+        if (stylesheet != null) return stylesheet.getSystemId();
+        else return null;
     }
 
     private String formatLine() {
@@ -283,14 +278,14 @@ public final class ErrorMsg {
     }
 
     /**
-     * This version of toString() uses the _params instance variable
-     * to format the message. If the <code>_code</code> is negative
-     * the use _message as the error string.
+     * This version of toString() uses the _params instance variable to format the message. If the
+     * <code>_code</code> is negative the use _message as the error string.
      */
     public String toString() {
-        String suffix = (_params == null) ?
-            (null != _code ? getErrorMessage() : _message)
-            : MessageFormat.format(getErrorMessage(), _params);
+        String suffix =
+                (_params == null)
+                        ? (null != _code ? getErrorMessage() : _message)
+                        : MessageFormat.format(getErrorMessage(), _params);
         return formatLine() + suffix;
     }
 
@@ -310,14 +305,13 @@ public final class ErrorMsg {
     }
 
     /**
-     * Return an ErrorMessages string corresponding to the _code
-     * This function is temporary until the three special-cased keys
-     * below are moved into ErrorMessages
+     * Return an ErrorMessages string corresponding to the _code This function is temporary until
+     * the three special-cased keys below are moved into ErrorMessages
      *
      * @return ErrorMessages string
      */
     private String getErrorMessage() {
-      return _bundle.getString(_code);
+        return _bundle.getString(_code);
     }
 
     // If the _isWarningError flag is true, the error is treated as
@@ -326,7 +320,7 @@ public final class ErrorMsg {
     // ErrorListener.errorTests.error001.
     public void setWarningError(boolean flag) {
         _isWarningError = flag;
-}
+    }
 
     public boolean isWarningError() {
         return _isWarningError;

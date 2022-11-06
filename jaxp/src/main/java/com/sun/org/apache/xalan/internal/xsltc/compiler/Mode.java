@@ -46,129 +46,91 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.NamedMethodGenerato
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.sun.org.apache.xml.internal.dtm.Axis;
 import com.sun.org.apache.xml.internal.dtm.DTM;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Mode gathers all the templates belonging to a given mode;
- * it is responsible for generating an appropriate
- * applyTemplates + (mode name) method in the translet.
+ * Mode gathers all the templates belonging to a given mode; it is responsible for generating an
+ * appropriate applyTemplates + (mode name) method in the translet.
+ *
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
  * @author Erwin Bolwidt <ejb@klomp.org>
- * @author G. Todd Miller
- * @LastModified: Sep 2021
+ * @author G. Todd Miller @LastModified: Sep 2021
  */
 final class Mode implements Constants {
 
-    /**
-     * The name of this mode as defined in the stylesheet.
-     */
+    /** The name of this mode as defined in the stylesheet. */
     private final QName _name;
 
-    /**
-     * A reference to the stylesheet object that owns this mode.
-     */
+    /** A reference to the stylesheet object that owns this mode. */
     private final Stylesheet _stylesheet;
 
-    /**
-     * The name of the method in which this mode is compiled.
-     */
+    /** The name of the method in which this mode is compiled. */
     private final String _methodName;
 
-    /**
-     * A vector of all the templates in this mode.
-     */
+    /** A vector of all the templates in this mode. */
     private List<Template> _templates;
 
-    /**
-     * Group for patterns with node()-type kernel and child axis.
-     */
+    /** Group for patterns with node()-type kernel and child axis. */
     private List<LocationPathPattern> _childNodeGroup = null;
 
-    /**
-     * Test sequence for patterns with node()-type kernel and child axis.
-     */
+    /** Test sequence for patterns with node()-type kernel and child axis. */
     private TestSeq _childNodeTestSeq = null;
 
-    /**
-     * Group for patterns with node()-type kernel and attribute axis.
-     */
+    /** Group for patterns with node()-type kernel and attribute axis. */
     private List<LocationPathPattern> _attribNodeGroup = null;
 
-    /**
-     * Test sequence for patterns with node()-type kernel and attribute axis.
-     */
+    /** Test sequence for patterns with node()-type kernel and attribute axis. */
     private TestSeq _attribNodeTestSeq = null;
 
-    /**
-     * Group for patterns with id() or key()-type kernel.
-     */
+    /** Group for patterns with id() or key()-type kernel. */
     private List<LocationPathPattern> _idxGroup = null;
 
-    /**
-     * Test sequence for patterns with id() or key()-type kernel.
-     */
+    /** Test sequence for patterns with id() or key()-type kernel. */
     private TestSeq _idxTestSeq = null;
 
-    /**
-     * Group for patterns with any other kernel type.
-     */
+    /** Group for patterns with any other kernel type. */
     private List<LocationPathPattern>[] _patternGroups;
 
-    /**
-     * Test sequence for patterns with any other kernel type.
-     */
+    /** Test sequence for patterns with any other kernel type. */
     private TestSeq[] _testSeq;
 
-
     /**
-     * A mapping between templates and test sequences.
-     * {@link LinkedHashMap} is necessary to make traversal order consistent across runs.
+     * A mapping between templates and test sequences. {@link LinkedHashMap} is necessary to make
+     * traversal order consistent across runs.
      */
     private Map<Template, Object> _neededTemplates = new LinkedHashMap<>();
 
     /**
-     * A mapping between named templates and Mode objects.
-     * {@link LinkedHashMap} is necessary to make traversal order consistent across runs.
+     * A mapping between named templates and Mode objects. {@link LinkedHashMap} is necessary to
+     * make traversal order consistent across runs.
      */
     private Map<Template, Mode> _namedTemplates = new LinkedHashMap<>();
 
-    /**
-     * A mapping between templates and instruction handles.
-     */
+    /** A mapping between templates and instruction handles. */
     private Map<Template, InstructionHandle> _templateIHs = new HashMap<>();
 
-    /**
-     * A mapping between templates and instruction lists.
-     */
+    /** A mapping between templates and instruction lists. */
     private Map<Template, InstructionList> _templateILs = new HashMap<>();
 
-    /**
-     * A reference to the pattern matching the root node.
-     */
+    /** A reference to the pattern matching the root node. */
     private LocationPathPattern _rootPattern = null;
 
-    /**
-     * Stores ranges of template precendences for the compilation
-     * of apply-imports.
-     */
+    /** Stores ranges of template precendences for the compilation of apply-imports. */
     private Map<Integer, Integer> _importLevels = null;
 
-    /**
-     * A mapping between key names and keys.
-     */
+    /** A mapping between key names and keys. */
     private Map<String, Key> _keys = null;
 
-    /**
-     * Variable index for the current node used in code generation.
-     */
+    /** Variable index for the current node used in code generation. */
     private int _currentIndex;
 
     /**
@@ -176,8 +138,8 @@ final class Mode implements Constants {
      *
      * @param name A textual representation of the mode's QName
      * @param stylesheet The Stylesheet in which the mode occured
-     * @param suffix A suffix to append to the method name for this mode
-     *               (normally a sequence number - still in a String).
+     * @param suffix A suffix to append to the method name for this mode (normally a sequence number
+     *     - still in a String).
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Mode(QName name, Stylesheet stylesheet, String suffix) {
@@ -185,13 +147,12 @@ final class Mode implements Constants {
         _stylesheet = stylesheet;
         _methodName = APPLY_TEMPLATES + suffix;
         _templates = new ArrayList<>();
-        _patternGroups = (List<LocationPathPattern>[])new ArrayList[32];
+        _patternGroups = (List<LocationPathPattern>[]) new ArrayList[32];
     }
 
     /**
-     * Returns the name of the method (_not_ function) that will be
-     * compiled for this mode. Normally takes the form 'applyTemplates()'
-     * or * 'applyTemplates2()'.
+     * Returns the name of the method (_not_ function) that will be compiled for this mode. Normally
+     * takes the form 'applyTemplates()' or * 'applyTemplates2()'.
      *
      * @return Method name for this mode
      */
@@ -207,9 +168,7 @@ final class Mode implements Constants {
         return _methodName + '_' + max;
     }
 
-    /**
-     * Shortcut to get the class compiled for this mode (will be inlined).
-     */
+    /** Shortcut to get the class compiled for this mode (will be inlined). */
     private String getClassName() {
         return _stylesheet.getClassName();
     }
@@ -236,20 +195,19 @@ final class Mode implements Constants {
         int i = p - 1;
         int j = r + 1;
         while (true) {
-            while (x.compareTo(templates.get(--j)) > 0);
-            while (x.compareTo(templates.get(++i)) < 0);
+            while (x.compareTo(templates.get(--j)) > 0)
+                ;
+            while (x.compareTo(templates.get(++i)) < 0)
+                ;
             if (i < j) {
                 templates.set(j, templates.set(i, templates.get(j)));
-            }
-            else {
+            } else {
                 return j;
             }
         }
     }
 
-    /**
-     * Process all the test patterns in this mode
-     */
+    /** Process all the test patterns in this mode */
     public void processPatterns(Map<String, Key> keys) {
         _keys = keys;
         _templates = quicksort(_templates, 0, _templates.size() - 1);
@@ -275,40 +233,34 @@ final class Mode implements Constants {
     }
 
     /**
-     * This method will break up alternative patterns (ie. unions of patterns,
-     * such as match="A/B | C/B") and add the basic patterns to their
-     * respective pattern groups.
+     * This method will break up alternative patterns (ie. unions of patterns, such as match="A/B |
+     * C/B") and add the basic patterns to their respective pattern groups.
      */
-    private void flattenAlternative(Pattern pattern,
-                                    Template template,
-                                    Map<String, Key> keys) {
+    private void flattenAlternative(Pattern pattern, Template template, Map<String, Key> keys) {
         // Patterns on type id() and key() are special since they do not have
         // any kernel node type (it can be anything as long as the node is in
         // the id's or key's index).
         if (pattern instanceof IdKeyPattern) {
-            final IdKeyPattern idkey = (IdKeyPattern)pattern;
+            final IdKeyPattern idkey = (IdKeyPattern) pattern;
             idkey.setTemplate(template);
             if (_idxGroup == null) _idxGroup = new ArrayList<>();
-            _idxGroup.add((IdKeyPattern)pattern);
+            _idxGroup.add((IdKeyPattern) pattern);
         }
         // Alternative patterns are broken up and re-processed recursively
         else if (pattern instanceof AlternativePattern) {
-            final AlternativePattern alt = (AlternativePattern)pattern;
+            final AlternativePattern alt = (AlternativePattern) pattern;
             flattenAlternative(alt.getLeft(), template, keys);
             flattenAlternative(alt.getRight(), template, keys);
         }
         // Finally we have a pattern that can be added to a test sequence!
         else if (pattern instanceof LocationPathPattern) {
-            final LocationPathPattern lpp = (LocationPathPattern)pattern;
+            final LocationPathPattern lpp = (LocationPathPattern) pattern;
             lpp.setTemplate(template);
             addPatternToGroup(lpp);
         }
     }
 
-    /**
-     * Group patterns by NodeTests of their last Step
-     * Keep them sorted by priority within group
-     */
+    /** Group patterns by NodeTests of their last Step Keep them sorted by priority within group */
     private void addPatternToGroup(final LocationPathPattern lpp) {
         // id() and key()-type patterns do not have a kernel type
         if (lpp instanceof IdKeyPattern) {
@@ -320,24 +272,20 @@ final class Mode implements Constants {
             final StepPattern kernel = lpp.getKernelPattern();
             if (kernel != null) {
                 addPattern(kernel.getNodeType(), lpp);
-            }
-            else if (_rootPattern == null ||
-                     lpp.noSmallerThan(_rootPattern)) {
+            } else if (_rootPattern == null || lpp.noSmallerThan(_rootPattern)) {
                 _rootPattern = lpp;
             }
         }
     }
 
-    /**
-     * Adds a pattern to a pattern group
-     */
+    /** Adds a pattern to a pattern group */
     private void addPattern(int kernelType, LocationPathPattern pattern) {
         // Make sure the array of pattern groups is long enough
         final int oldLength = _patternGroups.length;
         if (kernelType >= oldLength) {
             @SuppressWarnings({"rawtypes", "unchecked"})
             List<LocationPathPattern>[] newGroups =
-                    (List<LocationPathPattern>[])new ArrayList[kernelType * 2];
+                    (List<LocationPathPattern>[]) new ArrayList[kernelType * 2];
 
             System.arraycopy(_patternGroups, 0, newGroups, 0, oldLength);
             _patternGroups = newGroups;
@@ -348,28 +296,29 @@ final class Mode implements Constants {
 
         if (kernelType == DOM.NO_TYPE) {
             if (pattern.getAxis() == Axis.ATTRIBUTE) {
-                patterns = (_attribNodeGroup == null) ?
-                    (_attribNodeGroup = new ArrayList<>(2)) : _attribNodeGroup;
+                patterns =
+                        (_attribNodeGroup == null)
+                                ? (_attribNodeGroup = new ArrayList<>(2))
+                                : _attribNodeGroup;
+            } else {
+                patterns =
+                        (_childNodeGroup == null)
+                                ? (_childNodeGroup = new ArrayList<>(2))
+                                : _childNodeGroup;
             }
-            else {
-                patterns = (_childNodeGroup == null) ?
-                    (_childNodeGroup = new ArrayList<>(2)) : _childNodeGroup;
-            }
-        }
-        else {
-            patterns = (_patternGroups[kernelType] == null) ?
-                (_patternGroups[kernelType] = new ArrayList<>(2)) :
-                _patternGroups[kernelType];
+        } else {
+            patterns =
+                    (_patternGroups[kernelType] == null)
+                            ? (_patternGroups[kernelType] = new ArrayList<>(2))
+                            : _patternGroups[kernelType];
         }
 
         if (patterns.size() == 0) {
             patterns.add(pattern);
-        }
-        else {
+        } else {
             boolean inserted = false;
             for (int i = 0; i < patterns.size(); i++) {
-                final LocationPathPattern lppToCompare =
-                    patterns.get(i);
+                final LocationPathPattern lppToCompare = patterns.get(i);
 
                 if (pattern.noSmallerThan(lppToCompare)) {
                     inserted = true;
@@ -383,16 +332,12 @@ final class Mode implements Constants {
         }
     }
 
-    /**
-     * Complete test sequences of a given type by adding all patterns
-     * from a given group.
-     */
+    /** Complete test sequences of a given type by adding all patterns from a given group. */
     private void completeTestSequences(int nodeType, List<LocationPathPattern> patterns) {
         if (patterns != null) {
             if (_patternGroups[nodeType] == null) {
                 _patternGroups[nodeType] = patterns;
-            }
-            else {
+            } else {
                 final int m = patterns.size();
                 for (int j = 0; j < m; j++) {
                     addPattern(nodeType, patterns.get(j));
@@ -402,9 +347,9 @@ final class Mode implements Constants {
     }
 
     /**
-     * Build test sequences. The first step is to complete the test sequences
-     * by including patterns of "*" and "node()" kernel to all element test
-     * sequences, and of "@*" to all attribute test sequences.
+     * Build test sequences. The first step is to complete the test sequences by including patterns
+     * of "*" and "node()" kernel to all element test sequences, and of "@*" to all attribute test
+     * sequences.
      */
     private void prepareTestSequences() {
         final List<LocationPathPattern> starGroup = _patternGroups[DTM.ELEMENT_NODE];
@@ -426,9 +371,10 @@ final class Mode implements Constants {
         completeTestSequences(DTM.ATTRIBUTE_NODE, _attribNodeGroup);
 
         final List<String> names = _stylesheet.getXSLTC().getNamesIndex();
-        if (starGroup != null || atStarGroup != null ||
-            _childNodeGroup != null || _attribNodeGroup != null)
-        {
+        if (starGroup != null
+                || atStarGroup != null
+                || _childNodeGroup != null
+                || _attribNodeGroup != null) {
             final int n = _patternGroups.length;
 
             // Complete test sequence for user-defined types
@@ -443,8 +389,7 @@ final class Mode implements Constants {
 
                     // And also copy "attribute::node()" to its test sequence
                     completeTestSequences(i, _attribNodeGroup);
-                }
-                else {
+                } else {
                     // If an element then copy "*" to its test sequence
                     completeTestSequences(i, starGroup);
 
@@ -461,7 +406,7 @@ final class Mode implements Constants {
             final List<LocationPathPattern> patterns = _patternGroups[i];
             if (patterns != null) {
                 final TestSeq testSeq = new TestSeq(patterns, i, this);
-// System.out.println("testSeq[" + i + "] = " + testSeq);
+                // System.out.println("testSeq[" + i + "] = " + testSeq);
                 testSeq.reduce();
                 _testSeq[i] = testSeq;
                 testSeq.findTemplates(_neededTemplates);
@@ -474,13 +419,13 @@ final class Mode implements Constants {
             _childNodeTestSeq.findTemplates(_neededTemplates);
         }
 
-/*
-        if (_attribNodeGroup != null && _attribNodeGroup.size() > 0) {
-            _attribNodeTestSeq = new TestSeq(_attribNodeGroup, -1, this);
-            _attribNodeTestSeq.reduce();
-            _attribNodeTestSeq.findTemplates(_neededTemplates);
-        }
-*/
+        /*
+                if (_attribNodeGroup != null && _attribNodeGroup.size() > 0) {
+                    _attribNodeTestSeq = new TestSeq(_attribNodeGroup, -1, this);
+                    _attribNodeTestSeq.reduce();
+                    _attribNodeTestSeq.findTemplates(_neededTemplates);
+                }
+        */
 
         if (_idxGroup != null && _idxGroup.size() > 0) {
             _idxTestSeq = new TestSeq(_idxGroup, this);
@@ -494,8 +439,7 @@ final class Mode implements Constants {
         }
     }
 
-    private void compileNamedTemplate(Template template,
-                                      ClassGenerator classGen) {
+    private void compileNamedTemplate(Template template, ClassGenerator classGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = new InstructionList();
         String methodName = Util.escape(template.getName().toString());
@@ -508,7 +452,7 @@ final class Mode implements Constants {
 
         // Initialize the types and names arrays for the NamedMethodGenerator.
         com.sun.org.apache.bcel.internal.generic.Type[] types =
-            new com.sun.org.apache.bcel.internal.generic.Type[4 + numParams];
+                new com.sun.org.apache.bcel.internal.generic.Type[4 + numParams];
         String[] names = new String[4 + numParams];
         types[0] = Util.getJCRefType(DOM_INTF_SIG);
         types[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
@@ -524,14 +468,19 @@ final class Mode implements Constants {
         // template.
         for (int i = 4; i < 4 + numParams; i++) {
             types[i] = Util.getJCRefType(OBJECT_SIG);
-            names[i] = "param" + String.valueOf(i-4);
+            names[i] = "param" + String.valueOf(i - 4);
         }
 
         NamedMethodGenerator methodGen =
-                new NamedMethodGenerator(ACC_PUBLIC,
-                                     com.sun.org.apache.bcel.internal.generic.Type.VOID,
-                                     types, names, methodName,
-                                     getClassName(), il, cpg);
+                new NamedMethodGenerator(
+                        ACC_PUBLIC,
+                        com.sun.org.apache.bcel.internal.generic.Type.VOID,
+                        types,
+                        names,
+                        methodName,
+                        getClassName(),
+                        il,
+                        cpg);
 
         il.append(template.compile(classGen, methodGen));
         il.append(RETURN);
@@ -539,10 +488,8 @@ final class Mode implements Constants {
         classGen.addMethod(methodGen);
     }
 
-    private void compileTemplates(ClassGenerator classGen,
-                                  MethodGenerator methodGen,
-                                  InstructionHandle next)
-    {
+    private void compileTemplates(
+            ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle next) {
         Set<Template> templates = _namedTemplates.keySet();
         for (Template template : templates) {
             compileNamedTemplate(template, classGen);
@@ -556,8 +503,7 @@ final class Mode implements Constants {
                 til.append(new GOTO_W(next));
                 _templateILs.put(template, til);
                 _templateIHs.put(template, til.getStart());
-            }
-            else {
+            } else {
                 // empty template
                 _templateIHs.put(template, next);
             }
@@ -570,7 +516,6 @@ final class Mode implements Constants {
             if (iList != null) {
                 body.append(iList);
             }
-
         }
     }
 
@@ -580,41 +525,31 @@ final class Mode implements Constants {
             final TestSeq testSeq = _testSeq[i];
             if (testSeq != null) {
                 InstructionList il = testSeq.getInstructionList();
-                if (il != null)
-                    body.append(il);
+                if (il != null) body.append(il);
                 // else trivial TestSeq
             }
         }
     }
 
-    public static void compileGetChildren(ClassGenerator classGen,
-                                          MethodGenerator methodGen,
-                                          int node) {
+    public static void compileGetChildren(
+            ClassGenerator classGen, MethodGenerator methodGen, int node) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
-        final int git = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  GET_CHILDREN,
-                                                  GET_CHILDREN_SIG);
+        final int git = cpg.addInterfaceMethodref(DOM_INTF, GET_CHILDREN, GET_CHILDREN_SIG);
         il.append(methodGen.loadDOM());
         il.append(new ILOAD(node));
         il.append(new INVOKEINTERFACE(git, 2));
     }
 
-    /**
-     * Compiles the default handling for DOM elements: traverse all children
-     */
-    private InstructionList compileDefaultRecursion(ClassGenerator classGen,
-                                                    MethodGenerator methodGen,
-                                                    InstructionHandle next) {
+    /** Compiles the default handling for DOM elements: traverse all children */
+    private InstructionList compileDefaultRecursion(
+            ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle next) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = new InstructionList();
         final String applyTemplatesSig = classGen.getApplyTemplatesSig();
-        final int git = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  GET_CHILDREN,
-                                                  GET_CHILDREN_SIG);
-        final int applyTemplates = cpg.addMethodref(getClassName(),
-                                                    functionName(),
-                                                    applyTemplatesSig);
+        final int git = cpg.addInterfaceMethodref(DOM_INTF, GET_CHILDREN, GET_CHILDREN_SIG);
+        final int applyTemplates =
+                cpg.addMethodref(getClassName(), functionName(), applyTemplatesSig);
         il.append(classGen.loadTranslet());
         il.append(methodGen.loadDOM());
 
@@ -628,18 +563,15 @@ final class Mode implements Constants {
     }
 
     /**
-     * Compiles the default action for DOM text nodes and attribute nodes:
-     * output the node's text value
+     * Compiles the default action for DOM text nodes and attribute nodes: output the node's text
+     * value
      */
-    private InstructionList compileDefaultText(ClassGenerator classGen,
-                                               MethodGenerator methodGen,
-                                               InstructionHandle next) {
+    private InstructionList compileDefaultText(
+            ClassGenerator classGen, MethodGenerator methodGen, InstructionHandle next) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = new InstructionList();
 
-        final int chars = cpg.addInterfaceMethodref(DOM_INTF,
-                                                    CHARACTERS,
-                                                    CHARACTERS_SIG);
+        final int chars = cpg.addInterfaceMethodref(DOM_INTF, CHARACTERS, CHARACTERS_SIG);
         il.append(methodGen.loadDOM());
         il.append(new ILOAD(_currentIndex));
         il.append(methodGen.loadHandler());
@@ -648,12 +580,13 @@ final class Mode implements Constants {
         return il;
     }
 
-    private InstructionList compileNamespaces(ClassGenerator classGen,
-                                              MethodGenerator methodGen,
-                                              boolean[] isNamespace,
-                                              boolean[] isAttribute,
-                                              boolean attrFlag,
-                                              InstructionHandle defaultTarget) {
+    private InstructionList compileNamespaces(
+            ClassGenerator classGen,
+            MethodGenerator methodGen,
+            boolean[] isNamespace,
+            boolean[] isAttribute,
+            boolean attrFlag,
+            InstructionHandle defaultTarget) {
         final XSLTC xsltc = classGen.getParser().getXSLTC();
         final ConstantPoolGen cpg = classGen.getConstantPool();
 
@@ -677,44 +610,37 @@ final class Mode implements Constants {
             }
 
             // Add test sequences for known namespace types
-            for (int i = DTM.NTYPES; i < (DTM.NTYPES+namesCount); i++) {
+            for (int i = DTM.NTYPES; i < (DTM.NTYPES + namesCount); i++) {
                 if ((isNamespace[i]) && (isAttribute[i] == attrFlag)) {
-                    String name = names.get(i-DTM.NTYPES);
-                    String namespace = name.substring(0,name.lastIndexOf(':'));
+                    String name = names.get(i - DTM.NTYPES);
+                    String namespace = name.substring(0, name.lastIndexOf(':'));
                     final int type = xsltc.registerNamespace(namespace);
 
-                    if ((i < _testSeq.length) &&
-                        (_testSeq[i] != null)) {
-                        targets[type] =
-                            (_testSeq[i]).compile(classGen,
-                                                       methodGen,
-                                                       defaultTarget);
+                    if ((i < _testSeq.length) && (_testSeq[i] != null)) {
+                        targets[type] = (_testSeq[i]).compile(classGen, methodGen, defaultTarget);
                         compiled = true;
                     }
                 }
             }
 
             // Return "null" if no test sequences were compiled
-            if (!compiled) return(null);
+            if (!compiled) return (null);
 
             // Append first code in applyTemplates() - get type of current node
-            final int getNS = cpg.addInterfaceMethodref(DOM_INTF,
-                                                        "getNamespaceType",
-                                                        "(I)I");
+            final int getNS = cpg.addInterfaceMethodref(DOM_INTF, "getNamespaceType", "(I)I");
             il.append(methodGen.loadDOM());
             il.append(new ILOAD(_currentIndex));
             il.append(new INVOKEINTERFACE(getNS, 2));
             il.append(new SWITCH(types, targets, defaultTarget));
-            return(il);
-        }
-        else {
-            return(null);
+            return (il);
+        } else {
+            return (null);
         }
     }
 
-   /**
-     * Compiles the applyTemplates() method and adds it to the translet.
-     * This is the main dispatch method.
+    /**
+     * Compiles the applyTemplates() method and adds it to the translet. This is the main dispatch
+     * method.
      */
     public void compileApplyTemplates(ClassGenerator classGen) {
         final XSLTC xsltc = classGen.getParser().getXSLTC();
@@ -723,7 +649,7 @@ final class Mode implements Constants {
 
         // Create the applyTemplates() method
         final com.sun.org.apache.bcel.internal.generic.Type[] argTypes =
-            new com.sun.org.apache.bcel.internal.generic.Type[3];
+                new com.sun.org.apache.bcel.internal.generic.Type[3];
         argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
         argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
         argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);
@@ -735,22 +661,25 @@ final class Mode implements Constants {
 
         final InstructionList mainIL = new InstructionList();
         final MethodGenerator methodGen =
-            new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
-                                com.sun.org.apache.bcel.internal.generic.Type.VOID,
-                                argTypes, argNames, functionName(),
-                                getClassName(), mainIL,
-                                classGen.getConstantPool());
+                new MethodGenerator(
+                        ACC_PUBLIC | ACC_FINAL,
+                        com.sun.org.apache.bcel.internal.generic.Type.VOID,
+                        argTypes,
+                        argNames,
+                        functionName(),
+                        getClassName(),
+                        mainIL,
+                        classGen.getConstantPool());
         methodGen.addException("com.sun.org.apache.xalan.internal.xsltc.TransletException");
         // Insert an extra NOP just to keep "current" from appearing as if it
         // has a value before the start of the loop.
         mainIL.append(NOP);
 
-
         // Create a local variable to hold the current node
         final LocalVariableGen current;
-        current = methodGen.addLocalVariable2("current",
-                                              com.sun.org.apache.bcel.internal.generic.Type.INT,
-                                              null);
+        current =
+                methodGen.addLocalVariable2(
+                        "current", com.sun.org.apache.bcel.internal.generic.Type.INT, null);
         _currentIndex = current.getIndex();
 
         // Create the "body" instruction list that will eventually hold the
@@ -770,7 +699,7 @@ final class Mode implements Constants {
         // by a single IFNE(body.getStart()) instruction - need workaround:
         final BranchHandle ifeq = ilLoop.append(new IFLT(null));
         final BranchHandle loop = ilLoop.append(new GOTO_W(null));
-        ifeq.setTarget(ilLoop.append(RETURN));  // applyTemplates() ends here!
+        ifeq.setTarget(ilLoop.append(RETURN)); // applyTemplates() ends here!
         final InstructionHandle ihLoop = ilLoop.getStart();
 
         current.setStart(mainIL.append(new GOTO_W(ihLoop)));
@@ -779,13 +708,11 @@ final class Mode implements Constants {
         current.setEnd(loop);
 
         // Compile default handling of elements (traverse children)
-        InstructionList ilRecurse =
-            compileDefaultRecursion(classGen, methodGen, ihLoop);
+        InstructionList ilRecurse = compileDefaultRecursion(classGen, methodGen, ihLoop);
         InstructionHandle ihRecurse = ilRecurse.getStart();
 
         // Compile default handling of text/attribute nodes (output text)
-        InstructionList ilText =
-            compileDefaultText(classGen, methodGen, ihLoop);
+        InstructionList ilText = compileDefaultText(classGen, methodGen, ihLoop);
         InstructionHandle ihText = ilText.getStart();
 
         // Distinguish attribute/element/namespace tests for further processing
@@ -809,22 +736,19 @@ final class Mode implements Constants {
         // Handle template with explicit "*" pattern
         final TestSeq elemTest = _testSeq[DTM.ELEMENT_NODE];
         InstructionHandle ihElem = ihRecurse;
-        if (elemTest != null)
-            ihElem = elemTest.compile(classGen, methodGen, ihRecurse);
+        if (elemTest != null) ihElem = elemTest.compile(classGen, methodGen, ihRecurse);
 
         // Handle template with explicit "@*" pattern
         final TestSeq attrTest = _testSeq[DTM.ATTRIBUTE_NODE];
         InstructionHandle ihAttr = ihText;
-        if (attrTest != null)
-            ihAttr = attrTest.compile(classGen, methodGen, ihAttr);
+        if (attrTest != null) ihAttr = attrTest.compile(classGen, methodGen, ihAttr);
 
         // Do tests for id() and key() patterns first
         InstructionList ilKey = null;
         if (_idxTestSeq != null) {
             loop.setTarget(_idxTestSeq.compile(classGen, methodGen, body.getStart()));
             ilKey = _idxTestSeq.getInstructionList();
-        }
-        else {
+        } else {
             loop.setTarget(body.getStart());
         }
 
@@ -833,32 +757,32 @@ final class Mode implements Constants {
         if (_childNodeTestSeq != null) {
             // Compare priorities of node() and "*"
             double nodePrio = _childNodeTestSeq.getPriority();
-            int    nodePos  = _childNodeTestSeq.getPosition();
+            int nodePos = _childNodeTestSeq.getPosition();
             double elemPrio = (0 - Double.MAX_VALUE);
-            int    elemPos  = Integer.MIN_VALUE;
+            int elemPos = Integer.MIN_VALUE;
 
             if (elemTest != null) {
                 elemPrio = elemTest.getPriority();
-                elemPos  = elemTest.getPosition();
+                elemPos = elemTest.getPosition();
             }
-            if (elemPrio == Double.NaN || elemPrio < nodePrio ||
-                (elemPrio == nodePrio && elemPos < nodePos))
-            {
+            if (elemPrio == Double.NaN
+                    || elemPrio < nodePrio
+                    || (elemPrio == nodePrio && elemPos < nodePos)) {
                 ihElem = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);
             }
 
             // Compare priorities of node() and text()
             final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
             double textPrio = (0 - Double.MAX_VALUE);
-            int    textPos  = Integer.MIN_VALUE;
+            int textPos = Integer.MIN_VALUE;
 
             if (textTest != null) {
                 textPrio = textTest.getPriority();
-                textPos  = textTest.getPosition();
+                textPos = textTest.getPosition();
             }
-            if (textPrio == Double.NaN || textPrio < nodePrio ||
-                (textPrio == nodePrio && textPos < nodePos))
-            {
+            if (textPrio == Double.NaN
+                    || textPrio < nodePrio
+                    || (textPrio == nodePrio && textPos < nodePos)) {
                 ihText = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);
                 _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
             }
@@ -866,16 +790,14 @@ final class Mode implements Constants {
 
         // Handle templates with "ns:*" pattern
         InstructionHandle elemNamespaceHandle = ihElem;
-        InstructionList nsElem = compileNamespaces(classGen, methodGen,
-                                                   isNamespace, isAttribute,
-                                                   false, ihElem);
+        InstructionList nsElem =
+                compileNamespaces(classGen, methodGen, isNamespace, isAttribute, false, ihElem);
         if (nsElem != null) elemNamespaceHandle = nsElem.getStart();
 
         // Handle templates with "ns:@*" pattern
         InstructionHandle attrNamespaceHandle = ihAttr;
-        InstructionList nsAttr = compileNamespaces(classGen, methodGen,
-                                                   isNamespace, isAttribute,
-                                                   true, ihAttr);
+        InstructionList nsAttr =
+                compileNamespaces(classGen, methodGen, isNamespace, isAttribute, true, ihAttr);
         if (nsAttr != null) attrNamespaceHandle = nsAttr.getStart();
 
         // Handle templates with "ns:elem" or "ns:@attr" pattern
@@ -884,40 +806,36 @@ final class Mode implements Constants {
             final TestSeq testSeq = _testSeq[i];
             // Jump straight to namespace tests ?
             if (isNamespace[i]) {
-                if (isAttribute[i])
-                    targets[i] = attrNamespaceHandle;
-                else
-                    targets[i] = elemNamespaceHandle;
+                if (isAttribute[i]) targets[i] = attrNamespaceHandle;
+                else targets[i] = elemNamespaceHandle;
             }
             // Test first, then jump to namespace tests
             else if (testSeq != null) {
                 if (isAttribute[i])
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 attrNamespaceHandle);
-                else
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 elemNamespaceHandle);
-            }
-            else {
+                    targets[i] = testSeq.compile(classGen, methodGen, attrNamespaceHandle);
+                else targets[i] = testSeq.compile(classGen, methodGen, elemNamespaceHandle);
+            } else {
                 targets[i] = ihLoop;
             }
         }
 
+        // Handle pattern with match on root node - default: traverse children
+        targets[DTM.ROOT_NODE] =
+                _rootPattern != null
+                        ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+                        : ihRecurse;
 
         // Handle pattern with match on root node - default: traverse children
-        targets[DTM.ROOT_NODE] = _rootPattern != null
-            ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
-
-        // Handle pattern with match on root node - default: traverse children
-        targets[DTM.DOCUMENT_NODE] = _rootPattern != null
-            ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
+        targets[DTM.DOCUMENT_NODE] =
+                _rootPattern != null
+                        ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+                        : ihRecurse;
 
         // Handle any pattern with match on text nodes - default: output text
-        targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null
-            ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)
-            : ihText;
+        targets[DTM.TEXT_NODE] =
+                _testSeq[DTM.TEXT_NODE] != null
+                        ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)
+                        : ihText;
 
         // This DOM-type is not in use - default: process next node
         targets[DTM.NAMESPACE_NODE] = ihLoop;
@@ -933,19 +851,18 @@ final class Mode implements Constants {
         if (_childNodeTestSeq != null) ihPI = ihElem;
         if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null)
             targets[DTM.PROCESSING_INSTRUCTION_NODE] =
-                _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].
-                compile(classGen, methodGen, ihPI);
-        else
-            targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
+                    _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(classGen, methodGen, ihPI);
+        else targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
 
         // Match on comments - default: process next node
         InstructionHandle ihComment = ihLoop;
         if (_childNodeTestSeq != null) ihComment = ihElem;
-        targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null
-            ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)
-            : ihComment;
+        targets[DTM.COMMENT_NODE] =
+                _testSeq[DTM.COMMENT_NODE] != null
+                        ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)
+                        : ihComment;
 
-            // This DOM-type is not in use - default: process next node
+        // This DOM-type is not in use - default: process next node
         targets[DTM.CDATA_SECTION_NODE] = ihLoop;
 
         // This DOM-type is not in use - default: process next node
@@ -963,34 +880,26 @@ final class Mode implements Constants {
         // This DOM-type is not in use - default: process next node
         targets[DTM.NOTATION_NODE] = ihLoop;
 
-
         // Now compile test sequences for various match patterns:
         for (int i = DTM.NTYPES; i < targets.length; i++) {
             final TestSeq testSeq = _testSeq[i];
             // Jump straight to namespace tests ?
             if ((testSeq == null) || (isNamespace[i])) {
-                if (isAttribute[i])
-                    targets[i] = attrNamespaceHandle;
-                else
-                    targets[i] = elemNamespaceHandle;
+                if (isAttribute[i]) targets[i] = attrNamespaceHandle;
+                else targets[i] = elemNamespaceHandle;
             }
             // Match on node type
             else {
                 if (isAttribute[i])
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 attrNamespaceHandle);
-                else
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 elemNamespaceHandle);
+                    targets[i] = testSeq.compile(classGen, methodGen, attrNamespaceHandle);
+                else targets[i] = testSeq.compile(classGen, methodGen, elemNamespaceHandle);
             }
         }
 
         if (ilKey != null) body.insert(ilKey);
 
         // Append first code in applyTemplates() - get type of current node
-        final int getType = cpg.addInterfaceMethodref(DOM_INTF,
-                                                      "getExpandedTypeID",
-                                                      "(I)I");
+        final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
         body.append(methodGen.loadDOM());
         body.append(new ILOAD(_currentIndex));
         body.append(new INVOKEINTERFACE(getType, 2));
@@ -1029,24 +938,28 @@ final class Mode implements Constants {
         }
     }
 
-    private void compileTemplateCalls(ClassGenerator classGen,
-                                      MethodGenerator methodGen,
-                                      InstructionHandle next, int min, int max){
-        _neededTemplates.keySet().stream().forEach((template) -> {
-            final int prec = template.getImportPrecedence();
-            if ((prec >= min) && (prec < max)) {
-                if (template.hasContents()) {
-                    InstructionList til = template.compile(classGen, methodGen);
-                    til.append(new GOTO_W(next));
-                    _templateILs.put(template, til);
-                    _templateIHs.put(template, til.getStart());
-                }
-                else {
-                    // empty template
-                    _templateIHs.put(template, next);
-                }
-            }
-        });
+    private void compileTemplateCalls(
+            ClassGenerator classGen,
+            MethodGenerator methodGen,
+            InstructionHandle next,
+            int min,
+            int max) {
+        _neededTemplates.keySet().stream()
+                .forEach(
+                        (template) -> {
+                            final int prec = template.getImportPrecedence();
+                            if ((prec >= min) && (prec < max)) {
+                                if (template.hasContents()) {
+                                    InstructionList til = template.compile(classGen, methodGen);
+                                    til.append(new GOTO_W(next));
+                                    _templateILs.put(template, til);
+                                    _templateIHs.put(template, til.getStart());
+                                } else {
+                                    // empty template
+                                    _templateIHs.put(template, next);
+                                }
+                            }
+                        });
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -1060,7 +973,7 @@ final class Mode implements Constants {
         _neededTemplates = new LinkedHashMap<>();
         _templateIHs = new HashMap<>();
         _templateILs = new HashMap<>();
-        _patternGroups = (List<LocationPathPattern>[])new ArrayList[32];
+        _patternGroups = (List<LocationPathPattern>[]) new ArrayList[32];
         _rootPattern = null;
 
         // IMPORTANT: Save orignal & complete set of templates!!!!
@@ -1078,7 +991,7 @@ final class Mode implements Constants {
 
         // Create the applyTemplates() method
         final com.sun.org.apache.bcel.internal.generic.Type[] argTypes =
-            new com.sun.org.apache.bcel.internal.generic.Type[4];
+                new com.sun.org.apache.bcel.internal.generic.Type[4];
         argTypes[0] = Util.getJCRefType(DOM_INTF_SIG);
         argTypes[1] = Util.getJCRefType(NODE_ITERATOR_SIG);
         argTypes[2] = Util.getJCRefType(TRANSLET_OUTPUT_SIG);
@@ -1092,18 +1005,22 @@ final class Mode implements Constants {
 
         final InstructionList mainIL = new InstructionList();
         final MethodGenerator methodGen =
-            new MethodGenerator(ACC_PUBLIC | ACC_FINAL,
-                                com.sun.org.apache.bcel.internal.generic.Type.VOID,
-                                argTypes, argNames, functionName()+'_'+max,
-                                getClassName(), mainIL,
-                                classGen.getConstantPool());
+                new MethodGenerator(
+                        ACC_PUBLIC | ACC_FINAL,
+                        com.sun.org.apache.bcel.internal.generic.Type.VOID,
+                        argTypes,
+                        argNames,
+                        functionName() + '_' + max,
+                        getClassName(),
+                        mainIL,
+                        classGen.getConstantPool());
         methodGen.addException("com.sun.org.apache.xalan.internal.xsltc.TransletException");
 
         // Create the local variable to hold the current node
         final LocalVariableGen current;
-        current = methodGen.addLocalVariable2("current",
-                                              com.sun.org.apache.bcel.internal.generic.Type.INT,
-                                              null);
+        current =
+                methodGen.addLocalVariable2(
+                        "current", com.sun.org.apache.bcel.internal.generic.Type.INT, null);
         _currentIndex = current.getIndex();
 
         mainIL.append(new ILOAD(methodGen.getLocalIndex(NODE_PNAME)));
@@ -1121,13 +1038,11 @@ final class Mode implements Constants {
         final InstructionHandle ihLoop = ilLoop.getStart();
 
         // Compile default handling of elements (traverse children)
-        InstructionList ilRecurse =
-            compileDefaultRecursion(classGen, methodGen, ihLoop);
+        InstructionList ilRecurse = compileDefaultRecursion(classGen, methodGen, ihLoop);
         InstructionHandle ihRecurse = ilRecurse.getStart();
 
         // Compile default handling of text/attribute nodes (output text)
-        InstructionList ilText =
-            compileDefaultText(classGen, methodGen, ihLoop);
+        InstructionList ilText = compileDefaultText(classGen, methodGen, ihLoop);
         InstructionHandle ihText = ilText.getStart();
 
         // Distinguish attribute/element/namespace tests for further processing
@@ -1140,8 +1055,8 @@ final class Mode implements Constants {
         final boolean[] isNamespace = new boolean[types.length];
         for (int i = 0; i < names.size(); i++) {
             final String name = names.get(i);
-            isAttribute[i+DTM.NTYPES] = isAttributeName(name);
-            isNamespace[i+DTM.NTYPES] = isNamespaceName(name);
+            isAttribute[i + DTM.NTYPES] = isAttributeName(name);
+            isNamespace[i + DTM.NTYPES] = isNamespaceName(name);
         }
 
         // Compile all templates - regardless of pattern type
@@ -1172,34 +1087,34 @@ final class Mode implements Constants {
         if (_childNodeTestSeq != null) {
             // Compare priorities of node() and "*"
             double nodePrio = _childNodeTestSeq.getPriority();
-            int    nodePos  = _childNodeTestSeq.getPosition();
+            int nodePos = _childNodeTestSeq.getPosition();
             double elemPrio = (0 - Double.MAX_VALUE);
-            int    elemPos  = Integer.MIN_VALUE;
+            int elemPos = Integer.MIN_VALUE;
 
             if (elemTest != null) {
                 elemPrio = elemTest.getPriority();
-                elemPos  = elemTest.getPosition();
+                elemPos = elemTest.getPosition();
             }
 
-            if (elemPrio == Double.NaN || elemPrio < nodePrio ||
-                (elemPrio == nodePrio && elemPos < nodePos))
-            {
+            if (elemPrio == Double.NaN
+                    || elemPrio < nodePrio
+                    || (elemPrio == nodePrio && elemPos < nodePos)) {
                 ihElem = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);
             }
 
             // Compare priorities of node() and text()
             final TestSeq textTest = _testSeq[DTM.TEXT_NODE];
             double textPrio = (0 - Double.MAX_VALUE);
-            int    textPos  = Integer.MIN_VALUE;
+            int textPos = Integer.MIN_VALUE;
 
             if (textTest != null) {
                 textPrio = textTest.getPriority();
-                textPos  = textTest.getPosition();
+                textPos = textTest.getPosition();
             }
 
-            if (textPrio == Double.NaN || textPrio < nodePrio ||
-                (textPrio == nodePrio && textPos < nodePos))
-            {
+            if (textPrio == Double.NaN
+                    || textPrio < nodePrio
+                    || (textPrio == nodePrio && textPos < nodePos)) {
                 ihText = _childNodeTestSeq.compile(classGen, methodGen, ihLoop);
                 _testSeq[DTM.TEXT_NODE] = _childNodeTestSeq;
             }
@@ -1207,15 +1122,13 @@ final class Mode implements Constants {
 
         // Handle templates with "ns:*" pattern
         InstructionHandle elemNamespaceHandle = ihElem;
-        InstructionList nsElem = compileNamespaces(classGen, methodGen,
-                                                   isNamespace, isAttribute,
-                                                   false, ihElem);
+        InstructionList nsElem =
+                compileNamespaces(classGen, methodGen, isNamespace, isAttribute, false, ihElem);
         if (nsElem != null) elemNamespaceHandle = nsElem.getStart();
 
         // Handle templates with "ns:@*" pattern
-        InstructionList nsAttr = compileNamespaces(classGen, methodGen,
-                                                   isNamespace, isAttribute,
-                                                   true, ihAttr);
+        InstructionList nsAttr =
+                compileNamespaces(classGen, methodGen, isNamespace, isAttribute, true, ihAttr);
         InstructionHandle attrNamespaceHandle = ihAttr;
         if (nsAttr != null) attrNamespaceHandle = nsAttr.getStart();
 
@@ -1225,38 +1138,35 @@ final class Mode implements Constants {
             final TestSeq testSeq = _testSeq[i];
             // Jump straight to namespace tests ?
             if (isNamespace[i]) {
-                if (isAttribute[i])
-                    targets[i] = attrNamespaceHandle;
-                else
-                    targets[i] = elemNamespaceHandle;
+                if (isAttribute[i]) targets[i] = attrNamespaceHandle;
+                else targets[i] = elemNamespaceHandle;
             }
             // Test first, then jump to namespace tests
             else if (testSeq != null) {
                 if (isAttribute[i])
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 attrNamespaceHandle);
-                else
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 elemNamespaceHandle);
-            }
-            else {
+                    targets[i] = testSeq.compile(classGen, methodGen, attrNamespaceHandle);
+                else targets[i] = testSeq.compile(classGen, methodGen, elemNamespaceHandle);
+            } else {
                 targets[i] = ihLoop;
             }
         }
 
         // Handle pattern with match on root node - default: traverse children
-        targets[DTM.ROOT_NODE] = _rootPattern != null
-            ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;
+        targets[DTM.ROOT_NODE] =
+                _rootPattern != null
+                        ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+                        : ihRecurse;
         // Handle pattern with match on root node - default: traverse children
-        targets[DTM.DOCUMENT_NODE] = _rootPattern != null
-            ? getTemplateInstructionHandle(_rootPattern.getTemplate())
-            : ihRecurse;    // %HZ%:  Was ihLoop in XSLTC_DTM branch
+        targets[DTM.DOCUMENT_NODE] =
+                _rootPattern != null
+                        ? getTemplateInstructionHandle(_rootPattern.getTemplate())
+                        : ihRecurse; // %HZ%:  Was ihLoop in XSLTC_DTM branch
 
         // Handle any pattern with match on text nodes - default: loop
-        targets[DTM.TEXT_NODE] = _testSeq[DTM.TEXT_NODE] != null
-            ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)
-            : ihText;
+        targets[DTM.TEXT_NODE] =
+                _testSeq[DTM.TEXT_NODE] != null
+                        ? _testSeq[DTM.TEXT_NODE].compile(classGen, methodGen, ihText)
+                        : ihText;
 
         // This DOM-type is not in use - default: process next node
         targets[DTM.NAMESPACE_NODE] = ihLoop;
@@ -1272,21 +1182,20 @@ final class Mode implements Constants {
         if (_childNodeTestSeq != null) ihPI = ihElem;
         if (_testSeq[DTM.PROCESSING_INSTRUCTION_NODE] != null) {
             targets[DTM.PROCESSING_INSTRUCTION_NODE] =
-                _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].
-                compile(classGen, methodGen, ihPI);
-        }
-        else {
+                    _testSeq[DTM.PROCESSING_INSTRUCTION_NODE].compile(classGen, methodGen, ihPI);
+        } else {
             targets[DTM.PROCESSING_INSTRUCTION_NODE] = ihPI;
         }
 
         // Match on comments - default: process next node
         InstructionHandle ihComment = ihLoop;
         if (_childNodeTestSeq != null) ihComment = ihElem;
-        targets[DTM.COMMENT_NODE] = _testSeq[DTM.COMMENT_NODE] != null
-            ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)
-            : ihComment;
+        targets[DTM.COMMENT_NODE] =
+                _testSeq[DTM.COMMENT_NODE] != null
+                        ? _testSeq[DTM.COMMENT_NODE].compile(classGen, methodGen, ihComment)
+                        : ihComment;
 
-                // This DOM-type is not in use - default: process next node
+        // This DOM-type is not in use - default: process next node
         targets[DTM.CDATA_SECTION_NODE] = ihLoop;
 
         // This DOM-type is not in use - default: process next node
@@ -1304,41 +1213,32 @@ final class Mode implements Constants {
         // This DOM-type is not in use - default: process next node
         targets[DTM.NOTATION_NODE] = ihLoop;
 
-
-
         // Now compile test sequences for various match patterns:
         for (int i = DTM.NTYPES; i < targets.length; i++) {
             final TestSeq testSeq = _testSeq[i];
             // Jump straight to namespace tests ?
             if ((testSeq == null) || (isNamespace[i])) {
-                if (isAttribute[i])
-                    targets[i] = attrNamespaceHandle;
-                else
-                    targets[i] = elemNamespaceHandle;
+                if (isAttribute[i]) targets[i] = attrNamespaceHandle;
+                else targets[i] = elemNamespaceHandle;
             }
             // Match on node type
             else {
                 if (isAttribute[i])
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 attrNamespaceHandle);
-                else
-                    targets[i] = testSeq.compile(classGen, methodGen,
-                                                 elemNamespaceHandle);
+                    targets[i] = testSeq.compile(classGen, methodGen, attrNamespaceHandle);
+                else targets[i] = testSeq.compile(classGen, methodGen, elemNamespaceHandle);
             }
         }
 
         if (ilKey != null) body.insert(ilKey);
 
         // Append first code in applyTemplates() - get type of current node
-        final int getType = cpg.addInterfaceMethodref(DOM_INTF,
-                                                      "getExpandedTypeID",
-                                                      "(I)I");
+        final int getType = cpg.addInterfaceMethodref(DOM_INTF, "getExpandedTypeID", "(I)I");
         body.append(methodGen.loadDOM());
         body.append(new ILOAD(_currentIndex));
         body.append(new INVOKEINTERFACE(getType, 2));
 
         // Append switch() statement - main dispatch loop in applyTemplates()
-        InstructionHandle disp = body.append(new SWITCH(types,targets,ihLoop));
+        InstructionHandle disp = body.append(new SWITCH(types, targets, ihLoop));
 
         // Append all the "case:" statements
         appendTestSequences(body);
@@ -1371,9 +1271,7 @@ final class Mode implements Constants {
         _templates = oldTemplates;
     }
 
-    /**
-      * Peephole optimization.
-      */
+    /** Peephole optimization. */
     private void peepHoleOptimization(MethodGenerator methodGen) {
         InstructionList il = methodGen.getInstructionList();
         InstructionFinder find = new InstructionFinder(il);
@@ -1382,94 +1280,94 @@ final class Mode implements Constants {
 
         // LoadInstruction, POP => (removed)
         // pattern = "LoadInstruction POP";
-        // changed to lower case - changing to all lower case although only the instruction with capital I
+        // changed to lower case - changing to all lower case although only the instruction with
+        // capital I
         // is creating a problem in the Turkish locale
         pattern = "loadinstruction pop";
 
-        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext(); ) {
             InstructionHandle[] match = iter.next();
             try {
                 if (!match[0].hasTargeters() && !match[1].hasTargeters()) {
                     il.delete(match[0], match[1]);
                 }
-            }
-            catch (TargetLostException e) {
+            } catch (TargetLostException e) {
                 // TODO: move target down into the list
             }
         }
 
         // ILOAD_N, ILOAD_N, SWAP, ISTORE_N => ILOAD_N
         // pattern = "ILOAD ILOAD SWAP ISTORE";
-        // changed to lower case - changing to all lower case although only the instruction with capital I
+        // changed to lower case - changing to all lower case although only the instruction with
+        // capital I
         // is creating a problem in the Turkish locale
         pattern = "iload iload swap istore";
-        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext(); ) {
             InstructionHandle[] match = iter.next();
             try {
                 com.sun.org.apache.bcel.internal.generic.ILOAD iload1 =
-                    (com.sun.org.apache.bcel.internal.generic.ILOAD) match[0].getInstruction();
+                        (com.sun.org.apache.bcel.internal.generic.ILOAD) match[0].getInstruction();
                 com.sun.org.apache.bcel.internal.generic.ILOAD iload2 =
-                    (com.sun.org.apache.bcel.internal.generic.ILOAD) match[1].getInstruction();
+                        (com.sun.org.apache.bcel.internal.generic.ILOAD) match[1].getInstruction();
                 com.sun.org.apache.bcel.internal.generic.ISTORE istore =
-                    (com.sun.org.apache.bcel.internal.generic.ISTORE) match[3].getInstruction();
+                        (com.sun.org.apache.bcel.internal.generic.ISTORE) match[3].getInstruction();
 
-                if (!match[1].hasTargeters() &&
-                    !match[2].hasTargeters() &&
-                    !match[3].hasTargeters() &&
-                    iload1.getIndex() == iload2.getIndex() &&
-                    iload2.getIndex() == istore.getIndex())
-                {
+                if (!match[1].hasTargeters()
+                        && !match[2].hasTargeters()
+                        && !match[3].hasTargeters()
+                        && iload1.getIndex() == iload2.getIndex()
+                        && iload2.getIndex() == istore.getIndex()) {
                     il.delete(match[1], match[3]);
                 }
-            }
-            catch (TargetLostException e) {
+            } catch (TargetLostException e) {
                 // TODO: move target down into the list
             }
         }
 
         // LoadInstruction_N, LoadInstruction_M, SWAP => LoadInstruction_M, LoadInstruction_N
         // pattern = "LoadInstruction LoadInstruction SWAP";
-        // changed to lower case - changing to all lower case although only the instruction with capital I
+        // changed to lower case - changing to all lower case although only the instruction with
+        // capital I
         // is creating a problem in the Turkish locale
         pattern = "loadinstruction loadinstruction swap";
-        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext(); ) {
             InstructionHandle[] match = iter.next();
             try {
-                if (!match[0].hasTargeters() &&
-                    !match[1].hasTargeters() &&
-                    !match[2].hasTargeters())
-                {
+                if (!match[0].hasTargeters()
+                        && !match[1].hasTargeters()
+                        && !match[2].hasTargeters()) {
                     Instruction load_m = match[1].getInstruction();
                     il.insert(match[0], load_m);
                     il.delete(match[1], match[2]);
                 }
-            }
-            catch (TargetLostException e) {
+            } catch (TargetLostException e) {
                 // TODO: move target down into the list
             }
         }
 
         // ALOAD_N ALOAD_N => ALOAD_N DUP
         // pattern = "ALOAD ALOAD";
-        // changed to lower case - changing to all lower case although only the instruction with capital I
+        // changed to lower case - changing to all lower case although only the instruction with
+        // capital I
         // is creating a problem in the Turkish locale
         pattern = "aload aload";
-        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext();) {
+        for (Iterator<InstructionHandle[]> iter = find.search(pattern); iter.hasNext(); ) {
             InstructionHandle[] match = iter.next();
             try {
                 if (!match[1].hasTargeters()) {
                     com.sun.org.apache.bcel.internal.generic.ALOAD aload1 =
-                        (com.sun.org.apache.bcel.internal.generic.ALOAD) match[0].getInstruction();
+                            (com.sun.org.apache.bcel.internal.generic.ALOAD)
+                                    match[0].getInstruction();
                     com.sun.org.apache.bcel.internal.generic.ALOAD aload2 =
-                        (com.sun.org.apache.bcel.internal.generic.ALOAD) match[1].getInstruction();
+                            (com.sun.org.apache.bcel.internal.generic.ALOAD)
+                                    match[1].getInstruction();
 
                     if (aload1.getIndex() == aload2.getIndex()) {
                         il.insert(match[1], new DUP());
                         il.delete(match[1]);
                     }
                 }
-            }
-            catch (TargetLostException e) {
+            } catch (TargetLostException e) {
                 // TODO: move target down into the list
             }
         }
@@ -1479,20 +1377,15 @@ final class Mode implements Constants {
         return _templateIHs.get(template);
     }
 
-    /**
-     * Auxiliary method to determine if a qname is an attribute.
-     */
+    /** Auxiliary method to determine if a qname is an attribute. */
     private static boolean isAttributeName(String qname) {
         final int col = qname.lastIndexOf(':') + 1;
         return (qname.charAt(col) == '@');
     }
 
-    /**
-     * Auxiliary method to determine if a qname is a namespace
-     * qualified "*".
-     */
+    /** Auxiliary method to determine if a qname is a namespace qualified "*". */
     private static boolean isNamespaceName(String qname) {
         final int col = qname.lastIndexOf(':');
-        return (col > -1 && qname.charAt(qname.length()-1) == '*');
+        return (col > -1 && qname.charAt(qname.length() - 1) == '*');
     }
 }

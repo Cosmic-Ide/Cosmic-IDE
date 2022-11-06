@@ -25,12 +25,11 @@
 
 package com.sun.org.apache.xalan.internal.xsltc.trax;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.Locator2;
 
 /**
  * @author Sunitha Reddy
@@ -41,9 +40,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
 
     private boolean needToCallStartDocument = false;
 
-    public SAX2StAXStreamWriter() {
-
-    }
+    public SAX2StAXStreamWriter() {}
 
     public SAX2StAXStreamWriter(XMLStreamWriter writer) {
         this.writer = writer;
@@ -75,8 +72,8 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
         super.endDocument();
     }
 
-    public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes)
+            throws SAXException {
 
         if (needToCallStartDocument) {
             writeStartDocument();
@@ -86,9 +83,9 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
 
             String[] qname = {null, null};
             parseQName(qName, qname);
-            //Do not call writeStartElement with prefix and namespaceURI, as it writes out
-            //namespace declaration.
-            //writer.writeStartElement(qname[0], qname[1], uri);
+            // Do not call writeStartElement with prefix and namespaceURI, as it writes out
+            // namespace declaration.
+            // writer.writeStartElement(qname[0], qname[1], uri);
             writer.writeStartElement(qName);
 
             // write attributes and namespaces as attributes
@@ -115,8 +112,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
                     writer.writeNamespace(attrLocal, attrValue);
 
                 } else if (attrPrefix.length() > 0) {
-                    writer.writeAttribute(attrPrefix, attrURI, attrLocal,
-                            attrValue);
+                    writer.writeAttribute(attrPrefix, attrURI, attrLocal, attrValue);
                 } else {
                     writer.writeAttribute(attrQName, attrValue);
                 }
@@ -129,8 +125,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
         }
     }
 
-    public void endElement(String uri, String localName, String qName)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         try {
             writer.writeEndElement();
         } catch (XMLStreamException e) {
@@ -152,8 +147,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
         }
     }
 
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         super.characters(ch, start, length);
         try {
             if (!isCDATA) {
@@ -174,8 +168,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
         super.endCDATA();
     }
 
-    public void ignorableWhitespace(char[] ch, int start, int length)
-            throws SAXException {
+    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
 
         super.ignorableWhitespace(ch, start, length);
         try {
@@ -185,8 +178,7 @@ public class SAX2StAXStreamWriter extends SAX2StAXBaseWriter {
         }
     }
 
-    public void processingInstruction(String target, String data)
-            throws SAXException {
+    public void processingInstruction(String target, String data) throws SAXException {
 
         super.processingInstruction(target, data);
         try {

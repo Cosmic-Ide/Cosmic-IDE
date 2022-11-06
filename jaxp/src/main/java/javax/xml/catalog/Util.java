@@ -24,6 +24,16 @@
  */
 package javax.xml.catalog;
 
+import static javax.xml.catalog.CatalogFeatures.DEFER_FALSE;
+import static javax.xml.catalog.CatalogFeatures.DEFER_TRUE;
+import static javax.xml.catalog.CatalogFeatures.PREFER_PUBLIC;
+import static javax.xml.catalog.CatalogFeatures.PREFER_SYSTEM;
+import static javax.xml.catalog.CatalogFeatures.RESOLVE_CONTINUE;
+import static javax.xml.catalog.CatalogFeatures.RESOLVE_IGNORE;
+import static javax.xml.catalog.CatalogFeatures.RESOLVE_STRICT;
+
+import jdk.xml.internal.SecuritySupport;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,42 +41,33 @@ import java.net.URI;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import static javax.xml.catalog.CatalogFeatures.DEFER_FALSE;
-import static javax.xml.catalog.CatalogFeatures.DEFER_TRUE;
+
 import javax.xml.catalog.CatalogFeatures.Feature;
-import static javax.xml.catalog.CatalogFeatures.PREFER_PUBLIC;
-import static javax.xml.catalog.CatalogFeatures.PREFER_SYSTEM;
-import static javax.xml.catalog.CatalogFeatures.RESOLVE_CONTINUE;
-import static javax.xml.catalog.CatalogFeatures.RESOLVE_IGNORE;
-import static javax.xml.catalog.CatalogFeatures.RESOLVE_STRICT;
-import jdk.xml.internal.SecuritySupport;
 
 /**
- *
  * @since 9
  */
 class Util {
 
-    final static String URN = "urn:publicid:";
-    final static String PUBLICID_PREFIX = "-//";
-    final static String PUBLICID_PREFIX_ALT = "+//";
-    final static String SCHEME_FILE = "file";
-    final static String SCHEME_JAR = "jar";
-    final static String SCHEME_JARFILE = "jar:file:";
+    static final String URN = "urn:publicid:";
+    static final String PUBLICID_PREFIX = "-//";
+    static final String PUBLICID_PREFIX_ALT = "+//";
+    static final String SCHEME_FILE = "file";
+    static final String SCHEME_JAR = "jar";
+    static final String SCHEME_JARFILE = "jar:file:";
 
     /**
      * Finds an entry in the catalog that matches with the publicId or systemId.
      *
-     * The resolution follows the following rules determined by the prefer
-     * setting:
+     * <p>The resolution follows the following rules determined by the prefer setting:
      *
-     * prefer "system": attempts to resolve with a system entry; attempts to
-     * resolve with a public entry when only publicId is specified.
+     * <p>prefer "system": attempts to resolve with a system entry; attempts to resolve with a
+     * public entry when only publicId is specified.
      *
-     * prefer "public": attempts to resolve with a system entry; attempts to
-     * resolve with a public entry if no matching system entry is found.
+     * <p>prefer "public": attempts to resolve with a system entry; attempts to resolve with a
+     * public entry if no matching system entry is found.
      *
-     * If no match is found, continue searching uri entries
+     * <p>If no match is found, continue searching uri entries
      *
      * @param catalog the catalog
      * @param publicId the publicId
@@ -76,13 +77,13 @@ class Util {
     static String resolve(CatalogImpl catalog, String publicId, String systemId) {
         String resolvedSystemId = null;
 
-        //search the current catalog
+        // search the current catalog
         catalog.reset();
         if (systemId != null) {
             /*
-             If a system identifier is specified, it is used no matter how
-             prefer is set.
-             */
+            If a system identifier is specified, it is used no matter how
+            prefer is set.
+            */
             resolvedSystemId = catalog.matchSystem(systemId);
         }
 
@@ -94,10 +95,10 @@ class Util {
             resolvedSystemId = catalog.matchURI(systemId);
         }
 
-        //mark the catalog as having been searched before trying alternatives
+        // mark the catalog as having been searched before trying alternatives
         catalog.markAsSearched();
 
-        //search alternative catalogs
+        // search alternative catalogs
         if (resolvedSystemId == null) {
             Iterator<Catalog> iter = catalog.catalogs().iterator();
             while (iter.hasNext()) {
@@ -105,7 +106,6 @@ class Util {
                 if (resolvedSystemId != null) {
                     break;
                 }
-
             }
         }
 
@@ -127,27 +127,26 @@ class Util {
     /**
      * Validate that the URI must be absolute and a valid URL.
      *
-     * Note that this method does not verify the existence of the resource. The
-     * Catalog standard requires that such resources be ignored.
+     * <p>Note that this method does not verify the existence of the resource. The Catalog standard
+     * requires that such resources be ignored.
      *
      * @param uri
-     * @throws IllegalArgumentException if the uri is not absolute and a valid
-     * URL
+     * @throws IllegalArgumentException if the uri is not absolute and a valid URL
      */
     static void validateUriSyntax(URI uri) {
         CatalogMessages.reportNPEOnNull("URI input", uri);
 
         if (!uri.isAbsolute()) {
-            CatalogMessages.reportIAE(CatalogMessages.ERR_URI_NOTABSOLUTE,
-                    new Object[]{uri}, null);
+            CatalogMessages.reportIAE(
+                    CatalogMessages.ERR_URI_NOTABSOLUTE, new Object[] {uri}, null);
         }
 
         try {
             // check if the scheme was valid
             uri.toURL();
         } catch (MalformedURLException ex) {
-            CatalogMessages.reportIAE(CatalogMessages.ERR_URI_NOTVALIDURL,
-                    new Object[]{uri}, null);
+            CatalogMessages.reportIAE(
+                    CatalogMessages.ERR_URI_NOTVALIDURL, new Object[] {uri}, null);
         }
     }
 
@@ -158,8 +157,7 @@ class Util {
      * @return true if it is a file or JAR file URI, false otherwise
      */
     static boolean isFileUri(URI uri) {
-        if (SCHEME_FILE.equals(uri.getScheme())
-                || SCHEME_JAR.equals(uri.getScheme())) {
+        if (SCHEME_FILE.equals(uri.getScheme()) || SCHEME_JAR.equals(uri.getScheme())) {
             return true;
         }
         return false;
@@ -169,8 +167,8 @@ class Util {
      * Verifies whether the file resource exists.
      *
      * @param uri the URI to locate the resource
-     * @param openJarFile a flag to indicate whether a JAR file should be
-     * opened. This operation may be expensive.
+     * @param openJarFile a flag to indicate whether a JAR file should be opened. This operation may
+     *     be expensive.
      * @return true if the resource exists, false otherwise.
      */
     static boolean isFileUriExist(URI uri, boolean openJarFile) {
@@ -213,8 +211,8 @@ class Util {
     }
 
     /**
-     * Find catalog file paths by reading the system property, and then
-     * jaxp.properties if the system property is not specified.
+     * Find catalog file paths by reading the system property, and then jaxp.properties if the
+     * system property is not specified.
      *
      * @param sysPropertyName the name of system property
      * @return the catalog file paths, or null if not found.
@@ -228,13 +226,12 @@ class Util {
     }
 
     /**
-     * Checks whether the specified string is null or empty, returns the
-     * original string with leading and trailing spaces removed if not.
+     * Checks whether the specified string is null or empty, returns the original string with
+     * leading and trailing spaces removed if not.
      *
      * @param test the string to be tested
-     * @return the original string with leading and trailing spaces removed, or
-     * null if it is null or empty
-     *
+     * @return the original string with leading and trailing spaces removed, or null if it is null
+     *     or empty
      */
     static String getNotNullOrEmpty(String test) {
         if (test == null) {
@@ -259,25 +256,32 @@ class Util {
     static void validateFeatureInput(Feature f, String value) {
         CatalogMessages.reportNPEOnNull(f.name(), value);
         if (value.length() == 0) {
-            CatalogMessages.reportIAE(CatalogMessages.ERR_INVALID_ARGUMENT,
-                    new Object[]{value, f.name()}, null);
+            CatalogMessages.reportIAE(
+                    CatalogMessages.ERR_INVALID_ARGUMENT, new Object[] {value, f.name()}, null);
         }
 
         if (f == Feature.PREFER) {
             if (!value.equals(PREFER_SYSTEM) && !value.equals(PREFER_PUBLIC)) {
-                CatalogMessages.reportIAE(CatalogMessages.ERR_INVALID_ARGUMENT,
-                        new Object[]{value, Feature.PREFER.name()}, null);
+                CatalogMessages.reportIAE(
+                        CatalogMessages.ERR_INVALID_ARGUMENT,
+                        new Object[] {value, Feature.PREFER.name()},
+                        null);
             }
         } else if (f == Feature.DEFER) {
             if (!value.equals(DEFER_TRUE) && !value.equals(DEFER_FALSE)) {
-                CatalogMessages.reportIAE(CatalogMessages.ERR_INVALID_ARGUMENT,
-                        new Object[]{value, Feature.DEFER.name()}, null);
+                CatalogMessages.reportIAE(
+                        CatalogMessages.ERR_INVALID_ARGUMENT,
+                        new Object[] {value, Feature.DEFER.name()},
+                        null);
             }
         } else if (f == Feature.RESOLVE) {
-            if (!value.equals(RESOLVE_STRICT) && !value.equals(RESOLVE_CONTINUE)
+            if (!value.equals(RESOLVE_STRICT)
+                    && !value.equals(RESOLVE_CONTINUE)
                     && !value.equals(RESOLVE_IGNORE)) {
-                CatalogMessages.reportIAE(CatalogMessages.ERR_INVALID_ARGUMENT,
-                        new Object[]{value, Feature.RESOLVE.name()}, null);
+                CatalogMessages.reportIAE(
+                        CatalogMessages.ERR_INVALID_ARGUMENT,
+                        new Object[] {value, Feature.RESOLVE.name()},
+                        null);
             }
         } else if (f == Feature.FILES) {
             Util.validateUrisSyntax(value.split(";"));

@@ -21,24 +21,18 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
-/**
- * This class represents a constant pool reference to an interface method.
- *
- */
+/** This class represents a constant pool reference to an interface method. */
 public final class ConstantInterfaceMethodref extends ConstantCP {
 
-    /**
-     * Initialize from another object.
-     */
+    /** Initialize from another object. */
     public ConstantInterfaceMethodref(final ConstantInterfaceMethodref c) {
         super(Const.CONSTANT_InterfaceMethodref, c.getClassIndex(), c.getNameAndTypeIndex());
     }
-
 
     /**
      * Initialize instance from input data.
@@ -50,7 +44,6 @@ public final class ConstantInterfaceMethodref extends ConstantCP {
         super(Const.CONSTANT_InterfaceMethodref, input);
     }
 
-
     /**
      * @param class_index Reference to the class containing the method
      * @param name_and_type_index and the method signature
@@ -59,16 +52,15 @@ public final class ConstantInterfaceMethodref extends ConstantCP {
         super(Const.CONSTANT_InterfaceMethodref, class_index, name_and_type_index);
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitConstantInterfaceMethodref(this);
     }
 }

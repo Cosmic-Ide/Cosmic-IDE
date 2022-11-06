@@ -21,64 +21,58 @@
 
 package com.sun.org.apache.bcel.internal.generic;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.sun.org.apache.bcel.internal.Const;
 import com.sun.org.apache.bcel.internal.ExceptionConst;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * INVOKESTATIC - Invoke a class (static) method
  *
  * <PRE>Stack: ..., [arg1, [arg2 ...]] -&gt; ...</PRE>
  *
- * @see
- * <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.invokestatic">
- * The invokestatic instruction in The Java Virtual Machine Specification</a>
+ * @see <a
+ *     href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.invokestatic">
+ *     The invokestatic instruction in The Java Virtual Machine Specification</a>
  */
 public class INVOKESTATIC extends InvokeInstruction {
 
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    INVOKESTATIC() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    INVOKESTATIC() {}
 
     public INVOKESTATIC(final int index) {
         super(Const.INVOKESTATIC, index);
     }
 
-
     /**
      * Dump instruction as byte code to stream out.
+     *
      * @param out Output stream
      */
     @Override
-    public void dump( final DataOutputStream out ) throws IOException {
-      out.writeByte(super.getOpcode());
-      out.writeShort(super.getIndex());
+    public void dump(final DataOutputStream out) throws IOException {
+        out.writeByte(super.getOpcode());
+        out.writeShort(super.getIndex());
     }
 
     @Override
     public Class<?>[] getExceptions() {
-        return ExceptionConst.createExceptions(ExceptionConst.EXCS.EXCS_FIELD_AND_METHOD_RESOLUTION,
-            ExceptionConst.UNSATISFIED_LINK_ERROR,
-            ExceptionConst.INCOMPATIBLE_CLASS_CHANGE_ERROR);
+        return ExceptionConst.createExceptions(
+                ExceptionConst.EXCS.EXCS_FIELD_AND_METHOD_RESOLUTION,
+                ExceptionConst.UNSATISFIED_LINK_ERROR,
+                ExceptionConst.INCOMPATIBLE_CLASS_CHANGE_ERROR);
     }
 
-
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
      * i.e., the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitExceptionThrower(this);
         v.visitTypedInstruction(this);
         v.visitStackConsumer(this);

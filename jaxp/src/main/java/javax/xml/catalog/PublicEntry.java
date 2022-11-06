@@ -37,6 +37,7 @@ final class PublicEntry extends BaseEntry {
 
     /**
      * Construct a public entry.
+     *
      * @param publicId The publicId attribute.
      * @param uri The uri attribute.
      */
@@ -48,6 +49,7 @@ final class PublicEntry extends BaseEntry {
 
     /**
      * Set the publicId attribute.
+     *
      * @param publicId The publicId attribute value.
      */
     public void setPublicId(String publicId) {
@@ -56,9 +58,10 @@ final class PublicEntry extends BaseEntry {
     }
 
     /**
-     * Set the uri attribute. If the value of the uri attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
-     * The URI reference should not include a fragment identifier.
+     * Set the uri attribute. If the value of the uri attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect. The URI reference should not
+     * include a fragment identifier.
+     *
      * @param uri The uri attribute value.
      */
     public void setURI(String uri) {
@@ -67,6 +70,7 @@ final class PublicEntry extends BaseEntry {
 
     /**
      * Get the publicId attribute.
+     *
      * @return The publicId
      */
     public String getPublicId() {
@@ -74,6 +78,7 @@ final class PublicEntry extends BaseEntry {
     }
     /**
      * Get the uri attribute.
+     *
      * @return The uri attribute value.
      */
     public URL getURI() {
@@ -87,5 +92,4 @@ final class PublicEntry extends BaseEntry {
         }
         return null;
     }
-
 }

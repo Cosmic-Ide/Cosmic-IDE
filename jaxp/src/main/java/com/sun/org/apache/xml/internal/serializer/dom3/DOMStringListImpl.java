@@ -21,43 +21,37 @@
 
 package com.sun.org.apache.xml.internal.serializer.dom3;
 
-//import org.apache.xerces.dom3.DOMStringList;
+// import org.apache.xerces.dom3.DOMStringList;
+import org.w3c.dom.DOMStringList;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.w3c.dom.DOMStringList;
 
 /**
  * This class implemets the DOM Level 3 Core interface DOMStringList.
  *
- * @xsl.usage internal
- * @LastModified: Oct 2017
+ * @xsl.usage internal @LastModified: Oct 2017
  */
 final class DOMStringListImpl implements DOMStringList {
 
-    //A collection of DOMString values
+    // A collection of DOMString values
     private List<String> fStrings;
 
-    /**
-     * Construct an empty list of DOMStringListImpl
-     */
+    /** Construct an empty list of DOMStringListImpl */
     DOMStringListImpl() {
         fStrings = new ArrayList<>();
     }
 
-    /**
-     * Construct an empty list of DOMStringListImpl
-     */
+    /** Construct an empty list of DOMStringListImpl */
     DOMStringListImpl(List<String> params) {
         fStrings = params;
     }
 
-    /**
-     * Construct an empty list of DOMStringListImpl
-     */
-    DOMStringListImpl(String[] params ) {
+    /** Construct an empty list of DOMStringListImpl */
+    DOMStringListImpl(String[] params) {
         fStrings = new ArrayList<>();
         if (params != null) {
-            for (int i=0; i < params.length; i++) {
+            for (int i = 0; i < params.length; i++) {
                 fStrings.add(params[i]);
             }
         }
@@ -85,17 +79,15 @@ final class DOMStringListImpl implements DOMStringList {
      * @see org.apache.xerces.dom3.DOMStringList#contains(String)
      */
     public boolean contains(String param) {
-        return fStrings.contains(param) ;
+        return fStrings.contains(param);
     }
 
     /**
-     * DOM Internal:
-     * Add a <code>DOMString</code> to the list.
+     * DOM Internal: Add a <code>DOMString</code> to the list.
      *
      * @param domString A string to add to the list
      */
     public void add(String param) {
         fStrings.add(param);
     }
-
 }

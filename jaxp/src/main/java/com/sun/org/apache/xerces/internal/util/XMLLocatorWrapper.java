@@ -24,10 +24,9 @@ package com.sun.org.apache.xerces.internal.util;
 import com.sun.org.apache.xerces.internal.xni.XMLLocator;
 
 /**
- * <p>A light wrapper around an <code>XMLLocator</code>.</p>
+ * A light wrapper around an <code>XMLLocator</code>.
  *
  * @author Michael Glavassevich, IBM
- *
  * @version $Id: XMLLocatorWrapper.java 533423 2007-04-28 20:47:15Z mrglavas $
  */
 public final class XMLLocatorWrapper implements XMLLocator {

@@ -41,6 +41,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.sun.org.apache.xml.internal.serializer.ElemDesc;
 import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 import com.sun.org.apache.xml.internal.utils.XML11Char;
+
 import java.util.List;
 
 /**
@@ -48,36 +49,29 @@ import java.util.List;
  * @author Santiago Pericas-Geertsen
  * @author Morten Jorgensen
  * @author Erwin Bolwidt <ejb@klomp.org>
- * @author Gunnlaugur Briem <gthb@dimon.is>
- * @LastModified: Oct 2017
+ * @author Gunnlaugur Briem <gthb@dimon.is> @LastModified: Oct 2017
  */
 final class XslAttribute extends Instruction {
 
     private String _prefix;
-    private AttributeValue _name;       // name treated as AVT (7.1.3)
+    private AttributeValue _name; // name treated as AVT (7.1.3)
     private AttributeValueTemplate _namespace = null;
     private boolean _ignore = false;
-    private boolean _isLiteral = false;  // specified name is not AVT
+    private boolean _isLiteral = false; // specified name is not AVT
 
-    /**
-     * Returns the name of the attribute
-     */
+    /** Returns the name of the attribute */
     public AttributeValue getName() {
         return _name;
     }
 
-    /**
-     * Displays the contents of the attribute
-     */
+    /** Displays the contents of the attribute */
     public void display(int indent) {
         indent(indent);
         Util.println("Attribute " + _name);
         displayContents(indent + IndentIncrement);
     }
 
-    /**
-     * Parses the attribute's contents. Special care taken for namespaces.
-     */
+    /** Parses the attribute's contents. Special care taken for namespaces. */
     public void parseContents(Parser parser) {
         boolean generated = false;
         final SymbolTable stable = parser.getSymbolTable();
@@ -87,7 +81,7 @@ final class XslAttribute extends Instruction {
         QName qname = parser.getQName(name, false);
         final String prefix = qname.getPrefix();
 
-        if (((prefix != null) && (prefix.equals(XMLNS_PREFIX)))||(name.equals(XMLNS_PREFIX))) {
+        if (((prefix != null) && (prefix.equals(XMLNS_PREFIX))) || (name.equals(XMLNS_PREFIX))) {
             reportError(this, parser, ErrorMsg.ILLEGAL_ATTR_NAME_ERR, name);
             return;
         }
@@ -144,13 +138,11 @@ final class XslAttribute extends Instruction {
             if (_prefix == null || _prefix == Constants.EMPTYSTRING) {
                 if (prefix != null) {
                     _prefix = prefix;
-                }
-                else {
+                } else {
                     _prefix = stable.generateNamespacePrefix();
                     generated = true;
                 }
-            }
-            else if (prefix != null && !prefix.equals(_prefix)) {
+            } else if (prefix != null && !prefix.equals(_prefix)) {
                 _prefix = prefix;
             }
 
@@ -162,14 +154,12 @@ final class XslAttribute extends Instruction {
              * (as we only know it as an attribute value template).
              */
             if ((parent instanceof LiteralElement) && (!generated)) {
-                ((LiteralElement)parent).registerNamespace(_prefix,
-                                                           namespace,
-                                                           stable, false);
+                ((LiteralElement) parent).registerNamespace(_prefix, namespace, stable, false);
             }
         }
 
         if (parent instanceof LiteralElement) {
-            ((LiteralElement)parent).addAttribute(this);
+            ((LiteralElement) parent).addAttribute(this);
         }
 
         _name = AttributeValue.create(this, name, parser);
@@ -187,9 +177,7 @@ final class XslAttribute extends Instruction {
         return Type.Void;
     }
 
-    /**
-     *
-     */
+    /** */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
@@ -201,17 +189,16 @@ final class XslAttribute extends Instruction {
         if (_namespace != null) {
             // public void attribute(final String name, final String value)
             il.append(methodGen.loadHandler());
-            il.append(new PUSH(cpg,_prefix));
-            _namespace.translate(classGen,methodGen);
+            il.append(new PUSH(cpg, _prefix));
+            _namespace.translate(classGen, methodGen);
             il.append(methodGen.namespace());
         }
 
         if (!_isLiteral) {
-            // if the qname is an AVT, then the qname has to be checked at runtime if it is a valid qname
+            // if the qname is an AVT, then the qname has to be checked at runtime if it is a valid
+            // qname
             LocalVariableGen nameValue =
-                    methodGen.addLocalVariable2("nameValue",
-                    Util.getJCRefType(STRING_SIG),
-                                                null);
+                    methodGen.addLocalVariable2("nameValue", Util.getJCRefType(STRING_SIG), null);
 
             // store the name into a variable first so _name.translate only needs to be called once
             _name.translate(classGen, methodGen);
@@ -219,76 +206,69 @@ final class XslAttribute extends Instruction {
             il.append(new ALOAD(nameValue.getIndex()));
 
             // call checkQName if the name is an AVT
-            final int check = cpg.addMethodref(BASIS_LIBRARY_CLASS, "checkAttribQName",
-                            "("
-                            +STRING_SIG
-                            +")V");
+            final int check =
+                    cpg.addMethodref(
+                            BASIS_LIBRARY_CLASS, "checkAttribQName", "(" + STRING_SIG + ")V");
             il.append(new INVOKESTATIC(check));
 
             // Save the current handler base on the stack
             il.append(methodGen.loadHandler());
-            il.append(DUP);     // first arg to "attributes" call
+            il.append(DUP); // first arg to "attributes" call
 
             // load name value again
             nameValue.setEnd(il.append(new ALOAD(nameValue.getIndex())));
         } else {
             // Save the current handler base on the stack
             il.append(methodGen.loadHandler());
-            il.append(DUP);     // first arg to "attributes" call
+            il.append(DUP); // first arg to "attributes" call
 
             // Push attribute name
-            _name.translate(classGen, methodGen);// 2nd arg
-
+            _name.translate(classGen, methodGen); // 2nd arg
         }
 
         // Push attribute value - shortcut for literal strings
         if ((elementCount() == 1) && (elementAt(0) instanceof Text)) {
-            il.append(new PUSH(cpg, ((Text)elementAt(0)).getText()));
-        }
-        else {
+            il.append(new PUSH(cpg, ((Text) elementAt(0)).getText()));
+        } else {
             il.append(classGen.loadTranslet());
-            il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                                   "stringValueHandler",
-                                                   STRING_VALUE_HANDLER_SIG)));
+            il.append(
+                    new GETFIELD(
+                            cpg.addFieldref(
+                                    TRANSLET_CLASS,
+                                    "stringValueHandler",
+                                    STRING_VALUE_HANDLER_SIG)));
             il.append(DUP);
             il.append(methodGen.storeHandler());
             // translate contents with substituted handler
             translateContents(classGen, methodGen);
             // get String out of the handler
-            il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER,
-                                                         "getValue",
-                                                         "()" + STRING_SIG)));
+            il.append(
+                    new INVOKEVIRTUAL(
+                            cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
         }
 
         SyntaxTreeNode parent = getParent();
-        if (parent instanceof LiteralElement
-            && ((LiteralElement)parent).allAttributesUnique()) {
+        if (parent instanceof LiteralElement && ((LiteralElement) parent).allAttributesUnique()) {
             int flags = 0;
-            ElemDesc elemDesc = ((LiteralElement)parent).getElemDesc();
+            ElemDesc elemDesc = ((LiteralElement) parent).getElemDesc();
 
             // Set the HTML flags
             if (elemDesc != null && _name instanceof SimpleAttributeValue) {
-                String attrName = ((SimpleAttributeValue)_name).toString();
+                String attrName = ((SimpleAttributeValue) _name).toString();
                 if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTREMPTY)) {
                     flags = flags | SerializationHandler.HTML_ATTREMPTY;
-                }
-                else if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTRURL)) {
+                } else if (elemDesc.isAttrFlagSet(attrName, ElemDesc.ATTRURL)) {
                     flags = flags | SerializationHandler.HTML_ATTRURL;
                 }
             }
             il.append(new PUSH(cpg, flags));
             il.append(methodGen.uniqueAttribute());
-        }
-        else {
+        } else {
             // call "attribute"
             il.append(methodGen.attribute());
         }
 
         // Restore old handler base from stack
         il.append(methodGen.storeHandler());
-
-
-
     }
-
 }

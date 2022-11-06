@@ -23,7 +23,6 @@
  */
 package io.github.rosemoe.sora.lang.completion.snippet;
 
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -37,7 +36,8 @@ public class CodeSnippet implements Cloneable {
     private final List<SnippetItem> items;
     private final List<PlaceholderDefinition> placeholders;
 
-    public CodeSnippet(@NonNull List<SnippetItem> items, @NonNull List<PlaceholderDefinition> placeholders) {
+    public CodeSnippet(
+            @NonNull List<SnippetItem> items, @NonNull List<PlaceholderDefinition> placeholders) {
         this.items = items;
         this.placeholders = placeholders;
     }
@@ -80,7 +80,12 @@ public class CodeSnippet implements Cloneable {
         var defs = new ArrayList<PlaceholderDefinition>(placeholders.size());
         var map = new HashMap<PlaceholderDefinition, PlaceholderDefinition>();
         for (PlaceholderDefinition placeholder : placeholders) {
-            var n = new PlaceholderDefinition(placeholder.getId(), placeholder.getDefaultValue(), placeholder.getChoices(), placeholder.getTransform());
+            var n =
+                    new PlaceholderDefinition(
+                            placeholder.getId(),
+                            placeholder.getDefaultValue(),
+                            placeholder.getChoices(),
+                            placeholder.getTransform());
             defs.add(n);
             map.put(placeholder, n);
         }
@@ -90,7 +95,8 @@ public class CodeSnippet implements Cloneable {
             itemsClone.add(n);
             if (n instanceof PlaceholderItem) {
                 if (map.get(((PlaceholderItem) n).getDefinition()) != null) {
-                    ((PlaceholderItem) n).setDefinition(map.get(((PlaceholderItem) n).getDefinition()));
+                    ((PlaceholderItem) n)
+                            .setDefinition(map.get(((PlaceholderItem) n).getDefinition()));
                 }
             }
         }
@@ -193,7 +199,8 @@ public class CodeSnippet implements Cloneable {
                     if (j instanceof PlaceholderItem) {
                         var placeholder = (PlaceholderItem) j;
                         if (placeholder.getDefinition() == def) {
-                            placeholder.setIndex(placeholder.getStartIndex(), placeholder.getEndIndex() + delta);
+                            placeholder.setIndex(
+                                    placeholder.getStartIndex(), placeholder.getEndIndex() + delta);
                             for (int k = i + 1; k < items.size(); k++) {
                                 items.get(k).shiftIndex(delta);
                             }
@@ -220,7 +227,5 @@ public class CodeSnippet implements Cloneable {
         public CodeSnippet build() {
             return new CodeSnippet(items, definitions);
         }
-
     }
-
 }

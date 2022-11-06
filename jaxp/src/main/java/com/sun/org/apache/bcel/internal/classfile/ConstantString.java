@@ -21,30 +21,26 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a String object.
+ * This class is derived from the abstract {@link Constant} and represents a reference to a String
+ * object.
  *
- * @see     Constant
+ * @see Constant
  */
 public final class ConstantString extends Constant implements ConstantObject {
 
     private int stringIndex; // Identical to ConstantClass except for this name
 
-
-    /**
-     * Initialize from another object.
-     */
+    /** Initialize from another object. */
     public ConstantString(final ConstantString c) {
         this(c.getStringIndex());
     }
-
 
     /**
      * Initialize instance from file data.
@@ -56,7 +52,6 @@ public final class ConstantString extends Constant implements ConstantObject {
         this(file.readUnsignedShort());
     }
 
-
     /**
      * @param stringIndex Index of Constant_Utf8 in constant pool
      */
@@ -65,19 +60,17 @@ public final class ConstantString extends Constant implements ConstantObject {
         this.stringIndex = stringIndex;
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitConstantString(this);
     }
-
 
     /**
      * Dump constant field reference to file stream in binary format.
@@ -86,11 +79,10 @@ public final class ConstantString extends Constant implements ConstantObject {
      * @throws IOException
      */
     @Override
-    public void dump( final DataOutputStream file ) throws IOException {
+    public void dump(final DataOutputStream file) throws IOException {
         file.writeByte(super.getTag());
         file.writeShort(stringIndex);
     }
-
 
     /**
      * @return Index in constant pool of the string (ConstantUtf8).
@@ -99,14 +91,12 @@ public final class ConstantString extends Constant implements ConstantObject {
         return stringIndex;
     }
 
-
     /**
      * @param stringIndex the index into the constant of the string value
      */
-    public void setStringIndex( final int stringIndex ) {
+    public void setStringIndex(final int stringIndex) {
         this.stringIndex = stringIndex;
     }
-
 
     /**
      * @return String representation.
@@ -116,19 +106,19 @@ public final class ConstantString extends Constant implements ConstantObject {
         return super.toString() + "(stringIndex = " + stringIndex + ")";
     }
 
-
-    /** @return String object
+    /**
+     * @return String object
      */
     @Override
-    public Object getConstantValue( final ConstantPool cp ) {
+    public Object getConstantValue(final ConstantPool cp) {
         final Constant c = cp.getConstant(stringIndex, Const.CONSTANT_Utf8);
         return ((ConstantUtf8) c).getBytes();
     }
 
-
-    /** @return dereferenced string
+    /**
+     * @return dereferenced string
      */
-    public String getBytes( final ConstantPool cp ) {
+    public String getBytes(final ConstantPool cp) {
         return (String) getConstantValue(cp);
     }
 }

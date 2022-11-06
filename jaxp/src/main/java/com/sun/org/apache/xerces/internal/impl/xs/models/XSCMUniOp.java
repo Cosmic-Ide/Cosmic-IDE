@@ -26,11 +26,9 @@ import com.sun.org.apache.xerces.internal.impl.dtd.models.CMStateSet;
 import com.sun.org.apache.xerces.internal.impl.xs.XSParticleDecl;
 
 /**
- *
  * Content model Uni-Op node.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
  * @version $$
  */
@@ -43,8 +41,8 @@ public class XSCMUniOp extends CMNode {
 
         // Insure that its one of the types we require
         if ((type() != XSParticleDecl.PARTICLE_ZERO_OR_ONE)
-        &&  (type() != XSParticleDecl.PARTICLE_ZERO_OR_MORE)
-        &&  (type() != XSParticleDecl.PARTICLE_ONE_OR_MORE)) {
+                && (type() != XSParticleDecl.PARTICLE_ZERO_OR_MORE)
+                && (type() != XSParticleDecl.PARTICLE_ONE_OR_MORE)) {
             throw new RuntimeException("ImplementationMessages.VAL_UST");
         }
 
@@ -52,14 +50,12 @@ public class XSCMUniOp extends CMNode {
         fChild = childNode;
     }
 
-
     // -------------------------------------------------------------------
     //  Package, final methods
     // -------------------------------------------------------------------
     final CMNode getChild() {
         return fChild;
     }
-
 
     // -------------------------------------------------------------------
     //  Package, inherited methods
@@ -69,12 +65,9 @@ public class XSCMUniOp extends CMNode {
         //  For debugging purposes, make sure we got rid of all non '*'
         //  repetitions. Otherwise, '*' style nodes are always nullable.
         //
-        if (type() == XSParticleDecl.PARTICLE_ONE_OR_MORE)
-                return fChild.isNullable();
-            else
-                return true;
+        if (type() == XSParticleDecl.PARTICLE_ONE_OR_MORE) return fChild.isNullable();
+        else return true;
     }
-
 
     // -------------------------------------------------------------------
     //  Protected, inherited methods
@@ -90,17 +83,15 @@ public class XSCMUniOp extends CMNode {
     }
 
     /**
-     * Allows the user to set arbitrary data on this content model
-     * node. This is used by the a{n,m} optimization that runs
-     * in constant space. For convenience, set user data in
-     * children node too.
+     * Allows the user to set arbitrary data on this content model node. This is used by the a{n,m}
+     * optimization that runs in constant space. For convenience, set user data in children node
+     * too.
      */
     @Override
     public void setUserData(Object userData) {
         super.setUserData(userData);
         fChild.setUserData(userData);
     }
-
 
     // -------------------------------------------------------------------
     //  Private data members
@@ -109,5 +100,5 @@ public class XSCMUniOp extends CMNode {
     //      This is the reference to the one child that we have for this
     //      unary operation.
     // -------------------------------------------------------------------
-    private CMNode  fChild;
+    private CMNode fChild;
 } // XSCMUniOp

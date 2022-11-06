@@ -19,7 +19,6 @@
  * limitations under the License.
  */
 
-
 /*
  * WARNING: because java doesn't support multi-inheritance some code is
  * duplicated. If you're changing this file you probably want to change
@@ -31,20 +30,16 @@ package com.sun.org.apache.xerces.internal.dom;
 
 import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
+
 import org.w3c.dom.NamedNodeMap;
 
-
 /**
- * DeferredElementNSImpl is to ElementNSImpl, what DeferredElementImpl is to
- * ElementImpl.
+ * DeferredElementNSImpl is to ElementNSImpl, what DeferredElementImpl is to ElementImpl.
  *
  * @xerces.internal
- *
  * @see DeferredElementImpl
  */
-public class DeferredElementNSImpl
-    extends ElementNSImpl
-    implements DeferredNode {
+public class DeferredElementNSImpl extends ElementNSImpl implements DeferredNode {
 
     //
     // Constants
@@ -65,15 +60,14 @@ public class DeferredElementNSImpl
     //
 
     /**
-     * This is the deferred constructor. Only the fNodeIndex is given here. All
-     * other data, can be requested from the ownerDocument via the index.
+     * This is the deferred constructor. Only the fNodeIndex is given here. All other data, can be
+     * requested from the ownerDocument via the index.
      */
     DeferredElementNSImpl(DeferredDocumentImpl ownerDoc, int nodeIndex) {
         super(ownerDoc, null);
 
         fNodeIndex = nodeIndex;
         needsSyncChildren(true);
-
     } // <init>(DocumentImpl,int)
 
     //
@@ -96,8 +90,7 @@ public class DeferredElementNSImpl
         needsSyncData(false);
 
         // fluff data
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl) this.ownerDocument;
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) this.ownerDocument;
 
         // we don't want to generate any event for this so turn them off
         boolean orig = ownerDocument.mutationEvents;
@@ -109,13 +102,12 @@ public class DeferredElementNSImpl
         int index = name.indexOf(':');
         if (index < 0) {
             localName = name;
-        }
-        else {
+        } else {
             localName = name.substring(index + 1);
         }
 
-            namespaceURI = ownerDocument.getNodeURI(fNodeIndex);
-        type = (XSTypeDefinition)ownerDocument.getTypeInfo(fNodeIndex);
+        namespaceURI = ownerDocument.getNodeURI(fNodeIndex);
+        type = (XSTypeDefinition) ownerDocument.getTypeInfo(fNodeIndex);
 
         // attributes
         setupDefaultAttributes();
@@ -128,14 +120,14 @@ public class DeferredElementNSImpl
                 // Take special care of schema defaulted attributes. Calling the
                 // non-namespace aware setAttributeNode() method could overwrite
                 // another attribute with the same local name.
-                if (!attr.getSpecified() && (seenSchemaDefault ||
-                    (attr.getNamespaceURI() != null &&
-                    attr.getNamespaceURI() != NamespaceContext.XMLNS_URI &&
-                    attr.getName().indexOf(':') < 0))) {
+                if (!attr.getSpecified()
+                        && (seenSchemaDefault
+                                || (attr.getNamespaceURI() != null
+                                        && attr.getNamespaceURI() != NamespaceContext.XMLNS_URI
+                                        && attr.getName().indexOf(':') < 0))) {
                     seenSchemaDefault = true;
                     attrs.setNamedItemNS(attr);
-                }
-                else {
+                } else {
                     attrs.setNamedItem(attr);
                 }
                 attrIndex = ownerDocument.getPrevSibling(attrIndex);
@@ -144,19 +136,15 @@ public class DeferredElementNSImpl
 
         // set mutation events flag back to its original value
         ownerDocument.mutationEvents = orig;
-
     } // synchronizeData()
 
     /**
-     * Synchronizes the node's children with the internal structure.
-     * Fluffing the children at once solves a lot of work to keep
-     * the two structures in sync. The problem gets worse when
-     * editing the tree -- this makes it a lot easier.
+     * Synchronizes the node's children with the internal structure. Fluffing the children at once
+     * solves a lot of work to keep the two structures in sync. The problem gets worse when editing
+     * the tree -- this makes it a lot easier.
      */
     protected final void synchronizeChildren() {
-        DeferredDocumentImpl ownerDocument =
-            (DeferredDocumentImpl) ownerDocument();
+        DeferredDocumentImpl ownerDocument = (DeferredDocumentImpl) ownerDocument();
         ownerDocument.synchronizeChildren(this, fNodeIndex);
     } // synchronizeChildren()
-
 } // class DeferredElementImpl

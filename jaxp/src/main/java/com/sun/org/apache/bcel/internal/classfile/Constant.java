@@ -19,39 +19,36 @@
  */
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+import com.sun.org.apache.bcel.internal.util.BCELComparator;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-import com.sun.org.apache.bcel.internal.Const;
-import com.sun.org.apache.bcel.internal.util.BCELComparator;
-
 /**
- * Abstract superclass for classes to represent the different constant types
- * in the constant pool of a class file. The classes keep closely to
- * the JVM specification.
- *
- * @LastModified: May 2021
+ * Abstract superclass for classes to represent the different constant types in the constant pool of
+ * a class file. The classes keep closely to the JVM specification. @LastModified: May 2021
  */
 public abstract class Constant implements Cloneable, Node {
 
-    private static BCELComparator bcelComparator = new BCELComparator() {
+    private static BCELComparator bcelComparator =
+            new BCELComparator() {
 
-        @Override
-        public boolean equals( final Object o1, final Object o2 ) {
-            final Constant THIS = (Constant) o1;
-            final Constant THAT = (Constant) o2;
-            return Objects.equals(THIS.toString(), THAT.toString());
-        }
+                @Override
+                public boolean equals(final Object o1, final Object o2) {
+                    final Constant THIS = (Constant) o1;
+                    final Constant THAT = (Constant) o2;
+                    return Objects.equals(THIS.toString(), THAT.toString());
+                }
 
-
-        @Override
-        public int hashCode( final Object o ) {
-            final Constant THIS = (Constant) o;
-            return THIS.toString().hashCode();
-        }
-    };
+                @Override
+                public int hashCode(final Object o) {
+                    final Constant THIS = (Constant) o;
+                    return THIS.toString().hashCode();
+                }
+            };
 
     /* In fact this tag is redundant since we can distinguish different
      * `Constant' objects by their type, i.e., via `instanceof'. In some
@@ -68,20 +65,19 @@ public abstract class Constant implements Cloneable, Node {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public abstract void accept( Visitor v );
+    public abstract void accept(Visitor v);
 
-    public abstract void dump( DataOutputStream file ) throws IOException;
+    public abstract void dump(DataOutputStream file) throws IOException;
 
     /**
-     * @return Tag of constant, i.e., its type. No setTag() method to avoid
-     * confusion.
+     * @return Tag of constant, i.e., its type. No setTag() method to avoid confusion.
      */
     public final byte getTag() {
         return tag;
@@ -125,45 +121,46 @@ public abstract class Constant implements Cloneable, Node {
      * @throws ClassFormatException if the next byte is not recognized
      * @since 6.0 made public
      */
-    public static Constant readConstant(final DataInput dataInput) throws IOException, ClassFormatException {
+    public static Constant readConstant(final DataInput dataInput)
+            throws IOException, ClassFormatException {
         final byte b = dataInput.readByte(); // Read tag byte
         switch (b) {
-        case Const.CONSTANT_Class:
-            return new ConstantClass(dataInput);
-        case Const.CONSTANT_Fieldref:
-            return new ConstantFieldref(dataInput);
-        case Const.CONSTANT_Methodref:
-            return new ConstantMethodref(dataInput);
-        case Const.CONSTANT_InterfaceMethodref:
-            return new ConstantInterfaceMethodref(dataInput);
-        case Const.CONSTANT_String:
-            return new ConstantString(dataInput);
-        case Const.CONSTANT_Integer:
-            return new ConstantInteger(dataInput);
-        case Const.CONSTANT_Float:
-            return new ConstantFloat(dataInput);
-        case Const.CONSTANT_Long:
-            return new ConstantLong(dataInput);
-        case Const.CONSTANT_Double:
-            return new ConstantDouble(dataInput);
-        case Const.CONSTANT_NameAndType:
-            return new ConstantNameAndType(dataInput);
-        case Const.CONSTANT_Utf8:
-            return ConstantUtf8.getInstance(dataInput);
-        case Const.CONSTANT_MethodHandle:
-            return new ConstantMethodHandle(dataInput);
-        case Const.CONSTANT_MethodType:
-            return new ConstantMethodType(dataInput);
-        case Const.CONSTANT_Dynamic:
-            return new ConstantDynamic(dataInput);
-        case Const.CONSTANT_InvokeDynamic:
-            return new ConstantInvokeDynamic(dataInput);
-        case Const.CONSTANT_Module:
-            return new ConstantModule(dataInput);
-        case Const.CONSTANT_Package:
-            return new ConstantPackage(dataInput);
-        default:
-            throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
+            case Const.CONSTANT_Class:
+                return new ConstantClass(dataInput);
+            case Const.CONSTANT_Fieldref:
+                return new ConstantFieldref(dataInput);
+            case Const.CONSTANT_Methodref:
+                return new ConstantMethodref(dataInput);
+            case Const.CONSTANT_InterfaceMethodref:
+                return new ConstantInterfaceMethodref(dataInput);
+            case Const.CONSTANT_String:
+                return new ConstantString(dataInput);
+            case Const.CONSTANT_Integer:
+                return new ConstantInteger(dataInput);
+            case Const.CONSTANT_Float:
+                return new ConstantFloat(dataInput);
+            case Const.CONSTANT_Long:
+                return new ConstantLong(dataInput);
+            case Const.CONSTANT_Double:
+                return new ConstantDouble(dataInput);
+            case Const.CONSTANT_NameAndType:
+                return new ConstantNameAndType(dataInput);
+            case Const.CONSTANT_Utf8:
+                return ConstantUtf8.getInstance(dataInput);
+            case Const.CONSTANT_MethodHandle:
+                return new ConstantMethodHandle(dataInput);
+            case Const.CONSTANT_MethodType:
+                return new ConstantMethodType(dataInput);
+            case Const.CONSTANT_Dynamic:
+                return new ConstantDynamic(dataInput);
+            case Const.CONSTANT_InvokeDynamic:
+                return new ConstantInvokeDynamic(dataInput);
+            case Const.CONSTANT_Module:
+                return new ConstantModule(dataInput);
+            case Const.CONSTANT_Package:
+                return new ConstantPackage(dataInput);
+            default:
+                throw new ClassFormatException("Invalid byte tag in constant pool: " + b);
         }
     }
 
@@ -177,25 +174,24 @@ public abstract class Constant implements Cloneable, Node {
     /**
      * @param comparator Comparison strategy object
      */
-    public static void setComparator( final BCELComparator comparator ) {
+    public static void setComparator(final BCELComparator comparator) {
         bcelComparator = comparator;
     }
 
     /**
-     * Returns value as defined by given BCELComparator strategy.
-     * By default two Constant objects are said to be equal when
-     * the result of toString() is equal.
+     * Returns value as defined by given BCELComparator strategy. By default two Constant objects
+     * are said to be equal when the result of toString() is equal.
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals( final Object obj ) {
+    public boolean equals(final Object obj) {
         return bcelComparator.equals(this, obj);
     }
 
     /**
-     * Returns value as defined by given BCELComparator strategy.
-     * By default return the hashcode of the result of toString().
+     * Returns value as defined by given BCELComparator strategy. By default return the hashcode of
+     * the result of toString().
      *
      * @see java.lang.Object#hashCode()
      */

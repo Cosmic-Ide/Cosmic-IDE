@@ -25,12 +25,9 @@ package com.sun.org.apache.xerces.internal.impl.xpath;
  * XPath exception.
  *
  * @xerces.internal
- *
  * @author Andy Clark, IBM
- *
  */
-public class XPathException
-    extends Exception {
+public class XPathException extends Exception {
 
     /** Serialization version. */
     static final long serialVersionUID = -948482312169512085L;
@@ -58,5 +55,4 @@ public class XPathException
     public String getKey() {
         return fKey;
     } // getKey():  String
-
 } // class XPathException

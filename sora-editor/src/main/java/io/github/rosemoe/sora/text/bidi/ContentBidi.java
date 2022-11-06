@@ -25,16 +25,16 @@ package io.github.rosemoe.sora.text.bidi;
 
 import androidx.annotation.NonNull;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.ContentListener;
 import io.github.rosemoe.sora.util.IntPair;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class ContentBidi implements ContentListener {
 
-    public final static int MAX_BIDI_CACHE_ENTRY_COUNT = 64;
+    public static final int MAX_BIDI_CACHE_ENTRY_COUNT = 64;
 
     private final DirectionsEntry[] entries = new DirectionsEntry[MAX_BIDI_CACHE_ENTRY_COUNT];
     private final Content text;
@@ -58,7 +58,7 @@ public class ContentBidi implements ContentListener {
 
     public Directions getLineDirections(int line) {
         if (!enabled) {
-            return new Directions(new long[]{IntPair.pack(0, 0)}, text.getLine(line).length());
+            return new Directions(new long[] {IntPair.pack(0, 0)}, text.getLine(line).length());
         }
         synchronized (this) {
             for (int i = 0; i < entries.length; i++) {
@@ -77,7 +77,13 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public synchronized void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public synchronized void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         var delta = endLine - startLine;
         for (int i = 0; i < entries.length; i++) {
             var entry = entries[i];
@@ -95,7 +101,13 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public synchronized void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public synchronized void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         var delta = endLine - startLine;
         for (int i = 0; i < entries.length; i++) {
             var entry = entries[i];
@@ -111,9 +123,7 @@ public class ContentBidi implements ContentListener {
     }
 
     @Override
-    public void beforeReplace(Content content) {
-
-    }
+    public void beforeReplace(Content content) {}
 
     public void destroy() {
         text.removeContentListener(this);
@@ -131,5 +141,4 @@ public class ContentBidi implements ContentListener {
             this.line = line;
         }
     }
-
 }

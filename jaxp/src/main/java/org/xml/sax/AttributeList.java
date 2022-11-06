@@ -28,25 +28,21 @@ package org.xml.sax;
 /**
  * Interface for an element's attribute specifications.
  *
- * <p>This is the original SAX1 interface for reporting an element's
- * attributes.  Unlike the new {@link org.xml.sax.Attributes Attributes}
- * interface, it does not support Namespace-related information.
+ * <p>This is the original SAX1 interface for reporting an element's attributes. Unlike the new
+ * {@link org.xml.sax.Attributes Attributes} interface, it does not support Namespace-related
+ * information.
  *
- * <p>When an attribute list is supplied as part of a
- * {@link org.xml.sax.DocumentHandler#startElement startElement}
- * event, the list will return valid results only during the
- * scope of the event; once the event handler returns control
- * to the parser, the attribute list is invalid.  To save a
- * persistent copy of the attribute list, use the SAX1
- * {@link org.xml.sax.helpers.AttributeListImpl AttributeListImpl}
- * helper class.
+ * <p>When an attribute list is supplied as part of a {@link
+ * org.xml.sax.DocumentHandler#startElement startElement} event, the list will return valid results
+ * only during the scope of the event; once the event handler returns control to the parser, the
+ * attribute list is invalid. To save a persistent copy of the attribute list, use the SAX1 {@link
+ * org.xml.sax.helpers.AttributeListImpl AttributeListImpl} helper class.
  *
- * <p>An attribute list includes only attributes that have been
- * specified or defaulted: #IMPLIED attributes will not be included.
+ * <p>An attribute list includes only attributes that have been specified or defaulted: #IMPLIED
+ * attributes will not be included.
  *
- * <p>There are two ways for the SAX application to obtain information
- * from the AttributeList.  First, it can iterate through the entire
- * list:
+ * <p>There are two ways for the SAX application to obtain information from the AttributeList.
+ * First, it can iterate through the entire list:
  *
  * <pre>{@code
  * public void startElement (String name, AttributeList atts) {
@@ -59,11 +55,9 @@ package org.xml.sax;
  * }
  * }</pre>
  *
- * <p>(Note that the result of getLength() will be zero if there
- * are no attributes.)
+ * <p>(Note that the result of getLength() will be zero if there are no attributes.)
  *
- * <p>As an alternative, the application can request the value or
- * type of specific attributes:
+ * <p>As an alternative, the application can request the value or type of specific attributes:
  *
  * <pre>
  * public void startElement (String name, AttributeList atts) {
@@ -73,134 +67,109 @@ package org.xml.sax;
  * }
  * </pre>
  *
- * @deprecated This interface has been replaced by the SAX2
- *             {@link org.xml.sax.Attributes Attributes}
- *             interface, which includes Namespace support.
+ * @deprecated This interface has been replaced by the SAX2 {@link org.xml.sax.Attributes
+ *     Attributes} interface, which includes Namespace support.
  * @since 1.4, SAX 1.0
  * @author David Megginson
  * @see org.xml.sax.DocumentHandler#startElement startElement
  * @see org.xml.sax.helpers.AttributeListImpl AttributeListImpl
  */
-@Deprecated(since="1.5")
+@Deprecated(since = "1.5")
 public interface AttributeList {
-
 
     ////////////////////////////////////////////////////////////////////
     // Iteration methods.
     ////////////////////////////////////////////////////////////////////
 
-
     /**
      * Return the number of attributes in this list.
      *
-     * <p>The SAX parser may provide attributes in any
-     * arbitrary order, regardless of the order in which they were
-     * declared or specified.  The number of attributes may be
-     * zero.
+     * <p>The SAX parser may provide attributes in any arbitrary order, regardless of the order in
+     * which they were declared or specified. The number of attributes may be zero.
      *
      * @return The number of attributes in the list.
      */
-    public abstract int getLength ();
-
+    public abstract int getLength();
 
     /**
      * Return the name of an attribute in this list (by position).
      *
-     * <p>The names must be unique: the SAX parser shall not include the
-     * same attribute twice.  Attributes without values (those declared
-     * #IMPLIED without a value specified in the start tag) will be
-     * omitted from the list.
+     * <p>The names must be unique: the SAX parser shall not include the same attribute twice.
+     * Attributes without values (those declared #IMPLIED without a value specified in the start
+     * tag) will be omitted from the list.
      *
-     * <p>If the attribute name has a namespace prefix, the prefix
-     * will still be attached.
+     * <p>If the attribute name has a namespace prefix, the prefix will still be attached.
      *
      * @param i The index of the attribute in the list (starting at 0).
-     * @return The name of the indexed attribute, or null
-     *         if the index is out of range.
+     * @return The name of the indexed attribute, or null if the index is out of range.
      * @see #getLength
      */
-    public abstract String getName (int i);
-
+    public abstract String getName(int i);
 
     /**
      * Return the type of an attribute in the list (by position).
      *
-     * <p>The attribute type is one of the strings "CDATA", "ID",
-     * "IDREF", "IDREFS", "NMTOKEN", "NMTOKENS", "ENTITY", "ENTITIES",
-     * or "NOTATION" (always in upper case).
+     * <p>The attribute type is one of the strings "CDATA", "ID", "IDREF", "IDREFS", "NMTOKEN",
+     * "NMTOKENS", "ENTITY", "ENTITIES", or "NOTATION" (always in upper case).
      *
-     * <p>If the parser has not read a declaration for the attribute,
-     * or if the parser does not report attribute types, then it must
-     * return the value "CDATA" as stated in the XML 1.0 Recommentation
-     * (clause 3.3.3, "Attribute-Value Normalization").
+     * <p>If the parser has not read a declaration for the attribute, or if the parser does not
+     * report attribute types, then it must return the value "CDATA" as stated in the XML 1.0
+     * Recommentation (clause 3.3.3, "Attribute-Value Normalization").
      *
-     * <p>For an enumerated attribute that is not a notation, the
-     * parser will report the type as "NMTOKEN".
+     * <p>For an enumerated attribute that is not a notation, the parser will report the type as
+     * "NMTOKEN".
      *
      * @param i The index of the attribute in the list (starting at 0).
-     * @return The attribute type as a string, or
-     *         null if the index is out of range.
+     * @return The attribute type as a string, or null if the index is out of range.
      * @see #getLength
      * @see #getType(java.lang.String)
      */
-    public abstract String getType (int i);
-
+    public abstract String getType(int i);
 
     /**
      * Return the value of an attribute in the list (by position).
      *
-     * <p>If the attribute value is a list of tokens (IDREFS,
-     * ENTITIES, or NMTOKENS), the tokens will be concatenated
-     * into a single string separated by whitespace.
+     * <p>If the attribute value is a list of tokens (IDREFS, ENTITIES, or NMTOKENS), the tokens
+     * will be concatenated into a single string separated by whitespace.
      *
      * @param i The index of the attribute in the list (starting at 0).
-     * @return The attribute value as a string, or
-     *         null if the index is out of range.
+     * @return The attribute value as a string, or null if the index is out of range.
      * @see #getLength
      * @see #getValue(java.lang.String)
      */
-    public abstract String getValue (int i);
-
-
+    public abstract String getValue(int i);
 
     ////////////////////////////////////////////////////////////////////
     // Lookup methods.
     ////////////////////////////////////////////////////////////////////
 
-
     /**
      * Return the type of an attribute in the list (by name).
      *
-     * <p>The return value is the same as the return value for
-     * getType(int).
+     * <p>The return value is the same as the return value for getType(int).
      *
-     * <p>If the attribute name has a namespace prefix in the document,
-     * the application must include the prefix here.
+     * <p>If the attribute name has a namespace prefix in the document, the application must include
+     * the prefix here.
      *
      * @param name The name of the attribute.
-     * @return The attribute type as a string, or null if no
-     *         such attribute exists.
+     * @return The attribute type as a string, or null if no such attribute exists.
      * @see #getType(int)
      */
-    public abstract String getType (String name);
-
+    public abstract String getType(String name);
 
     /**
      * Return the value of an attribute in the list (by name).
      *
-     * <p>The return value is the same as the return value for
-     * getValue(int).
+     * <p>The return value is the same as the return value for getValue(int).
      *
-     * <p>If the attribute name has a namespace prefix in the document,
-     * the application must include the prefix here.
+     * <p>If the attribute name has a namespace prefix in the document, the application must include
+     * the prefix here.
      *
      * @param name the name of the attribute to return
-     * @return The attribute value as a string, or null if
-     *         no such attribute exists.
+     * @return The attribute value as a string, or null if no such attribute exists.
      * @see #getValue(int)
      */
-    public abstract String getValue (String name);
-
+    public abstract String getValue(String name);
 }
 
 // end of AttributeList.java

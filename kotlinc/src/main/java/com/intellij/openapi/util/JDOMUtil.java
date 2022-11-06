@@ -9,6 +9,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.util.text.CharArrayUtil;
 import com.intellij.xml.util.XmlStringUtil;
+
 import org.jdom.Attribute;
 import org.jdom.Content;
 import org.jdom.Element;
@@ -19,9 +20,6 @@ import org.jdom.filter.Filter;
 import org.jdom.output.Format;
 import org.jdom.output.Format.TextMode;
 import org.jdom.output.XMLOutputter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -38,6 +36,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 public final class JDOMUtil {
     public static final Pattern XPOINTER_PATTERN = Pattern.compile("xpointer\\((.*)\\)");

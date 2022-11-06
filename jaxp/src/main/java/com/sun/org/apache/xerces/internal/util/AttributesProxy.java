@@ -22,20 +22,18 @@ package com.sun.org.apache.xerces.internal.util;
 
 import com.sun.org.apache.xerces.internal.impl.Constants;
 import com.sun.org.apache.xerces.internal.xni.XMLAttributes;
+
 import org.xml.sax.AttributeList;
 import org.xml.sax.ext.Attributes2;
 
 /**
- * Wraps {@link XMLAttributes} and makes it look like
- * {@link AttributeList} and {@link Attributes}.
+ * Wraps {@link XMLAttributes} and makes it look like {@link AttributeList} and {@link Attributes}.
  *
  * @author Arnaud Le Hors, IBM
  * @author Andy Clark, IBM
- *
  */
 @SuppressWarnings("deprecation")
-public final class AttributesProxy
-    implements AttributeList, Attributes2 {
+public final class AttributesProxy implements AttributeList, Attributes2 {
 
     //
     // Data
@@ -97,9 +95,9 @@ public final class AttributesProxy
     }
 
     public String getType(String uri, String localName) {
-        return uri.equals(XMLSymbols.EMPTY_STRING) ?
-                fAttributes.getType(null, localName) :
-                    fAttributes.getType(uri, localName);
+        return uri.equals(XMLSymbols.EMPTY_STRING)
+                ? fAttributes.getType(null, localName)
+                : fAttributes.getType(uri, localName);
     }
 
     public String getValue(int i) {
@@ -111,9 +109,9 @@ public final class AttributesProxy
     }
 
     public String getValue(String uri, String localName) {
-        return uri.equals(XMLSymbols.EMPTY_STRING) ?
-                fAttributes.getValue(null, localName) :
-                    fAttributes.getValue(uri, localName);
+        return uri.equals(XMLSymbols.EMPTY_STRING)
+                ? fAttributes.getValue(null, localName)
+                : fAttributes.getValue(uri, localName);
     }
 
     public int getIndex(String qName) {
@@ -121,9 +119,9 @@ public final class AttributesProxy
     }
 
     public int getIndex(String uri, String localPart) {
-        return uri.equals(XMLSymbols.EMPTY_STRING) ?
-                fAttributes.getIndex(null, localPart) :
-                    fAttributes.getIndex(uri, localPart);
+        return uri.equals(XMLSymbols.EMPTY_STRING)
+                ? fAttributes.getIndex(null, localPart)
+                : fAttributes.getIndex(uri, localPart);
     }
 
     /*
@@ -135,8 +133,7 @@ public final class AttributesProxy
             throw new ArrayIndexOutOfBoundsException(index);
         }
         return Boolean.TRUE.equals(
-            fAttributes.getAugmentations(index).getItem(
-            Constants.ATTRIBUTE_DECLARED));
+                fAttributes.getAugmentations(index).getItem(Constants.ATTRIBUTE_DECLARED));
     }
 
     public boolean isDeclared(String qName) {
@@ -145,8 +142,7 @@ public final class AttributesProxy
             throw new IllegalArgumentException(qName);
         }
         return Boolean.TRUE.equals(
-            fAttributes.getAugmentations(index).getItem(
-            Constants.ATTRIBUTE_DECLARED));
+                fAttributes.getAugmentations(index).getItem(Constants.ATTRIBUTE_DECLARED));
     }
 
     public boolean isDeclared(String uri, String localName) {
@@ -155,8 +151,7 @@ public final class AttributesProxy
             throw new IllegalArgumentException(localName);
         }
         return Boolean.TRUE.equals(
-            fAttributes.getAugmentations(index).getItem(
-            Constants.ATTRIBUTE_DECLARED));
+                fAttributes.getAugmentations(index).getItem(Constants.ATTRIBUTE_DECLARED));
     }
 
     public boolean isSpecified(int index) {
@@ -189,5 +184,4 @@ public final class AttributesProxy
     public String getName(int i) {
         return fAttributes.getQName(i);
     }
-
 }

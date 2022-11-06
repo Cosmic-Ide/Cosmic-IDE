@@ -41,14 +41,15 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
-
 
 /**
  * @author Jacek Ambroziak
@@ -56,8 +57,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author G. Todd Miller
  * @author Morten Jorensen
  * @author Erwin Bolwidt <ejb@klomp.org>
- * @author John Howard <JohnH@schemasoft.com>
- * @LastModified: Nov 2017
+ * @author John Howard <JohnH@schemasoft.com> @LastModified: Nov 2017
  */
 public abstract class SyntaxTreeNode implements Constants {
 
@@ -65,15 +65,15 @@ public abstract class SyntaxTreeNode implements Constants {
     private Parser _parser;
 
     // AST navigation pointers
-    protected SyntaxTreeNode _parent;          // Parent node
-    private Stylesheet       _stylesheet;      // Stylesheet ancestor node
-    private Template         _template;        // Template ancestor node
+    protected SyntaxTreeNode _parent; // Parent node
+    private Stylesheet _stylesheet; // Stylesheet ancestor node
+    private Template _template; // Template ancestor node
     private final List<SyntaxTreeNode> _contents = new ArrayList<>(2); // Child nodes
 
     // Element description data
-    protected QName _qname;                    // The element QName
-    private int _line;                         // Source file line number
-    protected AttributesImpl _attributes = null;   // Attributes of this element
+    protected QName _qname; // The element QName
+    private int _line; // Source file line number
+    protected AttributesImpl _attributes = null; // Attributes of this element
     private Map<String, String> _prefixMapping = null; // Namespace declarations
 
     // Sentinel - used to denote unrecognised syntaxt tree nodes.
@@ -82,11 +82,10 @@ public abstract class SyntaxTreeNode implements Constants {
     // These two are used for indenting nodes in the AST (debug output)
     protected static final int IndentIncrement = 4;
     private static final char[] _spaces =
-        "                                                       ".toCharArray();
+            "                                                       ".toCharArray();
 
     /**
-     * Creates a new SyntaxTreeNode with a 'null' QName and no source file
-     * line number reference.
+     * Creates a new SyntaxTreeNode with a 'null' QName and no source file line number reference.
      */
     public SyntaxTreeNode() {
         _line = 0;
@@ -95,6 +94,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Creates a new SyntaxTreeNode with a 'null' QName.
+     *
      * @param line Source file line number reference
      */
     public SyntaxTreeNode(int line) {
@@ -104,6 +104,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Creates a new SyntaxTreeNode with no source file line number reference.
+     *
      * @param uri The element's namespace URI
      * @param prefix The element's namespace prefix
      * @param local The element's local name
@@ -115,6 +116,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Set the source file line number for this element
+     *
      * @param line The source file line number.
      */
     protected final void setLineNumber(int line) {
@@ -122,8 +124,7 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Get the source file line number for this element. If unavailable, lookup
-     * in ancestors.
+     * Get the source file line number for this element. If unavailable, lookup in ancestors.
      *
      * @return The source file line number.
      */
@@ -135,6 +136,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Set the QName for the syntax tree node.
+     *
      * @param qname The QName for the syntax tree node
      */
     protected void setQName(QName qname) {
@@ -143,6 +145,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Set the QName for the SyntaxTreeNode
+     *
      * @param uri The element's namespace URI
      * @param prefix The element's namespace prefix
      * @param local The element's local name
@@ -153,16 +156,18 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Set the QName for the SyntaxTreeNode
+     *
      * @param qname The QName for the syntax tree node
      */
     protected QName getQName() {
-        return(_qname);
+        return (_qname);
     }
 
     /**
      * Set the attributes for this SyntaxTreeNode.
-     * @param attributes Attributes for the element. Must be passed in as an
-     *                   implementation of org.xml.sax.Attributes.
+     *
+     * @param attributes Attributes for the element. Must be passed in as an implementation of
+     *     org.xml.sax.Attributes.
      */
     protected void setAttributes(AttributesImpl attributes) {
         _attributes = attributes;
@@ -170,6 +175,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns a value for an attribute from the source element.
+     *
      * @param qname The QName of the attribute to return.
      * @return The value of the attribute of name 'qname'.
      */
@@ -178,8 +184,7 @@ public abstract class SyntaxTreeNode implements Constants {
             return EMPTYSTRING;
         }
         final String value = _attributes.getValue(qname);
-        return (value == null || value.equals(EMPTYSTRING)) ?
-            EMPTYSTRING : value;
+        return (value == null || value.equals(EMPTYSTRING)) ? EMPTYSTRING : value;
     }
 
     protected String getAttribute(String prefix, String localName) {
@@ -193,30 +198,28 @@ public abstract class SyntaxTreeNode implements Constants {
     protected void addAttribute(String qname, String value) {
         int index = _attributes.getIndex(qname);
         if (index != -1) {
-            _attributes.setAttribute(index, "", Util.getLocalName(qname),
-                    qname, "CDATA", value);
-        }
-        else {
-            _attributes.addAttribute("", Util.getLocalName(qname), qname,
-                    "CDATA", value);
+            _attributes.setAttribute(index, "", Util.getLocalName(qname), qname, "CDATA", value);
+        } else {
+            _attributes.addAttribute("", Util.getLocalName(qname), qname, "CDATA", value);
         }
     }
 
     /**
-     * Returns a list of all attributes declared for the element represented by
-     * this syntax tree node.
+     * Returns a list of all attributes declared for the element represented by this syntax tree
+     * node.
+     *
      * @return Attributes for this syntax tree node
      */
     protected Attributes getAttributes() {
-        return(_attributes);
+        return (_attributes);
     }
 
     /**
-     * Sets the prefix mapping for the namespaces that were declared in this
-     * element. This does not include all prefix mappings in scope, so one
-     * may have to check ancestor elements to get all mappings that are in
-     * in scope. The prefixes must be passed in as a Map that maps
-     * namespace prefixes (String objects) to namespace URIs (also String).
+     * Sets the prefix mapping for the namespaces that were declared in this element. This does not
+     * include all prefix mappings in scope, so one may have to check ancestor elements to get all
+     * mappings that are in in scope. The prefixes must be passed in as a Map that maps namespace
+     * prefixes (String objects) to namespace URIs (also String).
+     *
      * @param mapping The Map containing the mappings.
      */
     protected void setPrefixMapping(Map<String, String> mapping) {
@@ -224,10 +227,10 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Returns a Map containing the prefix mappings that were declared
-     * for this element. This does not include all prefix mappings in scope,
-     * so one may have to check ancestor elements to get all mappings that are
-     * in in scope.
+     * Returns a Map containing the prefix mappings that were declared for this element. This does
+     * not include all prefix mappings in scope, so one may have to check ancestor elements to get
+     * all mappings that are in in scope.
+     *
      * @return Prefix mappings (for this element only).
      */
     protected Map<String, String> getPrefixMapping() {
@@ -236,20 +239,20 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Adds a single prefix mapping to this syntax tree node.
+     *
      * @param prefix Namespace prefix.
      * @param uri Namespace URI.
      */
     protected void addPrefixMapping(String prefix, String uri) {
-        if (_prefixMapping == null)
-            _prefixMapping = new HashMap<>();
+        if (_prefixMapping == null) _prefixMapping = new HashMap<>();
         _prefixMapping.put(prefix, uri);
     }
 
     /**
-     * Returns any namespace URI that is in scope for a given prefix. This
-     * method checks namespace mappings for this element, and if necessary
-     * for ancestor elements as well (ie. if the prefix maps to an URI in this
-     * scope then you'll definately get the URI from this method).
+     * Returns any namespace URI that is in scope for a given prefix. This method checks namespace
+     * mappings for this element, and if necessary for ancestor elements as well (ie. if the prefix
+     * maps to an URI in this scope then you'll definately get the URI from this method).
+     *
      * @param prefix Namespace prefix.
      * @return Namespace URI.
      */
@@ -258,25 +261,23 @@ public abstract class SyntaxTreeNode implements Constants {
         String uri = null;
 
         // First look up the prefix/uri mapping in our own map...
-        if (_prefixMapping != null)
-            uri = _prefixMapping.get(prefix);
+        if (_prefixMapping != null) uri = _prefixMapping.get(prefix);
         // ... but if we can't find it there we ask our parent for the mapping
         if ((uri == null) && (_parent != null)) {
             uri = _parent.lookupNamespace(prefix);
-            if ((prefix == Constants.EMPTYSTRING) && (uri == null))
-                uri = Constants.EMPTYSTRING;
+            if ((prefix == Constants.EMPTYSTRING) && (uri == null)) uri = Constants.EMPTYSTRING;
         }
         // ... and then we return whatever URI we've got.
-        return(uri);
+        return (uri);
     }
 
     /**
-     * Returns any namespace prefix that is mapped to a prefix in the current
-     * scope. This method checks namespace mappings for this element, and if
-     * necessary for ancestor elements as well (ie. if the URI is declared
-     * within the current scope then you'll definately get the prefix from
-     * this method). Note that this is a very slow method and consequentially
-     * it should only be used strictly when needed.
+     * Returns any namespace prefix that is mapped to a prefix in the current scope. This method
+     * checks namespace mappings for this element, and if necessary for ancestor elements as well
+     * (ie. if the URI is declared within the current scope then you'll definately get the prefix
+     * from this method). Note that this is a very slow method and consequentially it should only be
+     * used strictly when needed.
+     *
      * @param uri Namespace URI.
      * @return Namespace prefix.
      */
@@ -285,26 +286,25 @@ public abstract class SyntaxTreeNode implements Constants {
         String prefix = null;
 
         // First look up the prefix/uri mapping in our own map...
-        if ((_prefixMapping != null) &&
-            (_prefixMapping.containsValue(uri))) {
+        if ((_prefixMapping != null) && (_prefixMapping.containsValue(uri))) {
             for (Map.Entry<String, String> entry : _prefixMapping.entrySet()) {
                 prefix = entry.getKey();
                 String mapsTo = entry.getValue();
-                if (mapsTo.equals(uri)) return(prefix);
+                if (mapsTo.equals(uri)) return (prefix);
             }
         }
         // ... but if we can't find it there we ask our parent for the mapping
         else if (_parent != null) {
             prefix = _parent.lookupPrefix(uri);
-            if ((uri == Constants.EMPTYSTRING) && (prefix == null))
-                prefix = Constants.EMPTYSTRING;
+            if ((uri == Constants.EMPTYSTRING) && (prefix == null)) prefix = Constants.EMPTYSTRING;
         }
-        return(prefix);
+        return (prefix);
     }
 
     /**
-     * Set this node's parser. The parser (the XSLT parser) gives this
-     * syntax tree node access to the symbol table and XPath parser.
+     * Set this node's parser. The parser (the XSLT parser) gives this syntax tree node access to
+     * the symbol table and XPath parser.
+     *
      * @param parser The XSLT parser.
      */
     protected void setParser(Parser parser) {
@@ -313,6 +313,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns this node's XSLT parser.
+     *
      * @return The XSLT parser.
      */
     public final Parser getParser() {
@@ -320,8 +321,8 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Set this syntax tree node's parent node, if unset. For
-     * re-parenting just use <code>node._parent = newparent</code>.
+     * Set this syntax tree node's parent node, if unset. For re-parenting just use <code>
+     * node._parent = newparent</code>.
      *
      * @param parent The parent node.
      */
@@ -331,6 +332,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns this syntax tree node's parent node.
+     *
      * @return The parent syntax tree node.
      */
     protected final SyntaxTreeNode getParent() {
@@ -339,6 +341,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns 'true' if this syntax tree node is the Sentinal node.
+     *
      * @return 'true' if this syntax tree node is the Sentinal node.
      */
     protected final boolean isDummy() {
@@ -346,8 +349,9 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Get the import precedence of this element. The import precedence equals
-     * the import precedence of the stylesheet in which this element occured.
+     * Get the import precedence of this element. The import precedence equals the import precedence
+     * of the stylesheet in which this element occured.
+     *
      * @return The import precedence of this syntax tree node.
      */
     protected int getImportPrecedence() {
@@ -357,41 +361,41 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Get the Stylesheet node that represents the <xsl:stylesheet/> element
-     * that this node occured under.
+     * Get the Stylesheet node that represents the <xsl:stylesheet/> element that this node occured
+     * under.
+     *
      * @return The Stylesheet ancestor node of this node.
      */
     public Stylesheet getStylesheet() {
         if (_stylesheet == null) {
             SyntaxTreeNode parent = this;
             while (parent != null) {
-                if (parent instanceof Stylesheet)
-                    return((Stylesheet)parent);
+                if (parent instanceof Stylesheet) return ((Stylesheet) parent);
                 parent = parent.getParent();
             }
-            _stylesheet = (Stylesheet)parent;
+            _stylesheet = (Stylesheet) parent;
         }
-        return(_stylesheet);
+        return (_stylesheet);
     }
 
     /**
-     * Get the Template node that represents the <xsl:template/> element
-     * that this node occured under. Note that this method will return 'null'
-     * for nodes that represent top-level elements.
+     * Get the Template node that represents the <xsl:template/> element that this node occured
+     * under. Note that this method will return 'null' for nodes that represent top-level elements.
+     *
      * @return The Template ancestor node of this node or 'null'.
      */
     protected Template getTemplate() {
         if (_template == null) {
             SyntaxTreeNode parent = this;
-            while ((parent != null) && (!(parent instanceof Template)))
-                parent = parent.getParent();
-            _template = (Template)parent;
+            while ((parent != null) && (!(parent instanceof Template))) parent = parent.getParent();
+            _template = (Template) parent;
         }
-        return(_template);
+        return (_template);
     }
 
     /**
      * Returns a reference to the XSLTC (XSLT compiler) in use.
+     *
      * @return XSLTC - XSLT compiler.
      */
     protected final XSLTC getXSLTC() {
@@ -400,6 +404,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns the XSLT parser's symbol table.
+     *
      * @return Symbol table.
      */
     protected final SymbolTable getSymbolTable() {
@@ -407,10 +412,10 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Parse the contents of this syntax tree nodes (child nodes, XPath
-     * expressions, patterns and functions). The default behaviour is to parser
-     * the syntax tree node's children (since there are no common expressions,
-     * patterns, etc. that can be handled in this base class.
+     * Parse the contents of this syntax tree nodes (child nodes, XPath expressions, patterns and
+     * functions). The default behaviour is to parser the syntax tree node's children (since there
+     * are no common expressions, patterns, etc. that can be handled in this base class.
+     *
      * @param parser reference to the XSLT parser
      */
     public void parseContents(Parser parser) {
@@ -418,13 +423,14 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Parse all children of this syntax tree node. This method is normally
-     * called by the parseContents() method.
+     * Parse all children of this syntax tree node. This method is normally called by the
+     * parseContents() method.
+     *
      * @param parser reference to the XSLT parser
      */
     protected final void parseChildren(Parser parser) {
 
-        List<QName> locals = null;   // only create when needed
+        List<QName> locals = null; // only create when needed
 
         for (SyntaxTreeNode child : _contents) {
             parser.getSymbolTable().setCurrentNode(child);
@@ -450,34 +456,34 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Add a node to the current scope and return name of a variable or
-     * parameter if the node represents a variable or a parameter.
+     * Add a node to the current scope and return name of a variable or parameter if the node
+     * represents a variable or a parameter.
      */
     protected QName updateScope(Parser parser, SyntaxTreeNode node) {
         if (node instanceof Variable) {
-            final Variable var = (Variable)node;
+            final Variable var = (Variable) node;
             parser.addVariable(var);
             return var.getName();
-        }
-        else if (node instanceof Param) {
-            final Param param = (Param)node;
+        } else if (node instanceof Param) {
+            final Param param = (Param) node;
             parser.addParameter(param);
             return param.getName();
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
-     * Type check the children of this node. The type check phase may add
-     * coercions (CastExpr) to the AST.
+     * Type check the children of this node. The type check phase may add coercions (CastExpr) to
+     * the AST.
+     *
      * @param stable The compiler/parser's symbol table
      */
     public abstract Type typeCheck(SymbolTable stable) throws TypeCheckError;
 
     /**
      * Call typeCheck() on all child syntax tree nodes.
+     *
      * @param stable The compiler/parser's symbol table
      */
     protected Type typeCheckContents(SymbolTable stable) throws TypeCheckError {
@@ -489,19 +495,19 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Translate this abstract syntax tree node into JVM bytecodes.
+     *
      * @param classGen BCEL Java class generator
      * @param methodGen BCEL Java method generator
      */
-    public abstract void translate(ClassGenerator classGen,
-                                   MethodGenerator methodGen);
+    public abstract void translate(ClassGenerator classGen, MethodGenerator methodGen);
 
     /**
      * Call translate() on all child syntax tree nodes.
+     *
      * @param classGen BCEL Java class generator
      * @param methodGen BCEL Java method generator
      */
-    protected void translateContents(ClassGenerator classGen,
-                                     MethodGenerator methodGen) {
+    protected void translateContents(ClassGenerator classGen, MethodGenerator methodGen) {
         // Call translate() on all child nodes
         final int n = elementCount();
 
@@ -517,8 +523,8 @@ public abstract class SyntaxTreeNode implements Constants {
         // references falling out-of-scope inside the for-each element.
         // (the cause of which being 'lazy' register allocation for references)
         for (int i = 0; i < n; i++) {
-            if ( _contents.get(i) instanceof VariableBase) {
-                final VariableBase var = (VariableBase)_contents.get(i);
+            if (_contents.get(i) instanceof VariableBase) {
+                final VariableBase var = (VariableBase) _contents.get(i);
                 var.unmapRegister(classGen, methodGen);
             }
         }
@@ -528,8 +534,8 @@ public abstract class SyntaxTreeNode implements Constants {
      * Checks whether any children of this node is not of the specified type.
      *
      * @param type the type to be checked against
-     * @return true if there is at least one child that is not of the specified
-     * type, false otherwise.
+     * @return true if there is at least one child that is not of the specified type, false
+     *     otherwise.
      */
     public boolean notTypeOf(Class<?> type) {
         if (_contents.size() > 0) {
@@ -545,7 +551,7 @@ public abstract class SyntaxTreeNode implements Constants {
     /**
      * Return true if the node represents a simple RTF.
      *
-     * A node is a simple RTF if all children only produce Text value.
+     * <p>A node is a simple RTF if all children only produce Text value.
      *
      * @param node A node
      * @return true if the node content can be considered as a simple RTF.
@@ -554,17 +560,17 @@ public abstract class SyntaxTreeNode implements Constants {
 
         List<SyntaxTreeNode> contents = node.getContents();
         if (!contents.stream().noneMatch((item) -> (!isTextElement(item, false)))) {
-                return false;
+            return false;
         }
 
         return true;
     }
 
-     /**
+    /**
      * Return true if the node represents an adaptive RTF.
      *
-     * A node is an adaptive RTF if each children is a Text element
-     * or it is <xsl:call-template> or <xsl:apply-templates>.
+     * <p>A node is an adaptive RTF if each children is a Text element or it is <xsl:call-template>
+     * or <xsl:apply-templates>.
      *
      * @param node A node
      * @return true if the node content can be considered as an adaptive RTF.
@@ -573,8 +579,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
         List<SyntaxTreeNode> contents = node.getContents();
         for (SyntaxTreeNode item : contents) {
-            if (!isTextElement(item, true))
-                return false;
+            if (!isTextElement(item, true)) return false;
         }
 
         return true;
@@ -583,57 +588,44 @@ public abstract class SyntaxTreeNode implements Constants {
     /**
      * Return true if the node only produces Text content.
      *
-     * A node is a Text element if it is Text, xsl:value-of, xsl:number,
-     * or a combination of these nested in a control instruction (xsl:if or
-     * xsl:choose).
+     * <p>A node is a Text element if it is Text, xsl:value-of, xsl:number, or a combination of
+     * these nested in a control instruction (xsl:if or xsl:choose).
      *
-     * If the doExtendedCheck flag is true, xsl:call-template and xsl:apply-templates
-     * are also considered as Text elements.
+     * <p>If the doExtendedCheck flag is true, xsl:call-template and xsl:apply-templates are also
+     * considered as Text elements.
      *
      * @param node A node
-     * @param doExtendedCheck If this flag is true, <xsl:call-template> and
-     * <xsl:apply-templates> are also considered as Text elements.
-     *
+     * @param doExtendedCheck If this flag is true, <xsl:call-template> and <xsl:apply-templates>
+     *     are also considered as Text elements.
      * @return true if the node of Text type
      */
     private boolean isTextElement(SyntaxTreeNode node, boolean doExtendedCheck) {
-        if (node instanceof ValueOf || node instanceof Number
-            || node instanceof Text)
-        {
+        if (node instanceof ValueOf || node instanceof Number || node instanceof Text) {
             return true;
-        }
-        else if (node instanceof If) {
+        } else if (node instanceof If) {
             return doExtendedCheck ? isAdaptiveRTF(node) : isSimpleRTF(node);
-        }
-        else if (node instanceof Choose) {
+        } else if (node instanceof Choose) {
             List<SyntaxTreeNode> contents = node.getContents();
             for (SyntaxTreeNode item : contents) {
-                if (item instanceof Text ||
-                     ((item instanceof When || item instanceof Otherwise)
-                     && ((doExtendedCheck && isAdaptiveRTF(item))
-                         || (!doExtendedCheck && isSimpleRTF(item)))))
-                    continue;
-                else
-                    return false;
+                if (item instanceof Text
+                        || ((item instanceof When || item instanceof Otherwise)
+                                && ((doExtendedCheck && isAdaptiveRTF(item))
+                                        || (!doExtendedCheck && isSimpleRTF(item))))) continue;
+                else return false;
             }
             return true;
-        }
-        else if (doExtendedCheck &&
-                  (node instanceof CallTemplate
-                   || node instanceof ApplyTemplates))
-            return true;
-        else
-            return false;
+        } else if (doExtendedCheck
+                && (node instanceof CallTemplate || node instanceof ApplyTemplates)) return true;
+        else return false;
     }
 
     /**
      * Utility method used by parameters and variables to store result trees
+     *
      * @param classGen BCEL Java class generator
      * @param methodGen BCEL Java method generator
      */
-    protected void compileResultTree(ClassGenerator classGen,
-                                     MethodGenerator methodGen)
-    {
+    protected void compileResultTree(ClassGenerator classGen, MethodGenerator methodGen) {
         final ConstantPoolGen cpg = classGen.getConstantPool();
         final InstructionList il = methodGen.getInstructionList();
         final Stylesheet stylesheet = classGen.getStylesheet();
@@ -644,8 +636,7 @@ public abstract class SyntaxTreeNode implements Constants {
             isAdaptive = isAdaptiveRTF(this);
         }
 
-        int rtfType = isSimple ? DOM.SIMPLE_RTF
-                               : (isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF);
+        int rtfType = isSimple ? DOM.SIMPLE_RTF : (isAdaptive ? DOM.ADAPTIVE_RTF : DOM.TREE_RTF);
 
         // Save the current handler base on the stack
         il.append(methodGen.loadHandler());
@@ -653,26 +644,25 @@ public abstract class SyntaxTreeNode implements Constants {
         final String DOM_CLASS = classGen.getDOMClass();
 
         // Create new instance of DOM class (with RTF_INITIAL_SIZE nodes)
-        //int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
-        //il.append(new NEW(cpg.addClass(DOM_IMPL)));
+        // int index = cpg.addMethodref(DOM_IMPL, "<init>", "(I)V");
+        // il.append(new NEW(cpg.addClass(DOM_IMPL)));
 
         il.append(methodGen.loadDOM());
-        int index = cpg.addInterfaceMethodref(DOM_INTF,
-                                 "getResultTreeFrag",
-                                 "(IIZ)" + DOM_INTF_SIG);
+        int index =
+                cpg.addInterfaceMethodref(DOM_INTF, "getResultTreeFrag", "(IIZ)" + DOM_INTF_SIG);
         il.append(new PUSH(cpg, RTF_INITIAL_SIZE));
         il.append(new PUSH(cpg, rtfType));
         il.append(new PUSH(cpg, stylesheet.callsNodeset()));
-        il.append(new INVOKEINTERFACE(index,4));
+        il.append(new INVOKEINTERFACE(index, 4));
 
         il.append(DUP);
 
         // Overwrite old handler with DOM handler
-        index = cpg.addInterfaceMethodref(DOM_INTF,
-                                 "getOutputDomBuilder",
-                                 "()" + TRANSLET_OUTPUT_SIG);
+        index =
+                cpg.addInterfaceMethodref(
+                        DOM_INTF, "getOutputDomBuilder", "()" + TRANSLET_OUTPUT_SIG);
 
-        il.append(new INVOKEINTERFACE(index,1));
+        il.append(new INVOKEINTERFACE(index, 1));
         il.append(DUP);
         il.append(methodGen.storeHandler());
 
@@ -689,16 +679,22 @@ public abstract class SyntaxTreeNode implements Constants {
         // Check if we need to wrap the DOMImpl object in a DOMAdapter object.
         // DOMAdapter is not needed if the RTF is a simple RTF and the nodeset()
         // function is not used.
-        if (stylesheet.callsNodeset()
-            && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
+        if (stylesheet.callsNodeset() && !DOM_CLASS.equals(DOM_IMPL_CLASS)) {
             // new com.sun.org.apache.xalan.internal.xsltc.dom.DOMAdapter(DOMImpl,String[]);
-            index = cpg.addMethodref(DOM_ADAPTER_CLASS,
-                                     "<init>",
-                                     "("+DOM_INTF_SIG+
-                                     "["+STRING_SIG+
-                                     "["+STRING_SIG+
-                                     "[I"+
-                                     "["+STRING_SIG+")V");
+            index =
+                    cpg.addMethodref(
+                            DOM_ADAPTER_CLASS,
+                            "<init>",
+                            "("
+                                    + DOM_INTF_SIG
+                                    + "["
+                                    + STRING_SIG
+                                    + "["
+                                    + STRING_SIG
+                                    + "[I"
+                                    + "["
+                                    + STRING_SIG
+                                    + ")V");
             il.append(new NEW(cpg.addClass(DOM_ADAPTER_CLASS)));
             il.append(new DUP_X1());
             il.append(SWAP);
@@ -716,25 +712,24 @@ public abstract class SyntaxTreeNode implements Constants {
                 il.append(new NEWARRAY(BasicType.INT));
                 il.append(SWAP);
                 il.append(new INVOKESPECIAL(index));
-            }
-            else {
+            } else {
                 // Push name arrays on the stack
                 il.append(ALOAD_0);
-                il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                           NAMES_INDEX,
-                                           NAMES_INDEX_SIG)));
+                il.append(
+                        new GETFIELD(
+                                cpg.addFieldref(TRANSLET_CLASS, NAMES_INDEX, NAMES_INDEX_SIG)));
                 il.append(ALOAD_0);
-                il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                           URIS_INDEX,
-                                           URIS_INDEX_SIG)));
+                il.append(
+                        new GETFIELD(cpg.addFieldref(TRANSLET_CLASS, URIS_INDEX, URIS_INDEX_SIG)));
                 il.append(ALOAD_0);
-                il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                           TYPES_INDEX,
-                                           TYPES_INDEX_SIG)));
+                il.append(
+                        new GETFIELD(
+                                cpg.addFieldref(TRANSLET_CLASS, TYPES_INDEX, TYPES_INDEX_SIG)));
                 il.append(ALOAD_0);
-                il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                           NAMESPACE_INDEX,
-                                           NAMESPACE_INDEX_SIG)));
+                il.append(
+                        new GETFIELD(
+                                cpg.addFieldref(
+                                        TRANSLET_CLASS, NAMESPACE_INDEX, NAMESPACE_INDEX_SIG)));
 
                 // Initialized DOM adapter
                 il.append(new INVOKESPECIAL(index));
@@ -744,11 +739,11 @@ public abstract class SyntaxTreeNode implements Constants {
                 il.append(methodGen.loadDOM());
                 il.append(new CHECKCAST(cpg.addClass(classGen.getDOMClass())));
                 il.append(SWAP);
-                index = cpg.addMethodref(MULTI_DOM_CLASS,
-                                         "addDOMAdapter",
-                                         "(" + DOM_ADAPTER_SIG + ")I");
+                index =
+                        cpg.addMethodref(
+                                MULTI_DOM_CLASS, "addDOMAdapter", "(" + DOM_ADAPTER_SIG + ")I");
                 il.append(new INVOKEVIRTUAL(index));
-                il.append(POP);         // ignore mask returned by addDOMAdapter
+                il.append(POP); // ignore mask returned by addDOMAdapter
             }
         }
 
@@ -758,10 +753,11 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Returns true if this expression/instruction depends on the context. By
-     * default, every expression/instruction depends on the context unless it
-     * overrides this method. Currently used to determine if result trees are
-     * compiled using procedures or little DOMs (result tree fragments).
+     * Returns true if this expression/instruction depends on the context. By default, every
+     * expression/instruction depends on the context unless it overrides this method. Currently used
+     * to determine if result trees are compiled using procedures or little DOMs (result tree
+     * fragments).
+     *
      * @return 'true' if this node depends on the context.
      */
     protected boolean contextDependent() {
@@ -769,8 +765,9 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Return true if any of the expressions/instructions in the contents of
-     * this node is context dependent.
+     * Return true if any of the expressions/instructions in the contents of this node is context
+     * dependent.
+     *
      * @return 'true' if the contents of this node is context dependent.
      */
     protected boolean dependentContents() {
@@ -784,6 +781,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Adds a child node to this syntax tree node.
+     *
      * @param element is the new child node.
      */
     protected final void addElement(SyntaxTreeNode element) {
@@ -792,8 +790,9 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Inserts the first child node of this syntax tree node. The existing
-     * children are shifted back one position.
+     * Inserts the first child node of this syntax tree node. The existing children are shifted back
+     * one position.
+     *
      * @param element is the new child node.
      */
     protected final void setFirstElement(SyntaxTreeNode element) {
@@ -803,6 +802,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Removed a child node of this syntax tree node.
+     *
      * @param element is the child node to remove.
      */
     protected final void removeElement(SyntaxTreeNode element) {
@@ -812,6 +812,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns a List containing all the child nodes of this node.
+     *
      * @return A List containing all the child nodes of this node.
      */
     protected final List<SyntaxTreeNode> getContents() {
@@ -820,6 +821,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Tells you if this node has any child nodes.
+     *
      * @return 'true' if this node has any children.
      */
     protected final boolean hasContents() {
@@ -828,6 +830,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns the number of children this node has.
+     *
      * @return Number of child nodes.
      */
     protected final int elementCount() {
@@ -836,6 +839,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns an Iterator of all child nodes of this node.
+     *
      * @return An Iterator of all child nodes of this node.
      */
     protected final Iterator<SyntaxTreeNode> elements() {
@@ -844,6 +848,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns a child node at a given position.
+     *
      * @param pos The child node's position.
      * @return The child node.
      */
@@ -853,6 +858,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Returns this element's last child
+     *
      * @return The child node.
      */
     protected final SyntaxTreeNode lastChild() {
@@ -861,9 +867,9 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Displays the contents of this syntax tree node (to stdout).
-     * This method is intended for debugging _only_, and should be overridden
-     * by all syntax tree node implementations.
+     * Displays the contents of this syntax tree node (to stdout). This method is intended for
+     * debugging _only_, and should be overridden by all syntax tree node implementations.
+     *
      * @param indent Indentation level for syntax tree levels.
      */
     public void display(int indent) {
@@ -871,8 +877,9 @@ public abstract class SyntaxTreeNode implements Constants {
     }
 
     /**
-     * Displays the contents of this syntax tree node (to stdout).
-     * This method is intended for debugging _only_ !!!
+     * Displays the contents of this syntax tree node (to stdout). This method is intended for
+     * debugging _only_ !!!
+     *
      * @param indent Indentation level for syntax tree levels.
      */
     protected void displayContents(int indent) {
@@ -883,6 +890,7 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Set the indentation level for debug output.
+     *
      * @param indent Indentation level for syntax tree levels.
      */
     protected final void indent(int indent) {
@@ -891,30 +899,31 @@ public abstract class SyntaxTreeNode implements Constants {
 
     /**
      * Report an error to the parser.
-     * @param element The element in which the error occured (normally 'this'
-     * but it could also be an expression/pattern/etc.)
+     *
+     * @param element The element in which the error occured (normally 'this' but it could also be
+     *     an expression/pattern/etc.)
      * @param parser The XSLT parser to report the error to.
      * @param error The error code (from util/ErrorMsg).
      * @param message Any additional error message.
      */
-    protected void reportError(SyntaxTreeNode element, Parser parser,
-                               String errorCode, String message) {
+    protected void reportError(
+            SyntaxTreeNode element, Parser parser, String errorCode, String message) {
         final ErrorMsg error = new ErrorMsg(errorCode, message, element);
         parser.reportError(Constants.ERROR, error);
     }
 
     /**
      * Report a recoverable error to the parser.
-     * @param element The element in which the error occured (normally 'this'
-     * but it could also be an expression/pattern/etc.)
+     *
+     * @param element The element in which the error occured (normally 'this' but it could also be
+     *     an expression/pattern/etc.)
      * @param parser The XSLT parser to report the error to.
      * @param error The error code (from util/ErrorMsg).
      * @param message Any additional error message.
      */
-    protected  void reportWarning(SyntaxTreeNode element, Parser parser,
-                                  String errorCode, String message) {
+    protected void reportWarning(
+            SyntaxTreeNode element, Parser parser, String errorCode, String message) {
         final ErrorMsg error = new ErrorMsg(errorCode, message, element);
         parser.reportError(Constants.WARNING, error);
     }
-
 }

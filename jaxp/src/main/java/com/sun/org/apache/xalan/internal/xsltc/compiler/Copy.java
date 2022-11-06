@@ -80,24 +80,19 @@ final class Copy extends Instruction {
         final InstructionList il = methodGen.getInstructionList();
 
         final LocalVariableGen name =
-            methodGen.addLocalVariable2("name",
-                                        Util.getJCRefType(STRING_SIG),
-                                        null);
+                methodGen.addLocalVariable2("name", Util.getJCRefType(STRING_SIG), null);
         final LocalVariableGen length =
-            methodGen.addLocalVariable2("length",
-                                        Util.getJCRefType("I"),
-                                        null);
+                methodGen.addLocalVariable2("length", Util.getJCRefType("I"), null);
 
         // Get the name of the node to copy and save for later
         il.append(methodGen.loadDOM());
         il.append(methodGen.loadCurrentNode());
         il.append(methodGen.loadHandler());
-        final int cpy = cpg.addInterfaceMethodref(DOM_INTF,
-                                                  "shallowCopy",
-                                                  "("
-                                                  + NODE_SIG
-                                                  + TRANSLET_OUTPUT_SIG
-                                                  + ")" + STRING_SIG);
+        final int cpy =
+                cpg.addInterfaceMethodref(
+                        DOM_INTF,
+                        "shallowCopy",
+                        "(" + NODE_SIG + TRANSLET_OUTPUT_SIG + ")" + STRING_SIG);
         il.append(new INVOKEINTERFACE(cpy, 3));
         il.append(DUP);
         name.setStart(il.append(new ASTORE(name.getIndex())));
@@ -105,7 +100,7 @@ final class Copy extends Instruction {
 
         // Get the length of the node name and save for later
         il.append(new ALOAD(name.getIndex()));
-        final int lengthMethod = cpg.addMethodref(STRING_CLASS,"length","()I");
+        final int lengthMethod = cpg.addMethodref(STRING_CLASS, "length", "()I");
         il.append(new INVOKEVIRTUAL(lengthMethod));
         il.append(DUP);
         length.setStart(il.append(new ISTORE(length.getIndex())));
@@ -119,8 +114,7 @@ final class Copy extends Instruction {
             // If the parent of this element will result in an element being
             // output then we know that it is safe to copy out the attributes
             final SyntaxTreeNode parent = getParent();
-            if ((parent instanceof LiteralElement) ||
-                (parent instanceof LiteralElement)) {
+            if ((parent instanceof LiteralElement) || (parent instanceof LiteralElement)) {
                 _useSets.translate(classGen, methodGen);
             }
             // If not we have to check to see if the copy will result in an

@@ -25,60 +25,53 @@
 
 package javax.xml.transform.dom;
 
-import javax.xml.transform.Source;
-
 import org.w3c.dom.Node;
 
+import javax.xml.transform.Source;
+
 /**
- * <p>Acts as a holder for a transformation Source tree in the
- * form of a Document Object Model (DOM) tree.</p>
+ * Acts as a holder for a transformation Source tree in the form of a Document Object Model (DOM)
+ * tree.
  *
- * <p>Note that XSLT requires namespace support. Attempting to transform a DOM
- * that was not contructed with a namespace-aware parser may result in errors.
- * Parsers can be made namespace aware by calling
- * {@link javax.xml.parsers.DocumentBuilderFactory#setNamespaceAware(boolean awareness)}.</p>
+ * <p>Note that XSLT requires namespace support. Attempting to transform a DOM that was not
+ * contructed with a namespace-aware parser may result in errors. Parsers can be made namespace
+ * aware by calling {@link javax.xml.parsers.DocumentBuilderFactory#setNamespaceAware(boolean
+ * awareness)}.
  *
  * @author Jeff Suttor
- * @see <a href="http://www.w3.org/TR/DOM-Level-2">Document Object Model (DOM) Level 2 Specification</a>
+ * @see <a href="http://www.w3.org/TR/DOM-Level-2">Document Object Model (DOM) Level 2
+ *     Specification</a>
  * @since 1.4
  */
 public class DOMSource implements Source {
 
-    /**
-     * <p><code>Node</code> to serve as DOM source.</p>
-     */
+    /** <code>Node</code> to serve as DOM source. */
     private Node node;
 
-    /**
-     * <p>The base ID (URL or system ID) from where URLs
-     * will be resolved.</p>
-     */
+    /** The base ID (URL or system ID) from where URLs will be resolved. */
     private String systemID;
 
-    /** If {@link javax.xml.transform.TransformerFactory#getFeature}
-     * returns true when passed this value as an argument,
-     * the Transformer supports Source input of this type.
+    /**
+     * If {@link javax.xml.transform.TransformerFactory#getFeature} returns true when passed this
+     * value as an argument, the Transformer supports Source input of this type.
      */
-    public static final String FEATURE =
-        "http://javax.xml.transform.dom.DOMSource/feature";
+    public static final String FEATURE = "http://javax.xml.transform.dom.DOMSource/feature";
 
     /**
-     * <p>Zero-argument default constructor.  If this constructor is used, and
-     * no DOM source is set using {@link #setNode(Node node)} , then the
-     * <code>Transformer</code> will
-     * create an empty source {@link org.w3c.dom.Document} using
-     * {@link javax.xml.parsers.DocumentBuilder#newDocument()}.</p>
+     * Zero-argument default constructor. If this constructor is used, and no DOM source is set
+     * using {@link #setNode(Node node)} , then the <code>Transformer</code> will create an empty
+     * source {@link org.w3c.dom.Document} using {@link
+     * javax.xml.parsers.DocumentBuilder#newDocument()}.
      *
      * @see javax.xml.transform.Transformer#transform(Source xmlSource, Result outputTarget)
      */
-    public DOMSource() { }
+    public DOMSource() {}
 
     /**
-     * Create a new input source with a DOM node.  The operation
-     * will be applied to the subtree rooted at this node.  In XSLT,
-     * a "/" pattern still means the root of the tree (not the subtree),
-     * and the evaluation of global variables and parameters is done
-     * from the root node also.
+     * Create a new input source with a DOM node. The operation will be applied to the subtree
+     * rooted at this node. In XSLT, a "/" pattern still means the root of the tree (not the
+     * subtree), and the evaluation of global variables and parameters is done from the root node
+     * also.
      *
      * @param n The DOM node that will contain the Source tree.
      */
@@ -87,8 +80,8 @@ public class DOMSource implements Source {
     }
 
     /**
-     * Create a new input source with a DOM node, and with the
-     * system ID also passed in as the base URI.
+     * Create a new input source with a DOM node, and with the system ID also passed in as the base
+     * URI.
      *
      * @param node The DOM node that will contain the Source tree.
      * @param systemID Specifies the base URI associated with node.
@@ -117,8 +110,7 @@ public class DOMSource implements Source {
     }
 
     /**
-     * Set the base ID (URL or system ID) from where URLs
-     * will be resolved.
+     * Set the base ID (URL or system ID) from where URLs will be resolved.
      *
      * @param systemID Base URL for this DOM tree.
      */
@@ -128,8 +120,7 @@ public class DOMSource implements Source {
     }
 
     /**
-     * Get the base ID (URL or system ID) from where URLs
-     * will be resolved.
+     * Get the base ID (URL or system ID) from where URLs will be resolved.
      *
      * @return Base URL for this DOM tree.
      */
@@ -139,13 +130,11 @@ public class DOMSource implements Source {
     }
 
     /**
-     * Indicates whether the {@code DOMSource} object is empty. Empty is
-     * defined as follows:
+     * Indicates whether the {@code DOMSource} object is empty. Empty is defined as follows:
+     *
      * <ul>
-     * <li>if the system identifier and node are {@code null};
-     * </li>
-     * <li>if the system identifier is null, and the {@code node} has no child nodes.
-     * </li>
+     *   <li>if the system identifier and node are {@code null};
+     *   <li>if the system identifier is null, and the {@code node} has no child nodes.
      * </ul>
      *
      * @return true if the {@code DOMSource} object is empty, false otherwise

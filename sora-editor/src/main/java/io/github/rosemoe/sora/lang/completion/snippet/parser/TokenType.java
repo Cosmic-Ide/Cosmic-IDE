@@ -24,7 +24,6 @@
 package io.github.rosemoe.sora.lang.completion.snippet.parser;
 
 public enum TokenType {
-
     Dollar('$'),
     Colon(':'),
     Comma(','),

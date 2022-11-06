@@ -24,15 +24,16 @@
  */
 package com.sun.xml.internal.stream.events;
 
-import java.util.List;
+import com.sun.xml.internal.stream.util.ReadOnlyIterator;
+
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
-import java.util.Iterator;
 import javax.xml.stream.events.XMLEvent;
-import com.sun.xml.internal.stream.util.ReadOnlyIterator;
 
 /**
  * Implementation of EndElement event.
@@ -40,8 +41,7 @@ import com.sun.xml.internal.stream.util.ReadOnlyIterator;
  * @author Neeraj Bajaj Sun Microsystems,Inc.
  * @author K.Venugopal Sun Microsystems,Inc.
  */
-public class EndElementEvent extends DummyEvent
-        implements EndElement {
+public class EndElementEvent extends DummyEvent implements EndElement {
 
     List<Namespace> fNamespaces = null;
     QName fQName;
@@ -74,8 +74,7 @@ public class EndElementEvent extends DummyEvent
     }
 
     @Override
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-            throws java.io.IOException {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write("</");
         String prefix = fQName.getPrefix();
         if (prefix != null && prefix.length() > 0) {
@@ -87,8 +86,8 @@ public class EndElementEvent extends DummyEvent
     }
 
     /**
-     * Returns an Iterator of namespaces that have gone out of scope. Returns an
-     * empty iterator if no namespaces have gone out of scope.
+     * Returns an Iterator of namespaces that have gone out of scope. Returns an empty iterator if
+     * no namespaces have gone out of scope.
      *
      * @return an Iterator over Namespace interfaces, or an empty iterator
      */
@@ -118,10 +117,14 @@ public class EndElementEvent extends DummyEvent
         }
 
         if (fQName.getPrefix() != null) {
-            return "['" + fQName.getNamespaceURI() + "']:" + fQName.getPrefix() + ":" + fQName.getLocalPart();
+            return "['"
+                    + fQName.getNamespaceURI()
+                    + "']:"
+                    + fQName.getPrefix()
+                    + ":"
+                    + fQName.getLocalPart();
         } else {
             return "['" + fQName.getNamespaceURI() + "']:" + fQName.getLocalPart();
         }
     }
-
 }

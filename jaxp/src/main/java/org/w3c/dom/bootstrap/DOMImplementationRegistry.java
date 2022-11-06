@@ -39,8 +39,11 @@
  * [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
  */
 
-
 package org.w3c.dom.bootstrap;
+
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.DOMImplementationList;
+import org.w3c.dom.DOMImplementationSource;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -51,17 +54,11 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.DOMImplementationList;
-import org.w3c.dom.DOMImplementationSource;
 
 /**
- * A factory that enables applications to obtain instances of
- * <code>DOMImplementation</code>.
+ * A factory that enables applications to obtain instances of <code>DOMImplementation</code>.
  *
- * <p>
- * Example:
- * </p>
+ * <p>Example:
  *
  * <pre class='example'>
  *  // get an instance of the DOMImplementation registry
@@ -72,44 +69,32 @@ import org.w3c.dom.DOMImplementationSource;
  *       registry.getDOMImplementation("XML 3.0");
  * </pre>
  *
- * <p>
- * This provides an application with an implementation-independent starting
- * point. DOM implementations may modify this class to meet new security
- * standards or to provide *additional* fallbacks for the list of
- * DOMImplementationSources.
- * </p>
+ * <p>This provides an application with an implementation-independent starting point. DOM
+ * implementations may modify this class to meet new security standards or to provide *additional*
+ * fallbacks for the list of DOMImplementationSources.
  *
  * @see DOMImplementation
  * @see DOMImplementationSource
  * @since 1.5, DOM Level 3
  */
 public final class DOMImplementationRegistry {
-    /**
-     * The system property to specify the
-     * DOMImplementationSource class names.
-     */
-    public static final String PROPERTY =
-        "org.w3c.dom.DOMImplementationSourceList";
+    /** The system property to specify the DOMImplementationSource class names. */
+    public static final String PROPERTY = "org.w3c.dom.DOMImplementationSourceList";
 
-    /**
-     * Default columns per line.
-     */
+    /** Default columns per line. */
     private static final int DEFAULT_LINE_LENGTH = 80;
 
-    /**
-     * The list of DOMImplementationSources.
-     */
+    /** The list of DOMImplementationSources. */
     private List<DOMImplementationSource> sources;
 
-    /**
-     * Default class name.
-     */
+    /** Default class name. */
     private static final String FALLBACK_CLASS =
             "com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl";
-    private static final String DEFAULT_PACKAGE =
-            "com.sun.org.apache.xerces.internal.dom";
+
+    private static final String DEFAULT_PACKAGE = "com.sun.org.apache.xerces.internal.dom";
     /**
      * Private constructor.
+     *
      * @param srcs List of DOMImplementationSources
      */
     private DOMImplementationRegistry(final List<DOMImplementationSource> srcs) {
@@ -119,37 +104,26 @@ public final class DOMImplementationRegistry {
     /**
      * Obtain a new instance of a <code>DOMImplementationRegistry</code>.
      *
-
-     * The <code>DOMImplementationRegistry</code> is initialized by the
-     * application or the implementation, depending on the context, by
-     * first checking the value of the Java system property
-     * <code>org.w3c.dom.DOMImplementationSourceList</code> and
-     * the service provider whose contents are at
-     * "<code>META_INF/services/org.w3c.dom.DOMImplementationSourceList</code>".
-     * The value of this property is a white-space separated list of
-     * names of availables classes implementing the
-     * <code>DOMImplementationSource</code> interface. Each class listed
-     * in the class name list is instantiated and any exceptions
-     * encountered are thrown to the application.
+     * <p>The <code>DOMImplementationRegistry</code> is initialized by the application or the
+     * implementation, depending on the context, by first checking the value of the Java system
+     * property <code>org.w3c.dom.DOMImplementationSourceList</code> and the service provider whose
+     * contents are at "<code>META_INF/services/org.w3c.dom.DOMImplementationSourceList</code>". The
+     * value of this property is a white-space separated list of names of availables classes
+     * implementing the <code>DOMImplementationSource</code> interface. Each class listed in the
+     * class name list is instantiated and any exceptions encountered are thrown to the application.
      *
      * @return an initialized instance of DOMImplementationRegistry
-     * @throws ClassNotFoundException
-     *     If any specified class can not be found
-     * @throws InstantiationException
-     *     If any specified class is an interface or abstract class
-     * @throws IllegalAccessException
-     *     If the default constructor of a specified class is not accessible
-     * @throws ClassCastException
-     *     If any specified class does not implement
-     * <code>DOMImplementationSource</code>
+     * @throws ClassNotFoundException If any specified class can not be found
+     * @throws InstantiationException If any specified class is an interface or abstract class
+     * @throws IllegalAccessException If the default constructor of a specified class is not
+     *     accessible
+     * @throws ClassCastException If any specified class does not implement <code>
+     *     DOMImplementationSource</code>
      */
     @SuppressWarnings("removal")
     public static DOMImplementationRegistry newInstance()
-        throws
-        ClassNotFoundException,
-        InstantiationException,
-        IllegalAccessException,
-        ClassCastException {
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+                    ClassCastException {
         List<DOMImplementationSource> sources = new ArrayList<>();
 
         ClassLoader classLoader = getClassLoader();
@@ -166,7 +140,7 @@ public final class DOMImplementationRegistry {
             //
             // DOM Implementations can modify here to add *additional* fallback
             // mechanisms to access a list of default DOMImplementationSources.
-            //fall back to JAXP implementation class DOMXSImplementationSourceImpl
+            // fall back to JAXP implementation class DOMXSImplementationSourceImpl
             p = FALLBACK_CLASS;
         }
         if (p != null) {
@@ -188,7 +162,7 @@ public final class DOMImplementationRegistry {
                 }
                 try {
                     DOMImplementationSource source =
-                        (DOMImplementationSource) sourceClass.getConstructor().newInstance();
+                            (DOMImplementationSource) sourceClass.getConstructor().newInstance();
                     sources.add(source);
                 } catch (NoSuchMethodException | InvocationTargetException e) {
                     throw new InstantiationException(e.getMessage());
@@ -199,16 +173,13 @@ public final class DOMImplementationRegistry {
     }
 
     /**
-     * Return the first implementation that has the desired
-     * features, or <code>null</code> if none is found.
+     * Return the first implementation that has the desired features, or <code>null</code> if none
+     * is found.
      *
-     * @param features
-     *            A string that specifies which features are required. This is
-     *            a space separated list in which each feature is specified by
-     *            its name optionally followed by a space and a version number.
-     *            This is something like: "XML 1.0 Traversal +Events 2.0"
-     * @return An implementation that has the desired features,
-     *         or <code>null</code> if none found.
+     * @param features A string that specifies which features are required. This is a space
+     *     separated list in which each feature is specified by its name optionally followed by a
+     *     space and a version number. This is something like: "XML 1.0 Traversal +Events 2.0"
+     * @return An implementation that has the desired features, or <code>null</code> if none found.
      */
     public DOMImplementation getDOMImplementation(final String features) {
         int size = sources.size();
@@ -224,14 +195,11 @@ public final class DOMImplementationRegistry {
     }
 
     /**
-     * Return a list of implementations that support the
-     * desired features.
+     * Return a list of implementations that support the desired features.
      *
-     * @param features
-     *            A string that specifies which features are required. This is
-     *            a space separated list in which each feature is specified by
-     *            its name optionally followed by a space and a version number.
-     *            This is something like: "XML 1.0 Traversal +Events 2.0"
+     * @param features A string that specifies which features are required. This is a space
+     *     separated list in which each feature is specified by its name optionally followed by a
+     *     space and a version number. This is something like: "XML 1.0 Traversal +Events 2.0"
      * @return A list of DOMImplementations that support the desired features.
      */
     public DOMImplementationList getDOMImplementationList(final String features) {
@@ -239,29 +207,28 @@ public final class DOMImplementationRegistry {
         int size = sources.size();
         for (int i = 0; i < size; i++) {
             DOMImplementationSource source = sources.get(i);
-            DOMImplementationList impls =
-                source.getDOMImplementationList(features);
+            DOMImplementationList impls = source.getDOMImplementationList(features);
             for (int j = 0; j < impls.getLength(); j++) {
                 DOMImplementation impl = impls.item(j);
                 implementations.add(impl);
             }
         }
         return new DOMImplementationList() {
-                public DOMImplementation item(final int index) {
-                    if (index >= 0 && index < implementations.size()) {
-                        try {
-                            return implementations.get(index);
-                        } catch (IndexOutOfBoundsException e) {
-                            return null;
-                        }
+            public DOMImplementation item(final int index) {
+                if (index >= 0 && index < implementations.size()) {
+                    try {
+                        return implementations.get(index);
+                    } catch (IndexOutOfBoundsException e) {
+                        return null;
                     }
-                    return null;
                 }
+                return null;
+            }
 
-                public int getLength() {
-                    return implementations.size();
-                }
-            };
+            public int getLength() {
+                return implementations.size();
+            }
+        };
     }
 
     /**
@@ -279,7 +246,6 @@ public final class DOMImplementationRegistry {
     }
 
     /**
-     *
      * Gets a class loader.
      *
      * @return A class loader, possibly <code>null</code>
@@ -301,8 +267,7 @@ public final class DOMImplementationRegistry {
 
     /**
      * This method attempts to return the first line of the resource
-     * META_INF/services/org.w3c.dom.DOMImplementationSourceList
-     * from the provided ClassLoader.
+     * META_INF/services/org.w3c.dom.DOMImplementationSourceList from the provided ClassLoader.
      *
      * @param classLoader classLoader, may not be <code>null</code>.
      * @return first line of resource, or <code>null</code>
@@ -317,12 +282,10 @@ public final class DOMImplementationRegistry {
                 BufferedReader rd;
                 try {
                     rd =
-                        new BufferedReader(new InputStreamReader(is, "UTF-8"),
-                                           DEFAULT_LINE_LENGTH);
+                            new BufferedReader(
+                                    new InputStreamReader(is, "UTF-8"), DEFAULT_LINE_LENGTH);
                 } catch (java.io.UnsupportedEncodingException e) {
-                    rd =
-                        new BufferedReader(new InputStreamReader(is),
-                                           DEFAULT_LINE_LENGTH);
+                    rd = new BufferedReader(new InputStreamReader(is), DEFAULT_LINE_LENGTH);
                 }
                 String serviceValue = rd.readLine();
                 rd.close();
@@ -343,30 +306,31 @@ public final class DOMImplementationRegistry {
      */
     @SuppressWarnings("removal")
     private static ClassLoader getContextClassLoader() {
-        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    ClassLoader classLoader = null;
-                    try {
-                        classLoader =
-                            Thread.currentThread().getContextClassLoader();
-                    } catch (SecurityException ex) {
+        return AccessController.doPrivileged(
+                new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        ClassLoader classLoader = null;
+                        try {
+                            classLoader = Thread.currentThread().getContextClassLoader();
+                        } catch (SecurityException ex) {
+                        }
+                        return classLoader;
                     }
-                    return classLoader;
-                }
-            });
+                });
     }
 
     /**
-     * This method returns the system property indicated by the specified name
-     * after checking access control privileges.
+     * This method returns the system property indicated by the specified name after checking access
+     * control privileges.
      *
      * @param name the name of the system property
      * @return the system property
      */
     @SuppressWarnings("removal")
     private static String getSystemProperty(final String name) {
-        return AccessController.doPrivileged(new PrivilegedAction<String>() {
+        return AccessController.doPrivileged(
+                new PrivilegedAction<String>() {
                     @Override
                     public String run() {
                         return System.getProperty(name);
@@ -376,28 +340,28 @@ public final class DOMImplementationRegistry {
 
     /**
      * This method returns an Inputstream for the reading resource
-     * META_INF/services/org.w3c.dom.DOMImplementationSourceList after checking
-     * access control privileges.
+     * META_INF/services/org.w3c.dom.DOMImplementationSourceList after checking access control
+     * privileges.
      *
      * @param classLoader classLoader
      * @param name the resource
      * @return an Inputstream for the resource specified
      */
     @SuppressWarnings("removal")
-    private static InputStream getResourceAsStream(final ClassLoader classLoader,
-                                                   final String name) {
-        return AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-                @Override
-                public InputStream run() {
-                    InputStream ris;
-                    if (classLoader == null) {
-                        ris =
-                            ClassLoader.getSystemResourceAsStream(name);
-                    } else {
-                        ris = classLoader.getResourceAsStream(name);
+    private static InputStream getResourceAsStream(
+            final ClassLoader classLoader, final String name) {
+        return AccessController.doPrivileged(
+                new PrivilegedAction<InputStream>() {
+                    @Override
+                    public InputStream run() {
+                        InputStream ris;
+                        if (classLoader == null) {
+                            ris = ClassLoader.getSystemResourceAsStream(name);
+                        } else {
+                            ris = classLoader.getResourceAsStream(name);
+                        }
+                        return ris;
                     }
-                    return ris;
-                }
-            });
+                });
     }
 }

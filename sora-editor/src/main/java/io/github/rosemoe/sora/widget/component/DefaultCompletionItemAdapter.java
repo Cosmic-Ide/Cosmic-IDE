@@ -43,13 +43,19 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
     @Override
     public int getItemHeight() {
         // 45 dp
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 45, getContext().getResources().getDisplayMetrics());
+        return (int)
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        45,
+                        getContext().getResources().getDisplayMetrics());
     }
 
     @Override
     public View getView(int pos, View view, ViewGroup parent, boolean isCurrentCursorPosition) {
         if (view == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.default_completion_result_item, parent, false);
+            view =
+                    LayoutInflater.from(getContext())
+                            .inflate(R.layout.default_completion_result_item, parent, false);
         }
         var item = getItem(pos);
 
@@ -71,5 +77,4 @@ public final class DefaultCompletionItemAdapter extends EditorCompletionAdapter 
         iv.setImageDrawable(item.icon);
         return view;
     }
-
 }

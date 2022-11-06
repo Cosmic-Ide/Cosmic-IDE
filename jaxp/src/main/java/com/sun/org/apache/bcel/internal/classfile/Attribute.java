@@ -19,6 +19,8 @@
  */
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -26,15 +28,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * Abstract super class for <em>Attribute</em> objects. Currently the
- * <em>ConstantValue</em>, <em>SourceFile</em>, <em>Code</em>,
- * <em>Exceptiontable</em>, <em>LineNumberTable</em>,
- * <em>LocalVariableTable</em>, <em>InnerClasses</em> and
- * <em>Synthetic</em> attributes are supported. The <em>Unknown</em>
- * attribute stands for non-standard-attributes.
+ * Abstract super class for <em>Attribute</em> objects. Currently the <em>ConstantValue</em>,
+ * <em>SourceFile</em>, <em>Code</em>, <em>Exceptiontable</em>, <em>LineNumberTable</em>,
+ * <em>LocalVariableTable</em>, <em>InnerClasses</em> and <em>Synthetic</em> attributes are
+ * supported. The <em>Unknown</em> attribute stands for non-standard-attributes.
  *
  * @see ConstantValue
  * @see SourceFile
@@ -46,8 +44,7 @@ import com.sun.org.apache.bcel.internal.Const;
  * @see InnerClasses
  * @see Synthetic
  * @see Deprecated
- * @see Signature
- * @LastModified: May 2021
+ * @see Signature @LastModified: May 2021
  */
 public abstract class Attribute implements Cloneable, Node {
     private static final boolean debug = false;
@@ -59,15 +56,14 @@ public abstract class Attribute implements Cloneable, Node {
     private static final Map<String, Object> readers = new HashMap<>();
 
     /**
-     * Add an Attribute reader capable of parsing (user-defined) attributes
-     * named "name". You should not add readers for the standard attributes such
-     * as "LineNumberTable", because those are handled internally.
+     * Add an Attribute reader capable of parsing (user-defined) attributes named "name". You should
+     * not add readers for the standard attributes such as "LineNumberTable", because those are
+     * handled internally.
      *
      * @param name the name of the attribute as stored in the class file
-     * @param r    the reader object
+     * @param r the reader object
      */
-    public static void addAttributeReader(final String name, final UnknownAttributeReader r)
-    {
+    public static void addAttributeReader(final String name, final UnknownAttributeReader r) {
         readers.put(name, r);
     }
 
@@ -78,13 +74,11 @@ public abstract class Attribute implements Cloneable, Node {
     }
 
     /**
-     * Class method reads one attribute from the input data stream. This method
-     * must not be accessible from the outside. It is called by the Field and
-     * Method constructor methods.
+     * Class method reads one attribute from the input data stream. This method must not be
+     * accessible from the outside. It is called by the Field and Method constructor methods.
      *
      * @see Field
      * @see Method
-     *
      * @param file Input stream
      * @param constant_pool Array of constants
      * @return Attribute
@@ -93,35 +87,32 @@ public abstract class Attribute implements Cloneable, Node {
      * @since 6.0
      */
     public static Attribute readAttribute(final DataInput file, final ConstantPool constant_pool)
-            throws IOException, ClassFormatException
-    {
+            throws IOException, ClassFormatException {
         byte tag = Const.ATTR_UNKNOWN; // Unknown attribute
         // Get class name from constant pool via `name_index' indirection
         final int name_index = file.readUnsignedShort();
-        final ConstantUtf8 c = (ConstantUtf8) constant_pool.getConstant(name_index, Const.CONSTANT_Utf8);
+        final ConstantUtf8 c =
+                (ConstantUtf8) constant_pool.getConstant(name_index, Const.CONSTANT_Utf8);
         final String name = c.getBytes();
 
         // Length of data in bytes
         final int length = file.readInt();
 
         // Compare strings to find known attribute
-        for (byte i = 0; i < Const.KNOWN_ATTRIBUTES; i++)
-        {
-            if (name.equals(Const.getAttributeName(i)))
-            {
+        for (byte i = 0; i < Const.KNOWN_ATTRIBUTES; i++) {
+            if (name.equals(Const.getAttributeName(i))) {
                 tag = i; // found!
                 break;
             }
         }
 
         // Call proper constructor, depending on `tag'
-        switch (tag)
-        {
+        switch (tag) {
             case Const.ATTR_UNKNOWN:
                 final Object r = readers.get(name);
-                if (r instanceof UnknownAttributeReader)
-                {
-                    return ((UnknownAttributeReader) r).createAttribute(name_index, length, file, constant_pool);
+                if (r instanceof UnknownAttributeReader) {
+                    return ((UnknownAttributeReader) r)
+                            .createAttribute(name_index, length, file, constant_pool);
                 }
                 return new Unknown(name_index, length, file, constant_pool);
             case Const.ATTR_CONSTANT_VALUE:
@@ -156,9 +147,11 @@ public abstract class Attribute implements Cloneable, Node {
             case Const.ATTR_RUNTIME_INVISIBLE_ANNOTATIONS:
                 return new RuntimeInvisibleAnnotations(name_index, length, file, constant_pool);
             case Const.ATTR_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
-                return new RuntimeVisibleParameterAnnotations(name_index, length, file, constant_pool);
+                return new RuntimeVisibleParameterAnnotations(
+                        name_index, length, file, constant_pool);
             case Const.ATTR_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
-                return new RuntimeInvisibleParameterAnnotations(name_index, length, file, constant_pool);
+                return new RuntimeInvisibleParameterAnnotations(
+                        name_index, length, file, constant_pool);
             case Const.ATTR_ANNOTATION_DEFAULT:
                 return new AnnotationDefault(name_index, length, file, constant_pool);
             case Const.ATTR_LOCAL_VARIABLE_TYPE_TABLE:
@@ -190,22 +183,20 @@ public abstract class Attribute implements Cloneable, Node {
     }
 
     /**
-     * Class method reads one attribute from the input data stream. This method
-     * must not be accessible from the outside. It is called by the Field and
-     * Method constructor methods.
+     * Class method reads one attribute from the input data stream. This method must not be
+     * accessible from the outside. It is called by the Field and Method constructor methods.
      *
      * @see Field
      * @see Method
-     *
      * @param file Input stream
      * @param constant_pool Array of constants
      * @return Attribute
      * @throws IOException
      * @throws ClassFormatException
      */
-    public static Attribute readAttribute(final DataInputStream file, final ConstantPool constant_pool)
-            throws IOException, ClassFormatException
-    {
+    public static Attribute readAttribute(
+            final DataInputStream file, final ConstantPool constant_pool)
+            throws IOException, ClassFormatException {
         return readAttribute((DataInput) file, constant_pool);
     }
 
@@ -214,13 +205,15 @@ public abstract class Attribute implements Cloneable, Node {
      *
      * @param name the name of the attribute as stored in the class file
      */
-    public static void removeAttributeReader(final String name)
-    {
+    public static void removeAttributeReader(final String name) {
         readers.remove(name);
     }
 
-    protected Attribute(final byte tag, final int name_index, final int length, final ConstantPool constant_pool)
-    {
+    protected Attribute(
+            final byte tag,
+            final int name_index,
+            final int length,
+            final ConstantPool constant_pool) {
         this.tag = tag;
         this.name_index = name_index;
         this.length = length;
@@ -228,32 +221,26 @@ public abstract class Attribute implements Cloneable, Node {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
-     * @param v
-     *            Visitor object
+     * @param v Visitor object
      */
     @Override
     public abstract void accept(Visitor v);
 
     /**
-     * Use copy() if you want to have a deep copy(), i.e., with all references
-     * copied correctly.
+     * Use copy() if you want to have a deep copy(), i.e., with all references copied correctly.
      *
      * @return shallow copy of this attribute
      */
     @Override
-    public Object clone()
-    {
+    public Object clone() {
         Attribute attr = null;
-        try
-        {
+        try {
             attr = (Attribute) super.clone();
-        }
-        catch (final CloneNotSupportedException e)
-        {
+        } catch (final CloneNotSupportedException e) {
             throw new Error("Clone Not Supported"); // never happens
         }
         return attr;
@@ -267,12 +254,10 @@ public abstract class Attribute implements Cloneable, Node {
     /**
      * Dump attribute to file stream in binary format.
      *
-     * @param file
-     *            Output file stream
+     * @param file Output file stream
      * @throws IOException
      */
-    public void dump(final DataOutputStream file) throws IOException
-    {
+    public void dump(final DataOutputStream file) throws IOException {
         file.writeShort(name_index);
         file.writeInt(length);
     }
@@ -281,16 +266,14 @@ public abstract class Attribute implements Cloneable, Node {
      * @return Constant pool used by this object.
      * @see ConstantPool
      */
-    public final ConstantPool getConstantPool()
-    {
+    public final ConstantPool getConstantPool() {
         return constant_pool;
     }
 
     /**
      * @return Length of attribute field in bytes.
      */
-    public final int getLength()
-    {
+    public final int getLength() {
         return length;
     }
 
@@ -298,25 +281,24 @@ public abstract class Attribute implements Cloneable, Node {
      * @return Name of attribute
      * @since 6.0
      */
-    public String getName()
-    {
-        final ConstantUtf8 c = (ConstantUtf8) constant_pool.getConstant(name_index, Const.CONSTANT_Utf8);
+    public String getName() {
+        final ConstantUtf8 c =
+                (ConstantUtf8) constant_pool.getConstant(name_index, Const.CONSTANT_Utf8);
         return c.getBytes();
     }
 
     /**
      * @return Name index in constant pool of attribute name.
      */
-    public final int getNameIndex()
-    {
+    public final int getNameIndex() {
         return name_index;
     }
 
     /**
-     * @return Tag of attribute, i.e., its type. Value may not be altered, thus there is no setTag() method.
+     * @return Tag of attribute, i.e., its type. Value may not be altered, thus there is no setTag()
+     *     method.
      */
-    public final byte getTag()
-    {
+    public final byte getTag() {
         return tag;
     }
 
@@ -324,24 +306,21 @@ public abstract class Attribute implements Cloneable, Node {
      * @param constant_pool Constant pool to be used for this object.
      * @see ConstantPool
      */
-    public final void setConstantPool(final ConstantPool constant_pool)
-    {
+    public final void setConstantPool(final ConstantPool constant_pool) {
         this.constant_pool = constant_pool;
     }
 
     /**
      * @param length length in bytes.
      */
-    public final void setLength(final int length)
-    {
+    public final void setLength(final int length) {
         this.length = length;
     }
 
     /**
      * @param name_index of attribute.
      */
-    public final void setNameIndex(final int name_index)
-    {
+    public final void setNameIndex(final int name_index) {
         this.name_index = name_index;
     }
 
@@ -349,8 +328,7 @@ public abstract class Attribute implements Cloneable, Node {
      * @return attribute name.
      */
     @Override
-    public String toString()
-    {
+    public String toString() {
         return Const.getAttributeName(tag);
     }
 }

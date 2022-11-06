@@ -23,41 +23,37 @@
  */
 package com.sun.org.apache.xml.internal.serializer;
 
-import java.io.IOException;
-
-import javax.xml.transform.Transformer;
-
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DeclHandler;
 
+import java.io.IOException;
+
+import javax.xml.transform.Transformer;
+
 /**
- * This interface is the one that a serializer implements. It is a group of
- * other interfaces, such as ExtendedContentHandler, ExtendedLexicalHandler etc.
- * In addition there are other methods, such as reset().
+ * This interface is the one that a serializer implements. It is a group of other interfaces, such
+ * as ExtendedContentHandler, ExtendedLexicalHandler etc. In addition there are other methods, such
+ * as reset().
  *
- * This class is public only because it is used in another package,
- * it is not a public API.
+ * <p>This class is public only because it is used in another package, it is not a public API.
  *
- * @xsl.usage internal
- * @LastModified: May 2021
+ * @xsl.usage internal @LastModified: May 2021
  */
 public interface SerializationHandler
-    extends
-        ExtendedContentHandler,
-        ExtendedLexicalHandler,
-        XSLOutputAttributes,
-        DeclHandler,
-        org.xml.sax.DTDHandler,
-        ErrorHandler,
-        DOMSerializer,
-        Serializer
-{
+        extends ExtendedContentHandler,
+                ExtendedLexicalHandler,
+                XSLOutputAttributes,
+                DeclHandler,
+                org.xml.sax.DTDHandler,
+                ErrorHandler,
+                DOMSerializer,
+                Serializer {
     /**
-     * Set the SAX Content handler that the serializer sends its output to. This
-     * method only applies to a ToSAXHandler, not to a ToStream serializer.
+     * Set the SAX Content handler that the serializer sends its output to. This method only applies
+     * to a ToSAXHandler, not to a ToStream serializer.
      *
      * @see Serializer#asContentHandler()
      * @see ToSAXHandler
@@ -67,8 +63,7 @@ public interface SerializationHandler
     public void close();
 
     /**
-     * Notify that the serializer should take this DOM node as input to be
-     * serialized.
+     * Notify that the serializer should take this DOM node as input to be serialized.
      *
      * @param node the DOM node to be serialized.
      * @throws IOException
@@ -77,8 +72,7 @@ public interface SerializationHandler
     /**
      * Turns special character escaping on/off.
      *
-     * Note that characters will
-     * never, even if this option is set to 'true', be escaped within
+     * <p>Note that characters will never, even if this option is set to 'true', be escaped within
      * CDATA sections in output XML documents.
      *
      * @param escape true if escaping is to be set on.
@@ -87,70 +81,64 @@ public interface SerializationHandler
 
     /**
      * Set the number of spaces to indent for each indentation level.
+     *
      * @param spaces the number of spaces to indent for each indentation level.
      */
     public void setIndentAmount(int spaces);
 
     /**
      * Set the transformer associated with the serializer.
+     *
      * @param transformer the transformer associated with the serializer.
      */
     public void setTransformer(Transformer transformer);
 
     /**
      * Get the transformer associated with the serializer.
+     *
      * @return Transformer the transformer associated with the serializer.
      */
     public Transformer getTransformer();
 
     /**
-     * Used only by TransformerSnapshotImpl to restore the serialization
-     * to a previous state.
+     * Used only by TransformerSnapshotImpl to restore the serialization to a previous state.
      *
      * @param mappings NamespaceMappings
      */
     public void setNamespaceMappings(NamespaceMappings mappings);
 
     /**
-     * A SerializationHandler accepts SAX-like events, so
-     * it can accumulate attributes or namespace nodes after
-     * a startElement().
-     * <p>
-     * If the SerializationHandler has a Writer or OutputStream,
-     * a call to this method will flush such accumulated
-     * events as a closed start tag for an element.
-     * <p>
-     * If the SerializationHandler wraps a ContentHandler,
-     * a call to this method will flush such accumulated
-     * events as a SAX (not SAX-like) calls to
-     * startPrefixMapping() and startElement().
-     * <p>
-     * If one calls endDocument() then one need not call
-     * this method since a call to endDocument() will
-     * do what this method does. However, in some
-     * circumstances, such as with document fragments,
-     * endDocument() is not called and it may be
-     * necessary to call this method to flush
-     * any pending events.
-     * <p>
-     * For performance reasons this method should not be called
-     * very often.
+     * A SerializationHandler accepts SAX-like events, so it can accumulate attributes or namespace
+     * nodes after a startElement().
+     *
+     * <p>If the SerializationHandler has a Writer or OutputStream, a call to this method will flush
+     * such accumulated events as a closed start tag for an element.
+     *
+     * <p>If the SerializationHandler wraps a ContentHandler, a call to this method will flush such
+     * accumulated events as a SAX (not SAX-like) calls to startPrefixMapping() and startElement().
+     *
+     * <p>If one calls endDocument() then one need not call this method since a call to
+     * endDocument() will do what this method does. However, in some circumstances, such as with
+     * document fragments, endDocument() is not called and it may be necessary to call this method
+     * to flush any pending events.
+     *
+     * <p>For performance reasons this method should not be called very often.
      */
     public void flushPending() throws SAXException;
 
     /**
-     * Default behavior is to expand DTD entities,
-     * that is the initall default value is true.
-     * @param expand true if DTD entities are to be expanded,
-     * false if they are to be left as DTD entity references.
+     * Default behavior is to expand DTD entities, that is the initall default value is true.
+     *
+     * @param expand true if DTD entities are to be expanded, false if they are to be left as DTD
+     *     entity references.
      */
     public void setDTDEntityExpansion(boolean expand);
 
     /**
-     * Specify if the output will be treated as a standalone  property
+     * Specify if the output will be treated as a standalone property
+     *
      * @param b true if the property "jdk.xml.xsltcIsStandalone" is set to yes
      * @see JdkConstants.SP_XSLTC_IS_Standalone
      */
     public void setIsStandalone(boolean b);
-
 }

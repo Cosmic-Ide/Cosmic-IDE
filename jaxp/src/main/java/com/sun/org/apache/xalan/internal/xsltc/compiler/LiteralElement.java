@@ -31,10 +31,11 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.sun.org.apache.xml.internal.serializer.ElemDesc;
 import com.sun.org.apache.xml.internal.serializer.ToHTMLStream;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,8 +43,7 @@ import java.util.Set;
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Morten Jorgensen
- * @LastModified: Sep 2021
+ * @author Morten Jorgensen @LastModified: Sep 2021
  */
 final class LiteralElement extends Instruction {
 
@@ -57,25 +57,19 @@ final class LiteralElement extends Instruction {
     // names are not known at compile time.
     private boolean _allAttributesUnique = false;
 
-    /**
-     * Returns the QName for this literal element
-     */
+    /** Returns the QName for this literal element */
     public QName getName() {
         return _qname;
     }
 
-    /**
-     * Displays the contents of this literal element
-     */
+    /** Displays the contents of this literal element */
     public void display(int indent) {
         indent(indent);
         Util.println("LiteralElement name = " + _name);
         displayContents(indent + IndentIncrement);
     }
 
-    /**
-     * Returns the namespace URI for which a prefix is pointing to
-     */
+    /** Returns the namespace URI for which a prefix is pointing to */
     private String accessedNamespace(String prefix) {
         if (_literalElemParent != null) {
             String result = _literalElemParent.accessedNamespace(prefix);
@@ -87,12 +81,11 @@ final class LiteralElement extends Instruction {
     }
 
     /**
-     * Method used to keep track of what namespaces that are references by
-     * this literal element and its attributes. The output must contain a
-     * definition for each namespace, so we stuff them in a map.
+     * Method used to keep track of what namespaces that are references by this literal element and
+     * its attributes. The output must contain a definition for each namespace, so we stuff them in
+     * a map.
      */
-    public void registerNamespace(String prefix, String uri,
-                                  SymbolTable stable, boolean declared) {
+    public void registerNamespace(String prefix, String uri, SymbolTable stable, boolean declared) {
 
         // Check if the parent has a declaration for this namespace
         if (_literalElemParent != null) {
@@ -106,29 +99,26 @@ final class LiteralElement extends Instruction {
         if (_accessedPrefixes == null) {
             // use Hashtable for behavior compatibility
             _accessedPrefixes = new Hashtable<>();
-        }
-        else {
+        } else {
             if (!declared) {
                 // Check if this node has a declaration for this namespace
                 final String old = _accessedPrefixes.get(prefix);
                 if (old != null) {
-                    if (old.equals(uri))
-                        return;
-                    else
-                        prefix = stable.generateNamespacePrefix();
+                    if (old.equals(uri)) return;
+                    else prefix = stable.generateNamespacePrefix();
                 }
             }
         }
 
         if (!prefix.equals("xml")) {
-            _accessedPrefixes.put(prefix,uri);
+            _accessedPrefixes.put(prefix, uri);
         }
     }
 
     /**
-     * Translates the prefix of a QName according to the rules set in
-     * the attributes of xsl:stylesheet. Also registers a QName to assure
-     * that the output element contains the necessary namespace declarations.
+     * Translates the prefix of a QName according to the rules set in the attributes of
+     * xsl:stylesheet. Also registers a QName to assure that the output element contains the
+     * necessary namespace declarations.
      */
     private String translateQName(QName qname, SymbolTable stable) {
         // Break up the QName and get prefix:localname strings
@@ -136,10 +126,8 @@ final class LiteralElement extends Instruction {
         String prefix = qname.getPrefix();
 
         // Treat default namespace as "" and not null
-        if (prefix == null)
-            prefix = Constants.EMPTYSTRING;
-        else if (prefix.equals(XMLNS_PREFIX))
-            return(XMLNS_PREFIX);
+        if (prefix == null) prefix = Constants.EMPTYSTRING;
+        else if (prefix.equals(XMLNS_PREFIX)) return (XMLNS_PREFIX);
 
         // Check if we must translate the prefix
         final String alternative = stable.lookupPrefixAlias(prefix);
@@ -150,21 +138,17 @@ final class LiteralElement extends Instruction {
 
         // Get the namespace this prefix refers to
         String uri = lookupNamespace(prefix);
-        if (uri == null) return(localname);
+        if (uri == null) return (localname);
 
         // Register the namespace as accessed
         registerNamespace(prefix, uri, stable, false);
 
         // Construct the new name for the element (may be unchanged)
-        if (prefix != Constants.EMPTYSTRING)
-            return(prefix+":"+localname);
-        else
-            return(localname);
+        if (prefix != Constants.EMPTYSTRING) return (prefix + ":" + localname);
+        else return (localname);
     }
 
-    /**
-     * Add an attribute to this element
-     */
+    /** Add an attribute to this element */
     public void addAttribute(SyntaxTreeNode attribute) {
         if (_attributeElements == null) {
             _attributeElements = new ArrayList<>(2);
@@ -172,9 +156,7 @@ final class LiteralElement extends Instruction {
         _attributeElements.add(attribute);
     }
 
-    /**
-     * Set the first attribute of this element
-     */
+    /** Set the first attribute of this element */
     public void setFirstAttribute(SyntaxTreeNode attribute) {
         if (_attributeElements == null) {
             _attributeElements = new ArrayList<>(2);
@@ -183,8 +165,8 @@ final class LiteralElement extends Instruction {
     }
 
     /**
-     * Type-check the contents of this element. The element itself does not
-     * need any type checking as it leaves nothign on the JVM's stack.
+     * Type-check the contents of this element. The element itself does not need any type checking
+     * as it leaves nothign on the JVM's stack.
      */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         // Type-check all attributes
@@ -198,9 +180,9 @@ final class LiteralElement extends Instruction {
     }
 
     /**
-     * This method starts at a given node, traverses all namespace mappings,
-     * and assembles a list of all prefixes that (for the given node) maps
-     * to _ANY_ namespace URI. Used by literal result elements to determine
+     * This method starts at a given node, traverses all namespace mappings, and assembles a list of
+     * all prefixes that (for the given node) maps to _ANY_ namespace URI. Used by literal result
+     * elements to determine
      */
     public Set<Map.Entry<String, String>> getNamespaceScope(SyntaxTreeNode node) {
         Map<String, String> all = new LinkedHashMap<>();
@@ -208,9 +190,11 @@ final class LiteralElement extends Instruction {
         while (node != null) {
             Map<String, String> mapping = node.getPrefixMapping();
             if (mapping != null) {
-                mapping.entrySet().stream().forEach((entry) -> {
-                    all.putIfAbsent(entry.getKey(), entry.getValue());
-                });
+                mapping.entrySet().stream()
+                        .forEach(
+                                (entry) -> {
+                                    all.putIfAbsent(entry.getKey(), entry.getValue());
+                                });
             }
             node = node.getParent();
         }
@@ -218,8 +202,8 @@ final class LiteralElement extends Instruction {
     }
 
     /**
-     * Determines the final QName for the element and its attributes.
-     * Registers all namespaces that are used by the element/attributes
+     * Determines the final QName for the element and its attributes. Registers all namespaces that
+     * are used by the element/attributes
      */
     public void parseContents(Parser parser) {
         final SymbolTable stable = parser.getSymbolTable();
@@ -247,7 +231,7 @@ final class LiteralElement extends Instruction {
                 if (!Util.isValidQNames(val)) {
                     ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, val, this);
                     parser.reportError(Constants.ERROR, err);
-               }
+                }
                 setFirstAttribute(new UseAttributeSets(val, parser));
             }
             // Handle xsl:extension-element-prefixes
@@ -257,14 +241,12 @@ final class LiteralElement extends Instruction {
             // Handle xsl:exclude-result-prefixes
             else if (qname.equals(parser.getExcludeResultPrefixes())) {
                 stable.excludeNamespaces(val);
-            }
-            else {
+            } else {
                 // Ignore special attributes (e.g. xmlns:prefix and xmlns)
                 final String prefix = qname.getPrefix();
-                if (prefix != null && prefix.equals(XMLNS_PREFIX) ||
-                    prefix == null && qname.getLocalPart().equals(XMLNS_PREFIX) ||
-                    uri != null && uri.equals(XSLT_URI))
-                {
+                if (prefix != null && prefix.equals(XMLNS_PREFIX)
+                        || prefix == null && qname.getLocalPart().equals(XMLNS_PREFIX)
+                        || uri != null && uri.equals(XSLT_URI)) {
                     continue;
                 }
 
@@ -313,11 +295,10 @@ final class LiteralElement extends Instruction {
     }
 
     /**
-     * Compiles code that emits the literal element to the output handler,
-     * first the start tag, then namespace declaration, then attributes,
-     * then the element contents, and then the element end tag. Since the
-     * value of an attribute may depend on a variable, variables must be
-     * compiled first.
+     * Compiles code that emits the literal element to the output handler, first the start tag, then
+     * namespace declaration, then attributes, then the element contents, and then the element end
+     * tag. Since the value of an attribute may depend on a variable, variables must be compiled
+     * first.
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
 
@@ -331,12 +312,12 @@ final class LiteralElement extends Instruction {
         il.append(methodGen.loadHandler());
 
         il.append(new PUSH(cpg, _name));
-        il.append(DUP2);                // duplicate these 2 args for endElement
+        il.append(DUP2); // duplicate these 2 args for endElement
         il.append(methodGen.startElement());
 
         // The value of an attribute may depend on a (sibling) variable
         int j = 0;
-        while (j < elementCount())  {
+        while (j < elementCount()) {
             final SyntaxTreeNode item = elementAt(j);
             if (item instanceof Variable) {
                 item.translate(classGen, methodGen);
@@ -372,138 +353,115 @@ final class LiteralElement extends Instruction {
         il.append(methodGen.endElement());
     }
 
-    /**
-     * Return true if the output method is html.
-     */
+    /** Return true if the output method is html. */
     private boolean isHTMLOutput() {
         return getStylesheet().getOutputMethod() == Stylesheet.HTML_OUTPUT;
     }
 
     /**
-     * Return the ElemDesc object for an HTML element.
-     * Return null if the output method is not HTML or this is not a
-     * valid HTML element.
+     * Return the ElemDesc object for an HTML element. Return null if the output method is not HTML
+     * or this is not a valid HTML element.
      */
     public ElemDesc getElemDesc() {
         if (isHTMLOutput()) {
             return ToHTMLStream.getElemDesc(_name);
-        }
-        else
-            return null;
+        } else return null;
     }
 
-    /**
-     * Return true if all attributes of this LRE have unique names.
-     */
+    /** Return true if all attributes of this LRE have unique names. */
     public boolean allAttributesUnique() {
         return _allAttributesUnique;
     }
 
-    /**
-     * Check whether all attributes are unique.
-     */
+    /** Check whether all attributes are unique. */
     private boolean checkAttributesUnique() {
-         boolean hasHiddenXslAttribute = canProduceAttributeNodes(this, true);
-         if (hasHiddenXslAttribute)
-             return false;
+        boolean hasHiddenXslAttribute = canProduceAttributeNodes(this, true);
+        if (hasHiddenXslAttribute) return false;
 
-         if (_attributeElements != null) {
-             int numAttrs = _attributeElements.size();
-             Map<String, SyntaxTreeNode> attrsTable = null;
-             for (int i = 0; i < numAttrs; i++) {
-                 SyntaxTreeNode node = _attributeElements.get(i);
+        if (_attributeElements != null) {
+            int numAttrs = _attributeElements.size();
+            Map<String, SyntaxTreeNode> attrsTable = null;
+            for (int i = 0; i < numAttrs; i++) {
+                SyntaxTreeNode node = _attributeElements.get(i);
 
-                 if (node instanceof UseAttributeSets) {
-                     return false;
-                 }
-                 else if (node instanceof XslAttribute) {
-                     if (attrsTable == null) {
+                if (node instanceof UseAttributeSets) {
+                    return false;
+                } else if (node instanceof XslAttribute) {
+                    if (attrsTable == null) {
                         attrsTable = new HashMap<>();
-                         for (int k = 0; k < i; k++) {
-                             SyntaxTreeNode n = _attributeElements.get(k);
-                             if (n instanceof LiteralAttribute) {
-                                 LiteralAttribute literalAttr = (LiteralAttribute)n;
-                                 attrsTable.put(literalAttr.getName(), literalAttr);
-                             }
-                         }
-                     }
+                        for (int k = 0; k < i; k++) {
+                            SyntaxTreeNode n = _attributeElements.get(k);
+                            if (n instanceof LiteralAttribute) {
+                                LiteralAttribute literalAttr = (LiteralAttribute) n;
+                                attrsTable.put(literalAttr.getName(), literalAttr);
+                            }
+                        }
+                    }
 
-                     XslAttribute xslAttr = (XslAttribute)node;
-                     AttributeValue attrName = xslAttr.getName();
-                     if (attrName instanceof AttributeValueTemplate) {
-                         return false;
-                     }
-                     else if (attrName instanceof SimpleAttributeValue) {
-                         SimpleAttributeValue simpleAttr = (SimpleAttributeValue)attrName;
-                         String name = simpleAttr.toString();
-                         if (name != null && attrsTable.get(name) != null)
-                             return false;
-                         else if (name != null) {
-                             attrsTable.put(name, xslAttr);
-                         }
-                     }
-                 }
-             }
-         }
-         return true;
+                    XslAttribute xslAttr = (XslAttribute) node;
+                    AttributeValue attrName = xslAttr.getName();
+                    if (attrName instanceof AttributeValueTemplate) {
+                        return false;
+                    } else if (attrName instanceof SimpleAttributeValue) {
+                        SimpleAttributeValue simpleAttr = (SimpleAttributeValue) attrName;
+                        String name = simpleAttr.toString();
+                        if (name != null && attrsTable.get(name) != null) return false;
+                        else if (name != null) {
+                            attrsTable.put(name, xslAttr);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
-     * Return true if the instructions under the given SyntaxTreeNode can produce attribute nodes
-     * to an element. Only return false when we are sure that no attribute node is produced.
-     * Return true if we are not sure. If the flag ignoreXslAttribute is true, the direct
-     * <xsl:attribute> children of the current node are not included in the check.
+     * Return true if the instructions under the given SyntaxTreeNode can produce attribute nodes to
+     * an element. Only return false when we are sure that no attribute node is produced. Return
+     * true if we are not sure. If the flag ignoreXslAttribute is true, the direct <xsl:attribute>
+     * children of the current node are not included in the check.
      */
     private boolean canProduceAttributeNodes(SyntaxTreeNode node, boolean ignoreXslAttribute) {
         List<SyntaxTreeNode> contents = node.getContents();
         for (SyntaxTreeNode child : contents) {
             if (child instanceof Text) {
-                Text text = (Text)child;
-                if (text.isIgnore())
-                    continue;
-                else
-                    return false;
+                Text text = (Text) child;
+                if (text.isIgnore()) continue;
+                else return false;
             }
             // Cannot add an attribute to an element after children have been added to it.
             // We can safely return false when the instruction can produce an output node.
             else if (child instanceof LiteralElement
-                || child instanceof ValueOf
-                || child instanceof XslElement
-                || child instanceof Comment
-                || child instanceof Number
-                || child instanceof ProcessingInstruction)
-                return false;
+                    || child instanceof ValueOf
+                    || child instanceof XslElement
+                    || child instanceof Comment
+                    || child instanceof Number
+                    || child instanceof ProcessingInstruction) return false;
             else if (child instanceof XslAttribute) {
-                if (ignoreXslAttribute)
-                    continue;
-                else
-                    return true;
+                if (ignoreXslAttribute) continue;
+                else return true;
             }
             // In general, there is no way to check whether <xsl:call-template> or
             // <xsl:apply-templates> can produce attribute nodes. <xsl:copy> and
             // <xsl:copy-of> can also copy attribute nodes to an element. Return
             // true in those cases to be safe.
             else if (child instanceof CallTemplate
-                || child instanceof ApplyTemplates
-                || child instanceof Copy
-                || child instanceof CopyOf)
+                    || child instanceof ApplyTemplates
+                    || child instanceof Copy
+                    || child instanceof CopyOf) return true;
+            else if ((child instanceof If || child instanceof ForEach)
+                    && canProduceAttributeNodes(child, false)) {
                 return true;
-            else if ((child instanceof If
-                       || child instanceof ForEach)
-                     && canProduceAttributeNodes(child, false)) {
-                return true;
-            }
-            else if (child instanceof Choose) {
+            } else if (child instanceof Choose) {
                 List<SyntaxTreeNode> chooseContents = child.getContents();
                 for (SyntaxTreeNode chooseChild : chooseContents) {
                     if (chooseChild instanceof When || chooseChild instanceof Otherwise) {
-                        if (canProduceAttributeNodes(chooseChild, false))
-                            return true;
+                        if (canProduceAttributeNodes(chooseChild, false)) return true;
                     }
                 }
             }
         }
         return false;
     }
-
 }

@@ -24,47 +24,39 @@ package com.sun.org.apache.xerces.internal.impl.xs;
 import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
 
 /**
- * This class customizes the behaviour of the util.NamespaceSupport
- * class in order to easily implement some features that we need for
- * efficient schema handling.  It will not be generally useful.
+ * This class customizes the behaviour of the util.NamespaceSupport class in order to easily
+ * implement some features that we need for efficient schema handling. It will not be generally
+ * useful.
  *
  * @xerces.internal
- *
  * @author Neil Graham, IBM
- *
  */
-public class SchemaNamespaceSupport
-    extends NamespaceSupport {
+public class SchemaNamespaceSupport extends NamespaceSupport {
 
-    public SchemaNamespaceSupport () {
+    public SchemaNamespaceSupport() {
         super();
     } // constructor
 
     // more effecient than NamespaceSupport(NamespaceContext)
     public SchemaNamespaceSupport(SchemaNamespaceSupport nSupport) {
         fNamespaceSize = nSupport.fNamespaceSize;
-        if (fNamespace.length < fNamespaceSize)
-            fNamespace = new String[fNamespaceSize];
+        if (fNamespace.length < fNamespaceSize) fNamespace = new String[fNamespaceSize];
         System.arraycopy(nSupport.fNamespace, 0, fNamespace, 0, fNamespaceSize);
         fCurrentContext = nSupport.fCurrentContext;
-        if (fContext.length <= fCurrentContext)
-            fContext = new int[fCurrentContext+1];
-        System.arraycopy(nSupport.fContext, 0, fContext, 0, fCurrentContext+1);
+        if (fContext.length <= fCurrentContext) fContext = new int[fCurrentContext + 1];
+        System.arraycopy(nSupport.fContext, 0, fContext, 0, fCurrentContext + 1);
     } // end constructor
 
     /**
-     * This method takes a set of Strings, as stored in a
-     * NamespaceSupport object, and "fools" the object into thinking
-     * that this is one unified context.  This is meant to be used in
-     * conjunction with things like local elements, whose declarations
-     * may be deeply nested but which for all practical purposes may
-     * be regarded as being one level below the global <schema>
-     * element--at least with regard to namespace declarations.
-     * It's worth noting that the context from which the strings are
-     * being imported had better be using the same SymbolTable.
+     * This method takes a set of Strings, as stored in a NamespaceSupport object, and "fools" the
+     * object into thinking that this is one unified context. This is meant to be used in
+     * conjunction with things like local elements, whose declarations may be deeply nested but
+     * which for all practical purposes may be regarded as being one level below the global <schema>
+     * element--at least with regard to namespace declarations. It's worth noting that the context
+     * from which the strings are being imported had better be using the same SymbolTable.
      */
-    public void setEffectiveContext (String [] namespaceDecls) {
-        if(namespaceDecls == null || namespaceDecls.length == 0) return;
+    public void setEffectiveContext(String[] namespaceDecls) {
+        if (namespaceDecls == null || namespaceDecls.length == 0) return;
         pushContext();
         int newSize = fNamespaceSize + namespaceDecls.length;
         if (fNamespace.length < newSize) {
@@ -73,17 +65,15 @@ public class SchemaNamespaceSupport
             System.arraycopy(fNamespace, 0, tempNSArray, 0, fNamespace.length);
             fNamespace = tempNSArray;
         }
-        System.arraycopy(namespaceDecls, 0, fNamespace, fNamespaceSize,
-                         namespaceDecls.length);
+        System.arraycopy(namespaceDecls, 0, fNamespace, fNamespaceSize, namespaceDecls.length);
         fNamespaceSize = newSize;
     } // setEffectiveContext(String):void
 
     /**
-     * This method returns an array of Strings, as would be stored in
-     * a NamespaceSupport object.  This array contains all
-     * declarations except those at the global level.
+     * This method returns an array of Strings, as would be stored in a NamespaceSupport object.
+     * This array contains all declarations except those at the global level.
      */
-    public String [] getEffectiveLocalContext() {
+    public String[] getEffectiveLocalContext() {
         // the trick here is to recognize that all local contexts
         // happen to start at fContext[3].
         // context 1: empty
@@ -95,8 +85,7 @@ public class SchemaNamespaceSupport
             int copyCount = fNamespaceSize - bottomLocalContext;
             if (copyCount > 0) {
                 returnVal = new String[copyCount];
-                System.arraycopy(fNamespace, bottomLocalContext, returnVal, 0,
-                                 copyCount);
+                System.arraycopy(fNamespace, bottomLocalContext, returnVal, 0, copyCount);
             }
         }
         return returnVal;

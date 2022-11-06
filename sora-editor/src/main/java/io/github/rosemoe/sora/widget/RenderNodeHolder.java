@@ -29,17 +29,16 @@ import android.graphics.RenderNode;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
-
 import io.github.rosemoe.sora.lang.analysis.StyleUpdateRange;
 import io.github.rosemoe.sora.lang.styling.EmptyReader;
 import io.github.rosemoe.sora.util.ArrayList;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
 /**
- * Hardware accelerated text render, which manages {@link RenderNode}
- * to speed up drawing process.
+ * Hardware accelerated text render, which manages {@link RenderNode} to speed up drawing process.
  *
  * @author Rosemoe
  */
@@ -90,9 +89,8 @@ class RenderNodeHolder {
     }
 
     /**
-     * Called by editor when text style changes.
-     * Such as text size/typeface.
-     * Also called when wordwrap state changes from true to false
+     * Called by editor when text style changes. Such as text size/typeface. Also called when
+     * wordwrap state changes from true to false
      */
     public void invalidate() {
         cache.forEach(node -> node.isDirty = true);
@@ -156,38 +154,38 @@ class RenderNodeHolder {
     }
 
     public void afterInsert(int startLine, int endLine) {
-        cache.forEach(node -> {
-            if (node.line == startLine) {
-                node.isDirty = true;
-            } else if (node.line > startLine) {
-                node.line += endLine - startLine;
-            }
-        });
+        cache.forEach(
+                node -> {
+                    if (node.line == startLine) {
+                        node.isDirty = true;
+                    } else if (node.line > startLine) {
+                        node.line += endLine - startLine;
+                    }
+                });
     }
 
     public void afterDelete(int startLine, int endLine) {
         List<TextRenderNode> garbage = new ArrayList<>();
-        cache.forEach(node -> {
-            if (node.line == startLine) {
-                node.isDirty = true;
-            } else if (node.line > startLine && node.line <= endLine) {
-                garbage.add(node);
-                node.renderNode.discardDisplayList();
-            } else if (node.line > endLine) {
-                node.line -= endLine - startLine;
-            }
-        });
+        cache.forEach(
+                node -> {
+                    if (node.line == startLine) {
+                        node.isDirty = true;
+                    } else if (node.line > startLine && node.line <= endLine) {
+                        garbage.add(node);
+                        node.renderNode.discardDisplayList();
+                    } else if (node.line > endLine) {
+                        node.line -= endLine - startLine;
+                    }
+                });
         cache.removeAll(garbage);
         pool.addAll(garbage);
     }
 
     protected static class TextRenderNode {
 
-        /**
-         * The target line of this node.
-         * -1 for unavailable
-         */
+        /** The target line of this node. -1 for unavailable */
         public int line;
+
         public RenderNode renderNode;
         public boolean isDirty;
 
@@ -200,6 +198,5 @@ class RenderNodeHolder {
         public boolean needsRecord() {
             return isDirty || !renderNode.hasDisplayList();
         }
-
     }
 }

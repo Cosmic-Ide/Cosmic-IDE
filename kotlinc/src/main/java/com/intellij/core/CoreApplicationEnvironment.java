@@ -59,8 +59,9 @@ import com.intellij.psi.stubs.StubTreeLoader;
 import com.intellij.util.KeyedLazyInstanceEP;
 import com.intellij.util.graph.GraphAlgorithms;
 import com.intellij.util.graph.impl.GraphAlgorithmsImpl;
-import org.picocontainer.MutablePicoContainer;
+
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor;
+import org.picocontainer.MutablePicoContainer;
 
 import java.lang.reflect.Modifier;
 import java.nio.file.Path;
@@ -98,8 +99,7 @@ public class CoreApplicationEnvironment {
                 FileDocumentManager.class,
                 new MockFileDocumentManagerImpl(null, DocumentImpl::new));
         registerApplicationExtensionPoint(
-                new ExtensionPointName<>(
-                        "com.intellij.virtualFileManagerListener"),
+                new ExtensionPointName<>("com.intellij.virtualFileManagerListener"),
                 VirtualFileManagerListener.class);
         List<VirtualFileSystem> fs =
                 this.myJrtFileSystem != null

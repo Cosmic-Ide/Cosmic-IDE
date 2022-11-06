@@ -3,8 +3,8 @@ package org.cosmic.ide.ui.preference
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
-import org.cosmic.ide.R
 import org.cosmic.ide.App
+import org.cosmic.ide.R
 
 /**
  * CosmicIde's Settings.

@@ -30,9 +30,7 @@ import androidx.annotation.NonNull;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-/**
- * Report a single click
- */
+/** Report a single click */
 public class ClickEvent extends Event {
 
     private final CharPosition pos;
@@ -69,11 +67,8 @@ public class ClickEvent extends Event {
         return event.getY();
     }
 
-    /**
-     * Get original event object from Android framework
-     */
+    /** Get original event object from Android framework */
     public MotionEvent getCausingEvent() {
         return event;
     }
-
 }

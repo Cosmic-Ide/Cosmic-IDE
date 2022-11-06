@@ -21,14 +21,12 @@
 
 package com.sun.org.apache.xerces.internal.impl.xs.util;
 
-
 import com.sun.org.apache.xerces.internal.impl.xs.SchemaGrammar;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
 import com.sun.org.apache.xerces.internal.xs.XSObject;
 
 /**
  * @xerces.internal
- *
  */
 public final class XSInputSource extends XMLInputSource {
 

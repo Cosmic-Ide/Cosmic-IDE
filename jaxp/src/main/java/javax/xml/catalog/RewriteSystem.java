@@ -43,22 +43,24 @@ final class RewriteSystem extends BaseEntry {
      */
     public RewriteSystem(String base, String systemIdStartString, String rewritePrefix) {
         super(CatalogEntryType.REWRITESYSTEM, base);
-        setSystemIdStartString (systemIdStartString);
+        setSystemIdStartString(systemIdStartString);
         setRewritePrefix(rewritePrefix);
     }
 
     /**
      * Set the systemIdStartString attribute.
+     *
      * @param systemIdStartString The systemIdStartString attribute value.
      */
-    public void setSystemIdStartString (String systemIdStartString) {
+    public void setSystemIdStartString(String systemIdStartString) {
         CatalogMessages.reportNPEOnNull("systemIdStartString", systemIdStartString);
         this.systemIdStartString = Normalizer.normalizeURI(systemIdStartString);
     }
 
     /**
-     * Set the rewritePrefix attribute. If the value of the rewritePrefix attribute
-     * is relative, it must be made absolute with respect to the base URI currently in effect.
+     * Set the rewritePrefix attribute. If the value of the rewritePrefix attribute is relative, it
+     * must be made absolute with respect to the base URI currently in effect.
+     *
      * @param rewritePrefix The rewritePrefix attribute value.
      */
     public void setRewritePrefix(String rewritePrefix) {
@@ -67,14 +69,16 @@ final class RewriteSystem extends BaseEntry {
 
     /**
      * Get the systemIdStartString attribute.
+     *
      * @return The systemIdStartString
      */
-    public String getSystemIdStartString () {
+    public String getSystemIdStartString() {
         return systemIdStartString;
     }
 
     /**
      * Get the rewritePrefix attribute.
+     *
      * @return The rewritePrefix attribute value.
      */
     public URL getRewritePrefix() {
@@ -82,17 +86,17 @@ final class RewriteSystem extends BaseEntry {
     }
 
     /**
-     * Try to match the specified systemId with the entry. Return the match if it
-     * is successful and the length of the systemIdStartString is longer than the
-     * longest of any previous match.
+     * Try to match the specified systemId with the entry. Return the match if it is successful and
+     * the length of the systemIdStartString is longer than the longest of any previous match.
      *
      * @param systemId The systemId to be matched.
      * @param currentMatch The length of systemIdStartString of previous match if any.
      * @return The replacement URI if the match is successful, null if not.
      */
     public String match(String systemId, int currentMatch) {
-        if (systemIdStartString.length() < systemId.length() &&
-                systemIdStartString.equals(systemId.substring(0, systemIdStartString.length()))) {
+        if (systemIdStartString.length() < systemId.length()
+                && systemIdStartString.equals(
+                        systemId.substring(0, systemIdStartString.length()))) {
             if (currentMatch < systemIdStartString.length()) {
                 String prefix = rewritePrefix.toExternalForm();
                 String sysId;

@@ -27,6 +27,7 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,28 +42,22 @@ class TopLevelElement extends SyntaxTreeNode {
      */
     protected List<SyntaxTreeNode> _dependencies = null;
 
-    /**
-     * Type check all the children of this node.
-     */
+    /** Type check all the children of this node. */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         return typeCheckContents(stable);
     }
 
-    /**
-     * Translate this node into JVM bytecodes.
-     */
+    /** Translate this node into JVM bytecodes. */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
-        ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR,
-                                    getClass(), this);
+        ErrorMsg msg = new ErrorMsg(ErrorMsg.NOT_IMPLEMENTED_ERR, getClass(), this);
         getParser().reportError(FATAL, msg);
     }
 
     /**
-     * Translate this node into a fresh instruction list.
-     * The original instruction list is saved and restored.
+     * Translate this node into a fresh instruction list. The original instruction list is saved and
+     * restored.
      */
-    public InstructionList compile(ClassGenerator classGen,
-                                   MethodGenerator methodGen) {
+    public InstructionList compile(ClassGenerator classGen, MethodGenerator methodGen) {
         final InstructionList result, save = methodGen.getInstructionList();
         methodGen.setInstructionList(result = new InstructionList());
         translate(classGen, methodGen);
@@ -76,10 +71,7 @@ class TopLevelElement extends SyntaxTreeNode {
         displayContents(indent + IndentIncrement);
     }
 
-    /**
-     * Add a dependency with other top-level elements like
-     * variables, parameters or keys.
-     */
+    /** Add a dependency with other top-level elements like variables, parameters or keys. */
     public void addDependency(TopLevelElement other) {
         if (_dependencies == null) {
             _dependencies = new ArrayList<>();
@@ -90,11 +82,10 @@ class TopLevelElement extends SyntaxTreeNode {
     }
 
     /**
-     * Get the list of dependencies with other top-level elements
-     * like variables, parameteres or keys.
+     * Get the list of dependencies with other top-level elements like variables, parameteres or
+     * keys.
      */
     public List<SyntaxTreeNode> getDependencies() {
         return _dependencies;
     }
-
 }

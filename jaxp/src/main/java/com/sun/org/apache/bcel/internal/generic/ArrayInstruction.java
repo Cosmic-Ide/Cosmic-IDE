@@ -23,20 +23,12 @@ package com.sun.org.apache.bcel.internal.generic;
 
 import com.sun.org.apache.bcel.internal.ExceptionConst;
 
-/**
- * Super class for instructions dealing with array access such as IALOAD.
- *
- */
-public abstract class ArrayInstruction extends Instruction implements ExceptionThrower,
-        TypedInstruction {
+/** Super class for instructions dealing with array access such as IALOAD. */
+public abstract class ArrayInstruction extends Instruction
+        implements ExceptionThrower, TypedInstruction {
 
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    ArrayInstruction() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    ArrayInstruction() {}
 
     /**
      * @param opcode of instruction
@@ -45,17 +37,16 @@ public abstract class ArrayInstruction extends Instruction implements ExceptionT
         super(opcode, (short) 1);
     }
 
-
     @Override
     public Class<?>[] getExceptions() {
         return ExceptionConst.createExceptions(ExceptionConst.EXCS.EXCS_ARRAY_EXCEPTION);
     }
 
-
-    /** @return type associated with the instruction
+    /**
+     * @return type associated with the instruction
      */
     @Override
-    public Type getType( final ConstantPoolGen cp ) {
+    public Type getType(final ConstantPoolGen cp) {
         final short _opcode = super.getOpcode();
         switch (_opcode) {
             case com.sun.org.apache.bcel.internal.Const.IALOAD:

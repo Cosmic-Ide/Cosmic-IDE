@@ -20,21 +20,20 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-
 import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
+
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
+
 import javax.xml.XMLConstants;
 
 /**
- * <p>A read-only XNI wrapper around a JAXP NamespaceContext.</p>
+ * A read-only XNI wrapper around a JAXP NamespaceContext.
  *
- * @author Michael Glavassevich, IBM
- *
- * @LastModified: Oct 2017
+ * @author Michael Glavassevich, IBM @LastModified: Oct 2017
  */
 public final class JAXPNamespaceContextWrapper implements NamespaceContext {
 
@@ -143,5 +142,4 @@ public final class JAXPNamespaceContextWrapper implements NamespaceContext {
         fContext[fCurrentContext] = 0;
         fAllPrefixes.clear();
     }
-
 } // JAXPNamespaceContextWrapper

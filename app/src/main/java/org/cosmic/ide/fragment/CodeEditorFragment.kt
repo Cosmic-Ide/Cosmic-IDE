@@ -2,10 +2,10 @@ package org.cosmic.ide.fragment
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import io.github.rosemoe.sora.lang.EmptyLanguage
@@ -18,16 +18,13 @@ import org.cosmic.ide.App
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
-import org.cosmic.ide.ui.editor.KotlinLanguage
-import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
+import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.eclipse.tm4e.core.registry.IThemeSource
-import org.eclipse.tm4e.core.registry.IGrammarSource
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 
 class CodeEditorFragment : Fragment() {
     private lateinit var binding: FragmentCodeEditorBinding
@@ -150,7 +147,7 @@ class CodeEditorFragment : Fragment() {
                 "source.java", true
             )
         } catch (e: IOException) {
-            Log.e("CodeEditorFragment", "Failed to create instance of TextMateLanguage", e);
+            Log.e("CodeEditorFragment", "Failed to create instance of TextMateLanguage", e)
             return EmptyLanguage()
         }
     }
@@ -159,7 +156,7 @@ class CodeEditorFragment : Fragment() {
         try {
             return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
         } catch (e: IOException) {
-            Log.e("CodeEditorFragment", "Failed to create instance of KotlinLanguage", e);
+            Log.e("CodeEditorFragment", "Failed to create instance of KotlinLanguage", e)
             return EmptyLanguage()
         }
     }
@@ -189,7 +186,7 @@ class CodeEditorFragment : Fragment() {
             try {
                 currentFile.writeText(newContents)
             } catch (e: IOException) {
-                Log.e("CodeEditorFragment", "Failed to save file", e);
+                Log.e("CodeEditorFragment", "Failed to save file", e)
             }
         }
     }

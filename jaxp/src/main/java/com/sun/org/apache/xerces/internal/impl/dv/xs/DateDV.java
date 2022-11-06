@@ -21,36 +21,36 @@
 
 package com.sun.org.apache.xerces.internal.impl.dv.xs;
 
-import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
+
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Validator for <date> datatype (W3C Schema datatypes)
  *
  * @xerces.internal
- *
  * @author Elena Litani
  * @author Gopal Sharma, SUN Microsystems Inc.
- *
  */
 public class DateDV extends DateTimeDV {
 
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException {
-        try{
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
+        try {
             return parse(content);
-        } catch(Exception ex){
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "date"});
+        } catch (Exception ex) {
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "date"});
         }
     }
 
     /**
      * Parses, validates and computes normalized version of dateTime object
      *
-     * @param str    The lexical representation of dateTime object CCYY-MM-DD
-     *               with possible time zone Z or (-),(+)hh:mm
+     * @param str The lexical representation of dateTime object CCYY-MM-DD with possible time zone Z
+     *     or (-),(+)hh:mm
      * @return normalized dateTime representation
      * @exception SchemaDateTimeException Invalid lexical representation
      */
@@ -59,16 +59,16 @@ public class DateDV extends DateTimeDV {
         int len = str.length();
 
         int end = getDate(str, 0, len, date);
-        parseTimeZone (str, end, len, date);
+        parseTimeZone(str, end, len, date);
 
-        //validate and normalize
-        //REVISIT: do we need SchemaDateTimeException?
+        // validate and normalize
+        // REVISIT: do we need SchemaDateTimeException?
         validateDateTime(date);
 
-        //save unnormalized values
+        // save unnormalized values
         saveUnnormalized(date);
 
-        if (date.utc!=0 && date.utc!='Z') {
+        if (date.utc != 0 && date.utc != 'Z') {
             normalize(date);
         }
         return date;
@@ -81,15 +81,21 @@ public class DateDV extends DateTimeDV {
         append(message, date.month, 2);
         message.append('-');
         append(message, date.day, 2);
-        append(message, (char)date.utc, 0);
+        append(message, (char) date.utc, 0);
         return message.toString();
     }
 
     protected XMLGregorianCalendar getXMLGregorianCalendar(DateTimeData date) {
-        return datatypeFactory.newXMLGregorianCalendar(date.unNormYear, date.unNormMonth,
-                date.unNormDay, DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                DatatypeConstants.FIELD_UNDEFINED, DatatypeConstants.FIELD_UNDEFINED,
-                date.hasTimeZone() ? (date.timezoneHr * 60 + date.timezoneMin) : DatatypeConstants.FIELD_UNDEFINED);
+        return datatypeFactory.newXMLGregorianCalendar(
+                date.unNormYear,
+                date.unNormMonth,
+                date.unNormDay,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                date.hasTimeZone()
+                        ? (date.timezoneHr * 60 + date.timezoneMin)
+                        : DatatypeConstants.FIELD_UNDEFINED);
     }
-
 }

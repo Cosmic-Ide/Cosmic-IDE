@@ -26,20 +26,21 @@
 package com.sun.org.apache.xpath.internal.jaxp;
 
 import com.sun.org.apache.xpath.internal.objects.XObject;
-import java.util.Objects;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathNodes;
-import javax.xml.xpath.XPathEvaluationResult;
-import javax.xml.xpath.XPathEvaluationResult.XPathResultType;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.traversal.NodeIterator;
 
+import java.util.Objects;
+
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathEvaluationResult;
+import javax.xml.xpath.XPathEvaluationResult.XPathResultType;
+import javax.xml.xpath.XPathNodes;
 
 /**
- * This is the implementation of XPathEvaluationResult that represents the
- * result of the evaluation of an XPath expression within the context of a
- * particular node.
+ * This is the implementation of XPathEvaluationResult that represents the result of the evaluation
+ * of an XPath expression within the context of a particular node.
  */
 class XPathResultImpl<T> implements XPathEvaluationResult<T> {
 
@@ -61,11 +62,9 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
      *
      * @param resultObject internal XPath result object
      * @param type class type
-     * @throws TransformerException if there is an error reading the XPath
-     * result.
+     * @throws TransformerException if there is an error reading the XPath result.
      */
-    public XPathResultImpl(XObject resultObject, Class<T> type)
-            throws TransformerException {
+    public XPathResultImpl(XObject resultObject, Class<T> type) throws TransformerException {
         this.resultObject = resultObject;
         resultType = resultObject.getType();
         this.type = type;
@@ -74,6 +73,7 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
 
     /**
      * Return the result type as an enum specified by {@code XPathResultType}
+     *
      * @return the result type
      */
     @Override
@@ -98,9 +98,9 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
 
     /**
      * Read the XObject and set values in accordance with the result type
-     * @param resultObject  internal XPath result object
-     * @throws TransformerException  if there is an error reading the XPath
-     * result.
+     *
+     * @param resultObject internal XPath result object
+     * @throws TransformerException if there is an error reading the XPath result.
      */
     private void getResult(XObject resultObject) throws TransformerException {
         switch (resultType) {
@@ -120,25 +120,23 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
                 mapToType = XPathResultType.NODESET;
                 nodeList = resultObject.nodelist();
                 break;
-            case XObject.CLASS_RTREEFRAG:  //NODE
+            case XObject.CLASS_RTREEFRAG: // NODE
                 mapToType = XPathResultType.NODE;
                 NodeIterator ni = resultObject.nodeset();
-                //Return the first node, or null
+                // Return the first node, or null
                 node = ni.nextNode();
                 break;
         }
     }
 
     /**
-     * Read the internal result object and return the value in accordance with
-     * the type specified.
+     * Read the internal result object and return the value in accordance with the type specified.
      *
      * @param <T> The expected class type.
      * @param resultObject internal XPath result object
      * @param type the class type
      * @return The value of the result, null in case of unexpected type.
-     * @throws TransformerException  if there is an error reading the XPath
-     * result.
+     * @throws TransformerException if there is an error reading the XPath result.
      */
     static <T> T getValue(XObject resultObject, Class<T> type) throws TransformerException {
         Objects.requireNonNull(type);
@@ -153,9 +151,9 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
                 if (Double.class.isAssignableFrom(type)) {
                     return type.cast(resultObject.num());
                 } else if (Integer.class.isAssignableFrom(type)) {
-                    return type.cast((int)resultObject.num());
+                    return type.cast((int) resultObject.num());
                 } else if (Long.class.isAssignableFrom(type)) {
-                    return type.cast((long)resultObject.num());
+                    return type.cast((long) resultObject.num());
                 }
                 /*
                   This is to suppress warnings. By the current specification,
@@ -165,12 +163,11 @@ class XPathResultImpl<T> implements XPathEvaluationResult<T> {
             case XObject.CLASS_STRING:
                 return type.cast(resultObject.str());
             case XObject.CLASS_NODESET:
-                XPathNodes nodeSet = new XPathNodesImpl(resultObject.nodelist(),
-                        Node.class);
+                XPathNodes nodeSet = new XPathNodesImpl(resultObject.nodelist(), Node.class);
                 return type.cast(nodeSet);
-            case XObject.CLASS_RTREEFRAG:  //NODE
+            case XObject.CLASS_RTREEFRAG: // NODE
                 NodeIterator ni = resultObject.nodeset();
-                //Return the first node, or null
+                // Return the first node, or null
                 try {
                     return type.cast(ni.nextNode());
                 } catch (RuntimeException e) {

@@ -28,15 +28,15 @@ import static io.github.rosemoe.sora.util.MyCharacter.isAlpha;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-
 import io.github.rosemoe.sora.lang.completion.snippet.ConditionalFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.FormatString;
 import io.github.rosemoe.sora.lang.completion.snippet.NextUpperCaseFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.NoFormat;
 import io.github.rosemoe.sora.lang.completion.snippet.Transform;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
 
 /**
  * Utility class for applying {@link Transform} objects
@@ -48,8 +48,9 @@ public class TransformApplier {
     /**
      * Apply the given {@link Transform} to the text and return transform result
      *
-     * @param text      the text to be transformed. must not be null
-     * @param transform the {@link Transform} object describing how to transform the text, maybe null
+     * @param text the text to be transformed. must not be null
+     * @param transform the {@link Transform} object describing how to transform the text, maybe
+     *     null
      * @return the transformed text
      */
     public static String doTransform(@NonNull String text, @Nullable Transform transform) {
@@ -82,12 +83,13 @@ public class TransformApplier {
     /**
      * Generate text for the given region in Matcher.
      *
-     * @param text             the original text, which is given to the Matcher
-     * @param matcher          the Matcher at the requested region
+     * @param text the original text, which is given to the Matcher
+     * @param matcher the Matcher at the requested region
      * @param formatStringList the format descriptors
      * @return generated(transform) text
      */
-    private static CharSequence applySingle(String text, Matcher matcher, List<FormatString> formatStringList) {
+    private static CharSequence applySingle(
+            String text, Matcher matcher, List<FormatString> formatStringList) {
         var sb = new StringBuilder();
         var nextUpperCase = false;
         for (FormatString formatString : formatStringList) {
@@ -100,20 +102,26 @@ public class TransformApplier {
                     if (group != null) {
                         switch (format.getShorthand()) {
                             case "upcase":
-                                sb.append(applyFirstUpperCase(group.toUpperCase(Locale.ROOT), nextUpperCase));
+                                sb.append(
+                                        applyFirstUpperCase(
+                                                group.toUpperCase(Locale.ROOT), nextUpperCase));
                                 break;
                             case "lowcase":
-                                sb.append(applyFirstUpperCase(group.toLowerCase(Locale.ROOT), nextUpperCase));
+                                sb.append(
+                                        applyFirstUpperCase(
+                                                group.toLowerCase(Locale.ROOT), nextUpperCase));
                                 break;
                             default:
-                                //not supported
+                                // not supported
                                 sb.append(applyFirstUpperCase(group, nextUpperCase));
                         }
                     }
                 } else {
                     var ifValue = format.getIfValue() != null ? format.getIfValue() : group;
                     var elseValue = format.getElseValue() != null ? format.getElseValue() : "";
-                    sb.append(applyFirstUpperCase(group != null ? ifValue : elseValue, nextUpperCase));
+                    sb.append(
+                            applyFirstUpperCase(
+                                    group != null ? ifValue : elseValue, nextUpperCase));
                 }
             }
             nextUpperCase = formatString instanceof NextUpperCaseFormat;
@@ -121,14 +129,11 @@ public class TransformApplier {
         return sb;
     }
 
-    /**
-     * Convenient method for applying upper case of first character only
-     */
+    /** Convenient method for applying upper case of first character only */
     private static String applyFirstUpperCase(String text, boolean apply) {
         if (apply && text != null && text.length() > 0 && isAlpha(text.charAt(0))) {
             return Character.toUpperCase(text.charAt(0)) + text.substring(1, text.length());
         }
         return text;
     }
-
 }

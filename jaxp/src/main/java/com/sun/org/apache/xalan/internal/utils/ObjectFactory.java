@@ -20,31 +20,27 @@
 
 package com.sun.org.apache.xalan.internal.utils;
 
-import java.util.function.Supplier;
 import jdk.xml.internal.SecuritySupport;
 
+import java.util.function.Supplier;
+
 /**
- * This class is duplicated for each JAXP subpackage so keep it in sync.
- * It is package private and therefore is not exposed as part of the JAXP
- * API.
- * <p>
- * This class was moved from the <code>javax.xml.parsers.ObjectFactory</code>
- * class and modified to be used as a general utility for creating objects
- * dynamically.
+ * This class is duplicated for each JAXP subpackage so keep it in sync. It is package private and
+ * therefore is not exposed as part of the JAXP API.
  *
- * @LastModified: Oct 2017
+ * <p>This class was moved from the <code>javax.xml.parsers.ObjectFactory</code> class and modified
+ * to be used as a general utility for creating objects dynamically. @LastModified: Oct 2017
  */
 public class ObjectFactory {
 
     //
     // Constants
     //
-     private static final String JAXP_INTERNAL = "com.sun.org.apache";
-     private static final String STAX_INTERNAL = "com.sun.xml.internal";
+    private static final String JAXP_INTERNAL = "com.sun.org.apache";
+    private static final String STAX_INTERNAL = "com.sun.xml.internal";
 
     /** Set to true for debugging */
     private static final boolean DEBUG = false;
-
 
     /** Prints a message to standard error if debugging is enabled. */
     private static void debugPrintln(Supplier<String> msgGen) {
@@ -53,15 +49,11 @@ public class ObjectFactory {
         }
     } // debugPrintln(String)
 
-    /**
-     * Figure out which ClassLoader to use.  For JDK 1.2 and later use
-     * the context ClassLoader.
-     */
+    /** Figure out which ClassLoader to use. For JDK 1.2 and later use the context ClassLoader. */
     @SuppressWarnings("removal")
-    public static ClassLoader findClassLoader()
-    {
-        if (System.getSecurityManager()!=null) {
-            //this will ensure bootclassloader is used
+    public static ClassLoader findClassLoader() {
+        if (System.getSecurityManager() != null) {
+            // this will ensure bootclassloader is used
             return null;
         }
 
@@ -117,56 +109,46 @@ public class ObjectFactory {
     } // findClassLoader():ClassLoader
 
     /**
-     * Create an instance of a class using the same class loader for the ObjectFactory by default
-     * or boot class loader when Security Manager is in place
+     * Create an instance of a class using the same class loader for the ObjectFactory by default or
+     * boot class loader when Security Manager is in place
      */
     public static Object newInstance(String className, boolean doFallback)
-        throws ConfigurationError
-    {
+            throws ConfigurationError {
         @SuppressWarnings("removal")
-        ClassLoader cl = System.getSecurityManager()!=null ? null : findClassLoader();
-        try{
+        ClassLoader cl = System.getSecurityManager() != null ? null : findClassLoader();
+        try {
             Class<?> providerClass = findProviderClass(className, cl, doFallback);
             Object instance = providerClass.getConstructor().newInstance();
-            debugPrintln(()->"created new instance of " + providerClass +
-                             " using ClassLoader: " + cl);
+            debugPrintln(
+                    () -> "created new instance of " + providerClass + " using ClassLoader: " + cl);
             return instance;
         } catch (ClassNotFoundException x) {
-            throw new ConfigurationError(
-                "Provider " + className + " not found", x);
+            throw new ConfigurationError("Provider " + className + " not found", x);
         } catch (Exception x) {
             throw new ConfigurationError(
-                "Provider " + className + " could not be instantiated: " + x,
-                x);
+                    "Provider " + className + " could not be instantiated: " + x, x);
         }
     }
 
     /**
-     * Find a Class using the same class loader for the ObjectFactory by default
-     * or boot class loader when Security Manager is in place
+     * Find a Class using the same class loader for the ObjectFactory by default or boot class
+     * loader when Security Manager is in place
      */
     public static Class<?> findProviderClass(String className, boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        return findProviderClass (className,
-                findClassLoader (), doFallback);
+            throws ClassNotFoundException, ConfigurationError {
+        return findProviderClass(className, findClassLoader(), doFallback);
     }
 
-    /**
-     * Find a Class using the specified ClassLoader
-     */
-    private static Class<?> findProviderClass(String className, ClassLoader cl,
-                                           boolean doFallback)
-        throws ClassNotFoundException, ConfigurationError
-    {
-        //throw security exception if the calling thread is not allowed to access the
-        //class. Restrict the access to the package classes as specified in java.security policy.
+    /** Find a Class using the specified ClassLoader */
+    private static Class<?> findProviderClass(String className, ClassLoader cl, boolean doFallback)
+            throws ClassNotFoundException, ConfigurationError {
+        // throw security exception if the calling thread is not allowed to access the
+        // class. Restrict the access to the package classes as specified in java.security policy.
         @SuppressWarnings("removal")
         SecurityManager security = System.getSecurityManager();
-        try{
-            if (security != null){
-                if (className.startsWith(JAXP_INTERNAL) ||
-                    className.startsWith(STAX_INTERNAL)) {
+        try {
+            if (security != null) {
+                if (className.startsWith(JAXP_INTERNAL) || className.startsWith(STAX_INTERNAL)) {
                     cl = null;
                 } else {
                     final int lastDot = className.lastIndexOf(".");
@@ -174,8 +156,8 @@ public class ObjectFactory {
                     if (lastDot != -1) packageName = className.substring(0, lastDot);
                     security.checkPackageAccess(packageName);
                 }
-             }
-        }catch(SecurityException e){
+            }
+        } catch (SecurityException e) {
             throw e;
         }
 
@@ -205,5 +187,4 @@ public class ObjectFactory {
 
         return providerClass;
     }
-
 } // class ObjectFactory

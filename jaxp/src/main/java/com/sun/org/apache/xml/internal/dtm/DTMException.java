@@ -20,10 +20,7 @@
 
 package com.sun.org.apache.xml.internal.dtm;
 
-/**
- * This class specifies an exceptional condition that occurred
- * in the DTM module.
- */
+/** This class specifies an exceptional condition that occurred in the DTM module. */
 public class DTMException extends RuntimeException {
     static final long serialVersionUID = -775576419181334734L;
 
@@ -48,14 +45,13 @@ public class DTMException extends RuntimeException {
     /**
      * Wrap an existing exception in a DTMException.
      *
-     * <p>This is used for throwing processor exceptions before
-     * the processing has started.</p>
+     * <p>This is used for throwing processor exceptions before the processing has started.
      *
-     * @param message The error or warning message, or null to
-     *                use the message from the embedded exception.
+     * @param message The error or warning message, or null to use the message from the embedded
+     *     exception.
      * @param e Any exception
      */
     public DTMException(String message, Throwable e) {
         super(message, e);
     }
-    }
+}

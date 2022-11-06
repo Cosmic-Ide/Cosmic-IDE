@@ -19,10 +19,10 @@
  */
 package com.sun.org.apache.bcel.internal.generic;
 
+import com.sun.org.apache.bcel.internal.util.ByteSequence;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import com.sun.org.apache.bcel.internal.util.ByteSequence;
 
 /**
  * Select - Abstract super class for LOOKUPSWITCH and TABLESWITCH instructions.
@@ -31,36 +31,34 @@ import com.sun.org.apache.bcel.internal.util.ByteSequence;
  *
  * @see LOOKUPSWITCH
  * @see TABLESWITCH
- * @see InstructionList
- * @LastModified: May 2021
+ * @see InstructionList @LastModified: May 2021
  */
-public abstract class Select extends BranchInstruction implements VariableLengthInstruction,
-        StackConsumer /* @since 6.0 */, StackProducer {
+public abstract class Select extends BranchInstruction
+        implements VariableLengthInstruction, StackConsumer /* @since 6.0 */, StackProducer {
 
     private int[] match; // matches, i.e., case 1: ... TODO could be package-protected?
     private int[] indices; // target offsets TODO could be package-protected?
-    private InstructionHandle[] targets; // target objects in instruction list TODO could be package-protected?
+    private InstructionHandle[]
+            targets; // target objects in instruction list TODO could be package-protected?
     private int fixed_length; // fixed length defined by subclasses TODO could be package-protected?
     private int match_length; // number of cases TODO could be package-protected?
     private int padding = 0; // number of pad bytes for alignment TODO could be package-protected?
 
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    Select() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    Select() {}
 
     /**
-     * (Match, target) pairs for switch.
-     * `Match' and `targets' must have the same length of course.
+     * (Match, target) pairs for switch. `Match' and `targets' must have the same length of course.
      *
      * @param match array of matching values
      * @param targets instruction targets
      * @param defaultTarget default instruction target
      */
-    Select(final short opcode, final int[] match, final InstructionHandle[] targets, final InstructionHandle defaultTarget) {
+    Select(
+            final short opcode,
+            final int[] match,
+            final InstructionHandle[] targets,
+            final InstructionHandle defaultTarget) {
         // don't set default target before instuction is built
         super(opcode, null);
         this.match = match;
@@ -71,29 +69,33 @@ public abstract class Select extends BranchInstruction implements VariableLength
             notifyTarget(null, target2, this);
         }
         if ((match_length = match.length) != targets.length) {
-            throw new ClassGenException("Match and target array have not the same length: Match length: " +
-                match.length + " Target length: " + targets.length);
+            throw new ClassGenException(
+                    "Match and target array have not the same length: Match length: "
+                            + match.length
+                            + " Target length: "
+                            + targets.length);
         }
         indices = new int[match_length];
     }
 
-
     /**
-     * Since this is a variable length instruction, it may shift the following
-     * instructions which then need to update their position.
+     * Since this is a variable length instruction, it may shift the following instructions which
+     * then need to update their position.
      *
-     * Called by InstructionList.setPositions when setting the position for every
-     * instruction. In the presence of variable length instructions `setPositions'
-     * performs multiple passes over the instruction list to calculate the
-     * correct (byte) positions and offsets by calling this function.
+     * <p>Called by InstructionList.setPositions when setting the position for every instruction. In
+     * the presence of variable length instructions `setPositions' performs multiple passes over the
+     * instruction list to calculate the correct (byte) positions and offsets by calling this
+     * function.
      *
      * @param offset additional offset caused by preceding (variable length) instructions
      * @param max_offset the maximum offset that may be caused by these instructions
      * @return additional offset caused by possible change of this instruction's length
      */
     @Override
-    protected int updatePosition( final int offset, final int max_offset ) {
-        setPosition(getPosition() + offset); // Additional offset caused by preceding SWITCHs, GOTOs, etc.
+    protected int updatePosition(final int offset, final int max_offset) {
+        setPosition(
+                getPosition()
+                        + offset); // Additional offset caused by preceding SWITCHs, GOTOs, etc.
         final short old_length = (short) super.getLength();
         /* Alignment on 4-byte-boundary, + 1, because of tag byte.
          */
@@ -102,13 +104,13 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return super.getLength() - old_length;
     }
 
-
     /**
      * Dump instruction as byte code to stream out.
+     *
      * @param out Output stream
      */
     @Override
-    public void dump( final DataOutputStream out ) throws IOException {
+    public void dump(final DataOutputStream out) throws IOException {
         out.writeByte(super.getOpcode());
         for (int i = 0; i < padding; i++) {
             out.writeByte(0);
@@ -117,12 +119,9 @@ public abstract class Select extends BranchInstruction implements VariableLength
         out.writeInt(super.getIndex());
     }
 
-
-    /**
-     * Read needed data (e.g. index) from file.
-     */
+    /** Read needed data (e.g. index) from file. */
     @Override
-    protected void initFromFile( final ByteSequence bytes, final boolean wide ) throws IOException {
+    protected void initFromFile(final ByteSequence bytes, final boolean wide) throws IOException {
         padding = (4 - (bytes.getIndex() % 4)) % 4; // Compute number of pad bytes
         for (int i = 0; i < padding; i++) {
             bytes.readByte();
@@ -131,12 +130,11 @@ public abstract class Select extends BranchInstruction implements VariableLength
         super.setIndex(bytes.readInt());
     }
 
-
     /**
      * @return mnemonic for instruction
      */
     @Override
-    public String toString( final boolean verbose ) {
+    public String toString(final boolean verbose) {
         final StringBuilder buf = new StringBuilder(super.toString(verbose));
         if (verbose) {
             for (int i = 0; i < match_length; i++) {
@@ -144,8 +142,13 @@ public abstract class Select extends BranchInstruction implements VariableLength
                 if (targets[i] != null) {
                     s = targets[i].getInstruction().toString();
                 }
-                buf.append("(").append(match[i]).append(", ").append(s).append(" = {").append(
-                        indices[i]).append("})");
+                buf.append("(")
+                        .append(match[i])
+                        .append(", ")
+                        .append(s)
+                        .append(" = {")
+                        .append(indices[i])
+                        .append("})");
             }
         } else {
             buf.append(" ...");
@@ -153,22 +156,19 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return buf.toString();
     }
 
-
-    /**
-     * Set branch target for `i'th case
-     */
-    public void setTarget( final int i, final InstructionHandle target ) { // TODO could be package-protected?
+    /** Set branch target for `i'th case */
+    public void setTarget(
+            final int i, final InstructionHandle target) { // TODO could be package-protected?
         notifyTarget(targets[i], target, this);
         targets[i] = target;
     }
-
 
     /**
      * @param old_ih old target
      * @param new_ih new target
      */
     @Override
-    public void updateTarget( final InstructionHandle old_ih, final InstructionHandle new_ih ) {
+    public void updateTarget(final InstructionHandle old_ih, final InstructionHandle new_ih) {
         boolean targeted = false;
         if (super.getTarget() == old_ih) {
             targeted = true;
@@ -185,12 +185,11 @@ public abstract class Select extends BranchInstruction implements VariableLength
         }
     }
 
-
     /**
      * @return true, if ih is target of this instruction
      */
     @Override
-    public boolean containsTarget( final InstructionHandle ih ) {
+    public boolean containsTarget(final InstructionHandle ih) {
         if (super.getTarget() == ih) {
             return true;
         }
@@ -202,7 +201,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return false;
     }
 
-
     @Override
     protected Object clone() throws CloneNotSupportedException {
         final Select copy = (Select) super.clone();
@@ -212,10 +210,7 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return copy;
     }
 
-
-    /**
-     * Inform targets that they're not targeted anymore.
-     */
+    /** Inform targets that they're not targeted anymore. */
     @Override
     void dispose() {
         super.dispose();
@@ -224,7 +219,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
         }
     }
 
-
     /**
      * @return array of match indices
      */
@@ -232,14 +226,12 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return match;
     }
 
-
     /**
      * @return array of match target offsets
      */
     public int[] getIndices() {
         return indices;
     }
-
 
     /**
      * @return array of match targets
@@ -255,7 +247,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     final int getMatch(final int index) {
         return match[index];
     }
-
 
     /**
      * @return index entry from indices
@@ -273,7 +264,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return targets[index];
     }
 
-
     /**
      * @return the fixed_length
      * @since 6.0
@@ -281,7 +271,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     final int getFixed_length() {
         return fixed_length;
     }
-
 
     /**
      * @param fixed_length the fixed_length to set
@@ -291,7 +280,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
         this.fixed_length = fixed_length;
     }
 
-
     /**
      * @return the match_length
      * @since 6.0
@@ -299,7 +287,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     final int getMatch_length() {
         return match_length;
     }
-
 
     /**
      * @param match_length the match_length to set
@@ -311,7 +298,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     }
 
     /**
-     *
      * @param index
      * @param value
      * @since 6.0
@@ -321,7 +307,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     }
 
     /**
-     *
      * @param array
      * @since 6.0
      */
@@ -330,7 +315,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     }
 
     /**
-     *
      * @param array
      * @since 6.0
      */
@@ -339,7 +323,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     }
 
     /**
-     *
      * @param array
      * @since 6.0
      */
@@ -348,7 +331,6 @@ public abstract class Select extends BranchInstruction implements VariableLength
     }
 
     /**
-     *
      * @return the padding
      * @since 6.0
      */
@@ -356,10 +338,11 @@ public abstract class Select extends BranchInstruction implements VariableLength
         return padding;
     }
 
-
-    /** @since 6.0 */
+    /**
+     * @since 6.0
+     */
     final int setIndices(final int i, final int value) {
         indices[i] = value;
-        return value;  // Allow use in nested calls
+        return value; // Allow use in nested calls
     }
 }

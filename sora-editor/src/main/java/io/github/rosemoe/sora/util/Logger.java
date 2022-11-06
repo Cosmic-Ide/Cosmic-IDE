@@ -37,7 +37,7 @@ public class Logger {
         this.name = name;
     }
 
-    public synchronized static Logger instance(String name) {
+    public static synchronized Logger instance(String name) {
         var logger = map.get(name);
         if (logger == null) {
             logger = new Logger(name);
@@ -74,7 +74,6 @@ public class Logger {
         Log.w(name, msg);
     }
 
-
     public void w(String msg, Object... format) {
         Log.w(name, String.format(msg, format));
     }
@@ -95,7 +94,6 @@ public class Logger {
         Log.e(name, String.format(msg, format));
     }
 
-
     public void e(String msg, Throwable e) {
         Log.e(name, msg, e);
     }
@@ -103,6 +101,4 @@ public class Logger {
     public void e(String msg, Throwable e, Object... format) {
         Log.e(name, String.format(msg, format), e);
     }
-
-
 }

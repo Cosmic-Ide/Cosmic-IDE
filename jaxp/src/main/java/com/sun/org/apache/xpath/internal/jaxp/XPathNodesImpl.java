@@ -25,16 +25,17 @@
 
 package com.sun.org.apache.xpath.internal.jaxp;
 
-import java.util.Iterator;
-import javax.xml.xpath.XPathException;
-import javax.xml.xpath.XPathNodes;
-import javax.xml.xpath.XPathEvaluationResult.XPathResultType;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.Iterator;
+
+import javax.xml.xpath.XPathException;
+import javax.xml.xpath.XPathNodes;
+
 /**
- * This class implements XPathNodes that represents a set of nodes selected by
- * evaluating an expression.
+ * This class implements XPathNodes that represents a set of nodes selected by evaluating an
+ * expression.
  */
 public class XPathNodesImpl implements XPathNodes {
     Class<Node> elementType;
@@ -53,9 +54,11 @@ public class XPathNodesImpl implements XPathNodes {
     class NodeSetIterator<E> implements Iterator<E> {
         int currentIndex;
         Class<E> elementType;
+
         NodeSetIterator(Class<E> elementType) {
             this.elementType = elementType;
         }
+
         public boolean hasNext() {
             if (nodeList != null) {
                 return currentIndex < nodeList.getLength();
@@ -82,7 +85,7 @@ public class XPathNodesImpl implements XPathNodes {
 
     @Override
     public Node get(int index) throws XPathException {
-        if (index <0 || index >= size()) {
+        if (index < 0 || index >= size()) {
             throw new IndexOutOfBoundsException("Index " + index + " is out of bounds");
         }
         if (nodeList != null) {

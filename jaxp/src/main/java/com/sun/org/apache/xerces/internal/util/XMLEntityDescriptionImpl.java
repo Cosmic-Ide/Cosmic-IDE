@@ -24,15 +24,13 @@ package com.sun.org.apache.xerces.internal.util;
 import com.sun.org.apache.xerces.internal.impl.XMLEntityDescription;
 
 /**
- * <p>This class is an implementation of the XMLEntityDescription
- * interface which describes the properties of an entity.</p>
+ * This class is an implementation of the XMLEntityDescription interface which describes the
+ * properties of an entity.
  *
  * @author Michael Glavassevich, IBM
- *
  */
-public class XMLEntityDescriptionImpl
-    extends XMLResourceIdentifierImpl
-    implements XMLEntityDescription {
+public class XMLEntityDescriptionImpl extends XMLResourceIdentifierImpl
+        implements XMLEntityDescription {
 
     //
     // Constructors
@@ -50,8 +48,12 @@ public class XMLEntityDescriptionImpl
      * @param baseSystemId The base system identifier.
      * @param expandedSystemId The expanded system identifier.
      */
-    public XMLEntityDescriptionImpl(String entityName, String publicId, String literalSystemId,
-                                    String baseSystemId, String expandedSystemId) {
+    public XMLEntityDescriptionImpl(
+            String entityName,
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId) {
         setDescription(entityName, publicId, literalSystemId, baseSystemId, expandedSystemId);
     } // <init>(String,String,String,String,String)
 
@@ -65,9 +67,15 @@ public class XMLEntityDescriptionImpl
      * @param expandedSystemId The expanded system identifier.
      * @param namespace The namespace.
      */
-    public XMLEntityDescriptionImpl(String entityName, String publicId, String literalSystemId,
-                                    String baseSystemId, String expandedSystemId, String namespace) {
-        setDescription(entityName, publicId, literalSystemId, baseSystemId, expandedSystemId, namespace);
+    public XMLEntityDescriptionImpl(
+            String entityName,
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId,
+            String namespace) {
+        setDescription(
+                entityName, publicId, literalSystemId, baseSystemId, expandedSystemId, namespace);
     } // <init>(String,String,String,String,String,String)
 
     //
@@ -100,7 +108,7 @@ public class XMLEntityDescriptionImpl
     } // getEntityName():String
 
     /**
-     * <p>Sets the values of this entity description.</p>
+     * Sets the values of this entity description.
      *
      * @param entityName The name of the entity.
      * @param publicId The public identifier.
@@ -108,13 +116,17 @@ public class XMLEntityDescriptionImpl
      * @param baseSystemId The base system identifier.
      * @param expandedSystemId The expanded system identifier.
      */
-    public void setDescription(String entityName, String publicId, String literalSystemId,
-                               String baseSystemId, String expandedSystemId) {
+    public void setDescription(
+            String entityName,
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId) {
         setDescription(entityName, publicId, literalSystemId, baseSystemId, expandedSystemId, null);
     } // setDescription(String,String,String,String,String)
 
     /**
-     * <p>Sets the values of this entity description.</p>
+     * Sets the values of this entity description.
      *
      * @param entityName The name of the entity.
      * @param publicId The public identifier.
@@ -123,15 +135,18 @@ public class XMLEntityDescriptionImpl
      * @param expandedSystemId The expanded system identifier.
      * @param namespace The namespace.
      */
-    public void setDescription(String entityName, String publicId, String literalSystemId,
-                               String baseSystemId, String expandedSystemId, String namespace) {
+    public void setDescription(
+            String entityName,
+            String publicId,
+            String literalSystemId,
+            String baseSystemId,
+            String expandedSystemId,
+            String namespace) {
         fEntityName = entityName;
         setValues(publicId, literalSystemId, baseSystemId, expandedSystemId, namespace);
     } // setDescription(String,String,String,String,String,String)
 
-    /**
-     * <p>Clears the values.</p>
-     */
+    /** Clears the values. */
     public void clear() {
         super.clear();
         fEntityName = null;
@@ -178,5 +193,4 @@ public class XMLEntityDescriptionImpl
         }
         return str.toString();
     } // toString():String
-
 } // XMLEntityDescriptionImpl

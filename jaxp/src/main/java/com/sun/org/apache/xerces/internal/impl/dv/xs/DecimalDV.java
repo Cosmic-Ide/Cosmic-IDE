@@ -21,52 +21,60 @@
 
 package com.sun.org.apache.xerces.internal.impl.dv.xs;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.sun.org.apache.xerces.internal.impl.dv.InvalidDatatypeValueException;
 import com.sun.org.apache.xerces.internal.impl.dv.ValidationContext;
 import com.sun.org.apache.xerces.internal.xs.datatypes.XSDecimal;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Objects;
 
 /**
  * Represent the schema type "decimal"
  *
  * @xerces.internal
- *
  * @author Neeraj Bajaj, Sun Microsystems, inc.
  * @author Sandy Gao, IBM
- *
  */
 public class DecimalDV extends TypeValidator {
 
     @Override
-    public final short getAllowedFacets(){
-        return ( XSSimpleTypeDecl.FACET_PATTERN | XSSimpleTypeDecl.FACET_WHITESPACE | XSSimpleTypeDecl.FACET_ENUMERATION |XSSimpleTypeDecl.FACET_MAXINCLUSIVE |XSSimpleTypeDecl.FACET_MININCLUSIVE | XSSimpleTypeDecl.FACET_MAXEXCLUSIVE  | XSSimpleTypeDecl.FACET_MINEXCLUSIVE | XSSimpleTypeDecl.FACET_TOTALDIGITS | XSSimpleTypeDecl.FACET_FRACTIONDIGITS);
+    public final short getAllowedFacets() {
+        return (XSSimpleTypeDecl.FACET_PATTERN
+                | XSSimpleTypeDecl.FACET_WHITESPACE
+                | XSSimpleTypeDecl.FACET_ENUMERATION
+                | XSSimpleTypeDecl.FACET_MAXINCLUSIVE
+                | XSSimpleTypeDecl.FACET_MININCLUSIVE
+                | XSSimpleTypeDecl.FACET_MAXEXCLUSIVE
+                | XSSimpleTypeDecl.FACET_MINEXCLUSIVE
+                | XSSimpleTypeDecl.FACET_TOTALDIGITS
+                | XSSimpleTypeDecl.FACET_FRACTIONDIGITS);
     }
 
     @Override
-    public Object getActualValue(String content, ValidationContext context) throws InvalidDatatypeValueException {
+    public Object getActualValue(String content, ValidationContext context)
+            throws InvalidDatatypeValueException {
         try {
             return new XDecimal(content);
         } catch (NumberFormatException nfe) {
-            throw new InvalidDatatypeValueException("cvc-datatype-valid.1.2.1", new Object[]{content, "decimal"});
+            throw new InvalidDatatypeValueException(
+                    "cvc-datatype-valid.1.2.1", new Object[] {content, "decimal"});
         }
     }
 
     @Override
-    public final int compare(Object value1, Object value2){
-        return ((XDecimal)value1).compareTo((XDecimal)value2);
+    public final int compare(Object value1, Object value2) {
+        return ((XDecimal) value1).compareTo((XDecimal) value2);
     }
 
     @Override
-    public final int getTotalDigits(Object value){
-        return ((XDecimal)value).totalDigits;
+    public final int getTotalDigits(Object value) {
+        return ((XDecimal) value).totalDigits;
     }
 
     @Override
-    public final int getFractionDigits(Object value){
-        return ((XDecimal)value).fracDigits;
+    public final int getFractionDigits(Object value) {
+        return ((XDecimal) value).fracDigits;
     }
 
     // Avoid using the heavy-weight java.math.BigDecimal
@@ -89,16 +97,15 @@ public class DecimalDV extends TypeValidator {
         XDecimal(String content) throws NumberFormatException {
             initD(content);
         }
+
         XDecimal(String content, boolean integer) throws NumberFormatException {
-            if (integer)
-                initI(content);
-            else
-                initD(content);
+            if (integer) initI(content);
+            else initD(content);
         }
+
         void initD(String content) throws NumberFormatException {
             int len = content.length();
-            if (len == 0)
-                throw new NumberFormatException();
+            if (len == 0) throw new NumberFormatException();
 
             // these 4 variables are used to indicate where the integre/fraction
             // parts start/end.
@@ -108,8 +115,7 @@ public class DecimalDV extends TypeValidator {
             if (content.charAt(0) == '+') {
                 // skip '+', so intStart should be 1
                 intStart = 1;
-            }
-            else if (content.charAt(0) == '-') {
+            } else if (content.charAt(0) == '-') {
                 // keep '-', so intStart is stil 0
                 intStart = 1;
                 sign = -1;
@@ -123,14 +129,14 @@ public class DecimalDV extends TypeValidator {
 
             // Find the ending position of the integer part
             for (intEnd = actualIntStart;
-                 intEnd < len && TypeValidator.isDigit(content.charAt(intEnd));
-                 intEnd++);
+                    intEnd < len && TypeValidator.isDigit(content.charAt(intEnd));
+                    intEnd++)
+                ;
 
             // Not reached the end yet
             if (intEnd < len) {
                 // the remaining part is not ".DDD", error
-                if (content.charAt(intEnd) != '.')
-                    throw new NumberFormatException();
+                if (content.charAt(intEnd) != '.') throw new NumberFormatException();
 
                 // fraction part starts after '.', and ends at the end of the input
                 fracStart = intEnd + 1;
@@ -138,11 +144,10 @@ public class DecimalDV extends TypeValidator {
             }
 
             // no integer part, no fraction part, error.
-            if (intStart == intEnd && fracStart == fracEnd)
-                throw new NumberFormatException();
+            if (intStart == intEnd && fracStart == fracEnd) throw new NumberFormatException();
 
             // ignore trailing zeroes in fraction part
-            while (fracEnd > fracStart && content.charAt(fracEnd-1) == '0') {
+            while (fracEnd > fracStart && content.charAt(fracEnd - 1) == '0') {
                 fracEnd--;
             }
 
@@ -158,23 +163,20 @@ public class DecimalDV extends TypeValidator {
 
             if (intDigits > 0) {
                 ivalue = content.substring(actualIntStart, intEnd);
-                if (fracDigits > 0)
-                    fvalue = content.substring(fracStart, fracEnd);
-            }
-            else {
+                if (fracDigits > 0) fvalue = content.substring(fracStart, fracEnd);
+            } else {
                 if (fracDigits > 0) {
                     fvalue = content.substring(fracStart, fracEnd);
-                }
-                else {
+                } else {
                     // ".00", treat it as "0"
                     sign = 0;
                 }
             }
         }
+
         void initI(String content) throws NumberFormatException {
             int len = content.length();
-            if (len == 0)
-                throw new NumberFormatException();
+            if (len == 0) throw new NumberFormatException();
 
             // these 2 variables are used to indicate where the integre start/end.
             int intStart = 0, intEnd = 0;
@@ -183,8 +185,7 @@ public class DecimalDV extends TypeValidator {
             if (content.charAt(0) == '+') {
                 // skip '+', so intStart should be 1
                 intStart = 1;
-            }
-            else if (content.charAt(0) == '-') {
+            } else if (content.charAt(0) == '-') {
                 // keep '-', so intStart is stil 0
                 intStart = 1;
                 sign = -1;
@@ -198,16 +199,15 @@ public class DecimalDV extends TypeValidator {
 
             // Find the ending position of the integer part
             for (intEnd = actualIntStart;
-                 intEnd < len && TypeValidator.isDigit(content.charAt(intEnd));
-                 intEnd++);
+                    intEnd < len && TypeValidator.isDigit(content.charAt(intEnd));
+                    intEnd++)
+                ;
 
             // Not reached the end yet, error
-            if (intEnd < len)
-                throw new NumberFormatException();
+            if (intEnd < len) throw new NumberFormatException();
 
             // no integer part, error.
-            if (intStart == intEnd)
-                throw new NumberFormatException();
+            if (intStart == intEnd) throw new NumberFormatException();
 
             intDigits = intEnd - actualIntStart;
             fracDigits = 0;
@@ -215,8 +215,7 @@ public class DecimalDV extends TypeValidator {
 
             if (intDigits > 0) {
                 ivalue = content.substring(actualIntStart, intEnd);
-            }
-            else {
+            } else {
                 // "00", treat it as "0"
                 sign = 0;
             }
@@ -226,20 +225,18 @@ public class DecimalDV extends TypeValidator {
 
         @Override
         public boolean equals(Object val) {
-            if (val == this)
-                return true;
+            if (val == this) return true;
 
-            if (!(val instanceof XDecimal))
-                return false;
-            XDecimal oval = (XDecimal)val;
+            if (!(val instanceof XDecimal)) return false;
+            XDecimal oval = (XDecimal) val;
 
-            if (sign != oval.sign)
-               return false;
-            if (sign == 0)
-                return true;
+            if (sign != oval.sign) return false;
+            if (sign == 0) return true;
 
-            return intDigits == oval.intDigits && fracDigits == oval.fracDigits &&
-                   ivalue.equals(oval.ivalue) && fvalue.equals(oval.fvalue);
+            return intDigits == oval.intDigits
+                    && fracDigits == oval.fracDigits
+                    && ivalue.equals(oval.ivalue)
+                    && fvalue.equals(oval.fvalue);
         }
 
         @Override
@@ -255,23 +252,22 @@ public class DecimalDV extends TypeValidator {
         }
 
         public int compareTo(XDecimal val) {
-            if (sign != val.sign)
-                return sign > val.sign ? 1 : -1;
-            if (sign == 0)
-                return 0;
+            if (sign != val.sign) return sign > val.sign ? 1 : -1;
+            if (sign == 0) return 0;
             return sign * intComp(val);
         }
+
         private int intComp(XDecimal val) {
-            if (intDigits != val.intDigits)
-                return intDigits > val.intDigits ? 1 : -1;
+            if (intDigits != val.intDigits) return intDigits > val.intDigits ? 1 : -1;
             int ret = ivalue.compareTo(val.ivalue);
-            if (ret != 0)
-                return ret > 0 ? 1 : -1;;
+            if (ret != 0) return ret > 0 ? 1 : -1;
+            ;
             ret = fvalue.compareTo(val.fvalue);
             return ret == 0 ? 0 : (ret > 0 ? 1 : -1);
         }
 
         private String canonical;
+
         @Override
         public synchronized String toString() {
             if (canonical == null) {
@@ -282,10 +278,8 @@ public class DecimalDV extends TypeValidator {
 
         private void makeCanonical() {
             if (sign == 0) {
-                if (integer)
-                    canonical = "0";
-                else
-                    canonical = "0.0";
+                if (integer) canonical = "0";
+                else canonical = "0.0";
                 return;
             }
             if (integer && sign > 0) {
@@ -293,19 +287,15 @@ public class DecimalDV extends TypeValidator {
                 return;
             }
             // for -0.1, total digits is 1, so we need 3 extra spots
-            final StringBuilder buffer = new StringBuilder(totalDigits+3);
-            if (sign == -1)
-                buffer.append('-');
-            if (intDigits != 0)
-                buffer.append(ivalue);
-            else
-                buffer.append('0');
+            final StringBuilder buffer = new StringBuilder(totalDigits + 3);
+            if (sign == -1) buffer.append('-');
+            if (intDigits != 0) buffer.append(ivalue);
+            else buffer.append('0');
             if (!integer) {
                 buffer.append('.');
                 if (fracDigits != 0) {
                     buffer.append(fvalue);
-                }
-                else {
+                } else {
                     buffer.append('0');
                 }
             }

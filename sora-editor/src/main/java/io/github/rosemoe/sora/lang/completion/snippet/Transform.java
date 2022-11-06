@@ -49,5 +49,4 @@ public class Transform {
     public boolean globalMode;
 
     public List<FormatString> format;
-
 }

@@ -22,15 +22,11 @@ package com.sun.org.apache.bcel.internal.generic;
 
 import com.sun.org.apache.bcel.internal.Const;
 
-/**
- * Denotes array type, such as int[][]
- *
- */
+/** Denotes array type, such as int[][] */
 public final class ArrayType extends ReferenceType {
 
     private int dimensions;
     private Type basicType;
-
 
     /**
      * Convenience constructor for array type, e.g. int[]
@@ -41,7 +37,6 @@ public final class ArrayType extends ReferenceType {
         this(BasicType.getType(type), dimensions);
     }
 
-
     /**
      * Convenience constructor for reference array type, e.g. Object[]
      *
@@ -50,7 +45,6 @@ public final class ArrayType extends ReferenceType {
     public ArrayType(final String class_name, final int dimensions) {
         this(ObjectType.getInstance(class_name), dimensions);
     }
-
 
     /**
      * Constructor for array of given type
@@ -83,14 +77,12 @@ public final class ArrayType extends ReferenceType {
         super.setSignature(buf.toString());
     }
 
-
     /**
      * @return basic type of array, i.e., for int[][][] the basic type is int
      */
     public Type getBasicType() {
         return basicType;
     }
-
 
     /**
      * @return element type of array, i.e., for int[][][] the element type is int[][]
@@ -102,26 +94,26 @@ public final class ArrayType extends ReferenceType {
         return new ArrayType(basicType, dimensions - 1);
     }
 
-
-    /** @return number of dimensions of array
+    /**
+     * @return number of dimensions of array
      */
     public int getDimensions() {
         return dimensions;
     }
 
-
-    /** @return a hash code value for the object.
+    /**
+     * @return a hash code value for the object.
      */
     @Override
     public int hashCode() {
         return basicType.hashCode() ^ dimensions;
     }
 
-
-    /** @return true if both type objects refer to the same array type.
+    /**
+     * @return true if both type objects refer to the same array type.
      */
     @Override
-    public boolean equals( final Object _type ) {
+    public boolean equals(final Object _type) {
         if (_type instanceof ArrayType) {
             final ArrayType array = (ArrayType) _type;
             return (array.dimensions == dimensions) && array.basicType.equals(basicType);

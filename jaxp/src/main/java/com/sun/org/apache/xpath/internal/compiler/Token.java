@@ -27,9 +27,7 @@ package com.sun.org.apache.xpath.internal.compiler;
 
 import java.util.Arrays;
 
-/**
- * XPath tokens
- */
+/** XPath tokens */
 public final class Token {
     static final char EM = '!';
     static final char EQ = '=';
@@ -64,14 +62,13 @@ public final class Token {
     static final String ATTR = "attribute";
     static final String CHILD = "child";
 
-    static final String[] OPERATORS = {OR, AND, DIV, MOD, QUO,
-        DDOT, DCOLON, ATTR, CHILD};
+    static final String[] OPERATORS = {OR, AND, DIV, MOD, QUO, DDOT, DCOLON, ATTR, CHILD};
 
     public static boolean contains(String str) {
         return Arrays.stream(OPERATORS).anyMatch(str::equals);
     }
 
     private Token() {
-        //to prevent instantiation
+        // to prevent instantiation
     }
 }

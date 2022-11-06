@@ -24,26 +24,19 @@
  */
 
 /**
- *
- * <p>
  * Defines XML/Java Type Mappings.
  *
- * <p>
- * This API provides XML/Java type mappings.
+ * <p>This API provides XML/Java type mappings.
  *
- * <p>
- * The following XML standards apply:
+ * <p>The following XML standards apply:
  *
  * <ul>
- *     <li><a href="http://www.w3.org/TR/xmlschema-2/#dateTime">
- *             W3C XML Schema 1.0 Part 2, Section 3.2.7-14</a>
- *     </li>
- *     <li><a href="http://www.w3.org/TR/xpath-datamodel#dt-dayTimeDuration">
- *             XQuery 1.0 and XPath 2.0 Data Model, xdt:dayTimeDuration</a>
- *     </li>
- *     <li><a href="http://www.w3.org/TR/xpath-datamodel#dt-yearMonthDuration">
- *             XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration</a>
- *     </li>
+ *   <li><a href="http://www.w3.org/TR/xmlschema-2/#dateTime">W3C XML Schema 1.0 Part 2, Section
+ *       3.2.7-14</a>
+ *   <li><a href="http://www.w3.org/TR/xpath-datamodel#dt-dayTimeDuration">XQuery 1.0 and XPath 2.0
+ *       Data Model, xdt:dayTimeDuration</a>
+ *   <li><a href="http://www.w3.org/TR/xpath-datamodel#dt-yearMonthDuration">XQuery 1.0 and XPath
+ *       2.0 Data Model, xdt:yearMonthDuration</a>
  * </ul>
  *
  * <hr>
@@ -100,7 +93,6 @@
  *
  * <hr>
  *
- *
  * <table class="striped">
  *     <caption>XQuery and XPath/Java Type Mappings</caption>
  *     <thead>
@@ -124,39 +116,37 @@
  *
  * <hr>
  *
- * <p>
- * W3C XML Schema data types that have a "<em>natural</em>" mapping to Java types are defined by
- * JSR 31: Java Architecture for XML Binding (JAXB) Specification, Binding XML Schema to Java Representations.
- * JAXB defined mappings for XML Schema built-in data types include:
+ * <p>W3C XML Schema data types that have a "<em>natural</em>" mapping to Java types are defined by
+ * JSR 31: Java Architecture for XML Binding (JAXB) Specification, Binding XML Schema to Java
+ * Representations. JAXB defined mappings for XML Schema built-in data types include:
  *
  * <ul>
- *     <li>xs:anySimpleType</li>
- *     <li>xs:base64Binary</li>
- *     <li>xs:boolean</li>
- *     <li>xs:byte</li>
- *     <li>xs:decimal</li>
- *     <li>xs:double</li>
- *     <li>xs:float</li>
- *     <li>xs:hexBinary</li>
- *     <li>xs:int</li>
- *     <li>xs:integer</li>
- *     <li>xs:long</li>
- *     <li>xs:QName</li>
- *     <li>xs:short</li>
- *     <li>xs:string</li>
- *     <li>xs:unsignedByte</li>
- *     <li>xs:unsignedInt</li>
- *     <li>xs:unsignedShort</li>
+ *   <li>xs:anySimpleType
+ *   <li>xs:base64Binary
+ *   <li>xs:boolean
+ *   <li>xs:byte
+ *   <li>xs:decimal
+ *   <li>xs:double
+ *   <li>xs:float
+ *   <li>xs:hexBinary
+ *   <li>xs:int
+ *   <li>xs:integer
+ *   <li>xs:long
+ *   <li>xs:QName
+ *   <li>xs:short
+ *   <li>xs:string
+ *   <li>xs:unsignedByte
+ *   <li>xs:unsignedInt
+ *   <li>xs:unsignedShort
  * </ul>
  *
  * @author Jeff Suttor
- * @see <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">
- *             W3C XML Schema 1.0 Part 2, Section 3.2.7-14</a>
- * @see <a href="http://www.w3.org/TR/xpath-datamodel#dt-dayTimeDuration">
- *             XQuery 1.0 and XPath 2.0 Data Model, xdt:dayTimeDuration</a>
- * @see <a href="http://www.w3.org/TR/xpath-datamodel#dt-yearMonthDuration">
- *             XQuery 1.0 and XPath 2.0 Data Model, xdt:yearMonthDuration</a>
+ * @see <a href="http://www.w3.org/TR/xmlschema-2/#dateTime">W3C XML Schema 1.0 Part 2, Section
+ *     3.2.7-14</a>
+ * @see <a href="http://www.w3.org/TR/xpath-datamodel#dt-dayTimeDuration">XQuery 1.0 and XPath 2.0
+ *     Data Model, xdt:dayTimeDuration</a>
+ * @see <a href="http://www.w3.org/TR/xpath-datamodel#dt-yearMonthDuration">XQuery 1.0 and XPath 2.0
+ *     Data Model, xdt:yearMonthDuration</a>
  * @since 1.5
  */
-
 package javax.xml.datatype;

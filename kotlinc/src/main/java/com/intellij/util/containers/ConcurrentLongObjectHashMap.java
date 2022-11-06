@@ -4,7 +4,10 @@ package com.intellij.util.containers;
 // Apache 2.0 license that can be found in the LICENSE file.
 
 import android.os.Build;
+
 import androidx.annotation.NonNull;
+
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import sun.misc.Unsafe;
 
@@ -17,8 +20,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.locks.LockSupport;
-
-import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 /**
  * Adapted from Doug Lea ConcurrentHashMap (see
@@ -1552,7 +1553,9 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         private static int getAndAddInt(Object object, long offset, int v) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    return (int) HiddenApiBypass.invoke(Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
+                    return (int)
+                            HiddenApiBypass.invoke(
+                                    Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
                 } else {
                     return theUnsafe.getAndAddInt(object, offset, v);
                 }

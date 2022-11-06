@@ -25,51 +25,45 @@ import com.sun.org.apache.bcel.internal.ExceptionConst;
 
 /**
  * GETFIELD - Fetch field from object
- * <PRE>Stack: ..., objectref -&gt; ..., value</PRE>
- * OR
- * <PRE>Stack: ..., objectref -&gt; ..., value.word1, value.word2</PRE>
  *
+ * <PRE>Stack: ..., objectref -&gt; ..., value</PRE>
+ *
+ * OR
+ *
+ * <PRE>Stack: ..., objectref -&gt; ..., value.word1, value.word2</PRE>
  */
-public class GETFIELD extends FieldInstruction implements ExceptionThrower, StackConsumer,
-        StackProducer {
+public class GETFIELD extends FieldInstruction
+        implements ExceptionThrower, StackConsumer, StackProducer {
 
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    GETFIELD() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    GETFIELD() {}
 
     public GETFIELD(final int index) {
         super(Const.GETFIELD, index);
     }
 
-
     @Override
-    public int produceStack( final ConstantPoolGen cpg ) {
+    public int produceStack(final ConstantPoolGen cpg) {
         return getFieldSize(cpg);
     }
 
-
     @Override
     public Class<?>[] getExceptions() {
-        return ExceptionConst.createExceptions(ExceptionConst.EXCS.EXCS_FIELD_AND_METHOD_RESOLUTION,
-            ExceptionConst.NULL_POINTER_EXCEPTION,
-            ExceptionConst.INCOMPATIBLE_CLASS_CHANGE_ERROR);
+        return ExceptionConst.createExceptions(
+                ExceptionConst.EXCS.EXCS_FIELD_AND_METHOD_RESOLUTION,
+                ExceptionConst.NULL_POINTER_EXCEPTION,
+                ExceptionConst.INCOMPATIBLE_CLASS_CHANGE_ERROR);
     }
 
-
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
      * i.e., the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitExceptionThrower(this);
         v.visitStackConsumer(this);
         v.visitStackProducer(this);

@@ -34,9 +34,7 @@ import java.util.Objects;
  */
 public enum LineSeparator {
 
-    /**
-     * No separator. Used internally
-     */
+    /** No separator. Used internally */
     NONE(""),
     LF("\n"),
     CR("\r"),
@@ -52,23 +50,17 @@ public enum LineSeparator {
         chars = str.toCharArray();
     }
 
-    /**
-     * Get the text of this separator
-     */
+    /** Get the text of this separator */
     public String getContent() {
         return str;
     }
 
-    /**
-     * Get text length of this separator
-     */
+    /** Get text length of this separator */
     public int getLength() {
         return length;
     }
 
-    /**
-     * Get a char array containing the line separator. The char array should not be modified.
-     */
+    /** Get a char array containing the line separator. The char array should not be modified. */
     public char[] getChars() {
         return chars;
     }
@@ -98,12 +90,13 @@ public enum LineSeparator {
     /**
      * Get target line separator from a line separator string.
      *
-     * @param text  the whole text
+     * @param text the whole text
      * @param start start index of the line separator
-     * @param end   end index of the line separator
+     * @param end end index of the line separator
      * @throws IllegalArgumentException if the given str is not a line separator
      */
-    public static LineSeparator fromSeparatorString(@NonNull CharSequence text, int start, int end) {
+    public static LineSeparator fromSeparatorString(
+            @NonNull CharSequence text, int start, int end) {
         Objects.requireNonNull(text, "text must not be null");
         if (end == start) {
             return NONE;
@@ -118,5 +111,4 @@ public enum LineSeparator {
         }
         throw new IllegalArgumentException("unknown line separator type");
     }
-
 }

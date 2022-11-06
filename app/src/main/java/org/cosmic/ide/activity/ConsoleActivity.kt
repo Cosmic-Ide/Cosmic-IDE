@@ -1,13 +1,8 @@
 package org.cosmic.ide.activity
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type
-import androidx.core.view.WindowCompat
 import org.cosmic.ide.App
 import org.cosmic.ide.R
 import org.cosmic.ide.android.task.exec.ExecuteDexTask

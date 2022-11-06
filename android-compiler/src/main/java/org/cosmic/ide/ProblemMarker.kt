@@ -1,8 +1,8 @@
 package org.cosmic.ide
 
 import android.content.Context
-import android.os.Looper
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticsContainer
 import io.github.rosemoe.sora.text.Content
@@ -63,7 +63,7 @@ class ProblemMarker(
     private fun analyze(content: Content) {
         val code = content.toString()
         FileUtil.writeFile(file.getAbsolutePath(), code)
-        CoroutineUtil.inParallel thread@ {
+        CoroutineUtil.inParallel thread@{
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }

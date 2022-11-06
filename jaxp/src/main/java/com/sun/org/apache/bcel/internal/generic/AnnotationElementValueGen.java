@@ -21,70 +21,65 @@
 
 package com.sun.org.apache.bcel.internal.generic;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import com.sun.org.apache.bcel.internal.classfile.AnnotationElementValue;
 import com.sun.org.apache.bcel.internal.classfile.ElementValue;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * @since 6.0
  */
-public class AnnotationElementValueGen extends ElementValueGen
-{
+public class AnnotationElementValueGen extends ElementValueGen {
     // For annotation element values, this is the annotation
     private final AnnotationEntryGen a;
 
-    public AnnotationElementValueGen(final AnnotationEntryGen a, final ConstantPoolGen cpool)
-    {
+    public AnnotationElementValueGen(final AnnotationEntryGen a, final ConstantPoolGen cpool) {
         super(ANNOTATION, cpool);
         this.a = a;
     }
 
-    public AnnotationElementValueGen(final int type, final AnnotationEntryGen annotation,
-            final ConstantPoolGen cpool)
-    {
+    public AnnotationElementValueGen(
+            final int type, final AnnotationEntryGen annotation, final ConstantPoolGen cpool) {
         super(type, cpool);
         if (type != ANNOTATION) {
             throw new IllegalArgumentException(
-                    "Only element values of type annotation can be built with this ctor - type specified: " + type);
+                    "Only element values of type annotation can be built with this ctor - type"
+                        + " specified: "
+                            + type);
         }
         this.a = annotation;
     }
 
-    public AnnotationElementValueGen(final AnnotationElementValue value,
-            final ConstantPoolGen cpool, final boolean copyPoolEntries)
-    {
+    public AnnotationElementValueGen(
+            final AnnotationElementValue value,
+            final ConstantPoolGen cpool,
+            final boolean copyPoolEntries) {
         super(ANNOTATION, cpool);
         a = new AnnotationEntryGen(value.getAnnotationEntry(), cpool, copyPoolEntries);
     }
 
     @Override
-    public void dump(final DataOutputStream dos) throws IOException
-    {
+    public void dump(final DataOutputStream dos) throws IOException {
         dos.writeByte(super.getElementValueType()); // u1 type of value (ANNOTATION == '@')
         a.dump(dos);
     }
 
     @Override
-    public String stringifyValue()
-    {
+    public String stringifyValue() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    /**
-     * Return immutable variant of this AnnotationElementValueGen
-     */
+    /** Return immutable variant of this AnnotationElementValueGen */
     @Override
-    public ElementValue getElementValue()
-    {
-        return new AnnotationElementValue(super.getElementValueType(),
+    public ElementValue getElementValue() {
+        return new AnnotationElementValue(
+                super.getElementValueType(),
                 a.getAnnotation(),
                 getConstantPool().getConstantPool());
     }
 
-    public AnnotationEntryGen getAnnotation()
-    {
+    public AnnotationEntryGen getAnnotation() {
         return a;
     }
 }

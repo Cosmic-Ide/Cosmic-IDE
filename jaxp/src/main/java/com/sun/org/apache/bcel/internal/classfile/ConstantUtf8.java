@@ -21,6 +21,7 @@
 package com.sun.org.apache.bcel.internal.classfile;
 
 import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,8 +32,7 @@ import java.util.Map;
 /**
  * Extends the abstract {@link Constant} to represent a reference to a UTF-8 encoded string.
  *
- * @see Constant
- * @LastModified: Jan 2020
+ * @see Constant @LastModified: Jan 2020
  */
 public final class ConstantUtf8 extends Constant {
 
@@ -42,16 +42,17 @@ public final class ConstantUtf8 extends Constant {
         private static final int MAX_ENTRIES = 20000;
         private static final int INITIAL_CAPACITY = (int) (MAX_ENTRIES / 0.75);
 
-        private static final HashMap<String, ConstantUtf8> CACHE = new LinkedHashMap<String, ConstantUtf8>(
-            INITIAL_CAPACITY, 0.75f, true) {
+        private static final HashMap<String, ConstantUtf8> CACHE =
+                new LinkedHashMap<String, ConstantUtf8>(INITIAL_CAPACITY, 0.75f, true) {
 
-            private static final long serialVersionUID = -8506975356158971766L;
+                    private static final long serialVersionUID = -8506975356158971766L;
 
-            @Override
-            protected boolean removeEldestEntry(final Map.Entry<String, ConstantUtf8> eldest) {
-                return size() > MAX_ENTRIES;
-            }
-        };
+                    @Override
+                    protected boolean removeEldestEntry(
+                            final Map.Entry<String, ConstantUtf8> eldest) {
+                        return size() > MAX_ENTRIES;
+                    }
+                };
 
         // Set the size to 0 or below to skip caching entirely
         private static final int MAX_ENTRY_SIZE = 200;
@@ -59,7 +60,6 @@ public final class ConstantUtf8 extends Constant {
         static boolean isEnabled() {
             return Cache.MAX_ENTRIES > 0 && MAX_ENTRY_SIZE > 0;
         }
-
     }
 
     /**
@@ -73,9 +73,8 @@ public final class ConstantUtf8 extends Constant {
 
     /**
      * Gets a new or cached instance of the given value.
-     * <p>
-     * See {@link ConstantUtf8} class Javadoc for details.
-     * </p>
+     *
+     * <p>See {@link ConstantUtf8} class Javadoc for details.
      *
      * @param value the value.
      * @return a new or cached instance of the given value.
@@ -99,9 +98,8 @@ public final class ConstantUtf8 extends Constant {
 
     /**
      * Gets a new or cached instance of the given value.
-     * <p>
-     * See {@link ConstantUtf8} class Javadoc for details.
-     * </p>
+     *
+     * <p>See {@link ConstantUtf8} class Javadoc for details.
      *
      * @param dataInput the value.
      * @return a new or cached instance of the given value.
@@ -114,9 +112,8 @@ public final class ConstantUtf8 extends Constant {
 
     /**
      * Gets a new or cached instance of the given value.
-     * <p>
-     * See {@link ConstantUtf8} class Javadoc for details.
-     * </p>
+     *
+     * <p>See {@link ConstantUtf8} class Javadoc for details.
      *
      * @param value the value.
      * @return a new or cached instance of the given value.
@@ -160,8 +157,9 @@ public final class ConstantUtf8 extends Constant {
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class.
-     * I.e., the hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */

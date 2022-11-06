@@ -70,5 +70,4 @@ public class Directions {
     public boolean isRunRtl(int i) {
         return IntPair.getSecond(runs[i]) == 1;
     }
-
 }

@@ -23,20 +23,12 @@ package com.sun.org.apache.bcel.internal.generic;
 
 import com.sun.org.apache.bcel.internal.Const;
 
-/**
- * Super class for the family of arithmetic instructions.
- *
- */
-public abstract class ArithmeticInstruction extends Instruction implements TypedInstruction,
-        StackProducer, StackConsumer {
+/** Super class for the family of arithmetic instructions. */
+public abstract class ArithmeticInstruction extends Instruction
+        implements TypedInstruction, StackProducer, StackConsumer {
 
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    ArithmeticInstruction() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    ArithmeticInstruction() {}
 
     /**
      * @param opcode of instruction
@@ -45,11 +37,11 @@ public abstract class ArithmeticInstruction extends Instruction implements Typed
         super(opcode, (short) 1);
     }
 
-
-    /** @return type associated with the instruction
+    /**
+     * @return type associated with the instruction
      */
     @Override
-    public Type getType( final ConstantPoolGen cp ) {
+    public Type getType(final ConstantPoolGen cp) {
         final short _opcode = super.getOpcode();
         switch (_opcode) {
             case Const.DADD:

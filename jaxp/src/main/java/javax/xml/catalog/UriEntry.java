@@ -37,6 +37,7 @@ final class UriEntry extends BaseEntry {
 
     /**
      * Construct a uri entry.
+     *
      * @param name The name attribute.
      * @param uri The uri attribute.
      */
@@ -48,6 +49,7 @@ final class UriEntry extends BaseEntry {
 
     /**
      * Set the name attribute.
+     *
      * @param name The name attribute value.
      */
     public void setName(String name) {
@@ -60,8 +62,8 @@ final class UriEntry extends BaseEntry {
     }
 
     /**
-     * Set the uri attribute. If the value of the uri attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
+     * Set the uri attribute. If the value of the uri attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect.
      *
      * @param uri The uri attribute value.
      */
@@ -71,6 +73,7 @@ final class UriEntry extends BaseEntry {
 
     /**
      * Get the name attribute.
+     *
      * @return The name
      */
     public String getName() {
@@ -79,6 +82,7 @@ final class UriEntry extends BaseEntry {
 
     /**
      * Get the uri attribute.
+     *
      * @return The uri attribute value.
      */
     public URL getURI() {

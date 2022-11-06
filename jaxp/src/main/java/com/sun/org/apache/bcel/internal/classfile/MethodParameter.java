@@ -21,29 +21,31 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
  * Entry of the parameters table.
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.24">
- * The class File Format : The MethodParameters Attribute</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.24">The
+ *     class File Format : The MethodParameters Attribute</a>
  * @since 6.0
  */
 public class MethodParameter implements Cloneable {
 
-    /** Index of the CONSTANT_Utf8_info structure in the constant_pool table representing the name of the parameter */
+    /**
+     * Index of the CONSTANT_Utf8_info structure in the constant_pool table representing the name of
+     * the parameter
+     */
     private int nameIndex;
 
     /** The access flags */
     private int accessFlags;
 
-    public MethodParameter() {
-    }
+    public MethodParameter() {}
 
     /**
      * Construct object from input stream.
@@ -65,15 +67,14 @@ public class MethodParameter implements Cloneable {
         this.nameIndex = name_index;
     }
 
-    /**
-     * Returns the name of the parameter.
-     */
+    /** Returns the name of the parameter. */
     public String getParameterName(final ConstantPool constant_pool) {
         if (nameIndex == 0) {
             return null;
         }
-        return ((ConstantUtf8) constant_pool.getConstant(nameIndex, Const.CONSTANT_Utf8)).getBytes();
-       }
+        return ((ConstantUtf8) constant_pool.getConstant(nameIndex, Const.CONSTANT_Utf8))
+                .getBytes();
+    }
 
     public int getAccessFlags() {
         return accessFlags;

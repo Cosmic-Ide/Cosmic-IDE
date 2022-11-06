@@ -42,9 +42,18 @@ public abstract class ParameterAnnotations extends Attribute {
      * @param input Input stream
      * @param constant_pool Array of constants
      */
-    ParameterAnnotations(final byte parameter_annotation_type, final int name_index, final int length,
-            final DataInput input, final ConstantPool constant_pool) throws IOException {
-        this(parameter_annotation_type, name_index, length, (ParameterAnnotationEntry[]) null,
+    ParameterAnnotations(
+            final byte parameter_annotation_type,
+            final int name_index,
+            final int length,
+            final DataInput input,
+            final ConstantPool constant_pool)
+            throws IOException {
+        this(
+                parameter_annotation_type,
+                name_index,
+                length,
+                (ParameterAnnotationEntry[]) null,
                 constant_pool);
         final int num_parameters = input.readUnsignedByte();
         parameterAnnotationTable = new ParameterAnnotationEntry[num_parameters];
@@ -53,7 +62,6 @@ public abstract class ParameterAnnotations extends Attribute {
         }
     }
 
-
     /**
      * @param parameterAnnotationType the subclass type of the parameter annotation
      * @param nameIndex Index pointing to the name <em>Code</em>
@@ -61,33 +69,35 @@ public abstract class ParameterAnnotations extends Attribute {
      * @param parameterAnnotationTable the actual parameter annotations
      * @param constantPool Array of constants
      */
-    public ParameterAnnotations(final byte parameterAnnotationType, final int nameIndex, final int length,
-            final ParameterAnnotationEntry[] parameterAnnotationTable, final ConstantPool constantPool) {
+    public ParameterAnnotations(
+            final byte parameterAnnotationType,
+            final int nameIndex,
+            final int length,
+            final ParameterAnnotationEntry[] parameterAnnotationTable,
+            final ConstantPool constantPool) {
         super(parameterAnnotationType, nameIndex, length, constantPool);
         this.parameterAnnotationTable = parameterAnnotationTable;
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitParameterAnnotation(this);
     }
-
 
     /**
      * @param parameterAnnotationTable the entries to set in this parameter annotation
      */
-    public final void setParameterAnnotationTable(final ParameterAnnotationEntry[] parameterAnnotationTable ) {
+    public final void setParameterAnnotationTable(
+            final ParameterAnnotationEntry[] parameterAnnotationTable) {
         this.parameterAnnotationTable = parameterAnnotationTable;
     }
-
 
     /**
      * @return the parameter annotation entry table
@@ -96,31 +106,26 @@ public abstract class ParameterAnnotations extends Attribute {
         return parameterAnnotationTable;
     }
 
-
-    /**
-     * returns the array of parameter annotation entries in this parameter annotation
-     */
+    /** returns the array of parameter annotation entries in this parameter annotation */
     public ParameterAnnotationEntry[] getParameterAnnotationEntries() {
         return parameterAnnotationTable;
     }
 
     @Override
-    public void dump(final DataOutputStream dos) throws IOException
-    {
+    public void dump(final DataOutputStream dos) throws IOException {
         super.dump(dos);
         dos.writeByte(parameterAnnotationTable.length);
 
         for (final ParameterAnnotationEntry element : parameterAnnotationTable) {
             element.dump(dos);
         }
-
     }
 
     /**
      * @return deep copy of this attribute
      */
     @Override
-    public Attribute copy( final ConstantPool constant_pool ) {
+    public Attribute copy(final ConstantPool constant_pool) {
         return (Attribute) clone();
     }
 }

@@ -12,10 +12,10 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.children
 import org.cosmic.ide.R
-import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.cosmic.ide.util.Constants.DISCORD_URL
 import org.cosmic.ide.util.Constants.GITHUB_RELEASE_URL
 import org.cosmic.ide.util.Constants.GITHUB_URL
+import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
 /**
  * The actual fragment containing the settings menu.

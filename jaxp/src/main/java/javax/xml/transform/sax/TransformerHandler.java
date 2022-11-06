@@ -25,54 +25,48 @@
 
 package javax.xml.transform.sax;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.ext.LexicalHandler;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+
 /**
- * A TransformerHandler
- * listens for SAX ContentHandler parse events and transforms
- * them to a Result.
+ * A TransformerHandler listens for SAX ContentHandler parse events and transforms them to a Result.
  *
  * @since 1.4
  */
-public interface TransformerHandler
-    extends ContentHandler, LexicalHandler, DTDHandler {
+public interface TransformerHandler extends ContentHandler, LexicalHandler, DTDHandler {
 
     /**
-     * <p>Set  the <code>Result</code> associated with this
-     * <code>TransformerHandler</code> to be used for the transformation.</p>
+     * Set the <code>Result</code> associated with this <code>TransformerHandler</code> to be used
+     * for the transformation.
      *
-     * @param result A <code>Result</code> instance, should not be
-     *   <code>null</code>.
-     *
+     * @param result A <code>Result</code> instance, should not be <code>null</code>.
      * @throws IllegalArgumentException if result is invalid for some reason.
      */
     public void setResult(Result result) throws IllegalArgumentException;
 
     /**
-     * Set the base ID (URI or system ID) from where relative
-     * URLs will be resolved.
+     * Set the base ID (URI or system ID) from where relative URLs will be resolved.
+     *
      * @param systemID Base URI for the source tree.
      */
     public void setSystemId(String systemID);
 
     /**
-     * Get the base ID (URI or system ID) from where relative
-     * URLs will be resolved.
+     * Get the base ID (URI or system ID) from where relative URLs will be resolved.
+     *
      * @return The systemID that was set with {@link #setSystemId}.
      */
     public String getSystemId();
 
     /**
-     * <p>Get the <code>Transformer</code> associated with this handler, which
-     * is needed in order to set parameters and output properties.</p>
+     * Get the <code>Transformer</code> associated with this handler, which is needed in order to
+     * set parameters and output properties.
      *
-     * @return <code>Transformer</code> associated with this
-     *   <code>TransformerHandler</code>.
+     * @return <code>Transformer</code> associated with this <code>TransformerHandler</code>.
      */
     public Transformer getTransformer();
 }

@@ -39,19 +39,23 @@ public class SimpleSnippetCompletionItem extends CompletionItem {
         this(label, null, snippet);
     }
 
-    public SimpleSnippetCompletionItem(CharSequence label, CharSequence desc, SnippetDescription snippet) {
+    public SimpleSnippetCompletionItem(
+            CharSequence label, CharSequence desc, SnippetDescription snippet) {
         this(label, desc, null, snippet);
     }
 
-    public SimpleSnippetCompletionItem(CharSequence label, CharSequence desc, Drawable icon, SnippetDescription snippet) {
+    public SimpleSnippetCompletionItem(
+            CharSequence label, CharSequence desc, Drawable icon, SnippetDescription snippet) {
         super(label, desc, icon);
         this.snippet = snippet;
     }
 
     @Override
-    public void performCompletion(@NonNull CodeEditor editor, @NonNull Content text, @NonNull CharPosition position) {
+    public void performCompletion(
+            @NonNull CodeEditor editor, @NonNull Content text, @NonNull CharPosition position) {
         int prefixLength = snippet.getSelectedLength();
-        var selectedText = text.subSequence(position.index - prefixLength, position.index).toString();
+        var selectedText =
+                text.subSequence(position.index - prefixLength, position.index).toString();
         int actionIndex = position.index;
         if (snippet.getDeleteSelected()) {
             text.delete(position.index - prefixLength, position.index);
@@ -61,7 +65,8 @@ public class SimpleSnippetCompletionItem extends CompletionItem {
     }
 
     @Override
-    public void performCompletion(@NonNull CodeEditor editor, @NonNull Content text, int line, int column) {
+    public void performCompletion(
+            @NonNull CodeEditor editor, @NonNull Content text, int line, int column) {
         // do nothing
     }
 }

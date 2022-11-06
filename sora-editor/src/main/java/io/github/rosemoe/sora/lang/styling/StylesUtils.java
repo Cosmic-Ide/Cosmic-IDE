@@ -31,8 +31,8 @@ import io.github.rosemoe.sora.text.CharPosition;
 public class StylesUtils {
 
     /**
-     * Check cursor position's span.
-     * If {@link io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
+     * Check cursor position's span. If {@link
+     * io.github.rosemoe.sora.lang.styling.TextStyle#NO_COMPLETION_BIT} is set, true is returned.
      */
     public static boolean checkNoCompletion(@Nullable Styles styles, @NonNull CharPosition pos) {
         var line = pos.line;
@@ -68,5 +68,4 @@ public class StylesUtils {
             return true;
         }
     }
-
 }

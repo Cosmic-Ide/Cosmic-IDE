@@ -21,29 +21,26 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a invoke dynamic.
+ * This class is derived from the abstract {@link Constant} and represents a reference to a invoke
+ * dynamic.
  *
- * @see     Constant
- * @see  <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.10">
- * The CONSTANT_InvokeDynamic_info Structure in The Java Virtual Machine Specification</a>
+ * @see Constant
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.10">The
+ *     CONSTANT_InvokeDynamic_info Structure in The Java Virtual Machine Specification</a>
  * @since 6.0
  */
 public final class ConstantInvokeDynamic extends ConstantCP {
 
-    /**
-     * Initialize from another object.
-     */
+    /** Initialize from another object. */
     public ConstantInvokeDynamic(final ConstantInvokeDynamic c) {
         this(c.getBootstrapMethodAttrIndex(), c.getNameAndTypeIndex());
     }
-
 
     /**
      * Initialize instance from file data.
@@ -55,33 +52,31 @@ public final class ConstantInvokeDynamic extends ConstantCP {
         this(file.readShort(), file.readShort());
     }
 
-
-    public ConstantInvokeDynamic(final int bootstrap_method_attr_index, final int name_and_type_index) {
+    public ConstantInvokeDynamic(
+            final int bootstrap_method_attr_index, final int name_and_type_index) {
         super(Const.CONSTANT_InvokeDynamic, bootstrap_method_attr_index, name_and_type_index);
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitly
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitly defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitConstantInvokeDynamic(this);
     }
 
     /**
      * @return Reference (index) to bootstrap method this constant refers to.
-     *
-     * Note that this method is a functional duplicate of getClassIndex
-     * for use by ConstantInvokeDynamic.
+     *     <p>Note that this method is a functional duplicate of getClassIndex for use by
+     *     ConstantInvokeDynamic.
      * @since 6.0
      */
     public int getBootstrapMethodAttrIndex() {
-        return super.getClassIndex();  // AKA bootstrap_method_attr_index
+        return super.getClassIndex(); // AKA bootstrap_method_attr_index
     }
 
     /**

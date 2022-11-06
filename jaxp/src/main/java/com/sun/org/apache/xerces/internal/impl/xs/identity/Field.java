@@ -35,7 +35,6 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
  * Schema identity constraint field.
  *
  * @xerces.internal
- *
  * @author Andy Clark, IBM
  */
 public class Field {
@@ -47,7 +46,6 @@ public class Field {
     /** Field XPath. */
     protected final Field.XPath fXPath;
 
-
     /** Identity constraint. */
     protected final IdentityConstraint fIdentityConstraint;
 
@@ -56,8 +54,7 @@ public class Field {
     //
 
     /** Constructs a field. */
-    public Field(Field.XPath xpath,
-                 IdentityConstraint identityConstraint) {
+    public Field(Field.XPath xpath, IdentityConstraint identityConstraint) {
         fXPath = xpath;
         fIdentityConstraint = identityConstraint;
     } // <init>(Field.XPath,IdentityConstraint)
@@ -101,26 +98,24 @@ public class Field {
      *
      * @author Andy Clark, IBM
      */
-    public static class XPath
-        extends com.sun.org.apache.xerces.internal.impl.xpath.XPath {
+    public static class XPath extends com.sun.org.apache.xerces.internal.impl.xpath.XPath {
 
         //
         // Constructors
         //
 
         /** Constructs a field XPath expression. */
-        public XPath(String xpath,
-                     SymbolTable symbolTable,
-                     NamespaceContext context) throws XPathException {
+        public XPath(String xpath, SymbolTable symbolTable, NamespaceContext context)
+                throws XPathException {
             super(fixupXPath(xpath), symbolTable, context);
 
             // verify that only one attribute is selected per branch
-            for (int i=0;i<fLocationPaths.length;i++) {
-                for(int j=0; j<fLocationPaths[i].steps.length; j++) {
+            for (int i = 0; i < fLocationPaths.length; i++) {
+                for (int j = 0; j < fLocationPaths[i].steps.length; j++) {
                     com.sun.org.apache.xerces.internal.impl.xpath.XPath.Axis axis =
-                        fLocationPaths[i].steps[j].axis;
-                    if (axis.type == XPath.Axis.ATTRIBUTE &&
-                            (j < fLocationPaths[i].steps.length-1)) {
+                            fLocationPaths[i].steps[j].axis;
+                    if (axis.type == XPath.Axis.ATTRIBUTE
+                            && (j < fLocationPaths[i].steps.length - 1)) {
                         throw new XPathException("c-fields-xpaths");
                     }
                 }
@@ -147,18 +142,15 @@ public class Field {
                     if (!XMLChar.isSpace(c)) {
                         if (c == '.' || c == '/') {
                             whitespace = false;
-                        }
-                        else if (c != '|') {
+                        } else if (c != '|') {
                             return fixupXPath2(xpath, offset, end);
                         }
                     }
-                }
-                else if (c == '|') {
+                } else if (c == '|') {
                     whitespace = true;
                 }
             }
             return xpath;
-
         } // fixupXPath(String):String
 
         private static String fixupXPath2(String xpath, int offset, final int end) {
@@ -178,22 +170,18 @@ public class Field {
                     if (!XMLChar.isSpace(c)) {
                         if (c == '.' || c == '/') {
                             whitespace = false;
-                        }
-                        else if (c != '|') {
+                        } else if (c != '|') {
                             buffer.append("./");
                             whitespace = false;
                         }
                     }
-                }
-                else if (c == '|') {
+                } else if (c == '|') {
                     whitespace = true;
                 }
                 buffer.append(c);
             }
             return buffer.toString();
-
         } // fixupXPath2(String, int, int):String
-
     } // class XPath
 
     /**
@@ -201,8 +189,7 @@ public class Field {
      *
      * @author Andy Clark, IBM
      */
-    protected class Matcher
-        extends XPathMatcher {
+    protected class Matcher extends XPathMatcher {
 
         //
         // Data
@@ -228,18 +215,25 @@ public class Field {
         // XPathHandler methods
         //
 
-        /**
-         * This method is called when the XPath handler matches the
-         * XPath expression.
-         */
-        protected void matched(Object actualValue, short valueType, ShortList itemValueType, boolean isNil) {
+        /** This method is called when the XPath handler matches the XPath expression. */
+        protected void matched(
+                Object actualValue, short valueType, ShortList itemValueType, boolean isNil) {
             super.matched(actualValue, valueType, itemValueType, isNil);
-            if(isNil && (fIdentityConstraint.getCategory() == IdentityConstraint.IC_KEY)) {
+            if (isNil && (fIdentityConstraint.getCategory() == IdentityConstraint.IC_KEY)) {
                 String code = "KeyMatchesNillable";
-                fStore.reportError(code,
-                    new Object[]{fIdentityConstraint.getElementName(), fIdentityConstraint.getIdentityConstraintName()});
+                fStore.reportError(
+                        code,
+                        new Object[] {
+                            fIdentityConstraint.getElementName(),
+                            fIdentityConstraint.getIdentityConstraintName()
+                        });
             }
-            fStore.addValue(Field.this, fMayMatch, actualValue, convertToPrimitiveKind(valueType), convertToPrimitiveKind(itemValueType));
+            fStore.addValue(
+                    Field.this,
+                    fMayMatch,
+                    actualValue,
+                    convertToPrimitiveKind(valueType),
+                    convertToPrimitiveKind(itemValueType));
             // once we've stored the value for this field, we set the mayMatch
             // member to false so that in the same scope, we don't match any more
             // values (and throw an error instead).
@@ -274,11 +268,11 @@ public class Field {
                     }
                 }
                 if (i != length) {
-                    final short [] arr = new short[length];
+                    final short[] arr = new short[length];
                     for (int j = 0; j < i; ++j) {
                         arr[j] = itemValueType.item(j);
                     }
-                    for(; i < length; ++i) {
+                    for (; i < length; ++i) {
                         arr[i] = convertToPrimitiveKind(itemValueType.item(i));
                     }
                     return new ShortListImpl(arr, arr.length);
@@ -287,22 +281,26 @@ public class Field {
             return itemValueType;
         }
 
-        protected void handleContent(XSTypeDefinition type, boolean nillable, Object actualValue, short valueType, ShortList itemValueType) {
-            if (type == null ||
-               type.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE &&
-               ((XSComplexTypeDefinition) type).getContentType()
-                != XSComplexTypeDefinition.CONTENTTYPE_SIMPLE) {
+        protected void handleContent(
+                XSTypeDefinition type,
+                boolean nillable,
+                Object actualValue,
+                short valueType,
+                ShortList itemValueType) {
+            if (type == null
+                    || type.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE
+                            && ((XSComplexTypeDefinition) type).getContentType()
+                                    != XSComplexTypeDefinition.CONTENTTYPE_SIMPLE) {
 
-                    // the content must be simpleType content
-                    fStore.reportError( "cvc-id.3", new Object[] {
-                            fIdentityConstraint.getName(),
-                            fIdentityConstraint.getElementName()});
-
+                // the content must be simpleType content
+                fStore.reportError(
+                        "cvc-id.3",
+                        new Object[] {
+                            fIdentityConstraint.getName(), fIdentityConstraint.getElementName()
+                        });
             }
             fMatchedString = actualValue;
             matched(fMatchedString, valueType, itemValueType, nillable);
         } // handleContent(XSElementDecl, String)
-
     } // class Matcher
-
 } // class Field

@@ -54,8 +54,7 @@ public class Paint extends android.graphics.Paint {
     public void onAttributeUpdate() {
         spaceWidth = measureText(" ");
         tabWidth = measureText("\t");
-        if (widths != null)
-            widths.clearCache();
+        if (widths != null) widths.clearCache();
     }
 
     public float getSpaceWidth() {
@@ -84,15 +83,28 @@ public class Paint extends android.graphics.Paint {
     }
 
     @SuppressLint("NewApi")
-    public float myGetTextRunAdvances(@NonNull char[] chars, int index, int count, int contextIndex, int contextCount, boolean isRtl, @Nullable float[] advances, int advancesIndex, boolean fast) {
+    public float myGetTextRunAdvances(
+            @NonNull char[] chars,
+            int index,
+            int count,
+            int contextIndex,
+            int contextCount,
+            boolean isRtl,
+            @Nullable float[] advances,
+            int advancesIndex,
+            boolean fast) {
         if (fast) {
             ensureCacheObject();
             var width = 0f;
             for (int i = 0; i < count; i++) {
                 char ch = chars[i + index];
                 float charWidth;
-                if (Character.isHighSurrogate(ch) && i + 1 < count && Character.isLowSurrogate(chars[index + i + 1])) {
-                    charWidth = widths.measureCodePoint(Character.toCodePoint(ch, chars[index + i + 1]), this);
+                if (Character.isHighSurrogate(ch)
+                        && i + 1 < count
+                        && Character.isLowSurrogate(chars[index + i + 1])) {
+                    charWidth =
+                            widths.measureCodePoint(
+                                    Character.toCodePoint(ch, chars[index + i + 1]), this);
                     if (advances != null) {
                         advances[advancesIndex + i] = charWidth;
                         advances[advancesIndex + i + 1] = 0f;
@@ -108,21 +120,39 @@ public class Paint extends android.graphics.Paint {
             }
             return width;
         } else {
-            return getTextRunAdvances(chars, index, count, contextIndex, contextCount, isRtl, advances, advancesIndex);
+            return getTextRunAdvances(
+                    chars,
+                    index,
+                    count,
+                    contextIndex,
+                    contextCount,
+                    isRtl,
+                    advances,
+                    advancesIndex);
         }
     }
 
-    /**
-     * Get the advance of text with the context positions related to shaping the characters
-     */
-    public float measureTextRunAdvance(char[] text, int start, int end, int contextStart, int contextEnd, boolean fast) {
-        return myGetTextRunAdvances(text, start, end - start, contextStart, contextEnd - contextStart, false, null, 0, fast);
+    /** Get the advance of text with the context positions related to shaping the characters */
+    public float measureTextRunAdvance(
+            char[] text, int start, int end, int contextStart, int contextEnd, boolean fast) {
+        return myGetTextRunAdvances(
+                text,
+                start,
+                end - start,
+                contextStart,
+                contextEnd - contextStart,
+                false,
+                null,
+                0,
+                fast);
     }
 
     /**
-     * Find offset for a certain advance returned by {@link #measureTextRunAdvance(char[], int, int, int, int, boolean)}
+     * Find offset for a certain advance returned by {@link #measureTextRunAdvance(char[], int, int,
+     * int, int, boolean)}
      */
-    public int findOffsetByRunAdvance(ContentLine text, int start, int end, float advance, boolean useCache, boolean fast) {
+    public int findOffsetByRunAdvance(
+            ContentLine text, int start, int end, float advance, boolean useCache, boolean fast) {
         if (text.widthCache != null && useCache) {
             var cache = text.widthCache;
             var offset = start;
@@ -142,8 +172,12 @@ public class Paint extends android.graphics.Paint {
                 char ch = text.value[i];
                 float charWidth;
                 int j = i;
-                if (Character.isHighSurrogate(ch) && i + 1 < end && Character.isLowSurrogate(text.value[i + 1])) {
-                    charWidth = widths.measureCodePoint(Character.toCodePoint(ch, text.value[i + 1]), this);
+                if (Character.isHighSurrogate(ch)
+                        && i + 1 < end
+                        && Character.isLowSurrogate(text.value[i + 1])) {
+                    charWidth =
+                            widths.measureCodePoint(
+                                    Character.toCodePoint(ch, text.value[i + 1]), this);
                     i++;
                 } else {
                     charWidth = (ch == '\t') ? tabWidth : widths.measureChar(ch, this);
@@ -161,5 +195,4 @@ public class Paint extends android.graphics.Paint {
             return start + breakText(text.value, start, end - start, advance, null);
         }
     }
-
 }

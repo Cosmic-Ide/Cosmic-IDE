@@ -25,6 +25,7 @@ import com.sun.org.apache.xerces.internal.impl.xs.AttributePSVImpl;
 import com.sun.org.apache.xerces.internal.impl.xs.util.StringListImpl;
 import com.sun.org.apache.xerces.internal.xs.*;
 import com.sun.org.apache.xerces.internal.xs.AttributePSVI;
+
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
@@ -34,28 +35,25 @@ import java.io.ObjectOutputStream;
  * Attribute namespace implementation; stores PSVI attribute items.
  *
  * @xerces.internal
- *
  * @author Sandy Gao, IBM
- *
  */
 public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
 
     /** Serialization version. */
     static final long serialVersionUID = -3241738699421018889L;
 
-    /**
-     * Construct an attribute node.
-     */
-    public PSVIAttrNSImpl(CoreDocumentImpl ownerDocument, String namespaceURI,
-                          String qualifiedName, String localName) {
+    /** Construct an attribute node. */
+    public PSVIAttrNSImpl(
+            CoreDocumentImpl ownerDocument,
+            String namespaceURI,
+            String qualifiedName,
+            String localName) {
         super(ownerDocument, namespaceURI, qualifiedName, localName);
     }
 
-    /**
-     * Construct an attribute node.
-     */
-    public PSVIAttrNSImpl(CoreDocumentImpl ownerDocument, String namespaceURI,
-                          String qualifiedName) {
+    /** Construct an attribute node. */
+    public PSVIAttrNSImpl(
+            CoreDocumentImpl ownerDocument, String namespaceURI, String qualifiedName) {
         super(ownerDocument, namespaceURI, qualifiedName);
     }
 
@@ -65,8 +63,10 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     /** type of attribute, simpleType */
     protected XSTypeDefinition fTypeDecl = null;
 
-    /** If this attribute was explicitly given a
-     * value in the original document, this is true; otherwise, it is false  */
+    /**
+     * If this attribute was explicitly given a value in the original document, this is true;
+     * otherwise, it is false
+     */
     protected boolean fSpecified = true;
 
     /** Schema value */
@@ -84,7 +84,7 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     /** error messages */
     protected StringList fErrorMessages = null;
 
-    /** validation context: could be QName or XPath expression*/
+    /** validation context: could be QName or XPath expression */
     protected String fValidationContext = null;
 
     //
@@ -109,7 +109,8 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
      * [schema default]
      *
      * @return The canonical lexical representation of the declaration's {value constraint} value.
-     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_default>XML Schema Part 1: Structures [schema default]</a>
+     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_default>XML Schema Part 1:
+     *     Structures [schema default]</a>
      */
     @SuppressWarnings("deprecation")
     public String getSchemaDefault() {
@@ -119,8 +120,8 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     /**
      * [schema normalized value]
      *
-     *
-     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_normalized_value>XML Schema Part 1: Structures [schema normalized value]</a>
+     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_normalized_value>XML Schema Part 1:
+     *     Structures [schema normalized value]</a>
      * @return the normalized value of this item after validation
      */
     @Deprecated
@@ -130,38 +131,38 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
 
     /**
      * [schema specified]
-     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_specified">XML Schema Part 1: Structures [schema specified]</a>
+     *
+     * @see <a href="http://www.w3.org/TR/xmlschema-1/#e-schema_specified">XML Schema Part 1:
+     *     Structures [schema specified]</a>
      * @return false value was specified in schema, true value comes from the infoset
      */
     public boolean getIsSchemaSpecified() {
         return fSpecified;
     }
 
-
     /**
      * Determines the extent to which the document has been validated
      *
-     * @return return the [validation attempted] property. The possible values are
-     *         NO_VALIDATION, PARTIAL_VALIDATION and FULL_VALIDATION
+     * @return return the [validation attempted] property. The possible values are NO_VALIDATION,
+     *     PARTIAL_VALIDATION and FULL_VALIDATION
      */
     public short getValidationAttempted() {
         return fValidationAttempted;
     }
 
     /**
-     * Determine the validity of the node with respect
-     * to the validation being attempted
+     * Determine the validity of the node with respect to the validation being attempted
      *
-     * @return return the [validity] property. Possible values are:
-     *         UNKNOWN_VALIDITY, INVALID_VALIDITY, VALID_VALIDITY
+     * @return return the [validity] property. Possible values are: UNKNOWN_VALIDITY,
+     *     INVALID_VALIDITY, VALID_VALIDITY
      */
     public short getValidity() {
         return fValidity;
     }
 
     /**
-     * A list of error codes generated from validation attempts.
-     * Need to find all the possible subclause reports that need reporting
+     * A list of error codes generated from validation attempts. Need to find all the possible
+     * subclause reports that need reporting
      *
      * @return list of error codes
      */
@@ -173,10 +174,9 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     }
 
     /**
-     * A list of error messages generated from the validation attempt or
-     * an empty <code>StringList</code> if no errors occurred during the
-     * validation attempt. The indices of error messages in this list are
-     * aligned with those in the <code>[schema error code]</code> list.
+     * A list of error messages generated from the validation attempt or an empty <code>StringList
+     * </code> if no errors occurred during the validation attempt. The indices of error messages in
+     * this list are aligned with those in the <code>[schema error code]</code> list.
      */
     public StringList getErrorMessages() {
         if (fErrorMessages != null) {
@@ -193,30 +193,28 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     /**
      * An item isomorphic to the type definition used to validate this element.
      *
-     * @return  a type declaration
+     * @return a type declaration
      */
     public XSTypeDefinition getTypeDefinition() {
         return fTypeDecl;
     }
 
     /**
-     * If and only if that type definition is a simple type definition
-     * with {variety} union, or a complex type definition whose {content type}
-     * is a simple type definition with {variety} union, then an item isomorphic
-     * to that member of the union's {member type definitions} which actually
-     * validated the element item's normalized value.
+     * If and only if that type definition is a simple type definition with {variety} union, or a
+     * complex type definition whose {content type} is a simple type definition with {variety}
+     * union, then an item isomorphic to that member of the union's {member type definitions} which
+     * actually validated the element item's normalized value.
      *
-     * @return  a simple type declaration
+     * @return a simple type declaration
      */
     public XSSimpleTypeDefinition getMemberTypeDefinition() {
         return fValue.getMemberTypeDefinition();
     }
 
     /**
-     * An item isomorphic to the attribute declaration used to validate
-     * this attribute.
+     * An item isomorphic to the attribute declaration used to validate this attribute.
      *
-     * @return  an attribute declaration
+     * @return an attribute declaration
      */
     public XSAttributeDeclaration getAttributeDeclaration() {
         return fDeclaration;
@@ -225,7 +223,7 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     /**
      * Copy PSVI properties from another psvi item.
      *
-     * @param attr  the source of attribute PSVI items
+     * @param attr the source of attribute PSVI items
      */
     public void setPSVI(AttributePSVI attr) {
         this.fDeclaration = attr.getAttributeDeclaration();
@@ -273,13 +271,11 @@ public class PSVIAttrNSImpl extends AttrNSImpl implements AttributePSVI {
     // REVISIT: Forbid serialization of PSVI DOM until
     // we support object serialization of grammars -- mrglavas
 
-    private void writeObject(ObjectOutputStream out)
-        throws IOException {
+    private void writeObject(ObjectOutputStream out) throws IOException {
         throw new NotSerializableException(getClass().getName());
     }
 
-    private void readObject(ObjectInputStream in)
-        throws IOException, ClassNotFoundException {
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         throw new NotSerializableException(getClass().getName());
     }
 }

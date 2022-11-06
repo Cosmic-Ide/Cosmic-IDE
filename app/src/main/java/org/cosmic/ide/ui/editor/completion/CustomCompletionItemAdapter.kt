@@ -1,6 +1,5 @@
 package org.cosmic.ide.ui.editor.completion
 
-import android.graphics.Color
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View

@@ -22,14 +22,15 @@
 
 package com.sun.org.apache.xml.internal.serializer.dom3;
 
-import java.io.IOException;
-
 import com.sun.org.apache.xml.internal.serializer.DOM3Serializer;
 import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
 import com.sun.org.apache.xml.internal.serializer.utils.WrappedRuntimeException;
+
 import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.Node;
 import org.w3c.dom.ls.LSSerializerFilter;
+
+import java.io.IOException;
 
 /**
  * This class implements the DOM3Serializer interface.
@@ -38,9 +39,7 @@ import org.w3c.dom.ls.LSSerializerFilter;
  */
 public final class DOM3SerializerImpl implements DOM3Serializer {
 
-    /**
-     * Private class members
-     */
+    /** Private class members */
     // The DOMErrorHandler
     private DOMErrorHandler fErrorHandler;
 
@@ -67,7 +66,7 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
     /**
      * Returns a DOMErrorHandler set on the DOM Level 3 Serializer.
      *
-     * This interface is a public API.
+     * <p>This interface is a public API.
      *
      * @return A Level 3 DOMErrorHandler
      */
@@ -76,10 +75,10 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
     }
 
     /**
-     * Returns a LSSerializerFilter set on the DOM Level 3 Serializer to filter nodes
-     * during serialization.
+     * Returns a LSSerializerFilter set on the DOM Level 3 Serializer to filter nodes during
+     * serialization.
      *
-     * This interface is a public API.
+     * <p>This interface is a public API.
      *
      * @return The Level 3 LSSerializerFilter
      */
@@ -87,21 +86,19 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
         return fSerializerFilter;
     }
 
-
     /**
-     * Serializes the Level 3 DOM node by creating an instance of DOM3TreeWalker
-     * which traverses the DOM tree and invokes handler events to serialize
-     * the DOM NOde. Throws an exception only if an I/O exception occured
-     * while serializing.
-     * This interface is a public API.
+     * Serializes the Level 3 DOM node by creating an instance of DOM3TreeWalker which traverses the
+     * DOM tree and invokes handler events to serialize the DOM NOde. Throws an exception only if an
+     * I/O exception occured while serializing. This interface is a public API.
      *
      * @param node the Level 3 DOM node to serialize
      * @throws IOException if an I/O exception occured while serializing
      */
     public void serializeDOM3(Node node) throws IOException {
         try {
-            DOM3TreeWalker walker = new DOM3TreeWalker(fSerializationHandler,
-                    fErrorHandler, fSerializerFilter, fNewLine);
+            DOM3TreeWalker walker =
+                    new DOM3TreeWalker(
+                            fSerializationHandler, fErrorHandler, fSerializerFilter, fNewLine);
 
             walker.traverse(node);
         } catch (org.xml.sax.SAXException se) {
@@ -112,7 +109,7 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
     /**
      * Sets a DOMErrorHandler on the DOM Level 3 Serializer.
      *
-     * This interface is a public API.
+     * <p>This interface is a public API.
      *
      * @param handler the Level 3 DOMErrorHandler
      */
@@ -121,10 +118,9 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
     }
 
     /**
-     * Sets a LSSerializerFilter on the DOM Level 3 Serializer to filter nodes
-     * during serialization.
+     * Sets a LSSerializerFilter on the DOM Level 3 Serializer to filter nodes during serialization.
      *
-     * This interface is a public API.
+     * <p>This interface is a public API.
      *
      * @param filter the Level 3 LSSerializerFilter
      */
@@ -135,7 +131,7 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
     /**
      * Sets a SerializationHandler on the DOM Serializer.
      *
-     * This interface is a public API.
+     * <p>This interface is a public API.
      *
      * @param handler An instance of SerializationHandler
      */
@@ -145,8 +141,9 @@ public final class DOM3SerializerImpl implements DOM3Serializer {
 
     /**
      * Sets the new line character to be used during serialization
-     * @param newLine a String that is the end-of-line character sequence to be
-     * used in serialization.
+     *
+     * @param newLine a String that is the end-of-line character sequence to be used in
+     *     serialization.
      */
     public void setNewLine(String newLine) {
         fNewLine = newLine;

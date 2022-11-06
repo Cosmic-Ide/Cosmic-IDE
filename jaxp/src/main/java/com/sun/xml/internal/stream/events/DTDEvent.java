@@ -26,15 +26,14 @@
 package com.sun.xml.internal.stream.events;
 
 import java.util.List;
+
 import javax.xml.stream.events.DTD;
 import javax.xml.stream.events.EntityDeclaration;
 import javax.xml.stream.events.NotationDeclaration;
 import javax.xml.stream.events.XMLEvent;
 
 /**
- *
  * @author Neeraj Bajaj, Sun Microsystesm.
- *
  */
 public class DTDEvent extends DummyEvent implements DTD {
 
@@ -42,9 +41,7 @@ public class DTDEvent extends DummyEvent implements DTD {
     private List<NotationDeclaration> fNotations;
     private List<EntityDeclaration> fEntities;
 
-    /**
-     * Creates a new instance of DTDEvent
-     */
+    /** Creates a new instance of DTDEvent */
     public DTDEvent() {
         init();
     }
@@ -63,8 +60,10 @@ public class DTDEvent extends DummyEvent implements DTD {
         return fDoctypeDeclaration;
     }
 
-    //xxx: we can change the signature if the implementation doesn't store the entities in List Datatype.
-    //and then convert that DT to list format here. That way callee dont need to bother about conversion
+    // xxx: we can change the signature if the implementation doesn't store the entities in List
+    // Datatype.
+    // and then convert that DT to list format here. That way callee dont need to bother about
+    // conversion
     public void setEntities(List<EntityDeclaration> entites) {
         fEntities = entites;
     }
@@ -74,8 +73,10 @@ public class DTDEvent extends DummyEvent implements DTD {
         return fEntities;
     }
 
-    //xxx: we can change the signature if the implementation doesn't store the entities in List Datatype.
-    //and then convert that DT to list format here. That way callee dont need to bother about conversion
+    // xxx: we can change the signature if the implementation doesn't store the entities in List
+    // Datatype.
+    // and then convert that DT to list format here. That way callee dont need to bother about
+    // conversion
     public void setNotations(List<NotationDeclaration> notations) {
         fNotations = notations;
     }
@@ -86,9 +87,8 @@ public class DTDEvent extends DummyEvent implements DTD {
     }
 
     /**
-     * Returns an implementation defined representation of the DTD. This method
-     * may return null if no representation is available.
-     *
+     * Returns an implementation defined representation of the DTD. This method may return null if
+     * no representation is available.
      */
     @Override
     public Object getProcessedDTD() {
@@ -105,8 +105,7 @@ public class DTDEvent extends DummyEvent implements DTD {
     }
 
     @Override
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-            throws java.io.IOException {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write(fDoctypeDeclaration);
     }
 }

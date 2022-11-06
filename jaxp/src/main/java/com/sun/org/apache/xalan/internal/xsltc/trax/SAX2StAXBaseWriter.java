@@ -25,11 +25,6 @@
 
 package com.sun.org.apache.xalan.internal.xsltc.trax;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLReporter;
-import javax.xml.stream.XMLStreamException;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -38,9 +33,14 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.ext.Locator2;
 import org.xml.sax.helpers.DefaultHandler;
 
-public abstract class SAX2StAXBaseWriter extends DefaultHandler
-        implements
-        LexicalHandler {
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLReporter;
+import javax.xml.stream.XMLStreamException;
+
+public abstract class SAX2StAXBaseWriter extends DefaultHandler implements LexicalHandler {
 
     protected boolean isCDATA;
 
@@ -54,8 +54,7 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
 
     String xmlVersion = null, encoding = null;
 
-    public SAX2StAXBaseWriter() {
-    }
+    public SAX2StAXBaseWriter() {}
 
     public SAX2StAXBaseWriter(XMLReporter reporter) {
         this.reporter = reporter;
@@ -117,18 +116,16 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
         namespaces = null;
     }
 
-    public void startElement(String uri, String localName, String qName,
-            Attributes attributes) throws SAXException {
-        namespaces = null;
-    }
-
-    public void endElement(String uri, String localName, String qName)
+    public void startElement(String uri, String localName, String qName, Attributes attributes)
             throws SAXException {
         namespaces = null;
     }
 
-    public void startPrefixMapping(String prefix, String uri)
-            throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        namespaces = null;
+    }
+
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
 
         if (prefix == null) {
             prefix = "";
@@ -143,8 +140,7 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
         namespaces.add(uri);
     }
 
-    public void endPrefixMapping(String prefix) throws SAXException {
-    }
+    public void endPrefixMapping(String prefix) throws SAXException {}
 
     public void startCDATA() throws SAXException {
         isCDATA = true;
@@ -155,8 +151,7 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
         }
     }
 
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         if (isCDATA) {
             CDATABuffer.append(ch, start, length);
         }
@@ -167,28 +162,20 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
         CDATABuffer.setLength(0);
     }
 
-    public void comment(char[] ch, int start, int length) throws SAXException {
-    }
+    public void comment(char[] ch, int start, int length) throws SAXException {}
 
-    public void endDTD() throws SAXException {
-    }
+    public void endDTD() throws SAXException {}
 
-    public void endEntity(String name) throws SAXException {
-    }
+    public void endEntity(String name) throws SAXException {}
 
-    public void startDTD(String name, String publicId, String systemId)
-            throws SAXException {
-    }
+    public void startDTD(String name, String publicId, String systemId) throws SAXException {}
 
-    public void startEntity(String name) throws SAXException {
-    }
+    public void startEntity(String name) throws SAXException {}
 
     /**
-     * Used to report a {@link SAXException}to the {@link XMLReporter}
-     * registered with this handler.
+     * Used to report a {@link SAXException}to the {@link XMLReporter} registered with this handler.
      */
-    protected void reportException(String type, SAXException e)
-            throws SAXException {
+    protected void reportException(String type, SAXException e) throws SAXException {
 
         if (reporter != null) {
             try {
@@ -200,13 +187,12 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
     }
 
     /**
-     * Parses an XML qualified name, and places the resulting prefix and local
-     * name in the provided String array.
+     * Parses an XML qualified name, and places the resulting prefix and local name in the provided
+     * String array.
      *
      * @param qName The qualified name to parse.
-     * @param results An array where parse results will be placed. The prefix
-     *            will be placed at <code>results[0]</code>, and the local
-     *            part at <code>results[1]</code>
+     * @param results An array where parse results will be placed. The prefix will be placed at
+     *     <code>results[0]</code>, and the local part at <code>results[1]</code>
      */
     public static final void parseQName(String qName, String[] results) {
 
@@ -224,8 +210,7 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
     }
 
     /**
-     * {@Link Location}implementation used to expose details from a SAX
-     * {@link Locator}.
+     * {@Link Location}implementation used to expose details from a SAX {@link Locator}.
      *
      * @author christian
      */
@@ -235,6 +220,7 @@ public abstract class SAX2StAXBaseWriter extends DefaultHandler
         private int columnNumber;
         private String publicId;
         private String systemId;
+
         private SAXLocation(Locator locator) {
             lineNumber = locator.getLineNumber();
             columnNumber = locator.getColumnNumber();

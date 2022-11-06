@@ -20,19 +20,16 @@
 
 package com.sun.org.apache.xerces.internal.jaxp.validation;
 
-import java.lang.ref.WeakReference;
-
 import com.sun.org.apache.xerces.internal.xni.grammars.XMLGrammarPool;
 
+import java.lang.ref.WeakReference;
+
 /**
- * <p>An implementation of Schema for W3C XML Schemas
- * that keeps a weak reference to its grammar pool. If
- * no validators currently have a reference to the
- * grammar pool, the garbage collector is free to reclaim
- * its memory.</p>
+ * An implementation of Schema for W3C XML Schemas that keeps a weak reference to its grammar pool.
+ * If no validators currently have a reference to the grammar pool, the garbage collector is free to
+ * reclaim its memory.
  *
- * @author Michael Glavassevich, IBM
- * @LastModified: Oct 2017
+ * @author Michael Glavassevich, IBM @LastModified: Oct 2017
  */
 final class WeakReferenceXMLSchema extends AbstractXMLSchema {
 
@@ -59,5 +56,4 @@ final class WeakReferenceXMLSchema extends AbstractXMLSchema {
     public boolean isFullyComposed() {
         return false;
     }
-
 } // WeakReferenceXMLSchema

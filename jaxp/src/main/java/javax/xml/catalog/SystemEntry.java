@@ -49,6 +49,7 @@ final class SystemEntry extends BaseEntry {
 
     /**
      * Set the systemId attribute.
+     *
      * @param systemId The systemId attribute value.
      */
     public void setSystemId(String systemId) {
@@ -57,9 +58,10 @@ final class SystemEntry extends BaseEntry {
     }
 
     /**
-     * Set the uri attribute. If the value of the uri attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
-     * The URI reference should not include a fragment identifier.
+     * Set the uri attribute. If the value of the uri attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect. The URI reference should not
+     * include a fragment identifier.
+     *
      * @param uri The uri attribute value.
      */
     public void setURI(String uri) {
@@ -68,6 +70,7 @@ final class SystemEntry extends BaseEntry {
 
     /**
      * Get the systemId attribute.
+     *
      * @return The systemId
      */
     public String getSystemId() {
@@ -75,6 +78,7 @@ final class SystemEntry extends BaseEntry {
     }
     /**
      * Get the uri attribute.
+     *
      * @return The uri attribute value.
      */
     public URL getURI() {

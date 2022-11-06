@@ -28,13 +28,10 @@ import org.xml.sax.SAXParseException;
 /**
  * {@link ErrorHandler} that throws all errors and fatal errors.
  *
- * @author
- *     Kohsuke Kawaguchi
+ * @author Kohsuke Kawaguchi
  */
 public class DraconianErrorHandler implements ErrorHandler {
-    /**
-     * Use this singleton instance.
-     */
+    /** Use this singleton instance. */
     public static final ErrorHandler theInstance = new DraconianErrorHandler();
 
     private DraconianErrorHandler() {}
@@ -42,9 +39,11 @@ public class DraconianErrorHandler implements ErrorHandler {
     public void error(SAXParseException e) throws SAXException {
         throw e;
     }
+
     public void fatalError(SAXParseException e) throws SAXException {
         throw e;
     }
+
     public void warning(SAXParseException e) throws SAXException {
         ; // noop
     }

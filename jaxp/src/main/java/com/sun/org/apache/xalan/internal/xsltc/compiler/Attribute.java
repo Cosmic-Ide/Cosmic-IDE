@@ -39,7 +39,7 @@ final class Attribute extends Instruction {
     public void parseContents(Parser parser) {
         _name = parser.getQName(getAttribute("name"));
         parseChildren(parser);
-        //!!! add text nodes
-        //!!! take care of value templates
+        // !!! add text nodes
+        // !!! take care of value templates
     }
 }

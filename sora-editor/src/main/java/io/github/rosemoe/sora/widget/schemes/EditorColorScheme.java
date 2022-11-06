@@ -25,52 +25,48 @@ package io.github.rosemoe.sora.widget.schemes;
 
 import android.util.SparseIntArray;
 
+import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
+import io.github.rosemoe.sora.widget.CodeEditor;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.github.rosemoe.sora.annotations.UnsupportedUserUsage;
-import io.github.rosemoe.sora.widget.CodeEditor;
-
 /**
- * This class manages the colors of editor.
- * You can use color ids that are not in pre-defined id pool due to new languages.
- * <p>
- * This is also the default color scheme of editor.
- * Be careful to change this class, because this can cause its
- * subclasses behave differently and some subclasses did not apply
- * their default colors to some color ids. So change to this can cause
- * sub themes to change as well.
- * <p>
- * Typically, you can use this class to set color of editor directly
- * with {@link #setColor(int, int)} in a thread with looper.
- * <p>
- * However, we also accept you to extend this class to customize
- * your own ColorScheme to use different default colors.
- * Subclasses is expected to override {@link #applyDefault()}
- * to define colors, though other methods are not final.
- * After overriding this method, you will have to call super class's
- * applyDefault() and then a series of {@link #setColor(int, int)} calls
- * to apply your colors.
- * <p>
- * Note that new colors can be added in newer version of editor,
- * it is dangerous not to call super.applyDefault(), which can cause
- * newer editor works wrongly.
- * <p>
- * For more pre-defined color schemes, please turn to package io.github.rosemoe.editor.widget.schemes
- * <p>
- * Thanks to liyujiang-gzu (GitHub @liyujiang-gzu) for contribution to color schemes
+ * This class manages the colors of editor. You can use color ids that are not in pre-defined id
+ * pool due to new languages.
+ *
+ * <p>This is also the default color scheme of editor. Be careful to change this class, because this
+ * can cause its subclasses behave differently and some subclasses did not apply their default
+ * colors to some color ids. So change to this can cause sub themes to change as well.
+ *
+ * <p>Typically, you can use this class to set color of editor directly with {@link #setColor(int,
+ * int)} in a thread with looper.
+ *
+ * <p>However, we also accept you to extend this class to customize your own ColorScheme to use
+ * different default colors. Subclasses is expected to override {@link #applyDefault()} to define
+ * colors, though other methods are not final. After overriding this method, you will have to call
+ * super class's applyDefault() and then a series of {@link #setColor(int, int)} calls to apply your
+ * colors.
+ *
+ * <p>Note that new colors can be added in newer version of editor, it is dangerous not to call
+ * super.applyDefault(), which can cause newer editor works wrongly.
+ *
+ * <p>For more pre-defined color schemes, please turn to package
+ * io.github.rosemoe.editor.widget.schemes
+ *
+ * <p>Thanks to liyujiang-gzu (GitHub @liyujiang-gzu) for contribution to color schemes
  *
  * @author Rose
  */
 public class EditorColorScheme {
 
-    //----------------Issue colors----------------
+    // ----------------Issue colors----------------
     public static final int PROBLEM_TYPO = 37;
     public static final int PROBLEM_WARNING = 36;
     public static final int PROBLEM_ERROR = 35;
-    //-----------------Highlight colors-----------
+    // -----------------Highlight colors-----------
     public static final int ATTRIBUTE_VALUE = 34;
     public static final int ATTRIBUTE_NAME = 33;
     public static final int HTML_TAG = 32;
@@ -82,7 +78,7 @@ public class EditorColorScheme {
     public static final int OPERATOR = 23;
     public static final int COMMENT = 22;
     public static final int KEYWORD = 21;
-    //-------------View colors---------------------
+    // -------------View colors---------------------
     public static final int HARD_WRAP_MARKER = 51;
     public static final int TEXT_INLAY_HINT_FOREGROUND = 50;
     public static final int TEXT_INLAY_HINT_BACKGROUND = 49;
@@ -92,10 +88,9 @@ public class EditorColorScheme {
     public static final int SIDE_BLOCK_LINE = 38;
     public static final int NON_PRINTABLE_CHAR = 31;
 
-    /**
-     * Use zero if the text color should not be changed
-     */
+    /** Use zero if the text color should not be changed */
     public static final int TEXT_SELECTED = 30;
+
     public static final int MATCHED_TEXT_BACKGROUND = 29;
     public static final int COMPLETION_WND_CORNER = 20;
     public static final int COMPLETION_WND_BACKGROUND = 19;
@@ -103,9 +98,7 @@ public class EditorColorScheme {
     public static final int COMPLETION_WND_TEXT_SECONDARY = 43;
     public static final int COMPLETION_WND_ITEM_CURRENT = 44;
 
-    /**
-     * No longer supported
-     */
+    /** No longer supported */
     public static final int LINE_BLOCK_LABEL = 18;
 
     public static final int HIGHLIGHTED_DELIMITERS_BACKGROUND = 41;
@@ -130,22 +123,14 @@ public class EditorColorScheme {
     public static final int LINE_NUMBER = 2;
     public static final int LINE_DIVIDER = 1;
 
-    /**
-     * Min pre-defined color id
-     */
+    /** Min pre-defined color id */
     protected static final int START_COLOR_ID = 1;
 
-    /**
-     * Max pre-defined color id
-     */
+    /** Max pre-defined color id */
     protected static final int END_COLOR_ID = 51;
-    /**
-     * Real color saver
-     */
+    /** Real color saver */
     protected final SparseIntArray colors;
-    /**
-     * Host editor object
-     */
+    /** Host editor object */
     private final List<WeakReference<CodeEditor>> editors;
 
     private final boolean dark;
@@ -160,9 +145,7 @@ public class EditorColorScheme {
         attachEditor(editor);
     }
 
-    /**
-     * Create a default color scheme
-     */
+    /** Create a default color scheme */
     public EditorColorScheme() {
         this(false);
     }
@@ -181,8 +164,8 @@ public class EditorColorScheme {
 
     /**
      * Subscribe changes
-     * <p>
-     * Called by editor
+     *
+     * <p>Called by editor
      */
     @UnsupportedUserUsage
     public void attachEditor(CodeEditor editor) {
@@ -196,9 +179,7 @@ public class EditorColorScheme {
         editor.onColorFullUpdate();
     }
 
-    /**
-     * Unsubscribe changes
-     */
+    /** Unsubscribe changes */
     @UnsupportedUserUsage
     public void detachEditor(CodeEditor editor) {
         var itr = editors.iterator();
@@ -210,9 +191,7 @@ public class EditorColorScheme {
         }
     }
 
-    /**
-     * Apply default colors
-     */
+    /** Apply default colors */
     public void applyDefault() {
         for (int i = START_COLOR_ID; i <= END_COLOR_ID; i++) {
             applyDefault(i);
@@ -354,12 +333,12 @@ public class EditorColorScheme {
     /**
      * Apply a new color for the given type
      *
-     * @param type  The type
+     * @param type The type
      * @param color New color
      */
     public void setColor(int type, int color) {
-        //Do not change if the old value is the same as new value
-        //due to avoid unnecessary invalidate() calls
+        // Do not change if the old value is the same as new value
+        // due to avoid unnecessary invalidate() calls
         int old = getColor(type);
         if (old == color) {
             return;
@@ -367,7 +346,7 @@ public class EditorColorScheme {
 
         colors.put(type, color);
 
-        //Notify the editor
+        // Notify the editor
         var itr = editors.iterator();
         while (itr.hasNext()) {
             var editor = itr.next().get();
@@ -389,11 +368,8 @@ public class EditorColorScheme {
         return colors.get(type);
     }
 
-    /**
-     * Check whether this color scheme is dark
-     */
+    /** Check whether this color scheme is dark */
     public boolean isDark() {
         return dark;
     }
-
 }

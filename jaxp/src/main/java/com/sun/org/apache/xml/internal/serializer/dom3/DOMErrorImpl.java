@@ -28,11 +28,12 @@ import org.w3c.dom.DOMLocator;
 /**
  * Implementation of the DOM Level 3 DOMError interface.
  *
- * <p>See also the <a href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#ERROR-Interfaces-DOMError'>DOMError Interface definition from Document Object Model (DOM) Level 3 Core Specification</a>.
+ * <p>See also the <a
+ * href='http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/core.html#ERROR-Interfaces-DOMError'>DOMError
+ * Interface definition from Document Object Model (DOM) Level 3 Core Specification</a>.
  *
  * @xsl.usage internal
  */
-
 final class DOMErrorImpl implements DOMError {
 
     /** private data members */
@@ -55,16 +56,12 @@ final class DOMErrorImpl implements DOMError {
     // The location of the exception
     private DOMLocatorImpl fLocation = new DOMLocatorImpl();
 
-
     //
     // Constructors
     //
 
-    /**
-     * Default constructor.
-     */
-    DOMErrorImpl () {
-    }
+    /** Default constructor. */
+    DOMErrorImpl() {}
 
     /**
      * @param severity
@@ -83,8 +80,7 @@ final class DOMErrorImpl implements DOMError {
      * @param type
      * @param exception
      */
-    DOMErrorImpl(short severity, String message, String type,
-            Exception exception) {
+    DOMErrorImpl(short severity, String message, String type, Exception exception) {
         fSeverity = severity;
         fMessage = message;
         fType = type;
@@ -99,8 +95,13 @@ final class DOMErrorImpl implements DOMError {
      * @param relatedData
      * @param location
      */
-    DOMErrorImpl(short severity, String message, String type,
-            Exception exception, Object relatedData, DOMLocatorImpl location) {
+    DOMErrorImpl(
+            short severity,
+            String message,
+            String type,
+            Exception exception,
+            Object relatedData,
+            DOMLocatorImpl location) {
         fSeverity = severity;
         fMessage = message;
         fType = type;
@@ -109,10 +110,9 @@ final class DOMErrorImpl implements DOMError {
         fLocation = location;
     }
 
-
     /**
-     * The severity of the error, either <code>SEVERITY_WARNING</code>,
-     * <code>SEVERITY_ERROR</code>, or <code>SEVERITY_FATAL_ERROR</code>.
+     * The severity of the error, either <code>SEVERITY_WARNING</code>, <code>SEVERITY_ERROR</code>,
+     * or <code>SEVERITY_FATAL_ERROR</code>.
      *
      * @return A short containing the DOMError severity
      */
@@ -143,7 +143,7 @@ final class DOMErrorImpl implements DOMError {
      *
      * @return A java.lang.Exception
      */
-    public Object getRelatedException(){
+    public Object getRelatedException() {
         return fException;
     }
 
@@ -152,7 +152,7 @@ final class DOMErrorImpl implements DOMError {
      *
      * @return A String
      */
-    public String getType(){
+    public String getType() {
         return fType;
     }
 
@@ -161,11 +161,11 @@ final class DOMErrorImpl implements DOMError {
      *
      * @return java.lang.Object
      */
-    public Object getRelatedData(){
+    public Object getRelatedData() {
         return fRelatedData;
     }
 
-    public void reset(){
+    public void reset() {
         fSeverity = DOMError.SEVERITY_WARNING;
         fException = null;
         fMessage = null;
@@ -173,5 +173,4 @@ final class DOMErrorImpl implements DOMError {
         fRelatedData = null;
         fLocation = null;
     }
-
-}// class DOMErrorImpl
+} // class DOMErrorImpl

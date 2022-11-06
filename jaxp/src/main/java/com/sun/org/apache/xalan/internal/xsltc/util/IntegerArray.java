@@ -28,8 +28,8 @@ public final class IntegerArray {
     private static final int InitialSize = 32;
 
     private int[] _array;
-    private int   _size;
-    private int   _free = 0;
+    private int _size;
+    private int _free = 0;
 
     public IntegerArray() {
         this(InitialSize);
@@ -83,12 +83,10 @@ public final class IntegerArray {
         _array[_free++] = value;
     }
 
-    /**
-     * Adds new int at the end if not already present.
-     */
+    /** Adds new int at the end if not already present. */
     public void addNew(int value) {
         for (int i = 0; i < _free; i++) {
-            if (_array[i] == value) return;  // already in array
+            if (_array[i] == value) return; // already in array
         }
         add(value);
     }
@@ -105,12 +103,12 @@ public final class IntegerArray {
     }
 
     /**
-     * Merge two sorted arrays and eliminate duplicates.
-     * Elements of the other IntegerArray must not be changed.
+     * Merge two sorted arrays and eliminate duplicates. Elements of the other IntegerArray must not
+     * be changed.
      */
     public void merge(final IntegerArray other) {
         final int newSize = _free + other._free;
-// System.out.println("IntegerArray.merge() begin newSize = " + newSize);
+        // System.out.println("IntegerArray.merge() begin newSize = " + newSize);
         int[] newArray = new int[newSize];
 
         // Merge the two arrays
@@ -122,14 +120,13 @@ public final class IntegerArray {
             if (x < y) {
                 newArray[k] = x;
                 i++;
-            }
-            else if (x > y) {
+            } else if (x > y) {
                 newArray[k] = y;
                 j++;
-            }
-            else {
+            } else {
                 newArray[k] = x;
-                i++; j++;
+                i++;
+                j++;
             }
         }
 
@@ -138,8 +135,7 @@ public final class IntegerArray {
             while (j < other._free) {
                 newArray[k++] = other._array[j++];
             }
-        }
-        else {
+        } else {
             while (i < _free) {
                 newArray[k++] = _array[i++];
             }
@@ -148,7 +144,7 @@ public final class IntegerArray {
         // Update reference to this array
         _array = newArray;
         _free = _size = newSize;
-// System.out.println("IntegerArray.merge() end");
+        // System.out.println("IntegerArray.merge() end");
     }
 
     public void sort() {
@@ -165,17 +161,19 @@ public final class IntegerArray {
 
     private static int partition(int[] array, int p, int r) {
         final int x = array[(p + r) >>> 1];
-        int i = p - 1; int j = r + 1;
+        int i = p - 1;
+        int j = r + 1;
 
         while (true) {
-            while (x < array[--j]);
-            while (x > array[++i]);
+            while (x < array[--j])
+                ;
+            while (x > array[++i])
+                ;
             if (i < j) {
                 int temp = array[i];
                 array[i] = array[j];
                 array[j] = temp;
-            }
-            else {
+            } else {
                 return j;
             }
         }
@@ -218,8 +216,7 @@ public final class IntegerArray {
                 out.print(' ');
             }
             out.println(_array[_free - 1]);
-        }
-        else {
+        } else {
             out.println("IntegerArray: empty");
         }
     }

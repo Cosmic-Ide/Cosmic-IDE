@@ -25,28 +25,24 @@
 
 package com.sun.xml.internal.stream;
 
-
-
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLReporter;
-import javax.xml.stream.XMLStreamException;
+import com.sun.org.apache.xerces.internal.impl.PropertyManager;
+import com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
 import com.sun.org.apache.xerces.internal.impl.msg.XMLMessageFormatter;
 import com.sun.org.apache.xerces.internal.util.MessageFormatter;
 import com.sun.org.apache.xerces.internal.xni.XMLLocator;
 import com.sun.org.apache.xerces.internal.xni.XNIException;
 
-import com.sun.org.apache.xerces.internal.impl.PropertyManager;
-import com.sun.org.apache.xerces.internal.impl.XMLErrorReporter;
+import javax.xml.stream.Location;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLReporter;
+import javax.xml.stream.XMLStreamException;
 
 /**
- *
- * @author  neeraj
+ * @author neeraj
  */
-
 public class StaxErrorReporter extends XMLErrorReporter {
 
-    protected XMLReporter fXMLReporter = null ;
+    protected XMLReporter fXMLReporter = null;
 
     /** Creates a new instance of StaxErrorReporter */
     public StaxErrorReporter(PropertyManager propertyManager) {
@@ -55,44 +51,40 @@ public class StaxErrorReporter extends XMLErrorReporter {
         reset(propertyManager);
     }
 
-    /** Creates a new instance of StaxErrorReporter
-     * If this constructor is used to create the object, one must invoke reset() on this object.
+    /**
+     * Creates a new instance of StaxErrorReporter If this constructor is used to create the object,
+     * one must invoke reset() on this object.
      */
     public StaxErrorReporter() {
         super();
         putMessageFormatter(XMLMessageFormatter.XML_DOMAIN, new XMLMessageFormatter());
     }
 
-    /**
-     *One must call reset before using any of the function.
-     */
-    public void reset(PropertyManager propertyManager){
-        fXMLReporter = (XMLReporter)propertyManager.getProperty(XMLInputFactory.REPORTER);
+    /** One must call reset before using any of the function. */
+    public void reset(PropertyManager propertyManager) {
+        fXMLReporter = (XMLReporter) propertyManager.getProperty(XMLInputFactory.REPORTER);
     }
     /**
      * Reports an error at a specific location.
      *
-     * @param location  The error location.
-     * @param domain    The error domain.
-     * @param key       The key of the error message.
-     * @param arguments The replacement arguments for the error message,
-     *                  if needed.
-     * @param severity  The severity of the error.
-     *
+     * @param location The error location.
+     * @param domain The error domain.
+     * @param key The key of the error message.
+     * @param arguments The replacement arguments for the error message, if needed.
+     * @param severity The severity of the error.
      * @see #SEVERITY_WARNING
      * @see #SEVERITY_ERROR
      * @see #SEVERITY_FATAL_ERROR
      */
-    public String reportError(XMLLocator location,
-    String domain, String key, Object[] arguments,
-    short severity) throws XNIException {
+    public String reportError(
+            XMLLocator location, String domain, String key, Object[] arguments, short severity)
+            throws XNIException {
         // format error message and create parse exception
         MessageFormatter messageFormatter = getMessageFormatter(domain);
         String message;
         if (messageFormatter != null) {
             message = messageFormatter.formatMessage(fLocale, key, arguments);
-        }
-        else {
+        } else {
             StringBuffer str = new StringBuffer();
             str.append(domain);
             str.append('#');
@@ -102,7 +94,7 @@ public class StaxErrorReporter extends XMLErrorReporter {
                 str.append('?');
                 for (int i = 0; i < argCount; i++) {
                     str.append(arguments[i]);
-                    if (i < argCount -1) {
+                    if (i < argCount - 1) {
                         str.append('&');
                     }
                 }
@@ -110,78 +102,75 @@ public class StaxErrorReporter extends XMLErrorReporter {
             message = str.toString();
         }
 
-
-
-        //no reporter was specified
-        /**
-         * if (reporter == null) {
-         * reporter = new DefaultStaxErrorReporter();
-         * }
-         */
+        // no reporter was specified
+        /** if (reporter == null) { reporter = new DefaultStaxErrorReporter(); } */
 
         // call error handler
         switch (severity) {
-            case SEVERITY_WARNING: {
-                try{
-                    if(fXMLReporter!= null){
-                        fXMLReporter.report(message, "WARNING", null, convertToStaxLocation(location) );
+            case SEVERITY_WARNING:
+                {
+                    try {
+                        if (fXMLReporter != null) {
+                            fXMLReporter.report(
+                                    message, "WARNING", null, convertToStaxLocation(location));
+                        }
+                    } catch (XMLStreamException ex) {
+                        // what we should be doing ?? if the user throws XMLStreamException
+                        // REVISIT:
+                        throw new XNIException(ex);
                     }
-                }catch(XMLStreamException ex){
-                    //what we should be doing ?? if the user throws XMLStreamException
-                    //REVISIT:
-                    throw new XNIException(ex);
+                    break;
                 }
-                break;
-            }
-            case SEVERITY_ERROR: {
-                try{
-                    if(fXMLReporter!= null){
-                        fXMLReporter.report(message, "ERROR", null, convertToStaxLocation(location) );
+            case SEVERITY_ERROR:
+                {
+                    try {
+                        if (fXMLReporter != null) {
+                            fXMLReporter.report(
+                                    message, "ERROR", null, convertToStaxLocation(location));
+                        }
+                    } catch (XMLStreamException ex) {
+                        // what we should be doing ?? if the user throws XMLStreamException
+                        // REVISIT:
+                        throw new XNIException(ex);
                     }
-                }catch(XMLStreamException ex){
-                    //what we should be doing ?? if the user throws XMLStreamException
-                    //REVISIT:
-                    throw new XNIException(ex);
+                    break;
                 }
-                break;
-            }
-            case SEVERITY_FATAL_ERROR: {
-                if (!fContinueAfterFatalError) {
-                    throw new XNIException(message);
+            case SEVERITY_FATAL_ERROR:
+                {
+                    if (!fContinueAfterFatalError) {
+                        throw new XNIException(message);
+                    }
+                    break;
                 }
-                break;
-            }
         }
         return message;
     }
 
-
-    Location convertToStaxLocation(final XMLLocator location){
-        return new Location(){
-            public int getColumnNumber(){
+    Location convertToStaxLocation(final XMLLocator location) {
+        return new Location() {
+            public int getColumnNumber() {
                 return location.getColumnNumber();
             }
 
-            public int getLineNumber(){
+            public int getLineNumber() {
                 return location.getLineNumber();
             }
 
-            public String getPublicId(){
+            public String getPublicId() {
                 return location.getPublicId();
             }
 
-            public String getSystemId(){
+            public String getSystemId() {
                 return location.getLiteralSystemId();
             }
 
-            public int getCharacterOffset(){
+            public int getCharacterOffset() {
                 return location.getCharacterOffset();
             }
-            public String getLocationURI(){
+
+            public String getLocationURI() {
                 return "";
             }
-
         };
     }
-
 }

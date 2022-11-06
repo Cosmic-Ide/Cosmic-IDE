@@ -25,10 +25,12 @@
 
 package com.sun.xml.internal.stream.events;
 
+import com.sun.xml.internal.stream.dtd.nonvalidating.XMLNotationDecl;
+
+import jdk.xml.internal.JdkXmlUtils;
+
 import javax.xml.stream.events.NotationDeclaration;
 import javax.xml.stream.events.XMLEvent;
-import com.sun.xml.internal.stream.dtd.nonvalidating.XMLNotationDecl;
-import jdk.xml.internal.JdkXmlUtils;
 
 /**
  * Implementation of NotationDeclaration event.
@@ -46,14 +48,14 @@ public class NotationDeclarationImpl extends DummyEvent implements NotationDecla
         setEventType(XMLEvent.NOTATION_DECLARATION);
     }
 
-    public NotationDeclarationImpl(String name,String publicId,String systemId){
+    public NotationDeclarationImpl(String name, String publicId, String systemId) {
         this.fName = name;
         this.fPublicId = publicId;
         this.fSystemId = systemId;
         setEventType(XMLEvent.NOTATION_DECLARATION);
     }
 
-    public NotationDeclarationImpl(XMLNotationDecl notation){
+    public NotationDeclarationImpl(XMLNotationDecl notation) {
         this.fName = notation.name;
         this.fPublicId = notation.publicId;
         this.fSystemId = notation.systemId;
@@ -72,21 +74,19 @@ public class NotationDeclarationImpl extends DummyEvent implements NotationDecla
         return fSystemId;
     }
 
-    void setPublicId(String publicId){
+    void setPublicId(String publicId) {
         this.fPublicId = publicId;
     }
 
-    void setSystemId(String systemId){
+    void setSystemId(String systemId) {
         this.fSystemId = systemId;
     }
 
-    void setName(String name){
+    void setName(String name) {
         this.fName = name;
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
         writer.write("<!NOTATION ");
         writer.write(getName());
         writer.write(JdkXmlUtils.getDTDExternalDecl(fPublicId, fSystemId));

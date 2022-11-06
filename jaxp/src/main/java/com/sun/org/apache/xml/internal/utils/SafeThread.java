@@ -26,14 +26,12 @@ package com.sun.org.apache.xml.internal.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Represents a safe thread that does not inherit thread-locals and runs only
- * once.
- */
+/** Represents a safe thread that does not inherit thread-locals and runs only once. */
 public class SafeThread extends Thread {
     private volatile boolean ran = false;
 
     private static final AtomicInteger threadNumber = new AtomicInteger(1);
+
     private static String threadName() {
         return "SafeThread-" + threadNumber.getAndIncrement();
     }
@@ -52,15 +50,15 @@ public class SafeThread extends Thread {
 
     public final void run() {
         if (Thread.currentThread() != this) {
-            throw new IllegalStateException("The run() method in a"
-                    + " SafeThread cannot be called from another thread.");
+            throw new IllegalStateException(
+                    "The run() method in a" + " SafeThread cannot be called from another thread.");
         }
         synchronized (this) {
             if (!ran) {
                 ran = true;
             } else {
-                throw new IllegalStateException("The run() method in a"
-                        + " SafeThread cannot be called more than once.");
+                throw new IllegalStateException(
+                        "The run() method in a" + " SafeThread cannot be called more than once.");
             }
         }
         super.run();

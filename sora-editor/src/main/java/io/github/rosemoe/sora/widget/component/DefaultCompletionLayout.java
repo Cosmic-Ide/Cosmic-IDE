@@ -58,27 +58,42 @@ public class DefaultCompletionLayout implements CompletionLayout {
         layout.addView(progressBar);
         var params = ((RelativeLayout.LayoutParams) progressBar.getLayoutParams());
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.width = params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, context.getResources().getDisplayMetrics());
+        params.width =
+                params.height =
+                        (int)
+                                TypedValue.applyDimension(
+                                        TypedValue.COMPLEX_UNIT_DIP,
+                                        30,
+                                        context.getResources().getDisplayMetrics());
         GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()));
+        gd.setCornerRadius(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        8,
+                        context.getResources().getDisplayMetrics()));
         layout.setBackground(gd);
         rootView = layout;
         listView.setDividerHeight(0);
         setLoading(true);
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                editorAutoCompletion.select(position);
-            } catch (Exception e) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        listView.setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    try {
+                        editorAutoCompletion.select(position);
+                    } catch (Exception e) {
+                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
         return layout;
     }
 
     @Override
     public void onApplyColorScheme(EditorColorScheme colorScheme) {
         GradientDrawable gd = new GradientDrawable();
-        gd.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, editorAutoCompletion.getContext().getResources().getDisplayMetrics()));
+        gd.setCornerRadius(
+                TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        8,
+                        editorAutoCompletion.getContext().getResources().getDisplayMetrics()));
         gd.setStroke(1, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER));
         gd.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND));
         rootView.setBackground(gd);
@@ -94,9 +109,7 @@ public class DefaultCompletionLayout implements CompletionLayout {
         return listView;
     }
 
-    /**
-     * Perform motion events
-     */
+    /** Perform motion events */
     private void performScrollList(int offset) {
         var adpView = getCompletionList();
 
@@ -116,13 +129,16 @@ public class DefaultCompletionLayout implements CompletionLayout {
 
     @Override
     public void ensureListPositionVisible(int position, int increment) {
-        listView.post(() -> {
-            while (listView.getFirstVisiblePosition() + 1 > position && listView.canScrollList(-1)) {
-                performScrollList(increment / 2);
-            }
-            while (listView.getLastVisiblePosition() - 1 < position && listView.canScrollList(1)) {
-                performScrollList(-increment / 2);
-            }
-        });
+        listView.post(
+                () -> {
+                    while (listView.getFirstVisiblePosition() + 1 > position
+                            && listView.canScrollList(-1)) {
+                        performScrollList(increment / 2);
+                    }
+                    while (listView.getLastVisiblePosition() - 1 < position
+                            && listView.canScrollList(1)) {
+                        performScrollList(-increment / 2);
+                    }
+                });
     }
 }

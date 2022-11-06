@@ -37,27 +37,29 @@ final class RewriteUri extends BaseEntry {
 
     /**
      * Construct a rewriteURI entry.
+     *
      * @param uriStartString The uriStartString attribute.
      * @param rewritePrefix The rewritePrefix attribute.
      */
     public RewriteUri(String base, String uriStartString, String rewritePrefix) {
         super(CatalogEntryType.REWRITEURI, base);
-        setURIStartString (uriStartString);
+        setURIStartString(uriStartString);
         setRewritePrefix(rewritePrefix);
     }
 
     /**
      * Set the uriStartString attribute.
+     *
      * @param uriStartString The uriStartString attribute value.
      */
-    public void setURIStartString (String uriStartString) {
+    public void setURIStartString(String uriStartString) {
         CatalogMessages.reportNPEOnNull("uriStartString", uriStartString);
         this.uriStartString = Normalizer.normalizeURI(uriStartString);
     }
 
     /**
-     * Set the rewritePrefix attribute. If the value of the rewritePrefix attribute
-     * is relative, it must be made absolute with respect to the base URI currently in effect.
+     * Set the rewritePrefix attribute. If the value of the rewritePrefix attribute is relative, it
+     * must be made absolute with respect to the base URI currently in effect.
      *
      * @param rewritePrefix The rewritePrefix attribute value.
      */
@@ -67,14 +69,16 @@ final class RewriteUri extends BaseEntry {
 
     /**
      * Get the uriStartString attribute.
+     *
      * @return The uriStartString
      */
-    public String getURIStartString () {
+    public String getURIStartString() {
         return uriStartString;
     }
 
     /**
      * Get the rewritePrefix attribute.
+     *
      * @return The rewritePrefix attribute value.
      */
     public URL getRewritePrefix() {
@@ -82,9 +86,8 @@ final class RewriteUri extends BaseEntry {
     }
 
     /**
-     * Try to match the specified systemId with the entry. Return the match if it
-     * is successful and the length of the systemIdStartString is longer than the
-     * longest of any previous match.
+     * Try to match the specified systemId with the entry. Return the match if it is successful and
+     * the length of the systemIdStartString is longer than the longest of any previous match.
      *
      * @param systemId The systemId to be matched.
      * @param currentMatch The length of uriStartString of previous match if any.
@@ -92,8 +95,8 @@ final class RewriteUri extends BaseEntry {
      */
     @Override
     public String match(String systemId, int currentMatch) {
-        if (uriStartString.length() < systemId.length() &&
-                uriStartString.equals(systemId.substring(0, uriStartString.length()))) {
+        if (uriStartString.length() < systemId.length()
+                && uriStartString.equals(systemId.substring(0, uriStartString.length()))) {
             if (currentMatch < uriStartString.length()) {
                 String prefix = rewritePrefix.toExternalForm();
                 String sysId;
@@ -116,5 +119,4 @@ final class RewriteUri extends BaseEntry {
     public String match(String systemId) {
         return match(systemId, 0);
     }
-
 }

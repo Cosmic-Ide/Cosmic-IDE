@@ -25,9 +25,7 @@ package com.sun.org.apache.xerces.internal.impl.xs;
  * This exception might be thrown by any constraint checking method.
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
- *
  */
 public class XMLSchemaException extends Exception {
 
@@ -51,5 +49,4 @@ public class XMLSchemaException extends Exception {
     public Object[] getArgs() {
         return args;
     }
-
 }

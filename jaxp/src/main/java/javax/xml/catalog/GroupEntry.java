@@ -40,55 +40,53 @@ class GroupEntry extends BaseEntry {
     static final int ATTRIBUTE_DEFFER = 1;
     static final int ATTRIBUTE_RESOLUTION = 2;
 
-    //Unmodifiable features when the Catalog is created
+    // Unmodifiable features when the Catalog is created
     CatalogFeatures features;
 
-    //Value of the prefer attribute
+    // Value of the prefer attribute
     boolean isPreferPublic = true;
 
-    //The parent of the catalog instance
+    // The parent of the catalog instance
     CatalogImpl parent = null;
 
-    //The catalog instance this group belongs to
+    // The catalog instance this group belongs to
     CatalogImpl catalog;
 
-    //A list of all entries in a catalog or group
+    // A list of all entries in a catalog or group
     List<BaseEntry> entries = new ArrayList<>();
 
-    //loaded delegated catalog by system id
+    // loaded delegated catalog by system id
     Map<String, CatalogImpl> delegateCatalogs = new HashMap<>();
 
-    //A list of all loaded Catalogs, including this, and next catalogs
+    // A list of all loaded Catalogs, including this, and next catalogs
     Map<String, CatalogImpl> loadedCatalogs = new HashMap<>();
 
     /*
-     A list of Catalog Ids that have already been searched in a matching
-     operation. Check this list before constructing new Catalog to avoid circular
-     reference.
-     */
+    A list of Catalog Ids that have already been searched in a matching
+    operation. Check this list before constructing new Catalog to avoid circular
+    reference.
+    */
     List<String> catalogsSearched = new ArrayList<>();
 
-    //A flag to indicate whether the current match is a system or uri
+    // A flag to indicate whether the current match is a system or uri
     boolean isInstantMatch = false;
 
-    //A match of a rewrite type
+    // A match of a rewrite type
     String rewriteMatch = null;
 
-    //The length of the longest match of a rewrite type
+    // The length of the longest match of a rewrite type
     int longestRewriteMatch = 0;
 
-    //A match of a suffix type
+    // A match of a suffix type
     String suffixMatch = null;
 
-    //The length of the longest match of a suffix type
+    // The length of the longest match of a suffix type
     int longestSuffixMatch = 0;
 
-    //Indicate whether a system entry has been searched
+    // Indicate whether a system entry has been searched
     boolean systemEntrySearched = false;
 
-    /**
-     * PreferType represents possible values of the prefer property
-     */
+    /** PreferType represents possible values of the prefer property */
     public static enum PreferType {
         PUBLIC("public"),
         SYSTEM("system");
@@ -104,9 +102,7 @@ class GroupEntry extends BaseEntry {
         }
     }
 
-    /**
-     * PreferType represents possible values of the resolve property
-     */
+    /** PreferType represents possible values of the resolve property */
     public static enum ResolveType {
         STRICT(CatalogFeatures.RESOLVE_STRICT),
         CONTINUE(CatalogFeatures.RESOLVE_CONTINUE),
@@ -118,7 +114,7 @@ class GroupEntry extends BaseEntry {
             this.literal = literal;
         }
 
-        static public ResolveType getType(String resolveType) {
+        public static ResolveType getType(String resolveType) {
             for (ResolveType type : ResolveType.values()) {
                 if (type.isType(resolveType)) {
                     return type;
@@ -153,9 +149,7 @@ class GroupEntry extends BaseEntry {
         this(null, base, attributes);
     }
 
-    /**
-     * Resets the group entry to its initial state.
-     */
+    /** Resets the group entry to its initial state. */
     public void reset() {
         isInstantMatch = false;
         rewriteMatch = null;
@@ -166,6 +160,7 @@ class GroupEntry extends BaseEntry {
     }
     /**
      * Constructs a group entry.
+     *
      * @param catalog the catalog this GroupEntry belongs to
      * @param base the baseURI attribute
      * @param attributes the attributes
@@ -195,8 +190,8 @@ class GroupEntry extends BaseEntry {
     }
 
     /**
-     * Sets the prefer property. If the value is null or empty, or any String
-     * other than the defined, it will be assumed as the default value.
+     * Sets the prefer property. If the value is null or empty, or any String other than the
+     * defined, it will be assumed as the default value.
      *
      * @param value The value of the prefer attribute
      */
@@ -216,15 +211,11 @@ class GroupEntry extends BaseEntry {
     /**
      * Attempt to find a matching entry in the catalog by systemId.
      *
-     * <p>
-     * The method searches through the system-type entries, including system,
-     * rewriteSystem, systemSuffix, delegateSystem, and group entries in the
-     * current catalog in order to find a match.
+     * <p>The method searches through the system-type entries, including system, rewriteSystem,
+     * systemSuffix, delegateSystem, and group entries in the current catalog in order to find a
+     * match.
      *
-     *
-     * @param systemId The system identifier of the external entity being
-     * referenced.
-     *
+     * @param systemId The system identifier of the external entity being referenced.
      * @return a URI string if a mapping is found, or null otherwise.
      */
     public String matchSystem(String systemId) {
@@ -234,7 +225,7 @@ class GroupEntry extends BaseEntry {
             switch (entry.type) {
                 case SYSTEM:
                     match = ((SystemEntry) entry).match(systemId);
-                    //if there's a matching system entry, use it
+                    // if there's a matching system entry, use it
                     if (match != null) {
                         isInstantMatch = true;
                         return match;
@@ -244,7 +235,8 @@ class GroupEntry extends BaseEntry {
                     match = ((RewriteSystem) entry).match(systemId, longestRewriteMatch);
                     if (match != null) {
                         rewriteMatch = match;
-                        longestRewriteMatch = ((RewriteSystem) entry).getSystemIdStartString().length();
+                        longestRewriteMatch =
+                                ((RewriteSystem) entry).getSystemIdStartString().length();
                     }
                     break;
                 case SYSTEMSUFFIX:
@@ -258,7 +250,7 @@ class GroupEntry extends BaseEntry {
                     GroupEntry grpEntry = (GroupEntry) entry;
                     match = grpEntry.matchSystem(systemId);
                     if (grpEntry.isInstantMatch) {
-                        //use it if there is a match of the system type
+                        // use it if there is a match of the system type
                         return match;
                     } else if (grpEntry.longestRewriteMatch > longestRewriteMatch) {
                         longestRewriteMatch = grpEntry.longestRewriteMatch;
@@ -277,22 +269,17 @@ class GroupEntry extends BaseEntry {
             return suffixMatch;
         }
 
-        //if no single match is found, try delegates
+        // if no single match is found, try delegates
         return matchDelegate(CatalogEntryType.DELEGATESYSTEM, systemId);
     }
 
     /**
      * Attempt to find a matching entry in the catalog by publicId.
      *
-     * <p>
-     * The method searches through the public-type entries, including public,
-     * delegatePublic, and group entries in the current catalog in order to find
-     * a match.
+     * <p>The method searches through the public-type entries, including public, delegatePublic, and
+     * group entries in the current catalog in order to find a match.
      *
-     *
-     * @param publicId The public identifier of the external entity being
-     * referenced.
-     *
+     * @param publicId The public identifier of the external entity being referenced.
      * @return a URI string if a mapping is found, or null otherwise.
      */
     public String matchPublic(String publicId) {
@@ -303,7 +290,7 @@ class GroupEntry extends BaseEntry {
         if (!isPreferPublic && systemEntrySearched) {
             return null;
         }
-        //match public entries
+        // match public entries
         String match = null;
         for (BaseEntry entry : entries) {
             switch (entry.type) {
@@ -322,21 +309,17 @@ class GroupEntry extends BaseEntry {
             }
         }
 
-        //if no single match is found, try delegates
+        // if no single match is found, try delegates
         return matchDelegate(CatalogEntryType.DELEGATEPUBLIC, publicId);
     }
 
     /**
      * Attempt to find a matching entry in the catalog by the uri element.
      *
-     * <p>
-     * The method searches through the uri-type entries, including uri,
-     * rewriteURI, uriSuffix, delegateURI and group entries in the current
-     * catalog in order to find a match.
-     *
+     * <p>The method searches through the uri-type entries, including uri, rewriteURI, uriSuffix,
+     * delegateURI and group entries in the current catalog in order to find a match.
      *
      * @param uri The URI reference of a resource.
-     *
      * @return a URI string if a mapping is found, or null otherwise.
      */
     public String matchURI(String uri) {
@@ -368,7 +351,7 @@ class GroupEntry extends BaseEntry {
                     GroupEntry grpEntry = (GroupEntry) entry;
                     match = grpEntry.matchURI(uri);
                     if (grpEntry.isInstantMatch) {
-                        //use it if there is a match of the uri type
+                        // use it if there is a match of the uri type
                         return match;
                     } else if (grpEntry.longestRewriteMatch > longestRewriteMatch) {
                         rewriteMatch = match;
@@ -387,7 +370,7 @@ class GroupEntry extends BaseEntry {
             return suffixMatch;
         }
 
-        //if no single match is found, try delegates
+        // if no single match is found, try delegates
         return matchDelegate(CatalogEntryType.DELEGATEURI, uri);
     }
 
@@ -404,15 +387,15 @@ class GroupEntry extends BaseEntry {
         URI catalogId = null;
         URI temp;
 
-        //Check delegate types in the current catalog
+        // Check delegate types in the current catalog
         for (BaseEntry entry : entries) {
             if (entry.type == type) {
                 if (type == CatalogEntryType.DELEGATESYSTEM) {
-                    temp = ((DelegateSystem)entry).matchURI(id, longestMatch);
+                    temp = ((DelegateSystem) entry).matchURI(id, longestMatch);
                 } else if (type == CatalogEntryType.DELEGATEPUBLIC) {
-                    temp = ((DelegatePublic)entry).matchURI(id, longestMatch);
+                    temp = ((DelegatePublic) entry).matchURI(id, longestMatch);
                 } else {
-                    temp = ((DelegateUri)entry).matchURI(id, longestMatch);
+                    temp = ((DelegateUri) entry).matchURI(id, longestMatch);
                 }
                 if (temp != null) {
                     longestMatch = entry.getMatchId().length();
@@ -421,7 +404,7 @@ class GroupEntry extends BaseEntry {
             }
         }
 
-        //Check delegate Catalogs
+        // Check delegate Catalogs
         if (catalogId != null) {
             Catalog delegateCatalog = loadDelegateCatalog(catalog, catalogId);
 
@@ -446,13 +429,16 @@ class GroupEntry extends BaseEntry {
      */
     void loadDelegateCatalogs(CatalogImpl parent) {
         entries.stream()
-                .filter((entry) -> (entry.type == CatalogEntryType.DELEGATESYSTEM ||
-                        entry.type == CatalogEntryType.DELEGATEPUBLIC ||
-                        entry.type == CatalogEntryType.DELEGATEURI))
-                .map((entry) -> (AltCatalog)entry)
-                .forEach((altCatalog) -> {
-                        loadDelegateCatalog(parent, altCatalog.getCatalogURI());
-        });
+                .filter(
+                        (entry) ->
+                                (entry.type == CatalogEntryType.DELEGATESYSTEM
+                                        || entry.type == CatalogEntryType.DELEGATEPUBLIC
+                                        || entry.type == CatalogEntryType.DELEGATEURI))
+                .map((entry) -> (AltCatalog) entry)
+                .forEach(
+                        (altCatalog) -> {
+                            loadDelegateCatalog(parent, altCatalog.getCatalogURI());
+                        });
     }
 
     /**
@@ -482,30 +468,27 @@ class GroupEntry extends BaseEntry {
      * Returns a previously loaded Catalog object if found.
      *
      * @param catalogId The systemId of a catalog
-     * @return a Catalog object previously loaded, or null if none in the saved
-     * list
+     * @return a Catalog object previously loaded, or null if none in the saved list
      */
     CatalogImpl getLoadedCatalog(String catalogId) {
         CatalogImpl c = null;
 
-        //check delegate Catalogs
+        // check delegate Catalogs
         c = delegateCatalogs.get(catalogId);
         if (c == null) {
-            //check other loaded Catalogs
+            // check other loaded Catalogs
             c = loadedCatalogs.get(catalogId);
         }
 
         return c;
     }
 
-
     /**
-     * Verifies that the catalog file represented by the catalogId exists. If it
-     * doesn't, returns false to ignore it as specified in the Catalog
-     * specification, section 8. Resource Failures.
-     * <p>
-     * Verifies that the catalog represented by the catalogId has not been
-     * searched or is not circularly referenced.
+     * Verifies that the catalog file represented by the catalogId exists. If it doesn't, returns
+     * false to ignore it as specified in the Catalog specification, section 8. Resource Failures.
+     *
+     * <p>Verifies that the catalog represented by the catalogId has not been searched or is not
+     * circularly referenced.
      *
      * @param parent the parent of the catalog to be loaded
      * @param catalogURI the URI to the catalog
@@ -517,16 +500,16 @@ class GroupEntry extends BaseEntry {
             return false;
         }
 
-        //Ignore it if it doesn't exist
-        if (Util.isFileUri(catalogURI) &&
-                !Util.isFileUriExist(catalogURI, false)) {
+        // Ignore it if it doesn't exist
+        if (Util.isFileUri(catalogURI) && !Util.isFileUriExist(catalogURI, false)) {
             return false;
         }
 
         String catalogId = catalogURI.toASCIIString();
         if (catalogsSearched.contains(catalogId) || isCircular(parent, catalogId)) {
-            CatalogMessages.reportRunTimeError(CatalogMessages.ERR_CIRCULAR_REFERENCE,
-                    new Object[]{CatalogMessages.sanitize(catalogId)});
+            CatalogMessages.reportRunTimeError(
+                    CatalogMessages.ERR_CIRCULAR_REFERENCE,
+                    new Object[] {CatalogMessages.sanitize(catalogId)});
         }
 
         return true;
@@ -549,7 +532,7 @@ class GroupEntry extends BaseEntry {
             return true;
         }
 
-       // next, check parent's parent
+        // next, check parent's parent
         return parent.isCircular(parent.parent, systemId);
     }
 }

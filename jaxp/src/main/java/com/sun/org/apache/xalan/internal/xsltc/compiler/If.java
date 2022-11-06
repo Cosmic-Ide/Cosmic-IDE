@@ -39,11 +39,9 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 final class If extends Instruction {
 
     private Expression _test;
-    private boolean    _ignore = false;
+    private boolean _ignore = false;
 
-    /**
-     * Display the contents of this element
-     */
+    /** Display the contents of this element */
     public void display(int indent) {
         indent(indent);
         Util.println("If");
@@ -53,9 +51,7 @@ final class If extends Instruction {
         displayContents(indent + IndentIncrement);
     }
 
-    /**
-     * Parse the "test" expression and contents of this element.
-     */
+    /** Parse the "test" expression and contents of this element. */
     public void parseContents(Parser parser) {
         // Parse the "test" expression
         _test = parser.parseExpression(this, "test", null);
@@ -77,8 +73,8 @@ final class If extends Instruction {
     }
 
     /**
-     * Type-check the "test" expression and contents of this element.
-     * The contents will be ignored if we know the test will always fail.
+     * Type-check the "test" expression and contents of this element. The contents will be ignored
+     * if we know the test will always fail.
      */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         // Type-check the "test" expression
@@ -93,8 +89,8 @@ final class If extends Instruction {
     }
 
     /**
-     * Translate the "test" expression and contents of this element.
-     * The contents will be ignored if we know the test will always fail.
+     * Translate the "test" expression and contents of this element. The contents will be ignored if
+     * we know the test will always fail.
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
         final InstructionList il = methodGen.getInstructionList();

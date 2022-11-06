@@ -22,28 +22,20 @@ package com.sun.org.apache.bcel.internal.util;
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 
 /**
- * Abstract definition of a class repository. Instances may be used
- * to load classes from different sources and may be used in the
- * Repository.setRepository method.
+ * Abstract definition of a class repository. Instances may be used to load classes from different
+ * sources and may be used in the Repository.setRepository method.
  *
- * @see com.sun.org.apache.bcel.internal.Repository
- * @LastModified: Jan 2020
+ * @see com.sun.org.apache.bcel.internal.Repository @LastModified: Jan 2020
  */
 public interface Repository {
 
-    /**
-     * Stores the provided class under "clazz.getClassName()"
-     */
+    /** Stores the provided class under "clazz.getClassName()" */
     void storeClass(JavaClass clazz);
 
-    /**
-     * Removes class from repository
-     */
+    /** Removes class from repository */
     void removeClass(JavaClass clazz);
 
-    /**
-     * Finds the class with the name provided, if the class isn't there, return NULL.
-     */
+    /** Finds the class with the name provided, if the class isn't there, return NULL. */
     JavaClass findClass(String className);
 
     /**
@@ -51,13 +43,9 @@ public interface Repository {
      */
     JavaClass loadClass(String className) throws java.lang.ClassNotFoundException;
 
-    /**
-     * Finds the JavaClass instance for the given run-time class object
-     */
+    /** Finds the JavaClass instance for the given run-time class object */
     JavaClass loadClass(Class<?> clazz) throws java.lang.ClassNotFoundException;
 
-    /**
-     * Clears all entries from cache.
-     */
+    /** Clears all entries from cache. */
     void clear();
 }

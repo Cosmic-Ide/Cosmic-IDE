@@ -23,9 +23,9 @@
  */
 package io.github.rosemoe.sora.lang.styling;
 
-import java.util.Objects;
-
 import io.github.rosemoe.sora.lang.styling.inlayHint.InlayHint;
+
+import java.util.Objects;
 
 public class AdvancedSpan extends Span {
 
@@ -58,7 +58,9 @@ public class AdvancedSpan extends Span {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AdvancedSpan that = (AdvancedSpan) o;
-        return Objects.equals(renderer, that.renderer) && Objects.equals(hintBefore, that.hintBefore) && Objects.equals(hintAfter, that.hintAfter);
+        return Objects.equals(renderer, that.renderer)
+                && Objects.equals(hintBefore, that.hintBefore)
+                && Objects.equals(hintAfter, that.hintAfter);
     }
 
     @Override

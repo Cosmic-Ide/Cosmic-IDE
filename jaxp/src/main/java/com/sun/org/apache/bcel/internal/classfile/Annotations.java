@@ -42,9 +42,21 @@ public abstract class Annotations extends Attribute {
      * @param input Input stream
      * @param constant_pool Array of constants
      */
-    Annotations(final byte annotation_type, final int name_index, final int length, final DataInput input,
-            final ConstantPool constant_pool, final boolean isRuntimeVisible) throws IOException {
-        this(annotation_type, name_index, length, (AnnotationEntry[]) null, constant_pool, isRuntimeVisible);
+    Annotations(
+            final byte annotation_type,
+            final int name_index,
+            final int length,
+            final DataInput input,
+            final ConstantPool constant_pool,
+            final boolean isRuntimeVisible)
+            throws IOException {
+        this(
+                annotation_type,
+                name_index,
+                length,
+                (AnnotationEntry[]) null,
+                constant_pool,
+                isRuntimeVisible);
         final int annotation_table_length = input.readUnsignedShort();
         annotationTable = new AnnotationEntry[annotation_table_length];
         for (int i = 0; i < annotation_table_length; i++) {
@@ -59,16 +71,22 @@ public abstract class Annotations extends Attribute {
      * @param annotationTable the actual annotations
      * @param constantPool Array of constants
      */
-    public Annotations(final byte annotationType, final int nameIndex, final int length, final AnnotationEntry[] annotationTable,
-            final ConstantPool constantPool, final boolean isRuntimeVisible) {
+    public Annotations(
+            final byte annotationType,
+            final int nameIndex,
+            final int length,
+            final AnnotationEntry[] annotationTable,
+            final ConstantPool constantPool,
+            final boolean isRuntimeVisible) {
         super(annotationType, nameIndex, length, constantPool);
         this.annotationTable = annotationTable;
         this.isRuntimeVisible = isRuntimeVisible;
     }
 
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely defined by the contents of a Java class.
-     * I.e., the hierarchy of methods, fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
@@ -84,9 +102,7 @@ public abstract class Annotations extends Attribute {
         this.annotationTable = annotationTable;
     }
 
-    /**
-     * returns the array of annotation entries in this annotation
-     */
+    /** returns the array of annotation entries in this annotation */
     public AnnotationEntry[] getAnnotationEntries() {
         return annotationTable;
     }

@@ -21,31 +21,27 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * This class is derived from the abstract {@link Constant}
- * and represents a reference to a method type.
+ * This class is derived from the abstract {@link Constant} and represents a reference to a method
+ * type.
  *
- * @see     Constant
+ * @see Constant
  * @since 6.0
  */
 public final class ConstantMethodType extends Constant {
 
     private int descriptorIndex;
 
-
-    /**
-     * Initialize from another object.
-     */
+    /** Initialize from another object. */
     public ConstantMethodType(final ConstantMethodType c) {
         this(c.getDescriptorIndex());
     }
-
 
     /**
      * Initialize instance from file data.
@@ -57,25 +53,22 @@ public final class ConstantMethodType extends Constant {
         this(file.readUnsignedShort());
     }
 
-
     public ConstantMethodType(final int descriptor_index) {
         super(Const.CONSTANT_MethodType);
         this.descriptorIndex = descriptor_index;
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitly
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitly defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitConstantMethodType(this);
     }
-
 
     /**
      * Dump name and signature index to file stream in binary format.
@@ -84,21 +77,18 @@ public final class ConstantMethodType extends Constant {
      * @throws IOException
      */
     @Override
-    public void dump( final DataOutputStream file ) throws IOException {
+    public void dump(final DataOutputStream file) throws IOException {
         file.writeByte(super.getTag());
         file.writeShort(descriptorIndex);
     }
-
 
     public int getDescriptorIndex() {
         return descriptorIndex;
     }
 
-
     public void setDescriptorIndex(final int descriptor_index) {
         this.descriptorIndex = descriptor_index;
     }
-
 
     /**
      * @return String representation

@@ -46,5 +46,4 @@ class CatalogEntry extends GroupEntry {
     public String match(String match) {
         throw new UnsupportedOperationException("Unsupported operation.");
     }
-
 }

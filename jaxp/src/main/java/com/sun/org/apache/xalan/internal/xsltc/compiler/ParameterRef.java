@@ -39,19 +39,16 @@ import com.sun.org.apache.xalan.internal.xsltc.runtime.BasisLibrary;
  */
 final class ParameterRef extends VariableRefBase {
 
-    /**
-     * Name of param being referenced.
-     */
+    /** Name of param being referenced. */
     QName _name = null;
 
     public ParameterRef(Param param) {
         super(param);
         _name = param._name;
-
     }
 
     public String toString() {
-        return "parameter-ref("+_variable.getName()+'/'+_variable.getType()+')';
+        return "parameter-ref(" + _variable.getName() + '/' + _variable.getType() + ')';
     }
 
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
@@ -63,7 +60,7 @@ final class ParameterRef extends VariableRefBase {
          * {namespaceuri}localName, which will get mapped to an instance
          * variable in the class.
          */
-        final String name = BasisLibrary.mapQNameToJavaName (_name.toString());
+        final String name = BasisLibrary.mapQNameToJavaName(_name.toString());
         final String signature = _type.toSignature();
 
         if (_variable.isLocal()) {
@@ -76,33 +73,30 @@ final class ParameterRef extends VariableRefBase {
 
                 if (variableClosure != null) {
                     il.append(ALOAD_0);
-                    il.append(new GETFIELD(
-                        cpg.addFieldref(variableClosure.getInnerClassName(),
-                            name, signature)));
-                }
-                else {
+                    il.append(
+                            new GETFIELD(
+                                    cpg.addFieldref(
+                                            variableClosure.getInnerClassName(), name, signature)));
+                } else {
                     il.append(_variable.loadInstruction());
                 }
-            }
-            else {
+            } else {
                 il.append(_variable.loadInstruction());
             }
-        }
-        else {
+        } else {
             final String className = classGen.getClassName();
             il.append(classGen.loadTranslet());
             if (classGen.isExternal()) {
                 il.append(new CHECKCAST(cpg.addClass(className)));
             }
-            il.append(new GETFIELD(cpg.addFieldref(className,name,signature)));
+            il.append(new GETFIELD(cpg.addFieldref(className, name, signature)));
         }
 
         if (_variable.getType() instanceof NodeSetType) {
             // The method cloneIterator() also does resetting
-            final int clone = cpg.addInterfaceMethodref(NODE_ITERATOR,
-                                                       "cloneIterator",
-                                                       "()" +
-                                                        NODE_ITERATOR_SIG);
+            final int clone =
+                    cpg.addInterfaceMethodref(
+                            NODE_ITERATOR, "cloneIterator", "()" + NODE_ITERATOR_SIG);
             il.append(new INVOKEINTERFACE(clone, 1));
         }
     }

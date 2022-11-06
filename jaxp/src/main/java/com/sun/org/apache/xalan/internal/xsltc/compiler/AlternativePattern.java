@@ -38,8 +38,8 @@ final class AlternativePattern extends Pattern {
     private final Pattern _right;
 
     /**
-     * Construct an alternative pattern. The method <code>setParent</code>
-     * should not be called in this case.
+     * Construct an alternative pattern. The method <code>setParent</code> should not be called in
+     * this case.
      */
     public AlternativePattern(Pattern left, Pattern right) {
         _left = left;
@@ -60,9 +60,7 @@ final class AlternativePattern extends Pattern {
         return _right;
     }
 
-    /**
-     * The type of an '|' is not really defined, hence null is returned.
-     */
+    /** The type of an '|' is not really defined, hence null is returned. */
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         _left.typeCheck(stable);
         _right.typeCheck(stable);
@@ -73,10 +71,8 @@ final class AlternativePattern extends Pattern {
         double left = _left.getPriority();
         double right = _right.getPriority();
 
-        if (left < right)
-            return(left);
-        else
-            return(right);
+        if (left < right) return (left);
+        else return (right);
     }
 
     public String toString() {

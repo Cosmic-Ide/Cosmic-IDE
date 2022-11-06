@@ -40,9 +40,15 @@ public class EditorBasedSnippetVariableResolver implements ISnippetVariableResol
     @NonNull
     @Override
     public String[] getResolvableNames() {
-        return new String[]{
-                "TM_CURRENT_LINE", "TM_LINE_INDEX", "TM_LINE_NUMBER", "CURSOR_INDEX", "CURSOR_NUMBER",
-                "TM_CURRENT_WORD", "SELECTION", "TM_SELECTED_TEXT"
+        return new String[] {
+            "TM_CURRENT_LINE",
+            "TM_LINE_INDEX",
+            "TM_LINE_NUMBER",
+            "CURSOR_INDEX",
+            "CURSOR_NUMBER",
+            "TM_CURRENT_WORD",
+            "SELECTION",
+            "TM_SELECTED_TEXT"
         };
     }
 
@@ -59,16 +65,26 @@ public class EditorBasedSnippetVariableResolver implements ISnippetVariableResol
                 return Integer.toString(editor.getCursor().getLeft());
             case "CURSOR_NUMBER":
                 return Integer.toString(editor.getCursor().getLeft() + 1);
-            case "TM_CURRENT_WORD": {
-                var text = editor.getText();
-                var res = ICUUtils.getWordEdges(text.getLine(text.getCursor().getLeftLine()), text.getCursor().getLeftColumn(), true);
-                return text.getLine(text.getCursor().getLeftLine()).subSequence(IntPair.getFirst(res), IntPair.getSecond(res)).toString();
-            }
+            case "TM_CURRENT_WORD":
+                {
+                    var text = editor.getText();
+                    var res =
+                            ICUUtils.getWordEdges(
+                                    text.getLine(text.getCursor().getLeftLine()),
+                                    text.getCursor().getLeftColumn(),
+                                    true);
+                    return text.getLine(text.getCursor().getLeftLine())
+                            .subSequence(IntPair.getFirst(res), IntPair.getSecond(res))
+                            .toString();
+                }
             case "SELECTION":
-            case "TM_SELECTED_TEXT": {
-                var cursor = editor.getCursor();
-                return editor.getText().subSequence(cursor.getLeft(), cursor.getRight()).toString();
-            }
+            case "TM_SELECTED_TEXT":
+                {
+                    var cursor = editor.getCursor();
+                    return editor.getText()
+                            .subSequence(cursor.getLeft(), cursor.getRight())
+                            .toString();
+                }
         }
         throw new IllegalArgumentException("Unsupported variable name:" + name);
     }

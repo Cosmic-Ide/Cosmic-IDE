@@ -6,12 +6,11 @@ import android.util.Log;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 
+import org.cosmic.ide.CompilerUtil;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.interfaces.*;
-import org.cosmic.ide.common.Indexer;
 import org.cosmic.ide.common.util.FileUtil;
 import org.cosmic.ide.project.Project;
-import org.cosmic.ide.CompilerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class JavacCompilationTask implements Task {
         final var output = new File(project.getBinDirPath(), "classes");
 
         final var version = prefs.getString("ide_java_version", "7");
-        
+
         Log.d(TAG, "java_version=" + version);
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();

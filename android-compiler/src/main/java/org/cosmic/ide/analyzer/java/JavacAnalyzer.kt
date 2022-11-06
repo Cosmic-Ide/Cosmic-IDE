@@ -7,10 +7,9 @@ import androidx.preference.PreferenceManager
 import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
-import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.common.util.CoroutineUtil
-import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.CompilerUtil
+import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.project.JavaProject
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
@@ -28,8 +27,8 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
     private val tool = JavacTool.create()
     private val standardFileManager = tool.getStandardFileManager(
-                diagnostics, Locale.getDefault(), Charset.defaultCharset()
-            )
+        diagnostics, Locale.getDefault(), Charset.defaultCharset()
+    )
     private var isFirstUse = true
     private val project: JavaProject
     private val TAG = JavacAnalyzer::class.simpleName
@@ -38,8 +37,8 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
         project = javaProject
         standardFileManager.setLocation(
-                StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
-            )
+            StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
+        )
     }
 
     @Throws(IOException::class)

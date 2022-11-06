@@ -31,6 +31,9 @@ import com.sun.org.apache.xerces.internal.util.NamespaceSupport;
 import com.sun.org.apache.xerces.internal.util.SymbolTable;
 import com.sun.org.apache.xerces.internal.xni.QName;
 import com.sun.xml.internal.stream.util.ReadOnlyIterator;
+
+import jdk.xml.internal.SecuritySupport;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,20 +50,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.stream.StreamResult;
-import jdk.xml.internal.SecuritySupport;
 
 /**
- * This class implements a StAX XMLStreamWriter. It extends
- * <code>AbstractMap</code> in order to support a getter for
- * implementation-specific properties. For example, you can get
- * the underlying <code>OutputStream</code> by casting an instance
- * of this class to <code>Map</code> and calling
+ * This class implements a StAX XMLStreamWriter. It extends <code>AbstractMap</code> in order to
+ * support a getter for implementation-specific properties. For example, you can get the underlying
+ * <code>OutputStream</code> by casting an instance of this class to <code>Map</code> and calling
  * <code>getProperty(OUTPUTSTREAM_PROPERTY)</code>.
  *
  * @author Neeraj Bajaj
@@ -89,94 +90,72 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     public static final String OUTPUTSTREAM_PROPERTY = "sjsxp-outputstream";
 
     /**
-     * This flag can be used to turn escaping off for content. It does
-     * not apply to attribute content.
+     * This flag can be used to turn escaping off for content. It does not apply to attribute
+     * content.
      */
     boolean fEscapeCharacters = true;
 
-    /**
-     * Flag for the value of repairNamespace property
-     */
+    /** Flag for the value of repairNamespace property */
     private boolean fIsRepairingNamespace = false;
 
-    /**
-     * Underlying Writer to which characters are written.
-     */
+    /** Underlying Writer to which characters are written. */
     private Writer fWriter;
 
-    /**
-     * Underlying OutputStream to which <code>fWriter</code>
-     * writes to. May be null if unknown.
-     */
+    /** Underlying OutputStream to which <code>fWriter</code> writes to. May be null if unknown. */
     private OutputStream fOutputStream = null;
 
-    /**
-     * Collects attributes when the writer is in reparing mode.
-     */
+    /** Collects attributes when the writer is in reparing mode. */
     private List<Attribute> fAttributeCache;
 
-    /**
-     * Collects namespace declarations when the writer is in reparing mode.
-     */
+    /** Collects namespace declarations when the writer is in reparing mode. */
     private List<QName> fNamespaceDecls;
 
-    /**
-     * Namespace context encapsulating user specified context
-     * and context built by the writer
-     */
+    /** Namespace context encapsulating user specified context and context built by the writer */
     private NamespaceContextImpl fNamespaceContext = null;
 
     private NamespaceSupport fInternalNamespaceContext = null;
 
     private Random fPrefixGen = null;
 
-    /**
-     * Reference to PropertyManager
-     */
+    /** Reference to PropertyManager */
     private PropertyManager fPropertyManager = null;
 
-    /**
-     * Flag to track if start tag is opened
-     */
+    /** Flag to track if start tag is opened */
     private boolean fStartTagOpened = false;
 
-    /**
-     * Boolean flag  to indicate, if instance can be reused
-     */
+    /** Boolean flag to indicate, if instance can be reused */
     private boolean fReuse;
 
     private SymbolTable fSymbolTable = new SymbolTable();
 
-    private ElementStack fElementStack = new ElementStack(); //Change this .-Venu
+    private ElementStack fElementStack = new ElementStack(); // Change this .-Venu
 
-    final private String DEFAULT_PREFIX = fSymbolTable.addSymbol("");
+    private final String DEFAULT_PREFIX = fSymbolTable.addSymbol("");
 
     private final ReadOnlyIterator<String> fReadOnlyIterator = new ReadOnlyIterator<>();
 
     /**
-     * In some cases, this charset encoder is used to determine if a char is
-     * encodable by underlying writer. For example, an 8-bit char from the
-     * extended ASCII set is not encodable by 7-bit ASCII encoder. Unencodable
-     * chars are escaped using XML numeric entities.
+     * In some cases, this charset encoder is used to determine if a char is encodable by underlying
+     * writer. For example, an 8-bit char from the extended ASCII set is not encodable by 7-bit
+     * ASCII encoder. Unencodable chars are escaped using XML numeric entities.
      */
     private CharsetEncoder fEncoder = null;
 
-     /**
-     * This is used to hold the namespace for attributes which happen to have
-     * the same uri as the default namespace; It's added to avoid changing the
-     * current impl. which has many redundant code for the repair mode
+    /**
+     * This is used to hold the namespace for attributes which happen to have the same uri as the
+     * default namespace; It's added to avoid changing the current impl. which has many redundant
+     * code for the repair mode
      */
     Map<String, String> fAttrNamespace = null;
 
     /**
-     * Creates a new instance of XMLStreamWriterImpl. Uses platform's default
-     * encoding.
+     * Creates a new instance of XMLStreamWriterImpl. Uses platform's default encoding.
      *
      * @param outputStream Underlying stream to write the bytes to
-     * @param props        Properties used by this writer
+     * @param props Properties used by this writer
      */
     public XMLStreamWriterImpl(OutputStream outputStream, PropertyManager props)
-        throws IOException {
+            throws IOException {
 
         // cannot call this(outputStream, null, props); for constructor,
         // OutputStreamWriter charsetName cannot be null
@@ -189,42 +168,41 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      * Creates a new instance of XMLStreamWriterImpl.
      *
      * @param outputStream Underlying stream to write the bytes
-     * @param encoding     Encoding used to convert chars into bytes
-     * @param props        Properties used by this writer
+     * @param encoding Encoding used to convert chars into bytes
+     * @param props Properties used by this writer
      */
-    public XMLStreamWriterImpl(OutputStream outputStream, String encoding,
-        PropertyManager props) throws java.io.IOException {
+    public XMLStreamWriterImpl(OutputStream outputStream, String encoding, PropertyManager props)
+            throws java.io.IOException {
         this(new StreamResult(outputStream), encoding, props);
     }
 
     /**
      * Creates a new instance of XMLStreamWriterImpl using a Writer.
      *
-     * @param writer  Underlying writer to which chars are written
-     * @param props   Properties used by this writer
+     * @param writer Underlying writer to which chars are written
+     * @param props Properties used by this writer
      */
-    public XMLStreamWriterImpl(Writer writer, PropertyManager props)
-        throws java.io.IOException {
+    public XMLStreamWriterImpl(Writer writer, PropertyManager props) throws java.io.IOException {
         this(new StreamResult(writer), null, props);
     }
 
     /**
-     * Creates a new instance of XMLStreamWriterImpl using a StreamResult.
-     * A StreamResult encasupates an OutputStream, a Writer or a SystemId.
+     * Creates a new instance of XMLStreamWriterImpl using a StreamResult. A StreamResult
+     * encasupates an OutputStream, a Writer or a SystemId.
      *
-     * @param writer  Underlying writer to which chars are written
-     * @param props   Properties used by this writer
+     * @param writer Underlying writer to which chars are written
+     * @param props Properties used by this writer
      */
-    public XMLStreamWriterImpl(StreamResult sr, String encoding,
-        PropertyManager props) throws java.io.IOException {
+    public XMLStreamWriterImpl(StreamResult sr, String encoding, PropertyManager props)
+            throws java.io.IOException {
         setOutput(sr, encoding);
         fPropertyManager = props;
         init();
     }
 
     /**
-     * Initialize an instance of this XMLStreamWriter. Allocate new instances
-     * for all the data structures. Set internal flags based on property values.
+     * Initialize an instance of this XMLStreamWriter. Allocate new instances for all the data
+     * structures. Set internal flags based on property values.
      */
     private void init() {
         fReuse = false;
@@ -237,31 +215,31 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         fNamespaceContext.internalContext = fInternalNamespaceContext;
 
         // Set internal state based on property values
-        Boolean ob = (Boolean) fPropertyManager.getProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES);
+        Boolean ob =
+                (Boolean) fPropertyManager.getProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES);
         fIsRepairingNamespace = ob;
         ob = (Boolean) fPropertyManager.getProperty(Constants.ESCAPE_CHARACTERS);
         setEscapeCharacters(ob);
     }
 
     /**
-     * Reset this instance so that it can be re-used. Do not read properties
-     * again. The method <code>setOutput(StreamResult, encoding)</code> must
-     * be called after this one.
+     * Reset this instance so that it can be re-used. Do not read properties again. The method
+     * <code>setOutput(StreamResult, encoding)</code> must be called after this one.
      */
     public void reset() {
         reset(false);
     }
 
     /**
-     * Reset this instance so that it can be re-used. Clears but does not
-     * re-allocate internal data structures.
+     * Reset this instance so that it can be re-used. Clears but does not re-allocate internal data
+     * structures.
      *
      * @param resetProperties Indicates if properties should be read again
      */
     void reset(boolean resetProperties) {
         if (!fReuse) {
             throw new java.lang.IllegalStateException(
-                "close() Must be called before calling reset()");
+                    "close() Must be called before calling reset()");
         }
 
         fReuse = false;
@@ -276,7 +254,9 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         fNamespaceContext.userContext = null;
 
         if (resetProperties) {
-            Boolean ob = (Boolean) fPropertyManager.getProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES);
+            Boolean ob =
+                    (Boolean)
+                            fPropertyManager.getProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES);
             fIsRepairingNamespace = ob;
             ob = (Boolean) fPropertyManager.getProperty(Constants.ESCAPE_CHARACTERS);
             setEscapeCharacters(ob);
@@ -284,57 +264,48 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     /**
-     * Use a StreamResult to initialize the output for this XMLStreamWriter. Check
-     * for OutputStream, Writer and then systemId, in that order.
+     * Use a StreamResult to initialize the output for this XMLStreamWriter. Check for OutputStream,
+     * Writer and then systemId, in that order.
      *
-     * @param sr        StreamResult encapsulating output information
-     * @param encoding  Encoding to be used except when a Writer is available
+     * @param sr StreamResult encapsulating output information
+     * @param encoding Encoding to be used except when a Writer is available
      */
-    public void setOutput(StreamResult sr, String encoding)
-        throws IOException {
+    public void setOutput(StreamResult sr, String encoding) throws IOException {
 
         if (sr.getOutputStream() != null) {
             setOutputUsingStream(sr.getOutputStream(), encoding);
-        }
-        else if (sr.getWriter() != null) {
+        } else if (sr.getWriter() != null) {
             setOutputUsingWriter(sr.getWriter());
-        }
-        else if (sr.getSystemId() != null) {
-            setOutputUsingStream(new FileOutputStream(sr.getSystemId()),
-                encoding);
+        } else if (sr.getSystemId() != null) {
+            setOutputUsingStream(new FileOutputStream(sr.getSystemId()), encoding);
         }
     }
 
-     private void setOutputUsingWriter(Writer writer)
-        throws IOException
-     {
-         fWriter = writer;
+    private void setOutputUsingWriter(Writer writer) throws IOException {
+        fWriter = writer;
 
-         if (writer instanceof OutputStreamWriter) {
-             String charset = ((OutputStreamWriter) writer).getEncoding();
-             if (charset != null && !charset.equalsIgnoreCase("utf-8")) {
-                 fEncoder = Charset.forName(charset).newEncoder();
-             }
-         }
-     }
+        if (writer instanceof OutputStreamWriter) {
+            String charset = ((OutputStreamWriter) writer).getEncoding();
+            if (charset != null && !charset.equalsIgnoreCase("utf-8")) {
+                fEncoder = Charset.forName(charset).newEncoder();
+            }
+        }
+    }
 
     /**
-     * Utility method to create a writer when passed an OutputStream. Make
-     * sure to wrap an <code>OutputStreamWriter</code> using an
-     * <code>XMLWriter</code> for performance reasons.
+     * Utility method to create a writer when passed an OutputStream. Make sure to wrap an <code>
+     * OutputStreamWriter</code> using an <code>XMLWriter</code> for performance reasons.
      *
-     * @param os        Underlying OutputStream
-     * @param encoding  Encoding used to convert chars into bytes
+     * @param os Underlying OutputStream
+     * @param encoding Encoding used to convert chars into bytes
      */
-    private void setOutputUsingStream(OutputStream os, String encoding)
-        throws IOException {
+    private void setOutputUsingStream(OutputStream os, String encoding) throws IOException {
         fOutputStream = os;
 
         if (encoding != null) {
             if (encoding.equalsIgnoreCase("utf-8")) {
                 fWriter = new UTF8OutputStreamWriter(os);
-            }
-            else {
+            } else {
                 fWriter = new XMLWriter(new OutputStreamWriter(os, encoding));
                 fEncoder = Charset.forName(encoding).newEncoder();
             }
@@ -348,7 +319,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    /** Can this instance be reused
+    /**
+     * Can this instance be reused
      *
      * @return boolean boolean value to indicate if this instance can be reused or not
      */
@@ -364,14 +336,12 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         return fEscapeCharacters;
     }
 
-    /**
-     * Close this XMLStreamWriter by closing underlying writer.
-     */
+    /** Close this XMLStreamWriter by closing underlying writer. */
     @Override
     public void close() throws XMLStreamException {
         if (fWriter != null) {
             try {
-                //fWriter.close();
+                // fWriter.close();
                 fWriter.flush();
             } catch (IOException e) {
                 throw new XMLStreamException(e);
@@ -388,9 +358,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         fNamespaceContext.userContext = null;
     }
 
-    /**
-     * Flush this XMLStreamWriter by flushin underlying writer.
-     */
+    /** Flush this XMLStreamWriter by flushin underlying writer. */
     @Override
     public void flush() throws XMLStreamException {
         try {
@@ -411,10 +379,9 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     /**
-     * Return a prefix associated with specified uri, or null if the
-     * uri is unknown.
+     * Return a prefix associated with specified uri, or null if the uri is unknown.
      *
-     * @param  uri The namespace uri
+     * @param uri The namespace uri
      * @throws XMLStreamException if uri specified is "" or null
      */
     @Override
@@ -425,20 +392,18 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     /**
      * Returns value associated with the specified property name.
      *
-     * @param  str Property name
+     * @param str Property name
      * @throws IllegalArgumentException if the specified property is not supported
      * @return value associated with the specified property.
      */
     @Override
-    public Object getProperty(String str)
-        throws IllegalArgumentException {
+    public Object getProperty(String str) throws IllegalArgumentException {
         if (str == null) {
             throw new NullPointerException();
         }
 
         if (!fPropertyManager.containsProperty(str)) {
-            throw new IllegalArgumentException("Property '" + str +
-                "' is not supported");
+            throw new IllegalArgumentException("Property '" + str + "' is not supported");
         }
 
         return fPropertyManager.getProperty(str);
@@ -469,30 +434,26 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     /**
-     * Sets the current <code>NamespaceContext</code> for prefix and uri bindings.
-     * This context becomes the root namespace context for writing and
-     * will replace the current root namespace context. Subsequent calls
-     * to setPrefix and setDefaultNamespace will bind namespaces using
-     * the context passed to the method as the root context for resolving
-     * namespaces. This method may only be called once at the start of the
-     * document. It does not cause the namespaces to be declared. If a
-     * namespace URI to prefix mapping is found in the namespace context
-     * it is treated as declared and the prefix may be used by the
-     * <code>XMLStreamWriter</code>.
+     * Sets the current <code>NamespaceContext</code> for prefix and uri bindings. This context
+     * becomes the root namespace context for writing and will replace the current root namespace
+     * context. Subsequent calls to setPrefix and setDefaultNamespace will bind namespaces using the
+     * context passed to the method as the root context for resolving namespaces. This method may
+     * only be called once at the start of the document. It does not cause the namespaces to be
+     * declared. If a namespace URI to prefix mapping is found in the namespace context it is
+     * treated as declared and the prefix may be used by the <code>XMLStreamWriter</code>.
      *
      * @param namespaceContext the namespace context to use for this writer, may not be null
      * @throws XMLStreamException
      */
     @Override
-    public void setNamespaceContext(NamespaceContext namespaceContext)
-        throws XMLStreamException {
+    public void setNamespaceContext(NamespaceContext namespaceContext) throws XMLStreamException {
         fNamespaceContext.userContext = namespaceContext;
     }
 
     /**
-     * Sets the prefix the uri is bound to. This prefix is bound in the scope of
-     * the current START_ELEMENT / END_ELEMENT pair. If this method is called before
-     * a START_ELEMENT has been written the prefix is bound in the root scope.
+     * Sets the prefix the uri is bound to. This prefix is bound in the scope of the current
+     * START_ELEMENT / END_ELEMENT pair. If this method is called before a START_ELEMENT has been
+     * written the prefix is bound in the root scope.
      *
      * @param prefix
      * @param uri
@@ -519,10 +480,9 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 return;
             }
 
-            if(checkUserNamespaceContext(prefix,uri))
-                return;
+            if (checkUserNamespaceContext(prefix, uri)) return;
             QName qname = new QName();
-            qname.setValues(prefix,XMLConstants.XMLNS_ATTRIBUTE, null,uri);
+            qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null, uri);
             fNamespaceDecls.add(qname);
 
             return;
@@ -532,12 +492,10 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public void writeAttribute(String localName, String value)
-        throws XMLStreamException {
+    public void writeAttribute(String localName, String value) throws XMLStreamException {
         try {
             if (!fStartTagOpened) {
-                throw new XMLStreamException(
-                    "Attribute not associated with any element");
+                throw new XMLStreamException("Attribute not associated with any element");
             }
 
             if (fIsRepairingNamespace) {
@@ -552,9 +510,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             fWriter.write(localName);
             fWriter.write("=\"");
             writeXMLContent(
-                    value,
-                    true,   // true = escapeChars
-                    true);  // true = escapeDoubleQuotes
+                    value, true, // true = escapeChars
+                    true); // true = escapeDoubleQuotes
             fWriter.write("\"");
         } catch (IOException e) {
             throw new XMLStreamException(e);
@@ -562,12 +519,11 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public void writeAttribute(String namespaceURI, String localName,
-        String value) throws XMLStreamException {
+    public void writeAttribute(String namespaceURI, String localName, String value)
+            throws XMLStreamException {
         try {
             if (!fStartTagOpened) {
-                throw new XMLStreamException(
-                    "Attribute not associated with any element");
+                throw new XMLStreamException("Attribute not associated with any element");
             }
 
             if (namespaceURI == null) {
@@ -594,8 +550,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    private void writeAttributeWithPrefix(String prefix, String localName,
-        String value) throws IOException {
+    private void writeAttributeWithPrefix(String prefix, String localName, String value)
+            throws IOException {
         fWriter.write(SPACE);
 
         if ((prefix != null) && (!prefix.equals(XMLConstants.DEFAULT_NS_PREFIX))) {
@@ -605,19 +561,18 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
         fWriter.write(localName);
         fWriter.write("=\"");
-        writeXMLContent(value,
-                true,   // true = escapeChars
-                true);  // true = escapeDoubleQuotes
+        writeXMLContent(
+                value, true, // true = escapeChars
+                true); // true = escapeDoubleQuotes
         fWriter.write("\"");
     }
 
     @Override
-    public void writeAttribute(String prefix, String namespaceURI,
-        String localName, String value) throws XMLStreamException {
+    public void writeAttribute(String prefix, String namespaceURI, String localName, String value)
+            throws XMLStreamException {
         try {
             if (!fStartTagOpened) {
-                throw new XMLStreamException(
-                    "Attribute not associated with any element");
+                throw new XMLStreamException("Attribute not associated with any element");
             }
 
             if (namespaceURI == null) {
@@ -629,7 +584,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             }
 
             if (!fIsRepairingNamespace) {
-                if (prefix == null || prefix.isEmpty()){
+                if (prefix == null || prefix.isEmpty()) {
                     if (!namespaceURI.isEmpty()) {
                         throw new XMLStreamException("prefix cannot be null or empty");
                     } else {
@@ -638,20 +593,26 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                     }
                 }
 
-                if (!prefix.equals(XMLConstants.XML_NS_PREFIX) ||
-                        !namespaceURI.equals(XMLConstants.XML_NS_URI)) {
+                if (!prefix.equals(XMLConstants.XML_NS_PREFIX)
+                        || !namespaceURI.equals(XMLConstants.XML_NS_URI)) {
 
                     prefix = fSymbolTable.addSymbol(prefix);
                     namespaceURI = fSymbolTable.addSymbol(namespaceURI);
 
-                    if (fInternalNamespaceContext.containsPrefixInCurrentContext(prefix)){
+                    if (fInternalNamespaceContext.containsPrefixInCurrentContext(prefix)) {
 
                         String tmpURI = fInternalNamespaceContext.getURI(prefix);
 
-                        if (tmpURI != null && tmpURI != namespaceURI){
-                            throw new XMLStreamException("Prefix "+prefix+" is " +
-                                    "already bound to "+tmpURI+
-                                    ". Trying to rebind it to "+namespaceURI+" is an error.");
+                        if (tmpURI != null && tmpURI != namespaceURI) {
+                            throw new XMLStreamException(
+                                    "Prefix "
+                                            + prefix
+                                            + " is "
+                                            + "already bound to "
+                                            + tmpURI
+                                            + ". Trying to rebind it to "
+                                            + namespaceURI
+                                            + " is an error.");
                         }
                     }
                     fInternalNamespaceContext.declarePrefix(prefix, namespaceURI);
@@ -706,8 +667,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public void writeCharacters(char[] data, int start, int len)
-        throws XMLStreamException {
+    public void writeCharacters(char[] data, int start, int len) throws XMLStreamException {
         try {
             if (fStartTagOpened) {
                 closeStartTag();
@@ -766,8 +726,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      *   Namespaces in XML, 5.2 Namespace Defaulting</a>
      */
     @Override
-    public void writeDefaultNamespace(String namespaceURI)
-        throws XMLStreamException {
+    public void writeDefaultNamespace(String namespaceURI) throws XMLStreamException {
 
         // normalize namespaceURI
         String namespaceURINormalized;
@@ -780,13 +739,16 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         try {
             if (!fStartTagOpened) {
                 throw new IllegalStateException(
-                    "Namespace Attribute not associated with any element");
+                        "Namespace Attribute not associated with any element");
             }
 
             if (fIsRepairingNamespace) {
                 QName qname = new QName();
-                qname.setValues(XMLConstants.DEFAULT_NS_PREFIX,
-                    XMLConstants.XMLNS_ATTRIBUTE, null, namespaceURINormalized);
+                qname.setValues(
+                        XMLConstants.DEFAULT_NS_PREFIX,
+                        XMLConstants.XMLNS_ATTRIBUTE,
+                        null,
+                        namespaceURINormalized);
                 fNamespaceDecls.add(qname);
 
                 return;
@@ -794,16 +756,18 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
             namespaceURINormalized = fSymbolTable.addSymbol(namespaceURINormalized);
 
-            if (fInternalNamespaceContext.containsPrefixInCurrentContext("")){
+            if (fInternalNamespaceContext.containsPrefixInCurrentContext("")) {
 
                 String tmp = fInternalNamespaceContext.getURI("");
 
                 if (tmp != null && !tmp.equals(namespaceURINormalized)) {
-                        throw new XMLStreamException(
-                                "xmlns has been already bound to " +tmp +
-                                ". Rebinding it to "+ namespaceURINormalized +
-                                " is an error");
-                    }
+                    throw new XMLStreamException(
+                            "xmlns has been already bound to "
+                                    + tmp
+                                    + ". Rebinding it to "
+                                    + namespaceURINormalized
+                                    + " is an error");
+                }
             }
             fInternalNamespaceContext.declarePrefix("", namespaceURINormalized);
 
@@ -834,8 +798,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public void writeEmptyElement(String namespaceURI, String localName)
-        throws XMLStreamException {
+    public void writeEmptyElement(String namespaceURI, String localName) throws XMLStreamException {
         if (namespaceURI == null) {
             throw new XMLStreamException("NamespaceURI cannot be null");
         }
@@ -847,8 +810,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public void writeEmptyElement(String prefix, String localName,
-        String namespaceURI) throws XMLStreamException {
+    public void writeEmptyElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
         try {
             if (localName == null) {
                 throw new XMLStreamException("Local Name cannot be null");
@@ -875,8 +838,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
             if (!fIsRepairingNamespace) {
                 if (prefix == null) {
-                    throw new XMLStreamException("NamespaceURI " +
-                        namespaceURI + " has not been bound to any prefix");
+                    throw new XMLStreamException(
+                            "NamespaceURI " + namespaceURI + " has not been bound to any prefix");
                 }
             } else {
                 return;
@@ -905,7 +868,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 fInternalNamespaceContext.popContext();
 
                 if (elem.isEmpty) {
-                    //fWriter.write(CLOSE_EMPTY_ELEMENT);
+                    // fWriter.write(CLOSE_EMPTY_ELEMENT);
                 } else {
                     fWriter.write(OPEN_END_TAG);
 
@@ -939,14 +902,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             }
 
             if (currentElement.isEmpty) {
-                //fWriter.write(CLOSE_EMPTY_ELEMENT);
+                // fWriter.write(CLOSE_EMPTY_ELEMENT);
                 return;
             }
 
             fWriter.write(OPEN_END_TAG);
 
-            if ((currentElement.prefix != null) &&
-                    !(currentElement.prefix).isEmpty()) {
+            if ((currentElement.prefix != null) && !(currentElement.prefix).isEmpty()) {
                 fWriter.write(currentElement.prefix);
                 fWriter.write(":");
             }
@@ -957,9 +919,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         } catch (IOException e) {
             throw new XMLStreamException(e);
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new XMLStreamException(
-                    "No element was found to write: "
-                    + e.toString(), e);
+            throw new XMLStreamException("No element was found to write: " + e.toString(), e);
         }
     }
 
@@ -981,21 +941,17 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     /**
      * Write a Namespace declaration.
      *
-     * If namespaceURI == null,
-     * then it is assumed to be equivilent to {@link XMLConstants.NULL_NS_URI},
-     * i.e. there is no Namespace.
+     * <p>If namespaceURI == null, then it is assumed to be equivilent to {@link
+     * XMLConstants.NULL_NS_URI}, i.e. there is no Namespace.
      *
      * @param prefix Prefix to bind.
      * @param namespaceURI NamespaceURI to declare.
-     *
      * @throws XMLStreamException
-     *
-     * @see <a href="http://www.w3.org/TR/REC-xml-names/#defaulting">
-     *   Namespaces in XML, 5.2 Namespace Defaulting</a>
+     * @see <a href="http://www.w3.org/TR/REC-xml-names/#defaulting">Namespaces in XML, 5.2
+     *     Namespace Defaulting</a>
      */
     @Override
-    public void writeNamespace(String prefix, String namespaceURI)
-        throws XMLStreamException {
+    public void writeNamespace(String prefix, String namespaceURI) throws XMLStreamException {
 
         // normalize namespaceURI
         String namespaceURINormalized;
@@ -1011,10 +967,10 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             if (!fStartTagOpened) {
                 throw new IllegalStateException(
                         "Invalid state: start tag is not opened at writeNamespace("
-                        + prefix
-                        + ", "
-                        + namespaceURINormalized
-                        + ")");
+                                + prefix
+                                + ", "
+                                + namespaceURINormalized
+                                + ")");
             }
 
             // is this the default Namespace?
@@ -1025,8 +981,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 return;
             }
 
-            if (prefix.equals(XMLConstants.XML_NS_PREFIX) && namespaceURINormalized.equals(XMLConstants.XML_NS_URI))
-                return;
+            if (prefix.equals(XMLConstants.XML_NS_PREFIX)
+                    && namespaceURINormalized.equals(XMLConstants.XML_NS_URI)) return;
 
             prefix = fSymbolTable.addSymbol(prefix);
             namespaceURINormalized = fSymbolTable.addSymbol(namespaceURINormalized);
@@ -1039,24 +995,26 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 }
 
                 qname = new QName();
-                qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null,
-                    namespaceURINormalized);
+                qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null, namespaceURINormalized);
                 fNamespaceDecls.add(qname);
 
                 return;
             }
 
-
-            if (fInternalNamespaceContext.containsPrefixInCurrentContext(prefix)){
+            if (fInternalNamespaceContext.containsPrefixInCurrentContext(prefix)) {
 
                 String tmp = fInternalNamespaceContext.getURI(prefix);
 
                 if (tmp != null && !tmp.equals(namespaceURINormalized)) {
 
-                       throw new XMLStreamException("prefix "+prefix+
-                            " has been already bound to " +tmp +
-                            ". Rebinding it to "+ namespaceURINormalized+
-                            " is an error");
+                    throw new XMLStreamException(
+                            "prefix "
+                                    + prefix
+                                    + " has been already bound to "
+                                    + tmp
+                                    + ". Rebinding it to "
+                                    + namespaceURINormalized
+                                    + " is an error");
                 }
             }
 
@@ -1068,8 +1026,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    private void writenamespace(String prefix, String namespaceURI)
-        throws IOException {
+    private void writenamespace(String prefix, String namespaceURI) throws IOException {
         fWriter.write(" xmlns");
 
         if ((prefix != null) && (!prefix.equals(XMLConstants.DEFAULT_NS_PREFIX))) {
@@ -1080,14 +1037,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         fWriter.write("=\"");
         writeXMLContent(
                 namespaceURI,
-                true,   // true = escapeChars
-                true);  // true = escapeDoubleQuotes
+                true, // true = escapeChars
+                true); // true = escapeDoubleQuotes
         fWriter.write("\"");
     }
 
     @Override
-    public void writeProcessingInstruction(String target)
-        throws XMLStreamException {
+    public void writeProcessingInstruction(String target) throws XMLStreamException {
         try {
             if (fStartTagOpened) {
                 closeStartTag();
@@ -1113,8 +1069,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      * @throws XMLStreamException
      */
     @Override
-    public void writeProcessingInstruction(String target, String data)
-        throws XMLStreamException {
+    public void writeProcessingInstruction(String target, String data) throws XMLStreamException {
         try {
             if (fStartTagOpened) {
                 closeStartTag();
@@ -1163,14 +1118,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      * @throws XMLStreamException in case of an IOException
      */
     @Override
-    public void writeStartDocument(String encoding, String version)
-        throws XMLStreamException {
+    public void writeStartDocument(String encoding, String version) throws XMLStreamException {
         writeStartDocument(encoding, version, false, false);
     }
 
-    public void writeStartDocument(String encoding, String version,
-            boolean standalone, boolean standaloneSet)
-        throws XMLStreamException {
+    public void writeStartDocument(
+            String encoding, String version, boolean standalone, boolean standaloneSet)
+            throws XMLStreamException {
 
         try {
             if ((encoding == null || encoding.length() == 0)
@@ -1214,8 +1168,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     /**
-     * Verifies that the encoding is consistent between the underlying encoding
-     * and that specified.
+     * Verifies that the encoding is consistent between the underlying encoding and that specified.
      *
      * @param encoding the specified encoding
      * @throws XMLStreamException if they do not match
@@ -1225,12 +1178,10 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         String streamEncoding = null;
         if (fWriter instanceof OutputStreamWriter) {
             streamEncoding = ((OutputStreamWriter) fWriter).getEncoding();
-        }
-        else if (fWriter instanceof UTF8OutputStreamWriter) {
+        } else if (fWriter instanceof UTF8OutputStreamWriter) {
             streamEncoding = ((UTF8OutputStreamWriter) fWriter).getEncoding();
-        }
-        else if (fWriter instanceof XMLWriter) {
-            streamEncoding = ((OutputStreamWriter) ((XMLWriter)fWriter).getWriter()).getEncoding();
+        } else if (fWriter instanceof XMLWriter) {
+            streamEncoding = ((OutputStreamWriter) ((XMLWriter) fWriter).getWriter()).getEncoding();
         }
 
         if (streamEncoding != null && !streamEncoding.equalsIgnoreCase(encoding)) {
@@ -1244,10 +1195,12 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             }
             // If no alias matches the encoding name, then report error
             if (!foundAlias) {
-                throw new XMLStreamException("Underlying stream encoding '"
-                        + streamEncoding
-                        + "' and input paramter for writeStartDocument() method '"
-                        + encoding + "' do not match.");
+                throw new XMLStreamException(
+                        "Underlying stream encoding '"
+                                + streamEncoding
+                                + "' and input paramter for writeStartDocument() method '"
+                                + encoding
+                                + "' do not match.");
             }
         }
     }
@@ -1287,8 +1240,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      * @throws XMLStreamException
      */
     @Override
-    public void writeStartElement(String namespaceURI, String localName)
-        throws XMLStreamException {
+    public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
         if (localName == null) {
             throw new XMLStreamException("Local Name cannot be null");
         }
@@ -1319,8 +1271,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
      * @throws XMLStreamException
      */
     @Override
-    public void writeStartElement(String prefix, String localName,
-        String namespaceURI) throws XMLStreamException {
+    public void writeStartElement(String prefix, String localName, String namespaceURI)
+            throws XMLStreamException {
         try {
             if (localName == null) {
                 throw new XMLStreamException("Local Name cannot be null");
@@ -1352,22 +1304,17 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
             String tmpPrefix = fNamespaceContext.getPrefix(namespaceURI);
 
-
-            if ((prefix != null) &&
-                    ((tmpPrefix == null) || !prefix.equals(tmpPrefix))) {
+            if ((prefix != null) && ((tmpPrefix == null) || !prefix.equals(tmpPrefix))) {
                 fInternalNamespaceContext.declarePrefix(prefix, namespaceURI);
-
             }
 
             if (fIsRepairingNamespace) {
-                if ((prefix == null) ||
-                        ((tmpPrefix != null) && prefix.equals(tmpPrefix))) {
+                if ((prefix == null) || ((tmpPrefix != null) && prefix.equals(tmpPrefix))) {
                     return;
                 }
 
                 QName qname = new QName();
-                qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null,
-                    namespaceURI);
+                qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null, namespaceURI);
                 fNamespaceDecls.add(qname);
 
                 return;
@@ -1385,21 +1332,19 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    /**
-     * Writes character reference in hex format.
-     */
+    /** Writes character reference in hex format. */
     private void writeCharRef(int codePoint) throws IOException {
-        fWriter.write( "&#x" );
-        fWriter.write( Integer.toHexString(codePoint) );
-        fWriter.write( ';' );
+        fWriter.write("&#x");
+        fWriter.write(Integer.toHexString(codePoint));
+        fWriter.write(';');
     }
 
     /**
-     * Writes XML content to underlying writer. Escapes characters unless
-     * escaping character feature is turned off.
+     * Writes XML content to underlying writer. Escapes characters unless escaping character feature
+     * is turned off.
      */
-    private void writeXMLContent(char[] content, int start, int length,
-        boolean escapeChars) throws IOException {
+    private void writeXMLContent(char[] content, int start, int length, boolean escapeChars)
+            throws IOException {
         if (!escapeChars) {
             fWriter.write(content, start, length);
 
@@ -1414,13 +1359,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         for (int index = start; index < end; index++) {
             char ch = content[index];
 
-            if (fEncoder != null && !fEncoder.canEncode(ch)){
-                fWriter.write(content, startWritePos, index - startWritePos );
+            if (fEncoder != null && !fEncoder.canEncode(ch)) {
+                fWriter.write(content, startWritePos, index - startWritePos);
 
                 // Check if current and next characters forms a surrogate pair
                 // and escape it to avoid generation of invalid xml content
-                if ( index != end - 1 && Character.isSurrogatePair(ch, content[index+1])) {
-                    writeCharRef(Character.toCodePoint(ch, content[index+1]));
+                if (index != end - 1 && Character.isSurrogatePair(ch, content[index + 1])) {
+                    writeCharRef(Character.toCodePoint(ch, content[index + 1]));
                     index++;
                 } else {
                     writeCharRef(ch);
@@ -1430,26 +1375,26 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             }
 
             switch (ch) {
-            case '<':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&lt;");
-                startWritePos = index + 1;
+                case '<':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&lt;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
 
-            case '&':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&amp;");
-                startWritePos = index + 1;
+                case '&':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&amp;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
 
-            case '>':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&gt;");
-                startWritePos = index + 1;
+                case '>':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&gt;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
             }
         }
 
@@ -1459,21 +1404,19 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
     private void writeXMLContent(String content) throws IOException {
         if ((content != null) && (content.length() > 0)) {
-            writeXMLContent(content,
-                    fEscapeCharacters,  // boolean = escapeChars
-                    false);             // false = escapeDoubleQuotes
+            writeXMLContent(
+                    content,
+                    fEscapeCharacters, // boolean = escapeChars
+                    false); // false = escapeDoubleQuotes
         }
     }
 
     /**
-     * Writes XML content to underlying writer. Escapes characters unless
-     * escaping character feature is turned off.
+     * Writes XML content to underlying writer. Escapes characters unless escaping character feature
+     * is turned off.
      */
-    private void writeXMLContent(
-            String content,
-            boolean escapeChars,
-            boolean escapeDoubleQuotes)
-        throws IOException {
+    private void writeXMLContent(String content, boolean escapeChars, boolean escapeDoubleQuotes)
+            throws IOException {
 
         if (!escapeChars) {
             fWriter.write(content);
@@ -1489,13 +1432,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         for (int index = 0; index < end; index++) {
             char ch = content.charAt(index);
 
-            if (fEncoder != null && !fEncoder.canEncode(ch)){
-                fWriter.write(content, startWritePos, index - startWritePos );
+            if (fEncoder != null && !fEncoder.canEncode(ch)) {
+                fWriter.write(content, startWritePos, index - startWritePos);
 
                 // Check if current and next characters forms a surrogate pair
                 // and escape it to avoid generation of invalid xml content
-                if ( index != end - 1 && Character.isSurrogatePair(ch, content.charAt(index+1))) {
-                    writeCharRef(Character.toCodePoint(ch, content.charAt(index+1)));
+                if (index != end - 1 && Character.isSurrogatePair(ch, content.charAt(index + 1))) {
+                    writeCharRef(Character.toCodePoint(ch, content.charAt(index + 1)));
                     index++;
                 } else {
                     writeCharRef(ch);
@@ -1506,37 +1449,37 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             }
 
             switch (ch) {
-            case '<':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&lt;");
-                startWritePos = index + 1;
+                case '<':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&lt;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
 
-            case '&':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&amp;");
-                startWritePos = index + 1;
+                case '&':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&amp;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
 
-            case '>':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                fWriter.write("&gt;");
-                startWritePos = index + 1;
+                case '>':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    fWriter.write("&gt;");
+                    startWritePos = index + 1;
 
-                break;
+                    break;
 
-            case '"':
-                fWriter.write(content, startWritePos, index - startWritePos);
-                if (escapeDoubleQuotes) {
-                    fWriter.write("&quot;");
-                } else {
-                    fWriter.write('"');
-                }
-                startWritePos = index + 1;
+                case '"':
+                    fWriter.write(content, startWritePos, index - startWritePos);
+                    if (escapeDoubleQuotes) {
+                        fWriter.write("&quot;");
+                    } else {
+                        fWriter.write('"');
+                    }
+                    startWritePos = index + 1;
 
-                break;
+                    break;
             }
         }
 
@@ -1544,9 +1487,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         fWriter.write(content, startWritePos, end - startWritePos);
     }
 
-    /**
-     * marks close of start tag and writes the same into the writer.
-     */
+    /** marks close of start tag and writes the same into the writer. */
     private void closeStartTag() throws XMLStreamException {
         try {
             ElementState currentElement = fElementStack.peek();
@@ -1555,8 +1496,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 repair();
                 correctPrefix(currentElement, XMLStreamConstants.START_ELEMENT);
 
-                if ((currentElement.prefix != null) &&
-                        (currentElement.prefix != XMLConstants.DEFAULT_NS_PREFIX)) {
+                if ((currentElement.prefix != null)
+                        && (currentElement.prefix != XMLConstants.DEFAULT_NS_PREFIX)) {
                     fWriter.write(currentElement.prefix);
                     fWriter.write(":");
                 }
@@ -1570,8 +1511,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                     qname = fNamespaceDecls.get(i);
 
                     if (qname != null) {
-                        if (fInternalNamespaceContext.declarePrefix(qname.prefix,
-                            qname.uri)) {
+                        if (fInternalNamespaceContext.declarePrefix(qname.prefix, qname.uri)) {
                             writenamespace(qname.prefix, qname.uri);
                         }
                     }
@@ -1585,14 +1525,14 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                     attr = fAttributeCache.get(j);
 
                     if ((attr.prefix != null) && (attr.uri != null)) {
-                        if (!attr.prefix.isEmpty() && !attr.uri.isEmpty() ) {
+                        if (!attr.prefix.isEmpty() && !attr.uri.isEmpty()) {
                             String tmp = fInternalNamespaceContext.getPrefix(attr.uri);
 
                             if ((tmp == null) || (!tmp.equals(attr.prefix))) {
                                 tmp = getAttrPrefix(attr.uri);
                                 if (tmp == null) {
-                                    if (fInternalNamespaceContext.declarePrefix(attr.prefix,
-                                        attr.uri)) {
+                                    if (fInternalNamespaceContext.declarePrefix(
+                                            attr.prefix, attr.uri)) {
                                         writenamespace(attr.prefix, attr.uri);
                                     }
                                 } else {
@@ -1602,8 +1542,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                         }
                     }
 
-                    writeAttributeWithPrefix(attr.prefix, attr.localpart,
-                        attr.value);
+                    writeAttributeWithPrefix(attr.prefix, attr.localpart, attr.value);
                 }
                 fAttrNamespace = null;
                 fAttributeCache.clear();
@@ -1624,16 +1563,13 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    /**
-     * marks open of start tag and writes the same into the writer.
-     */
+    /** marks open of start tag and writes the same into the writer. */
     private void openStartTag() throws IOException {
         fStartTagOpened = true;
         fWriter.write(OPEN_START_TAG);
     }
 
     /**
-     *
      * @param uri
      * @return
      */
@@ -1650,8 +1586,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 return;
             }
 
-            if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix) && uri.equals(XMLConstants.DEFAULT_NS_PREFIX))
-                return;
+            if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)
+                    && uri.equals(XMLConstants.DEFAULT_NS_PREFIX)) return;
 
             uri = fSymbolTable.addSymbol(uri);
 
@@ -1672,9 +1608,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             if (XMLConstants.DEFAULT_NS_PREFIX.equals(tmpPrefix)) {
                 if (type == XMLStreamConstants.START_ELEMENT) {
                     return;
-                }
-                else if (type == XMLStreamConstants.ATTRIBUTE) {
-                    //the uri happens to be the same as that of the default namespace
+                } else if (type == XMLStreamConstants.ATTRIBUTE) {
+                    // the uri happens to be the same as that of the default namespace
                     tmpPrefix = getAttrPrefix(uri);
                     isSpecialCaseURI = true;
                 }
@@ -1700,8 +1635,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                     QName qname = new QName();
                     qname.setValues(prefix, XMLConstants.XMLNS_ATTRIBUTE, null, uri);
                     fNamespaceDecls.add(qname);
-                    fInternalNamespaceContext.declarePrefix(fSymbolTable.addSymbol(
-                        prefix), uri);
+                    fInternalNamespaceContext.declarePrefix(fSymbolTable.addSymbol(prefix), uri);
                 }
             }
         }
@@ -1709,15 +1643,14 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         attr.prefix = prefix;
     }
 
-    /**
-     * return the prefix if the attribute has an uri the same as that of the default namespace
-     */
+    /** return the prefix if the attribute has an uri the same as that of the default namespace */
     private String getAttrPrefix(String uri) {
         if (fAttrNamespace != null) {
             return fAttrNamespace.get(uri);
         }
         return null;
     }
+
     private void addAttrNamespace(String prefix, String uri) {
         if (fAttrNamespace == null) {
             fAttrNamespace = new HashMap<>();
@@ -1750,37 +1683,35 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         return false;
     }
 
-    /**
-     * Correct's namespaces  as per requirements of isReparisingNamespace property.
-     */
+    /** Correct's namespaces as per requirements of isReparisingNamespace property. */
     protected void repair() {
         Attribute attr;
         Attribute attr2;
         ElementState currentElement = fElementStack.peek();
         removeDuplicateDecls();
 
-        for(int i=0 ; i< fAttributeCache.size();i++){
+        for (int i = 0; i < fAttributeCache.size(); i++) {
             attr = fAttributeCache.get(i);
-            if((attr.prefix != null && !attr.prefix.isEmpty()) || (attr.uri != null && !attr.uri.isEmpty())) {
-                correctPrefix(currentElement,attr);
+            if ((attr.prefix != null && !attr.prefix.isEmpty())
+                    || (attr.uri != null && !attr.uri.isEmpty())) {
+                correctPrefix(currentElement, attr);
             }
         }
 
         if (!isDeclared(currentElement)) {
-            if ((currentElement.prefix != null) &&
-                    (currentElement.uri != null)) {
+            if ((currentElement.prefix != null) && (currentElement.uri != null)) {
                 if ((!currentElement.prefix.isEmpty()) && (!currentElement.uri.isEmpty())) {
                     fNamespaceDecls.add(currentElement);
                 }
             }
         }
 
-        for(int i=0 ; i< fAttributeCache.size();i++){
+        for (int i = 0; i < fAttributeCache.size(); i++) {
             attr = fAttributeCache.get(i);
-            for(int j=i+1;j<fAttributeCache.size();j++){
+            for (int j = i + 1; j < fAttributeCache.size(); j++) {
                 attr2 = fAttributeCache.get(j);
-                if(!"".equals(attr.prefix)&& !"".equals(attr2.prefix)){
-                    correctPrefix(attr,attr2);
+                if (!"".equals(attr.prefix) && !"".equals(attr2.prefix)) {
+                    correctPrefix(attr, attr2);
                 }
             }
         }
@@ -1792,9 +1723,12 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         for (i = 0; i < fAttributeCache.size(); i++) {
             attr = fAttributeCache.get(i);
             /* If 'attr' is an attribute and it is in no namespace(which means that prefix="", uri=""), attr's
-               namespace should not be redinded. See [http://www.w3.org/TR/REC-xml-names/#defaulting].
-             */
-            if (attr.prefix != null && attr.prefix.isEmpty() && attr.uri != null && attr.uri.isEmpty()){
+              namespace should not be redinded. See [http://www.w3.org/TR/REC-xml-names/#defaulting].
+            */
+            if (attr.prefix != null
+                    && attr.prefix.isEmpty()
+                    && attr.uri != null
+                    && attr.uri.isEmpty()) {
                 repairNamespaceDecl(attr);
             }
         }
@@ -1829,23 +1763,23 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         checkForNull(attr1);
         checkForNull(attr2);
 
-        if(attr1.prefix.equals(attr2.prefix) && !(attr1.uri.equals(attr2.uri))){
+        if (attr1.prefix.equals(attr2.prefix) && !(attr1.uri.equals(attr2.uri))) {
 
             tmpPrefix = fNamespaceContext.getPrefix(attr2.uri);
 
             if (tmpPrefix != null) {
                 attr2.prefix = fSymbolTable.addSymbol(tmpPrefix);
             } else {
-                for (int n=0; n<fNamespaceDecls.size(); n++) {
+                for (int n = 0; n < fNamespaceDecls.size(); n++) {
                     decl = fNamespaceDecls.get(n);
-                    if(decl != null && (decl.uri.equals(attr2.uri))){
+                    if (decl != null && (decl.uri.equals(attr2.uri))) {
                         attr2.prefix = decl.prefix;
 
                         return;
                     }
                 }
 
-                //No namespace mapping found , so declare prefix.
+                // No namespace mapping found , so declare prefix.
                 StringBuilder genPrefix = new StringBuilder("zdef");
 
                 for (int k = 0; k < 1; k++) {
@@ -1857,8 +1791,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
                 attr2.prefix = tmpPrefix;
 
                 QName qname = new QName();
-                qname.setValues(tmpPrefix, XMLConstants.XMLNS_ATTRIBUTE, null,
-                    attr2.uri);
+                qname.setValues(tmpPrefix, XMLConstants.XMLNS_ATTRIBUTE, null, attr2.uri);
                 fNamespaceDecls.add(qname);
             }
         }
@@ -1869,17 +1802,18 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         if (attr.uri == null) attr.uri = XMLConstants.DEFAULT_NS_PREFIX;
     }
 
-    void removeDuplicateDecls(){
-        QName decl1,decl2;
-        for(int i =0; i<fNamespaceDecls.size(); i++) {
+    void removeDuplicateDecls() {
+        QName decl1, decl2;
+        for (int i = 0; i < fNamespaceDecls.size(); i++) {
             decl1 = fNamespaceDecls.get(i);
-            if(decl1!=null) {
-                for(int j=i+1;j<fNamespaceDecls.size();j++){
+            if (decl1 != null) {
+                for (int j = i + 1; j < fNamespaceDecls.size(); j++) {
                     decl2 = fNamespaceDecls.get(j);
                     // QName.equals relies on identity equality, so we can't use it,
                     // because prefixes aren't interned
-                    if(decl2!=null && decl1.prefix.equals(decl2.prefix) && decl1.uri.equals(decl2.uri))
-                        fNamespaceDecls.remove(j);
+                    if (decl2 != null
+                            && decl1.prefix.equals(decl2.prefix)
+                            && decl1.uri.equals(decl2.uri)) fNamespaceDecls.remove(j);
                 }
             }
         }
@@ -1896,17 +1830,16 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         QName decl;
         String tmpURI;
 
-        //check for null prefix.
+        // check for null prefix.
         for (int j = 0; j < fNamespaceDecls.size(); j++) {
             decl = fNamespaceDecls.get(j);
 
             if (decl != null) {
-                if ((attr.prefix != null) &&
-                        (attr.prefix.equals(decl.prefix) &&
-                        !(attr.uri.equals(decl.uri)))) {
+                if ((attr.prefix != null)
+                        && (attr.prefix.equals(decl.prefix) && !(attr.uri.equals(decl.uri)))) {
                     tmpURI = fNamespaceContext.getNamespaceURI(attr.prefix);
 
-                    //see if you need to add to symbole table.
+                    // see if you need to add to symbole table.
                     if (tmpURI != null) {
                         if (tmpURI.equals(attr.uri)) {
                             fNamespaceDecls.set(j, null);
@@ -1925,8 +1858,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         for (int n = 0; n < fNamespaceDecls.size(); n++) {
             decl = fNamespaceDecls.get(n);
 
-            if ((attr.prefix != null) &&
-                    ((attr.prefix.equals(decl.prefix)) && (decl.uri.equals(attr.uri)))) {
+            if ((attr.prefix != null)
+                    && ((attr.prefix.equals(decl.prefix)) && (decl.uri.equals(attr.uri)))) {
                 return true;
             }
         }
@@ -1962,15 +1895,12 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
 
         /**
          * Pushes an element on the stack.
-         * <p>
-         * <strong>Note:</strong> The QName values are copied into the
-         * stack. In other words, the caller does <em>not</em> orphan
-         * the element to the stack. Also, the QName object returned
-         * is <em>not</em> orphaned to the caller. It should be
-         * considered read-only.
+         *
+         * <p><strong>Note:</strong> The QName values are copied into the stack. In other words, the
+         * caller does <em>not</em> orphan the element to the stack. Also, the QName object returned
+         * is <em>not</em> orphaned to the caller. It should be considered read-only.
          *
          * @param element The element to push onto the stack.
-         *
          * @return Returns the actual QName object that stores the
          */
         public ElementState push(ElementState element) {
@@ -1990,7 +1920,6 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
 
         /**
-         *
          * @param prefix
          * @param localpart
          * @param rawname
@@ -1998,8 +1927,8 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
          * @param isEmpty
          * @return
          */
-        public ElementState push(String prefix, String localpart,
-            String rawname, String uri, boolean isEmpty) {
+        public ElementState push(
+                String prefix, String localpart, String rawname, String uri, boolean isEmpty) {
             if (fDepth == fElements.length) {
                 ElementState[] array = new ElementState[fElements.length * 2];
                 System.arraycopy(fElements, 0, array, 0, fDepth);
@@ -2016,12 +1945,10 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
 
         /**
-         * Pops an element off of the stack by setting the values of
-         * the specified QName.
-         * <p>
-         * <strong>Note:</strong> The object returned is <em>not</em>
-         * orphaned to the caller. Therefore, the caller should consider
-         * the object to be read-only.
+         * Pops an element off of the stack by setting the values of the specified QName.
+         *
+         * <p><strong>Note:</strong> The object returned is <em>not</em> orphaned to the caller.
+         * Therefore, the caller should consider the object to be read-only.
          */
         public ElementState pop() {
             return fElements[--fDepth];
@@ -2033,17 +1960,16 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
 
         /**
-         * This function is as a result of optimization done for endElement --
-         * we dont need to set the value for every end element we encouter.
-         * For Well formedness checks we can have the same QName object that was pushed.
-         * the values will be set only if application need to know about the endElement
+         * This function is as a result of optimization done for endElement -- we dont need to set
+         * the value for every end element we encouter. For Well formedness checks we can have the
+         * same QName object that was pushed. the values will be set only if application need to
+         * know about the endElement
          */
         public ElementState peek() {
             return fElements[fDepth - 1];
         }
 
         /**
-         *
          * @return
          */
         public boolean empty() {
@@ -2051,29 +1977,24 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    /**
-     * Maintains element state . localName for now.
-     */
+    /** Maintains element state . localName for now. */
     class ElementState extends QName {
         public boolean isEmpty = false;
 
         public ElementState() {}
 
-        public ElementState(String prefix, String localpart, String rawname,
-            String uri) {
+        public ElementState(String prefix, String localpart, String rawname, String uri) {
             super(prefix, localpart, rawname, uri);
         }
 
-        public void setValues(String prefix, String localpart, String rawname,
-            String uri, boolean isEmpty) {
+        public void setValues(
+                String prefix, String localpart, String rawname, String uri, boolean isEmpty) {
             super.setValues(prefix, localpart, rawname, uri);
             this.isEmpty = isEmpty;
         }
     }
 
-    /**
-     * Attributes
-     */
+    /** Attributes */
     class Attribute extends QName {
         String value;
 
@@ -2083,15 +2004,12 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         }
     }
 
-    /**
-     * Implementation of NamespaceContext .
-     *
-     */
+    /** Implementation of NamespaceContext . */
     class NamespaceContextImpl implements NamespaceContext {
-        //root namespace context set by user.
+        // root namespace context set by user.
         NamespaceContext userContext = null;
 
-        //context built by the writer.
+        // context built by the writer.
         NamespaceSupport internalContext = null;
 
         public String getNamespaceURI(String prefix) {
@@ -2140,7 +2058,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
             return null;
         }
 
-        //Cleanup note: leaving these warnings to a xerces.internal.util cleanup
+        // Cleanup note: leaving these warnings to a xerces.internal.util cleanup
         public Iterator<String> getPrefixes(String uri) {
             List<String> prefixes = null;
             Iterator<String> itr = null;
@@ -2200,10 +2118,7 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
         return key.equals(OUTPUTSTREAM_PROPERTY);
     }
 
-    /**
-     * Returns the value associated to an implementation-specific
-     * property.
-     */
+    /** Returns the value associated to an implementation-specific property. */
     @Override
     public Object get(Object key) {
         if (key.equals(OUTPUTSTREAM_PROPERTY)) {
@@ -2213,32 +2128,27 @@ public final class XMLStreamWriterImpl extends AbstractMap<Object, Object>
     }
 
     @Override
-    public Set<Entry<Object,Object>> entrySet() {
+    public Set<Entry<Object, Object>> entrySet() {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Overrides the method defined in AbstractMap which is
-     * not completely implemented. Calling toString() in
-     * AbstractMap would cause an unsupported exection to
-     * be thrown.
+     * Overrides the method defined in AbstractMap which is not completely implemented. Calling
+     * toString() in AbstractMap would cause an unsupported exection to be thrown.
      */
     @Override
     public String toString() {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
 
-    /**
-     * Overrides the method defined in AbstractMap
-     * This is required by the toString() method
-     */
+    /** Overrides the method defined in AbstractMap This is required by the toString() method */
     @Override
     public int hashCode() {
         return fElementStack.hashCode();
     }
     /**
-     * Overrides the method defined in AbstractMap
-     * This is required to satisfy the contract for hashCode.
+     * Overrides the method defined in AbstractMap This is required to satisfy the contract for
+     * hashCode.
      */
     @Override
     public boolean equals(Object obj) {

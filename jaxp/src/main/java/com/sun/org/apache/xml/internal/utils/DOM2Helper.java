@@ -20,34 +20,28 @@
 package com.sun.org.apache.xml.internal.utils;
 
 import com.sun.org.apache.xml.internal.dtm.ref.DTMNodeProxy;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-
 /**
  * This class provides a DOM level 2 "helper", which provides several services.
  *
- * The original class extended DOMHelper that was deprecated and then removed.
+ * <p>The original class extended DOMHelper that was deprecated and then removed.
  */
 public final class DOM2Helper {
 
-    /**
-     * Construct an instance.
-     */
-    private DOM2Helper() {
-    }
+    /** Construct an instance. */
+    private DOM2Helper() {}
 
     /**
-     * Returns the local name of the given node, as defined by the XML
-     * Namespaces specification. This is prepared to handle documents built
-     * using DOM Level 1 methods by falling back upon explicitly parsing the
-     * node name.
+     * Returns the local name of the given node, as defined by the XML Namespaces specification.
+     * This is prepared to handle documents built using DOM Level 1 methods by falling back upon
+     * explicitly parsing the node name.
      *
      * @param n Node to be examined
-     *
-     * @return String containing the local name, or null if the node was not
-     * assigned a Namespace.
+     * @return String containing the local name, or null if the node was not assigned a Namespace.
      */
     public static String getLocalNameOfNode(Node n) {
 
@@ -57,15 +51,12 @@ public final class DOM2Helper {
     }
 
     /**
-     * Returns the local name of the given node. If the node's name begins with
-     * a namespace prefix, this is the part after the colon; otherwise it's the
-     * full node name.
+     * Returns the local name of the given node. If the node's name begins with a namespace prefix,
+     * this is the part after the colon; otherwise it's the full node name.
      *
-     * This method is copied from
-     * com.sun.org.apache.xml.internal.utils.DOMHelper
+     * <p>This method is copied from com.sun.org.apache.xml.internal.utils.DOMHelper
      *
      * @param n the node to be examined.
-     *
      * @return String containing the Local Name
      */
     private static String getLocalNameOfNodeFallback(Node n) {
@@ -77,37 +68,33 @@ public final class DOM2Helper {
     }
 
     /**
-     * Returns the Namespace Name (Namespace URI) for the given node. In a Level
-     * 2 DOM, you can ask the node itself. Note, however, that doing so
-     * conflicts with our decision in getLocalNameOfNode not to trust the that
-     * the DOM was indeed created using the Level 2 methods. If Level 1 methods
-     * were used, these two functions will disagree with each other.
-     * <p>
-     * TODO: Reconcile with getLocalNameOfNode.
+     * Returns the Namespace Name (Namespace URI) for the given node. In a Level 2 DOM, you can ask
+     * the node itself. Note, however, that doing so conflicts with our decision in
+     * getLocalNameOfNode not to trust the that the DOM was indeed created using the Level 2
+     * methods. If Level 1 methods were used, these two functions will disagree with each other.
+     *
+     * <p>TODO: Reconcile with getLocalNameOfNode.
      *
      * @param n Node to be examined
-     *
-     * @return String containing the Namespace URI bound to this DOM node at the
-     * time the Node was created.
+     * @return String containing the Namespace URI bound to this DOM node at the time the Node was
+     *     created.
      */
     public static String getNamespaceOfNode(Node n) {
         return n.getNamespaceURI();
     }
 
     /**
-     * Figure out whether node2 should be considered as being later in the
-     * document than node1, in Document Order as defined by the XPath model.
-     * This may not agree with the ordering defined by other XML applications.
-     * <p>
-     * There are some cases where ordering isn't defined, and neither are the
-     * results of this function -- though we'll generally return true.
+     * Figure out whether node2 should be considered as being later in the document than node1, in
+     * Document Order as defined by the XPath model. This may not agree with the ordering defined by
+     * other XML applications.
+     *
+     * <p>There are some cases where ordering isn't defined, and neither are the results of this
+     * function -- though we'll generally return true.
      *
      * @param node1 DOM Node to perform position comparison on.
      * @param node2 DOM Node to perform position comparison on .
-     *
-     * @return false if node2 comes before node1, otherwise return true. You can
-     * think of this as
-     * {@code (node1.documentOrderPosition &lt;= node2.documentOrderPosition)}.
+     * @return false if node2 comes before node1, otherwise return true. You can think of this as
+     *     {@code (node1.documentOrderPosition &lt;= node2.documentOrderPosition)}.
      */
     public static boolean isNodeAfter(Node node1, Node node2) {
         if (node1 == node2 || isNodeTheSame(node1, node2)) {
@@ -136,7 +123,7 @@ public final class DOM2Helper {
             // NOTE: If no common ancestor is found, ordering is undefined
             // and we return the default value of isNodeAfter.
             // Count parents in each ancestor chain
-            int nParents1 = 2, nParents2 = 2;  // include node & parent obtained above
+            int nParents1 = 2, nParents2 = 2; // include node & parent obtained above
 
             while (parent1 != null) {
                 nParents1++;
@@ -172,11 +159,12 @@ public final class DOM2Helper {
                 }
             }
 
-            Node prevChild1 = null, prevChild2 = null;  // so we can "back up"
+            Node prevChild1 = null, prevChild2 = null; // so we can "back up"
 
             // Loop up the ancestor chain looking for common parent
             while (null != startNode1) {
-                if (startNode1 == startNode2 || isNodeTheSame(startNode1, startNode2)) // common parent?
+                if (startNode1 == startNode2
+                        || isNodeTheSame(startNode1, startNode2)) // common parent?
                 {
                     if (null == prevChild1) // first time in loop?
                     {
@@ -184,26 +172,25 @@ public final class DOM2Helper {
                         // Edge condition: one is the ancestor of the other.
                         isNodeAfter = (nParents1 < nParents2) ? true : false;
 
-                        break;  // from while loop
+                        break; // from while loop
                     } else {
                         // Compare ancestors below lowest-common as siblings
-                        isNodeAfter = isNodeAfterSibling(startNode1, prevChild1,
-                                prevChild2);
+                        isNodeAfter = isNodeAfterSibling(startNode1, prevChild1, prevChild2);
 
-                        break;  // from while loop
+                        break; // from while loop
                     }
-                }  // end if(startNode1 == startNode2)
+                } // end if(startNode1 == startNode2)
 
                 // Move up one level and try again
                 prevChild1 = startNode1;
                 startNode1 = getParentOfNode(startNode1);
                 prevChild2 = startNode2;
                 startNode2 = getParentOfNode(startNode2);
-            }  // end while(parents exist to examine)
-        }  // end big else (not immediate siblings)
+            } // end while(parents exist to examine)
+        } // end big else (not immediate siblings)
 
         return isNodeAfter;
-    }  // end isNodeAfter(Node node1, Node node2)
+    } // end isNodeAfter(Node node1, Node node2)
 
     /**
      * Use DTMNodeProxy to determine whether two nodes are the same.
@@ -221,16 +208,13 @@ public final class DOM2Helper {
     }
 
     /**
-     * Get the XPath-model parent of a node. This version takes advantage of the
-     * DOM Level 2 Attr.ownerElement() method; the base version we would
-     * otherwise inherit is prepared to fall back on exhaustively walking the
-     * document to find an Attr's parent.
+     * Get the XPath-model parent of a node. This version takes advantage of the DOM Level 2
+     * Attr.ownerElement() method; the base version we would otherwise inherit is prepared to fall
+     * back on exhaustively walking the document to find an Attr's parent.
      *
      * @param node Node to be examined
-     *
-     * @return the DOM parent of the input node, if there is one, or the
-     * ownerElement if the input node is an Attr, or null if the node is a
-     * Document, a DocumentFragment, or an orphan.
+     * @return the DOM parent of the input node, if there is one, or the ownerElement if the input
+     *     node is an Attr, or null if the node is a Document, a DocumentFragment, or an orphan.
      */
     public static Node getParentOfNode(Node node) {
         Node parent = node.getParentNode();
@@ -242,32 +226,28 @@ public final class DOM2Helper {
 
     /**
      * Figure out if child2 is after child1 in document order.
-     * <p>
-     * Warning: Some aspects of "document order" are not well defined. For
-     * example, the order of attributes is considered meaningless in XML, and
-     * the order reported by our model will be consistent for a given invocation
-     * but may not match that of either the source file or the serialized
-     * output.
+     *
+     * <p>Warning: Some aspects of "document order" are not well defined. For example, the order of
+     * attributes is considered meaningless in XML, and the order reported by our model will be
+     * consistent for a given invocation but may not match that of either the source file or the
+     * serialized output.
      *
      * @param parent Must be the parent of both child1 and child2.
      * @param child1 Must be the child of parent and not equal to child2.
      * @param child2 Must be the child of parent and not equal to child1.
      * @return true if child 2 is after child1 in document order.
      */
-    private static boolean isNodeAfterSibling(Node parent, Node child1,
-            Node child2) {
+    private static boolean isNodeAfterSibling(Node parent, Node child1, Node child2) {
 
         boolean isNodeAfterSibling = false;
         short child1type = child1.getNodeType();
         short child2type = child2.getNodeType();
 
-        if ((Node.ATTRIBUTE_NODE != child1type)
-                && (Node.ATTRIBUTE_NODE == child2type)) {
+        if ((Node.ATTRIBUTE_NODE != child1type) && (Node.ATTRIBUTE_NODE == child2type)) {
 
             // always sort attributes before non-attributes.
             isNodeAfterSibling = false;
-        } else if ((Node.ATTRIBUTE_NODE == child1type)
-                && (Node.ATTRIBUTE_NODE != child2type)) {
+        } else if ((Node.ATTRIBUTE_NODE == child1type) && (Node.ATTRIBUTE_NODE != child2type)) {
 
             // always sort attributes before non-attributes.
             isNodeAfterSibling = true;
@@ -339,5 +319,5 @@ public final class DOM2Helper {
         }
 
         return isNodeAfterSibling;
-    }  // end isNodeAfterSibling(Node parent, Node child1, Node child2)
+    } // end isNodeAfterSibling(Node parent, Node child1, Node child2)
 }

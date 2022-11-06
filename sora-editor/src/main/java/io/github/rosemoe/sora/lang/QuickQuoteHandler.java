@@ -36,17 +36,21 @@ public interface QuickQuoteHandler {
      * Checks whether the given input matches the requirement to invoke this handler
      *
      * @param candidateCharacter The character going to be inserted. Length can be 1 or 2.
-     * @param text               Current text in editor
-     * @param cursor             The range of cursor
-     * @param style              Current code styles
+     * @param text Current text in editor
+     * @param cursor The range of cursor
+     * @param style Current code styles
      * @return Whether this handler consumed the event
      */
     @NonNull
-    HandleResult onHandleTyping(@NonNull String candidateCharacter, @NonNull Content text, @NonNull TextRange cursor, @Nullable Styles style);
+    HandleResult onHandleTyping(
+            @NonNull String candidateCharacter,
+            @NonNull Content text,
+            @NonNull TextRange cursor,
+            @Nullable Styles style);
 
     class HandleResult {
 
-        public final static HandleResult NOT_CONSUMED = new HandleResult(false, null);
+        public static final HandleResult NOT_CONSUMED = new HandleResult(false, null);
 
         private boolean consumed;
 
@@ -73,5 +77,4 @@ public interface QuickQuoteHandler {
             this.newCursorRange = newCursorRange;
         }
     }
-
 }

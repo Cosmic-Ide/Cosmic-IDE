@@ -24,24 +24,18 @@ package com.sun.org.apache.xerces.internal.xinclude;
 import com.sun.org.apache.xerces.internal.xni.NamespaceContext;
 
 /**
- * This is an implementation of NamespaceContext which is intended to be used for
- * XInclude processing.  It enables each context to be marked as invalid, if necessary,
- * to indicate that the namespaces recorded on those contexts won't be apparent in the
- * resulting infoset.
+ * This is an implementation of NamespaceContext which is intended to be used for XInclude
+ * processing. It enables each context to be marked as invalid, if necessary, to indicate that the
+ * namespaces recorded on those contexts won't be apparent in the resulting infoset.
  *
  * @author Peter McCracken, IBM
- *
  */
 public class XIncludeNamespaceSupport extends MultipleScopeNamespaceSupport {
 
-    /**
-     * This stores whether or not the context at the matching depth was valid.
-     */
+    /** This stores whether or not the context at the matching depth was valid. */
     private boolean[] fValidContext = new boolean[8];
 
-    /**
-     *
-     */
+    /** */
     public XIncludeNamespaceSupport() {
         super();
     }
@@ -53,9 +47,7 @@ public class XIncludeNamespaceSupport extends MultipleScopeNamespaceSupport {
         super(context);
     }
 
-    /**
-     * Pushes a new context onto the stack.
-     */
+    /** Pushes a new context onto the stack. */
     public void pushContext() {
         super.pushContext();
         if (fCurrentContext + 1 == fValidContext.length) {
@@ -68,21 +60,20 @@ public class XIncludeNamespaceSupport extends MultipleScopeNamespaceSupport {
     }
 
     /**
-     * This method is used to set a context invalid for XInclude namespace processing.
-     * Any context defined by an &lt;include&gt; or &lt;fallback&gt; element is not
-     * valid for processing the include parent's [in-scope namespaces]. Thus, contexts
-     * defined by these elements are set to invalid by the XInclude processor using
-     * this method.
+     * This method is used to set a context invalid for XInclude namespace processing. Any context
+     * defined by an &lt;include&gt; or &lt;fallback&gt; element is not valid for processing the
+     * include parent's [in-scope namespaces]. Thus, contexts defined by these elements are set to
+     * invalid by the XInclude processor using this method.
      */
     public void setContextInvalid() {
         fValidContext[fCurrentContext] = false;
     }
 
     /**
-     * This returns the namespace URI which was associated with the given pretext, in
-     * the context that existed at the include parent of the current element.  The
-     * include parent is the last element, before the current one, which was not set
-     * to an invalid context using setContextInvalid()
+     * This returns the namespace URI which was associated with the given pretext, in the context
+     * that existed at the include parent of the current element. The include parent is the last
+     * element, before the current one, which was not set to an invalid context using
+     * setContextInvalid()
      *
      * @param prefix the prefix of the desired URI
      * @return the URI corresponding to the prefix in the context of the include parent

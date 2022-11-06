@@ -37,6 +37,7 @@ final class SystemSuffix extends BaseEntry {
 
     /**
      * Construct a systemSuffix entry.
+     *
      * @param systemIdSuffix The systemIdSuffix attribute.
      * @param uri The uri attribute.
      */
@@ -48,6 +49,7 @@ final class SystemSuffix extends BaseEntry {
 
     /**
      * Set the systemIdSuffix attribute.
+     *
      * @param systemIdSuffix The systemIdSuffix attribute value.
      */
     public void setSystemIdSuffix(String systemIdSuffix) {
@@ -56,9 +58,10 @@ final class SystemSuffix extends BaseEntry {
     }
 
     /**
-     * Set the uri attribute. If the value of the uri attribute is relative, it
-     * must be made absolute with respect to the base URI currently in effect.
-     * The URI reference should not include a fragment identifier.
+     * Set the uri attribute. If the value of the uri attribute is relative, it must be made
+     * absolute with respect to the base URI currently in effect. The URI reference should not
+     * include a fragment identifier.
+     *
      * @param uri The uri attribute value.
      */
     public void setURI(String uri) {
@@ -67,13 +70,15 @@ final class SystemSuffix extends BaseEntry {
 
     /**
      * Get the systemIdSuffix attribute.
+     *
      * @return The systemIdSuffix
      */
-    public String getSystemIdSuffix  () {
+    public String getSystemIdSuffix() {
         return systemIdSuffix;
     }
     /**
      * Get the uri attribute.
+     *
      * @return The uri attribute value.
      */
     public URL getURI() {
@@ -81,9 +86,8 @@ final class SystemSuffix extends BaseEntry {
     }
 
     /**
-     * Try to match the specified systemId with the entry. Return the match if it
-     * is successful and the length of the systemIdSuffix is longer than the longest
-     * of any previous match.
+     * Try to match the specified systemId with the entry. Return the match if it is successful and
+     * the length of the systemIdSuffix is longer than the longest of any previous match.
      *
      * @param systemId The systemId to be matched.
      * @param currentMatch The length of systemIdSuffix of previous match if any.

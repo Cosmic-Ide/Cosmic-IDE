@@ -25,29 +25,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * @since 6.0
- * @LastModified: May 2021
+ * @since 6.0 @LastModified: May 2021
  */
-public abstract class ElementValue
-{
+public abstract class ElementValue {
     private final int type;
 
     private final ConstantPool cpool;
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return stringifyValue();
     }
 
-    protected ElementValue(final int type, final ConstantPool cpool)
-    {
+    protected ElementValue(final int type, final ConstantPool cpool) {
         this.type = type;
         this.cpool = cpool;
     }
 
-    public int getElementValueType()
-    {
+    public int getElementValueType() {
         return type;
     }
 
@@ -55,25 +50,24 @@ public abstract class ElementValue
 
     public abstract void dump(DataOutputStream dos) throws IOException;
 
-    public static final byte STRING            = 's';
-    public static final byte ENUM_CONSTANT     = 'e';
-    public static final byte CLASS             = 'c';
-    public static final byte ANNOTATION        = '@';
-    public static final byte ARRAY             = '[';
-    public static final byte PRIMITIVE_INT     = 'I';
-    public static final byte PRIMITIVE_BYTE    = 'B';
-    public static final byte PRIMITIVE_CHAR    = 'C';
-    public static final byte PRIMITIVE_DOUBLE  = 'D';
-    public static final byte PRIMITIVE_FLOAT   = 'F';
-    public static final byte PRIMITIVE_LONG    = 'J';
-    public static final byte PRIMITIVE_SHORT   = 'S';
+    public static final byte STRING = 's';
+    public static final byte ENUM_CONSTANT = 'e';
+    public static final byte CLASS = 'c';
+    public static final byte ANNOTATION = '@';
+    public static final byte ARRAY = '[';
+    public static final byte PRIMITIVE_INT = 'I';
+    public static final byte PRIMITIVE_BYTE = 'B';
+    public static final byte PRIMITIVE_CHAR = 'C';
+    public static final byte PRIMITIVE_DOUBLE = 'D';
+    public static final byte PRIMITIVE_FLOAT = 'F';
+    public static final byte PRIMITIVE_LONG = 'J';
+    public static final byte PRIMITIVE_SHORT = 'S';
     public static final byte PRIMITIVE_BOOLEAN = 'Z';
 
-    public static ElementValue readElementValue(final DataInput input, final ConstantPool cpool) throws IOException
-    {
+    public static ElementValue readElementValue(final DataInput input, final ConstantPool cpool)
+            throws IOException {
         final byte type = input.readByte();
-        switch (type)
-        {
+        switch (type) {
             case PRIMITIVE_BYTE:
             case PRIMITIVE_CHAR:
             case PRIMITIVE_DOUBLE:
@@ -86,41 +80,46 @@ public abstract class ElementValue
                 return new SimpleElementValue(type, input.readUnsignedShort(), cpool);
 
             case ENUM_CONSTANT:
-                return new EnumElementValue(ENUM_CONSTANT, input.readUnsignedShort(), input.readUnsignedShort(), cpool);
+                return new EnumElementValue(
+                        ENUM_CONSTANT, input.readUnsignedShort(), input.readUnsignedShort(), cpool);
 
             case CLASS:
                 return new ClassElementValue(CLASS, input.readUnsignedShort(), cpool);
 
             case ANNOTATION:
                 // TODO isRuntimeVisible
-                return new AnnotationElementValue(ANNOTATION, AnnotationEntry.read(input, cpool, false), cpool);
+                return new AnnotationElementValue(
+                        ANNOTATION, AnnotationEntry.read(input, cpool, false), cpool);
 
             case ARRAY:
                 final int numArrayVals = input.readUnsignedShort();
                 final ElementValue[] evalues = new ElementValue[numArrayVals];
-                for (int j = 0; j < numArrayVals; j++)
-                {
+                for (int j = 0; j < numArrayVals; j++) {
                     evalues[j] = ElementValue.readElementValue(input, cpool);
                 }
                 return new ArrayElementValue(ARRAY, evalues, cpool);
 
             default:
-                throw new IllegalArgumentException("Unexpected element value kind in annotation: " + type);
+                throw new IllegalArgumentException(
+                        "Unexpected element value kind in annotation: " + type);
         }
     }
 
-    /** @since 6.0 */
+    /**
+     * @since 6.0
+     */
     final ConstantPool getConstantPool() {
         return cpool;
     }
 
-    /** @since 6.0 */
+    /**
+     * @since 6.0
+     */
     final int getType() {
         return type;
     }
 
-    public String toShortString()
-    {
+    public String toShortString() {
         return stringifyValue();
     }
 }

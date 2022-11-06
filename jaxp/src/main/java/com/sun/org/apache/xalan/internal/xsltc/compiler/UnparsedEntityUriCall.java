@@ -28,13 +28,13 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringType;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
 import java.util.List;
 
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
- * @author Morten Jorgensen
- * @LastModified: Oct 2017
+ * @author Morten Jorgensen @LastModified: Oct 2017
  */
 final class UnparsedEntityUriCall extends FunctionCall {
     private Expression _entity;
@@ -60,10 +60,10 @@ final class UnparsedEntityUriCall extends FunctionCall {
         // ...then the entity name...
         _entity.translate(classGen, methodGen);
         // ...to get the URI from the DOM object.
-        il.append(new INVOKEINTERFACE(
-                         cpg.addInterfaceMethodref(DOM_INTF,
-                                                   GET_UNPARSED_ENTITY_URI,
-                                                   GET_UNPARSED_ENTITY_URI_SIG),
-                         2));
+        il.append(
+                new INVOKEINTERFACE(
+                        cpg.addInterfaceMethodref(
+                                DOM_INTF, GET_UNPARSED_ENTITY_URI, GET_UNPARSED_ENTITY_URI_SIG),
+                        2));
     }
 }

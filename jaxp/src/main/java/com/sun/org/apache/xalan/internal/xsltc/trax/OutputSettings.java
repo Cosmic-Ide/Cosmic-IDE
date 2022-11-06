@@ -40,8 +40,6 @@ public final class OutputSettings {
 
     public Properties getProperties() {
         Properties properties = new Properties();
-        return(properties);
+        return (properties);
     }
-
-
 }

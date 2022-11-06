@@ -26,34 +26,30 @@ package io.github.rosemoe.sora.event;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 /**
- * Reports a scroll in editor.
- * The scrolling action can either have run or be running when this event is generated and sent.
- * <p>
- * The returned x,y positions are usually positive when over-scrolling is disabled. They represent
- * the left-top position's pixel in editor.
+ * Reports a scroll in editor. The scrolling action can either have run or be running when this
+ * event is generated and sent.
+ *
+ * <p>The returned x,y positions are usually positive when over-scrolling is disabled. They
+ * represent the left-top position's pixel in editor.
  */
 public class ScrollEvent extends Event {
 
+    /** Caused by thumb's exact movements */
+    public static final int CAUSE_USER_DRAG = 1;
+    /** Caused by fling after user's movements */
+    public static final int CAUSE_USER_FLING = 2;
     /**
-     * Caused by thumb's exact movements
+     * Caused by calling {@link CodeEditor#ensurePositionVisible(int, int)}. This can happen when
+     * this method is manually called or either the user edits the text
      */
-    public final static int CAUSE_USER_DRAG = 1;
-    /**
-     * Caused by fling after user's movements
-     */
-    public final static int CAUSE_USER_FLING = 2;
-    /**
-     * Caused by calling {@link CodeEditor#ensurePositionVisible(int, int)}.
-     * This can happen when this method is manually called or either the user edits the text
-     */
-    public final static int CAUSE_MAKE_POSITION_VISIBLE = 3;
+    public static final int CAUSE_MAKE_POSITION_VISIBLE = 3;
     /**
      * Caused by the user's thumb reaching the edge of editor viewport, which causes the editor to
      * scroll to move the selection to text currently outside the viewport.
      */
-    public final static int CAUSE_TEXT_SELECTING = 4;
+    public static final int CAUSE_TEXT_SELECTING = 4;
 
-    public final static int CAUSE_SCALE_TEXT = 5;
+    public static final int CAUSE_SCALE_TEXT = 5;
 
     private final int mStartX;
     private final int mStartY;
@@ -70,39 +66,28 @@ public class ScrollEvent extends Event {
         mCause = cause;
     }
 
-    /**
-     * Get the start x
-     */
+    /** Get the start x */
     public int getStartX() {
         return mStartX;
     }
 
-    /**
-     * Get the start y
-     */
+    /** Get the start y */
     public int getStartY() {
         return mStartY;
     }
 
-    /**
-     * Get end x
-     */
+    /** Get end x */
     public int getEndX() {
         return mEndX;
     }
 
-    /**
-     * Get end y
-     */
+    /** Get end y */
     public int getEndY() {
         return mEndY;
     }
 
-    /**
-     * Get the cause of the scroll
-     */
+    /** Get the cause of the scroll */
     public int getCause() {
         return mCause;
     }
-
 }

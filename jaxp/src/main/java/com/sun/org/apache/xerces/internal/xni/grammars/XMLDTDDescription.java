@@ -31,8 +31,7 @@ public interface XMLDTDDescription extends XMLGrammarDescription {
     /**
      * Return the root name of this DTD.
      *
-     * @return  the root name. null if the name is unknown.
+     * @return the root name. null if the name is unknown.
      */
     public String getRootName();
-
 } // interface XMLDTDDescription

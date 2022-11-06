@@ -18,7 +18,7 @@ public class KotlinProject implements Project {
         try {
             this.indexer = new Indexer(getCacheDirPath());
         } catch (Exception ignore) {
-             this.indexer = null;
+            this.indexer = null;
         }
     }
 

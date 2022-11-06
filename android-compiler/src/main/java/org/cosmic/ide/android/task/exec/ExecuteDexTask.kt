@@ -6,15 +6,13 @@ import android.os.Looper
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.android.task.dex.D8Task
 import org.cosmic.ide.common.util.CoroutineUtil
-import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.Project
-import org.cosmic.ide.CompilerUtil
 import java.io.File
-import java.io.PrintStream
 import java.io.InputStream
-import java.lang.reflect.Modifier
+import java.io.PrintStream
 import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Modifier
 
 class ExecuteDexTask(
     private val prefs: SharedPreferences,
@@ -112,7 +110,7 @@ class ExecuteDexTask(
             } catch (e: Error) {
                 e.printStackTrace(errorStream)
             }
-            Handler(Looper.getMainLooper()).post(postRunnable!!);
+            Handler(Looper.getMainLooper()).post(postRunnable!!)
         }
     }
 }

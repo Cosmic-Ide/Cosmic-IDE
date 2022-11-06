@@ -28,5 +28,4 @@
  *
  * @since 1.5
  */
-
 package org.w3c.dom.bootstrap;

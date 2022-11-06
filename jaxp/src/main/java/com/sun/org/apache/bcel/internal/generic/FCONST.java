@@ -31,14 +31,8 @@ public class FCONST extends Instruction implements ConstantPushInstruction {
 
     private float value;
 
-
-    /**
-     * Empty constructor needed for Instruction.readInstruction.
-     * Not to be used otherwise.
-     */
-    FCONST() {
-    }
-
+    /** Empty constructor needed for Instruction.readInstruction. Not to be used otherwise. */
+    FCONST() {}
 
     public FCONST(final float f) {
         super(com.sun.org.apache.bcel.internal.Const.FCONST_0, (short) 1);
@@ -54,31 +48,28 @@ public class FCONST extends Instruction implements ConstantPushInstruction {
         value = f;
     }
 
-
     @Override
     public Number getValue() {
         return value;
     }
 
-
-    /** @return Type.FLOAT
+    /**
+     * @return Type.FLOAT
      */
     @Override
-    public Type getType( final ConstantPoolGen cp ) {
+    public Type getType(final ConstantPoolGen cp) {
         return Type.FLOAT;
     }
 
-
     /**
-     * Call corresponding visitor method(s). The order is:
-     * Call visitor methods of implemented interfaces first, then
-     * call methods according to the class hierarchy in descending order,
+     * Call corresponding visitor method(s). The order is: Call visitor methods of implemented
+     * interfaces first, then call methods according to the class hierarchy in descending order,
      * i.e., the most specific visitXXX() call comes last.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitPushInstruction(this);
         v.visitStackProducer(this);
         v.visitTypedInstruction(this);

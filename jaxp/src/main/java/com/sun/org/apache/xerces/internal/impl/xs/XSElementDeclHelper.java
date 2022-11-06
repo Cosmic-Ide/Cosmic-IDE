@@ -25,7 +25,6 @@ import com.sun.org.apache.xerces.internal.xni.QName;
 
 /**
  * @xerces.internal
- *
  * @version $Id$
  */
 public interface XSElementDeclHelper {

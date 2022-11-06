@@ -20,30 +20,28 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.Reader;
-
-import com.sun.org.apache.xerces.internal.xni.XNIException;
 import com.sun.org.apache.xerces.internal.xni.XMLResourceIdentifier;
+import com.sun.org.apache.xerces.internal.xni.XNIException;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLEntityResolver;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLInputSource;
-import javax.xml.catalog.CatalogException;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+
+import javax.xml.catalog.CatalogException;
+
 /**
  * This class wraps a SAX entity resolver in an XNI entity resolver.
  *
  * @see EntityResolver
- *
  * @author Andy Clark, IBM
- *
  */
-public class EntityResolverWrapper
-    implements XMLEntityResolver {
+public class EntityResolverWrapper implements XMLEntityResolver {
 
     //
     // Data
@@ -83,17 +81,16 @@ public class EntityResolverWrapper
     //
 
     /**
-     * Resolves an external parsed entity. If the entity cannot be
-     * resolved, this method should return null.
+     * Resolves an external parsed entity. If the entity cannot be resolved, this method should
+     * return null.
      *
-     * @param resourceIdentifier        contains the physical co-ordinates of the resource to be resolved
-     *
+     * @param resourceIdentifier contains the physical co-ordinates of the resource to be resolved
      * @throws XNIException Thrown on general error.
-     * @throws IOException  Thrown if resolved entity stream cannot be
-     *                      opened or some other i/o error occurs.
+     * @throws IOException Thrown if resolved entity stream cannot be opened or some other i/o error
+     *     occurs.
      */
     public XMLInputSource resolveEntity(XMLResourceIdentifier resourceIdentifier)
-        throws XNIException, IOException {
+            throws XNIException, IOException {
 
         // When both pubId and sysId are null, the user's entity resolver
         // can do nothing about it. We'd better not bother calling it.
@@ -102,8 +99,7 @@ public class EntityResolverWrapper
         // any schema location hint. -Sg
         String pubId = resourceIdentifier.getPublicId();
         String sysId = resourceIdentifier.getExpandedSystemId();
-        if (pubId == null && sysId == null)
-            return null;
+        if (pubId == null && sysId == null) return null;
 
         // resolve entity using SAX entity resolver
         if (fEntityResolver != null && resourceIdentifier != null) {
@@ -117,7 +113,7 @@ public class EntityResolverWrapper
                     Reader charStream = inputSource.getCharacterStream();
                     String encoding = inputSource.getEncoding();
                     XMLInputSource xmlInputSource =
-                        new XMLInputSource(publicId, systemId, baseSystemId, true);
+                            new XMLInputSource(publicId, systemId, baseSystemId, true);
                     xmlInputSource.setByteStream(byteStream);
                     xmlInputSource.setCharacterStream(charStream);
                     xmlInputSource.setEncoding(encoding);
@@ -132,15 +128,12 @@ public class EntityResolverWrapper
                     ex = e;
                 }
                 throw new XNIException(ex);
-            }
-
-            catch (CatalogException e) {
+            } catch (CatalogException e) {
                 throw new XNIException(e);
             }
         }
 
         // unable to resolve entity
         return null;
-
     } // resolveEntity(String,String,String):XMLInputSource
 }

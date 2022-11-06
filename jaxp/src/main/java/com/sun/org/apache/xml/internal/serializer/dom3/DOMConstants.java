@@ -26,8 +26,7 @@ import static jdk.xml.internal.JdkConstants.S_IS_STANDALONE;
 /**
  * DOM Constants used by the DOM Level 3 LSSerializer implementation.
  *
- * @xsl.usage internal
- * @LastModified: May 2021
+ * @xsl.usage internal @LastModified: May 2021
  */
 public final class DOMConstants {
     //
@@ -40,11 +39,9 @@ public final class DOMConstants {
     public static final String ORACLE_URL = "http://www.oracle.com/xml";
 
     // The namespace used to qualified DOM Level 3 DOMConfiguration parameters
-    public static final String S_DOM3_PROPERTIES_NS = "{"
-            + DOMConstants.DOM3_REC_URL + "}";
+    public static final String S_DOM3_PROPERTIES_NS = "{" + DOMConstants.DOM3_REC_URL + "}";
 
-    public static final String S_XERCES_PROPERTIES_NS = "{"
-            + DOMConstants.XERCES_URL + "}";
+    public static final String S_XERCES_PROPERTIES_NS = "{" + DOMConstants.XERCES_URL + "}";
 
     // The namespace used for the JDK-only parameters
     public static final String S_JDK_PROPERTIES_NS = "{" + ORACLE_URL + "}";
@@ -59,11 +56,13 @@ public final class DOMConstants {
     // DOM Level 3 DOM Configuration parameter names
     // ************************************************************************
     // DOM Level 3 parameters defined in Core
-    public static final String DOM_CANONICAL_FORM = "canonical-form"; // Unsupported, we only appear to support this
+    public static final String DOM_CANONICAL_FORM =
+            "canonical-form"; // Unsupported, we only appear to support this
 
     public static final String DOM_CDATA_SECTIONS = "cdata-sections";
 
-    public static final String DOM_CHECK_CHAR_NORMALIZATION = "check-character-normalization"; // Unsupported
+    public static final String DOM_CHECK_CHAR_NORMALIZATION =
+            "check-character-normalization"; // Unsupported
 
     public static final String DOM_COMMENTS = "comments";
 
@@ -94,7 +93,8 @@ public final class DOMConstants {
 
     public static final String DOM_FORMAT_PRETTY_PRINT = "format-pretty-print";
 
-    public static final String DOM_IGNORE_UNKNOWN_CHARACTER_DENORMALIZATIONS = "ignore-unknown-character-denormalizations"; // Unsupported
+    public static final String DOM_IGNORE_UNKNOWN_CHARACTER_DENORMALIZATIONS =
+            "ignore-unknown-character-denormalizations"; // Unsupported
 
     public static final String DOM_XMLDECL = "xml-declaration";
 
@@ -124,7 +124,8 @@ public final class DOMConstants {
     public static final String NS_IS_STANDALONE = S_JDK_PROPERTIES_NS + S_IS_STANDALONE;
 
     //
-    public static final String S_XSL_VALUE_ENTITIES = "com/sun/org/apache/xml/internal/serializer/XMLEntities";
+    public static final String S_XSL_VALUE_ENTITIES =
+            "com/sun/org/apache/xml/internal/serializer/XMLEntities";
 
     // Parameter values
     public static final String DOM3_EXPLICIT_TRUE = "explicit:yes";
@@ -141,5 +142,4 @@ public final class DOMConstants {
     public static final String DOM_EXCEPTION_FEATURE_NOT_SUPPORTED = "FEATURE_NOT_SUPPORTED";
 
     public static final String DOM_LSEXCEPTION_SERIALIZER_ERR = "SERIALIZER_ERROR";
-
 }

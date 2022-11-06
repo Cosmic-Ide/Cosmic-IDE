@@ -30,66 +30,53 @@ import com.sun.org.apache.xerces.internal.xs.XSSimpleTypeDefinition;
 import com.sun.org.apache.xerces.internal.xs.XSValue;
 
 /**
- * Class to get the information back after content is validated. This info
- * would be filled by validate().
+ * Class to get the information back after content is validated. This info would be filled by
+ * validate().
  *
  * @xerces.internal
- *
  * @author Neeraj Bajaj, Sun Microsystems, inc.
- *
  */
 public class ValidatedInfo implements XSValue {
 
-    /**
-     * The normalized value of a string value
-     */
+    /** The normalized value of a string value */
     public String normalizedValue;
 
     /**
-     * The actual value from a string value (QName, Boolean, etc.)
-     * An array of Objects if the type is a list.
+     * The actual value from a string value (QName, Boolean, etc.) An array of Objects if the type
+     * is a list.
      */
     public Object actualValue;
 
     /**
-     * The type of the actual value. It's one of the _DT constants
-     * defined in XSConstants.java. The value is used to indicate
-     * the most specific built-in type.
-     * (i.e. short instead of decimal or integer).
+     * The type of the actual value. It's one of the _DT constants defined in XSConstants.java. The
+     * value is used to indicate the most specific built-in type. (i.e. short instead of decimal or
+     * integer).
      */
     public short actualValueType;
 
-    /**
-     * The declared type of the value.
-     */
+    /** The declared type of the value. */
     public XSSimpleType actualType;
 
     /**
-     * If the type is a union type, then the member type which
-     * actually validated the string value.
+     * If the type is a union type, then the member type which actually validated the string value.
      */
     public XSSimpleType memberType;
 
     /**
-     * If
-     * 1. the type is a union type where one of the member types is a list, or
-     *    if the type is a list; and
-     * 2. the item type of the list is a union type
-     * then an array of member types used to validate the values.
+     * If 1. the type is a union type where one of the member types is a list, or if the type is a
+     * list; and 2. the item type of the list is a union type then an array of member types used to
+     * validate the values.
      */
     public XSSimpleType[] memberTypes;
 
     /**
-     * In the case the value is a list or a list of unions, this value
-     * indicates the type(s) of the items in the list.
-     * For a normal list, the length of the array is 1; for list of unions,
-     * the length of the array is the same as the length of the list.
+     * In the case the value is a list or a list of unions, this value indicates the type(s) of the
+     * items in the list. For a normal list, the length of the array is 1; for list of unions, the
+     * length of the array is the same as the length of the list.
      */
     public ShortList itemValueTypes;
 
-    /**
-     * reset the state of this object
-     */
+    /** reset the state of this object */
     public void reset() {
         this.normalizedValue = null;
         this.actualValue = null;
@@ -101,30 +88,28 @@ public class ValidatedInfo implements XSValue {
     }
 
     /**
-     * Return a string representation of the value. If there is an actual
-     * value, use toString; otherwise, use the normalized value.
+     * Return a string representation of the value. If there is an actual value, use toString;
+     * otherwise, use the normalized value.
      */
     public String stringValue() {
         if (actualValue == null) {
             return normalizedValue;
-        }
-        else {
+        } else {
             return actualValue.toString();
         }
     }
 
-    /**
-     * Returns true if the two ValidatedInfo objects can be compared in the same
-     * value space.
-     */
+    /** Returns true if the two ValidatedInfo objects can be compared in the same value space. */
     public static boolean isComparable(ValidatedInfo info1, ValidatedInfo info2) {
         final short primitiveType1 = convertToPrimitiveKind(info1.actualValueType);
         final short primitiveType2 = convertToPrimitiveKind(info2.actualValueType);
         if (primitiveType1 != primitiveType2) {
-            return (primitiveType1 == XSConstants.ANYSIMPLETYPE_DT && primitiveType2 == XSConstants.STRING_DT ||
-                    primitiveType1 == XSConstants.STRING_DT && primitiveType2 == XSConstants.ANYSIMPLETYPE_DT);
-        }
-        else if (primitiveType1 == XSConstants.LIST_DT || primitiveType1 == XSConstants.LISTOFUNION_DT) {
+            return (primitiveType1 == XSConstants.ANYSIMPLETYPE_DT
+                            && primitiveType2 == XSConstants.STRING_DT
+                    || primitiveType1 == XSConstants.STRING_DT
+                            && primitiveType2 == XSConstants.ANYSIMPLETYPE_DT);
+        } else if (primitiveType1 == XSConstants.LIST_DT
+                || primitiveType1 == XSConstants.LISTOFUNION_DT) {
             final ShortList typeList1 = info1.itemValueTypes;
             final ShortList typeList2 = info2.itemValueTypes;
             final int typeList1Length = typeList1 != null ? typeList1.getLength() : 0;
@@ -136,8 +121,10 @@ public class ValidatedInfo implements XSValue {
                 final short primitiveItem1 = convertToPrimitiveKind(typeList1.item(i));
                 final short primitiveItem2 = convertToPrimitiveKind(typeList2.item(i));
                 if (primitiveItem1 != primitiveItem2) {
-                    if (primitiveItem1 == XSConstants.ANYSIMPLETYPE_DT && primitiveItem2 == XSConstants.STRING_DT ||
-                        primitiveItem1 == XSConstants.STRING_DT && primitiveItem2 == XSConstants.ANYSIMPLETYPE_DT) {
+                    if (primitiveItem1 == XSConstants.ANYSIMPLETYPE_DT
+                                    && primitiveItem2 == XSConstants.STRING_DT
+                            || primitiveItem1 == XSConstants.STRING_DT
+                                    && primitiveItem2 == XSConstants.ANYSIMPLETYPE_DT) {
                         continue;
                     }
                     return false;
@@ -149,6 +136,7 @@ public class ValidatedInfo implements XSValue {
 
     /**
      * Returns the primitive type of the given type.
+     *
      * @param valueType A value type as defined in XSConstants.
      * @return The primitive type from which valueType was derived.
      */
@@ -205,9 +193,8 @@ public class ValidatedInfo implements XSValue {
     public void copyFrom(XSValue o) {
         if (o == null) {
             reset();
-        }
-        else if (o instanceof ValidatedInfo) {
-            ValidatedInfo other = (ValidatedInfo)o;
+        } else if (o instanceof ValidatedInfo) {
+            ValidatedInfo other = (ValidatedInfo) o;
             normalizedValue = other.normalizedValue;
             actualValue = other.actualValue;
             actualValueType = other.actualValueType;
@@ -215,22 +202,20 @@ public class ValidatedInfo implements XSValue {
             memberType = other.memberType;
             memberTypes = other.memberTypes;
             itemValueTypes = other.itemValueTypes;
-        }
-        else {
+        } else {
             normalizedValue = o.getNormalizedValue();
             actualValue = o.getActualValue();
             actualValueType = o.getActualValueType();
-            actualType = (XSSimpleType)o.getTypeDefinition();
-            memberType = (XSSimpleType)o.getMemberTypeDefinition();
+            actualType = (XSSimpleType) o.getTypeDefinition();
+            memberType = (XSSimpleType) o.getMemberTypeDefinition();
             XSSimpleType realType = memberType == null ? actualType : memberType;
             if (realType != null && realType.getBuiltInKind() == XSConstants.LISTOFUNION_DT) {
                 XSObjectList members = o.getMemberTypeDefinitions();
                 memberTypes = new XSSimpleType[members.getLength()];
                 for (int i = 0; i < members.getLength(); i++) {
-                    memberTypes[i] = (XSSimpleType)members.get(i);
+                    memberTypes[i] = (XSSimpleType) members.get(i);
                 }
-            }
-            else {
+            } else {
                 memberTypes = null;
             }
             itemValueTypes = o.getListValueTypes();

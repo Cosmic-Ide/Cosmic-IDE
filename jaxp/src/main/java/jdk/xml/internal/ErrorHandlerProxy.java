@@ -29,9 +29,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-/**
- * Implements an ErrorHandler that simply passes on the Exception.
- */
+/** Implements an ErrorHandler that simply passes on the Exception. */
 public class ErrorHandlerProxy implements ErrorHandler {
 
     @Override

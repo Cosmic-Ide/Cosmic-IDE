@@ -4,10 +4,9 @@ import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-import org.cosmic.ide.android.interfaces.Task
-import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.project.Project
 import org.cosmic.ide.CompilerUtil
+import org.cosmic.ide.android.interfaces.Task
+import org.cosmic.ide.project.Project
 import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths

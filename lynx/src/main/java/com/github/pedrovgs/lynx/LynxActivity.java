@@ -24,65 +24,66 @@ import android.os.Bundle;
 /**
  * Activity created to show a LynxView with "match_parent" configuration for LynxView
  * "layout_height" and "layout_width" attributes. To configure LynxView and all the information to
- * show use Activity extras and a LynxConfig object. Use getIntent() method to obtain a valid
- * intent
+ * show use Activity extras and a LynxConfig object. Use getIntent() method to obtain a valid intent
  * to start this Activity.
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
 public class LynxActivity extends Activity {
 
-  private static final String LYNX_CONFIG_EXTRA = "extra_lynx_config";
+    private static final String LYNX_CONFIG_EXTRA = "extra_lynx_config";
 
-  /**
-   * Generates an Intent to start LynxActivity with a default LynxConfig object as configuration.
-   *
-   * @param context the application context
-   * @return a new {@code Intent} to start {@link LynxActivity}
-   */
-  public static Intent getIntent(Context context) {
-    return getIntent(context, new LynxConfig());
-  }
-
-  /**
-   * Generates an Intent to start LynxActivity with a LynxConfig configuration passed as parameter.
-   *
-   * @param context the application context
-   * @param lynxConfig the lynx configuration
-   * @return a new {@code Intent} to start {@link LynxActivity}
-   */
-  public static Intent getIntent(Context context, LynxConfig lynxConfig) {
-    if (lynxConfig == null) {
-      lynxConfig = new LynxConfig();
+    /**
+     * Generates an Intent to start LynxActivity with a default LynxConfig object as configuration.
+     *
+     * @param context the application context
+     * @return a new {@code Intent} to start {@link LynxActivity}
+     */
+    public static Intent getIntent(Context context) {
+        return getIntent(context, new LynxConfig());
     }
-    Intent intent = new Intent(context, LynxActivity.class);
-    intent.putExtra(LYNX_CONFIG_EXTRA, lynxConfig);
-    return intent;
-  }
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.lynx_activity);
-    LynxConfig lynxConfig = getLynxConfig();
-    configureLynxView(lynxConfig);
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-  }
-
-  private LynxConfig getLynxConfig() {
-    Bundle extras = getIntent().getExtras();
-    LynxConfig lynxConfig = new LynxConfig();
-    if (extras != null && extras.containsKey(LYNX_CONFIG_EXTRA)) {
-      lynxConfig = (LynxConfig) extras.getSerializable(LYNX_CONFIG_EXTRA);
+    /**
+     * Generates an Intent to start LynxActivity with a LynxConfig configuration passed as
+     * parameter.
+     *
+     * @param context the application context
+     * @param lynxConfig the lynx configuration
+     * @return a new {@code Intent} to start {@link LynxActivity}
+     */
+    public static Intent getIntent(Context context, LynxConfig lynxConfig) {
+        if (lynxConfig == null) {
+            lynxConfig = new LynxConfig();
+        }
+        Intent intent = new Intent(context, LynxActivity.class);
+        intent.putExtra(LYNX_CONFIG_EXTRA, lynxConfig);
+        return intent;
     }
-    return lynxConfig;
-  }
 
-  private void configureLynxView(LynxConfig lynxConfig) {
-    LynxView lynxView = (LynxView) findViewById(R.id.lynx_view);
-    lynxView.setLynxConfig(lynxConfig);
-  }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.lynx_activity);
+        LynxConfig lynxConfig = getLynxConfig();
+        configureLynxView(lynxConfig);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private LynxConfig getLynxConfig() {
+        Bundle extras = getIntent().getExtras();
+        LynxConfig lynxConfig = new LynxConfig();
+        if (extras != null && extras.containsKey(LYNX_CONFIG_EXTRA)) {
+            lynxConfig = (LynxConfig) extras.getSerializable(LYNX_CONFIG_EXTRA);
+        }
+        return lynxConfig;
+    }
+
+    private void configureLynxView(LynxConfig lynxConfig) {
+        LynxView lynxView = (LynxView) findViewById(R.id.lynx_view);
+        lynxView.setLynxConfig(lynxConfig);
+    }
 }

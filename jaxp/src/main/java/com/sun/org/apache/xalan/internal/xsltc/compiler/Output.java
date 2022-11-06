@@ -21,12 +21,6 @@
 
 package com.sun.org.apache.xalan.internal.xsltc.compiler;
 
-import java.io.OutputStreamWriter;
-import java.util.Properties;
-import java.util.StringTokenizer;
-
-import javax.xml.transform.OutputKeys;
-
 import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
@@ -39,6 +33,12 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util;
 import com.sun.org.apache.xml.internal.serializer.Encodings;
 import com.sun.org.apache.xml.internal.utils.XML11Char;
 
+import java.io.OutputStreamWriter;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.xml.transform.OutputKeys;
+
 /**
  * @author Jacek Ambroziak
  * @author Santiago Pericas-Geertsen
@@ -50,38 +50,35 @@ final class Output extends TopLevelElement {
 
     // These attributes are extracted from the xsl:output element. They also
     // appear as fields (with the same type, only public) in the translet
-    private String  _version;
-    private String  _method;
-    private String  _encoding;
+    private String _version;
+    private String _method;
+    private String _encoding;
     private boolean _omitHeader = false;
-    private String  _standalone;
-    private String  _doctypePublic;
-    private String  _doctypeSystem;
-    private String  _cdata;
+    private String _standalone;
+    private String _doctypePublic;
+    private String _doctypeSystem;
+    private String _cdata;
     private boolean _indent = false;
-    private String  _mediaType;
+    private String _mediaType;
     private String _indentamount;
 
     // Disables this output element (when other element has higher precedence)
     private boolean _disabled = false;
 
     // Some global constants
-    private final static String STRING_SIG = "Ljava/lang/String;";
-    private final static String XML_VERSION = "1.0";
-    private final static String HTML_VERSION = "4.0";
+    private static final String STRING_SIG = "Ljava/lang/String;";
+    private static final String XML_VERSION = "1.0";
+    private static final String HTML_VERSION = "4.0";
 
-    /**
-     * Displays the contents of this element (for debugging)
-     */
+    /** Displays the contents of this element (for debugging) */
     public void display(int indent) {
         indent(indent);
         Util.println("Output " + _method);
     }
 
     /**
-     * Disables this <xsl:output> element in case where there are some other
-     * <xsl:output> element (from a different imported/included stylesheet)
-     * with higher precedence.
+     * Disables this <xsl:output> element in case where there are some other <xsl:output> element
+     * (from a different imported/included stylesheet) with higher precedence.
      */
     public void disable() {
         _disabled = true;
@@ -120,9 +117,11 @@ final class Output extends TopLevelElement {
         // Merge cdata-section-elements
         if (previous.hasAttribute("cdata-section-elements")) {
             // addAttribute works as a setter if it already exists
-            addAttribute("cdata-section-elements",
-                previous.getAttribute("cdata-section-elements") + ' ' +
-                getAttribute("cdata-section-elements"));
+            addAttribute(
+                    "cdata-section-elements",
+                    previous.getAttribute("cdata-section-elements")
+                            + ' '
+                            + getAttribute("cdata-section-elements"));
         }
 
         // Transfer non-standard attributes as well
@@ -136,9 +135,7 @@ final class Output extends TopLevelElement {
         }
     }
 
-    /**
-     * Scans the attribute list for the xsl:output instruction
-     */
+    /** Scans the attribute list for the xsl:output instruction */
     public void parseContents(Parser parser) {
         final Properties outputProperties = new Properties();
 
@@ -154,8 +151,7 @@ final class Output extends TopLevelElement {
         _version = getAttribute("version");
         if (_version.equals(Constants.EMPTYSTRING)) {
             _version = null;
-        }
-        else {
+        } else {
             outputProperties.setProperty(OutputKeys.VERSION, _version);
         }
 
@@ -166,11 +162,11 @@ final class Output extends TopLevelElement {
         }
         if (_method != null) {
             _method = _method.toLowerCase();
-            if ((_method.equals("xml"))||
-                (_method.equals("html"))||
-                (_method.equals("text"))||
-                ((XML11Char.isXML11ValidQName(_method)&&(_method.indexOf(":") > 0)))) {
-               outputProperties.setProperty(OutputKeys.METHOD, _method);
+            if ((_method.equals("xml"))
+                    || (_method.equals("html"))
+                    || (_method.equals("text"))
+                    || ((XML11Char.isXML11ValidQName(_method) && (_method.indexOf(":") > 0)))) {
+                outputProperties.setProperty(OutputKeys.METHOD, _method);
             } else {
                 reportError(this, parser, ErrorMsg.INVALID_METHOD_IN_OUTPUT, _method);
             }
@@ -180,18 +176,14 @@ final class Output extends TopLevelElement {
         _encoding = getAttribute("encoding");
         if (_encoding.equals(Constants.EMPTYSTRING)) {
             _encoding = null;
-        }
-        else {
+        } else {
             try {
                 // Create a write to verify encoding support
                 String canonicalEncoding;
                 canonicalEncoding = Encodings.convertMime2JavaEncoding(_encoding);
-                OutputStreamWriter writer =
-                    new OutputStreamWriter(System.out, canonicalEncoding);
-            }
-            catch (java.io.UnsupportedEncodingException e) {
-                ErrorMsg msg = new ErrorMsg(ErrorMsg.UNSUPPORTED_ENCODING,
-                                            _encoding, this);
+                OutputStreamWriter writer = new OutputStreamWriter(System.out, canonicalEncoding);
+            } catch (java.io.UnsupportedEncodingException e) {
+                ErrorMsg msg = new ErrorMsg(ErrorMsg.UNSUPPORTED_ENCODING, _encoding, this);
                 parser.reportError(Constants.WARNING, msg);
             }
             outputProperties.setProperty(OutputKeys.ENCODING, _encoding);
@@ -210,8 +202,7 @@ final class Output extends TopLevelElement {
         _standalone = getAttribute("standalone");
         if (_standalone.equals(Constants.EMPTYSTRING)) {
             _standalone = null;
-        }
-        else {
+        } else {
             outputProperties.setProperty(OutputKeys.STANDALONE, _standalone);
         }
 
@@ -219,17 +210,14 @@ final class Output extends TopLevelElement {
         _doctypeSystem = getAttribute("doctype-system");
         if (_doctypeSystem.equals(Constants.EMPTYSTRING)) {
             _doctypeSystem = null;
-        }
-        else {
+        } else {
             outputProperties.setProperty(OutputKeys.DOCTYPE_SYSTEM, _doctypeSystem);
         }
-
 
         _doctypePublic = getAttribute("doctype-public");
         if (_doctypePublic.equals(Constants.EMPTYSTRING)) {
             _doctypePublic = null;
-        }
-        else {
+        } else {
             outputProperties.setProperty(OutputKeys.DOCTYPE_PUBLIC, _doctypePublic);
         }
 
@@ -237,8 +225,7 @@ final class Output extends TopLevelElement {
         _cdata = getAttribute("cdata-section-elements");
         if (_cdata.equals(Constants.EMPTYSTRING)) {
             _cdata = null;
-        }
-        else {
+        } else {
             StringBuffer expandedNames = new StringBuffer();
             StringTokenizer tokens = new StringTokenizer(_cdata);
 
@@ -249,12 +236,10 @@ final class Output extends TopLevelElement {
                     ErrorMsg err = new ErrorMsg(ErrorMsg.INVALID_QNAME_ERR, qname, this);
                     parser.reportError(Constants.ERROR, err);
                 }
-                expandedNames.append(
-                   parser.getQName(qname).toString()).append(' ');
+                expandedNames.append(parser.getQName(qname).toString()).append(' ');
             }
             _cdata = expandedNames.toString();
-            outputProperties.setProperty(OutputKeys.CDATA_SECTION_ELEMENTS,
-                _cdata);
+            outputProperties.setProperty(OutputKeys.CDATA_SECTION_ELEMENTS, _cdata);
         }
 
         // Get the indent setting - only has effect for xml and html output
@@ -264,18 +249,16 @@ final class Output extends TopLevelElement {
                 _indent = true;
             }
             outputProperties.setProperty(OutputKeys.INDENT, attrib);
-        }
-        else if (_method != null && _method.equals("html")) {
+        } else if (_method != null && _method.equals("html")) {
             _indent = true;
         }
 
         // indent-amount: extension attribute of xsl:output
-        _indentamount = getAttribute(
-            lookupPrefix("http://xml.apache.org/xalan"), "indent-amount");
+        _indentamount = getAttribute(lookupPrefix("http://xml.apache.org/xalan"), "indent-amount");
         //  Hack for supporting Old Namespace URI.
-        if (_indentamount.equals(EMPTYSTRING)){
-            _indentamount = getAttribute(
-                lookupPrefix("http://xml.apache.org/xslt"), "indent-amount");
+        if (_indentamount.equals(EMPTYSTRING)) {
+            _indentamount =
+                    getAttribute(lookupPrefix("http://xml.apache.org/xslt"), "indent-amount");
         }
         if (!_indentamount.equals(EMPTYSTRING)) {
             outputProperties.setProperty("indent_amount", _indentamount);
@@ -285,8 +268,7 @@ final class Output extends TopLevelElement {
         _mediaType = getAttribute("media-type");
         if (_mediaType.equals(Constants.EMPTYSTRING)) {
             _mediaType = null;
-        }
-        else {
+        } else {
             outputProperties.setProperty(OutputKeys.MEDIA_TYPE, _mediaType);
         }
 
@@ -299,8 +281,7 @@ final class Output extends TopLevelElement {
                 if (_mediaType == null) {
                     _mediaType = "text/html";
                 }
-            }
-            else if (_method.equals("text")) {
+            } else if (_method.equals("text")) {
                 if (_mediaType == null) {
                     _mediaType = "text/plain";
                 }
@@ -312,8 +293,8 @@ final class Output extends TopLevelElement {
     }
 
     /**
-     * Compile code that passes the information in this <xsl:output> element
-     * to the appropriate fields in the translet
+     * Compile code that passes the information in this <xsl:output> element to the appropriate
+     * fields in the translet
      */
     public void translate(ClassGenerator classGen, MethodGenerator methodGen) {
 
@@ -367,11 +348,11 @@ final class Output extends TopLevelElement {
         }
 
         // Set system/public doctype only if both are set
-        field = cpg.addFieldref(TRANSLET_CLASS,"_doctypeSystem",STRING_SIG);
+        field = cpg.addFieldref(TRANSLET_CLASS, "_doctypeSystem", STRING_SIG);
         il.append(DUP);
         il.append(new PUSH(cpg, _doctypeSystem));
         il.append(new PUTFIELD(field));
-        field = cpg.addFieldref(TRANSLET_CLASS,"_doctypePublic",STRING_SIG);
+        field = cpg.addFieldref(TRANSLET_CLASS, "_doctypePublic", STRING_SIG);
         il.append(DUP);
         il.append(new PUSH(cpg, _doctypePublic));
         il.append(new PUTFIELD(field));
@@ -392,8 +373,8 @@ final class Output extends TopLevelElement {
             il.append(new PUTFIELD(field));
         }
 
-        //Compile code to set indent amount.
-        if(_indentamount != null && !_indentamount.equals(EMPTYSTRING)){
+        // Compile code to set indent amount.
+        if (_indentamount != null && !_indentamount.equals(EMPTYSTRING)) {
             field = cpg.addFieldref(TRANSLET_CLASS, "_indentamount", "I");
             il.append(DUP);
             il.append(new PUSH(cpg, Integer.parseInt(_indentamount)));
@@ -402,9 +383,8 @@ final class Output extends TopLevelElement {
 
         // Forward to the translet any elements that should be output as CDATA
         if (_cdata != null) {
-            int index = cpg.addMethodref(TRANSLET_CLASS,
-                                         "addCdataElement",
-                                         "(Ljava/lang/String;)V");
+            int index =
+                    cpg.addMethodref(TRANSLET_CLASS, "addCdataElement", "(Ljava/lang/String;)V");
 
             StringTokenizer tokens = new StringTokenizer(_cdata);
             while (tokens.hasMoreTokens()) {
@@ -415,5 +395,4 @@ final class Output extends TopLevelElement {
         }
         il.append(POP); // Cleanup - pop last translet reference off stack
     }
-
 }

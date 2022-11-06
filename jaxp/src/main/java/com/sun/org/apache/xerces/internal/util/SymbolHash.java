@@ -20,15 +20,12 @@
 
 package com.sun.org.apache.xerces.internal.util;
 
-
 /**
- * This class is an unsynchronized hash table primary used for String
- * to Object mapping.
- * <p>
- * The hash code uses the same algorithm as SymbolTable class.
+ * This class is an unsynchronized hash table primary used for String to Object mapping.
  *
- * @author Elena Litani
- * @LastModified: Nov 2017
+ * <p>The hash code uses the same algorithm as SymbolTable class.
+ *
+ * @author Elena Litani @LastModified: Nov 2017
  */
 public class SymbolHash {
 
@@ -49,7 +46,7 @@ public class SymbolHash {
     // Data
     //
 
-    /** Actual table size **/
+    /** Actual table size * */
     protected int fTableSize;
 
     /** Buckets. */
@@ -59,8 +56,8 @@ public class SymbolHash {
     protected int fNum = 0;
 
     /**
-     * Array of randomly selected hash function multipliers or <code>null</code>
-     * if the default String.hashCode() function should be used.
+     * Array of randomly selected hash function multipliers or <code>null</code> if the default
+     * String.hashCode() function should be used.
      */
     protected int[] fHashMultipliers;
 
@@ -76,7 +73,7 @@ public class SymbolHash {
     /**
      * Constructs a key table with a given size.
      *
-     * @param size  the size of the key table.
+     * @param size the size of the key table.
      */
     public SymbolHash(int size) {
         fTableSize = size;
@@ -88,9 +85,8 @@ public class SymbolHash {
     //
 
     /**
-     * Adds the key/value mapping to the key table. If the key already exists,
-     * the previous value associated with this key is overwritten by the new
-     * value.
+     * Adds the key/value mapping to the key table. If the key already exists, the previous value
+     * associated with this key is overwritten by the new value.
      *
      * @param key
      * @param value
@@ -115,8 +111,7 @@ public class SymbolHash {
             // would exceed the number of buckets.
             rehash();
             bucket = hash % fTableSize;
-        }
-        else if (collisionCount >= MAX_HASH_COLLISIONS && key instanceof String) {
+        } else if (collisionCount >= MAX_HASH_COLLISIONS && key instanceof String) {
             // Select a new hash function and rehash the table if
             // MAX_HASH_COLLISIONS is exceeded.
             rebalance();
@@ -156,26 +151,24 @@ public class SymbolHash {
     /**
      * Add all values to the given array. The array must have enough entry.
      *
-     * @param elements  the array to store the elements
-     * @param from      where to start store element in the array
-     * @return          number of elements copied to the array
+     * @param elements the array to store the elements
+     * @param from where to start store element in the array
+     * @return number of elements copied to the array
      */
     public int getValues(Object[] elements, int from) {
-        for (int i=0, j=0; i<fTableSize && j<fNum; i++) {
+        for (int i = 0, j = 0; i < fTableSize && j < fNum; i++) {
             for (Entry entry = fBuckets[i]; entry != null; entry = entry.next) {
-                elements[from+j] = entry.value;
+                elements[from + j] = entry.value;
                 j++;
             }
         }
         return fNum;
     }
 
-    /**
-     * Return key/value pairs of all entries in the map
-     */
+    /** Return key/value pairs of all entries in the map */
     public Object[] getEntries() {
         Object[] entries = new Object[fNum << 1];
-        for (int i=0, j=0; i<fTableSize && j<fNum << 1; i++) {
+        for (int i = 0, j = 0; i < fTableSize && j < fNum << 1; i++) {
             for (Entry entry = fBuckets[i]; entry != null; entry = entry.next) {
                 entries[j] = entry.key;
                 entries[++j] = entry.value;
@@ -185,9 +178,7 @@ public class SymbolHash {
         return entries;
     }
 
-    /**
-     * Make a clone of this object.
-     */
+    /** Make a clone of this object. */
     public SymbolHash makeClone() {
         SymbolHash newTable = new SymbolHash(fTableSize);
         newTable.fNum = fNum;
@@ -201,11 +192,11 @@ public class SymbolHash {
     }
 
     /**
-     * Remove all key/value association. This tries to save a bit of GC'ing
-     * by at least keeping the fBuckets array around.
+     * Remove all key/value association. This tries to save a bit of GC'ing by at least keeping the
+     * fBuckets array around.
      */
     public void clear() {
-        for (int i=0; i<fTableSize; i++) {
+        for (int i = 0; i < fTableSize; i++) {
             fBuckets[i] = null;
         }
         fNum = 0;
@@ -215,8 +206,7 @@ public class SymbolHash {
     protected Entry search(Object key, int bucket) {
         // search for identical key
         for (Entry entry = fBuckets[bucket]; entry != null; entry = entry.next) {
-            if (key.equals(entry.key))
-                return entry;
+            if (key.equals(entry.key)) return entry;
         }
         return null;
     }
@@ -244,20 +234,18 @@ public class SymbolHash {
     } // hash0(String):int
 
     /**
-     * Increases the capacity of and internally reorganizes this
-     * SymbolHash, in order to accommodate and access its entries more
-     * efficiently.  This method is called automatically when the
-     * number of keys in the SymbolHash exceeds its number of buckets.
+     * Increases the capacity of and internally reorganizes this SymbolHash, in order to accommodate
+     * and access its entries more efficiently. This method is called automatically when the number
+     * of keys in the SymbolHash exceeds its number of buckets.
      */
     protected void rehash() {
         rehashCommon((fBuckets.length << 1) + 1);
     }
 
     /**
-     * Randomly selects a new hash function and reorganizes this SymbolHash
-     * in order to more evenly distribute its entries across the table. This
-     * method is called automatically when the number keys in one of the
-     * SymbolHash's buckets exceeds MAX_HASH_COLLISIONS.
+     * Randomly selects a new hash function and reorganizes this SymbolHash in order to more evenly
+     * distribute its entries across the table. This method is called automatically when the number
+     * keys in one of the SymbolHash's buckets exceeds MAX_HASH_COLLISIONS.
      */
     protected void rebalance() {
         if (fHashMultipliers == null) {
@@ -277,7 +265,7 @@ public class SymbolHash {
         fBuckets = newTable;
         fTableSize = fBuckets.length;
 
-        for (int i = oldCapacity; i-- > 0;) {
+        for (int i = oldCapacity; i-- > 0; ) {
             for (Entry old = oldTable[i]; old != null; ) {
                 Entry e = old;
                 old = old.next;
@@ -293,10 +281,7 @@ public class SymbolHash {
     // Classes
     //
 
-    /**
-     * This class is a key table entry. Each entry acts as a node
-     * in a linked list.
-     */
+    /** This class is a key table entry. Each entry acts as a node in a linked list. */
     protected static final class Entry {
         // key/value
         public Object key;
@@ -320,10 +305,8 @@ public class SymbolHash {
             Entry entry = new Entry();
             entry.key = key;
             entry.value = value;
-            if (next != null)
-                entry.next = next.makeClone();
+            if (next != null) entry.next = next.makeClone();
             return entry;
         }
     } // entry
-
 } // class SymbolHash

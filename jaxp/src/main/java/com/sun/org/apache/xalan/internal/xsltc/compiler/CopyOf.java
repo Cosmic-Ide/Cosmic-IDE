@@ -62,13 +62,12 @@ final class CopyOf extends Instruction {
 
     public Type typeCheck(SymbolTable stable) throws TypeCheckError {
         final Type tselect = _select.typeCheck(stable);
-        if (tselect instanceof NodeType ||
-            tselect instanceof NodeSetType ||
-            tselect instanceof ReferenceType ||
-            tselect instanceof ResultTreeType) {
+        if (tselect instanceof NodeType
+                || tselect instanceof NodeSetType
+                || tselect instanceof ReferenceType
+                || tselect instanceof ResultTreeType) {
             // falls through
-        }
-        else {
+        } else {
             _select = new CastExpr(_select, Type.String);
         }
         return Type.Void;
@@ -79,15 +78,14 @@ final class CopyOf extends Instruction {
         final InstructionList il = methodGen.getInstructionList();
         final Type tselect = _select.getType();
 
-        final String CPY1_SIG = "("+NODE_ITERATOR_SIG+TRANSLET_OUTPUT_SIG+")V";
+        final String CPY1_SIG = "(" + NODE_ITERATOR_SIG + TRANSLET_OUTPUT_SIG + ")V";
         final int cpy1 = cpg.addInterfaceMethodref(DOM_INTF, "copy", CPY1_SIG);
 
-        final String CPY2_SIG = "("+NODE_SIG+TRANSLET_OUTPUT_SIG+")V";
+        final String CPY2_SIG = "(" + NODE_SIG + TRANSLET_OUTPUT_SIG + ")V";
         final int cpy2 = cpg.addInterfaceMethodref(DOM_INTF, "copy", CPY2_SIG);
 
-        final String getDoc_SIG = "()"+NODE_SIG;
+        final String getDoc_SIG = "()" + NODE_SIG;
         final int getDoc = cpg.addInterfaceMethodref(DOM_INTF, "getDocument", getDoc_SIG);
-
 
         if (tselect instanceof NodeSetType) {
             il.append(methodGen.loadDOM());
@@ -99,43 +97,41 @@ final class CopyOf extends Instruction {
             // call copy from the DOM 'library'
             il.append(methodGen.loadHandler());
             il.append(new INVOKEINTERFACE(cpy1, 3));
-        }
-        else if (tselect instanceof NodeType) {
+        } else if (tselect instanceof NodeType) {
             il.append(methodGen.loadDOM());
             _select.translate(classGen, methodGen);
             il.append(methodGen.loadHandler());
             il.append(new INVOKEINTERFACE(cpy2, 3));
-        }
-        else if (tselect instanceof ResultTreeType) {
+        } else if (tselect instanceof ResultTreeType) {
             _select.translate(classGen, methodGen);
             // We want the whole tree, so we start with the root node
-            il.append(DUP); //need a pointer to the DOM ;
-            il.append(new INVOKEINTERFACE(getDoc,1)); //ICONST_0);
+            il.append(DUP); // need a pointer to the DOM ;
+            il.append(new INVOKEINTERFACE(getDoc, 1)); // ICONST_0);
             il.append(methodGen.loadHandler());
             il.append(new INVOKEINTERFACE(cpy2, 3));
-        }
-        else if (tselect instanceof ReferenceType) {
+        } else if (tselect instanceof ReferenceType) {
             _select.translate(classGen, methodGen);
             il.append(methodGen.loadHandler());
             il.append(methodGen.loadCurrentNode());
             il.append(methodGen.loadDOM());
-            final int copy = cpg.addMethodref(BASIS_LIBRARY_CLASS, "copy",
-                                              "("
-                                              + OBJECT_SIG
-                                              + TRANSLET_OUTPUT_SIG
-                                              + NODE_SIG
-                                              + DOM_INTF_SIG
-                                              + ")V");
+            final int copy =
+                    cpg.addMethodref(
+                            BASIS_LIBRARY_CLASS,
+                            "copy",
+                            "("
+                                    + OBJECT_SIG
+                                    + TRANSLET_OUTPUT_SIG
+                                    + NODE_SIG
+                                    + DOM_INTF_SIG
+                                    + ")V");
             il.append(new INVOKESTATIC(copy));
-        }
-        else {
+        } else {
             il.append(classGen.loadTranslet());
             _select.translate(classGen, methodGen);
             il.append(methodGen.loadHandler());
-            il.append(new INVOKEVIRTUAL(cpg.addMethodref(TRANSLET_CLASS,
-                                                         CHARACTERSW,
-                                                         CHARACTERSW_SIG)));
+            il.append(
+                    new INVOKEVIRTUAL(
+                            cpg.addMethodref(TRANSLET_CLASS, CHARACTERSW, CHARACTERSW_SIG)));
         }
-
     }
 }

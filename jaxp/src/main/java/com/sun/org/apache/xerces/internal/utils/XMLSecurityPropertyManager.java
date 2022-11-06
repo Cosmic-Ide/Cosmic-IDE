@@ -25,34 +25,33 @@
 
 package com.sun.org.apache.xerces.internal.utils;
 
-import javax.xml.XMLConstants;
 import jdk.xml.internal.JdkConstants;
 import jdk.xml.internal.SecuritySupport;
 
-/**
- * This class manages security related properties
- *
- */
+import javax.xml.XMLConstants;
+
+/** This class manages security related properties */
 public final class XMLSecurityPropertyManager {
 
     /**
-     * States of the settings of a property, in the order: default value, value
-     * set by FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system
-     * properties, and jaxp api properties
+     * States of the settings of a property, in the order: default value, value set by
+     * FEATURE_SECURE_PROCESSING, jaxp.properties file, jaxp system properties, and jaxp api
+     * properties
      */
     public static enum State {
-        //this order reflects the overriding order
-        DEFAULT, FSP, JAXPDOTPROPERTIES, SYSTEMPROPERTY, APIPROPERTY
+        // this order reflects the overriding order
+        DEFAULT,
+        FSP,
+        JAXPDOTPROPERTIES,
+        SYSTEMPROPERTY,
+        APIPROPERTY
     }
 
-    /**
-     * Limits managed by the security manager
-     */
+    /** Limits managed by the security manager */
     public static enum Property {
-        ACCESS_EXTERNAL_DTD(XMLConstants.ACCESS_EXTERNAL_DTD,
-                JdkConstants.EXTERNAL_ACCESS_DEFAULT),
-        ACCESS_EXTERNAL_SCHEMA(XMLConstants.ACCESS_EXTERNAL_SCHEMA,
-                JdkConstants.EXTERNAL_ACCESS_DEFAULT);
+        ACCESS_EXTERNAL_DTD(XMLConstants.ACCESS_EXTERNAL_DTD, JdkConstants.EXTERNAL_ACCESS_DEFAULT),
+        ACCESS_EXTERNAL_SCHEMA(
+                XMLConstants.ACCESS_EXTERNAL_SCHEMA, JdkConstants.EXTERNAL_ACCESS_DEFAULT);
 
         final String name;
         final String defaultValue;
@@ -75,29 +74,24 @@ public final class XMLSecurityPropertyManager {
         }
     }
 
-    /**
-     * Values of the properties as defined in enum Properties
-     */
+    /** Values of the properties as defined in enum Properties */
     private final String[] values;
-    /**
-     * States of the settings for each property in Properties above
-     */
+    /** States of the settings for each property in Properties above */
     private State[] states = {State.DEFAULT, State.DEFAULT};
 
-    /**
-     * Default constructor. Establishes default values
-     */
+    /** Default constructor. Establishes default values */
     public XMLSecurityPropertyManager() {
         values = new String[Property.values().length];
         for (Property property : Property.values()) {
             values[property.ordinal()] = property.defaultValue();
         }
-        //read system properties or jaxp.properties
+        // read system properties or jaxp.properties
         readSystemProperties();
     }
 
     /**
      * Finds the property with the given name.
+     *
      * @param propertyName the property name specified
      * @return the property name if found, null otherwise
      */
@@ -112,16 +106,16 @@ public final class XMLSecurityPropertyManager {
 
     /**
      * Set limit by property name and state
+     *
      * @param propertyName property name
      * @param state the state of the property
      * @param value the value of the property
-     * @return true if the property is managed by the security property manager;
-     *         false if otherwise.
+     * @return true if the property is managed by the security property manager; false if otherwise.
      */
     public boolean setValue(String propertyName, State state, Object value) {
         int index = getIndex(propertyName);
         if (index > -1) {
-            setValue(index, state, (String)value);
+            setValue(index, state, (String) value);
             return true;
         }
         return false;
@@ -135,7 +129,7 @@ public final class XMLSecurityPropertyManager {
      * @param value the value of the property
      */
     public void setValue(Property property, State state, String value) {
-        //only update if it shall override
+        // only update if it shall override
         if (state.compareTo(states[property.ordinal()]) >= 0) {
             values[property.ordinal()] = value;
             states[property.ordinal()] = state;
@@ -144,18 +138,18 @@ public final class XMLSecurityPropertyManager {
 
     /**
      * Set the value of a property by its index
+     *
      * @param index the index of the property
      * @param state the state of the property
      * @param value the value of the property
      */
     public void setValue(int index, State state, String value) {
-        //only update if it shall override
+        // only update if it shall override
         if (state.compareTo(states[index]) >= 0) {
             values[index] = value;
             states[index] = state;
         }
     }
-
 
     /**
      * Return the value of the specified property
@@ -184,6 +178,7 @@ public final class XMLSecurityPropertyManager {
 
     /**
      * Return the value of a property by its ordinal
+     *
      * @param index the index of a property
      * @return value of a property
      */
@@ -193,27 +188,24 @@ public final class XMLSecurityPropertyManager {
 
     /**
      * Get the index by property name
+     *
      * @param propertyName property name
      * @return the index of the property if found; return -1 if not
      */
-    public int getIndex(String propertyName){
+    public int getIndex(String propertyName) {
         for (Property property : Property.values()) {
             if (property.equalsName(propertyName)) {
-                //internally, ordinal is used as index
+                // internally, ordinal is used as index
                 return property.ordinal();
             }
         }
         return -1;
     }
 
-    /**
-     * Read from system properties, or those in jaxp.properties
-     */
+    /** Read from system properties, or those in jaxp.properties */
     private void readSystemProperties() {
-        getSystemProperty(Property.ACCESS_EXTERNAL_DTD,
-                JdkConstants.SP_ACCESS_EXTERNAL_DTD);
-        getSystemProperty(Property.ACCESS_EXTERNAL_SCHEMA,
-                JdkConstants.SP_ACCESS_EXTERNAL_SCHEMA);
+        getSystemProperty(Property.ACCESS_EXTERNAL_DTD, JdkConstants.SP_ACCESS_EXTERNAL_DTD);
+        getSystemProperty(Property.ACCESS_EXTERNAL_SCHEMA, JdkConstants.SP_ACCESS_EXTERNAL_SCHEMA);
     }
 
     /**
@@ -237,7 +229,7 @@ public final class XMLSecurityPropertyManager {
                 states[property.ordinal()] = State.JAXPDOTPROPERTIES;
             }
         } catch (NumberFormatException e) {
-            //invalid setting ignored
+            // invalid setting ignored
         }
     }
 }

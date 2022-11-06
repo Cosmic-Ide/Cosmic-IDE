@@ -104,5 +104,4 @@ public class CharSequenceIterator implements CharacterIterator {
         another.index = index;
         return another;
     }
-
 }

@@ -24,12 +24,12 @@ import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.TypeCheckError;
+
 import java.util.List;
 
 /**
  * @author Jacek Ambroziak
- * @author Santiago Pericas-Geertsen
- * @LastModified: Oct 2017
+ * @author Santiago Pericas-Geertsen @LastModified: Oct 2017
  */
 final class BooleanCall extends FunctionCall {
 

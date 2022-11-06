@@ -30,21 +30,22 @@ import com.sun.org.apache.xerces.internal.xni.XMLString;
 import com.sun.org.apache.xerces.internal.xni.XNIException;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLDTDFilter;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLDTDSource;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>This filter records which unparsed entities have been
- * declared in the DTD and provides this information to a ValidationManager.
- * Events are forwarded to the registered XMLDTDHandler without modification.</p>
+ * This filter records which unparsed entities have been declared in the DTD and provides this
+ * information to a ValidationManager. Events are forwarded to the registered XMLDTDHandler without
+ * modification.
  *
- * @author Michael Glavassevich, IBM
- * @LastModified: Oct 2017
+ * @author Michael Glavassevich, IBM @LastModified: Oct 2017
  */
 final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
 
-    /** DTD source and handler. **/
+    /** DTD source and handler. * */
     private XMLDTDSource fDTDSource;
+
     private XMLDTDHandler fDTDHandler;
 
     /** Validation manager. */
@@ -61,86 +62,95 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
      * XMLDTDHandler methods
      */
 
-    public void startDTD(XMLLocator locator, Augmentations augmentations)
-            throws XNIException {
+    public void startDTD(XMLLocator locator, Augmentations augmentations) throws XNIException {
         fValidationManager.setEntityState(this);
         if (fDTDHandler != null) {
             fDTDHandler.startDTD(locator, augmentations);
         }
     }
 
-    public void startParameterEntity(String name,
-            XMLResourceIdentifier identifier, String encoding,
-            Augmentations augmentations) throws XNIException {
+    public void startParameterEntity(
+            String name,
+            XMLResourceIdentifier identifier,
+            String encoding,
+            Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.startParameterEntity(name, identifier, encoding, augmentations);
         }
     }
 
-    public void textDecl(String version, String encoding,
-            Augmentations augmentations) throws XNIException {
+    public void textDecl(String version, String encoding, Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.textDecl(version, encoding, augmentations);
         }
     }
 
-    public void endParameterEntity(String name, Augmentations augmentations)
-            throws XNIException {
+    public void endParameterEntity(String name, Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.endParameterEntity(name, augmentations);
         }
     }
 
-    public void startExternalSubset(XMLResourceIdentifier identifier,
-            Augmentations augmentations) throws XNIException {
+    public void startExternalSubset(XMLResourceIdentifier identifier, Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.startExternalSubset(identifier, augmentations);
         }
     }
 
-    public void endExternalSubset(Augmentations augmentations)
-            throws XNIException {
+    public void endExternalSubset(Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.endExternalSubset(augmentations);
         }
     }
 
-    public void comment(XMLString text, Augmentations augmentations)
-            throws XNIException {
+    public void comment(XMLString text, Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.comment(text, augmentations);
         }
     }
 
-    public void processingInstruction(String target, XMLString data,
-            Augmentations augmentations) throws XNIException {
+    public void processingInstruction(String target, XMLString data, Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.processingInstruction(target, data, augmentations);
         }
     }
 
-    public void elementDecl(String name, String contentModel,
-            Augmentations augmentations) throws XNIException {
+    public void elementDecl(String name, String contentModel, Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.elementDecl(name, contentModel, augmentations);
         }
     }
 
-    public void startAttlist(String elementName, Augmentations augmentations)
-            throws XNIException {
+    public void startAttlist(String elementName, Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.startAttlist(elementName, augmentations);
         }
     }
 
-    public void attributeDecl(String elementName, String attributeName,
-            String type, String[] enumeration, String defaultType,
-            XMLString defaultValue, XMLString nonNormalizedDefaultValue,
-            Augmentations augmentations) throws XNIException {
+    public void attributeDecl(
+            String elementName,
+            String attributeName,
+            String type,
+            String[] enumeration,
+            String defaultType,
+            XMLString defaultValue,
+            XMLString nonNormalizedDefaultValue,
+            Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
-            fDTDHandler.attributeDecl(elementName, attributeName,
-                    type, enumeration, defaultType,
-                    defaultValue, nonNormalizedDefaultValue,
+            fDTDHandler.attributeDecl(
+                    elementName,
+                    attributeName,
+                    type,
+                    enumeration,
+                    defaultType,
+                    defaultValue,
+                    nonNormalizedDefaultValue,
                     augmentations);
         }
     }
@@ -151,26 +161,28 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
         }
     }
 
-    public void internalEntityDecl(String name, XMLString text,
-            XMLString nonNormalizedText, Augmentations augmentations)
+    public void internalEntityDecl(
+            String name, XMLString text, XMLString nonNormalizedText, Augmentations augmentations)
             throws XNIException {
         if (fDTDHandler != null) {
-            fDTDHandler.internalEntityDecl(name, text,
-                    nonNormalizedText, augmentations);
+            fDTDHandler.internalEntityDecl(name, text, nonNormalizedText, augmentations);
         }
     }
 
-    public void externalEntityDecl(String name,
-            XMLResourceIdentifier identifier, Augmentations augmentations)
+    public void externalEntityDecl(
+            String name, XMLResourceIdentifier identifier, Augmentations augmentations)
             throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.externalEntityDecl(name, identifier, augmentations);
         }
     }
 
-    public void unparsedEntityDecl(String name,
-            XMLResourceIdentifier identifier, String notation,
-            Augmentations augmentations) throws XNIException {
+    public void unparsedEntityDecl(
+            String name,
+            XMLResourceIdentifier identifier,
+            String notation,
+            Augmentations augmentations)
+            throws XNIException {
         if (fUnparsedEntities == null) {
             fUnparsedEntities = new HashMap<>();
         }
@@ -180,26 +192,24 @@ final class UnparsedEntityHandler implements XMLDTDFilter, EntityState {
         }
     }
 
-    public void notationDecl(String name, XMLResourceIdentifier identifier,
-            Augmentations augmentations) throws XNIException {
+    public void notationDecl(
+            String name, XMLResourceIdentifier identifier, Augmentations augmentations)
+            throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.notationDecl(name, identifier, augmentations);
         }
     }
 
-    public void startConditional(short type, Augmentations augmentations)
-            throws XNIException {
+    public void startConditional(short type, Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.startConditional(type, augmentations);
         }
     }
 
-    public void ignoredCharacters(XMLString text, Augmentations augmentations)
-            throws XNIException {
+    public void ignoredCharacters(XMLString text, Augmentations augmentations) throws XNIException {
         if (fDTDHandler != null) {
             fDTDHandler.ignoredCharacters(text, augmentations);
         }
-
     }
 
     public void endConditional(Augmentations augmentations) throws XNIException {

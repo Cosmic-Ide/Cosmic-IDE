@@ -25,8 +25,8 @@
 
 package javax.xml.transform;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.CodeSigner;
@@ -38,8 +38,7 @@ import java.security.ProtectionDomain;
 import java.util.Objects;
 
 /**
- * This class specifies an exceptional condition that occurred
- * during the transformation process.
+ * This class specifies an exceptional condition that occurred during the transformation process.
  *
  * @since 1.4
  */
@@ -51,8 +50,8 @@ public class TransformerException extends Exception {
     SourceLocator locator;
 
     /**
-     * Method getLocator retrieves an instance of a SourceLocator
-     * object that specifies where an error occurred.
+     * Method getLocator retrieves an instance of a SourceLocator object that specifies where an
+     * error occurred.
      *
      * @return A SourceLocator object, or null if none was specified.
      */
@@ -61,8 +60,8 @@ public class TransformerException extends Exception {
     }
 
     /**
-     * Method setLocator sets an instance of a SourceLocator
-     * object that specifies where an error occurred.
+     * Method setLocator sets an instance of a SourceLocator object that specifies where an error
+     * occurred.
      *
      * @param location A SourceLocator object, or null to clear the location.
      */
@@ -70,7 +69,7 @@ public class TransformerException extends Exception {
         this.locator = location;
     }
 
-    /** Field containedException specifies a wrapped exception.  May be null. */
+    /** Field containedException specifies a wrapped exception. May be null. */
     Throwable containedException;
 
     /**
@@ -84,42 +83,35 @@ public class TransformerException extends Exception {
     }
 
     /**
-     * Returns the cause of this throwable or <code>null</code> if the
-     * cause is nonexistent or unknown.  (The cause is the throwable that
-     * caused this throwable to get thrown.)
+     * Returns the cause of this throwable or <code>null</code> if the cause is nonexistent or
+     * unknown. (The cause is the throwable that caused this throwable to get thrown.)
+     *
      * @return the cause, or null if unknown
      */
     @Override
     public Throwable getCause() {
 
-        return ((containedException == this)
-                ? null
-                : containedException);
+        return ((containedException == this) ? null : containedException);
     }
 
     /**
-     * Initializes the <i>cause</i> of this throwable to the specified value.
-     * (The cause is the throwable that caused this throwable to get thrown.)
+     * Initializes the <i>cause</i> of this throwable to the specified value. (The cause is the
+     * throwable that caused this throwable to get thrown.)
      *
-     * <p>This method can be called at most once.  It is generally called from
-     * within the constructor, or immediately after creating the
-     * throwable.  If this throwable was created
-     * with {@link #TransformerException(Throwable)} or
-     * {@link #TransformerException(String,Throwable)}, this method cannot be called
-     * even once.
+     * <p>This method can be called at most once. It is generally called from within the
+     * constructor, or immediately after creating the throwable. If this throwable was created with
+     * {@link #TransformerException(Throwable)} or {@link #TransformerException(String,Throwable)},
+     * this method cannot be called even once.
      *
-     * @param  cause the cause (which is saved for later retrieval by the
-     *         {@link #getCause()} method).  (A <code>null</code> value is
-     *         permitted, and indicates that the cause is nonexistent or
-     *         unknown.)
-     * @return  a reference to this <code>Throwable</code> instance.
-     * @throws IllegalArgumentException if <code>cause</code> is this
-     *         throwable.  (A throwable cannot
-     *         be its own cause.)
-     * @throws IllegalStateException if this throwable was
-     *         created with {@link #TransformerException(Throwable)} or
-     *         {@link #TransformerException(String,Throwable)}, or this method has already
-     *         been called on this throwable.
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()}
+     *     method). (A <code>null</code> value is permitted, and indicates that the cause is
+     *     nonexistent or unknown.)
+     * @return a reference to this <code>Throwable</code> instance.
+     * @throws IllegalArgumentException if <code>cause</code> is this throwable. (A throwable cannot
+     *     be its own cause.)
+     * @throws IllegalStateException if this throwable was created with {@link
+     *     #TransformerException(Throwable)} or {@link #TransformerException(String,Throwable)}, or
+     *     this method has already been called on this throwable.
      */
     @Override
     public synchronized Throwable initCause(Throwable cause) {
@@ -135,8 +127,7 @@ public class TransformerException extends Exception {
         }
 
         if (cause == this) {
-            throw new IllegalArgumentException(
-                "Self-causation not permitted");
+            throw new IllegalArgumentException("Self-causation not permitted");
         }
 
         this.containedException = cause;
@@ -165,11 +156,10 @@ public class TransformerException extends Exception {
     /**
      * Wrap an existing exception in a TransformerException.
      *
-     * <p>This is used for throwing processor exceptions before
-     * the processing has started.</p>
+     * <p>This is used for throwing processor exceptions before the processing has started.
      *
-     * @param message The error or warning message, or null to
-     *                use the message from the embedded exception.
+     * @param message The error or warning message, or null to use the message from the embedded
+     *     exception.
      * @param e Any exception
      */
     public TransformerException(String message, Throwable e) {
@@ -179,9 +169,8 @@ public class TransformerException extends Exception {
     /**
      * Create a new TransformerException from a message and a Locator.
      *
-     * <p>This constructor is especially useful when an application is
-     * creating its own exception from within a DocumentHandler
-     * callback.</p>
+     * <p>This constructor is especially useful when an application is creating its own exception
+     * from within a DocumentHandler callback.
      *
      * @param message The error or warning message.
      * @param locator The locator object for the error or warning.
@@ -193,27 +182,26 @@ public class TransformerException extends Exception {
     /**
      * Wrap an existing exception in a TransformerException.
      *
-     * @param message The error or warning message, or null to
-     *                use the message from the embedded exception.
+     * @param message The error or warning message, or null to use the message from the embedded
+     *     exception.
      * @param locator The locator object for the error or warning.
      * @param e Any exception
      */
-    public TransformerException(String message, SourceLocator locator,
-                                Throwable e) {
-        super(((message == null) || (message.length() == 0))
-              ? ((e == null) ? "" : e.toString())
-              : message);
+    public TransformerException(String message, SourceLocator locator, Throwable e) {
+        super(
+                ((message == null) || (message.length() == 0))
+                        ? ((e == null) ? "" : e.toString())
+                        : message);
 
         this.containedException = e;
-        this.locator            = locator;
+        this.locator = locator;
     }
 
     /**
-     * Get the error message with location information
-     * appended.
+     * Get the error message with location information appended.
      *
-     * @return A <code>String</code> representing the error message with
-     *         location information appended.
+     * @return A <code>String</code> representing the error message with location information
+     *     appended.
      */
     public String getMessageAndLocation() {
         StringBuilder sbuffer = new StringBuilder();
@@ -226,8 +214,7 @@ public class TransformerException extends Exception {
     /**
      * Get the location information as a string.
      *
-     * @return A string with location info, or null
-     * if there is no location information.
+     * @return A string with location info, or null if there is no location information.
      */
     @SuppressWarnings("removal")
     public String getLocationAsString() {
@@ -238,14 +225,15 @@ public class TransformerException extends Exception {
         if (System.getSecurityManager() == null) {
             return getLocationString();
         } else {
-            return AccessController.doPrivileged((PrivilegedAction<String>) () ->
-                getLocationString(),
-                new AccessControlContext(new ProtectionDomain[] {getNonPrivDomain()}));
+            return AccessController.doPrivileged(
+                    (PrivilegedAction<String>) () -> getLocationString(),
+                    new AccessControlContext(new ProtectionDomain[] {getNonPrivDomain()}));
         }
     }
 
     /**
      * Constructs the location string.
+     *
      * @return the location string
      */
     private String getLocationString() {
@@ -253,33 +241,32 @@ public class TransformerException extends Exception {
             return null;
         }
 
-        StringBuilder sbuffer  = new StringBuilder();
-            String       systemID = locator.getSystemId();
-            int          line     = locator.getLineNumber();
-            int          column   = locator.getColumnNumber();
+        StringBuilder sbuffer = new StringBuilder();
+        String systemID = locator.getSystemId();
+        int line = locator.getLineNumber();
+        int column = locator.getColumnNumber();
 
-            if (null != systemID) {
-                sbuffer.append("; SystemID: ");
-                sbuffer.append(systemID);
-            }
+        if (null != systemID) {
+            sbuffer.append("; SystemID: ");
+            sbuffer.append(systemID);
+        }
 
-            if (0 != line) {
-                sbuffer.append("; Line#: ");
-                sbuffer.append(line);
-            }
+        if (0 != line) {
+            sbuffer.append("; Line#: ");
+            sbuffer.append(line);
+        }
 
-            if (0 != column) {
-                sbuffer.append("; Column#: ");
-                sbuffer.append(column);
-            }
+        if (0 != column) {
+            sbuffer.append("; Column#: ");
+            sbuffer.append(column);
+        }
 
-            return sbuffer.toString();
+        return sbuffer.toString();
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
      */
     @Override
     public void printStackTrace() {
@@ -287,9 +274,9 @@ public class TransformerException extends Exception {
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
+     *
      * @param s The stream where the dump will be sent to.
      */
     @Override
@@ -298,9 +285,9 @@ public class TransformerException extends Exception {
     }
 
     /**
-     * Print the the trace of methods from where the error
-     * originated.  This will trace all nested exception
-     * objects, as well as this object.
+     * Print the the trace of methods from where the error originated. This will trace all nested
+     * exception objects, as well as this object.
+     *
      * @param s The writer where the dump will be sent to.
      */
     @Override
@@ -319,7 +306,8 @@ public class TransformerException extends Exception {
                 }
 
                 super.printStackTrace(s);
-            } catch (Throwable e) {}
+            } catch (Throwable e) {
+            }
 
             Throwable exception = getException();
 
@@ -351,7 +339,8 @@ public class TransformerException extends Exception {
                     } else {
                         exception = null;
                     }
-                } catch (InvocationTargetException | IllegalAccessException
+                } catch (InvocationTargetException
+                        | IllegalAccessException
                         | NoSuchMethodException e) {
                     exception = null;
                 }
@@ -364,11 +353,12 @@ public class TransformerException extends Exception {
 
     /**
      * Creates a ProtectionDomain that has no permission.
+     *
      * @return a ProtectionDomain
      */
     private ProtectionDomain getNonPrivDomain() {
         CodeSource nullSource = new CodeSource(null, (CodeSigner[]) null);
         PermissionCollection noPermission = new Permissions();
         return new ProtectionDomain(nullSource, noPermission);
-}
+    }
 }

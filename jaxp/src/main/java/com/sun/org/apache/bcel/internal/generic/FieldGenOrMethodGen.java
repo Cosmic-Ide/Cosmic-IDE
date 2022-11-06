@@ -19,18 +19,16 @@
  */
 package com.sun.org.apache.bcel.internal.generic;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sun.org.apache.bcel.internal.Const;
 import com.sun.org.apache.bcel.internal.classfile.AccessFlags;
 import com.sun.org.apache.bcel.internal.classfile.Attribute;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Super class for FieldGen and MethodGen objects, since they have
- * some methods in common!
- *
- * @LastModified: May 2021
+ * Super class for FieldGen and MethodGen objects, since they have some methods in
+ * common! @LastModified: May 2021
  */
 public abstract class FieldGenOrMethodGen extends AccessFlags implements NamedAndTyped, Cloneable {
 
@@ -43,10 +41,7 @@ public abstract class FieldGenOrMethodGen extends AccessFlags implements NamedAn
     // @since 6.0
     private final List<AnnotationEntryGen> annotationList = new ArrayList<>();
 
-
-    protected FieldGenOrMethodGen() {
-    }
-
+    protected FieldGenOrMethodGen() {}
 
     /**
      * @since 6.0
@@ -56,84 +51,70 @@ public abstract class FieldGenOrMethodGen extends AccessFlags implements NamedAn
     }
 
     @Override
-    public void setType( final Type type ) { // TODO could be package-protected?
+    public void setType(final Type type) { // TODO could be package-protected?
         if (type.getType() == Const.T_ADDRESS) {
             throw new IllegalArgumentException("Type can not be " + type);
         }
         this.type = type;
     }
 
-
     @Override
     public Type getType() {
         return type;
     }
 
-
-    /** @return name of method/field.
+    /**
+     * @return name of method/field.
      */
     @Override
     public String getName() {
         return name;
     }
 
-
     @Override
-    public void setName( final String name ) { // TODO could be package-protected?
+    public void setName(final String name) { // TODO could be package-protected?
         this.name = name;
     }
-
 
     public ConstantPoolGen getConstantPool() {
         return cp;
     }
 
-
-    public void setConstantPool( final ConstantPoolGen cp ) { // TODO could be package-protected?
+    public void setConstantPool(final ConstantPoolGen cp) { // TODO could be package-protected?
         this.cp = cp;
     }
 
-
     /**
-     * Add an attribute to this method. Currently, the JVM knows about
-     * the `Code', `ConstantValue', `Synthetic' and `Exceptions'
-     * attributes. Other attributes will be ignored by the JVM but do no
-     * harm.
+     * Add an attribute to this method. Currently, the JVM knows about the `Code', `ConstantValue',
+     * `Synthetic' and `Exceptions' attributes. Other attributes will be ignored by the JVM but do
+     * no harm.
      *
      * @param a attribute to be added
      */
-    public void addAttribute( final Attribute a ) {
+    public void addAttribute(final Attribute a) {
         attributeList.add(a);
     }
 
     /**
      * @since 6.0
      */
-    public void addAnnotationEntry(final AnnotationEntryGen ag)
-    {
+    public void addAnnotationEntry(final AnnotationEntryGen ag) {
         annotationList.add(ag);
     }
 
-
-    /**
-     * Remove an attribute.
-     */
-    public void removeAttribute( final Attribute a ) {
+    /** Remove an attribute. */
+    public void removeAttribute(final Attribute a) {
         attributeList.remove(a);
     }
 
     /**
      * @since 6.0
      */
-    public void removeAnnotationEntry(final AnnotationEntryGen ag)
-    {
+    public void removeAnnotationEntry(final AnnotationEntryGen ag) {
         annotationList.remove(ag);
     }
 
-
-    /**
-     * Remove all attributes.
-     */
+    /** Remove all attributes. */
     public void removeAttributes() {
         attributeList.clear();
     }
@@ -141,11 +122,9 @@ public abstract class FieldGenOrMethodGen extends AccessFlags implements NamedAn
     /**
      * @since 6.0
      */
-    public void removeAnnotationEntries()
-    {
+    public void removeAnnotationEntries() {
         annotationList.clear();
     }
-
 
     /**
      * @return all attributes of this method.
@@ -156,13 +135,12 @@ public abstract class FieldGenOrMethodGen extends AccessFlags implements NamedAn
 
     public AnnotationEntryGen[] getAnnotationEntries() {
         return annotationList.toArray(new AnnotationEntryGen[0]);
-      }
+    }
 
-
-    /** @return signature of method/field.
+    /**
+     * @return signature of method/field.
      */
     public abstract String getSignature();
-
 
     @Override
     public Object clone() {

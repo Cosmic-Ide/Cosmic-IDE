@@ -23,6 +23,7 @@ package com.sun.org.apache.xerces.internal.util;
 import com.sun.org.apache.xerces.internal.impl.Constants;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLComponentManager;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,25 +31,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class implements the basic operations for managing parser
- * configuration features and properties. This utility class can
- * be used as a base class for parser configurations or separately
- * to encapsulate a number of parser settings as a component
- * manager.
- * <p>
- * This class can be constructed with a "parent" settings object
- * (in the form of an <code>XMLComponentManager</code>) that allows
- * parser configuration settings to be "chained" together.
+ * This class implements the basic operations for managing parser configuration features and
+ * properties. This utility class can be used as a base class for parser configurations or
+ * separately to encapsulate a number of parser settings as a component manager.
  *
- * @author Andy Clark, IBM
+ * <p>This class can be constructed with a "parent" settings object (in the form of an <code>
+ * XMLComponentManager</code>) that allows parser configuration settings to be "chained" together.
  *
- * @LastModified: Apr 2019
+ * @author Andy Clark, IBM @LastModified: Apr 2019
  */
-public class ParserConfigurationSettings
-    implements XMLComponentManager {
+public class ParserConfigurationSettings implements XMLComponentManager {
 
-        protected static final String PARSER_SETTINGS =
-                        Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
+    protected static final String PARSER_SETTINGS =
+            Constants.XERCES_FEATURE_PREFIX + Constants.PARSER_SETTINGS;
 
     //
     // Data
@@ -80,10 +75,7 @@ public class ParserConfigurationSettings
         this(null);
     } // <init>()
 
-    /**
-     * Constructs a parser configuration settings object with a
-     * parent settings object.
-     */
+    /** Constructs a parser configuration settings object with a parent settings object. */
     public ParserConfigurationSettings(XMLComponentManager parent) {
 
         // create storage for recognized features and properties
@@ -96,7 +88,6 @@ public class ParserConfigurationSettings
 
         // save parent
         fParentSettings = parent;
-
     } // <init>(XMLComponentManager)
 
     //
@@ -104,11 +95,10 @@ public class ParserConfigurationSettings
     //
 
     /**
-     * Allows a parser to add parser specific features to be recognized
-     * and managed by the parser configuration.
+     * Allows a parser to add parser specific features to be recognized and managed by the parser
+     * configuration.
      *
-     * @param featureIds An array of the additional feature identifiers
-     *                   to be recognized.
+     * @param featureIds An array of the additional feature identifiers to be recognized.
      */
     public void addRecognizedFeatures(String[] featureIds) {
 
@@ -120,24 +110,20 @@ public class ParserConfigurationSettings
                 fRecognizedFeatures.add(featureId);
             }
         }
-
     } // addRecognizedFeatures(String[])
 
     /**
      * Set the state of a feature.
      *
-     * Set the state of any feature in a SAX2 parser.  The parser
-     * might not recognize the feature, and if it does recognize
-     * it, it might not be able to fulfill the request.
+     * <p>Set the state of any feature in a SAX2 parser. The parser might not recognize the feature,
+     * and if it does recognize it, it might not be able to fulfill the request.
      *
      * @param featureId The unique identifier (URI) of the feature.
      * @param state The requested state of the feature (true or false).
-     *
      * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
-     *            requested feature is not known.
+     *     requested feature is not known.
      */
-    public void setFeature(String featureId, boolean state)
-        throws XMLConfigurationException {
+    public void setFeature(String featureId, boolean state) throws XMLConfigurationException {
 
         // check and store
         FeatureState checkState = checkFeature(featureId);
@@ -149,11 +135,10 @@ public class ParserConfigurationSettings
     } // setFeature(String,boolean)
 
     /**
-     * Allows a parser to add parser specific properties to be recognized
-     * and managed by the parser configuration.
+     * Allows a parser to add parser specific properties to be recognized and managed by the parser
+     * configuration.
      *
-     * @param propertyIds An array of the additional property identifiers
-     *                    to be recognized.
+     * @param propertyIds An array of the additional property identifiers to be recognized.
      */
     public void addRecognizedProperties(String[] propertyIds) {
         fRecognizedProperties.addAll(Arrays.asList(propertyIds));
@@ -165,10 +150,9 @@ public class ParserConfigurationSettings
      * @param propertyId
      * @param value
      * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
-     *            requested feature is not known.
+     *     requested feature is not known.
      */
-    public void setProperty(String propertyId, Object value)
-        throws XMLConfigurationException {
+    public void setProperty(String propertyId, Object value) throws XMLConfigurationException {
 
         // check and store
         PropertyState checkState = checkProperty(propertyId);
@@ -176,7 +160,6 @@ public class ParserConfigurationSettings
             throw new XMLConfigurationException(checkState.status, propertyId);
         }
         fProperties.put(propertyId, value);
-
     } // setProperty(String,Object)
 
     //
@@ -187,17 +170,12 @@ public class ParserConfigurationSettings
      * Returns the state of a feature.
      *
      * @param featureId The feature identifier.
-                 * @return true if the feature is supported
-     *
-     * @throws XMLConfigurationException Thrown for configuration error.
-     *                                   In general, components should
-     *                                   only throw this exception if
-     *                                   it is <strong>really</strong>
-     *                                   a critical error.
+     * @return true if the feature is supported
+     * @throws XMLConfigurationException Thrown for configuration error. In general, components
+     *     should only throw this exception if it is <strong>really</strong> a critical error.
      */
     @Override
-    public boolean getFeature(String featureId)
-        throws XMLConfigurationException {
+    public boolean getFeature(String featureId) throws XMLConfigurationException {
 
         FeatureState state = getFeatureState(featureId);
         if (state.isExceptional()) {
@@ -223,7 +201,7 @@ public class ParserConfigurationSettings
             FeatureState checkState = checkFeature(featureId);
             if (checkState.isExceptional()) {
                 return checkState;
-        }
+            }
             return FeatureState.is(false);
         }
         return FeatureState.is(state);
@@ -233,17 +211,12 @@ public class ParserConfigurationSettings
      * Returns the value of a property.
      *
      * @param propertyId The property identifier.
-                 * @return the value of the property
-     *
-     * @throws XMLConfigurationException Thrown for configuration error.
-     *                                   In general, components should
-     *                                   only throw this exception if
-     *                                   it is <strong>really</strong>
-     *                                   a critical error.
+     * @return the value of the property
+     * @throws XMLConfigurationException Thrown for configuration error. In general, components
+     *     should only throw this exception if it is <strong>really</strong> a critical error.
      */
     @Override
-    public Object getProperty(String propertyId)
-        throws XMLConfigurationException {
+    public Object getProperty(String propertyId) throws XMLConfigurationException {
 
         PropertyState state = getPropertyState(propertyId);
         if (state.isExceptional()) {
@@ -271,7 +244,7 @@ public class ParserConfigurationSettings
             PropertyState state = checkProperty(propertyId);
             if (state.isExceptional()) {
                 return state;
-        }
+            }
         }
 
         return PropertyState.is(propertyValue);
@@ -282,23 +255,20 @@ public class ParserConfigurationSettings
     //
 
     /**
-     * Check a feature. If feature is known and supported, this method simply
-     * returns. Otherwise, the appropriate exception is thrown.
+     * Check a feature. If feature is known and supported, this method simply returns. Otherwise,
+     * the appropriate exception is thrown.
      *
      * @param featureId The unique identifier (URI) of the feature.
-     *
      * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
-     *            requested feature is not known.
+     *     requested feature is not known.
      */
-    protected FeatureState checkFeature(String featureId)
-        throws XMLConfigurationException {
+    protected FeatureState checkFeature(String featureId) throws XMLConfigurationException {
 
         // check feature
         if (!fRecognizedFeatures.contains(featureId)) {
             if (fParentSettings != null) {
                 return fParentSettings.getFeatureState(featureId);
-            }
-            else {
+            } else {
                 return FeatureState.NOT_RECOGNIZED;
             }
         }
@@ -308,17 +278,15 @@ public class ParserConfigurationSettings
     } // checkFeature(String)
 
     /**
-     * Check a property. If the property is known and supported, this method
-     * simply returns. Otherwise, the appropriate exception is thrown.
+     * Check a property. If the property is known and supported, this method simply returns.
+     * Otherwise, the appropriate exception is thrown.
      *
-     * @param propertyId The unique identifier (URI) of the property
-     *                   being set.
+     * @param propertyId The unique identifier (URI) of the property being set.
      * @return the PropertyState
      * @exception com.sun.org.apache.xerces.internal.xni.parser.XMLConfigurationException If the
-     *            requested feature is not known.
+     *     requested feature is not known.
      */
-    protected PropertyState checkProperty(String propertyId)
-        throws XMLConfigurationException {
+    protected PropertyState checkProperty(String propertyId) throws XMLConfigurationException {
 
         // check property
         if (!fRecognizedProperties.contains(propertyId)) {
@@ -326,13 +294,11 @@ public class ParserConfigurationSettings
                 PropertyState state = fParentSettings.getPropertyState(propertyId);
                 if (state.isExceptional()) {
                     return state;
-            }
-            }
-            else {
+                }
+            } else {
                 return PropertyState.NOT_RECOGNIZED;
             }
         }
         return PropertyState.RECOGNIZED;
     } // checkProperty(String)
-
 } // class ParserConfigurationSettings

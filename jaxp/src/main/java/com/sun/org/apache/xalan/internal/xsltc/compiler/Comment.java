@@ -25,8 +25,8 @@ import com.sun.org.apache.bcel.internal.generic.ConstantPoolGen;
 import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import com.sun.org.apache.bcel.internal.generic.INVOKEINTERFACE;
 import com.sun.org.apache.bcel.internal.generic.INVOKEVIRTUAL;
-import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.bcel.internal.generic.InstructionList;
+import com.sun.org.apache.bcel.internal.generic.PUSH;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ClassGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MethodGenerator;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
@@ -71,28 +71,28 @@ final class Comment extends Instruction {
             if (rawText.canLoadAsArrayOffsetLength()) {
                 rawText.loadAsArrayOffsetLength(classGen, methodGen);
                 final int comment =
-                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                                  "comment",
-                                                  "([CII)V");
+                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE, "comment", "([CII)V");
                 il.append(new INVOKEINTERFACE(comment, 4));
             } else {
                 il.append(new PUSH(cpg, rawText.getText()));
                 final int comment =
-                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                                  "comment",
-                                                  "(" + STRING_SIG + ")V");
+                        cpg.addInterfaceMethodref(
+                                TRANSLET_OUTPUT_INTERFACE, "comment", "(" + STRING_SIG + ")V");
                 il.append(new INVOKEINTERFACE(comment, 2));
             }
         } else {
             // Save the current handler base on the stack
             il.append(methodGen.loadHandler());
-            il.append(DUP);             // first arg to "comment" call
+            il.append(DUP); // first arg to "comment" call
 
             // Get the translet's StringValueHandler
             il.append(classGen.loadTranslet());
-            il.append(new GETFIELD(cpg.addFieldref(TRANSLET_CLASS,
-                                                   "stringValueHandler",
-                                                   STRING_VALUE_HANDLER_SIG)));
+            il.append(
+                    new GETFIELD(
+                            cpg.addFieldref(
+                                    TRANSLET_CLASS,
+                                    "stringValueHandler",
+                                    STRING_VALUE_HANDLER_SIG)));
             il.append(DUP);
             il.append(methodGen.storeHandler());
 
@@ -100,14 +100,13 @@ final class Comment extends Instruction {
             translateContents(classGen, methodGen);
 
             // get String out of the handler
-            il.append(new INVOKEVIRTUAL(cpg.addMethodref(STRING_VALUE_HANDLER,
-                                                         "getValue",
-                                                         "()" + STRING_SIG)));
+            il.append(
+                    new INVOKEVIRTUAL(
+                            cpg.addMethodref(STRING_VALUE_HANDLER, "getValue", "()" + STRING_SIG)));
             // call "comment"
             final int comment =
-                        cpg.addInterfaceMethodref(TRANSLET_OUTPUT_INTERFACE,
-                                                  "comment",
-                                                  "(" + STRING_SIG + ")V");
+                    cpg.addInterfaceMethodref(
+                            TRANSLET_OUTPUT_INTERFACE, "comment", "(" + STRING_SIG + ")V");
             il.append(new INVOKEINTERFACE(comment, 2));
             // Restore old handler base from stack
             il.append(methodGen.storeHandler());

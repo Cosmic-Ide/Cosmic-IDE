@@ -21,14 +21,14 @@ import com.github.pedrovgs.lynx.LynxConfig;
 /**
  * TraceRenderer implementation used to render Trace objects with TraceLevel.ASSERT trace level.
  *
- * To learn more about Renderers library take a look to the repository:
+ * <p>To learn more about Renderers library take a look to the repository:
  * https://github.com/pedrovgs/Renderers
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
 class AssertTraceRenderer extends DebugTraceRenderer {
 
-  AssertTraceRenderer(LynxConfig lynxConfig) {
-    super(lynxConfig);
-  }
+    AssertTraceRenderer(LynxConfig lynxConfig) {
+        super(lynxConfig);
+    }
 }

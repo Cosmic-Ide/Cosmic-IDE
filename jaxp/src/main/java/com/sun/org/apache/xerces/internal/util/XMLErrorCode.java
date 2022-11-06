@@ -22,11 +22,9 @@
 package com.sun.org.apache.xerces.internal.util;
 
 /**
- * <p>A structure that represents an error code, characterized by
- * a domain and a message key.</p>
+ * A structure that represents an error code, characterized by a domain and a message key.
  *
  * @author Naela Nissar, IBM
- *
  */
 final class XMLErrorCode {
 
@@ -34,14 +32,14 @@ final class XMLErrorCode {
     // Data
     //
 
-    /** error domain **/
+    /** error domain * */
     private String fDomain;
 
-    /** message key **/
+    /** message key * */
     private String fKey;
 
     /**
-     * <p>Constructs an XMLErrorCode with the given domain and key.</p>
+     * Constructs an XMLErrorCode with the given domain and key.
      *
      * @param domain The error domain.
      * @param key The key of the error message.
@@ -52,7 +50,7 @@ final class XMLErrorCode {
     }
 
     /**
-     * <p>Convenience method to set the values of an XMLErrorCode.</p>
+     * Convenience method to set the values of an XMLErrorCode.
      *
      * @param domain The error domain.
      * @param key The key of the error message.
@@ -63,19 +61,18 @@ final class XMLErrorCode {
     }
 
     /**
-     * <p>Indicates whether some other object is equal to this XMLErrorCode.</p>
+     * Indicates whether some other object is equal to this XMLErrorCode.
      *
      * @param obj the object with which to compare.
      */
     public boolean equals(Object obj) {
-        if (!(obj instanceof XMLErrorCode))
-            return false;
+        if (!(obj instanceof XMLErrorCode)) return false;
         XMLErrorCode err = (XMLErrorCode) obj;
         return (fDomain.equals(err.fDomain) && fKey.equals(err.fKey));
     }
 
     /**
-     * <p>Returns a hash code value for this XMLErrorCode.</p>
+     * Returns a hash code value for this XMLErrorCode.
      *
      * @return a hash code value for this XMLErrorCode.
      */

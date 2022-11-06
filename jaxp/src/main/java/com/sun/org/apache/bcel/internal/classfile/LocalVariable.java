@@ -20,25 +20,23 @@
 
 package com.sun.org.apache.bcel.internal.classfile;
 
+import com.sun.org.apache.bcel.internal.Const;
+
 import java.io.DataInput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.sun.org.apache.bcel.internal.Const;
-
 /**
- * This class represents a local variable within a method. It contains its
- * scope, name, signature and index on the method's frame.  It is used both
- * to represent an element of the LocalVariableTable as well as an element
- * of the LocalVariableTypeTable.  The nomenclature used here may be a bit confusing;
- * while the two items have the same layout in a class file, a LocalVariableTable
- * attribute contains a descriptor_index, not a signatureIndex.  The
+ * This class represents a local variable within a method. It contains its scope, name, signature
+ * and index on the method's frame. It is used both to represent an element of the
+ * LocalVariableTable as well as an element of the LocalVariableTypeTable. The nomenclature used
+ * here may be a bit confusing; while the two items have the same layout in a class file, a
+ * LocalVariableTable attribute contains a descriptor_index, not a signatureIndex. The
  * LocalVariableTypeTable attribute does have a signatureIndex.
- * @see com.sun.org.apache.bcel.internal.classfile.Utility for more details on the difference.
  *
- * @see     LocalVariableTable
- * @see     LocalVariableTypeTable
- * @LastModified: May 2021
+ * @see com.sun.org.apache.bcel.internal.classfile.Utility for more details on the difference.
+ * @see LocalVariableTable
+ * @see LocalVariableTypeTable @LastModified: May 2021
  */
 public final class LocalVariable implements Cloneable, Node {
 
@@ -54,29 +52,38 @@ public final class LocalVariable implements Cloneable, Node {
     private ConstantPool constantPool;
     private int origIndex; // never changes; used to match up with LocalVariableTypeTable entries
 
-
     /**
-     * Initializes from another LocalVariable. Note that both objects use the same
-     * references (shallow copy). Use copy() for a physical copy.
+     * Initializes from another LocalVariable. Note that both objects use the same references
+     * (shallow copy). Use copy() for a physical copy.
      *
      * @param localVariable Another LocalVariable.
      */
     public LocalVariable(final LocalVariable localVariable) {
-        this(localVariable.getStartPC(), localVariable.getLength(), localVariable.getNameIndex(),
-                localVariable.getSignatureIndex(), localVariable.getIndex(), localVariable.getConstantPool());
+        this(
+                localVariable.getStartPC(),
+                localVariable.getLength(),
+                localVariable.getNameIndex(),
+                localVariable.getSignatureIndex(),
+                localVariable.getIndex(),
+                localVariable.getConstantPool());
         this.origIndex = localVariable.getOrigIndex();
     }
 
     /**
      * Constructs object from file stream.
+     *
      * @param file Input stream
      * @throws IOException
      */
     LocalVariable(final DataInput file, final ConstantPool constant_pool) throws IOException {
-        this(file.readUnsignedShort(), file.readUnsignedShort(), file.readUnsignedShort(), file
-                .readUnsignedShort(), file.readUnsignedShort(), constant_pool);
+        this(
+                file.readUnsignedShort(),
+                file.readUnsignedShort(),
+                file.readUnsignedShort(),
+                file.readUnsignedShort(),
+                file.readUnsignedShort(),
+                constant_pool);
     }
-
 
     /**
      * @param startPc Range in which the variable
@@ -86,7 +93,12 @@ public final class LocalVariable implements Cloneable, Node {
      * @param index Variable is `index'th local variable on the method's frame
      * @param constantPool Array of constants
      */
-    public LocalVariable(final int startPc, final int length, final int nameIndex, final int signatureIndex, final int index,
+    public LocalVariable(
+            final int startPc,
+            final int length,
+            final int nameIndex,
+            final int signatureIndex,
+            final int index,
             final ConstantPool constantPool) {
         this.startPc = startPc;
         this.length = length;
@@ -97,7 +109,6 @@ public final class LocalVariable implements Cloneable, Node {
         this.origIndex = index;
     }
 
-
     /**
      * @param startPc Range in which the variable
      * @param length ... is valid
@@ -105,10 +116,17 @@ public final class LocalVariable implements Cloneable, Node {
      * @param signatureIndex Index of variable's signature
      * @param index Variable is `index'th local variable on the method's frame
      * @param constantPool Array of constants
-     * @param origIndex Variable is `index'th local variable on the method's frame prior to any changes
+     * @param origIndex Variable is `index'th local variable on the method's frame prior to any
+     *     changes
      */
-    public LocalVariable(final int startPc, final int length, final int nameIndex, final int signatureIndex, final int index,
-            final ConstantPool constantPool, final int origIndex) {
+    public LocalVariable(
+            final int startPc,
+            final int length,
+            final int nameIndex,
+            final int signatureIndex,
+            final int index,
+            final ConstantPool constantPool,
+            final int origIndex) {
         this.startPc = startPc;
         this.length = length;
         this.nameIndex = nameIndex;
@@ -118,19 +136,17 @@ public final class LocalVariable implements Cloneable, Node {
         this.origIndex = origIndex;
     }
 
-
     /**
-     * Called by objects that are traversing the nodes of the tree implicitely
-     * defined by the contents of a Java class. I.e., the hierarchy of methods,
-     * fields, attributes, etc. spawns a tree of objects.
+     * Called by objects that are traversing the nodes of the tree implicitely defined by the
+     * contents of a Java class. I.e., the hierarchy of methods, fields, attributes, etc. spawns a
+     * tree of objects.
      *
      * @param v Visitor object
      */
     @Override
-    public void accept( final Visitor v ) {
+    public void accept(final Visitor v) {
         v.visitLocalVariable(this);
     }
-
 
     /**
      * Dumps local variable to file stream in binary format.
@@ -154,14 +170,12 @@ public final class LocalVariable implements Cloneable, Node {
         return constantPool;
     }
 
-
     /**
      * @return Variable is valid within getStartPC() .. getStartPC()+getLength()
      */
     public int getLength() {
         return length;
     }
-
 
     /**
      * @return Variable name.
@@ -172,14 +186,12 @@ public final class LocalVariable implements Cloneable, Node {
         return c.getBytes();
     }
 
-
     /**
      * @return Index in constant pool of variable name.
      */
     public int getNameIndex() {
         return nameIndex;
     }
-
 
     /**
      * @return Signature.
@@ -190,14 +202,12 @@ public final class LocalVariable implements Cloneable, Node {
         return c.getBytes();
     }
 
-
     /**
      * @return Index in constant pool of variable signature.
      */
     public int getSignatureIndex() {
         return signatureIndex;
     }
-
 
     /**
      * @return index of register where variable is stored
@@ -206,14 +216,12 @@ public final class LocalVariable implements Cloneable, Node {
         return index;
     }
 
-
     /**
      * @return index of register where variable was originally stored
      */
     public int getOrigIndex() {
         return origIndex;
     }
-
 
     /**
      * @return Start of range where the variable is valid
@@ -222,66 +230,68 @@ public final class LocalVariable implements Cloneable, Node {
         return startPc;
     }
 
-
     /*
      * Helper method shared with LocalVariableTypeTable
      */
-    String toStringShared( final boolean typeTable ) {
+    String toStringShared(final boolean typeTable) {
         final String name = getName();
         final String signature = Utility.signatureToString(getSignature(), false);
-        final String label = "LocalVariable" + (typeTable ? "Types" : "" );
-        return label + "(startPc = " + startPc + ", length = " + length + ", index = "
-                + index + ":" + signature + " " + name + ")";
+        final String label = "LocalVariable" + (typeTable ? "Types" : "");
+        return label
+                + "(startPc = "
+                + startPc
+                + ", length = "
+                + length
+                + ", index = "
+                + index
+                + ":"
+                + signature
+                + " "
+                + name
+                + ")";
     }
-
 
     /**
      * @param constantPool Constant pool to be used for this object.
      */
-    public void setConstantPool( final ConstantPool constantPool ) {
+    public void setConstantPool(final ConstantPool constantPool) {
         this.constantPool = constantPool;
     }
-
 
     /**
      * @param length the length of this local variable
      */
-    public void setLength( final int length ) {
+    public void setLength(final int length) {
         this.length = length;
     }
-
 
     /**
      * @param nameIndex the index into the constant pool for the name of this variable
      */
-    public void setNameIndex( final int nameIndex ) { // TODO unused
+    public void setNameIndex(final int nameIndex) { // TODO unused
         this.nameIndex = nameIndex;
     }
-
 
     /**
      * @param signatureIndex the index into the constant pool for the signature of this variable
      */
-    public void setSignatureIndex( final int signatureIndex ) { // TODO unused
+    public void setSignatureIndex(final int signatureIndex) { // TODO unused
         this.signatureIndex = signatureIndex;
     }
-
 
     /**
      * @param index the index in the local variable table of this variable
      */
-    public void setIndex( final int index ) { // TODO unused
+    public void setIndex(final int index) { // TODO unused
         this.index = index;
     }
-
 
     /**
      * @param startPc Specify range where the local variable is valid.
      */
-    public void setStartPC( final int startPc ) { // TODO unused
+    public void setStartPC(final int startPc) { // TODO unused
         this.startPc = startPc;
     }
-
 
     /**
      * @return string representation.
@@ -290,7 +300,6 @@ public final class LocalVariable implements Cloneable, Node {
     public String toString() {
         return toStringShared(false);
     }
-
 
     /**
      * @return deep copy of this object

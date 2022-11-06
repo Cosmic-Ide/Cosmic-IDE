@@ -33,26 +33,23 @@ public final class Operators {
     public static final int GE = 4;
     public static final int LE = 5;
 
-    private static final String[] names = {
-    "=", "!=", ">", "<", ">=", "<="
-    };
+    private static final String[] names = {"=", "!=", ">", "<", ">=", "<="};
 
     public static final String getOpNames(int operator) {
-          return names[operator];
+        return names[operator];
     }
 
-//  Swap operator array
+    //  Swap operator array
     private static final int[] swapOpArray = {
-        EQ,     // EQ
-        NE,     // NE
-        LT,     // GT
-        GT,     // LT
-        LE,     // GE
-        GE      // LE
+        EQ, // EQ
+        NE, // NE
+        LT, // GT
+        GT, // LT
+        LE, // GE
+        GE // LE
     };
 
     public static final int swapOp(int operator) {
-          return swapOpArray[operator];
+        return swapOpArray[operator];
     }
-
 }

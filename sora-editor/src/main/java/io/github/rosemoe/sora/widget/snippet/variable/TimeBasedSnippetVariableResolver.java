@@ -41,7 +41,9 @@ public class TimeBasedSnippetVariableResolver implements ISnippetVariableResolve
 
     private static String getDisplayName(int field, boolean shortType) {
         var c = Calendar.getInstance();
-        var result = c.getDisplayName(field, shortType ? Calendar.SHORT : Calendar.LONG, Locale.getDefault());
+        var result =
+                c.getDisplayName(
+                        field, shortType ? Calendar.SHORT : Calendar.LONG, Locale.getDefault());
         if (result == null && shortType) {
             result = c.getDisplayName(field, Calendar.LONG, Locale.getDefault());
         }
@@ -58,11 +60,19 @@ public class TimeBasedSnippetVariableResolver implements ISnippetVariableResolve
     @NonNull
     @Override
     public String[] getResolvableNames() {
-        return new String[]{
-                "CURRENT_YEAR", "CURRENT_YEAR_SHORT", "CURRENT_MONTH", "CURRENT_DATE",
-                "CURRENT_HOUR", "CURRENT_MINUTE", "CURRENT_SECOND", "CURRENT_DAY_NAME",
-                "CURRENT_DAY_NAME_SHORT", "CURRENT_MONTH_NAME", "CURRENT_MONTH_NAME_SHORT",
-                "CURRENT_SECONDS_UNIX"
+        return new String[] {
+            "CURRENT_YEAR",
+            "CURRENT_YEAR_SHORT",
+            "CURRENT_MONTH",
+            "CURRENT_DATE",
+            "CURRENT_HOUR",
+            "CURRENT_MINUTE",
+            "CURRENT_SECOND",
+            "CURRENT_DAY_NAME",
+            "CURRENT_DAY_NAME_SHORT",
+            "CURRENT_MONTH_NAME",
+            "CURRENT_MONTH_NAME_SHORT",
+            "CURRENT_SECONDS_UNIX"
         };
     }
 
@@ -73,17 +83,22 @@ public class TimeBasedSnippetVariableResolver implements ISnippetVariableResolve
             case "CURRENT_YEAR":
                 return Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
             case "CURRENT_YEAR_SHORT":
-                return padStart(Integer.toString(Calendar.getInstance().get(Calendar.YEAR) % 100), '0', 2);
+                return padStart(
+                        Integer.toString(Calendar.getInstance().get(Calendar.YEAR) % 100), '0', 2);
             case "CURRENT_MONTH":
-                return padStart(Integer.toString(Calendar.getInstance().get(Calendar.MONTH)), '0', 2);
+                return padStart(
+                        Integer.toString(Calendar.getInstance().get(Calendar.MONTH)), '0', 2);
             case "CURRENT_DATE":
                 return SimpleDateFormat.getDateInstance().format(new Date());
             case "CURRENT_HOUR":
-                return padStart(Integer.toString(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)), '0', 2);
+                return padStart(
+                        Integer.toString(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)), '0', 2);
             case "CURRENT_MINUTE":
-                return padStart(Integer.toString(Calendar.getInstance().get(Calendar.MINUTE)), '0', 2);
+                return padStart(
+                        Integer.toString(Calendar.getInstance().get(Calendar.MINUTE)), '0', 2);
             case "CURRENT_SECOND":
-                return padStart(Integer.toString(Calendar.getInstance().get(Calendar.SECOND)), '0', 2);
+                return padStart(
+                        Integer.toString(Calendar.getInstance().get(Calendar.SECOND)), '0', 2);
             case "CURRENT_DAY_NAME":
                 return getDisplayName(Calendar.DAY_OF_WEEK, false);
             case "CURRENT_DAY_NAME_SHORT":

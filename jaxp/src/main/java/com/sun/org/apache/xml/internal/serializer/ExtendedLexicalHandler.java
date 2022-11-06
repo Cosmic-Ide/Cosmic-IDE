@@ -24,16 +24,17 @@ package com.sun.org.apache.xml.internal.serializer;
 import org.xml.sax.SAXException;
 
 /**
- * This interface has extensions to the standard SAX LexicalHandler interface.
- * This interface is intended to be used by a serializer.
+ * This interface has extensions to the standard SAX LexicalHandler interface. This interface is
+ * intended to be used by a serializer.
+ *
  * @xsl.usage internal
  */
-abstract interface ExtendedLexicalHandler extends org.xml.sax.ext.LexicalHandler
-{
+abstract interface ExtendedLexicalHandler extends org.xml.sax.ext.LexicalHandler {
     /**
      * This method is used to notify of a comment
-     * @param comment the comment, but unlike the SAX comment() method this
-     * method takes a String rather than a character array.
+     *
+     * @param comment the comment, but unlike the SAX comment() method this method takes a String
+     *     rather than a character array.
      * @throws SAXException
      */
     public void comment(String comment) throws SAXException;

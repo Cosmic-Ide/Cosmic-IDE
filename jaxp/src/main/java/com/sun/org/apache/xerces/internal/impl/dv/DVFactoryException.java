@@ -22,11 +22,10 @@
 package com.sun.org.apache.xerces.internal.impl.dv;
 
 /**
- * A runtime exception that's thrown if an error happens when the application
- * tries to get a DV factory instance.
+ * A runtime exception that's thrown if an error happens when the application tries to get a DV
+ * factory instance.
  *
  * @xerces.internal
- *
  */
 public class DVFactoryException extends RuntimeException {
 

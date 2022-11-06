@@ -21,17 +21,15 @@
 
 package com.sun.org.apache.xerces.internal.xpointer;
 
-import java.io.PrintWriter;
-
 import com.sun.org.apache.xerces.internal.xni.XNIException;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLErrorHandler;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLParseException;
 
+import java.io.PrintWriter;
+
 /**
- * The Default XPointer error handler used by the XInclude implementation.
- * XPointer error's are thrown so that they may be caught by the XInclude
- * implementation and reported as resource errors.
- *
+ * The Default XPointer error handler used by the XInclude implementation. XPointer error's are
+ * thrown so that they may be caught by the XInclude implementation and reported as resource errors.
  */
 final class XPointerErrorHandler implements XMLErrorHandler {
 
@@ -46,10 +44,7 @@ final class XPointerErrorHandler implements XMLErrorHandler {
     // Constructors
     //
 
-    /**
-     * Constructs an error handler that prints error messages to
-     * <code>System.err</code>.
-     */
+    /** Constructs an error handler that prints error messages to <code>System.err</code>. */
     public XPointerErrorHandler() {
         this(new PrintWriter(System.err));
     } // <init>()
@@ -67,21 +62,18 @@ final class XPointerErrorHandler implements XMLErrorHandler {
     //
 
     /** Warning. */
-    public void warning(String domain, String key, XMLParseException ex)
-            throws XNIException {
+    public void warning(String domain, String key, XMLParseException ex) throws XNIException {
         printError("Warning", ex);
     } // warning(XMLParseException)
 
     /** Error. */
-    public void error(String domain, String key, XMLParseException ex)
-            throws XNIException {
+    public void error(String domain, String key, XMLParseException ex) throws XNIException {
         printError("Error", ex);
-        //throw ex;
+        // throw ex;
     } // error(XMLParseException)
 
     /** Fatal error. */
-    public void fatalError(String domain, String key, XMLParseException ex)
-            throws XNIException {
+    public void fatalError(String domain, String key, XMLParseException ex) throws XNIException {
         printError("Fatal Error", ex);
         throw ex;
     } // fatalError(XMLParseException)
@@ -99,8 +91,7 @@ final class XPointerErrorHandler implements XMLErrorHandler {
         String systemId = ex.getExpandedSystemId();
         if (systemId != null) {
             int index = systemId.lastIndexOf('/');
-            if (index != -1)
-                systemId = systemId.substring(index + 1);
+            if (index != -1) systemId = systemId.substring(index + 1);
             fOut.print(systemId);
         }
         fOut.print(':');
@@ -111,7 +102,5 @@ final class XPointerErrorHandler implements XMLErrorHandler {
         fOut.print(ex.getMessage());
         fOut.println();
         fOut.flush();
-
     } // printError(String,SAXParseException)
-
 } // class DefaultErrorHandler

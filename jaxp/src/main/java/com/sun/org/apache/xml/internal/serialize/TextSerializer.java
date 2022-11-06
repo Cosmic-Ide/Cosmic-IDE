@@ -18,17 +18,12 @@
  * limitations under the License.
  */
 
-
 // Sep 14, 2000:
 //  Fixed serializer to report IO exception directly, instead at
 //  the end of document processing.
 //  Reported by Patrick Higgins <phiggins@transzap.com>
 
-
 package com.sun.org.apache.xml.internal.serialize;
-
-
-import java.io.IOException;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,98 +31,76 @@ import org.xml.sax.AttributeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import java.io.IOException;
 
 /**
- * Implements a text serializer supporting both DOM and SAX
- * serializing. For usage instructions see {@link Serializer}.
- * <p>
- * If an output stream is used, the encoding is taken from the
- * output format (defaults to <tt>UTF-8</tt>). If a writer is
- * used, make sure the writer uses the same encoding (if applies)
- * as specified in the output format.
- * <p>
- * The serializer supports both DOM and SAX. DOM serializing is done
- * by calling {@link #serialize} and SAX serializing is done by firing
- * SAX events and using the serializer as a document handler.
- * <p>
- * If an I/O exception occurs while serializing, the serializer
- * will not throw an exception directly, but only throw it
- * at the end of serializing (either DOM or SAX's {@link
- * org.xml.sax.DocumentHandler#endDocument}.
+ * Implements a text serializer supporting both DOM and SAX serializing. For usage instructions see
+ * {@link Serializer}.
  *
+ * <p>If an output stream is used, the encoding is taken from the output format (defaults to
+ * <tt>UTF-8</tt>). If a writer is used, make sure the writer uses the same encoding (if applies) as
+ * specified in the output format.
+ *
+ * <p>The serializer supports both DOM and SAX. DOM serializing is done by calling {@link
+ * #serialize} and SAX serializing is done by firing SAX events and using the serializer as a
+ * document handler.
+ *
+ * <p>If an I/O exception occurs while serializing, the serializer will not throw an exception
+ * directly, but only throw it at the end of serializing (either DOM or SAX's {@link
+ * org.xml.sax.DocumentHandler#endDocument}.
  *
  * @author <a href="mailto:arkin@intalio.com">Assaf Arkin</a>
  * @see Serializer
- *
- * @deprecated As of JDK 9, Xerces 2.9.0, Xerces DOM L3 Serializer implementation
- * is replaced by that of Xalan. Main class
- * {@link com.sun.org.apache.xml.internal.serialize.DOMSerializerImpl} is replaced
- * by {@link com.sun.org.apache.xml.internal.serializer.dom3.LSSerializerImpl}.
+ * @deprecated As of JDK 9, Xerces 2.9.0, Xerces DOM L3 Serializer implementation is replaced by
+ *     that of Xalan. Main class {@link com.sun.org.apache.xml.internal.serialize.DOMSerializerImpl}
+ *     is replaced by {@link com.sun.org.apache.xml.internal.serializer.dom3.LSSerializerImpl}.
  */
 @Deprecated
-public class TextSerializer
-    extends BaseMarkupSerializer
-{
-
+public class TextSerializer extends BaseMarkupSerializer {
 
     /**
-     * Constructs a new serializer. The serializer cannot be used without
-     * calling {@link #setOutputCharStream} or {@link #setOutputByteStream}
-     * first.
+     * Constructs a new serializer. The serializer cannot be used without calling {@link
+     * #setOutputCharStream} or {@link #setOutputByteStream} first.
      */
-    public TextSerializer()
-    {
-        super( new OutputFormat( Method.TEXT, null, false ) );
+    public TextSerializer() {
+        super(new OutputFormat(Method.TEXT, null, false));
     }
 
-
-    public void setOutputFormat( OutputFormat format )
-    {
-        super.setOutputFormat( format != null ? format : new OutputFormat( Method.TEXT, null, false ) );
+    public void setOutputFormat(OutputFormat format) {
+        super.setOutputFormat(format != null ? format : new OutputFormat(Method.TEXT, null, false));
     }
 
-
-    //-----------------------------------------//
+    // -----------------------------------------//
     // SAX content handler serializing methods //
-    //-----------------------------------------//
+    // -----------------------------------------//
 
-
-    public void startElement( String namespaceURI, String localName,
-                              String rawName, Attributes attrs )
-        throws SAXException
-    {
-        startElement( rawName == null ? localName : rawName, null );
+    public void startElement(
+            String namespaceURI, String localName, String rawName, Attributes attrs)
+            throws SAXException {
+        startElement(rawName == null ? localName : rawName, null);
     }
 
-
-    public void endElement( String namespaceURI, String localName,
-                            String rawName )
-        throws SAXException
-    {
-        endElement( rawName == null ? localName : rawName );
+    public void endElement(String namespaceURI, String localName, String rawName)
+            throws SAXException {
+        endElement(rawName == null ? localName : rawName);
     }
 
-
-    //------------------------------------------//
+    // ------------------------------------------//
     // SAX document handler serializing methods //
-    //------------------------------000---------//
+    // ------------------------------000---------//
 
-
-    public void startElement( String tagName, AttributeList attrs )
-        throws SAXException
-    {
-        boolean      preserveSpace;
+    public void startElement(String tagName, AttributeList attrs) throws SAXException {
+        boolean preserveSpace;
         ElementState state;
 
         try {
             state = getElementState();
-            if ( isDocumentState() ) {
+            if (isDocumentState()) {
                 // If this is the root element handle it differently.
                 // If the first root element in the document, serialize
                 // the document's DOCTYPE. Space preserving defaults
                 // to that of the output format.
-                if ( ! _started )
-                    startDocument( tagName );
+                if (!_started) startDocument(tagName);
             }
             // For any other element, if first in parent, then
             // use the parnet's space preserving.
@@ -142,27 +115,21 @@ public class TextSerializer
             // Now it's time to enter a new element state
             // with the tag name and space preserving.
             // We still do not change the curent element state.
-            state = enterElementState( null, null, tagName, preserveSpace );
-        } catch ( IOException except ) {
-            throw new SAXException( except );
+            state = enterElementState(null, null, tagName, preserveSpace);
+        } catch (IOException except) {
+            throw new SAXException(except);
         }
     }
 
-
-    public void endElement( String tagName )
-        throws SAXException
-    {
+    public void endElement(String tagName) throws SAXException {
         try {
-            endElementIO( tagName );
-        } catch ( IOException except ) {
-            throw new SAXException( except );
+            endElementIO(tagName);
+        } catch (IOException except) {
+            throw new SAXException(except);
         }
     }
 
-
-    public void endElementIO( String tagName )
-        throws IOException
-    {
+    public void endElementIO(String tagName) throws IOException {
         ElementState state;
 
         // Works much like content() with additions for closing
@@ -174,69 +141,48 @@ public class TextSerializer
         state = leaveElementState();
         state.afterElement = true;
         state.empty = false;
-        if ( isDocumentState() )
-            _printer.flush();
+        if (isDocumentState()) _printer.flush();
     }
 
+    public void processingInstructionIO(String target, String code) throws IOException {}
 
-    public void processingInstructionIO( String target, String code ) throws IOException
-    {
-    }
+    public void comment(String text) {}
 
+    public void comment(char[] chars, int start, int length) {}
 
-    public void comment( String text )
-    {
-    }
-
-
-    public void comment( char[] chars, int start, int length )
-    {
-    }
-
-
-    public void characters( char[] chars, int start, int length )
-        throws SAXException
-    {
+    public void characters(char[] chars, int start, int length) throws SAXException {
         ElementState state;
 
         try {
             state = content();
             state.doCData = state.inCData = false;
-            printText( chars, start, length, true, true );
-        } catch ( IOException except ) {
-            throw new SAXException( except );
+            printText(chars, start, length, true, true);
+        } catch (IOException except) {
+            throw new SAXException(except);
         }
     }
 
-
-    protected void characters( String text, boolean unescaped )
-        throws IOException
-    {
+    protected void characters(String text, boolean unescaped) throws IOException {
         ElementState state;
 
         state = content();
         state.doCData = state.inCData = false;
-        printText( text, true, true );
+        printText(text, true, true);
     }
 
-
-    //------------------------------------------//
+    // ------------------------------------------//
     // Generic node serializing methods methods //
-    //------------------------------------------//
-
+    // ------------------------------------------//
 
     /**
      * Called to serialize the document's DOCTYPE by the root element.
-     * <p>
-     * This method will check if it has not been called before ({@link #_started}),
-     * will serialize the document type declaration, and will serialize all
-     * pre-root comments and PIs that were accumulated in the document
-     * (see {@link #serializePreRoot}). Pre-root will be serialized even if
-     * this is not the first root element of the document.
+     *
+     * <p>This method will check if it has not been called before ({@link #_started}), will
+     * serialize the document type declaration, and will serialize all pre-root comments and PIs
+     * that were accumulated in the document (see {@link #serializePreRoot}). Pre-root will be
+     * serialized even if this is not the first root element of the document.
      */
-    protected void startDocument( String rootTagName )
-        throws IOException
-    {
+    protected void startDocument(String rootTagName) throws IOException {
         // Required to stop processing the DTD, even though the DTD
         // is not printed.
         _printer.leaveDTD();
@@ -246,29 +192,24 @@ public class TextSerializer
         serializePreRoot();
     }
 
-
     /**
-     * Called to serialize a DOM element. Equivalent to calling {@link
-     * #startElement}, {@link #endElement} and serializing everything
-     * inbetween, but better optimized.
+     * Called to serialize a DOM element. Equivalent to calling {@link #startElement}, {@link
+     * #endElement} and serializing everything inbetween, but better optimized.
      */
-    protected void serializeElement( Element elem )
-        throws IOException
-    {
-        Node         child;
+    protected void serializeElement(Element elem) throws IOException {
+        Node child;
         ElementState state;
-        boolean      preserveSpace;
-        String       tagName;
+        boolean preserveSpace;
+        String tagName;
 
         tagName = elem.getTagName();
         state = getElementState();
-        if ( isDocumentState() ) {
+        if (isDocumentState()) {
             // If this is the root element handle it differently.
             // If the first root element in the document, serialize
             // the document's DOCTYPE. Space preserving defaults
             // to that of the output format.
-            if ( ! _started )
-                startDocument( tagName );
+            if (!_started) startDocument(tagName);
         }
         // For any other element, if first in parent, then
         // use the parnet's space preserving.
@@ -282,18 +223,18 @@ public class TextSerializer
 
         // If element has children, then serialize them, otherwise
         // serialize en empty tag.
-        if ( elem.hasChildNodes() ) {
+        if (elem.hasChildNodes()) {
             // Enter an element state, and serialize the children
             // one by one. Finally, end the element.
-            state = enterElementState( null, null, tagName, preserveSpace );
+            state = enterElementState(null, null, tagName, preserveSpace);
             child = elem.getFirstChild();
-            while ( child != null ) {
-                serializeNode( child );
+            while (child != null) {
+                serializeNode(child);
                 child = child.getNextSibling();
             }
-            endElementIO( tagName );
+            endElementIO(tagName);
         } else {
-            if ( ! isDocumentState() ) {
+            if (!isDocumentState()) {
                 // After element but parent element is no longer empty.
                 state.afterElement = true;
                 state.empty = false;
@@ -301,83 +242,78 @@ public class TextSerializer
         }
     }
 
-
     /**
      * Serialize the DOM node. This method is unique to the Text serializer.
      *
      * @param node The node to serialize
      */
-    protected void serializeNode( Node node )
-        throws IOException
-    {
+    protected void serializeNode(Node node) throws IOException {
         // Based on the node type call the suitable SAX handler.
         // Only comments entities and documents which are not
         // handled by SAX are serialized directly.
-        switch ( node.getNodeType() ) {
-        case Node.TEXT_NODE : {
-            String text;
+        switch (node.getNodeType()) {
+            case Node.TEXT_NODE:
+                {
+                    String text;
 
-            text = node.getNodeValue();
-            if ( text != null )
-                characters( node.getNodeValue(), true );
-            break;
-        }
+                    text = node.getNodeValue();
+                    if (text != null) characters(node.getNodeValue(), true);
+                    break;
+                }
 
-        case Node.CDATA_SECTION_NODE : {
-            String text;
+            case Node.CDATA_SECTION_NODE:
+                {
+                    String text;
 
-            text = node.getNodeValue();
-            if ( text != null )
-                characters( node.getNodeValue(), true );
-            break;
-        }
+                    text = node.getNodeValue();
+                    if (text != null) characters(node.getNodeValue(), true);
+                    break;
+                }
 
-        case Node.COMMENT_NODE :
-            break;
+            case Node.COMMENT_NODE:
+                break;
 
-        case Node.ENTITY_REFERENCE_NODE :
-            // Ignore.
-            break;
+            case Node.ENTITY_REFERENCE_NODE:
+                // Ignore.
+                break;
 
-        case Node.PROCESSING_INSTRUCTION_NODE :
-            break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                break;
 
-        case Node.ELEMENT_NODE :
-            serializeElement( (Element) node );
-            break;
+            case Node.ELEMENT_NODE:
+                serializeElement((Element) node);
+                break;
 
-        case Node.DOCUMENT_NODE :
-            // !!! Fall through
-        case Node.DOCUMENT_FRAGMENT_NODE : {
-            Node         child;
+            case Node.DOCUMENT_NODE:
+                // !!! Fall through
+            case Node.DOCUMENT_FRAGMENT_NODE:
+                {
+                    Node child;
 
-            // By definition this will happen if the node is a document,
-            // document fragment, etc. Just serialize its contents. It will
-            // work well for other nodes that we do not know how to serialize.
-            child = node.getFirstChild();
-            while ( child != null ) {
-                serializeNode( child );
-                child = child.getNextSibling();
-            }
-            break;
-        }
+                    // By definition this will happen if the node is a document,
+                    // document fragment, etc. Just serialize its contents. It will
+                    // work well for other nodes that we do not know how to serialize.
+                    child = node.getFirstChild();
+                    while (child != null) {
+                        serializeNode(child);
+                        child = child.getNextSibling();
+                    }
+                    break;
+                }
 
-        default:
-            break;
+            default:
+                break;
         }
     }
 
-
-    protected ElementState content()
-    {
+    protected ElementState content() {
         ElementState state;
 
         state = getElementState();
-        if ( ! isDocumentState() ) {
+        if (!isDocumentState()) {
             // If this is the first content in the element,
             // change the state to not-empty.
-            if ( state.empty )
-                state.empty = false;
+            if (state.empty) state.empty = false;
             // Except for one content type, all of them
             // are not last element. That one content
             // type will take care of itself.
@@ -386,11 +322,7 @@ public class TextSerializer
         return state;
     }
 
-
-    protected String getEntityRef( int ch )
-    {
+    protected String getEntityRef(int ch) {
         return null;
     }
-
-
 }

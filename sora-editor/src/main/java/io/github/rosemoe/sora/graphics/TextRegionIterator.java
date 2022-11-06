@@ -26,11 +26,11 @@ package io.github.rosemoe.sora.graphics;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.List;
-
 import io.github.rosemoe.sora.lang.styling.Span;
 import io.github.rosemoe.sora.util.RegionIterator;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
+
+import java.util.List;
 
 /**
  * Helper class for {@link GraphicTextRow} to iterate text regions
@@ -41,7 +41,8 @@ class TextRegionIterator extends RegionIterator {
 
     private final List<Span> spans;
 
-    public TextRegionIterator(int length, @NonNull List<Span> spans, @Nullable List<Integer> softBreaks) {
+    public TextRegionIterator(
+            int length, @NonNull List<Span> spans, @Nullable List<Integer> softBreaks) {
         super(length, new SpansPoints(spans), new SoftBreaksPoints(softBreaks));
         this.spans = spans;
     }
@@ -92,7 +93,6 @@ class TextRegionIterator extends RegionIterator {
         public int getPointAt(int index) {
             return spans.get(index).column;
         }
-
     }
 
     private static class SoftBreaksPoints implements RegionProvider {
@@ -113,5 +113,4 @@ class TextRegionIterator extends RegionIterator {
             return points.get(index);
         }
     }
-
 }

@@ -28,10 +28,6 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.github.rosemoe.sora.graphics.Paint;
 import io.github.rosemoe.sora.graphics.SingleCharacterWidths;
 import io.github.rosemoe.sora.text.Content;
@@ -40,9 +36,13 @@ import io.github.rosemoe.sora.util.BlockIntList;
 import io.github.rosemoe.sora.util.IntPair;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- * Layout implementation of editor
- * This layout is never broke unless there is actually a newline character
+ * Layout implementation of editor This layout is never broke unless there is actually a newline
+ * character
  *
  * @author Rose
  */
@@ -68,42 +68,58 @@ public class LineBreakLayout extends AbstractLayout {
         shadowPaint.onAttributeUpdate();
         var reuseCountLocal = reuseCount.get();
         var measurerLocal = measurer;
-        final var monitor = new TaskMonitor(1, (results) -> {
-            final var editor = this.editor;
-            if (editor == null) {
-                return;
-            }
-            editor.post(() -> {
-                editor.setLayoutBusy(false);
-                editor.getEventHandler().scrollBy(0, 0);
-            });
-        });
-        var task = new LayoutTask<Void>(monitor) {
+        final var monitor =
+                new TaskMonitor(
+                        1,
+                        (results) -> {
+                            final var editor = this.editor;
+                            if (editor == null) {
+                                return;
+                            }
+                            editor.post(
+                                    () -> {
+                                        editor.setLayoutBusy(false);
+                                        editor.getEventHandler().scrollBy(0, 0);
+                                    });
+                        });
+        var task =
+                new LayoutTask<Void>(monitor) {
 
-            @Override
-            protected Void compute() {
-                widthMaintainer.lock.lock();
-                try {
-                    editor.setLayoutBusy(true);
-                    text.runReadActionsOnLines(0, text.getLineCount() - 1, (int index, ContentLine line, Content.ContentLineConsumer2.AbortFlag abortFlag) -> {
-                        var width = (int) measurerLocal.measureText(line, 0, line.length(), shadowPaint);
-                        if (shouldRun()) {
-                            widthMaintainer.add(width);
-                        } else {
-                            abortFlag.set = true;
+                    @Override
+                    protected Void compute() {
+                        widthMaintainer.lock.lock();
+                        try {
+                            editor.setLayoutBusy(true);
+                            text.runReadActionsOnLines(
+                                    0,
+                                    text.getLineCount() - 1,
+                                    (int index,
+                                            ContentLine line,
+                                            Content.ContentLineConsumer2.AbortFlag abortFlag) -> {
+                                        var width =
+                                                (int)
+                                                        measurerLocal.measureText(
+                                                                line,
+                                                                0,
+                                                                line.length(),
+                                                                shadowPaint);
+                                        if (shouldRun()) {
+                                            widthMaintainer.add(width);
+                                        } else {
+                                            abortFlag.set = true;
+                                        }
+                                    });
+                        } finally {
+                            widthMaintainer.lock.unlock();
                         }
-                    });
-                } finally {
-                    widthMaintainer.lock.unlock();
-                }
-                return null;
-            }
+                        return null;
+                    }
 
-            @Override
-            protected boolean shouldRun() {
-                return super.shouldRun() && reuseCount.get() == reuseCountLocal;
-            }
-        };
+                    @Override
+                    protected boolean shouldRun() {
+                        return super.shouldRun() && reuseCount.get() == reuseCountLocal;
+                    }
+                };
         submitTask(task);
     }
 
@@ -118,7 +134,8 @@ public class LineBreakLayout extends AbstractLayout {
     }
 
     @Override
-    public RowIterator obtainRowIterator(int initialRow, @Nullable SparseArray<ContentLine> preloadedLines) {
+    public RowIterator obtainRowIterator(
+            int initialRow, @Nullable SparseArray<ContentLine> preloadedLines) {
         return new LineBreakLayoutRowItr(text, initialRow, preloadedLines);
     }
 
@@ -133,12 +150,19 @@ public class LineBreakLayout extends AbstractLayout {
     }
 
     @Override
-    public void afterInsert(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence insertedContent) {
+    public void afterInsert(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence insertedContent) {
         super.afterInsert(content, startLine, startColumn, endLine, endColumn, insertedContent);
         for (int i = startLine; i <= endLine; i++) {
             if (i == startLine) {
                 if (endLine == startLine) {
-                    widthMaintainer.set(i, widthMaintainer.get(i) + measureRegion(i, startColumn, endColumn));
+                    widthMaintainer.set(
+                            i, widthMaintainer.get(i) + measureRegion(i, startColumn, endColumn));
                 } else {
                     widthMaintainer.set(i, measureLine(i));
                 }
@@ -149,13 +173,27 @@ public class LineBreakLayout extends AbstractLayout {
     }
 
     @Override
-    public void afterDelete(Content content, int startLine, int startColumn, int endLine, int endColumn, CharSequence deletedContent) {
+    public void afterDelete(
+            Content content,
+            int startLine,
+            int startColumn,
+            int endLine,
+            int endColumn,
+            CharSequence deletedContent) {
         super.afterDelete(content, startLine, startColumn, endLine, endColumn, deletedContent);
         if (startLine < endLine) {
             widthMaintainer.removeRange(startLine + 1, endLine + 1);
         }
         if (startLine == endLine) {
-            widthMaintainer.set(startLine, widthMaintainer.get(startLine) - (int) measurer.measureText(deletedContent, 0, endColumn - startColumn, editor.getTextPaint()));
+            widthMaintainer.set(
+                    startLine,
+                    widthMaintainer.get(startLine)
+                            - (int)
+                                    measurer.measureText(
+                                            deletedContent,
+                                            0,
+                                            endColumn - startColumn,
+                                            editor.getTextPaint()));
         } else {
             widthMaintainer.set(startLine, measureLine(startLine));
         }
@@ -201,7 +239,9 @@ public class LineBreakLayout extends AbstractLayout {
     public long getCharPositionForLayoutOffset(float xOffset, float yOffset) {
         int lineCount = text.getLineCount();
         int line = Math.min(lineCount - 1, Math.max((int) (yOffset / editor.getRowHeight()), 0));
-        int res = BidiLayout.horizontalIndex(editor, this, text, line, 0, text.getColumnCount(line), xOffset);
+        int res =
+                BidiLayout.horizontalIndex(
+                        editor, this, text, line, 0, text.getColumnCount(line), xOffset);
         return IntPair.pack(line, res);
     }
 
@@ -211,7 +251,9 @@ public class LineBreakLayout extends AbstractLayout {
             dest = new float[2];
         }
         dest[0] = editor.getRowBottom(line);
-        dest[1] = BidiLayout.horizontalOffset(editor, this, text, line, 0, text.getColumnCount(line), column);
+        dest[1] =
+                BidiLayout.horizontalOffset(
+                        editor, this, text, line, 0, text.getColumnCount(line), column);
         return dest;
     }
 
@@ -271,7 +313,10 @@ public class LineBreakLayout extends AbstractLayout {
         private final SparseArray<ContentLine> preloadedLines;
         private int currentRow;
 
-        LineBreakLayoutRowItr(@NonNull Content text, int initialRow, @Nullable SparseArray<ContentLine> preloadedLines) {
+        LineBreakLayoutRowItr(
+                @NonNull Content text,
+                int initialRow,
+                @Nullable SparseArray<ContentLine> preloadedLines) {
             initRow = currentRow = initialRow;
             result = new Row();
             this.text = text;
@@ -305,5 +350,4 @@ public class LineBreakLayout extends AbstractLayout {
             currentRow = initRow;
         }
     }
-
 }

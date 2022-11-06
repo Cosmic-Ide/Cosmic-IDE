@@ -27,7 +27,6 @@ import java.text.CharacterIterator;
  * Boyer-Moore searcher.
  *
  * @xerces.internal
- *
  */
 public class BMPattern {
     final char[] pattern;
@@ -44,111 +43,98 @@ public class BMPattern {
         this.ignoreCase = ignoreCase;
 
         int length = pattern.length;
-        for (int i = 0;  i < this.shiftTable.length;  i ++)
-            this.shiftTable[i] = length;
+        for (int i = 0; i < this.shiftTable.length; i++) this.shiftTable[i] = length;
 
-        for (int i = 0;  i < length;  i ++) {
+        for (int i = 0; i < length; i++) {
             char ch = this.pattern[i];
-            int diff = length-i-1;
+            int diff = length - i - 1;
             int index = ch % this.shiftTable.length;
-            if (diff < this.shiftTable[index])
-                this.shiftTable[index] = diff;
+            if (diff < this.shiftTable[index]) this.shiftTable[index] = diff;
             if (this.ignoreCase) {
                 ch = Character.toUpperCase(ch);
                 index = ch % this.shiftTable.length;
-                if (diff < this.shiftTable[index])
-                    this.shiftTable[index] = diff;
+                if (diff < this.shiftTable[index]) this.shiftTable[index] = diff;
                 ch = Character.toLowerCase(ch);
                 index = ch % this.shiftTable.length;
-                if (diff < this.shiftTable[index])
-                    this.shiftTable[index] = diff;
+                if (diff < this.shiftTable[index]) this.shiftTable[index] = diff;
             }
         }
     }
 
     /**
-     *
      * @return -1 if <var>iterator</var> does not contain this pattern.
      */
     public int matches(CharacterIterator iterator, int start, int limit) {
-        if (this.ignoreCase)  return this.matchesIgnoreCase(iterator, start, limit);
+        if (this.ignoreCase) return this.matchesIgnoreCase(iterator, start, limit);
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
-                if ((ch = iterator.setIndex(--index)) != this.pattern[--pindex])
-                    break;
-                if (pindex == 0)
-                    return index;
+                if ((ch = iterator.setIndex(--index)) != this.pattern[--pindex]) break;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }
 
     /**
-     *
      * @return -1 if <var>str</var> does not contain this pattern.
      */
     public int matches(String str, int start, int limit) {
-        if (this.ignoreCase)  return this.matchesIgnoreCase(str, start, limit);
+        if (this.ignoreCase) return this.matchesIgnoreCase(str, start, limit);
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
-            //System.err.println("Starts at "+index);
+            // System.err.println("Starts at "+index);
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
-                if ((ch = str.charAt(--index)) != this.pattern[--pindex])
-                    break;
-                if (pindex == 0)
-                    return index;
+                if ((ch = str.charAt(--index)) != this.pattern[--pindex]) break;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }
     /**
-     *
      * @return -1 if <var>chars</char> does not contain this pattern.
      */
     public int matches(char[] chars, int start, int limit) {
-        if (this.ignoreCase)  return this.matchesIgnoreCase(chars, start, limit);
+        if (this.ignoreCase) return this.matchesIgnoreCase(chars, start, limit);
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
-            //System.err.println("Starts at "+index);
+            // System.err.println("Starts at "+index);
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
-                if ((ch = chars[--index]) != this.pattern[--pindex])
-                    break;
-                if (pindex == 0)
-                    return index;
+                if ((ch = chars[--index]) != this.pattern[--pindex]) break;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }
 
     int matchesIgnoreCase(CharacterIterator iterator, int start, int limit) {
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
                 char ch1 = ch = iterator.setIndex(--index);
@@ -159,22 +145,21 @@ public class BMPattern {
                     if (ch1 != ch2 && Character.toLowerCase(ch1) != Character.toLowerCase(ch2))
                         break;
                 }
-                if (pindex == 0)
-                    return index;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }
 
     int matchesIgnoreCase(String text, int start, int limit) {
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
                 char ch1 = ch = text.charAt(--index);
@@ -185,21 +170,21 @@ public class BMPattern {
                     if (ch1 != ch2 && Character.toLowerCase(ch1) != Character.toLowerCase(ch2))
                         break;
                 }
-                if (pindex == 0)
-                    return index;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }
+
     int matchesIgnoreCase(char[] chars, int start, int limit) {
         int plength = this.pattern.length;
-        if (plength == 0)  return start;
-        int index = start+plength;
+        if (plength == 0) return start;
+        int index = start + plength;
         while (index <= limit) {
             int pindex = plength;
-            int nindex = index+1;
+            int nindex = index + 1;
             char ch;
             do {
                 char ch1 = ch = chars[--index];
@@ -210,11 +195,10 @@ public class BMPattern {
                     if (ch1 != ch2 && Character.toLowerCase(ch1) != Character.toLowerCase(ch2))
                         break;
                 }
-                if (pindex == 0)
-                    return index;
+                if (pindex == 0) return index;
             } while (pindex > 0);
-            index += this.shiftTable[ch % this.shiftTable.length]+1;
-            if (index < nindex)  index = nindex;
+            index += this.shiftTable[ch % this.shiftTable.length] + 1;
+            if (index < nindex) index = nindex;
         }
         return -1;
     }

@@ -36,12 +36,13 @@ final class DelegateUri extends AltCatalog {
 
     /**
      * Construct a delegateURI entry.
+     *
      * @param uriStartString The uriStartString attribute.
      * @param catalog The catalog attribute.
      */
     public DelegateUri(String base, String uriStartString, String catalog) {
         super(CatalogEntryType.DELEGATEURI, base);
-        setURIStartString (uriStartString);
+        setURIStartString(uriStartString);
         setCatalog(catalog);
     }
 
@@ -50,7 +51,7 @@ final class DelegateUri extends AltCatalog {
      *
      * @param uriStartString The uriStartString attribute value.
      */
-    public void setURIStartString (String uriStartString) {
+    public void setURIStartString(String uriStartString) {
         CatalogMessages.reportNPEOnNull("uriStartString", uriStartString);
         this.uriStartString = Normalizer.normalizeURI(uriStartString);
         setMatchId(this.uriStartString);
@@ -58,9 +59,10 @@ final class DelegateUri extends AltCatalog {
 
     /**
      * Get the uriStartString attribute.
+     *
      * @return The uriStartString
      */
-    public String getURIStartString () {
+    public String getURIStartString() {
         return uriStartString;
     }
 
@@ -76,9 +78,8 @@ final class DelegateUri extends AltCatalog {
     }
 
     /**
-     * Matches the specified systemId with the entry. Return the match if it
-     * is successful and the length of the uriStartString is longer than the
-     * longest of any previous match.
+     * Matches the specified systemId with the entry. Return the match if it is successful and the
+     * length of the uriStartString is longer than the longest of any previous match.
      *
      * @param systemId The systemId to be matched.
      * @param currentMatch The length of uriStartString of previous match if any.
@@ -86,8 +87,8 @@ final class DelegateUri extends AltCatalog {
      */
     @Override
     public URI matchURI(String systemId, int currentMatch) {
-        if (uriStartString.length() <= systemId.length() &&
-                uriStartString.equals(systemId.substring(0, uriStartString.length()))) {
+        if (uriStartString.length() <= systemId.length()
+                && uriStartString.equals(systemId.substring(0, uriStartString.length()))) {
             if (currentMatch < uriStartString.length()) {
                 return catalogURI;
             }

@@ -22,22 +22,18 @@ package com.sun.org.apache.xerces.internal.impl.xs.util;
 
 import com.sun.org.apache.xerces.internal.xs.ShortList;
 import com.sun.org.apache.xerces.internal.xs.XSException;
+
 import java.util.AbstractList;
 
 /**
  * Containts a list of Object's.
  *
  * @xerces.internal
- *
- * @author Sandy Gao, IBM
- *
- * @LastModified: Oct 2017
+ * @author Sandy Gao, IBM @LastModified: Oct 2017
  */
 public final class ShortListImpl extends AbstractList<Short> implements ShortList {
 
-    /**
-     * An immutable empty list.
-     */
+    /** An immutable empty list. */
     public static final ShortListImpl EMPTY_LIST = new ShortListImpl(new short[0], 0);
 
     // The array to hold all data
@@ -48,8 +44,8 @@ public final class ShortListImpl extends AbstractList<Short> implements ShortLis
     /**
      * Construct an XSObjectList implementation
      *
-     * @param array     the data array
-     * @param length    the number of elements
+     * @param array the data array
+     * @param length the number of elements
      */
     public ShortListImpl(short[] array, int length) {
         fArray = array;
@@ -57,20 +53,18 @@ public final class ShortListImpl extends AbstractList<Short> implements ShortLis
     }
 
     /**
-     * The number of <code>Objects</code> in the list. The range of valid
-     * child node indices is 0 to <code>length-1</code> inclusive.
+     * The number of <code>Objects</code> in the list. The range of valid child node indices is 0 to
+     * <code>length-1</code> inclusive.
      */
     public int getLength() {
         return fLength;
     }
 
     /**
-     *  Checks if the <code>unsigned short</code> <code>item</code> is a
-     * member of this list.
-     * @param item  <code>unsigned short</code> whose presence in this list
-     *   is to be tested.
-     * @return  True if this list contains the <code>unsigned short</code>
-     *   <code>item</code>.
+     * Checks if the <code>unsigned short</code> <code>item</code> is a member of this list.
+     *
+     * @param item <code>unsigned short</code> whose presence in this list is to be tested.
+     * @return True if this list contains the <code>unsigned short</code> <code>item</code>.
      */
     public boolean contains(short item) {
         for (int i = 0; i < fLength; i++) {
@@ -92,12 +86,12 @@ public final class ShortListImpl extends AbstractList<Short> implements ShortLis
         if (obj == null || !(obj instanceof ShortList)) {
             return false;
         }
-        ShortList rhs = (ShortList)obj;
+        ShortList rhs = (ShortList) obj;
 
         if (fLength != rhs.getLength()) {
             return false;
         }
-        for (int i = 0;i < fLength; ++i) {
+        for (int i = 0; i < fLength; ++i) {
             if (fArray[i] != rhs.item(i)) {
                 return false;
             }
@@ -119,5 +113,4 @@ public final class ShortListImpl extends AbstractList<Short> implements ShortLis
     public int size() {
         return getLength();
     }
-
 } // class ShortListImpl

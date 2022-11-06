@@ -23,21 +23,17 @@
  * questions.
  */
 
-package com.sun.xml.internal.stream.events ;
+package com.sun.xml.internal.stream.events;
 
-import javax.xml.stream.events.EndDocument;
-import java.io.Writer;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.events.EndDocument;
 
 /**
  * This class contains information about EndDocument event.
  *
  * @author Neeraj Bajaj, Sun Microsystems.
  */
-
-
-public class EndDocumentEvent extends DummyEvent
-implements EndDocument {
+public class EndDocumentEvent extends DummyEvent implements EndDocument {
 
     public EndDocumentEvent() {
         init();
@@ -51,11 +47,7 @@ implements EndDocument {
         return "ENDDOCUMENT";
     }
 
-    protected void writeAsEncodedUnicodeEx(java.io.Writer writer)
-    throws java.io.IOException
-    {
-        //end document
+    protected void writeAsEncodedUnicodeEx(java.io.Writer writer) throws java.io.IOException {
+        // end document
     }
-
-
 }

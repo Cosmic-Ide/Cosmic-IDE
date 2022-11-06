@@ -24,16 +24,12 @@ package com.sun.org.apache.xerces.internal.impl.dtd;
 import com.sun.org.apache.xerces.internal.xni.parser.XMLDocumentFilter;
 
 /**
- * Defines a DTD Validator filter to allow
- * components to query the DTD validator.
+ * Defines a DTD Validator filter to allow components to query the DTD validator.
  *
  * @xerces.internal
- *
  * @author Elena Litani, IBM
- *
  */
-public interface XMLDTDValidatorFilter
-    extends XMLDocumentFilter {
+public interface XMLDTDValidatorFilter extends XMLDocumentFilter {
 
     /**
      * Returns true if the validator has a DTD grammar
@@ -48,6 +44,4 @@ public interface XMLDTDValidatorFilter
      * @return true if validator must validate the document
      */
     public boolean validate();
-
-
 } // interface XMLDTDValidatorFilter

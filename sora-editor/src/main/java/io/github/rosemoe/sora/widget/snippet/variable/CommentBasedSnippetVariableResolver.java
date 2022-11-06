@@ -52,9 +52,7 @@ public class CommentBasedSnippetVariableResolver implements ISnippetVariableReso
     @NonNull
     @Override
     public String[] getResolvableNames() {
-        return new String[]{
-                "LINE_COMMENT", "BLOCK_COMMENT_START", "BLOCK_COMMENT_END"
-        };
+        return new String[] {"LINE_COMMENT", "BLOCK_COMMENT_START", "BLOCK_COMMENT_END"};
     }
 
     @NonNull

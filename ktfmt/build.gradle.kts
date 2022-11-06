@@ -35,7 +35,5 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    implementation("com.google.guava:guava:31.1-jre")
-    implementation(projects.kotlinc)
-    implementation(projects.googleJavaFormat)
+    implementation(files("libs/ktfmt-0.41.jar"))
 }

@@ -3,10 +3,9 @@ plugins {
 }
 
 repositories {
-    google()
     gradlePluginPortal()
     mavenCentral()
-    maven("https://jitpack.io")
+    google()
 }
 
 dependencies {

@@ -49,7 +49,6 @@ public class KotlinLanguage extends TextMateLanguage {
                 GrammarRegistry.getInstance(),
                 ThemeRegistry.getInstance(),
                 true);
-        ThemeRegistry.getInstance().setTheme(new ThemeModel(theme));
         mEditor = editor;
         mCurrentFile = file;
         if (project instanceof KotlinProject) {

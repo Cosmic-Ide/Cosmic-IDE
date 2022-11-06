@@ -21,6 +21,7 @@ import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry;
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry;
+import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel;
 import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
@@ -48,7 +49,7 @@ public class KotlinLanguage extends TextMateLanguage {
                 GrammarRegistry.getInstance(),
                 ThemeRegistry.getInstance(),
                 true);
-        ThemeRegistry.getInstance().loadTheme(theme);
+        ThemeRegistry.getInstance().setTheme(new ThemeModel(theme));
         mEditor = editor;
         mCurrentFile = file;
         if (project instanceof KotlinProject) {

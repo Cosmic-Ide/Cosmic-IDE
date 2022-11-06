@@ -12,6 +12,7 @@ import android.os.Build
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
@@ -19,6 +20,8 @@ import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.util.dpToPx
+import org.eclipse.tm4e.core.registry.IThemeSource
+import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import java.io.File
 import kotlin.system.exitProcess
 import kotlin.concurrent.schedule
@@ -45,6 +48,21 @@ class App : Application() {
                 )
             )
             GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
+            val themeRegistry = ThemeRegistry.getInstance()
+            themeRegistry.loadTheme(
+                ThemeModel(
+                    IThemeSource.fromInputStream(
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.tmTheme.json"), "darcula.tmTheme.json", null
+                    )
+                )
+            )
+            themeRegistry.loadTheme(
+                ThemeModel(
+                    IThemeSource.fromInputStream(
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/light.tmTheme"), "light.tmTheme", null
+                    )
+                )
+            )
         }
 
         Thread.setDefaultUncaughtExceptionHandler {

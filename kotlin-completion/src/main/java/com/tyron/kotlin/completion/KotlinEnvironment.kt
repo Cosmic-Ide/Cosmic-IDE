@@ -96,7 +96,7 @@ data class KotlinEnvironment(
 
 
     fun complete(file: KotlinFile, line: Int, character: Int) =
-        with(file.insert("$COMPLETION_SUFFIX ", line, character)) {
+        with(file.insert("$COMPLETION_SUFFIX", line, character)) {
             kotlinFiles[file.name] = this
 
             elementAt(line, character)?.let { element ->

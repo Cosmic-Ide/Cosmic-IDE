@@ -367,7 +367,7 @@ data class KotlinEnvironment(
                         )
                         put(CommonConfigurationKeys.USE_FIR, true)
                         put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
-                        put(JVMConfigurationKeys.ENABLE_DEBUG_MODE, true)
+//                        put(JVMConfigurationKeys.ENABLE_DEBUG_MODE, true)
                         put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)
                         put(JVMConfigurationKeys.DISABLE_OPTIMIZATION, true)
                         put(JVMConfigurationKeys.NO_OPTIMIZED_CALLABLE_REFERENCES, true)

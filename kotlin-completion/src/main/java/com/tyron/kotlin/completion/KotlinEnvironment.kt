@@ -2,7 +2,7 @@
 
 package com.tyron.kotlin.completion
 
-import org.cosmic.ide.project.KotlinProject
+import org.cosmic.ide.project.Project
 import org.cosmic.ide.common.util.FileUtil
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItem
@@ -12,7 +12,6 @@ import com.tyron.kotlin.completion.util.*
 import com.tyron.kotlin_completion.util.PsiUtils
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
-import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.jvm.compiler.*
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
@@ -350,7 +349,7 @@ data class KotlinEnvironment(
                     logTime("compilerConfig") {
                         addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
-                        put(CommonConfigurationKeys.MODULE_NAME, "codeCompletion")
+                        put(CommonConfigurationKeys.MODULE_NAME, "completion")
 
                         val langFeatures = mutableMapOf<LanguageFeature, LanguageFeature.State>()
                         for (langFeature in LanguageFeature.values()) {
@@ -366,6 +365,14 @@ data class KotlinEnvironment(
                             CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
                             languageVersionSettings
                         )
+                        put(CommonConfigurationKeys.USE_FIR, true)
+                        put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
+                        put(JVMConfigurationKeys.ENABLE_DEBUG_MODE, true)
+                        put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)
+                        put(JVMConfigurationKeys.DISABLE_OPTIMIZATION, true)
+                        put(JVMConfigurationKeys.NO_OPTIMIZED_CALLABLE_REFERENCES, true)
+                        put(JVMConfigurationKeys.IGNORE_CONST_OPTIMIZATION_ERRORS, true)
+                        put(JVMConfigurationKeys.VALIDATE_BYTECODE, false)
                         put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                         put(JVMConfigurationKeys.NO_JDK, true)
                         put(JVMConfigurationKeys.NO_REFLECT, true)
@@ -374,7 +381,7 @@ data class KotlinEnvironment(
             ))
         }
 
-        fun get(module: KotlinProject): KotlinEnvironment {
+        fun get(module: Project): KotlinEnvironment {
             val jars = File(module.getLibDirPath()).walkBottomUp().filter {
                 it.exists()
             }.toMutableList()

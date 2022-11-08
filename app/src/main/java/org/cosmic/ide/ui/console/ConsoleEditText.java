@@ -163,6 +163,9 @@ public class ConsoleEditText extends AppCompatEditText {
 
     @UiThread
     private void appendStderr(final CharSequence str) {
+        if (str.length() == 0) {
+            return;
+        }
         mHandler.post(
                 () -> {
                     var spannable = new SpannableString(str);
@@ -296,6 +299,9 @@ public class ConsoleEditText extends AppCompatEditText {
                 return newChars;
 
             } else {
+                if (newChars.length() == 0) {
+                    return;
+                }
                 var spannable = new SpannableString(newChars);
                 spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),
@@ -311,6 +317,9 @@ public class ConsoleEditText extends AppCompatEditText {
                 return oldChars; // don't edit
 
             } else { // if (startPos >= mLength)
+                if (newChars.length() == 0) {
+                    return;
+                }
                 var spannable = new SpannableString(newChars);
                 spannable.setSpan(
                         new ForegroundColorSpan(Color.parseColor("#A4C639")),

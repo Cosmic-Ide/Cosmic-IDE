@@ -1,8 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: 'request: '
-labels: enhancement
+labels: feature
 assignees: PranavPurwar
 
 ---

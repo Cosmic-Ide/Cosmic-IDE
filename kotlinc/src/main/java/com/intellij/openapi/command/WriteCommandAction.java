@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.intellij.codeInsight.FileModificationService2;
+import com.intellij.codeInsight.FileModificationService;
 import com.intellij.core.CoreBundle;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
@@ -137,7 +137,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         private <E extends Throwable> E doRunWriteCommandAction(
                 @NonNull ThrowableRunnable<E> action) {
             if (myPsiFiles.length > 0
-                    && !FileModificationService2.getInstance()
+                    && !FileModificationService.getInstance()
                             .preparePsiElementsForWrite(myPsiFiles)) {
                 return null;
             }
@@ -279,8 +279,8 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
 
     private void performWriteCommandAction(@NonNull RunResult<T> result) {
         if (myPsiFiles.length > 0
-                && !FileModificationService2.getInstance()
-                        .preparePsiElementsForWrite(Arrays.asList(myPsiFiles))) {
+                && !FileModificationService.getInstance()
+                        .preparePsiElementsForWrite(myPsiFiles)) {
             return;
         }
 

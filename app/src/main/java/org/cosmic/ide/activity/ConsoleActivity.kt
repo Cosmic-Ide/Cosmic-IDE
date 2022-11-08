@@ -66,7 +66,7 @@ class ConsoleActivity : BaseActivity() {
         console.flushInputStream()
         binding.toolbar.setSubtitle("Running")
         task = ExecuteDexTask(
-            App.getDefaultSharedPreferences(),
+            settings,
             classToExecute,
             console.getInputStream(),
             console.getOutputStream(),

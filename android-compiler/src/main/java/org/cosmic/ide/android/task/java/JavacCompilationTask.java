@@ -27,7 +27,7 @@ import javax.tools.StandardLocation;
 public class JavacCompilationTask implements Task {
 
     private final SharedPreferences prefs;
-    private final String TAG = JavacCompilationTask.class.getSimpleName();
+    private final String TAG = "JavacCompilationTask";
 
     public JavacCompilationTask(SharedPreferences preferences) {
         prefs = preferences;

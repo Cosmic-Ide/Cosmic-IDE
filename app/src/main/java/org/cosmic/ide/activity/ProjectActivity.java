@@ -46,12 +46,8 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
 
     private OnProjectCreatedListener mListener;
 
-    public void setOnProjectCreatedListener(OnProjectCreatedListener listener) {
-        mListener = listener;
-    }
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProjectBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -63,7 +59,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         binding.projectRecycler.setAdapter(projectAdapter);
         binding.projectRecycler.setLayoutManager(new LinearLayoutManager(this));
         projectAdapter.setOnProjectEventListener(this);
-        setOnProjectCreatedListener(this::onProjectClicked);
+        mListener = this::onProjectClicked;
 
         UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);

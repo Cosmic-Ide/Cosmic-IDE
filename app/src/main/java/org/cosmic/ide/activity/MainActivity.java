@@ -71,7 +71,7 @@ import java.util.Objects;
 public class MainActivity extends BaseActivity {
 
     public static final String BUILD_STATUS = "BUILD_STATUS";
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = "MainActivity";
 
     private String temp;
     private BottomSheetDialog loadingDialog;
@@ -307,7 +307,7 @@ public class MainActivity extends BaseActivity {
                     Constants.DRAWER_STATE,
                     ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
         }
-        saveAll();
+        saveOpenedFiles();
         super.onSaveInstanceState(outState);
     }
 
@@ -318,16 +318,21 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    private void saveOpenedFiles() {
         try {
             getProject()
                     .getIndexer()
                     .put("lastOpenedFiles", mainViewModel.getFiles().getValue())
                     .flush();
-        } catch (JSONException ignore) {
+        } catch (JSONException e) {
+            Log.e(TAG, "Cannot save opened files", e);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        saveOpenedFiles();
     }
 
     private void unzipFiles() {
@@ -694,18 +699,5 @@ public class MainActivity extends BaseActivity {
 
     public JavaProject getProject() {
         return javaProject;
-    }
-
-    public void saveAll() {
-        CoroutineUtil.inParallel(
-                () -> {
-                    for (int i = 0; i < tabsAdapter.getItemCount(); i++) {
-                        String tag = "f" + tabsAdapter.getItemId(i);
-                        Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                        if (fragment instanceof CodeEditorFragment) {
-                            ((CodeEditorFragment) fragment).save();
-                        }
-                    }
-                });
     }
 }

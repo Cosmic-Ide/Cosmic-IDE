@@ -1,7 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: 'bug: '
+about: Create a bug report to help us improve Cosmic Ide.
 labels: bug
 assignees: PranavPurwar
 
@@ -26,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Mobile phone (please complete the following information):**
 
-- Device: \[e.g. Pixel 6]
+- Device: \[e.g. Pixel 7]
 - OS: \[e.g. Android 13]
 - Version \[e.g. v1.0.0]
 

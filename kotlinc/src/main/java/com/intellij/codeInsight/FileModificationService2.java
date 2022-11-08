@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
-public abstract class FileModificationService {
-  public static FileModificationService getInstance() {
+public abstract class FileModificationService2 {
+  public static FileModificationService2 getInstance() {
     return ApplicationManager.getApplication().getService(FileModificationService2.class);
   }
 

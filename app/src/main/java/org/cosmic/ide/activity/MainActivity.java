@@ -78,7 +78,6 @@ public class MainActivity extends BaseActivity {
 
     private JavaProject javaProject;
     private MainViewModel mainViewModel;
-    private FileViewModel fileViewModel;
     private PageAdapter tabsAdapter;
 
     public ActivityMainBinding binding;
@@ -90,7 +89,7 @@ public class MainActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
+        var fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 

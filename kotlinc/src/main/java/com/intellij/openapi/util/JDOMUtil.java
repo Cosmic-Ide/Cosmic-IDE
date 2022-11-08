@@ -130,14 +130,8 @@ public final class JDOMUtil {
         return var3;
     }
 
-    // @Internal
-
     public static Element load(Path file, SafeJdomFactory factory)
             throws JDOMException, IOException {
-        if (file == null) {
-            ;
-        }
-
         try {
             return loadUsingStaX(
                     new InputStreamReader(
@@ -150,45 +144,22 @@ public final class JDOMUtil {
         }
     }
 
-    // @Contract("null -> null; !null -> !null")
     public static Element load(InputStream stream) throws JDOMException, IOException {
         return stream == null ? null : load((InputStream) stream, (SafeJdomFactory) null);
     }
 
-    // @Internal
-
     public static Element load(InputStream stream, SafeJdomFactory factory)
             throws JDOMException, IOException {
-        if (stream == null) {
-            ;
-        }
-
         return loadUsingStaX(new InputStreamReader(stream, StandardCharsets.UTF_8), factory);
     }
 
     public static void writeElement(Element element, Writer writer, String lineSeparator)
             throws IOException {
-        if (element == null) {
-            ;
-        }
-
         writeElement(element, writer, createOutputter(lineSeparator));
     }
 
     public static void writeElement(Element element, Writer writer, XMLOutputter xmlOutputter)
             throws IOException {
-        if (element == null) {
-            ;
-        }
-
-        if (writer == null) {
-            ;
-        }
-
-        if (xmlOutputter == null) {
-            ;
-        }
-
         try {
             xmlOutputter.output(element, writer);
         } catch (NullPointerException var4) {
@@ -198,18 +169,10 @@ public final class JDOMUtil {
     }
 
     public static String writeElement(Element element) {
-        if (element == null) {
-            ;
-        }
-
         return writeElement(element, "\n");
     }
 
     public static String writeElement(Element element, String lineSeparator) {
-        if (element == null) {
-            ;
-        }
-
         String var10000;
         try {
             StringWriter writer = new StringWriter();
@@ -219,9 +182,6 @@ public final class JDOMUtil {
             throw new RuntimeException(var3);
         }
 
-        if (var10000 == null) {
-            ;
-        }
 
         return var10000;
     }
@@ -235,9 +195,6 @@ public final class JDOMUtil {
                         .setOmitEncoding(false)
                         .setOmitDeclaration(false)
                         .setLineSeparator(lineSeparator);
-        if (var10000 == null) {
-            ;
-        }
 
         return var10000;
     }
@@ -273,19 +230,11 @@ public final class JDOMUtil {
     }
 
     public static String escapeText(String text, boolean escapeSpaces, boolean escapeLineEnds) {
-        if (text == null) {
-            ;
-        }
-
         return escapeText(text, false, escapeSpaces, escapeLineEnds);
     }
 
     public static String escapeText(
             String text, boolean escapeApostrophes, boolean escapeSpaces, boolean escapeLineEnds) {
-        if (text == null) {
-            ;
-        }
-
         StringBuilder buffer = null;
 
         for (int i = 0; i < text.length(); ++i) {
@@ -295,18 +244,11 @@ public final class JDOMUtil {
         }
 
         String var10000 = buffer == null ? text : buffer.toString();
-        if (var10000 == null) {
-            ;
-        }
 
         return var10000;
     }
 
     private static void printDiagnostics(Element element, String prefix) {
-        if (element == null) {
-            ;
-        }
-
         JDOMUtil.ElementInfo info = getElementInfo(element);
         prefix = prefix + "/" + info.name;
         if (info.hasNullAttributes) {
@@ -322,10 +264,6 @@ public final class JDOMUtil {
     }
 
     private static JDOMUtil.ElementInfo getElementInfo(Element element) {
-        if (element == null) {
-            ;
-        }
-
         boolean hasNullAttributes = false;
         StringBuilder buf = new StringBuilder(element.getName());
         List<Attribute> attributes = getAttributes(element);
@@ -358,14 +296,7 @@ public final class JDOMUtil {
     }
 
     public static List<Attribute> getAttributes(Element e) {
-        if (e == null) {
-            ;
-        }
-
         List var10000 = e.hasAttributes() ? e.getAttributes() : Collections.emptyList();
-        if (var10000 == null) {
-            ;
-        }
 
         return var10000;
     }
@@ -387,19 +318,13 @@ public final class JDOMUtil {
         }
 
         public String escapeAttributeEntities(String str) {
-            if (str == null) {}
-
             String var10000 = JDOMUtil.escapeText(str, false, true);
-            if (var10000 == null) {}
 
             return var10000;
         }
 
         public String escapeElementEntities(String str) {
-            if (str == null) {}
-
             String var10000 = JDOMUtil.escapeText(str, false, false);
-            if (var10000 == null) {}
 
             return var10000;
         }

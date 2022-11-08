@@ -138,7 +138,7 @@ public class MainViewModel extends ViewModel {
         if (files != null) {
             files.clear();
             files.add(file);
-            setFiles(files);
+            mFiles.setValue(files);
         }
     }
 }

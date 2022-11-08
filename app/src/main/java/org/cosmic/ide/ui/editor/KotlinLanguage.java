@@ -25,7 +25,6 @@ import java.util.Collection;
 public class KotlinLanguage extends TextMateLanguage {
 
     private final CodeEditor mEditor;
-    private final Project mProject;
     private final KotlinEnvironment kotlinEnvironment;
     private final String fileName;
     private final String TAG = "KotlinLanguage";
@@ -39,8 +38,7 @@ public class KotlinLanguage extends TextMateLanguage {
                 ThemeRegistry.getInstance(),
                 true);
         mEditor = editor;
-        mProject = project;
-        kotlinEnvironment = KotlinEnvironment.Companion.get(mProject);
+        kotlinEnvironment = KotlinEnvironment.Companion.get(project);
         final var ktFile =
                 kotlinEnvironment.updateKotlinFile(
                         file.getAbsolutePath(), mEditor.getText().toString());

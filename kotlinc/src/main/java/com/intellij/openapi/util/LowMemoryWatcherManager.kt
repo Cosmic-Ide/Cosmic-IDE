@@ -2,10 +2,9 @@
 package com.intellij.openapi.util
 
 import com.intellij.openapi.Disposable
-import androidx.annotation.NonNull
 import java.util.concurrent.ExecutorService
 
-class LowMemoryWatcherManager(@NonNull unused: ExecutorService) : Disposable {
+class LowMemoryWatcherManager(unused: ExecutorService) : Disposable {
 
   override fun dispose() {}
 }

@@ -300,7 +300,7 @@ public class ConsoleEditText extends AppCompatEditText {
 
             } else {
                 if (newChars.length() == 0) {
-                    return;
+                    return newChars;
                 }
                 var spannable = new SpannableString(newChars);
                 spannable.setSpan(
@@ -318,7 +318,7 @@ public class ConsoleEditText extends AppCompatEditText {
 
             } else { // if (startPos >= mLength)
                 if (newChars.length() == 0) {
-                    return;
+                    return newChars;
                 }
                 var spannable = new SpannableString(newChars);
                 spannable.setSpan(

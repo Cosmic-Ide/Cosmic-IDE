@@ -19,11 +19,13 @@ public class UnsafeUtil {
                 for (Field field : type.getDeclaredFields()) {
                     if (type.isAssignableFrom(field.getType())) {
                         field.setAccessible(true);
-                        return type.cast(field.get(type));
+                        try {
+                            return type.cast(field.get(type));
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
-            } catch (Exception e) {
-                throw new RuntimeException("Unsafe unavailable", e);
             }
             throw new RuntimeException("Unsafe unavailable");
         }

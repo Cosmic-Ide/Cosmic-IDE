@@ -28,7 +28,7 @@ public class KotlinLanguage extends TextMateLanguage {
     private final Project mProject;
     private final KotlinEnvironment kotlinEnvironment;
     private final String fileName;
-    private final TAG = KotlinLanguage.class.getSimpleName();
+    private final String TAG = KotlinLanguage.class.getSimpleName();
 
     public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme)
             throws Exception {

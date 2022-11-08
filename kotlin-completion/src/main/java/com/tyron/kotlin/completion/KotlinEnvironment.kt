@@ -218,8 +218,7 @@ data class KotlinEnvironment(
             componentProvider.getService(LazyTopDownAnalyzer::class.java)
                 .analyzeDeclarations(
                     TopDownAnalysisMode.TopLevelDeclarations,
-                    files,
-                    DataFlowInfo.EMPTY
+                    files
                 )
             val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
             AnalysisHandlerExtension.getInstances(project)
@@ -262,11 +261,7 @@ data class KotlinEnvironment(
                     } else {
                         true
                     }
-                },
-                filterOutJavaGettersAndSetters = true,
-                filterOutShadowed = true,
-                excludeNonInitializedVariable = true,
-                useReceiverType = null
+                }
             ).toList()
             else -> null
         }
@@ -350,24 +345,8 @@ data class KotlinEnvironment(
                         addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
                         put(CommonConfigurationKeys.MODULE_NAME, "completion")
-
-                        val langFeatures = mutableMapOf<LanguageFeature, LanguageFeature.State>()
-                        for (langFeature in LanguageFeature.values()) {
-                            langFeatures[langFeature] = LanguageFeature.State.ENABLED
-                        }
-                        val languageVersionSettings = LanguageVersionSettingsImpl(
-                            LanguageVersion.LATEST_STABLE,
-                            ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
-                            emptyMap(),
-                            langFeatures
-                        )
-                        put(
-                            CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
-                            languageVersionSettings
-                        )
                         put(CommonConfigurationKeys.USE_FIR, true)
                         put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
-//                        put(JVMConfigurationKeys.ENABLE_DEBUG_MODE, true)
                         put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)
                         put(JVMConfigurationKeys.DISABLE_OPTIMIZATION, true)
                         put(JVMConfigurationKeys.NO_OPTIMIZED_CALLABLE_REFERENCES, true)

@@ -21,8 +21,8 @@ public class UnsafeUtil {
                         field.setAccessible(true);
                         try {
                             return type.cast(field.get(type));
-                        } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
+                        } catch (IllegalAccessException iae) {
+                            throw new RuntimeException(iae);
                         }
                     }
                 }

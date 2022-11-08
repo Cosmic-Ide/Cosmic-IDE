@@ -6,8 +6,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,7 +17,7 @@ public abstract class FileModificationService2 {
     return ApplicationManager.getApplication().getService(FileModificationService2.class);
   }
 
-  public abstract boolean preparePsiElementsForWrite(@NotNull Collection<? extends PsiElement> elements);
+  public abstract boolean preparePsiElementsForWrite(@NonNull Collection<? extends PsiElement> elements);
   public abstract boolean prepareFileForWrite(@Nullable final PsiFile psiFile);
 
   public boolean preparePsiElementForWrite(@Nullable PsiElement element) {
@@ -25,9 +25,9 @@ public abstract class FileModificationService2 {
     return prepareFileForWrite(file);
   }
 
-  public boolean preparePsiElementsForWrite(PsiElement @NotNull ... elements) {
+  public boolean preparePsiElementsForWrite(PsiElement @NonNull ... elements) {
     return preparePsiElementsForWrite(Arrays.asList(elements));
   }
 
-  public abstract boolean prepareVirtualFilesForWrite(@NotNull Project project, @NotNull Collection<? extends VirtualFile> files);
+  public abstract boolean prepareVirtualFilesForWrite(@NonNull Project project, @NotNull Collection<? extends VirtualFile> files);
 }

@@ -25,8 +25,6 @@ android {
     }
 }
 
-val intellijVersion = "203.8084.24"
-
 dependencies {
     implementation("androidx.annotation:annotation:1.5.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
@@ -43,7 +41,7 @@ dependencies {
     api("com.jetbrains.intellij.platform:util-jdom:222.4345.24")
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
-    api(files("libs/kotlin-compiler-1.7.20.jar"))
+    api(files("libs/kotlin-compiler-1.7.21.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
 }

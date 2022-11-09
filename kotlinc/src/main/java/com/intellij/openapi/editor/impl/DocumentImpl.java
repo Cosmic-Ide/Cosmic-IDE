@@ -2,7 +2,7 @@ package com.intellij.openapi.editor.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetnrains.annotations.VisibleForTesting;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import com.intellij.core.CoreBundle;
 import com.intellij.openapi.Disposable;

@@ -31,7 +31,7 @@ dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.20")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.7.21")
 
     implementation("org.fusesource.jansi:jansi:2.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.9")

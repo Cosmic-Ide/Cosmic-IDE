@@ -139,7 +139,7 @@ class KotlinCompiler : Task {
         val location: CompilerMessageSourceLocation?
     ) {
         override fun toString(): String {
-            return severity.getPresentableName() + ": " + location.toString().substringAfter("src/") + " " + message
+            return severity.getPresentableName().uppercase() + ": " + location.toString().substringAfter("src/") + " " + message
         }
     }
 }

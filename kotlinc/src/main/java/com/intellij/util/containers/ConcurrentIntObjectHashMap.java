@@ -5,7 +5,7 @@ package com.intellij.util.containers;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
@@ -129,7 +129,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
             return key;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public final V getValue() {
             return val;
@@ -442,7 +442,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      * @param value value whose presence in this map is to be tested
      * @return {@code true} if this map maps one or more keys to the specified value
      */
-    public boolean containsValue(@NonNull Object value) {
+    public boolean containsValue(@NotNull Object value) {
         Node<V>[] t;
         if ((t = table) != null) {
             Traverser<V> it = new Traverser<>(t, t.length, 0, t.length);
@@ -471,12 +471,12 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      *     mapping for {@code key}
      */
     @Override
-    public V put(int key, @NonNull V value) {
+    public V put(int key, @NotNull V value) {
         return putVal(key, value, false);
     }
 
     /** Implementation for put and putIfAbsent */
-    V putVal(int key, @NonNull V value, boolean onlyIfAbsent) {
+    V putVal(int key, @NotNull V value, boolean onlyIfAbsent) {
         int hash = spread(key);
         int binCount = 0;
         for (Node<V>[] tab = table; ; ) {
@@ -675,7 +675,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      *
      * @return the collection view
      */
-    @NonNull
+    @NotNull
     public Collection<V> values() {
         ValuesView<V> vs;
         return (vs = values) != null ? vs : (values = new ValuesView<>(this));
@@ -698,7 +698,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      * @return the set view
      */
     @Override
-    @NonNull
+    @NotNull
     public Set<Entry<V>> entrySet() {
         EntrySetView<V> es;
         return (es = entrySet) != null ? es : (entrySet = new EntrySetView<>(this));
@@ -804,19 +804,19 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      *     mapping for the key
      */
     @Override
-    public V putIfAbsent(int key, @NonNull V value) {
+    public V putIfAbsent(int key, @NotNull V value) {
         return putVal(key, value, true);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean remove(int key, @NonNull Object value) {
+    public boolean remove(int key, @NotNull Object value) {
         return replaceNode(key, null, value) != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean replace(int key, @NonNull V oldValue, @NonNull V newValue) {
+    public boolean replace(int key, @NotNull V oldValue, @NotNull V newValue) {
         return replaceNode(key, newValue, oldValue) != null;
     }
 
@@ -826,7 +826,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      * @return the previous value associated with the specified key, or {@code null} if there was no
      *     mapping for the key
      */
-    public V replace(int key, @NonNull V value) {
+    public V replace(int key, @NotNull V value) {
         return replaceNode(key, value, null);
     }
 
@@ -882,7 +882,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      * @return an enumeration of the values in this table
      * @see #values()
      */
-    @NonNull
+    @NotNull
     @Override
     public Enumeration<V> elements() {
         Node<V>[] t;
@@ -2252,7 +2252,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
          *
          * @return an iterator over the elements in this collection
          */
-        @NonNull
+        @NotNull
         @Override
         public abstract Iterator<E> iterator();
 
@@ -2292,7 +2292,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
 
         @Override
         @SuppressWarnings("unchecked")
-        public final <T> T[] toArray(@NonNull T[] a) {
+        public final <T> T[] toArray(@NotNull T[] a) {
             long sz = map.mappingCount();
             if (sz > MAX_ARRAY_SIZE) {
                 throw new OutOfMemoryError(oomeMsg);
@@ -2355,7 +2355,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         }
 
         @Override
-        public final boolean containsAll(@NonNull Collection<?> c) {
+        public final boolean containsAll(@NotNull Collection<?> c) {
             if (c != this) {
                 for (Object e : c) {
                     if (e == null || !contains(e)) {
@@ -2367,7 +2367,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         }
 
         @Override
-        public final boolean removeAll(@NonNull Collection<?> c) {
+        public final boolean removeAll(@NotNull Collection<?> c) {
             boolean modified = false;
             for (Iterator<E> it = iterator(); it.hasNext(); ) {
                 if (c.contains(it.next())) {
@@ -2379,7 +2379,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         }
 
         @Override
-        public final boolean retainAll(@NonNull Collection<?> c) {
+        public final boolean retainAll(@NotNull Collection<?> c) {
             boolean modified = false;
             for (Iterator<E> it = iterator(); it.hasNext(); ) {
                 if (!c.contains(it.next())) {
@@ -2419,7 +2419,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
             return false;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Iterator<V> iterator() {
             ConcurrentIntObjectHashMap<V> m = map;
@@ -2434,7 +2434,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         }
 
         @Override
-        public boolean addAll(@NonNull Collection<? extends V> c) {
+        public boolean addAll(@NotNull Collection<? extends V> c) {
             throw new UnsupportedOperationException();
         }
     }
@@ -2474,7 +2474,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         /**
          * @return an iterator over the entries of the backing map
          */
-        @NonNull
+        @NotNull
         @Override
         public Iterator<Entry<V>> iterator() {
             ConcurrentIntObjectHashMap<V> m = map;
@@ -2576,8 +2576,8 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
      * @return value if there is no entry in the map, or corresponding value if entry already exists
      */
     @Override
-    @NonNull
-    public V cacheOrGet(final int key, @NonNull final V defaultValue) {
+    @NotNull
+    public V cacheOrGet(final int key, @NotNull final V defaultValue) {
         V v = get(key);
         if (v != null) return v;
         V prev = putIfAbsent(key, defaultValue);

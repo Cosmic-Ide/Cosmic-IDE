@@ -1,8 +1,8 @@
 package com.intellij.openapi.command;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import com.intellij.codeInsight.FileModificationService2;
 import com.intellij.core.CoreBundle;
@@ -33,24 +33,24 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
 
     public interface Builder {
 
-        @NonNull
+        @NotNull
         Builder withName(@Nullable String name);
 
-        @NonNull
+        @NotNull
         Builder withGroupId(@Nullable String groupId);
 
-        @NonNull
-        Builder withUndoConfirmationPolicy(@NonNull UndoConfirmationPolicy policy);
+        @NotNull
+        Builder withUndoConfirmationPolicy(@NotNull UndoConfirmationPolicy policy);
 
-        @NonNull
+        @NotNull
         Builder withGlobalUndo();
 
-        @NonNull
+        @NotNull
         Builder shouldRecordActionForActiveDocument(boolean value);
 
-        <E extends Throwable> void run(@NonNull ThrowableRunnable<E> action) throws E;
+        <E extends Throwable> void run(@NotNull ThrowableRunnable<E> action) throws E;
 
-        <R, E extends Throwable> R compute(@NonNull ThrowableComputable<R, E> action) throws E;
+        <R, E extends Throwable> R compute(@NotNull ThrowableComputable<R, E> action) throws E;
     }
 
     private static final class BuilderImpl implements Builder {
@@ -67,30 +67,30 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
             myPsiFiles = files;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Builder withName(String name) {
             myCommandName = name;
             return this;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Builder withGlobalUndo() {
             myGlobalUndoAction = true;
             return this;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Builder shouldRecordActionForActiveDocument(boolean value) {
             myShouldRecordActionForActiveDocument = value;
             return this;
         }
 
-        @NonNull
+        @NotNull
         @Override
-        public Builder withUndoConfirmationPolicy(@NonNull UndoConfirmationPolicy policy) {
+        public Builder withUndoConfirmationPolicy(@NotNull UndoConfirmationPolicy policy) {
             if (myUndoConfirmationPolicy != null)
                 throw new IllegalStateException(
                         "do not call withUndoConfirmationPolicy() several times");
@@ -98,7 +98,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
             return this;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Builder withGroupId(String groupId) {
             myGroupId = groupId;
@@ -106,7 +106,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         }
 
         @Override
-        public <E extends Throwable> void run(@NonNull final ThrowableRunnable<E> action) throws E {
+        public <E extends Throwable> void run(@NotNull final ThrowableRunnable<E> action) throws E {
             Application application = ApplicationManager.getApplication();
             boolean dispatchThread = application.isDispatchThread();
 
@@ -135,7 +135,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         }
 
         private <E extends Throwable> E doRunWriteCommandAction(
-                @NonNull ThrowableRunnable<E> action) {
+                @NotNull ThrowableRunnable<E> action) {
             if (myPsiFiles.length > 0
                     && !FileModificationService2.getInstance()
                             .preparePsiElementsForWrite(myPsiFiles)) {
@@ -171,7 +171,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         }
 
         @Override
-        public <R, E extends Throwable> R compute(@NonNull final ThrowableComputable<R, E> action)
+        public <R, E extends Throwable> R compute(@NotNull final ThrowableComputable<R, E> action)
                 throws E {
             AtomicReference<R> result = new AtomicReference<>();
             run(() -> result.set(action.compute()));
@@ -179,17 +179,17 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         }
     }
 
-    @NonNull
+    @NotNull
     public static Builder writeCommandAction(Project project) {
         return new BuilderImpl(project);
     }
 
-    @NonNull
-    public static Builder writeCommandAction(@NonNull PsiFile first, PsiFile... others) {
+    @NotNull
+    public static Builder writeCommandAction(@NotNull PsiFile first, PsiFile... others) {
         return new BuilderImpl(first.getProject(), ArrayUtil.prepend(first, others));
     }
 
-    @NonNull
+    @NotNull
     public static Builder writeCommandAction(Project project, PsiFile... files) {
         return new BuilderImpl(project, files);
     }
@@ -249,7 +249,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
      * @deprecated Use {@code #writeCommandAction(Project).run()} or compute() instead
      */
     @Deprecated
-    @NonNull
+    @NotNull
     @Override
     public RunResult<T> execute() {
         Application application = ApplicationManager.getApplication();
@@ -277,7 +277,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         return result;
     }
 
-    private void performWriteCommandAction(@NonNull RunResult<T> result) {
+    private void performWriteCommandAction(@NotNull RunResult<T> result) {
         if (myPsiFiles.length > 0
                 && !FileModificationService2.getInstance()
                         .preparePsiElementsForWrite(myPsiFiles)) {
@@ -311,12 +311,12 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
      * @deprecated Use {@link #writeCommandAction(Project)}.withUndoConfirmationPolicy() instead
      */
     @Deprecated
-    @NonNull
+    @NotNull
     protected UndoConfirmationPolicy getUndoConfirmationPolicy() {
         return UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION;
     }
 
-    private void doExecuteCommand(@NonNull Runnable runnable) {
+    private void doExecuteCommand(@NotNull Runnable runnable) {
         Runnable wrappedRunnable =
                 () -> {
                     // if (isGlobalUndoAction())
@@ -338,21 +338,21 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
      */
     @Deprecated
     public abstract static class Simple<T> extends WriteCommandAction<T> {
-        protected Simple(Project project, /*@NonNull*/ PsiFile... files) {
+        protected Simple(Project project, /*@NotNull*/ PsiFile... files) {
             super(project, files);
         }
 
-        protected Simple(Project project, String commandName, /*@NonNull*/ PsiFile... files) {
+        protected Simple(Project project, String commandName, /*@NotNull*/ PsiFile... files) {
             super(project, commandName, files);
         }
 
         protected Simple(
-                Project project, String name, String groupID, /*@NonNull*/ PsiFile... files) {
+                Project project, String name, String groupID, /*@NotNull*/ PsiFile... files) {
             super(project, name, groupID, files);
         }
 
         @Override
-        protected void run(@NonNull Result<T> result) throws Throwable {
+        protected void run(@NotNull Result<T> result) throws Throwable {
             run();
         }
 
@@ -366,7 +366,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
      * instead.
      */
     @VisibleForTesting
-    public static void runWriteCommandAction(Project project, @NonNull Runnable runnable) {
+    public static void runWriteCommandAction(Project project, @NotNull Runnable runnable) {
         runWriteCommandAction(project, getDefaultCommandName(), DEFAULT_GROUP_ID, runnable);
     }
 
@@ -378,7 +378,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
             Project project,
             @Nullable final String commandName,
             @Nullable final String groupID,
-            @NonNull final Runnable runnable,
+            @NotNull final Runnable runnable,
             PsiFile... files) {
         writeCommandAction(project, files)
                 .withName(commandName)
@@ -387,12 +387,12 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
     }
 
     public static <T> T runWriteCommandAction(
-            Project project, @NonNull final Computable<T> computable) {
+            Project project, @NotNull final Computable<T> computable) {
         return writeCommandAction(project).compute(() -> computable.compute());
     }
 
     public static <T, E extends Throwable> T runWriteCommandAction(
-            Project project, @NonNull final ThrowableComputable<T, E> computable) throws E {
+            Project project, @NotNull final ThrowableComputable<T, E> computable) throws E {
         return writeCommandAction(project).compute(computable);
     }
 }

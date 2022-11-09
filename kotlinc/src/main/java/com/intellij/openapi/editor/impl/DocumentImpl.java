@@ -1,8 +1,8 @@
 package com.intellij.openapi.editor.impl;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetnrains.annotations.VisibleForTesting;
 
 import com.intellij.core.CoreBundle;
 import com.intellij.openapi.Disposable;
@@ -109,11 +109,11 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
                 }
 
                 @Override
-                public @NonNull CharSequence subSequence(int start, int end) {
+                public @NotNull CharSequence subSequence(int start, int end) {
                     return myText.subSequence(start, end);
                 }
 
-                @NonNull
+                @NotNull
                 @Override
                 public String toString() {
                     return doGetText();
@@ -121,11 +121,11 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             };
     private final AtomicInteger sequence = new AtomicInteger();
 
-    public DocumentImpl(@NonNull String text) {
+    public DocumentImpl(@NotNull String text) {
         this(text, false);
     }
 
-    public DocumentImpl(@NonNull CharSequence chars) {
+    public DocumentImpl(@NotNull CharSequence chars) {
         this(chars, false);
     }
 
@@ -136,12 +136,12 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
      * during changedUpdate event, so the exception will be rethrown and rest of the listeners WON'T
      * be notified.
      */
-    public DocumentImpl(@NonNull CharSequence chars, boolean forUseInNonAWTThread) {
+    public DocumentImpl(@NotNull CharSequence chars, boolean forUseInNonAWTThread) {
         this(chars, false, forUseInNonAWTThread);
     }
 
     public DocumentImpl(
-            @NonNull CharSequence chars, boolean acceptSlashR, boolean forUseInNonAWTThread) {
+            @NotNull CharSequence chars, boolean acceptSlashR, boolean forUseInNonAWTThread) {
         setAcceptSlashR(acceptSlashR);
         assertValidSeparators(chars);
         myText = CharArrayUtil.createImmutableCharSequence(chars);
@@ -155,14 +155,14 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     static final Key<Reference<RangeMarkerTree<RangeMarkerEx>>> PERSISTENT_RANGE_MARKERS_KEY =
             Key.create("PERSISTENT_RANGE_MARKERS_KEY");
     //  @ApiStatus.Internal
-    public void documentCreatedFrom(@NonNull VirtualFile f, int tabSize) {
+    public void documentCreatedFrom(@NotNull VirtualFile f, int tabSize) {
         processQueue();
         getSaveRMTree(f, RANGE_MARKERS_KEY, myRangeMarkers, tabSize);
         getSaveRMTree(f, PERSISTENT_RANGE_MARKERS_KEY, myPersistentRangeMarkers, tabSize);
     }
 
     // are some range markers retained by strong references?
-    public static boolean areRangeMarkersRetainedFor(@NonNull VirtualFile f) {
+    public static boolean areRangeMarkersRetainedFor(@NotNull VirtualFile f) {
         processQueue();
         // if a marker is retained then so is its node and the whole tree
         // (ignore the race when marker is gc-ed right after this call - it's harmless)
@@ -171,9 +171,9 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     private void getSaveRMTree(
-            @NonNull VirtualFile f,
-            @NonNull Key<Reference<RangeMarkerTree<RangeMarkerEx>>> key,
-            @NonNull RangeMarkerTree<RangeMarkerEx> tree,
+            @NotNull VirtualFile f,
+            @NotNull Key<Reference<RangeMarkerTree<RangeMarkerEx>>> key,
+            @NotNull RangeMarkerTree<RangeMarkerEx> tree,
             int tabSize) {
         RMTreeReference freshRef = new RMTreeReference(tree, f);
         Reference<RangeMarkerTree<RangeMarkerEx>> oldRef;
@@ -207,11 +207,11 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             new ReferenceQueue<>();
 
     private static class RMTreeReference extends WeakReference<RangeMarkerTree<RangeMarkerEx>> {
-        @NonNull private final VirtualFile virtualFile;
+        @NotNull private final VirtualFile virtualFile;
 
         RMTreeReference(
-                @NonNull RangeMarkerTree<RangeMarkerEx> referent,
-                @NonNull VirtualFile virtualFile) {
+                @NotNull RangeMarkerTree<RangeMarkerEx> referent,
+                @NotNull VirtualFile virtualFile) {
             super(referent, rmTreeQueue);
             this.virtualFile = virtualFile;
         }
@@ -227,9 +227,9 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     /** makes range marker without creating document (which could be expensive) */
-    @NonNull
+    @NotNull
     static RangeMarker createRangeMarkerForVirtualFile(
-            @NonNull VirtualFile file,
+            @NotNull VirtualFile file,
             int offset,
             int startLine,
             int startCol,
@@ -418,7 +418,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         //    return markAsNeedsStrippingLater;
     }
 
-    //  private static int getMaxSpacesToLeave(int line, @NonNull List<? extends
+    //  private static int getMaxSpacesToLeave(int line, @NotNull List<? extends
     // StripTrailingSpacesFilter> filters) {
     //    for (StripTrailingSpacesFilter filter :  filters) {
     //      if (filter instanceof SmartStripTrailingSpacesFilter) {
@@ -464,20 +464,20 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         return true;
     }
 
-    private RangeMarkerTree<RangeMarkerEx> treeFor(@NonNull RangeMarkerEx rangeMarker) {
+    private RangeMarkerTree<RangeMarkerEx> treeFor(@NotNull RangeMarkerEx rangeMarker) {
         return rangeMarker instanceof PersistentRangeMarker
                 ? myPersistentRangeMarkers
                 : myRangeMarkers;
     }
 
     @Override
-    public boolean removeRangeMarker(@NonNull RangeMarkerEx rangeMarker) {
+    public boolean removeRangeMarker(@NotNull RangeMarkerEx rangeMarker) {
         return treeFor(rangeMarker).removeInterval(rangeMarker);
     }
 
     //  @Override
     public void registerRangeMarker(
-            @NonNull RangeMarkerEx rangeMarker,
+            @NotNull RangeMarkerEx rangeMarker,
             int start,
             int end,
             boolean greedyToLeft,
@@ -499,7 +499,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    @NonNull
+    @NotNull
     public RangeMarker createGuardedBlock(int startOffset, int endOffset) {
         LOG.assertTrue(startOffset <= endOffset, "Should be startOffset <= endOffset");
         RangeMarker block = createRangeMarker(startOffset, endOffset, true);
@@ -508,12 +508,12 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    public void removeGuardedBlock(@NonNull RangeMarker block) {
+    public void removeGuardedBlock(@NotNull RangeMarker block) {
         myGuardedBlocks.remove(block);
     }
 
     //  @Override
-    @NonNull
+    @NotNull
     public List<RangeMarker> getGuardedBlocks() {
         return myGuardedBlocks;
     }
@@ -588,7 +588,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    @NonNull
+    @NotNull
     public RangeMarker createRangeMarker(
             int startOffset, int endOffset, boolean surviveOnExternalChange) {
         if (!(0 <= startOffset && startOffset <= endOffset && endOffset <= getTextLength())) {
@@ -619,14 +619,14 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     //  @Override
-    public void replaceText(@NonNull CharSequence chars, long newModificationStamp) {
+    public void replaceText(@NotNull CharSequence chars, long newModificationStamp) {
         replaceString(
                 0, getTextLength(), 0, chars, newModificationStamp, true); // TODO: optimization!!!
         clearLineModificationFlags();
     }
 
     @Override
-    public void insertString(int offset, @NonNull CharSequence s) {
+    public void insertString(int offset, @NotNull CharSequence s) {
         if (offset < 0) {
             throw new IndexOutOfBoundsException("Wrong offset: " + offset);
         }
@@ -732,7 +732,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    public void replaceString(int startOffset, int endOffset, @NonNull CharSequence s) {
+    public void replaceString(int startOffset, int endOffset, @NotNull CharSequence s) {
         replaceString(
                 startOffset, endOffset, startOffset, s, LocalTimeCounter.currentTime(), false);
     }
@@ -741,7 +741,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             int startOffset,
             int endOffset,
             int moveOffset,
-            @NonNull CharSequence s,
+            @NotNull CharSequence s,
             final long newModificationStamp,
             boolean wholeTextReplaced) {
         assertBounds(startOffset, endOffset);
@@ -879,7 +879,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         }
     }
 
-    private void assertValidSeparators(@NonNull CharSequence s) {
+    private void assertValidSeparators(@NotNull CharSequence s) {
         if (myAcceptSlashR) {
             return;
         }
@@ -921,10 +921,10 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     private void throwGuardedFragment(
-            @NonNull RangeMarker guard,
+            @NotNull RangeMarker guard,
             int offset,
-            @NonNull CharSequence oldString,
-            @NonNull CharSequence newString) {
+            @NotNull CharSequence oldString,
+            @NotNull CharSequence newString) {
         if (myCheckGuardedBlocks > 0 && !myGuardsSuppressed) {
             DocumentEvent event =
                     new DocumentEventImpl(
@@ -982,10 +982,10 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     private void updateText(
-            @NonNull ImmutableCharSequence newText,
+            @NotNull ImmutableCharSequence newText,
             int offset,
-            @NonNull CharSequence oldString,
-            @NonNull CharSequence newString,
+            @NotNull CharSequence oldString,
+            @NotNull CharSequence newString,
             boolean wholeTextReplaced,
             long newModificationStamp,
             int initialStartOffset,
@@ -1109,9 +1109,9 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     private void changedUpdate(
-            @NonNull DocumentEvent event,
+            @NotNull DocumentEvent event,
             long newModificationStamp,
-            @NonNull CharSequence prevText,
+            @NotNull CharSequence prevText,
             DelayedExceptions exceptions) {
         try {
             if (LOG.isTraceEnabled()) {
@@ -1173,13 +1173,13 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         }
     }
 
-    @NonNull
+    @NotNull
     @Override
     public String getText() {
         return ReadAction.compute(this::doGetText);
     }
 
-    @NonNull
+    @NotNull
     private String doGetText() {
         String s = SoftReference.dereference(myTextString);
         if (s == null) {
@@ -1188,9 +1188,9 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         return s;
     }
 
-    @NonNull
+    @NotNull
     @Override
-    public String getText(@NonNull final TextRange range) {
+    public String getText(@NotNull final TextRange range) {
         return ReadAction.compute(
                 () -> myText.subSequence(range.getStartOffset(), range.getEndOffset()).toString());
     }
@@ -1201,19 +1201,19 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    @NonNull
+    @NotNull
     public CharSequence getCharsSequence() {
         return myMutableCharSequence;
     }
 
-    @NonNull
+    @NotNull
     @Override
     public CharSequence getImmutableCharSequence() {
         return myText;
     }
 
     @Override
-    public void addDocumentListener(@NonNull DocumentListener listener) {
+    public void addDocumentListener(@NotNull DocumentListener listener) {
         if (ArrayUtil.contains(listener, getListeners())) {
             LOG.error("Already registered: " + listener);
         }
@@ -1222,7 +1222,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
 
     @Override
     public void addDocumentListener(
-            @NonNull final DocumentListener listener, @NonNull Disposable parentDisposable) {
+            @NotNull final DocumentListener listener, @NotNull Disposable parentDisposable) {
         addDocumentListener(listener);
         Disposer.register(
                 parentDisposable, new DocumentListenerDisposable(myDocumentListeners, listener));
@@ -1230,12 +1230,12 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
 
     // this contortion is for avoiding document leak when the listener is leaked
     private static class DocumentListenerDisposable implements Disposable {
-        @NonNull private final LockFreeCOWSortedArray<? super DocumentListener> myList;
-        @NonNull private final DocumentListener myListener;
+        @NotNull private final LockFreeCOWSortedArray<? super DocumentListener> myList;
+        @NotNull private final DocumentListener myListener;
 
         DocumentListenerDisposable(
-                @NonNull LockFreeCOWSortedArray<? super DocumentListener> list,
-                @NonNull DocumentListener listener) {
+                @NotNull LockFreeCOWSortedArray<? super DocumentListener> list,
+                @NotNull DocumentListener listener) {
             myList = list;
             myListener = listener;
         }
@@ -1247,7 +1247,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    public void removeDocumentListener(@NonNull DocumentListener listener) {
+    public void removeDocumentListener(@NotNull DocumentListener listener) {
         boolean success = myDocumentListeners.remove(listener);
         if (!success) {
             LOG.error(
@@ -1264,7 +1264,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     //  @Override
-    //  @NonNull
+    //  @NotNull
     //  public LineIterator createLineIterator() {
     //    return getLineSet().createIterator();
     //  }
@@ -1313,22 +1313,22 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     //  @Override
-    //  public void addEditReadOnlyListener(@NonNull EditReadOnlyListener listener) {
+    //  public void addEditReadOnlyListener(@NotNull EditReadOnlyListener listener) {
     //    myReadOnlyListeners.add(listener);
     //  }
     //
     //  @Override
-    //  public void removeEditReadOnlyListener(@NonNull EditReadOnlyListener listener) {
+    //  public void removeEditReadOnlyListener(@NotNull EditReadOnlyListener listener) {
     //    myReadOnlyListeners.remove(listener);
     //  }
 
     @Override
-    public void addPropertyChangeListener(@NonNull PropertyChangeListener listener) {
+    public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
         myPropertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(@NonNull PropertyChangeListener listener) {
+    public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
         myPropertyChangeSupport.removePropertyChangeListener(listener);
     }
 
@@ -1339,7 +1339,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     }
 
     @Override
-    public void setText(@NonNull final CharSequence text) {
+    public void setText(@NotNull final CharSequence text) {
         Runnable runnable =
                 () ->
                         replaceString(
@@ -1422,19 +1422,19 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     // ApplicationManager.getApplication().getMessageBus().syncPublisher(DocumentBulkUpdateListener.TOPIC);
     //  }
     //
-    //  @NonNull
+    //  @NotNull
     //  private static DocumentBulkUpdateListener getPublisher() {
     //    return DocumentBulkUpdateListenerHolder.ourBulkChangePublisher;
     //  }
 
     //  @Override
-    public boolean processRangeMarkers(@NonNull Processor<? super RangeMarker> processor) {
+    public boolean processRangeMarkers(@NotNull Processor<? super RangeMarker> processor) {
         return processRangeMarkersOverlappingWith(0, getTextLength(), processor);
     }
 
     //  @Override
     public boolean processRangeMarkersOverlappingWith(
-            int start, int end, @NonNull Processor<? super RangeMarker> processor) {
+            int start, int end, @NotNull Processor<? super RangeMarker> processor) {
         //    TextRange interval = new ProperTextRange(start, end);
         //    MarkupIterator<RangeMarkerEx> iterator = IntervalTreeImpl
         //      .mergingOverlappingIterator(myRangeMarkers, interval, myPersistentRangeMarkers,
@@ -1448,7 +1448,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         throw new UnsupportedOperationException();
     }
 
-    @NonNull
+    @NotNull
     public String dumpState() {
         StringBuilder result = new StringBuilder();
         result.append("intervals:\n");
@@ -1475,7 +1475,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
                 + "]";
     }
 
-    @NonNull
+    @NotNull
     public FrozenDocument freeze() {
         FrozenDocument frozen = myFrozen;
         if (frozen == null) {

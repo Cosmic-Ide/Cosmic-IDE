@@ -5,7 +5,7 @@ package com.intellij.util.containers;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
@@ -132,7 +132,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
             return key;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public final V getValue() {
             return val;
@@ -231,7 +231,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         }
     }
 
-    static <V> boolean casTabAt(Node<V>[] tab, int i, Node<V> c, @NonNull Node<V> v) {
+    static <V> boolean casTabAt(Node<V>[] tab, int i, Node<V> c, @NotNull Node<V> v) {
         try {
             return theUnsafe.compareAndSwapObject(
                     (Object) tab, ((long) i << ASHIFT) + ABASE, (Object) c, (Object) v);
@@ -419,7 +419,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      * @param value value whose presence in this map is to be tested
      * @return {@code true} if this map maps one or more keys to the specified value
      */
-    public boolean containsValue(@NonNull Object value) {
+    public boolean containsValue(@NotNull Object value) {
         Node<V>[] t;
         if ((t = table) != null) {
             Traverser<V> it = new Traverser<>(t, t.length, 0, t.length);
@@ -448,12 +448,12 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      *     mapping for {@code key}
      */
     @Override
-    public V put(long key, @NonNull V value) {
+    public V put(long key, @NotNull V value) {
         return putVal(key, value, false);
     }
 
     /** Implementation for put and putIfAbsent */
-    V putVal(long key, @NonNull V value, boolean onlyIfAbsent) {
+    V putVal(long key, @NotNull V value, boolean onlyIfAbsent) {
         int hash = spread(key);
         int binCount = 0;
         for (Node<V>[] tab = table; ; ) {
@@ -652,7 +652,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      *
      * @return the collection view
      */
-    @NonNull
+    @NotNull
     public Collection<V> values() {
         ValuesView<V> vs;
         return (vs = values) != null ? vs : (values = new ValuesView<>(this));
@@ -779,17 +779,17 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      *     mapping for the key
      */
     @Override
-    public V putIfAbsent(long key, @NonNull V value) {
+    public V putIfAbsent(long key, @NotNull V value) {
         return putVal(key, value, true);
     }
 
     /** {@inheritDoc} */
-    public boolean remove(long key, @NonNull Object value) {
+    public boolean remove(long key, @NotNull Object value) {
         return replaceNode(key, null, value) != null;
     }
 
     /** {@inheritDoc} */
-    public boolean replace(long key, @NonNull V oldValue, @NonNull V newValue) {
+    public boolean replace(long key, @NotNull V oldValue, @NotNull V newValue) {
         return replaceNode(key, newValue, oldValue) != null;
     }
 
@@ -799,7 +799,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      * @return the previous value associated with the specified key, or {@code null} if there was no
      *     mapping for the key
      */
-    public V replace(long key, @NonNull V value) {
+    public V replace(long key, @NotNull V value) {
         return replaceNode(key, value, null);
     }
 
@@ -855,7 +855,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
      * @return an enumeration of the values in this table
      * @see #values()
      */
-    @NonNull
+    @NotNull
     public Enumeration<V> elements() {
         Node<V>[] t;
         int f = (t = table) == null ? 0 : t.length;
@@ -2174,7 +2174,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                     return k;
                 }
 
-                @NonNull
+                @NotNull
                 @Override
                 public V getValue() {
                     return v;
@@ -2236,7 +2236,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
          *
          * @return an iterator over the elements in this collection
          */
-        @NonNull
+        @NotNull
         @Override
         public abstract Iterator<E> iterator();
 
@@ -2339,7 +2339,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         }
 
         @Override
-        public final boolean containsAll(@NonNull Collection<?> c) {
+        public final boolean containsAll(@NotNull Collection<?> c) {
             if (c != this) {
                 for (Object e : c) {
                     if (e == null || !contains(e)) {
@@ -2351,7 +2351,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         }
 
         @Override
-        public final boolean removeAll(@NonNull Collection<?> c) {
+        public final boolean removeAll(@NotNull Collection<?> c) {
             boolean modified = false;
             for (Iterator<E> it = iterator(); it.hasNext(); ) {
                 if (c.contains(it.next())) {
@@ -2363,7 +2363,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         }
 
         @Override
-        public final boolean retainAll(@NonNull Collection<?> c) {
+        public final boolean retainAll(@NotNull Collection<?> c) {
             boolean modified = false;
             for (Iterator<E> it = iterator(); it.hasNext(); ) {
                 if (!c.contains(it.next())) {
@@ -2402,7 +2402,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
             return false;
         }
 
-        @NonNull
+        @NotNull
         @Override
         public Iterator<V> iterator() {
             ConcurrentLongObjectHashMap<V> m = map;
@@ -2417,12 +2417,12 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         }
 
         @Override
-        public boolean addAll(@NonNull Collection<? extends V> c) {
+        public boolean addAll(@NotNull Collection<? extends V> c) {
             throw new UnsupportedOperationException();
         }
     }
 
-    @NonNull
+    @NotNull
     @Override
     public Iterable<LongEntry<V>> entries() {
         return new EntrySetView<>(this);
@@ -2463,7 +2463,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         /**
          * @return an iterator over the entries of the backing map
          */
-        @NonNull
+        @NotNull
         @Override
         public Iterator<LongEntry<V>> iterator() {
             ConcurrentLongObjectHashMap<V> m = map;
@@ -2545,7 +2545,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
     }
 
     private static boolean compareAndSwapInt(
-            @NonNull Object object, long offset, int expected, int value) {
+            @NotNull Object object, long offset, int expected, int value) {
         try {
             return theUnsafe.compareAndSwapInt(object, offset, expected, value);
         } catch (Throwable throwable) {
@@ -2554,7 +2554,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
     }
 
     private static boolean compareAndSwapLong(
-            @NonNull Object object, long offset, long expected, long value) {
+            @NotNull Object object, long offset, long expected, long value) {
         try {
             return theUnsafe.compareAndSwapLong(object, offset, expected, value);
         } catch (Throwable throwable) {
@@ -2565,8 +2565,8 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
     /**
      * @return value if there is no entry in the map, or corresponding value if entry already exists
      */
-    @NonNull
-    public V cacheOrGet(final long key, @NonNull final V defaultValue) {
+    @NotNull
+    public V cacheOrGet(final long key, @NotNull final V defaultValue) {
         V v = get(key);
         if (v != null) return v;
         V prev = putIfAbsent(key, defaultValue);

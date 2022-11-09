@@ -5,7 +5,7 @@
 
 package com.intellij.core;
 
-import androidx.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.intellij.codeInsight.folding.CodeFoldingSettings;
 import com.intellij.concurrency.JobLauncher;

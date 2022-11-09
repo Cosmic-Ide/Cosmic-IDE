@@ -1,7 +1,7 @@
 package com.intellij.util;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -18,7 +18,7 @@ import java.util.concurrent.locks.LockSupport;
 
 public final class ReadMostlyRWLock {
 
-    @NonNull final Thread writeThread;
+    @NotNull final Thread writeThread;
     @VisibleForTesting volatile boolean writeRequested;
     private final AtomicBoolean writeIntent = new AtomicBoolean(false);
     private volatile boolean writeAcquired;
@@ -27,17 +27,17 @@ public final class ReadMostlyRWLock {
     private volatile boolean writeSuspended;
     private volatile long deadReadersGCStamp;
 
-    public ReadMostlyRWLock(@NonNull Thread writeThread) {
+    public ReadMostlyRWLock(@NotNull Thread writeThread) {
         this.writeThread = writeThread;
     }
 
     public static class Reader {
-        @NonNull private final Thread thread;
+        @NotNull private final Thread thread;
         volatile boolean readRequested;
         private volatile boolean blocked;
         private volatile boolean impatientReads;
 
-        Reader(@NonNull Thread readerThread) {
+        Reader(@NotNull Thread readerThread) {
             thread = readerThread;
         }
 
@@ -149,7 +149,7 @@ public final class ReadMostlyRWLock {
         return R.get().impatientReads;
     }
 
-    public void executeByImpatientReader(@NonNull Runnable runnable)
+    public void executeByImpatientReader(@NotNull Runnable runnable)
             throws CannotRunReadActionException {
         checkReadThreadAccess();
         Reader status = R.get();
@@ -222,7 +222,7 @@ public final class ReadMostlyRWLock {
         }
     }
 
-    public void writeSuspendWhilePumpingIdeEventQueueHopingForTheBest(@NonNull Runnable runnable) {
+    public void writeSuspendWhilePumpingIdeEventQueueHopingForTheBest(@NotNull Runnable runnable) {
         boolean prev = writeSuspended;
         writeSuspended = true;
         writeUnlock();

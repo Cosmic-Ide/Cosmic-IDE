@@ -1,6 +1,6 @@
 package com.intellij.openapi.editor.impl;
 
-import androidx.annotation.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import com.intellij.openapi.util.text.LineTokenizer;
 import com.intellij.openapi.util.text.StringUtil;
@@ -43,8 +43,8 @@ public final class LineSet {
         return createLineSet(text, false);
     }
 
-    @NonNull
-    private static LineSet createLineSet(@NonNull CharSequence text, boolean markModified) {
+    @NotNull
+    private static LineSet createLineSet(@NotNull CharSequence text, boolean markModified) {
         IntList starts = new IntArrayList();
         ByteList flags = new ByteArrayList();
 
@@ -60,12 +60,12 @@ public final class LineSet {
         return new LineSet(starts.toIntArray(), flags.toByteArray(), text.length());
     }
 
-    @NonNull
+    @NotNull
     LineSet update(
-            @NonNull CharSequence prevText,
+            @NotNull CharSequence prevText,
             int start,
             int end,
-            @NonNull CharSequence replacement,
+            @NotNull CharSequence replacement,
             boolean wholeTextReplaced) {
         if (myLength == 0) {
             return createLineSet(replacement, !wholeTextReplaced);
@@ -99,7 +99,7 @@ public final class LineSet {
         return index >= 0 && index < s.length() && s.charAt(index) == c;
     }
 
-    private boolean isSingleLineChange(int start, int end, @NonNull CharSequence replacement) {
+    private boolean isSingleLineChange(int start, int end, @NotNull CharSequence replacement) {
         if (start == 0 && end == myLength && replacement.length() == 0) return false;
 
         int startLine = findLineIndex(start);
@@ -108,7 +108,7 @@ public final class LineSet {
                 && !isLastEmptyLine(startLine);
     }
 
-    @NonNull
+    @NotNull
     private LineSet updateInsideOneLine(int line, int lengthDelta) {
         int[] starts = myStarts.clone();
         for (int i = line + 1; i < starts.length; i++) {
@@ -206,7 +206,7 @@ public final class LineSet {
         return bsResult >= 0 ? bsResult : -bsResult - 2;
     }
 
-    //    @NonNull
+    //    @NotNull
     //    public LineIterator createIterator() {
     //        return new LineIteratorImpl(this);
     //    }
@@ -241,8 +241,8 @@ public final class LineSet {
         return !isLastEmptyLine(index) && BitUtil.isSet(myFlags[index], MODIFIED_MASK);
     }
 
-    @NonNull
-    LineSet setModified(@NonNull IntList indices) {
+    @NotNull
+    LineSet setModified(@NotNull IntList indices) {
         if (indices.isEmpty()) {
             return this;
         }
@@ -259,7 +259,7 @@ public final class LineSet {
         return new LineSet(myStarts, flags, myLength);
     }
 
-    @NonNull
+    @NotNull
     LineSet clearModificationFlags(int startLine, int endLine) {
         if (startLine > endLine) {
             throw new IllegalArgumentException(
@@ -283,7 +283,7 @@ public final class LineSet {
         return new LineSet(myStarts, flags, myLength);
     }
 
-    @NonNull
+    @NotNull
     LineSet clearModificationFlags() {
         return getLineCount() == 0 ? this : clearModificationFlags(0, getLineCount());
     }

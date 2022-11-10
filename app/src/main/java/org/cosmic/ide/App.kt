@@ -65,9 +65,9 @@ class App : Application() {
         Thread.setDefaultUncaughtExceptionHandler {
             _, throwable ->
             val intent = Intent(context, DebugActivity::class.java)
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK))
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
-            Log.e(crash, throwable.message, throwable.stackTraceToString())
+            Log.e("Crash", throwable.message, throwable)
             startActivity(intent)
             Process.killProcess(Process.myPid())
             exitProcess(0)

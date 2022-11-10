@@ -12,6 +12,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmic.ide.App
@@ -29,6 +30,7 @@ import java.io.IOException
 class CodeEditorFragment : Fragment() {
     private lateinit var binding: FragmentCodeEditorBinding
     private lateinit var currentFile: File
+    private val TAG = "CodeEditorFragment"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,23 +121,13 @@ class CodeEditorFragment : Fragment() {
 
     private fun getColorScheme(): TextMateColorScheme {
         try {
-            var themeSource: IThemeSource
+            val registry = ThemeRegistry.getInstance()
             if (App.isDarkMode(requireContext())) {
-                themeSource =
-                    IThemeSource.fromInputStream(
-                        requireContext().getAssets().open("textmate/darcula.tmTheme.json"),
-                        "darcula.tmTheme.json",
-                        null
-                    )
+                registry.setTheme("darcula")
             } else {
-                themeSource =
-                    IThemeSource.fromInputStream(
-                        requireContext().assets.open("textmate/light.tmTheme"),
-                        "light.tmTheme",
-                        null
-                    )
+                registry.setTheme("light")
             }
-            return TextMateColorScheme.create(themeSource)
+            return TextMateColorScheme.create(registry)
         } catch (e: Exception) {
             throw IllegalStateException(e)
         }
@@ -147,7 +139,7 @@ class CodeEditorFragment : Fragment() {
                 "source.java", true
             )
         } catch (e: IOException) {
-            Log.e("CodeEditorFragment", "Failed to create instance of TextMateLanguage", e)
+            Log.e(TAG, "Failed to create instance of TextMateLanguage", e)
             return EmptyLanguage()
         }
     }
@@ -156,7 +148,7 @@ class CodeEditorFragment : Fragment() {
         try {
             return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
         } catch (e: IOException) {
-            Log.e("CodeEditorFragment", "Failed to create instance of KotlinLanguage", e)
+            Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             return EmptyLanguage()
         }
     }
@@ -186,7 +178,7 @@ class CodeEditorFragment : Fragment() {
             try {
                 currentFile.writeText(newContents)
             } catch (e: IOException) {
-                Log.e("CodeEditorFragment", "Failed to save file", e)
+                Log.e(TAG, "Failed to save file", e)
             }
         }
     }

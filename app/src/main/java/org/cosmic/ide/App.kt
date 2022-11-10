@@ -49,14 +49,14 @@ class App : Application() {
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.tmTheme.json"), "darcula.tmTheme.json", null
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.tmTheme.json"), "darcula", null
                     )
                 )
             )
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/light.tmTheme"), "light.tmTheme", null
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/light.tmTheme"), "light", null
                     )
                 )
             )

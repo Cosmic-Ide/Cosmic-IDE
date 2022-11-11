@@ -1,19 +1,21 @@
 package org.cosmic.ide.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Switch;
 
 import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.pedrovgs.lynx.LynxActivity;
 import com.github.pedrovgs.lynx.LynxConfig;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
@@ -22,6 +24,7 @@ import org.cosmic.ide.databinding.ActivityProjectBinding;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
+import org.cosmic.ide.util.AndroidUtilities;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 
@@ -41,8 +44,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
     private ProjectAdapter projectAdapter;
     private ActivityProjectBinding binding;
 
-    private BottomSheetDialog createNewProjectDialog;
-    private BottomSheetDialog deleteProjectDialog;
+    private AlertDialog createNewProjectDialog;
 
     private OnProjectCreatedListener mListener;
 
@@ -53,7 +55,6 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         setContentView(binding.getRoot());
 
         buildCreateNewProjectDialog();
-        buildDeleteProjectDialog();
 
         projectAdapter = new ProjectAdapter();
         binding.projectRecycler.setAdapter(projectAdapter);
@@ -90,25 +91,13 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         loadProjects();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (createNewProjectDialog.isShowing()) {
-            createNewProjectDialog.dismiss();
-        }
-        if (deleteProjectDialog.isShowing()) {
-            deleteProjectDialog.dismiss();
-        }
-    }
-
     private void buildCreateNewProjectDialog() {
-        createNewProjectDialog = new BottomSheetDialog(this);
-        createNewProjectDialog.setContentView(R.layout.create_new_project_dialog);
-    }
-
-    private void buildDeleteProjectDialog() {
-        deleteProjectDialog = new BottomSheetDialog(this);
-        deleteProjectDialog.setContentView(R.layout.delete_dialog);
+        var builder = new MaterialAlertDialogBuilder(this)
+                .setTitle("New project")
+                .setView(R.layout.create_new_project_dialog)
+                .setPositiveButton("Create", null)
+                .setNegativeButton("Cancel", null);
+        createNewProjectDialog = builder.create();
     }
 
     @WorkerThread
@@ -116,11 +105,9 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         if (!createNewProjectDialog.isShowing()) {
             createNewProjectDialog.show();
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
-            Button cancelBtn = createNewProjectDialog.findViewById(android.R.id.button2);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
-            MaterialSwitch kotlinTemplate =
+            Switch kotlinTemplate =
                     createNewProjectDialog.findViewById(R.id.use_kotlin_template);
-            cancelBtn.setOnClickListener(v -> createNewProjectDialog.dismiss());
             createBtn.setOnClickListener(
                     v -> {
                         var projectName = input.getText().toString().trim().replace("..", "");
@@ -151,24 +138,15 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
 
     @WorkerThread
     private void showDeleteProjectDialog(Project project) {
-        if (!deleteProjectDialog.isShowing()) {
-            deleteProjectDialog.show();
-            TextView message = deleteProjectDialog.findViewById(android.R.id.message);
-            Button cancelBtn = deleteProjectDialog.findViewById(android.R.id.button2);
-            Button deleteBtn = deleteProjectDialog.findViewById(android.R.id.button1);
-            cancelBtn.setOnClickListener(v -> deleteProjectDialog.dismiss());
-            message.setText(getString(R.string.project_delete_warning, project.getProjectName()));
-            deleteBtn.setOnClickListener(
-                    v -> {
-                        runOnUiThread(
-                                () -> {
-                                    if (deleteProjectDialog.isShowing())
-                                        deleteProjectDialog.dismiss();
-                                    project.delete();
-                                    loadProjects();
-                                });
-                    });
-        }
+        AndroidUtilities.showSimpleAlert(this, "Delete", getString(R.string.delete_project, project.getProjectName()), "Delete", "Cancel", ((dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                runOnUiThread(
+                        () -> {
+                            project.delete();
+                            loadProjects();
+                        });
+            }
+        }));
     }
 
     @Override

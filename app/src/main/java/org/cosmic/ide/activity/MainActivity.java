@@ -143,8 +143,8 @@ public class MainActivity extends BaseActivity {
 
         fileViewModel.refreshNode(getProject().getRootFile());
         mainViewModel.setFiles(getProject().getIndexer().getList("lastOpenedFiles"));
-        mainViewModel.getToolbarTitle().observe(this, binding.toolbar::setTitle);
-        mainViewModel.setToolbarTitle(getProject().getProjectName());
+
+        binding.toolbar.setTitle(getProject().getProjectName());
 
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
@@ -201,14 +201,15 @@ public class MainActivity extends BaseActivity {
                         files -> {
                             tabsAdapter.submitList(files);
                             if (files.isEmpty()) {
+                                binding.viewPager.setVisibility(View.GONE);
                                 binding.tabLayout.removeAllTabs();
                                 binding.tabLayout.setVisibility(View.GONE);
-                                binding.viewPager.setVisibility(View.GONE);
                                 binding.emptyContainer.setVisibility(View.VISIBLE);
+                                mainViewModel.setCurrentPosition(-1);
                             } else {
                                 binding.tabLayout.setVisibility(View.VISIBLE);
-                                binding.viewPager.setVisibility(View.VISIBLE);
                                 binding.emptyContainer.setVisibility(View.GONE);
+                                binding.viewPager.setVisibility(View.VISIBLE);
                             }
                         });
         mainViewModel
@@ -216,6 +217,9 @@ public class MainActivity extends BaseActivity {
                 .observe(
                         this,
                         position -> {
+                            if (position == -1) {
+                                return;
+                            }
                             binding.viewPager.setCurrentItem(position);
                         });
         if (binding.root instanceof DrawerLayout) {
@@ -245,7 +249,7 @@ public class MainActivity extends BaseActivity {
                                     () -> {
                                         String current =
                                                 mainViewModel.getCurrentFile().getAbsolutePath();
-                                        if (current.endsWith(".java") || current.endsWith(".jav")) {
+                                        if (current.endsWith(".java")) {
                                             var formatter =
                                                     new GoogleJavaFormatter(
                                                             ((CodeEditorFragment) fragment)
@@ -471,13 +475,13 @@ public class MainActivity extends BaseActivity {
             if (App.Companion.isDarkMode(this)) {
                 themeSource =
                         IThemeSource.fromInputStream(
-                                getAssets().open("textmate/darcula.tmTheme.json"),
-                                "darcula.tmTheme.json",
+                                getAssets().open("textmate/darcula.json"),
+                                "darcula.json",
                                 null);
             } else {
                 themeSource =
                         IThemeSource.fromInputStream(
-                                getAssets().open("textmate/light.tmTheme"), "light.tmTheme", null);
+                                getAssets().open("textmate/QuietLight.tmTheme"), "QuietLight.tmTheme", null);
             }
             return TextMateColorScheme.create(themeSource);
         } catch (Exception e) {

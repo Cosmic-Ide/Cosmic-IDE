@@ -13,5 +13,6 @@ include(
     ":jaxp",
     ":kotlin-completion",
     ":lynx",
-    "ktfmt"
+    ":ktfmt",
+    ":treeview"
 )

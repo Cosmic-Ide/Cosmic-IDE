@@ -58,7 +58,7 @@
                         android:text="@string/no_projects_suggestion"
                         android:gravity="center"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:textColorSecondary"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:layout_marginTop="@dimen/spacing_tiny" />
                 </LinearLayout>
             </FrameLayout>

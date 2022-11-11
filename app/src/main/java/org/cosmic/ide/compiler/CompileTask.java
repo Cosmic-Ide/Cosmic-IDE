@@ -76,7 +76,7 @@ public class CompileTask extends Thread {
     }
 
     private void compileJava() {
-        final var prefs = App.getDefaultSharedPreferences();
+        final var prefs = App.getDefaultPreferences();
         try {
             listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             new JavacCompilationTask(prefs).doFullTask(activity.getProject());

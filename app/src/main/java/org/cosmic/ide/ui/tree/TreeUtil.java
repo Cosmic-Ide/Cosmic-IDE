@@ -1,6 +1,6 @@
 package org.cosmic.ide.ui.treeview;
 
-import org.cosmic.ide.ui.treeview.file.TreeFile;
+import org.cosmic.ide.ui.treeview.model.TreeFile;
 
 import java.io.File;
 import java.util.*;

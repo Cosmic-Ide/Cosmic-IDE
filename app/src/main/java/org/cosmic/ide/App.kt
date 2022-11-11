@@ -31,14 +31,14 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        context = applicationContext
+        context = this
         DynamicColors.applyToActivitiesIfAvailable(this)
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
-            dpToPx.initalizeResources(context.getResources())
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
+            dpToPx.resources = context.getResources()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe")
             }
             FileProviderRegistry.getInstance().addFileProvider(
                 AssetsFileResolver(
@@ -50,14 +50,14 @@ class App : Application() {
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.tmTheme.json"), "darcula", null
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.json"), "darcula", null
                     )
                 )
             )
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/light.tmTheme"), "light", null
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/QuietLight.tmTheme"), "QuietLight", null
                     )
                 )
             )
@@ -82,7 +82,7 @@ class App : Application() {
         lateinit var context: Context
 
         @JvmStatic
-        fun getDefaultSharedPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+        fun getDefaultPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
         fun isDarkMode(context: Context): Boolean {
             val darkModeFlag = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK

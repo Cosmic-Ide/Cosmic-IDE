@@ -63,11 +63,11 @@
     </LinearLayout>
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/treeViewFragment"
-        android:name="org.cosmic.ide.ui.TreeViewDrawer"
+        android:id="@+id/treeFileManagerFragment"
+        android:name="org.cosmic.ide.ui.TreeFileManagerFragment"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="?android:colorBackground" />
+        android:background="?android:attr/colorBackground" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

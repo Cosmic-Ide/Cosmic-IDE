@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="?dialogPreferredPadding"
+    android:padding="?attr/dialogPreferredPadding"
     android:orientation="vertical"
     android:background="?attr/colorSurface"
     tools:ignore="PrivateResource">
@@ -16,16 +16,16 @@
         android:indeterminate="true"
         app:trackCornerRadius="@dimen/mtrl_progress_indicator_full_rounded_corner_radius" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_medium"
         android:layout_toEndOf="@id/progress_bar"
         android:text="@string/compilation_running"
-        android:textAppearance="?attr/textAppearanceTitleLarge" />
+        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/stage_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

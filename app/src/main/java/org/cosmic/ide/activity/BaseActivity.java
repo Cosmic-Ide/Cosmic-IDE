@@ -22,7 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setupTheme();
 
-        settings = App.getDefaultSharedPreferences();
+        settings = App.getDefaultPreferences();
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         UiUtilsKt.addSystemWindowInsetToPadding(getRootActivityView(), true, false, true, false);

@@ -1,16 +1,13 @@
-package org.cosmic.ide.ui.treeview.file
+package org.cosmic.ide.ui.treeview.model
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import org.cosmic.ide.R
-import org.cosmic.ide.ui.treeview.model.TreeFolder
-import org.cosmic.ide.ui.treeview.model.TreeJavaFile
 import java.io.File
 import java.util.Objects
 
 open class TreeFile {
-
     companion object {
         @JvmStatic
         fun fromFile(file: File): TreeFile? {
@@ -34,9 +31,9 @@ open class TreeFile {
 
     open fun getIcon(context: Context): Drawable? {
         return when (getFile().extension) {
-            "java" -> AppCompatResources.getDrawable(context, R.drawable.file_type_java)
-            "kt" -> AppCompatResources.getDrawable(context, R.drawable.file_type_kt)
-            else -> AppCompatResources.getDrawable(context, R.drawable.ic_file)
+            "java" -> getDrawable(context, R.drawable.file_type_java)
+            "kt" -> getDrawable(context, R.drawable.file_type_kt)
+            else -> getDrawable(context, R.drawable.ic_file)
         }
     }
 

@@ -7,7 +7,7 @@
     android:gravity="center_vertical"
     android:background="?attr/colorSurface">
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/result_item_image"
         android:layout_height="match_parent"
         android:layout_width="20dp"
@@ -22,22 +22,21 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:gravity="center_vertical">
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:textColor="?android:textColorPrimary"
+            android:textColor="?android:attr/textColorPrimary"
             android:singleLine="true" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/result_item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:textColor="?android:textColorSecondary"
             android:singleLine="true"
             tools:text="Identifier" />
     </LinearLayout>

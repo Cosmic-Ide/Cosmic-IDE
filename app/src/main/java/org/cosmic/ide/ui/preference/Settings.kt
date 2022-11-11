@@ -11,7 +11,7 @@ import org.cosmic.ide.R
  */
 class Settings(private val context: Context, private val callback: Callback? = null) :
     SharedPreferences.OnSharedPreferenceChangeListener {
-    private val inner = App.getDefaultSharedPreferences()
+    private val `inner` = App.getDefaultPreferences()
 
     interface Callback {
         fun onSettingChanged(key: String)
@@ -19,7 +19,7 @@ class Settings(private val context: Context, private val callback: Callback? = n
 
     init {
         if (callback != null) {
-            inner.registerOnSharedPreferenceChangeListener(this)
+            `inner`.registerOnSharedPreferenceChangeListener(this)
         }
     }
 
@@ -28,20 +28,20 @@ class Settings(private val context: Context, private val callback: Callback? = n
     }
 
     fun release() {
-        inner.unregisterOnSharedPreferenceChangeListener(this)
+        `inner`.unregisterOnSharedPreferenceChangeListener(this)
     }
 
     // The current theme
     val theme: Int
         get() =
-            inner.getInt(
+            `inner`.getInt(
                 context.getString(R.string.key_theme),
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )
 
     val javaVersion: Int
         get() =
-            inner.getInt(
+            `inner`.getInt(
                 context.getString(R.string.key_java_version),
                 7
             )

@@ -7,11 +7,12 @@
     android:padding="?attr/dialogPreferredPadding">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_project_name"
+        android:id="@+id/til_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/project_name">
-
+        android:hint="@string/file_name"
+        android:textDirection="locale"
+        app:counterEnabled="true">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"
             android:layout_width="match_parent"
@@ -22,29 +23,22 @@
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_package_name"
+    <LinearLayout
+        android:id="@+id/kind_of_class"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_small"
-        android:hint="@string/package_name"
-        android:visibility="gone"
-        app:placeholderText="com.example.project">
+        android:orientation="horizontal">
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/class_kind" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@android:id/text2"
+        <Spinner
+            android:id="@+id/class_kind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:importantForAutofill="no"
-            android:inputType="text" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/use_kotlin_template"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:checked="true"
-        android:text="@string/kotlin_template" />
+            android:entries="@array/kind_class" />
+    </LinearLayout>
 
 </LinearLayout>

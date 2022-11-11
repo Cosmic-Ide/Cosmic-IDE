@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.ui.treeview.TreeNode;
 import org.cosmic.ide.ui.treeview.TreeUtil;
-import org.cosmic.ide.ui.treeview.file.TreeFile;
+import org.cosmic.ide.ui.treeview.model.TreeFile;
 
 import java.io.File;
 

@@ -65,9 +65,7 @@ class CodeEditorFragment : Fragment() {
             }
             if (currentFile.extension.equals("kt")) {
                 setEditorLanguage(LANGUAGE_KOTLIN)
-            } else if (currentFile.extension.equals("java") ||
-                currentFile.extension.equals("jav")
-            ) {
+            } else if (currentFile.extension.equals("java")) {
                 setEditorLanguage(LANGUAGE_JAVA)
             } else if (currentFile.extension.equals("smali")) {
                 setEditorLanguage(LANGUAGE_SMALI)
@@ -125,7 +123,7 @@ class CodeEditorFragment : Fragment() {
             if (App.isDarkMode(requireContext())) {
                 registry.setTheme("darcula")
             } else {
-                registry.setTheme("light")
+                registry.setTheme("QuietLight")
             }
             return TextMateColorScheme.create(registry)
         } catch (e: Exception) {
@@ -139,7 +137,7 @@ class CodeEditorFragment : Fragment() {
                 "source.java", true
             )
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to create instance of TextMateLanguage", e)
+            Log.e(TAG, "Failed to create instance of TextMateLanguage (Java)", e)
             return EmptyLanguage()
         }
     }
@@ -189,7 +187,7 @@ class CodeEditorFragment : Fragment() {
         const val LANGUAGE_SMALI = 2
 
         fun newInstance(file: File): CodeEditorFragment {
-            val args: Bundle = Bundle()
+            val args = Bundle()
             args.putString("path", file.absolutePath)
             val fragment = CodeEditorFragment()
             fragment.arguments = args

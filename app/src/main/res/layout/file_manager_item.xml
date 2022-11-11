@@ -6,27 +6,25 @@
     android:orientation="horizontal"
     android:gravity="start|center_vertical"
     android:paddingVertical="@dimen/spacing_tiny"
-    android:paddingHorizontal="@dimen/spacing_small"
-    android:background="?attr/colorSurface">
+    android:paddingHorizontal="@dimen/spacing_small">
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/arrow"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/arrow_forward" />
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginHorizontal="@dimen/spacing_small"
         android:src="@drawable/ic_file" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
         tools:text="Main.kt" />
 
 </LinearLayout>

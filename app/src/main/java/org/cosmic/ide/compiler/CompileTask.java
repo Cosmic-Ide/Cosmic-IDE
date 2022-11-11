@@ -44,14 +44,6 @@ public class CompileTask extends Thread {
             Looper.prepare();
         }
 
-//        try {
-//            listener.onCurrentBuildStageChanged(STAGE_CLEAN);
-//            activity.saveAll();
-//        } catch (Exception e) {
-//            listener.onFailed(e.getMessage());
-//            return;
-//        }
-
         compileKotlin();
         if (!listener.isSuccessTillNow()) return;
 

@@ -64,16 +64,16 @@ class App : Application() {
         }
 
         Thread.setDefaultUncaughtExceptionHandler {
-            _, throwable ->
+            thread, throwable ->
             val intent = Intent(context, DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
             Log.e("Crash", throwable.message, throwable)
-            val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+            startActivity(intent)
 
-            val am = getSystemService(ALARM_SERVICE) as AlarmManager
-            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)
-            Process.killProcess(Process.myPid())
+            if (Thread.getDefaultUncaughtExceptionHandler() != null) {
+                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(thread, throwable);
+            }
             exitProcess(0)
         }
     }

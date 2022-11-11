@@ -1,5 +1,6 @@
 package org.cosmic.ide
 
+import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
@@ -68,7 +69,10 @@ class App : Application() {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
             Log.e("Crash", throwable.message, throwable)
-            startActivity(intent)
+            val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+
+            val am = getSystemService(ALARM_SERVICE) as AlarmManager
+            am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pendingIntent)
             Process.killProcess(Process.myPid())
             exitProcess(0)
         }

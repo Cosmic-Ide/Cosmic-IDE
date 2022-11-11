@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.github.pedrovgs.lynx.LynxActivity;
 import com.github.pedrovgs.lynx.LynxConfig;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
@@ -106,7 +108,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
             createNewProjectDialog.show();
             EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
-            Switch kotlinTemplate =
+            MaterialSwitch kotlinTemplate =
                     createNewProjectDialog.findViewById(R.id.use_kotlin_template);
             createBtn.setOnClickListener(
                     v -> {

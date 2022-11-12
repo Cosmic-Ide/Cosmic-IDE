@@ -17,7 +17,7 @@ import com.kieronquinn.monetcompat.app.MonetCompatActivity
 
 abstract class BaseActivity : MonetCompatActivity() {
 
-    protected var settings: SharedPreferences
+    protected lateinit var settings: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

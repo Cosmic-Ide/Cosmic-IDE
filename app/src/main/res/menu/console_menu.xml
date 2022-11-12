@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:title="@string/recompile"
+        android:title="@string/compilation_recompile"
         android:id="@+id/action_recompile"
         android:icon="@drawable/refresh"
         app:showAsAction="always" />

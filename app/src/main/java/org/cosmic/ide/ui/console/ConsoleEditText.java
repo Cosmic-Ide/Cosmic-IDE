@@ -36,17 +36,17 @@ public class ConsoleEditText extends AppCompatEditText {
     private IntegerQueue mInputBuffer = new IntegerQueue(IntegerQueue.QUEUE_SIZE);
 
     /** buffer for output */
-    private ByteQueue mStdoutBuffer = new ByteQueue(4 * 1024);
+    private ByteQueue mStdoutBuffer = new ByteQueue(4096);
 
     /** buffer for output */
-    private ByteQueue mStderrBuffer = new ByteQueue(4 * 1024);
+    private ByteQueue mStderrBuffer = new ByteQueue(4096);
 
     private AtomicBoolean isRunning = new AtomicBoolean(true);
 
     // filter input text, block a part of text
     private TextListener mTextListener = new TextListener();
     private EnterListener mEnterListener = new EnterListener();
-    private byte[] mReceiveBuffer = new byte[4 * 1024];
+    private byte[] mReceiveBuffer = new byte[4096];
     private final Handler mHandler =
             new Handler(Looper.getMainLooper()) {
                 @Override
@@ -108,7 +108,6 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStdoutToScreen() {
-
         int bytesAvailable = mStdoutBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
@@ -121,7 +120,6 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStderrToScreen() {
-
         int bytesAvailable = mStderrBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
@@ -391,6 +389,9 @@ public class ConsoleEditText extends AppCompatEditText {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        mStderrBuffer.close();
+        mStdoutBuffer.close();
 
         outputStream = null;
         inputStream = null;

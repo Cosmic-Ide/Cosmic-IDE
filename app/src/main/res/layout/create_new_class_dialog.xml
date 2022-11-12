@@ -10,7 +10,7 @@
         android:id="@+id/til_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/file_name"
+        android:hint="@string/create_class_dialog_class_name"
         android:textDirection="locale"
         app:counterEnabled="true">
         <com.google.android.material.textfield.TextInputEditText
@@ -23,22 +23,10 @@
         </com.google.android.material.textfield.TextInputEditText>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-        android:id="@+id/kind_of_class"
+    <Spinner
+        android:id="@+id/class_kind"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/class_kind" />
-
-        <Spinner
-            android:id="@+id/class_kind"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:entries="@array/kind_class" />
-    </LinearLayout>
+        android:layout_marginTop="@dimen/spacing_small" />
 
 </LinearLayout>

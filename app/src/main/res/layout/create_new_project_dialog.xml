@@ -4,7 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="?attr/dialogPreferredPadding">
+    android:paddingTop="?attr/dialogPreferredPadding"
+    android:paddingStart="?attr/dialogPreferredPadding"
+    android:paddingEnd="?attr/dialogPreferredPadding"
+    android:paddingBottom="@dimen/spacing_medium">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_project_name"
@@ -43,8 +46,8 @@
         android:id="@+id/use_kotlin_template"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_marginTop="@dimen/spacing_medium"
         android:checked="true"
-        android:text="@string/kotlin_template" />
+        android:text="@string/use_kotlin_template" />
 
 </LinearLayout>

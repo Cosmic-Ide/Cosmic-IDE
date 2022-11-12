@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/appearance">
+    <PreferenceCategory app:title="@string/pref_appearance">
 
         <org.cosmic.ide.ui.preference.IntListPreference
             app:key="@string/key_theme"
-            app:title="@string/dark_theme"
+            app:title="@string/pref_dark_theme"
             app:defaultValue="@integer/theme_auto"
             app:entries="@array/entries_theme"
             app:entryValues="@array/values_theme" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/compiler">
+    <PreferenceCategory app:title="@string/pref_compiler">
 
         <ListPreference
             app:key="@string/key_java_version"
-            app:title="@string/java_version"
+            app:title="@string/pref_java_version"
             app:defaultValue="7"
             app:entries="@array/java_versions"
             app:entryValues="@array/java_versions" />
 
         <EditTextPreference
             app:key="@string/key_program_arguments"
-            app:title="@string/program_arguments" />
+            app:title="@string/pref_program_arguments" />
 
         <SwitchPreferenceCompat
             app:key="@string/key_fastjarfs"
-            app:title="@string/fast_jar_fs"
+            app:title="@string/pref_fast_jar_fs"
             app:defaultValue="true"
-            app:summary="@string/desc_fast_jar_fs" />
+            app:summary="@string/pref_fast_jar_fs_desc" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/about">
+    <PreferenceCategory app:title="@string/pref_about">
 
         <Preference
             app:key="@string/key_app_version"
-            app:title="@string/app_version_text"
+            app:title="@string/pref_app_version"
             app:summary="@string/app_version" />
 
         <Preference
             app:key="@string/key_discord"
-            app:title="@string/our_discord"
-            app:summary="@string/join_discord" />
+            app:title="@string/pref_discord"
+            app:summary="@string/pref_discord_desc" />
 
         <Preference
             app:key="@string/key_github"
-            app:title="@string/our_github"
-            app:summary="@string/view_github_repository" />
+            app:title="@string/pref_github"
+            app:summary="@string/pref_github_desc" />
 
     </PreferenceCategory>
 

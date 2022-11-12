@@ -18,7 +18,6 @@ import com.github.pedrovgs.lynx.LynxConfig;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
-
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
@@ -95,10 +94,10 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
 
     private void buildCreateNewProjectDialog() {
         var builder = new MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle("New project")
+                .setTitle(getString(R.string.create_project))
                 .setView(R.layout.create_new_project_dialog)
-                .setPositiveButton("Create", null)
-                .setNegativeButton("Cancel", null);
+                .setPositiveButton(getString(R.string.create), null)
+                .setNegativeButton(getString(android.R.string.cancel), null);
         createNewProjectDialog = builder.create();
     }
 
@@ -141,15 +140,25 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
 
     @WorkerThread
     private void showDeleteProjectDialog(Project project) {
-        AndroidUtilities.showSimpleAlert(this, "Delete project", getString(R.string.delete_project, project.getProjectName()), "Delete", "Cancel", ((dialog, which) -> {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                runOnUiThread(
-                        () -> {
-                            project.delete();
-                            loadProjects();
-                        });
-            }
-        }));
+        AndroidUtilities.showSimpleAlert(
+                this,
+                getString(R.string.dialog_delete),
+                getString(R.string.dialog_confirm_delete, project.getProjectName()),
+                getString(android.R.string.yes), getString(android.R.string.no),
+                ((dialog, which) -> {
+                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                        project.delete();
+                        runOnUiThread(
+                                () -> {
+                                    /** I think it will be annoying? Or not */
+                                    /* AndroidUtilities.showSimpleAlert(
+                                        this,
+                                        getString(R.string.success),
+                                        getString(R.string.delete_success)); */
+                                    loadProjects();
+                                });
+                    }
+                }));
     }
 
     @Override

@@ -28,6 +28,7 @@
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textSize="20sp"
             tools:text="Abc" />
 
         <TextView

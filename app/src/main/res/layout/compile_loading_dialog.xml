@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_medium"
         android:layout_toEndOf="@id/progress_bar"
-        android:text="@string/compilation_running"
+        android:text="@string/compilation_state_compiling"
         android:textAppearance="?attr/textAppearanceTitleMedium" />
 
     <TextView
@@ -32,9 +32,7 @@
         android:layout_marginStart="@dimen/spacing_medium"
         android:layout_toEndOf="@id/progress_bar"
         android:layout_below="@id/title"
-        android:gravity="center"
-        android:text="@string/stage"
-        android:textColor="?android:textColorSecondary"
+        android:text="@string/compilation_stage"
         android:textAppearance="?attr/textAppearanceBodyMedium" />
 
 </RelativeLayout>

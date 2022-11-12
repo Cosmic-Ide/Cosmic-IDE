@@ -37,16 +37,16 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
 
-        findPreference<Preference>("key_app_version")?.setOnPreferenceClickListener {
+        findPreference<Preference>("ide_app_version")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_RELEASE_URL.toUri()))
             true
         }
-        findPreference<Preference>("key_discord")?.setOnPreferenceClickListener {
+        findPreference<Preference>("ide_discord_link")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, DISCORD_URL.toUri()))
             true
         }
 
-        findPreference<Preference>("key_github")?.setOnPreferenceClickListener {
+        findPreference<Preference>("ide_github_link")?.setOnPreferenceClickListener {
             startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
             true
         }

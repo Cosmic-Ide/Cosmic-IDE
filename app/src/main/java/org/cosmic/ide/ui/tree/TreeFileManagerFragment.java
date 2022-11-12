@@ -87,7 +87,7 @@ public class TreeFileManagerFragment extends Fragment {
         buildRenameFileDialog();
 
         treeView = new TreeView<TreeFile>(
-                requireContext(), TreeNode.root(Collections.emptyList()));
+                activity, TreeNode.root(Collections.emptyList()));
 
         HorizontalScrollView horizontalScrollView = view.findViewById(R.id.horizontalScrollView);
         horizontalScrollView.addView(treeView.getView(), new ViewGroup.LayoutParams(
@@ -117,7 +117,7 @@ public class TreeFileManagerFragment extends Fragment {
                                             }
                                         }
                                     } catch (Exception e) {
-                                        AndroidUtilities.showSimpleAlert(activity, "Failed to open file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.error_file_open), e.getMessage(), activity.getString(R.string.dialog_close), activity.getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                             if (which == DialogInterface.BUTTON_NEGATIVE) {
                                                 AndroidUtilities.copyToClipboard(e.getMessage());
                                             }
@@ -156,7 +156,7 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void showPopup(View view, TreeNode<TreeFile> treeNode) {
-        var popup = new PopupMenu(requireContext(), view);
+        var popup = new PopupMenu(activity, view);
         var inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.treeview_menu, popup.getMenu());
         popup.show();
@@ -181,17 +181,17 @@ public class TreeFileManagerFragment extends Fragment {
         popup.setOnMenuItemClickListener(
                 item -> {
                     var id = item.getItemId();
-                    if (id == R.id.create_kotlin_class_menu_bttn) {
+                    if (id == R.id.create_kotlin_class_menu_btn) {
                         showCreateNewKotlinFileDialog(treeNode);
-                    } else if (id == R.id.create_java_class_menu_bttn) {
+                    } else if (id == R.id.create_java_class_menu_btn) {
                         showCreateNewJavaFileDialog(treeNode);
-                    } else if (id == R.id.create_directory_bttn) {
+                    } else if (id == R.id.create_directory_btn) {
                         showCreateNewDirectoryDialog(treeNode);
-                    } else if (id == R.id.delete_menu_bttn) {
+                    } else if (id == R.id.delete_menu_btn) {
                         showConfirmDeleteDialog(treeNode);
-                    } else if (id == R.id.rename_menu_bttn) {
+                    } else if (id == R.id.rename_menu_btn) {
                         showRenameFileDialog(treeNode);
-                    } else if (id == R.id.dex_menu_bttn) {
+                    } else if (id == R.id.dex_menu_btn) {
                         D8Task.compileJar(nodeFile.getAbsolutePath());
                         partialRefresh(() -> treeView.refreshTreeView());
                     }
@@ -214,29 +214,29 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle("Create file")
-                .setView(R.layout.create_new_file_dialog)
-                .setPositiveButton("Create", null)
-                .setNegativeButton("Cancel", null);
+        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                .setTitle(activity.getString(R.string.create_class_dialog_title))
+                .setView(R.layout.create_new_class_dialog)
+                .setPositiveButton(activity.getString(R.string.create_class_dialog_positive), null)
+                .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewFileDialog = builder.create();
     }
 
     private void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle("Create a folder")
+        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                .setTitle(activity.getString(R.string.create_folder_dialog_title))
                 .setView(R.layout.create_new_folder_dialog)
-                .setPositiveButton("Create", null)
-                .setNegativeButton("Cancel", null);
+                .setPositiveButton(activity.getString(R.string.create_folder_dialog_positive), null)
+                .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewDirectoryDialog = builder.create();
     }
 
     private void buildRenameFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle("Rename file")
+        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                .setTitle(activity.getString(R.string.rename))
                 .setView(R.layout.rename_dialog)
-                .setPositiveButton("Rename", null)
-                .setNegativeButton("Cancel", null);
+                .setPositiveButton(activity.getString(R.string.rename), null)
+                .setNegativeButton(activity.getString(android.R.string.cancel), null);
         renameFileDialog = builder.create();
     }
 
@@ -280,7 +280,7 @@ public class TreeFileManagerFragment extends Fragment {
 
             ArrayAdapter<CharSequence> adapter =
                     ArrayAdapter.createFromResource(
-                            requireContext(),
+                            activity,
                             R.array.kind_class,
                             android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -340,7 +340,7 @@ public class TreeFileManagerFragment extends Fragment {
 
             ArrayAdapter<CharSequence> adapter =
                     ArrayAdapter.createFromResource(
-                            requireContext(),
+                            activity,
                             R.array.kind_class_kotlin,
                             android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -414,11 +414,8 @@ public class TreeFileManagerFragment extends Fragment {
                             inputEt.setText("");
                             createNewDirectoryDialog.dismiss();
                         } else {
-                            if (fileName.contains(".")) {
-                                inputEt.setError("Directory name contains illegal characters!");
-                            }
-                            if (fileName.isEmpty()) {
-                                inputEt.setError("Directory name cannot be empty!");
+                            if (fileName.contains(".") || fileName.isEmpty()) {
+                                ((TextInputLayout) inputEt.getParent()).setError(activity.getString(R.string.create_folder_dialog_invalid_name));
                             }
                         }
                     });
@@ -426,7 +423,7 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void showConfirmDeleteDialog(TreeNode<TreeFile> node) {
-        AndroidUtilities.showSimpleAlert(requireContext(), "Delete", getString(R.string.delete_file, node.getValue().getFile().getName()), "Delete", "Cancel", ((dialog, which) -> {
+        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.dialog_delete), getString(R.string.dialog_confirm_delete, node.getValue().getFile().getName()), activity.getString(android.R.string.yes), activity.getString(android.R.string.no), ((dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 FileUtil.deleteFile(node.getValue().getFile().getPath());
                 node.getParent().removeChild(node);

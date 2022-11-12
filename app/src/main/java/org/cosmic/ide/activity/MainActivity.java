@@ -164,9 +164,9 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onTabReselected(TabLayout.Tab p1) {
                         PopupMenu popup = new PopupMenu(MainActivity.this, p1.view);
-                        popup.getMenu().add(0, 0, 1, getString(R.string.close));
-                        popup.getMenu().add(0, 1, 2, getString(R.string.close_others));
-                        popup.getMenu().add(0, 2, 3, getString(R.string.close_all));
+                        popup.getMenu().add(0, 0, 1, getString(R.string.menu_close_file));
+                        popup.getMenu().add(0, 1, 2, getString(R.string.menu_close_others));
+                        popup.getMenu().add(0, 2, 3, getString(R.string.menu_close_all));
                         popup.setOnMenuItemClickListener(
                                 item -> {
                                     switch (item.getItemId()) {
@@ -263,7 +263,7 @@ public class MainActivity extends BaseActivity {
                                             try {
                                                 temp = FileUtil.readFile(new File(current));
                                             } catch (IOException e) {
-                                                Log.d(TAG, "Cannot read file", e);
+                                                Log.d(TAG, getString(R.string.error_file_open), e);
                                             }
                                         } else {
                                             temp =
@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }
@@ -363,7 +363,7 @@ public class MainActivity extends BaseActivity {
                         getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }
@@ -379,7 +379,7 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }
@@ -449,7 +449,7 @@ public class MainActivity extends BaseActivity {
 
                             @Override
                             public void onSuccess() {
-                                notifBuilder.setContentText("Success");
+                                notifBuilder.setContentText(getString(R.string.compilation_result_success));
                                 notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
@@ -459,12 +459,12 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void onFailed(String errorMessage) {
                                 compileSuccess = false;
-                                notifBuilder.setContentText("Failure");
+                                notifBuilder.setContentText(getString(R.string.compilation_result_failed));
                                 notifManager.notify(id, notifBuilder.build());
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
-                                AndroidUtilities.showSimpleAlert(MainActivity.this, "Error while compiling", errorMessage, "Close", "Copy stacktrace", ((dialog, which) -> {
+                                AndroidUtilities.showSimpleAlert(MainActivity.this, getString(R.string.compilation_result_failed), errorMessage, getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                                         AndroidUtilities.copyToClipboard(errorMessage);
                                     }
@@ -495,7 +495,9 @@ public class MainActivity extends BaseActivity {
             } else {
                 themeSource =
                         IThemeSource.fromInputStream(
-                                getAssets().open("textmate/QuietLight.tmTheme"), "QuietLight", null);
+                                getAssets().open("textmate/QuietLight.tmTheme"),
+                                "QuietLight",
+                                null);
             }
             return TextMateColorScheme.create(themeSource);
         } catch (Exception e) {
@@ -537,7 +539,7 @@ public class MainActivity extends BaseActivity {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
-                "Select a class to show smali",
+                getString(R.string.select_smali_class),
                 classes,
                 (d, pos) -> {
                     final var claz = classes[pos];
@@ -563,7 +565,7 @@ public class MainActivity extends BaseActivity {
                                             1,
                                             options);
                                 } catch (Throwable e) {
-                                    AndroidUtilities.showSimpleAlert(this, "Failed to extract smali source", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_extract_smali), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                                             AndroidUtilities.copyToClipboard(e.getMessage());
                                         }
@@ -580,7 +582,7 @@ public class MainActivity extends BaseActivity {
         if (classes == null) return;
 
         listDialog(
-                "Select a class to decompile",
+                getString(R.string.select_class_decompile),
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
@@ -597,7 +599,7 @@ public class MainActivity extends BaseActivity {
                                                                     getProject().getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
-                                    AndroidUtilities.showSimpleAlert(this, "Failed to decompile class", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_decompile), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                                             AndroidUtilities.copyToClipboard(e.getMessage());
                                         }
@@ -624,7 +626,7 @@ public class MainActivity extends BaseActivity {
         final var classes = getClassesFromDex();
         if (classes == null) return;
         listDialog(
-                "Select a class to disassemble",
+                getString(R.string.select_class_disassemble),
                 classes,
                 (d, pos) -> {
                     var claz = classes[pos].replace(".", "/");
@@ -640,7 +642,7 @@ public class MainActivity extends BaseActivity {
                                                         + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
-                        AndroidUtilities.showSimpleAlert(this, "Failed to disassemble class", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                        AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_disassemble), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                             if (which == DialogInterface.BUTTON_NEGATIVE) {
                                 AndroidUtilities.copyToClipboard(e.getMessage());
                             }
@@ -693,7 +695,7 @@ public class MainActivity extends BaseActivity {
             }
             return classes.toArray(new String[0]);
         } catch (Exception e) {
-            AndroidUtilities.showSimpleAlert(this, "Failed to get list of available classes in dex", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+            AndroidUtilities.showSimpleAlert(this, getString(R.string.error_classes_get_dex), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                 if (which == DialogInterface.BUTTON_NEGATIVE) {
                     AndroidUtilities.copyToClipboard(e.getMessage());
                 }

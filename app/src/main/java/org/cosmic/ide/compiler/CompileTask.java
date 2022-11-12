@@ -32,10 +32,10 @@ public class CompileTask extends Thread {
         this.listener = listener;
         this.showExecuteDialog = isExecuteMethod;
 
-        STAGE_CLEAN = context.getString(R.string.stage_clean);
-        STAGE_KOTLINC = context.getString(R.string.stage_kotlinc);
-        STAGE_JAVAC = context.getString(R.string.stage_javac);
-        STAGE_D8 = context.getString(R.string.stage_d8);
+        STAGE_CLEAN = context.getString(R.string.compilation_stage_clean);
+        STAGE_KOTLINC = context.getString(R.string.compilation_stage_kotlinc);
+        STAGE_JAVAC = context.getString(R.string.compilation_stage_javac);
+        STAGE_D8 = context.getString(R.string.compilation_stage_d8);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class CompileTask extends Thread {
                     return;
                 }
                 activity.listDialog(
-                        "Choose a class to run",
+                        activity.getString(R.string.select_class_run),
                         classes,
                         (dialog, item) -> {
                             var intent = new Intent(activity, ConsoleActivity.class);

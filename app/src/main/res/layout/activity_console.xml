@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:navigationIcon="@drawable/ic_back_24"
-            app:title="@string/console" />
+            app:title="@string/compilation_console" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:paddingHorizontal="8dp"
+        android:paddingHorizontal="@dimen/spacing_small"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <HorizontalScrollView
             android:layout_width="match_parent"

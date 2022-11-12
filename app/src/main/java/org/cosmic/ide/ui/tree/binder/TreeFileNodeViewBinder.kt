@@ -8,7 +8,7 @@ import org.cosmic.ide.ui.treeview.TreeNode
 import org.cosmic.ide.ui.treeview.base.BaseNodeViewBinder
 import org.cosmic.ide.ui.treeview.model.TreeFile
 import org.cosmic.ide.util.dpToPx
-import org.cosmic.ide.util.setMargins
+import org.cosmic.ide.util.AndroidUtilities
 
 class TreeFileNodeViewBinder(
     itemView: View,
@@ -21,9 +21,7 @@ class TreeFileNodeViewBinder(
     override fun bindView(treeNode: TreeNode<TreeFile>) {
         viewHolder = ViewHolder(itemView)
 
-        viewHolder.rootView.setMargins(
-            left = level * dpToPx.dpToPx(15f)
-        )
+        AndroidUtilities.setMargins(viewHolder.rootView, level * dpToPx.dpToPx(14f), 0, 0, 0)
 
         with(viewHolder.arrow) {
             setImageResource(R.drawable.arrow_forward)

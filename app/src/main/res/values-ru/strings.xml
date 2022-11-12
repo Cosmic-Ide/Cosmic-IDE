@@ -1,58 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Строки, используемые MainActivity -->
-    <string name="run">Запустить</string>
+
     <string name="advanced">Дополнительно</string>
-    <string name="compilation_running">Компиляция проекта</string>
-    <string name="file_name">Имя файла</string>
-    <string name="directory_name">Имя папки</string>
     <string name="create">Создать</string>
-    <string name="create_java_class">Создать Java-класс</string>
-    <string name="create_kotlin_class">Создать Kotlin-класс</string>
-    <string name="class_kind">Вид</string>
-    <string name="create_directory">Создать папку</string>
-    <string name="create_file">Создать файл</string>
-    <string name="delete_file">Удалить %1$s?</string>
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
-    <string name="close">Закрыть</string>
-    <string name="close_others">Закрыть другие</string>
-    <string name="close_all">Закрыть все</string>
-    <string name="no_open_files">Нет открытых файлов</string>
-    <string name="open_the_file">Откройте файл через левое меню</string>
 
-    <!-- Строки, используемые ProjectActivity -->
-    <string name="projects">Проекты</string>
-    <string name="new_project">Новый проект</string>
-    <string name="delete_project">Удалить проект</string>
-    <string name="project_name">Имя проекта</string>
+    <string name="quit">Выход</string>
+    <string name="copy_stacktrace">Копировать лог</string>
+
+    <string name="editor_action_undo">Отменить</string>
+    <string name="editor_action_redo">Повторить</string>
+    <string name="editor_action_format">Формат</string>
+
+    <string name="menu_close_file">Закрыть</string>
+    <string name="menu_close_others">Закрыть другие</string>
+    <string name="menu_close_all">Закрыть все</string>
+
+    <string name="compile">Компилировать</string>
+    <string name="error">Ошибка</string>
+    <string name="project">Проект</string>
+    <string name="folder">Папка</string>
+
+    <string name="no_open_file_title">Нет открытых файлов</string>
+    <string name="no_open_file_desc">Попробуйте открыть файл через левое меню.</string>
     <string name="no_projects_title">Проекты не найдены</string>
-    <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже</string>
-    <string name="project_delete_warning">Вы уверены, что хотите удалить %1$s?</string>
-    <string name="kotlin_template">Kotlin-шаблон</string>
+    <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже.</string>
 
-    <!-- Строки, используемые PreferenceSettingsFragment -->
-    <string name="java_version">Версия Java</string>
-    <string name="format">Формат</string>
-    <string name="settings">Настройки</string>
-    <string name="appearance">Вид</string>
-    <string name="compiler">Компилятор</string>
-    <string name="dark_theme">Темная тема</string>
-    <string name="about">О приложении</string>
-    <string name="our_discord">Наш Discord</string>
-    <string name="join_discord">Присоединяйтесь к нашему Discord каналу</string>
-    <string name="our_github">Наш Github</string>
-    <string name="view_github_repository">Посмотреть наш репозиторий Github</string>
-    <string name="app_version_text">Версия</string>
-    <string name="follow_system">Использовать системную тему</string>
-    <string name="off">Выключить</string>
-    <string name="on">Включить</string>
-    <string name="program_arguments">Аргументы программы</string>
+    <string name="treemenu_create_kotlin">Создать класс Kotlin</string>
+    <string name="treemenu_create_java">Создать класс Java</string>
+    <string name="treemenu_create_folder">Создать папку</string>
 
-    <!-- Строки, используемые CompilerTask -->
-    <string name="stage">Стадия</string>
-    <string name="stage_clean">Очистка сборки&#8230;</string>
-    <string name="stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
-    <string name="stage_javac">Компиляция с Javac&#8230;</string>
-    <string name="stage_d8">Расшифровка файлов классов с D8&#8230;</string>
+    <string name="create_folder_dialog_title">Cоздать папку</string>
+    <string name="create_folder_dialog_class_name">Название папки</string>
+    <string name="create_folder_dialog_positive">Создать</string>
+    <string name="create_folder_dialog_invalid_name">Недопустимое имя папки</string>
+
+    <string name="create_class_dialog_title">Создать класс</string>
+    <string name="create_class_dialog_class_name">Название класса</string>
+    <string name="create_class_dialog_positive">Создать</string>
+    <string name="create_class_dialog_class_type">Тип класса</string>
+    <string name="create_class_dialog_invalid_name">Недопустимое имя класса</string>
+
+    <string name="select_smali_class">Выберите класс Smali для показа</string>
+    <string name="select_class_decompile">Выберите класс для декомпиляции</string>
+    <string name="select_class_disassemble">Выберите класс для разборки</string>
+    <string name="select_class_run">Выберите класс для выполнения</string>
+
+    <string name="error_file_open">Не удалось открыть файл</string>
+    <string name="error_file_unzip">Не удалось разархивировать файл</string>
+    <string name="error_file_extract_smali">Не удалось извлечь исходный код Smali</string>
+    <string name="error_class_decompile">Не удалось декомпилировать класс</string>
+    <string name="error_class_disassemble">Не удалось разобрать класс</string>
+
+    <!-- Compiler Service -->
+    <string name="compilation_state_compiling">Идёт компиляция</string>
+    <string name="compilation_result_success">Успешная компиляция</string>
+    <string name="compilation_result_failed">Сбой компиляции</string>
+    <string name="compilation_stage">Стадия</string>
+    <string name="compilation_console" translatable="false">Консоль</string>
+    <string name="compilation_recompile" translatable="false">Перекомпилировать</string>
+    <string name="compilation_stage_clean">Очистка сборки&#8230;</string>
+    <string name="compilation_stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
+    <string name="compilation_stage_javac">Компиляция с Javac&#8230;</string>
+    <string name="compilation_stage_d8">Расшифровка файлов классов с помощью D8&#8230;</string>
+
+    <string name="success">Успех</string>
+    <string name="delete_success">Успешное удаление.</string>
+    <string name="dialog_confirm_delete">Вы уверены, что хотите удалить %1$s?</string>
+    <string name="dialog_delete">Удалить</string>
+    <string name="dialog_close">Закрыть</string>
+
+    <string name="logcat">Логи приложения</string>
+    <string name="create_project">Создать проект</string>
+    <string name="project_name">Название проекта</string>
+    <string name="package_name">Имя пакета</string>
+    <string name="use_kotlin_template">Использовать шаблон Котлина</string>
+
+    <string name="pref_java_version">Версия Java</string>
+    <string name="pref_program_arguments">Аргументы программы</string>
+    <string name="pref_settings">Настройки</string>
+    <string name="pref_appearance">Вид</string>
+    <string name="pref_fast_jar_fs">Включить Fast Jar FS</string>
+    <string name="pref_fast_jar_fs_desc">[Экспериментальный] Использовать Fast Jar FS. Улучшает скорость сборки.</string>
+    <string name="pref_compiler">Компилятор</string>
+    <string name="pref_dark_theme">Темная тема</string>
+    <string name="pref_about">О нас</string>
+    <string name="pref_discord">Наш Дискорд</string> 
+    <string name="pref_discord_desc">Присоединяйтесь к нашему дискорд каналу</string>
+    <string name="pref_github">Наш Github</string>
+    <string name="pref_github_desc">Просмотрите наш репозиторий на Github</string>
+    <string name="pref_app_version">Версия приложения</string>
+    <string name="pref_follow_system">Следовать системе</string>
+    <string name="off">Выкл.</string>
+    <string name="on">Вкл.</string>
+
 </resources>

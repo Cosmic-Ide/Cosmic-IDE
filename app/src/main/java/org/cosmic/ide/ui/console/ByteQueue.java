@@ -23,7 +23,7 @@ public final class ByteQueue {
     }
 
     // Read data from buffer.
-    public synchronized int read(byte[] buffer, boolean block) {
+    public synchronized int read(byte[] buffer, boolean block) throws InterruptedException {
         while (mStoredBytes == 0 && mOpen) {
             if (block) {
                 try {

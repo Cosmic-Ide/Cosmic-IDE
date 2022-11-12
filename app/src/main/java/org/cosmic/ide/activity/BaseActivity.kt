@@ -32,7 +32,7 @@ abstract class BaseActivity : MonetCompatActivity {
         return getWindow().getDecorView().findViewById(android.R.id.content)
     }
 
-    private void setupTheme() {
+    private fun setupTheme() {
         lifecycleScope.launchWhenCreated {
             monet.awaitMonetReady()
         }

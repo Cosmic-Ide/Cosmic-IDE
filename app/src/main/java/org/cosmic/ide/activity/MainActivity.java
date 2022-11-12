@@ -431,8 +431,6 @@ public class MainActivity extends BaseActivity {
                 new Notification.Builder(this, BUILD_STATUS)
                         .setContentTitle(getProject().getProjectName())
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setLargeIcon(
-                                BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
 
@@ -492,12 +490,12 @@ public class MainActivity extends BaseActivity {
                 themeSource =
                         IThemeSource.fromInputStream(
                                 getAssets().open("textmate/darcula.json"),
-                                "darcula.json",
+                                "darcula",
                                 null);
             } else {
                 themeSource =
                         IThemeSource.fromInputStream(
-                                getAssets().open("textmate/QuietLight.tmTheme"), "QuietLight.tmTheme", null);
+                                getAssets().open("textmate/QuietLight.tmTheme"), "QuietLight", null);
             }
             return TextMateColorScheme.create(themeSource);
         } catch (Exception e) {

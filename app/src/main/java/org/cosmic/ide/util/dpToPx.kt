@@ -4,16 +4,18 @@ import android.content.res.Resources
 import android.util.TypedValue
 
 object dpToPx {
-    var resources: Resources? = null
-        set(value) {
-            resources = value
-        }
+    private lateinit var resources: Resources
+
+    @JvmStatic
+    fun initializeResources(res: Resources) {
+        resources = res
+    }
 
     @JvmStatic
     fun dpToPx(dp: Float): Int {
         return Math.round(
             TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dp, resources?.getDisplayMetrics()
+                TypedValue.COMPLEX_UNIT_DIP, dp, resources.getDisplayMetrics()
             )
         )
     }

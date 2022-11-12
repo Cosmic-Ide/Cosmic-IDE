@@ -1,8 +1,8 @@
 package org.cosmic.ide.ui.console;
 
-// A thread-safe produce-consumer byte array.
-// Only allows one producer and one consumer.
+/** A circular byte buffer allowing one producer and one consumer thread. */
 public class ByteQueue {
+
     private byte[] mBuffer;
     private int mHead;
     private int mStoredBytes;

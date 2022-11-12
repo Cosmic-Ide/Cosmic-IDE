@@ -30,7 +30,7 @@ open class TreeFile {
     fun getFile() = mFile
 
     open fun getIcon(context: Context): Drawable? {
-        return when (getFile().extension) {
+        return when (mFile.extension) {
             "java" -> getDrawable(context, R.drawable.file_type_java)
             "kt" -> getDrawable(context, R.drawable.file_type_kt)
             else -> getDrawable(context, R.drawable.ic_file)

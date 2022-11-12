@@ -117,10 +117,11 @@ public class TreeFileManagerFragment extends Fragment {
                                             }
                                         }
                                     } catch (Exception e) {
-                                        activity.dialog(
-                                                "Failed to open file",
-                                                Log.getStackTraceString(e),
-                                                true);
+                                        AndroidUtilities.showSimpleAlert(activity, "Failed to open file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                                AndroidUtilities.copyToClipboard(e.getMessage());
+                                            }
+                                        }));
                                     }
                                 }
                             }
@@ -213,7 +214,7 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext())
+        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle("Create file")
                 .setView(R.layout.create_new_file_dialog)
                 .setPositiveButton("Create", null)
@@ -222,7 +223,7 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext())
+        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle("Create a folder")
                 .setView(R.layout.create_new_folder_dialog)
                 .setPositiveButton("Create", null)
@@ -231,7 +232,7 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void buildRenameFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(requireContext())
+        var builder = new MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle("Rename file")
                 .setView(R.layout.rename_dialog)
                 .setPositiveButton("Rename", null)

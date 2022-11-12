@@ -106,7 +106,7 @@ public class CompileTask extends Thread {
                     return;
                 }
                 activity.listDialog(
-                        "Select a class to execute",
+                        "Choose a class to run",
                         classes,
                         (dialog, item) -> {
                             var intent = new Intent(activity, ConsoleActivity.class);

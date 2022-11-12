@@ -36,8 +36,8 @@ class App : Application() {
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
-            dpToPx.resources = context.getResources()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            dpToPx.initializeResources(context.getResources())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe")
             }
             FileProviderRegistry.getInstance().addFileProvider(

@@ -1,9 +1,9 @@
 package org.cosmic.ide.activity
 
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.cosmic.ide.util.AndroidUtilities
 
 class DebugActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -12,18 +12,15 @@ class DebugActivity : BaseActivity() {
         val intent = getIntent()
         val error = intent?.getStringExtra("error")!!
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle("An error occurred...")
-            .setMessage(error)
-            .setPositiveButton("QUIT", { _, _ -> finish() })
-            .setNegativeButton(
-                "COPY",
-                { _, _ ->
-                    (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager)
-                        .setPrimaryClip(ClipData.newPlainText("", error))
-                }
-            )
-            .create()
-            .show()
+        MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                .setTitle("An error occured")
+                .setMessage(error)
+                .setPositiveButton("Quit", null)
+                .setNegativeButton("Copy stacktrace", { dialog, which ->
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        AndroidUtilities.copyToClipboard(error)
+                    }
+                })
+                .show()
     }
 }

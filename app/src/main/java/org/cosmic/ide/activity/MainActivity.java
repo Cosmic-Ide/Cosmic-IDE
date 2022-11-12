@@ -25,7 +25,6 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -51,6 +50,7 @@ import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.fragment.CodeEditorFragment;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.ui.editor.adapter.PageAdapter;
+import org.cosmic.ide.util.AndroidUtilities;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
 import org.eclipse.tm4e.core.registry.IGrammarSource;
@@ -348,7 +348,11 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
-                showError(getString(e));
+                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        AndroidUtilities.copyToClipboard(e.getMessage());
+                    }
+                }));
             }
         }
         final var commonStdlib =
@@ -359,7 +363,11 @@ public class MainActivity extends BaseActivity {
                         getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
-                showError(getString(e));
+                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        AndroidUtilities.copyToClipboard(e.getMessage());
+                    }
+                }));
             }
         }
         if (new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
@@ -371,7 +379,11 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
             } catch (Exception e) {
-                showError(getString(e));
+                AndroidUtilities.showSimpleAlert(this, "Failed to unzip file", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        AndroidUtilities.copyToClipboard(e.getMessage());
+                    }
+                }));
             }
         }
     }
@@ -454,7 +466,11 @@ public class MainActivity extends BaseActivity {
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
-                                showError(errorMessage);
+                                AndroidUtilities.showSimpleAlert(MainActivity.this, "Error while compiling", errorMessage, "Close", "Copy stacktrace", ((dialog, which) -> {
+                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                        AndroidUtilities.copyToClipboard(errorMessage);
+                                    }
+                                }));
                             }
 
                             @Override
@@ -549,7 +565,11 @@ public class MainActivity extends BaseActivity {
                                             1,
                                             options);
                                 } catch (Throwable e) {
-                                    dialog("Failed to extract smali source", getString(e), true);
+                                    AndroidUtilities.showSimpleAlert(this, "Failed to extract smali source", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                            AndroidUtilities.copyToClipboard(e.getMessage());
+                                        }
+                                    }));
                                 }
                             });
 
@@ -579,7 +599,11 @@ public class MainActivity extends BaseActivity {
                                                                     getProject().getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
-                                    dialog("Failed to decompile class", getString(e), true);
+                                    AndroidUtilities.showSimpleAlert(this, "Failed to decompile class", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                            AndroidUtilities.copyToClipboard(e.getMessage());
+                                        }
+                                    }));
                                 }
                             });
 
@@ -618,7 +642,11 @@ public class MainActivity extends BaseActivity {
                                                         + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
-                        dialog("Failed to disassemble class", getString(e), true);
+                        AndroidUtilities.showSimpleAlert(this, "Failed to disassemble class", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                AndroidUtilities.copyToClipboard(e.getMessage());
+                            }
+                        }));
                     }
 
                     var edi = new CodeEditor(this);
@@ -651,23 +679,6 @@ public class MainActivity extends BaseActivity {
                 });
     }
 
-    public void dialog(String title, final String message, boolean copyButton) {
-        var dialog =
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle(title)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .setNegativeButton(android.R.string.cancel, null);
-        if (copyButton)
-            dialog.setNeutralButton(
-                    "Copy",
-                    (dialogInterface, i) -> {
-                        ((ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE))
-                                .setPrimaryClip(ClipData.newPlainText("", message));
-                    });
-        dialog.create().show();
-    }
-
     /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
@@ -684,20 +695,13 @@ public class MainActivity extends BaseActivity {
             }
             return classes.toArray(new String[0]);
         } catch (Exception e) {
-            dialog("Failed to get available classes in dex", getString(e), true);
+            AndroidUtilities.showSimpleAlert(this, "Failed to get list of available classes in dex", e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                    AndroidUtilities.copyToClipboard(e.getMessage());
+                }
+            }));
             return null;
         }
-    }
-
-    /* Shows a snackbar indicating that there were problems during compilation */
-    private void showError(String exception) {
-        Snackbar.make(binding.snackbarContainer, "An error occurred", Snackbar.LENGTH_INDEFINITE)
-                .setAction("Show error", v -> dialog("Failed", exception.toString(), true))
-                .show();
-    }
-
-    private String getString(Throwable e) {
-        return Log.getStackTraceString(e);
     }
 
     public JavaProject getProject() {

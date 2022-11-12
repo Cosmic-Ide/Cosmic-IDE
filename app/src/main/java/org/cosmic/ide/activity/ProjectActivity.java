@@ -94,7 +94,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
     }
 
     private void buildCreateNewProjectDialog() {
-        var builder = new MaterialAlertDialogBuilder(this)
+        var builder = new MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle("New project")
                 .setView(R.layout.create_new_project_dialog)
                 .setPositiveButton("Create", null)
@@ -140,7 +140,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
 
     @WorkerThread
     private void showDeleteProjectDialog(Project project) {
-        AndroidUtilities.showSimpleAlert(this, "Delete", getString(R.string.delete_project, project.getProjectName()), "Delete", "Cancel", ((dialog, which) -> {
+        AndroidUtilities.showSimpleAlert(this, "Delete project", getString(R.string.delete_project, project.getProjectName()), "Delete", "Cancel", ((dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 runOnUiThread(
                         () -> {

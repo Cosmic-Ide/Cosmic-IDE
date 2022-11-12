@@ -1,5 +1,6 @@
 package org.cosmic.ide.fragment
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -23,6 +25,7 @@ import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
+import org.cosmic.ide.util.AndroidUtilities
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
@@ -61,7 +64,16 @@ class CodeEditorFragment : Fragment() {
             try {
                 binding.editor.setText(currentFile.readText())
             } catch (e: IOException) {
-                (requireActivity() as MainActivity).dialog("Failed to open file", e.toString(), true)
+                MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                        .setTitle("Failed to open file")
+                        .setMessage(e.message)
+                        .setPositiveButton("Close", null)
+                        .setNegativeButton("Copy stacktrace", { dialog, which ->
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                AndroidUtilities.copyToClipboard(e.message)
+                            }
+                        })
+                        .show()
             }
             if (currentFile.extension.equals("kt")) {
                 setEditorLanguage(LANGUAGE_KOTLIN)

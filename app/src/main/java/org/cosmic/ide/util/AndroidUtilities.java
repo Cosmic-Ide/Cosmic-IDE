@@ -20,6 +20,7 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.cosmic.ide.App;
+import org.cosmic.ide.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -93,7 +94,7 @@ public class AndroidUtilities {
     }
 
     public static void showSimpleAlert(Context context, String title, String message, String positive, String negative, String neutral, DialogInterface.OnClickListener lsitener) {
-        var builder = new MaterialAlertDialogBuilder(context)
+        var builder = new MaterialAlertDialogBuilder(context, getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(title)
                 .setMessage(message);
         if (positive != null) {
@@ -106,6 +107,10 @@ public class AndroidUtilities {
             builder.setNeutralButton(neutral, lsitener);
         }
         builder.show();
+    }
+
+    public static int getDialogFullWidthButtonsThemeOverlay() {
+        return R.style.ThemeOverlay_CosmicIde_MaterialAlertDialog_FullWidthButtons;
     }
 
     public static void copyToClipboard(String text) {

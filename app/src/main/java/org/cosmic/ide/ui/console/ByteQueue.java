@@ -12,6 +12,10 @@ public final class ByteQueue {
         mBuffer = new byte[size];
     }
 
+    public synchronized int getBytesAvailable() {
+        return mStoredBytes;
+    }
+
     // Close the queue and stop accepting changes.
     public synchronized void close() {
         mOpen = false;
@@ -92,8 +96,8 @@ public final class ByteQueue {
                 while (bytesToWriteBeforeWaiting > 0) {
                     int tail = mHead + mStoredBytes;
                     int oneRun;
-                    if (tail >= bufferLength) {l
-                        tail = tail - bufferLength;
+                    if (tail >= bufferLength) {
+                        tail -= bufferLength;
                         oneRun = mHead - tail;
                     } else {
                         oneRun = bufferLength - tail;

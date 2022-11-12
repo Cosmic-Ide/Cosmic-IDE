@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.kieronquinn.monetcompat.app.MonetFragment
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -30,7 +31,7 @@ import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
 
-class CodeEditorFragment : Fragment() {
+class CodeEditorFragment : MonetFragment() {
     private lateinit var binding: FragmentCodeEditorBinding
     private lateinit var currentFile: File
     private val TAG = "CodeEditorFragment"
@@ -46,6 +47,7 @@ class CodeEditorFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
+        binding.root.applyMonetRecursively()
         return binding.root
     }
 

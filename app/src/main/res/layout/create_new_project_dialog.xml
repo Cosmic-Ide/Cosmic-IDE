@@ -42,7 +42,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <com.kieronquinn.monetcompat.view.MonetSwitch
         android:id="@+id/use_kotlin_template"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"

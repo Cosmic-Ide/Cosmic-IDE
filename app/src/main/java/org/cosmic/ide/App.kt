@@ -33,6 +33,7 @@ class App : Application() {
         super.onCreate()
         context = this
         DynamicColors.applyToActivitiesIfAvailable(this)
+        MonetCompat.enablePaletteCompat()
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()

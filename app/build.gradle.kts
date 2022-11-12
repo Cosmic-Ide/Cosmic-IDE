@@ -89,6 +89,8 @@ dependencies {
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
 
+    implementation("com.github.KieronQuinn:MonetCompat:0.4.1")
+    implementation("androidx.palette:palette:1.0.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
     implementation("com.google.android.material:material:1.8.0-alpha02")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")

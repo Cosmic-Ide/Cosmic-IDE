@@ -348,7 +348,7 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }
@@ -363,7 +363,7 @@ public class MainActivity extends BaseActivity {
                         getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }
@@ -379,7 +379,7 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), "Close", "Copy stacktrace", ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.getMessage());
                     }

@@ -150,7 +150,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                         project.delete();
                         runOnUiThread(
                                 () -> {
-                                    /** I think it will be annoying? Or not */
+                                    /** I think it will be annoying? Or not? :D */
                                     /* AndroidUtilities.showSimpleAlert(
                                         this,
                                         getString(R.string.success),

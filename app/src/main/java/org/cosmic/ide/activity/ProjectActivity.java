@@ -133,6 +133,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        loadProjects();
                     });
             input.setText("");
         }

@@ -50,15 +50,15 @@ class App : Application() {
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.json"), "darcula", null
-                    )
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.json"), "darcula.json", null
+                    ), "darcula"
                 )
             )
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
-                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/QuietLight.tmTheme"), "QuietLight", null
-                    )
+                        FileProviderRegistry.getInstance().tryGetInputStream("textmate/QuietLight.tmTheme"), "QuietLight.tmTheme", null
+                    ), "QuietLight"
                 )
             )
         }

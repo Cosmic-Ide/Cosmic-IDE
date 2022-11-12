@@ -33,7 +33,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        DynamicColors.applyToActivitiesIfAvailable(this)
+//        DynamicColors.applyToActivitiesIfAvailable(this)
         MonetCompat.enablePaletteCompat()
         MonetCompat.useSystemColorsOnAndroid12 = true
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)

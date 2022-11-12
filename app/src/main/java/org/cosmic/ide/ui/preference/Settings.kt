@@ -32,12 +32,12 @@ class Settings(private val context: Context, private val callback: Callback? = n
     }
 
     // The current theme
-    val theme: Int
-        get() =
-            `inner`.getInt(
-                context.getString(R.string.key_theme),
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            )
+//    val theme: Int
+//        get() =
+//            `inner`.getInt(
+//                context.getString(R.string.key_theme),
+//                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+//            )
 
     val javaVersion: Int
         get() =

@@ -75,14 +75,14 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             return
         }
 
-        when (preference.key) {
-            context.getString(R.string.key_theme) -> {
-                preference.onPreferenceChangeListener =
-                    Preference.OnPreferenceChangeListener { _, value ->
-                        AppCompatDelegate.setDefaultNightMode(value as Int)
-                        true
-                    }
-            }
-        }
+//        when (preference.key) {
+//            context.getString(R.string.key_theme) -> {
+//                preference.onPreferenceChangeListener =
+//                    Preference.OnPreferenceChangeListener { _, value ->
+//                        AppCompatDelegate.setDefaultNightMode(value as Int)
+//                        true
+//                    }
+//            }
+//        }
     }
 }

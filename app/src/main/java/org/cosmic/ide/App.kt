@@ -34,6 +34,7 @@ class App : Application() {
         super.onCreate()
         context = this
 //        DynamicColors.applyToActivitiesIfAvailable(this)
+        MonetColor.debugLog = true
         MonetCompat.enablePaletteCompat()
         MonetCompat.useSystemColorsOnAndroid12 = true
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)

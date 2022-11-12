@@ -8,15 +8,16 @@ import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 
 import org.cosmic.ide.App
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 
-abstract class BaseActivity : MonetCompatActivity {
+abstract class BaseActivity : MonetCompatActivity() {
 
-    public var settings: SharedPreferences
+    protected var settings: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
+import com.kieronquinn.monetcompat.core.MonetCompat
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -34,6 +35,7 @@ class App : Application() {
         context = this
         DynamicColors.applyToActivitiesIfAvailable(this)
         MonetCompat.enablePaletteCompat()
+        MonetCompat.useSystemColorsOnAndroid12 = true
         FileUtil.setDataDirectory(context.getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()

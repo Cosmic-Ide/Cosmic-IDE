@@ -112,7 +112,7 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesAvailable = mStdoutBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
-            int bytesRead = mStdoutBuffer.read(mReceiveBuffer, bytesToRead);
+            int bytesRead = mStdoutBuffer.read(mReceiveBuffer, true);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStdout(out);
@@ -125,7 +125,7 @@ public class ConsoleEditText extends AppCompatEditText {
         int bytesAvailable = mStderrBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
-            int bytesRead = mStderrBuffer.read(mReceiveBuffer, bytesToRead);
+            int bytesRead = mStderrBuffer.read(mReceiveBuffer, true);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStderr(out);

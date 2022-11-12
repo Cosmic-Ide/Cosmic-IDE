@@ -68,7 +68,7 @@ public final class ByteQueue {
      * <p/>
      * Returns whether the output was totally written, false if it was closed before.
      */
-    public boolean write(byte[] buffer, int offset, int lengthToWrite) {
+    public boolean write(byte[] buffer, int offset, int lengthToWrite) throws InterruptedException {
         if (lengthToWrite + offset > buffer.length) {
             throw new IllegalArgumentException("length + offset > buffer.length");
         } else if (lengthToWrite <= 0) {

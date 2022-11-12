@@ -61,7 +61,7 @@ public class CompileTask extends Thread {
             listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
-            listener.onFailed(e.getMessage());
+            listener.onFailed(e.getLocalizedMessage());
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
         }
@@ -73,7 +73,7 @@ public class CompileTask extends Thread {
             listener.onCurrentBuildStageChanged(STAGE_JAVAC);
             new JavacCompilationTask(prefs).doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
-            listener.onFailed(e.getMessage());
+            listener.onFailed(e.getLocalizedMessage());
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
         }
@@ -84,7 +84,7 @@ public class CompileTask extends Thread {
             listener.onCurrentBuildStageChanged(STAGE_D8);
             new D8Task().doFullTask(activity.getProject());
         } catch (Exception e) {
-            listener.onFailed(e.getMessage());
+            listener.onFailed(e.getLocalizedMessage());
         }
     }
 
@@ -118,7 +118,7 @@ public class CompileTask extends Thread {
                         });
             }
         } catch (Throwable e) {
-            listener.onFailed(e.getMessage());
+            listener.onFailed(e.getLocalizedMessage());
         }
     }
 

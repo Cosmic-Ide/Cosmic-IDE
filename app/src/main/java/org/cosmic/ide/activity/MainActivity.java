@@ -348,9 +348,9 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getMessage());
+                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                     }
                 }));
             }
@@ -363,9 +363,9 @@ public class MainActivity extends BaseActivity {
                         getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getMessage());
+                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                     }
                 }));
             }
@@ -379,9 +379,9 @@ public class MainActivity extends BaseActivity {
                 FileUtil.writeFile(
                         getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getMessage());
+                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                     }
                 }));
             }
@@ -565,9 +565,9 @@ public class MainActivity extends BaseActivity {
                                             1,
                                             options);
                                 } catch (Throwable e) {
-                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_extract_smali), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_extract_smali), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                         if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                            AndroidUtilities.copyToClipboard(e.getMessage());
+                                            AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                                         }
                                     }));
                                 }
@@ -599,9 +599,9 @@ public class MainActivity extends BaseActivity {
                                                                     getProject().getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
-                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_decompile), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_decompile), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                         if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                            AndroidUtilities.copyToClipboard(e.getMessage());
+                                            AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                                         }
                                     }));
                                 }
@@ -642,9 +642,9 @@ public class MainActivity extends BaseActivity {
                                                         + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
-                        AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_disassemble), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                        AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_disassemble), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                             if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.getMessage());
+                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                             }
                         }));
                     }
@@ -695,9 +695,9 @@ public class MainActivity extends BaseActivity {
             }
             return classes.toArray(new String[0]);
         } catch (Exception e) {
-            AndroidUtilities.showSimpleAlert(this, getString(R.string.error_classes_get_dex), e.getMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+            AndroidUtilities.showSimpleAlert(this, getString(R.string.error_classes_get_dex), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
                 if (which == DialogInterface.BUTTON_NEGATIVE) {
-                    AndroidUtilities.copyToClipboard(e.getMessage());
+                    AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                 }
             }));
             return null;

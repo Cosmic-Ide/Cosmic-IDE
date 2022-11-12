@@ -117,9 +117,9 @@ public class TreeFileManagerFragment extends Fragment {
                                             }
                                         }
                                     } catch (Exception e) {
-                                        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.error_file_open), e.getMessage(), activity.getString(R.string.dialog_close), activity.getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                                        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.error_file_open), e.getLocalizedMessage(), activity.getString(R.string.dialog_close), activity.getString(R.string.copy_stacktrace), ((dialog, which) -> {
                                             if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                                AndroidUtilities.copyToClipboard(e.getMessage());
+                                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
                                             }
                                         }));
                                     }

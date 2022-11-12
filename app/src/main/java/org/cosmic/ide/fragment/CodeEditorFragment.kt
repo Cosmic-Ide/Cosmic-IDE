@@ -66,7 +66,7 @@ class CodeEditorFragment : Fragment() {
             } catch (e: IOException) {
                 MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                         .setTitle(requireContext().getString(R.string.error_file_open))
-                        .setMessage(e.message)
+                        .setMessage(e.localizedMessage)
                         .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
                         .setNegativeButton(requireContext().getString(R.string.copy_stacktrace), { _, which ->
                             if (which == DialogInterface.BUTTON_NEGATIVE) {

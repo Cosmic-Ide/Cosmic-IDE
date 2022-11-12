@@ -68,7 +68,7 @@ class App : Application() {
             val intent = Intent(context, DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
-            Log.e("Crash", throwable.message, throwable)
+            Log.e("Crash", throwable.localizedMessage, throwable)
             startActivity(intent)
         }
     }

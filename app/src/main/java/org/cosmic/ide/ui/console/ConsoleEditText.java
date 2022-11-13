@@ -36,17 +36,17 @@ public class ConsoleEditText extends AppCompatEditText {
     private IntegerQueue mInputBuffer = new IntegerQueue(IntegerQueue.QUEUE_SIZE);
 
     /** buffer for output */
-    private ByteQueue mStdoutBuffer = new ByteQueue(4096);
+    private ByteQueue mStdoutBuffer = new ByteQueue(4 * 1024);
 
     /** buffer for output */
-    private ByteQueue mStderrBuffer = new ByteQueue(4096);
+    private ByteQueue mStderrBuffer = new ByteQueue(4 * 1024);
 
     private AtomicBoolean isRunning = new AtomicBoolean(true);
 
     // filter input text, block a part of text
     private TextListener mTextListener = new TextListener();
     private EnterListener mEnterListener = new EnterListener();
-    private byte[] mReceiveBuffer = new byte[4096];
+    private byte[] mReceiveBuffer = new byte[4 * 1024];
     private final Handler mHandler =
             new Handler(Looper.getMainLooper()) {
                 @Override
@@ -108,10 +108,11 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStdoutToScreen() {
+
         int bytesAvailable = mStdoutBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
-            int bytesRead = mStdoutBuffer.read(mReceiveBuffer, true);
+            int bytesRead = mStdoutBuffer.read(mReceiveBuffer, 0, bytesToRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStdout(out);
@@ -120,10 +121,11 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStderrToScreen() {
+
         int bytesAvailable = mStderrBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
-            int bytesRead = mStderrBuffer.read(mReceiveBuffer, true);
+            int bytesRead = mStderrBuffer.read(mReceiveBuffer, 0, bytesToRead);
             String out = new String(mReceiveBuffer, 0, bytesRead);
             mLength = mLength + out.length();
             appendStderr(out);
@@ -389,9 +391,6 @@ public class ConsoleEditText extends AppCompatEditText {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        mStderrBuffer.close();
-        mStdoutBuffer.close();
 
         outputStream = null;
         inputStream = null;

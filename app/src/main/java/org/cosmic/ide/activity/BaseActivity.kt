@@ -18,8 +18,8 @@ import com.kieronquinn.monetcompat.app.MonetCompatActivity
 abstract class BaseActivity : MonetCompatActivity() {
 
     protected lateinit var settings: SharedPreferences
-    private val applyBackgroundColorToWindow = true
-    private val recreateMode = false
+    override val applyBackgroundColorToWindow = true
+    override val recreateMode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

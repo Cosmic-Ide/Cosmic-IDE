@@ -74,6 +74,7 @@ class App : Application() {
             intent.putExtra("error", throwable.stackTraceToString())
             Log.e("Crash", throwable.message, throwable)
             startActivity(intent)
+            exitProcess(1)
         }
     }
 

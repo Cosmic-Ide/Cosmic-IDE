@@ -36,6 +36,8 @@ abstract class BaseActivity : MonetCompatActivity() {
     private fun setupTheme() {
         lifecycleScope.launchWhenCreated {
             monet.awaitMonetReady()
+            recreateMode = false
+            applyBackgroundColorToWindow = true
         }
     }
 }

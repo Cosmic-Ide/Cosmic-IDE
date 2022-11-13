@@ -28,6 +28,7 @@ import org.cosmic.ide.project.Project;
 import org.cosmic.ide.util.AndroidUtilities;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.UiUtilsKt;
+import com.kieronquinn.monetcompat.extensions.views.ViewExtensions_ViewGroupKt.applyMonetRecursively;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityProjectBinding.inflate(getLayoutInflater());
+        applyMonetRecursively(binding.getRoot())
         setContentView(binding.getRoot());
 
         buildCreateNewProjectDialog();

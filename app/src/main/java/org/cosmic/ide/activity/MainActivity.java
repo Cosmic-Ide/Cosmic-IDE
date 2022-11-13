@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity {
                     unzipFiles();
                 });
 
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.appBar, false, true, false, false);
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 binding.viewPager,

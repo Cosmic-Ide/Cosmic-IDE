@@ -22,6 +22,7 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
+import org.cosmic.ide.fragment.WizardFragment;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
@@ -64,7 +65,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
         mListener = this::onProjectClicked;
 
         UiUtilsKt.addSystemWindowInsetToMargin(binding.fab, false, false, false, true);
-        UiUtilsKt.addSystemWindowInsetToPadding(binding.appbar, false, true, false, false);
+        UiUtilsKt.addSystemWindowInsetToPadding(binding.appBar, false, true, false, false);
         UiUtilsKt.addSystemWindowInsetToPadding(binding.projectRecycler, false, false, false, true);
 
         binding.refreshLayout.setOnRefreshListener(
@@ -73,6 +74,14 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                     binding.refreshLayout.setRefreshing(false);
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
+        /* Test show fragment in onlongclicklistener */
+        binding.fab.setOnLongClickListener(v -> {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, new WizardFragment(), "WizardFragment")
+                    .commit();
+            return true;
+        });
         binding.toolbar.inflateMenu(R.menu.projects_menu);
         binding.toolbar.setOnMenuItemClickListener(
                 item -> {

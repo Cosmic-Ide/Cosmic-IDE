@@ -33,7 +33,7 @@ class ConsoleActivity : BaseActivity() {
             true
         }
 
-        binding.appbar.addSystemWindowInsetToPadding(false, true, false, false)
+        binding.appBar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->

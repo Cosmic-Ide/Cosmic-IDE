@@ -6,6 +6,8 @@
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
 
+    <string name="next">Дальше</string>
+    <string name="back">Назад</string>
     <string name="quit">Выход</string>
     <string name="copy_stacktrace">Копировать лог</string>
 
@@ -71,7 +73,7 @@
     <string name="dialog_delete">Удалить</string>
     <string name="dialog_close">Закрыть</string>
 
-    <string name="logcat">Логи приложения</string>
+    <string name="logcat">Логи</string>
     <string name="create_project">Создать проект</string>
     <string name="project_name">Название проекта</string>
     <string name="package_name">Имя пакета</string>
@@ -94,5 +96,7 @@
     <string name="pref_follow_system">Следовать системе</string>
     <string name="off">Выкл.</string>
     <string name="on">Вкл.</string>
+
+    <string name="wizard_title">Новый проект</string>
 
 </resources>

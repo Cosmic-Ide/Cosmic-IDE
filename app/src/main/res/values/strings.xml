@@ -12,6 +12,8 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
 
+    <string name="next">Next</string>
+    <string name="back">Back</string>
     <string name="quit">Quit</string>
     <string name="copy_stacktrace">Copy stacktrace</string>
 
@@ -101,5 +103,7 @@
     <string name="pref_follow_system">Follow System</string>
     <string name="off">Off</string>
     <string name="on">On</string>
+
+    <string name="wizard_title">New project</string>
 
 </resources>

@@ -66,7 +66,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun setupPreference(preference: Preference) {
-        val context = requireActivity()
+//        val context = requireActivity()
 
         if (!preference.isVisible) return
 

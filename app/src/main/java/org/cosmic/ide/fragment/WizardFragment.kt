@@ -16,10 +16,6 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 class WizardFragment : Fragment() {
     private lateinit var binding: FragmentWizardBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,13 +23,13 @@ class WizardFragment : Fragment() {
     ): View? {
         binding = FragmentWizardBinding.inflate(inflater, container, false)
         binding.fab.addSystemWindowInsetToMargin(false, false, false, true)
-        binding.appBar.addSystemWindowInsetToPadding(false, true, false, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val activityFab: View = requireActivity().findViewById(R.id.fab)
         enterTransition = MaterialContainerTransform().apply {
-            startView = requireActivity().findViewById(R.id.fab)
+            startView = activityFab
             endView = view
             duration = 300L
             scrimColor = Color.TRANSPARENT
@@ -41,5 +37,6 @@ class WizardFragment : Fragment() {
             startContainerColor = ThemeUtils.getThemeAttrColor(requireActivity(), com.google.android.material.R.attr.colorPrimary)
             endContainerColor = ThemeUtils.getThemeAttrColor(requireActivity(), com.google.android.material.R.attr.colorSurface)
         }
+        activityFab.visibility = View.GONE
     }
 }

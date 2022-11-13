@@ -17,9 +17,6 @@ class SettingActivity : BaseActivity() {
 
         binding.toolbar.setNavigationOnClickListener { _ -> finish() }
 
-        binding.appBar.apply {
-            liftOnScrollTargetViewId = androidx.preference.R.id.recycler_view
-            addSystemWindowInsetToPadding(false, true, false, false)
-        }
+        binding.appBar.liftOnScrollTargetViewId = androidx.preference.R.id.recycler_view
     }
 }

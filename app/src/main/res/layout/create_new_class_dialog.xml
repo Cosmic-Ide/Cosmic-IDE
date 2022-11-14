@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/create_class_dialog_class_name"
-        android:textDirection="locale"
-        app:counterEnabled="true">
+        android:textDirection="locale">
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"
             android:layout_width="match_parent"

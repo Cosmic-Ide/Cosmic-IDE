@@ -21,14 +21,10 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         val item = getItem(pos)
         var tv: TextView = view.findViewById(R.id.result_item_label)
         tv.setText(item.label)
-        tv.setTextColor(MaterialColors.getColor(getContext(), android.R.attr.textColorPrimary, getThemeColor(EditorColorScheme.COMPLETION_WND_TEXT_PRIMARY)))
         tv = view.findViewById(R.id.result_item_desc)
         tv.setText(item.desc)
-        tv.setTextColor(MaterialColors.getColor(getContext(), android.R.attr.textColorSecondary, getThemeColor(EditorColorScheme.COMPLETION_WND_TEXT_SECONDARY)))
-        view.setTag(pos)
         tv = view.findViewById(R.id.result_item_image)
         tv.setText(item.desc.subSequence(0, 1))
-        tv.setTextColor(MaterialColors.getColor(getContext(), android.R.attr.textColorPrimary, getThemeColor(EditorColorScheme.COMPLETION_WND_TEXT_PRIMARY)))
         return view
     }
 }

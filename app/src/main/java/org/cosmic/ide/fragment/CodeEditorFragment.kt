@@ -104,7 +104,7 @@ class CodeEditorFragment : Fragment() {
         with(editor) {
             getComponent(EditorAutoCompletion::class.java).setLayout(CustomCompletionLayout())
             getComponent(EditorAutoCompletion::class.java).setAdapter(CustomCompletionItemAdapter())
-            setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular))
+            setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.notosans_regular))
             setTextSize(12F)
             setEdgeEffectColor(Color.TRANSPARENT)
             setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)

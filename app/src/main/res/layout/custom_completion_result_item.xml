@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:background="?attr/colorSurface">
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/result_item_image"
         android:layout_height="match_parent"
         android:layout_width="20dp"
         android:layout_marginStart="@dimen/spacing_tiny"
+        android:textColor="?android:attr/textColorPrimary"
         android:fontFamily="@font/mono_font"
         android:gravity="center"
         android:textStyle="bold"
@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
+            android:textColor="?android:attr/textColorSecondary"
             android:singleLine="true"
             tools:text="Identifier" />
     </LinearLayout>

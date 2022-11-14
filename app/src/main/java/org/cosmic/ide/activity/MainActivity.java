@@ -32,6 +32,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.App;
@@ -485,21 +486,13 @@ public class MainActivity extends BaseActivity {
 
     private TextMateColorScheme getColorScheme() {
         try {
-            IThemeSource themeSource;
+            ThemeRegistry registry = ThemeRegistry.getInstance();
             if (App.Companion.isDarkMode(this)) {
-                themeSource =
-                        IThemeSource.fromInputStream(
-                                getAssets().open("textmate/darcula.json"),
-                                "darcula",
-                                null);
+                registry.setTheme("darcula");
             } else {
-                themeSource =
-                        IThemeSource.fromInputStream(
-                                getAssets().open("textmate/QuietLight.tmTheme"),
-                                "QuietLight",
-                                null);
+                registry.setTheme("QuietLight");
             }
-            return TextMateColorScheme.create(themeSource);
+            return TextMateColorScheme.create(registry);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }
@@ -508,13 +501,8 @@ public class MainActivity extends BaseActivity {
     private Language getJavaLanguage() {
         try {
             return TextMateLanguage.create(
-                    IGrammarSource.fromInputStream(
-                            getAssets().open("textmate/java/syntaxes/java.tmLanguage.json"),
-                            "java.tmLanguage.json",
-                            null),
-                    new InputStreamReader(
-                            getAssets().open("textmate/java/language-configuration.json")),
-                    getColorScheme().getThemeSource());
+                "source.java", true
+            );
         } catch (IOException e) {
             return new EmptyLanguage();
         }
@@ -523,13 +511,8 @@ public class MainActivity extends BaseActivity {
     private Language getSmaliLanguage() {
         try {
             return TextMateLanguage.create(
-                    IGrammarSource.fromInputStream(
-                            getAssets().open("textmate/smali/syntaxes/smali.tmLanguage.json"),
-                            "smali.tmLanguage.json",
-                            null),
-                    new InputStreamReader(
-                            getAssets().open("textmate/smali/language-configuration.json")),
-                    getColorScheme().getThemeSource());
+                "source.smali", true
+            );
         } catch (IOException e) {
             return new EmptyLanguage();
         }

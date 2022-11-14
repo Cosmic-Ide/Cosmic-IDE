@@ -17,7 +17,6 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.project.Project;
-import org.eclipse.tm4e.core.registry.IThemeSource;
 
 import java.io.File;
 import java.util.Collection;
@@ -29,7 +28,7 @@ public class KotlinLanguage extends TextMateLanguage {
     private final String fileName;
     private final String TAG = "KotlinLanguage";
 
-    public KotlinLanguage(CodeEditor editor, Project project, File file, IThemeSource theme)
+    public KotlinLanguage(CodeEditor editor, Project project, File file)
             throws Exception {
         super(
                 GrammarRegistry.getInstance().findGrammar("source.kotlin"),

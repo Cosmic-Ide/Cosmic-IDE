@@ -156,7 +156,7 @@ class CodeEditorFragment : Fragment() {
 
     private fun getKotlinLanguage(): Language {
         try {
-            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile, getColorScheme().themeSource)
+            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             return EmptyLanguage()

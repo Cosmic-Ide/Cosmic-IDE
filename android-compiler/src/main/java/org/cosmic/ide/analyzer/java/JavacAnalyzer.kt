@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.sun.source.util.JavacTask
+import com.sun.tools.javac.file.JavacFileManager
 import com.sun.tools.javac.api.JavacTool
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
 import org.cosmic.ide.CompilerUtil
@@ -25,13 +26,15 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private val prefs: SharedPreferences
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
-    private val tool = JavacTool.create()
-    private val standardFileManager = tool.getStandardFileManager(
-        diagnostics, Locale.getDefault(), Charset.defaultCharset()
-    )
+    private val tool: JavacTool by lazy { JavacTool.create() }
+    private val standardFileManager: JavacFileManager by lazy {
+        tool.getStandardFileManager(
+            diagnostics, Locale.getDefault(), Charset.defaultCharset()
+        )
+    }
     private var isFirstUse = true
     private val project: JavaProject
-    private val TAG = JavacAnalyzer::class.simpleName
+    private val TAG = "JavacAnalyzer"
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)

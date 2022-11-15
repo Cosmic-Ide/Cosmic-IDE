@@ -584,7 +584,7 @@ public class MainActivity extends BaseActivity {
 
                     final var edi = new CodeEditor(this);
                     edi.setTypefaceText(
-                            ResourcesCompat.getFont(this, R.font.notosans_regular));
+                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
                     edi.setColorScheme(getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());
@@ -626,7 +626,7 @@ public class MainActivity extends BaseActivity {
 
                     var edi = new CodeEditor(this);
                     edi.setTypefaceText(
-                            ResourcesCompat.getFont(this, R.font.notosans_regular));
+                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
                     edi.setColorScheme(getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(getJavaLanguage());

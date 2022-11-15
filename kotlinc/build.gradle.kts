@@ -41,7 +41,7 @@ dependencies {
     api("com.jetbrains.intellij.platform:util-jdom:222.4459.10")
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
-    api(files("libs/kotlin-compiler-1.7.21.jar"))
+    api(files("libs/kotlin-compiler-1.8.0-Beta.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
 }

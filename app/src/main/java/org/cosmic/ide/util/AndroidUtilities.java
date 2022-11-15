@@ -73,7 +73,7 @@ public class AndroidUtilities {
             }
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         } catch (Exception e) {
-            Log.d("AndroidUtilities", "Failed to close keyboard " + e.getMessage());
+            Log.d("AndroidUtilities", "Failed to close keyboard " + e.getLocalizedMessage());
         }
     }
 
@@ -89,22 +89,22 @@ public class AndroidUtilities {
         showSimpleAlert(context, title, message, context.getString(android.R.string.ok), null, null, null);
     }
 
-    public static void showSimpleAlert(Context context, String title, String message, String positive, String negative, DialogInterface.OnClickListener lsitener) {
-        showSimpleAlert(context, title, message, positive, negative, null, lsitener);
+    public static void showSimpleAlert(Context context, String title, String message, String positive, String negative, DialogInterface.OnClickListener listener) {
+        showSimpleAlert(context, title, message, positive, negative, null, listener);
     }
 
-    public static void showSimpleAlert(Context context, String title, String message, String positive, String negative, String neutral, DialogInterface.OnClickListener lsitener) {
+    public static void showSimpleAlert(Context context, String title, String message, String positive, String negative, String neutral, DialogInterface.OnClickListener listener) {
         var builder = new MaterialAlertDialogBuilder(context, getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(title)
                 .setMessage(message);
         if (positive != null) {
-            builder.setPositiveButton(positive, lsitener);
+            builder.setPositiveButton(positive, listener);
         }
         if (negative != null) {
-            builder.setNegativeButton(negative, lsitener);
+            builder.setNegativeButton(negative, listener);
         }
         if (neutral != null) {
-            builder.setNeutralButton(neutral, lsitener);
+            builder.setNeutralButton(neutral, listener);
         }
         builder.show();
     }

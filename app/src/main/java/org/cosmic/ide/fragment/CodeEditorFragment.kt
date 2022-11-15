@@ -144,14 +144,9 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun getJavaLanguage(): Language {
-        try {
-            return TextMateLanguage.create(
-                "source.java", true
-            )
-        } catch (e: IOException) {
-            Log.e(TAG, "Failed to create instance of TextMateLanguage (Java)", e)
-            return EmptyLanguage()
-        }
+        return TextMateLanguage.create(
+            "source.java", true
+        )
     }
 
     private fun getKotlinLanguage(): Language {
@@ -164,13 +159,9 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun getSmaliLanguage(): Language {
-        try {
-            return TextMateLanguage.create(
-                "source.smali", true
-            )
-        } catch (e: IOException) {
-            return EmptyLanguage()
-        }
+        return TextMateLanguage.create(
+           "source.smali", true
+        )
     }
 
     fun getEditor() = binding.editor

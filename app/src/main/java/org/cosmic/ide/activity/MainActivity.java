@@ -499,23 +499,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private Language getJavaLanguage() {
-        try {
-            return TextMateLanguage.create(
-                "source.java", true
-            );
-        } catch (IOException e) {
-            return new EmptyLanguage();
-        }
+        return TextMateLanguage.create(
+            "source.java", true
+        );
     }
 
     private Language getSmaliLanguage() {
-        try {
-            return TextMateLanguage.create(
-                "source.smali", true
-            );
-        } catch (IOException e) {
-            return new EmptyLanguage();
-        }
+        return TextMateLanguage.create(
+            "source.smali", true
+        );
     }
 
     private void smali() {

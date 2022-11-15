@@ -17,8 +17,6 @@
 # proguard's merging breaks gson
 -keep,allowshrinking class org.jf.util.** { *; }
 -keep,allowshrinking class org.jf.dexlib2.** { *; }
--keep,allowshrinking class org.fusesource.jansi.io.Colors { *; }
--keep class org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration { *; }
 
 # for disassembler (javap)
 -keep,allowshrinking class com.sun.tools.classfile.** { *; }

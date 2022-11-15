@@ -142,8 +142,8 @@ object PathUtil {
             if (!jar.exists()) return NO_PATH
 
             if (jar.name == KOTLIN_COMPILER_JAR) {
-                val lib = jar.parentFile
-                return lib.parentFile
+                val lib = jar.parentFile!!
+                return lib.parentFile!!
             }
 
             return NO_PATH
@@ -155,8 +155,8 @@ object PathUtil {
             if (!jar.exists()) return NO_PATH
 
             if (jar.name == "kotlin-plugin.jar") {
-                val lib = jar.parentFile
-                val pluginHome = lib.parentFile
+                val lib = jar.parentFile!!
+                val pluginHome = lib.parentFile!!
 
                 return File(pluginHome, HOME_FOLDER_NAME)
             }
@@ -176,7 +176,7 @@ object PathUtil {
 
     @JvmStatic
     fun getJdkClassesRootsFromCurrentJre(): List<File> =
-            getJdkClassesRootsFromJre(System.getProperty("java.home"))
+            getJdkClassesRootsFromJre(System.getProperty("java.home")!!)
 
     @JvmStatic
     fun getJdkClassesRootsFromJre(javaHome: String): List<File> =

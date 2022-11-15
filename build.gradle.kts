@@ -12,3 +12,7 @@ allprojects {
 tasks.register("clean", Delete::class.java, Action<Delete> {
     delete(rootProject.buildDir)
 })
+
+tasks.withType(JavaCompile) {
+    options.deprecation = true
+}

@@ -4,7 +4,7 @@ package com.intellij.openapi.util
 import com.intellij.openapi.Disposable
 import java.util.concurrent.ExecutorService
 
-class LowMemoryWatcherManager(unused: ExecutorService) : Disposable {
+class LowMemoryWatcherManager(@Suppress("UNUSED_PARAMETER") service: ExecutorService) : Disposable {
 
   override fun dispose() {}
 }

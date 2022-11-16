@@ -70,7 +70,7 @@ class CodeEditorFragment : Fragment() {
                         .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
                         .setNegativeButton(requireContext().getString(R.string.copy_stacktrace), { _, which ->
                             if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.message)
+                                AndroidUtilities.copyToClipboard(e.localizedMessage)
                             }
                         })
                         .show()
@@ -81,6 +81,8 @@ class CodeEditorFragment : Fragment() {
                 setEditorLanguage(LANGUAGE_JAVA)
             } else if (currentFile.extension.equals("smali")) {
                 setEditorLanguage(LANGUAGE_SMALI)
+            } else {
+                setEditorLanguage(-1)
             }
             binding.editor
                 .getText()

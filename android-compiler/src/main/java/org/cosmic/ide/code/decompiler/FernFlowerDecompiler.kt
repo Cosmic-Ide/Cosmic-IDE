@@ -8,7 +8,7 @@ import java.io.File
 
 class FernFlowerDecompiler {
     private val options = defaultOptions()
-    private val TAG = FernFlowerDecompiler::class.simpleName
+    private val TAG = "FernFlowerDecompiler"
 
     fun decompile(
         className: String,

@@ -70,6 +70,7 @@ class App : Application() {
             intent.putExtra("error", throwable.stackTraceToString())
             Log.e("Crash", throwable.localizedMessage, throwable)
             startActivity(intent)
+            exitProcess(1)
         }
     }
 

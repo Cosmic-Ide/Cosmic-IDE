@@ -72,7 +72,6 @@ class ConsoleActivity : BaseActivity() {
             console.getOutputStream(),
             console.getErrorStream(),
             {
-                // console.stop()
                 binding.toolbar.setSubtitle("Stopped")
             }
         )

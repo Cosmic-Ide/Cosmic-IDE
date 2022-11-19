@@ -16,22 +16,16 @@ import java.io.File
 
 class ProblemMarker(
     context: Context,
-    editor: CodeEditor,
-    file: File,
-    project: JavaProject
+    private val editor: CodeEditor,
+    private val file: File,
+    private val project: JavaProject
 ) : ContentListener {
 
-    private var editor: CodeEditor
     private var analyzer: JavacAnalyzer
-    private var file: File
-    private var project: JavaProject
     private val diagnostics = DiagnosticsContainer()
-    private val TAG = ProblemMarker::class.simpleName
+    private val TAG = "ProblemMarker"
 
     init {
-        this.editor = editor
-        this.file = file
-        this.project = project
         this.analyzer = JavacAnalyzer(context, project)
         analyze(editor.getText())
     }
@@ -68,7 +62,7 @@ class ProblemMarker(
                 analyzer.reset()
             }
             try {
-                if (!(file.extension.equals(".java"))) {
+                if (!(file.extension.equals("java"))) {
                     Handler(Looper.getMainLooper()).post {
                         editor.setDiagnostics(DiagnosticsContainer())
                     }

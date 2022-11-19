@@ -25,7 +25,7 @@ import javax.tools.StandardLocation
 class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private val prefs: SharedPreferences
-    private var diagnostics = DiagnosticCollector<JavaFileObject>()
+    private var diagnostics: DiagnosticCollector by lazy { DiagnosticCollector<JavaFileObject>() }
     private val tool: JavacTool by lazy { JavacTool.create() }
     private val standardFileManager: JavacFileManager by lazy {
         tool.getStandardFileManager(

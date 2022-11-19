@@ -17,11 +17,11 @@ object CompilerUtil {
     }
 
     @JvmStatic
-    fun getPlatformPaths(): ArrayList<Path> by lazy {
+    fun getPlatformPaths(): ArrayList<Path> {
         val paths = arrayListOf<Path>()
         for (file in platformClasspath) {
             paths.add(file.toPath())
         }
-        paths
+        return paths
     }
 }

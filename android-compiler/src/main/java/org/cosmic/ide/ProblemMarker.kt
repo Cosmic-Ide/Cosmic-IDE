@@ -15,18 +15,17 @@ import org.cosmic.ide.project.JavaProject
 import java.io.File
 
 class ProblemMarker(
-    context: Context,
+    private val context: Context,
     private val editor: CodeEditor,
     private val file: File,
     private val project: JavaProject
 ) : ContentListener {
 
-    private var analyzer: JavacAnalyzer
+    private val analyzer: JavacAnalyzer by lazy { JavacAnalyzer(context, project) }
     private val diagnostics = DiagnosticsContainer()
     private val TAG = "ProblemMarker"
 
     init {
-        this.analyzer = JavacAnalyzer(context, project)
         analyze(editor.getText())
     }
 

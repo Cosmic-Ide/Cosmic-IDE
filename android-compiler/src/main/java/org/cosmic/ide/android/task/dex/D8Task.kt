@@ -26,7 +26,7 @@ class D8Task : Task {
                 D8Command.builder()
                     .setMinApiLevel(26)
                     .setMode(CompilationMode.DEBUG)
-                    .addClasspathFiles(CompilerUtil.getPlatformPaths())
+                    .addClasspathFiles(CompilerUtil.platformPaths)
                     .addProgramFiles(Paths.get(jarFile))
                     .setOutput(Paths.get(outputDex), OutputMode.DexIndexed)
                     .build()
@@ -45,7 +45,7 @@ class D8Task : Task {
             D8Command.builder()
                 .setMinApiLevel(26)
                 .setMode(CompilationMode.DEBUG)
-                .addClasspathFiles(CompilerUtil.getPlatformPaths())
+                .addClasspathFiles(CompilerUtil.platformPaths)
                 .addProgramFiles(
                     getClassFiles(File(project.getBinDirPath(), "classes"))
                 )
@@ -63,7 +63,7 @@ class D8Task : Task {
         val paths = arrayListOf<Path>()
 
         root.walk().forEach {
-            if (it.isFile() && it.extension == "class") {
+            if (it.extension == "class") {
                 paths.add(it.toPath())
             }
         }

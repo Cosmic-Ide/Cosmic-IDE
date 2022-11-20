@@ -7,6 +7,8 @@ import android.app.PendingIntent;
 import android.content.*;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -465,11 +467,13 @@ public class MainActivity extends BaseActivity {
                                 if (loadingDialog.isShowing()) {
                                     loadingDialog.dismiss();
                                 }
-                                AndroidUtilities.showSimpleAlert(MainActivity.this, getString(R.string.compilation_result_failed), errorMessage, getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                        AndroidUtilities.copyToClipboard(errorMessage);
-                                    }
-                                }));
+                                new Handler(Looper.getMainLooper()).post(() -> {
+                                    AndroidUtilities.showSimpleAlert(MainActivity.this, getString(R.string.compilation_result_failed), errorMessage, getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
+                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                            AndroidUtilities.copyToClipboard(errorMessage);
+                                        }
+                                    }));
+                                });
                             }
 
                             @Override
@@ -657,7 +661,7 @@ public class MainActivity extends BaseActivity {
     /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
-            var dex = new File(getProject().getBinDirPath().concat("classes.dex"));
+            var dex = new File(getProject().getBinDirPath() + "classes.dex");
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
                 compile(false, true);

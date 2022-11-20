@@ -23,11 +23,12 @@ class DebugActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(getString(R.string.error))
                 .setMessage(error)
-                .setPositiveButton(getString(R.string.quit), { _, _ -> finish() })
+                .setPositiveButton(getString(R.string.quit), { _, _ -> finishAffinity() })
                 .setNegativeButton(getString(R.string.copy_stacktrace), { _, which ->
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(error)
                     }
+                    finishAffinity()
                 })
                 .show()
     }

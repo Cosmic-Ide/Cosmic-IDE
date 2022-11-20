@@ -24,9 +24,9 @@ class ExecuteDexTask(
 ) : Task {
 
     private var result: Any? = null
-    private lateinit var sysIn: InputStream
-    private lateinit var sysOut: PrintStream
-    private lateinit var sysErr: PrintStream
+    private val sysIn = System.`in`
+    private val sysOut = System.`out`
+    private val sysErr = System.err
 
     override fun getTaskName(): String {
         return "Execute Dex Task"
@@ -49,10 +49,6 @@ class ExecuteDexTask(
     override fun doFullTask(project: Project) {
         val dexFile = project.getBinDirPath() + "classes.dex"
 
-        sysIn = System.`in`
-        sysOut = System.`out`
-        sysErr = System.err
-
         System.setOut(outputStream)
         System.setErr(errorStream)
         System.setIn(inputStream)
@@ -63,20 +59,23 @@ class ExecuteDexTask(
         dexLoader.loadDex(dexFile)
 
         // TODO: Move to D8Task
-        val libs = File(project.getLibDirPath()).listFiles()
-        if (libs != null) {
-            // Check if all libs have been pre-dexed or not
-            for (lib in libs) {
-                val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
+        val folder = File(project.getLibDirPath())
+        if (folder.exists() && folder.isDirectory) {
+            val libs = folder.listFiles()
+            if (libs != null) {
+                // Check if all libs have been pre-dexed or not
+                for (lib in libs) {
+                    val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
 
-                if (!File(outDex).exists()) {
-                    CoroutineUtil.inParallel {
-                        D8Task.compileJar(lib.absolutePath)
-                        File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
+                    if (!File(outDex).exists()) {
+                        CoroutineUtil.inParallel {
+                            D8Task.compileJar(lib.absolutePath)
+                            File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
+                        }
                     }
+                    // load library into ClassLoader
+                    dexLoader.loadDex(outDex)
                 }
-                // load library into ClassLoader
-                dexLoader.loadDex(outDex)
             }
         }
 

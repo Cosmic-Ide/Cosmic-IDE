@@ -14,6 +14,35 @@ import java.io.File
 
 class KotlinCompiler : Task {
 
+    private val collector = object : MessageCollector {
+        private val diagnostics = mutableListOf<Diagnostic>()
+
+        override fun clear() { diagnostics.clear() }
+
+        override fun hasErrors() = diagnostics.any { it.severity.isError }
+
+        override fun report(
+            severity: CompilerMessageSeverity,
+            message: String,
+            location: CompilerMessageSourceLocation?
+        ) {
+            // do not add redundant logging messages
+            if (severity != CompilerMessageSeverity.LOGGING) {
+                diagnostics += Diagnostic(severity, message, location)
+            }
+        }
+
+        override fun toString() = diagnostics
+            .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
+    }
+
+    private val args = K2JVMCompilerArguments().apply {
+        includeRuntime = false
+        noReflect = true
+        noStdlib = true
+        noJdk = true
+    }
+
     @Throws(Exception::class)
     override fun doFullTask(project: Project) {
         val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
@@ -26,27 +55,6 @@ class KotlinCompiler : Task {
         val mKotlinHome = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
 
-        val collector = object : MessageCollector {
-            private val diagnostics = mutableListOf<Diagnostic>()
-
-            override fun clear() { diagnostics.clear() }
-
-            override fun hasErrors() = diagnostics.any { it.severity.isError }
-
-            override fun report(
-                severity: CompilerMessageSeverity,
-                message: String,
-                location: CompilerMessageSourceLocation?
-            ) {
-                // do not add redundant logging messages
-                if (severity != CompilerMessageSeverity.LOGGING) {
-                    diagnostics += Diagnostic(severity, message, location)
-                }
-            }
-
-            override fun toString() = diagnostics
-                .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
-        }
         val claspath = arrayListOf<File>()
         val libs = File(project.getLibDirPath()).listFiles()
         if (libs != null) {
@@ -61,10 +69,7 @@ class KotlinCompiler : Task {
         val prefs = appClass.getDeclaredMethod("getDefaultPreferences").invoke(null) as SharedPreferences
         val useFastJarFS = prefs.getBoolean("ide_fastjarfs", true)
 
-        val args = K2JVMCompilerArguments().apply {
-            includeRuntime = false
-            noReflect = true
-            noStdlib = true
+        args.apply {
             classpath =
                 CompilerUtil.platformClasspath.joinToString(separator = File.pathSeparator) { it.absolutePath } +
                 claspath.joinToString(prefix = File.pathSeparator, separator = File.pathSeparator)
@@ -76,7 +81,6 @@ class KotlinCompiler : Task {
             // incremental compiler needs the module name for generating .kotlin_module files
             moduleName = project.getProjectName()
             pluginClasspaths = plugins
-            noJdk = true
             useFastJarFileSystem = useFastJarFS
         }
 
@@ -99,7 +103,7 @@ class KotlinCompiler : Task {
         val files = dir.listFiles()
         if (files == null) return sourceFiles
         for (file in files) {
-            if (file.isFile()) {
+            if (file.isFile) {
                 val extension = file.extension
                 if (extension.equals("java") || extension.equals("kt")) {
                     sourceFiles.add(file.absolutePath)

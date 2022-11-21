@@ -23,7 +23,7 @@
         android:layout_marginStart="@dimen/spacing_medium"
         android:layout_toEndOf="@id/progress_bar"
         android:text="@string/compilation_state_compiling"
-        android:textAppearance="?attr/textAppearanceTitleMedium" />
+        android:textAppearance="?attr/textAppearanceTitleLarge" />
 
     <TextView
         android:id="@+id/stage_txt"

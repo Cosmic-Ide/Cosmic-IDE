@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 
 import androidx.annotation.*;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.appcompat.widget.ThemeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConsoleEditText extends AppCompatEditText {
+
     private static final String TAG = "ConsoleEditText";
     private static final int NEW_OUTPUT = 1;
     private static final int NEW_ERR = 2;
@@ -108,7 +110,6 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStdoutToScreen() {
-
         int bytesAvailable = mStdoutBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
@@ -121,7 +122,6 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private void writeStderrToScreen() {
-
         int bytesAvailable = mStderrBuffer.getBytesAvailable();
         int bytesToRead = Math.min(bytesAvailable, mReceiveBuffer.length);
         try {
@@ -170,7 +170,7 @@ public class ConsoleEditText extends AppCompatEditText {
                 () -> {
                     var spannable = new SpannableString(str);
                     spannable.setSpan(
-                            new ForegroundColorSpan(Color.RED),
+                            new ForegroundColorSpan(ThemeUtils.getThemeAttrColor(getContext(), com.google.android.material.R.attr.colorError)),
                             0,
                             str.length(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

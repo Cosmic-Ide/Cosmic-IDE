@@ -14,7 +14,6 @@ import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
 abstract class BaseActivity : AppCompatActivity() {
-
     protected lateinit var settings: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -3,6 +3,7 @@ package org.cosmic.ide.ui.treeview.binder
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.treeview.TreeNode
 import org.cosmic.ide.ui.treeview.base.BaseNodeViewBinder
@@ -21,7 +22,12 @@ class TreeFileNodeViewBinder(
     override fun bindView(treeNode: TreeNode<TreeFile>) {
         viewHolder = ViewHolder(itemView)
 
-        AndroidUtilities.setMargins(viewHolder.rootView, level * dpToPx.dpToPx(14f), 0, 0, 0)
+        val isRightToLeft = ViewCompat.getLayoutDirection(viewHolder.rootView) == ViewCompat.LAYOUT_DIRECTION_RTL
+        if (isRightToLeft) {
+            AndroidUtilities.setMargins(viewHolder.rootView, 0, 0, level * dpToPx.dpToPx(14f), 0)
+        } else {
+            AndroidUtilities.setMargins(viewHolder.rootView, level * dpToPx.dpToPx(14f), 0, 0, 0)
+        }
 
         with(viewHolder.arrow) {
             setImageResource(R.drawable.arrow_forward)

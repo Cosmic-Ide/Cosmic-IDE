@@ -216,7 +216,7 @@ public class TreeFileManagerFragment extends Fragment {
     private void buildCreateFileDialog() {
         var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(activity.getString(R.string.create_class_dialog_title))
-                .setView(R.layout.create_new_class_dialog)
+                .setView(R.layout.dialog_new_class)
                 .setPositiveButton(activity.getString(R.string.create_class_dialog_positive), null)
                 .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewFileDialog = builder.create();
@@ -225,7 +225,7 @@ public class TreeFileManagerFragment extends Fragment {
     private void buildCreateDirectoryDialog() {
         var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(activity.getString(R.string.create_folder_dialog_title))
-                .setView(R.layout.create_new_folder_dialog)
+                .setView(R.layout.dialog_new_folder)
                 .setPositiveButton(activity.getString(R.string.create_folder_dialog_positive), null)
                 .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewDirectoryDialog = builder.create();
@@ -234,7 +234,7 @@ public class TreeFileManagerFragment extends Fragment {
     private void buildRenameFileDialog() {
         var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(activity.getString(R.string.rename))
-                .setView(R.layout.rename_dialog)
+                .setView(R.layout.dialog_rename)
                 .setPositiveButton(activity.getString(R.string.rename), null)
                 .setNegativeButton(activity.getString(android.R.string.cancel), null);
         renameFileDialog = builder.create();

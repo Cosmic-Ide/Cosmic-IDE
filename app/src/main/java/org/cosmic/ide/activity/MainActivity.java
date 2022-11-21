@@ -398,7 +398,7 @@ public class MainActivity extends BaseActivity {
 
     private void buildLoadingDialog() {
         loadingDialog = new BottomSheetDialog(this);
-        loadingDialog.setContentView(R.layout.compile_loading_dialog);
+        loadingDialog.setContentView(R.layout.dialog_compile_running);
         loadingDialog.setCancelable(false);
         loadingDialog.setCanceledOnTouchOutside(false);
     }

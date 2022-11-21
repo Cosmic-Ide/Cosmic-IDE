@@ -79,19 +79,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.bind(mProjects.get(position));
-        holder.background.setOnClickListener(
-                v -> {
-                    if (onProjectEventListener != null && position != RecyclerView.NO_POSITION) {
-                        onProjectEventListener.onProjectClicked(mProjects.get(position));
-                    }
-                });
-        holder.background.setOnLongClickListener(
-                v -> {
-                    if (onProjectEventListener != null && position != RecyclerView.NO_POSITION) {
-                        return onProjectEventListener.onProjectLongClicked(mProjects.get(position));
-                    }
-                    return false;
-                });
     }
 
     @Override
@@ -100,20 +87,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView title;
-        private final TextView path;
-        public final View background;
 
         public ViewHolder(View view) {
             super(view);
-            title = view.findViewById(R.id.project_title);
-            path = view.findViewById(R.id.project_path);
-            background = view.findViewById(R.id.background);
         }
 
         public void bind(Project project) {
-            title.setText(project.getProjectName());
-            path.setText(project.getProjectDirPath());
+            binding.project = project;
+            binding.listener = onProjectEventListener;
+            binding.executePendingBindings();
         }
     }
 }

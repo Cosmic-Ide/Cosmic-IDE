@@ -104,7 +104,7 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
     private void buildCreateNewProjectDialog() {
         var builder = new MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(getString(R.string.create_project))
-                .setView(R.layout.create_new_project_dialog)
+                .setView(R.layout.dialog_new_project)
                 .setPositiveButton(getString(R.string.create), null)
                 .setNegativeButton(getString(android.R.string.cancel), null);
         createNewProjectDialog = builder.create();

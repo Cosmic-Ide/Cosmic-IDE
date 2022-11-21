@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.cosmic.ide.R;
+import org.cosmic.ide.databinding.ProjectItemBinding;
 import org.cosmic.ide.project.Project;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     }
 
     private final List<Project> mProjects = new ArrayList<>();
-    private OnProjectEventListener onProjectEventListener;
+    private static OnProjectEventListener onProjectEventListener;
 
     public void setOnProjectEventListener(OnProjectEventListener onProjectEventListener) {
         this.onProjectEventListener = onProjectEventListener;
@@ -68,10 +69,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        var root =
-                LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.project_item, parent, false);
-        final var holder = new ViewHolder(root);
+        final var binding = ProjectItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        final var holder = new ViewHolder(binding);
         return holder;
     }
 
@@ -88,13 +87,16 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewHolder(View view) {
-            super(view);
+        private ProjectItemBinding binding;
+
+        public ViewHolder(ProjectItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
-        public void bind(Project project) {
-            binding.project = project;
-            binding.listener = onProjectEventListener;
+        public void bind(@NonNull Project project) {
+            binding.setProject(project);
+            binding.setListener(onProjectEventListener);
             binding.executePendingBindings();
         }
     }

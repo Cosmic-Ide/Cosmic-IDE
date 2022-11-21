@@ -67,6 +67,9 @@
     <string name="compilation_stage_javac">Компиляция с Javac&#8230;</string>
     <string name="compilation_stage_d8">Расшифровка файлов классов с помощью D8&#8230;</string>
 
+    <string name="console_state_running">Выполняется</string>
+    <string name="console_state_stopped">Остановлено</string>
+
     <string name="success">Успех</string>
     <string name="delete_success">Успешное удаление.</string>
     <string name="dialog_confirm_delete">Вы уверены, что хотите удалить %1$s?</string>

@@ -64,7 +64,7 @@ class ConsoleActivity : BaseActivity() {
     private fun executeDex() {
         val console = binding.console
         console.flushInputStream()
-        binding.toolbar.setSubtitle("Running")
+        binding.toolbar.setSubtitle(getString(R.string.console_state_running))
         task = ExecuteDexTask(
             settings,
             classToExecute,
@@ -72,7 +72,7 @@ class ConsoleActivity : BaseActivity() {
             console.getOutputStream(),
             console.getErrorStream(),
             {
-                binding.toolbar.setSubtitle("Stopped")
+                binding.toolbar.setSubtitle(getString(R.string.console_state_stopped))
             }
         )
         task?.doFullTask(project)

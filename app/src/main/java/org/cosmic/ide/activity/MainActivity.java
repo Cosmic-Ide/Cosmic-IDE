@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -71,7 +73,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     public static final String BUILD_STATUS = "BUILD_STATUS";
     public static final String TAG = "MainActivity";
@@ -83,13 +85,11 @@ public class MainActivity extends BaseActivity {
     private MainViewModel mainViewModel;
     private PageAdapter tabsAdapter;
 
-    public ActivityMainBinding binding;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView();
+        setSupportActionBar(binding.toolbar);
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         var fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
@@ -147,7 +147,7 @@ public class MainActivity extends BaseActivity {
         fileViewModel.refreshNode(getProject().getRootFile());
         mainViewModel.setFiles(getProject().getIndexer().getList("lastOpenedFiles"));
 
-        binding.toolbar.setTitle(getProject().getProjectName());
+        getSupportActionBar().setTitle(getProject().getProjectName());
 
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
@@ -239,68 +239,6 @@ public class MainActivity extends BaseActivity {
                             });
         }
 
-        binding.toolbar.inflateMenu(R.menu.main_menu);
-        binding.toolbar.setOnMenuItemClickListener(
-                item -> {
-                    final String tag =
-                            "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
-                    final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
-                    final var id = item.getItemId();
-                    if (id == R.id.action_format) {
-                        if (fragment instanceof CodeEditorFragment) {
-                            CoroutineUtil.execute(
-                                    () -> {
-                                        String current =
-                                                mainViewModel.getCurrentFile().getAbsolutePath();
-                                        if (current.endsWith(".java")) {
-                                            var formatter =
-                                                    new GoogleJavaFormatter(
-                                                            ((CodeEditorFragment) fragment)
-                                                                    .getEditor()
-                                                                    .getText()
-                                                                    .toString());
-                                            temp = formatter.format();
-                                        } else if (current.endsWith(".kt")
-                                                || current.endsWith(".kts")) {
-                                            new ktfmtFormatter(current).format();
-                                            try {
-                                                temp = FileUtil.readFile(new File(current));
-                                            } catch (IOException e) {
-                                                Log.d(TAG, getString(R.string.error_file_open), e);
-                                            }
-                                        } else {
-                                            temp =
-                                                    ((CodeEditorFragment) fragment)
-                                                            .getEditor()
-                                                            .getText()
-                                                            .toString();
-                                        }
-                                    });
-                            ((CodeEditorFragment) fragment).getEditor().setText(temp);
-                        }
-                    } else if (id == R.id.action_settings) {
-                        startActivity(new Intent(this, SettingActivity.class));
-                    } else if (id == R.id.action_run) {
-                        compile(true, false);
-                    } else if (id == R.id.action_smali) {
-                        smali();
-                    } else if (id == R.id.action_disassemble) {
-                        disassemble();
-                    } else if (id == R.id.action_class2java) {
-                        decompile();
-                    } else if (id == R.id.action_undo) {
-                        if (fragment instanceof CodeEditorFragment) {
-                            ((CodeEditorFragment) fragment).undo();
-                        }
-                    } else if (id == R.id.action_redo) {
-                        if (fragment instanceof CodeEditorFragment) {
-                            ((CodeEditorFragment) fragment).redo();
-                        }
-                    }
-
-                    return true;
-                });
-
         if (savedInstanceState != null) {
             restoreViewState(savedInstanceState);
         }
@@ -315,6 +253,77 @@ public class MainActivity extends BaseActivity {
         }
         saveOpenedFiles();
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final String tag =
+                "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
+        final var id = item.getItemId();
+        if (id == R.id.action_format) {
+            if (fragment instanceof CodeEditorFragment) {
+                CoroutineUtil.execute(
+                        () -> {
+                            String current =
+                                    mainViewModel.getCurrentFile().getAbsolutePath();
+                            if (current.endsWith(".java")) {
+                                var formatter =
+                                        new GoogleJavaFormatter(
+                                                ((CodeEditorFragment) fragment)
+                                                        .getEditor()
+                                                        .getText()
+                                                        .toString());
+                                temp = formatter.format();
+                            } else if (current.endsWith(".kt")
+                                    || current.endsWith(".kts")) {
+                                new ktfmtFormatter(current).format();
+                                try {
+                                    temp = FileUtil.readFile(new File(current));
+                                } catch (IOException e) {
+                                    Log.d(TAG, getString(R.string.error_file_open), e);
+                                }
+                            } else {
+                                temp =
+                                        ((CodeEditorFragment) fragment)
+                                                .getEditor()
+                                                .getText()
+                                                .toString();
+                            }
+                });
+                ((CodeEditorFragment) fragment).getEditor().setText(temp);
+            }
+        } else if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.action_run) {
+            compile(true, false);
+        } else if (id == R.id.action_smali) {
+            smali();
+        } else if (id == R.id.action_disassemble) {
+            disassemble();
+        } else if (id == R.id.action_class2java) {
+            decompile();
+        } else if (id == R.id.action_undo) {
+            if (fragment instanceof CodeEditorFragment) {
+                ((CodeEditorFragment) fragment).undo();
+            }
+        } else if (id == R.id.action_redo) {
+            if (fragment instanceof CodeEditorFragment) {
+                ((CodeEditorFragment) fragment).redo();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_main;
     }
 
     private void restoreViewState(@NonNull Bundle state) {

@@ -2,8 +2,8 @@
 <resources>
     <style name="Platform.V27.Theme.CosmicIde" parent="Base.Platform.Theme.CosmicIde">
         <item name="colorPrimaryDark">@color/system_window_scrim</item>
-        <item name="android:navigationBarColor">?colorPrimaryDark</item>
-        <item name="android:windowLightNavigationBar">?isLightTheme</item>
+        <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
     </style>
     <style name="Platform.Theme.CosmicIde" parent="Platform.V27.Theme.CosmicIde" />
 </resources>

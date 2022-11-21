@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceScreen
+        android:fragment="org.cosmic.ide.fragment.settings.AppearanceSettingsFragment"
+        android:key="appearance"
+        android:title="@string/pref_appearance" />
+
+    <PreferenceScreen
+        android:fragment="org.cosmic.ide.fragment.settings.CompilerSettingsFragment"
+        android:key="compiler"
+        android:title="@string/pref_compiler" />
+
+    <PreferenceScreen
+        android:fragment="org.cosmic.ide.fragment.settings.AboutSettingsFragment"
+        android:key="about"
+        android:title="@string/pref_about" />
+
+</PreferenceScreen>

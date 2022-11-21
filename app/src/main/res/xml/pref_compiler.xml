@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:key="@string/key_java_version"
+        app:title="@string/pref_java_version"
+        app:defaultValue="7"
+        app:entries="@array/java_versions"
+        app:entryValues="@array/java_versions" />
+
+    <EditTextPreference
+        app:key="@string/key_program_arguments"
+        app:title="@string/pref_program_arguments" />
+
+    <SwitchPreferenceCompat
+        app:key="@string/key_fastjarfs"
+        app:title="@string/pref_fast_jar_fs"
+        app:defaultValue="true"
+        app:summary="@string/pref_fast_jar_fs_desc" />
+
+</PreferenceScreen>

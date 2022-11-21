@@ -3,11 +3,12 @@ package org.cosmic.ide.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Switch;
 
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
@@ -37,14 +38,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnProjectEventListener {
+public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implements ProjectAdapter.OnProjectEventListener {
 
     public interface OnProjectCreatedListener {
         void onProjectCreated(Project project);
     }
 
     private ProjectAdapter projectAdapter;
-    private ActivityProjectBinding binding;
 
     private AlertDialog createNewProjectDialog;
 
@@ -53,8 +53,8 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityProjectBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView();
+        setSupportActionBar(binding.toolbar);
 
         buildCreateNewProjectDialog();
 
@@ -74,31 +74,38 @@ public class ProjectActivity extends BaseActivity implements ProjectAdapter.OnPr
                     binding.refreshLayout.setRefreshing(false);
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
-        /* Test show fragment in onlongclicklistener */
         binding.fab.setOnLongClickListener(v -> {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, new WizardFragment(), "WizardFragment")
-                    .commit();
+            startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
             return true;
         });
-        binding.toolbar.inflateMenu(R.menu.projects_menu);
-        binding.toolbar.setOnMenuItemClickListener(
-                item -> {
-                    final var id = item.getItemId();
-                    if (id == R.id.action_settings) {
-                        startActivity(new Intent(this, SettingActivity.class));
-                    } else if (id == R.id.action_logcat) {
-                        startActivity(LynxActivity.getIntent(this, new LynxConfig()));
-                    }
-                    return true;
-                });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.projects_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        final var id = item.getItemId();
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        } else if (id == R.id.action_logcat) {
+            startActivity(LynxActivity.getIntent(this, new LynxConfig()));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         loadProjects();
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_project;
     }
 
     private void buildCreateNewProjectDialog() {

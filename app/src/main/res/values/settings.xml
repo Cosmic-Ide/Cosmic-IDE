@@ -6,6 +6,7 @@
     <string name="key_program_arguments" translatable="false">ide_program_arguments</string>
     <string name="key_fastjarfs" translatable="false">ide_fastjarfs</string>
     <string name="key_app_version" translatable="false">ide_app_version</string>
+    <string name="key_app_translation" translatable="false">ide_app_translation</string>
     <string name="key_discord" translatable="false">ide_discord_link</string>
     <string name="key_github" translatable="false">ide_github_link</string>
 
@@ -27,8 +28,8 @@
 
     <string-array name="entries_theme">
         <item>@string/pref_follow_system</item>
-        <item>@string/off</item>
-        <item>@string/on</item>
+        <item>@string/pref_theme_light</item>
+        <item>@string/pref_theme_dark</item>
     </string-array>
 
     <integer-array name="values_theme">

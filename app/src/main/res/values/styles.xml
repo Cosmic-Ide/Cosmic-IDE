@@ -19,4 +19,14 @@
         <item name="buttonBarNegativeButtonStyle">@style/Widget.CosmicIde.Button.TextButton.Dialog.FullWidth</item>
         <item name="buttonBarNeutralButtonStyle">@style/Widget.CosmicIde.Button.TextButton.Dialog.FullWidth</item>
     </style>
+
+    <style name="PreferenceThemeOverlay.CosmicIde">
+        <item name="preferenceCategoryTitleTextAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="singleLineTitle">false</item>
+    </style>
+
+    <style name="Preference.SwitchPreferenceCompat.M3" parent="Preference.SwitchPreferenceCompat.Material">
+        <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
+    </style>
+
 </resources>

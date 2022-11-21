@@ -96,16 +96,19 @@
     <string name="pref_fast_jar_fs">Enable Fast Jar FS</string>
     <string name="pref_fast_jar_fs_desc">[Experimental] Use Fast Jar FS in kotlinc. Improves build speed.</string>
     <string name="pref_compiler">Compiler</string>
-    <string name="pref_dark_theme">Dark Theme</string>
+    <string name="pref_theme">Theme</string>
     <string name="pref_about">About</string>
     <string name="pref_discord">Our Discord</string> 
     <string name="pref_discord_desc">Join our discord channel</string>
     <string name="pref_github">Our Github</string>
     <string name="pref_github_desc">View our github repository</string>
-    <string name="pref_app_version">Version</string>
+    <string name="pref_app_version">Version %s</string>
+    <string name="check_for_updates">Check for updates</string>
     <string name="pref_follow_system">Follow System</string>
-    <string name="off">Off</string>
-    <string name="on">On</string>
+    <string name="pref_theme_light">Light</string>
+    <string name="pref_theme_dark">Dark</string>
+    <string name="app_translation">Translation</string>
+    <string name="app_translation_desc">Translate this app</string>
 
     <string name="wizard_title">New project</string>
 

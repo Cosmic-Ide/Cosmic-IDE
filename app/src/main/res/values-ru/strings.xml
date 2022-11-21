@@ -89,16 +89,19 @@
     <string name="pref_fast_jar_fs">Включить Fast Jar FS</string>
     <string name="pref_fast_jar_fs_desc">[Экспериментальный] Использовать Fast Jar FS. Улучшает скорость сборки.</string>
     <string name="pref_compiler">Компилятор</string>
-    <string name="pref_dark_theme">Темная тема</string>
-    <string name="pref_about">О нас</string>
+    <string name="pref_theme">Тема</string>
+    <string name="pref_about">О программе</string>
     <string name="pref_discord">Наш Дискорд</string> 
     <string name="pref_discord_desc">Присоединяйтесь к нашему дискорд каналу</string>
     <string name="pref_github">Наш Github</string>
     <string name="pref_github_desc">Просмотрите наш репозиторий на Github</string>
-    <string name="pref_app_version">Версия приложения</string>
-    <string name="pref_follow_system">Следовать системе</string>
-    <string name="off">Выкл.</string>
-    <string name="on">Вкл.</string>
+    <string name="pref_app_version">Версия %s</string>
+    <string name="check_for_updates">Проверить обновления</string>
+    <string name="pref_follow_system">Как в системе</string>
+    <string name="pref_theme_light">Светлая</string>
+    <string name="pref_theme_dark">Темная</string>
+    <string name="app_translation">Перевод</string>
+    <string name="app_translation_desc">Помочь с переводом приложения</string>
 
     <string name="wizard_title">Новый проект</string>
 

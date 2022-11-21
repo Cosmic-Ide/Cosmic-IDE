@@ -1,6 +1,8 @@
 package org.cosmic.ide.activity
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import org.cosmic.ide.App
@@ -12,26 +14,16 @@ import org.cosmic.ide.util.Constants.PROJECT_PATH
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 
-class ConsoleActivity : BaseActivity() {
-    private lateinit var binding: ActivityConsoleBinding
+class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
+    override val layoutRes = R.layout.activity_console
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
     private var task: ExecuteDexTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityConsoleBinding.inflate(getLayoutInflater())
-        setContentView(binding.root)
-
-        binding.toolbar.setNavigationOnClickListener { _ -> finish() }
-        binding.toolbar.inflateMenu(R.menu.console_menu)
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_recompile -> executeDex()
-                R.id.action_cancel -> finish()
-            }
-            true
-        }
+        setContentView()
+        setSupportActionBar(binding.toolbar);
 
         binding.appBar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
@@ -55,6 +47,19 @@ class ConsoleActivity : BaseActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.console_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_recompile -> executeDex()
+            R.id.action_cancel -> finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         binding.console.release()
@@ -64,7 +69,7 @@ class ConsoleActivity : BaseActivity() {
     private fun executeDex() {
         val console = binding.console
         console.flushInputStream()
-        binding.toolbar.setSubtitle(getString(R.string.console_state_running))
+        supportActionBar?.setSubtitle(getString(R.string.console_state_running))
         task = ExecuteDexTask(
             settings,
             classToExecute,
@@ -72,7 +77,7 @@ class ConsoleActivity : BaseActivity() {
             console.getOutputStream(),
             console.getErrorStream(),
             {
-                binding.toolbar.setSubtitle(getString(R.string.console_state_stopped))
+                supportActionBar?.setSubtitle(getString(R.string.console_state_stopped))
             }
         )
         task?.doFullTask(project)

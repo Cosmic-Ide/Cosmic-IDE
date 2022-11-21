@@ -107,14 +107,7 @@ public class TreeFileManagerFragment extends Fragment {
                                         var file = treeNode.getValue().getFile();
                                         if (file.isFile()) {
                                             mainViewModel.openFile(file);
-                                            if (activity.binding.root instanceof DrawerLayout) {
-                                                DrawerLayout drawer =
-                                                        (DrawerLayout) activity.binding.root;
-                                                if (drawer != null
-                                                        && drawer.isDrawerOpen(GravityCompat.START)) {
-                                                    mainViewModel.setDrawerState(false);
-                                                }
-                                            }
+                                            mainViewModel.setDrawerState(false);
                                         }
                                     } catch (Exception e) {
                                         AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.error_file_open), e.getLocalizedMessage(), activity.getString(R.string.dialog_close), activity.getString(R.string.copy_stacktrace), ((dialog, which) -> {

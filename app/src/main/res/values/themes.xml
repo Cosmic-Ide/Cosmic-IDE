@@ -3,16 +3,20 @@
 
     <style name="Base.Platform.Theme.CosmicIde" parent="Theme.Material3.DynamicColors.DayNight">
         <item name="colorPrimaryDark">@color/system_window_scrim</item>
-        <item name="android:windowLightStatusBar">?isLightTheme</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
     <style name="Platform.Theme.CosmicIde" parent="Base.Platform.Theme.CosmicIde" />
     <style name="Base.Theme.CosmicIde" parent="Platform.Theme.CosmicIde">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
-        <item name="switchStyle">@style/Widget.Material3.CompoundButton.MaterialSwitch</item>
-        <item name="textInputStyle">?textInputFilledStyle</item>
+        <item name="textInputStyle">?attr/textInputFilledStyle</item>
         <item name="toolbarStyle">@style/Widget.CosmicIde.Toolbar</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.CosmicIde</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.M3</item>
+
+        <item name="android:textAppearanceListItem">?attr/textAppearanceBodyLarge</item>
+        <item name="android:textAppearanceListItemSecondary">?attr/textAppearanceBodySmall</item>
     </style>
     <style name="Theme.CosmicIde" parent="Base.Theme.CosmicIde">
         <item name="android:overScrollMode">never</item>

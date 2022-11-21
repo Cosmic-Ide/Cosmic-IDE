@@ -18,10 +18,6 @@ android {
         vectorDrawables.useSupportLibrary = BuildAndroidConfig.SUPPORT_LIBRARY_VECTOR_DRAWABLES
     }
 
-    applicationVariants.all {
-        resValue("string", "app_version", versionName)
-    }
-
     signingConfigs {
         val TESTKEY = "testkey"
         getByName(BuildType.DEBUG) {

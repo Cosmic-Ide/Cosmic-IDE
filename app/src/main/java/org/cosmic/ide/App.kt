@@ -32,7 +32,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        DynamicColors.applyToActivitiesIfAvailable(context)
+        DynamicColors.applyToActivitiesIfAvailable(this)
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()

@@ -77,21 +77,21 @@
     <string name="package_name">Paketnamen</string>
     <string name="use_kotlin_template">Verwenden Sie die Kotlin-Vorlage</string>
 
-    <string name="pref_java_version">Java-Version</string>
-    <string name="pref_program_arguments">Programmargumente</string>
-    <string name="pref_settings">Einstellungen</string>
-    <string name="pref_appearance">Aussehen</string>
-    <string name="pref_fast_jar_fs">Aktivieren Sie Fast Jar FS</string>
-    <string name="pref_fast_jar_fs_desc">[Experimentell] Verwenden Sie Fast Jar FS in kotlinc. Verbessert die Baugeschwindigkeit.</string>
-    <string name="pref_compiler">Compiler</string>
-    <string name="pref_dark_theme">Dunkles Thema</string>
-    <string name="pref_about">Um</string>
-    <string name="pref_discord">Unser Zwietracht</string> 
-    <string name="pref_discord_desc">Tritt unserem Discord-Kanal bei</string>
-    <string name="pref_github">Unser Github</string>
-    <string name="pref_github_desc">Sehen Sie sich unser Github-Repository an</string>
-    <string name="pref_app_version">Ausführung</string>
-    <string name="pref_follow_system">System folgen</string>
+    <string name="java_version">Java-Version</string>
+    <string name="program_arguments">Programmargumente</string>
+    <string name="settings">Einstellungen</string>
+    <string name="appearance">Aussehen</string>
+    <string name="fast_jar_fs">Aktivieren Sie Fast Jar FS</string>
+    <string name="fast_jar_fs_desc">[Experimentell] Verbessert die Baugeschwindigkeit.</string>
+    <string name="compiler">Compiler</string>
+    <string name="theme">Thema</string>
+    <string name="about">Um</string>
+    <string name="discord">Unser Zwietracht</string> 
+    <string name="discord_desc">Tritt unserem Discord-Kanal bei</string>
+    <string name="github">Unser Github</string>
+    <string name="github_desc">Sehen Sie sich unser Github-Repository an</string>
+    <string name="app_version">Ausführung %s</string>
+    <string name="follow_system">System folgen</string>
     <string name="off">Aus</string>
     <string name="on">An</string>
 

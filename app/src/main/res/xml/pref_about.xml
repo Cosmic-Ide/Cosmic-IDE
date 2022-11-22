@@ -4,23 +4,23 @@
     <PreferenceCategory app:title="@string/app_name">
 
         <Preference
-            app:key="@string/key_app_version"
+            app:key="app_version"
             app:summary="@string/check_for_updates" />
 
         <Preference
-            app:key="@string/key_app_translation"
+            app:key="app_translation"
             app:title="@string/app_translation"
             app:summary="@string/app_translation_desc" />
 
         <Preference
-            app:key="@string/key_discord"
-            app:title="@string/pref_discord"
-            app:summary="@string/pref_discord_desc" />
+            app:key="discord"
+            app:title="@string/discord"
+            app:summary="@string/discord_desc" />
     
         <Preference
-            app:key="@string/key_github"
-            app:title="@string/pref_github"
-            app:summary="@string/pref_github_desc" />
+            app:key="github"
+            app:title="@string/github"
+            app:summary="@string/github_desc" />
 
     </PreferenceCategory>
 

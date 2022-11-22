@@ -24,11 +24,11 @@ class SettingsHeadersFragment : PreferenceHeaderFragmentCompat(), SlidingPaneLay
     override fun onPanelSlide(panel: View, slideOffset: Float) = Unit
 
     override fun onPanelOpened(panel: View) {
-        activity?.title = currentTitle ?: getString(R.string.pref_settings)
+        activity?.title = currentTitle ?: getString(R.string.settings)
     }
 
     override fun onPanelClosed(panel: View) {
-        activity?.title = getString(R.string.pref_settings)
+        activity?.title = getString(R.string.settings)
     }
 
     fun setTitle(title: CharSequence?) {

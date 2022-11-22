@@ -2,20 +2,20 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        app:key="@string/key_java_version"
-        app:title="@string/pref_java_version"
+        app:key="java_version"
+        app:title="@string/java_version"
         app:defaultValue="7"
         app:entries="@array/java_versions"
         app:entryValues="@array/java_versions" />
 
     <EditTextPreference
-        app:key="@string/key_program_arguments"
-        app:title="@string/pref_program_arguments" />
+        app:key="program_arguments"
+        app:title="@string/program_arguments" />
 
     <SwitchPreferenceCompat
-        app:key="@string/key_fastjarfs"
-        app:title="@string/pref_fast_jar_fs"
+        app:key="fast_jar_fs"
+        app:title="@string/fast_jar_fs"
         app:defaultValue="true"
-        app:summary="@string/pref_fast_jar_fs_desc" />
+        app:summary="@string/fast_jar_fs_desc" />
 
 </PreferenceScreen>

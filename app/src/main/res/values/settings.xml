@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="key_theme" translatable="false">ide_theme</string>
-    <string name="key_java_version" translatable="false">ide_java_version</string>
-    <string name="key_program_arguments" translatable="false">ide_program_arguments</string>
-    <string name="key_fastjarfs" translatable="false">ide_fastjarfs</string>
-    <string name="key_app_version" translatable="false">ide_app_version</string>
-    <string name="key_app_translation" translatable="false">ide_app_translation</string>
-    <string name="key_discord" translatable="false">ide_discord_link</string>
-    <string name="key_github" translatable="false">ide_github_link</string>
-
     <string-array name="java_versions">
         <item>5</item>
         <item>6</item>
@@ -27,9 +18,9 @@
     </string-array>
 
     <string-array name="entries_theme">
-        <item>@string/pref_follow_system</item>
-        <item>@string/pref_theme_light</item>
-        <item>@string/pref_theme_dark</item>
+        <item>@string/follow_system</item>
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
     </string-array>
 
     <integer-array name="values_theme">
@@ -41,5 +32,10 @@
     <integer name="theme_auto">-1</integer>
     <integer name="theme_day">1</integer>
     <integer name="theme_night">2</integer>
+
+    <integer name="font_size_default">14</integer>
+    <integer name="font_size_min">8</integer>
+    <integer name="font_size_max">22</integer>
+    <integer name="font_size_stepsize">2</integer>
 
 </resources>

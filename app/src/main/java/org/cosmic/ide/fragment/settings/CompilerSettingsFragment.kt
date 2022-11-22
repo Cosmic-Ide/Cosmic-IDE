@@ -9,7 +9,7 @@ import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.showListPreferenceDialog
 
 class CompilerSettingsFragment :
-    BasePreferenceFragment(R.string.pref_compiler),
+    BasePreferenceFragment(R.string.compiler),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

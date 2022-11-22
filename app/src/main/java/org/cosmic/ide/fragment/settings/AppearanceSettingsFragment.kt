@@ -5,16 +5,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
+import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.IntListPreference
 import org.cosmic.ide.ui.preference.showIntListPreferenceDialog
 
 class AppearanceSettingsFragment :
-    BasePreferenceFragment(R.string.pref_appearance),
+    BasePreferenceFragment(R.string.appearance),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_appearance)
+        findPreference<Preference>("dynamic_theme")?.isVisible = DynamicColors.isDynamicColorAvailable()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,10 +40,8 @@ class AppearanceSettingsFragment :
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
-        val context = requireActivity()
-
         when (key) {
-            context.getString(R.string.key_theme) -> {
+            "theme" -> {
                 AppCompatDelegate.setDefaultNightMode(settings.theme)
             }
         }

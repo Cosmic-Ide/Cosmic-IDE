@@ -1,40 +1,52 @@
 package org.cosmic.ide.ui.preference
 
-import android.content.Context
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 import androidx.core.content.edit
+import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.App
 import org.cosmic.ide.R
 
 /**
  * CosmicIde's Settings.
  */
-class Settings(private val context: Context) {
-    private val `inner` = App.getDefaultPreferences()
+class Settings() {
+    val prefs = App.getDefaultPreferences()
 
     fun subscribe(listener: OnSharedPreferenceChangeListener) {
-        `inner`.registerOnSharedPreferenceChangeListener(listener)
+        prefs.registerOnSharedPreferenceChangeListener(listener)
     }
 
     fun unsubscribe(listener: OnSharedPreferenceChangeListener) {
-        `inner`.unregisterOnSharedPreferenceChangeListener(listener)
+        prefs.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
     val theme: Int
         get() =
-            `inner`.getInt(
-                context.getString(R.string.key_theme),
-                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            prefs.getInt(
+                "theme",
+                MODE_NIGHT_FOLLOW_SYSTEM
             )
 
-    var javaVersion: Int
+    val isDynamicTheme: Boolean
         get() =
-            `inner`.getInt(
-                context.getString(R.string.key_java_version),
+            DynamicColors.isDynamicColorAvailable() &&
+            prefs.getBoolean(
+                "dynamic_theme",
+                false
+            )
+
+    val fontSize: Int
+        get() =
+            prefs.getInt(
+                "font_size",
+                14
+            )
+
+    val javaVersion: Int
+        get() =
+            prefs.getInt(
+                "java_version",
                 7
             )
-        set(value) {
-            `inner`.edit { putInt(context.getString(R.string.key_java_version), value) }
-        }
 }

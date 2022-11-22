@@ -25,6 +25,7 @@ import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
+import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -34,6 +35,7 @@ class CodeEditorFragment : Fragment() {
     private lateinit var binding: FragmentCodeEditorBinding
     private lateinit var currentFile: File
     private val TAG = "CodeEditorFragment"
+    private val settings: Settings by lazy { Settings() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,11 +105,13 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun configureEditor(editor: CodeEditor) {
+        val fontSize: Float = settings.fontSize.toFloat()
+
         with(editor) {
             getComponent(EditorAutoCompletion::class.java).setLayout(CustomCompletionLayout())
             getComponent(EditorAutoCompletion::class.java).setAdapter(CustomCompletionItemAdapter())
             setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_light))
-            setTextSize(12F)
+            setTextSize(fontSize)
             setEdgeEffectColor(Color.TRANSPARENT)
             setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
         }

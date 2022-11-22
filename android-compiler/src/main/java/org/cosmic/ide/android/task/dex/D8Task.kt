@@ -47,9 +47,9 @@ class D8Task : Task {
                 .setMode(CompilationMode.DEBUG)
                 .addClasspathFiles(CompilerUtil.platformPaths)
                 .addProgramFiles(
-                    getClassFiles(File(project.getBinDirPath(), "classes"))
+                    getClassFiles(File(project.binDirPath, "classes"))
                 )
-                .setOutput(Paths.get(project.getBinDirPath()), OutputMode.DexIndexed)
+                .setOutput(Paths.get(project.binDirPath), OutputMode.DexIndexed)
                 .build()
         )
     }

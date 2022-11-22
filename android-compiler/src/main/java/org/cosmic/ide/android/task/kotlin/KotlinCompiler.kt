@@ -45,18 +45,18 @@ class KotlinCompiler : Task {
 
     @Throws(Exception::class)
     override fun doFullTask(project: Project) {
-        val sourceFiles = getSourceFiles(File(project.getSrcDirPath()))
+        val sourceFiles = getSourceFiles(File(project.srcDirPath))
         if (!sourceFiles.any {
             it.endsWith(".kt")
         }
         ) {
             return
         }
-        val mKotlinHome = File(project.getBinDirPath(), "kt_home").apply { mkdirs() }
-        val mClassOutput = File(project.getBinDirPath(), "classes").apply { mkdirs() }
+        val mKotlinHome = File(project.binDirPath, "kt_home").apply { mkdirs() }
+        val mClassOutput = File(project.binDirPath, "classes").apply { mkdirs() }
 
         val claspath = arrayListOf<File>()
-        val libs = File(project.getLibDirPath()).listFiles()
+        val libs = File(project.libDirPath).listFiles()
         if (libs != null) {
             for (lib in libs) {
                 claspath.add(lib)
@@ -79,16 +79,16 @@ class KotlinCompiler : Task {
                 it.endsWith(".java")
             }.toTypedArray()
             // incremental compiler needs the module name for generating .kotlin_module files
-            moduleName = project.getProjectName()
+            moduleName = project.projectName
             pluginClasspaths = plugins
             useFastJarFileSystem = useFastJarFS
         }
 
-        val cacheDir = File(project.getBinDirPath(), "caches")
+        val cacheDir = File(project.binDirPath, "caches")
 
         makeIncrementally(
             cacheDir,
-            listOf(File(project.getSrcDirPath())),
+            listOf(File(project.srcDirPath)),
             args,
             collector
         )
@@ -116,7 +116,7 @@ class KotlinCompiler : Task {
     }
 
     private fun getKotlinCompilerPlugins(project: Project): List<File> {
-        val pluginDir = File(project.getProjectDirPath(), "kt_plugins")
+        val pluginDir = File(project.projectDirPath, "kt_plugins")
 
         if (!pluginDir.exists() || pluginDir.isFile) {
             return listOf<File>()

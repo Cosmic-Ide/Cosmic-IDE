@@ -361,14 +361,14 @@ data class KotlinEnvironment(
         }
 
         fun get(module: Project): KotlinEnvironment {
-            val jars = File(module.getLibDirPath()).walkBottomUp().filter {
+            val jars = File(module.libDirPath).walkBottomUp().filter {
                 it.exists()
             }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar"))
             val environment = with(jars)
-            File(module.getSrcDirPath()).walkBottomUp().forEach {
+            File(module.srcDirPath).walkBottomUp().forEach {
                 if (it.extension == "kt") {
                     environment.updateKotlinFile(it.absolutePath, it.readText())
                 }

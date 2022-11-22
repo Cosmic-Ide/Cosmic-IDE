@@ -47,7 +47,7 @@ class ExecuteDexTask(
      * @property [project] A project that contains dex classes.
      */
     override fun doFullTask(project: Project) {
-        val dexFile = project.getBinDirPath() + "classes.dex"
+        val dexFile = project.binDirPath + "classes.dex"
 
         System.setOut(outputStream)
         System.setErr(errorStream)
@@ -59,18 +59,18 @@ class ExecuteDexTask(
         dexLoader.loadDex(dexFile)
 
         // TODO: Move to D8Task
-        val folder = File(project.getLibDirPath())
+        val folder = File(project.libDirPath)
         if (folder.exists() && folder.isDirectory) {
             val libs = folder.listFiles()
             if (libs != null) {
                 // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val outDex = project.getBuildDirPath() + lib.getName().replaceAfterLast('.', "dex")
+                    val outDex = project.buildDirPath + lib.getName().replaceAfterLast('.', "dex")
 
                     if (!File(outDex).exists()) {
                         CoroutineUtil.inParallel {
                             D8Task.compileJar(lib.absolutePath)
-                            File(project.getBuildDirPath(), "classes.dex").renameTo(File(outDex))
+                            File(project.buildDirPath, "classes.dex").renameTo(File(outDex))
                         }
                     }
                     // load library into ClassLoader

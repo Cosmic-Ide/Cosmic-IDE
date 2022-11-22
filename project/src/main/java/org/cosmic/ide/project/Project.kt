@@ -5,23 +5,27 @@ import org.cosmic.ide.common.Indexer;
 import java.io.File
 
 interface Project {
+
     fun delete()
 
-    fun getRootFile(): File
+    val rootFile: File
 
-    fun getProjectName(): String
+    val projectName: String
 
-    fun getIndexer(): Indexer
+    val indexer: Indexer
 
-    fun getProjectDirPath(): String
+    val projectDirPath: String
 
-    fun getSrcDirPath(): String
+    val projectDirPath: String
 
-    fun getBinDirPath(): String
+    val srcDirPath: String
 
-    fun getLibDirPath(): String
+    val binDirPath: String
 
-    fun getBuildDirPath(): String
+    val libDirPath: String
 
-    fun getCacheDirPath(): String
+    val buildDirPath: String
+
+    val cacheDirPath: String
+
 }

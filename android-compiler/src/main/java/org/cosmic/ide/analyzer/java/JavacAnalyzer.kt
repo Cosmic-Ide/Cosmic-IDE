@@ -46,8 +46,8 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     @Throws(IOException::class)
     fun analyze() {
-        val version = prefs.getString("ide_java_version", "7")
-        val files = getSourceFiles(File(project.getSrcDirPath()))
+        val version = prefs.getString("java_version", "7")
+        val files = getSourceFiles(File(project.srcDirPath))
 
         val javaFileObjects = arrayListOf<JavaFileObject>()
         for (file in files) {
@@ -123,8 +123,8 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
                 classpath.add(File(clas))
             }
         }
-        classpath.add(File(project.getBinDirPath() + "classes"))
-        val libs = File(project.getLibDirPath()).listFiles()
+        classpath.add(File(project.binDirPath + "classes"))
+        val libs = File(project.libDirPath).listFiles()
         for (lib in libs!!) {
             classpath.add(lib)
         }

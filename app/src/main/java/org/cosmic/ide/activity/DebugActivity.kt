@@ -30,6 +30,7 @@ class DebugActivity : AppCompatActivity() {
                     }
                     finishAffinity()
                 })
+                .setCancelable(false)
                 .show()
     }
 }

@@ -62,7 +62,7 @@
                          android:layout_height="wrap_content"
                          android:layout_marginTop="@dimen/spacing_small"
                          android:text="@string/no_open_file_desc"
-                         android:textAppearance="?attr/textAppearanceBodyMedium"
+                         android:textAppearance="?attr/textAppearanceBodyLarge"
                          android:textColor="?android:attr/textColorSecondary" />
                 </LinearLayout>
 

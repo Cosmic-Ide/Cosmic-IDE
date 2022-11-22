@@ -23,7 +23,8 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView()
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.appBar.addSystemWindowInsetToPadding(false, true, false, false)
         binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
@@ -43,6 +44,7 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
             classToExecute = bundle.getString("class_to_execute")!!
             val projectPath = bundle.getString(PROJECT_PATH)
             project = JavaProject(File(projectPath!!))
+            supportActionBar?.setTitle(project.getProjectName())
             executeDex()
         }
     }

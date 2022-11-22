@@ -209,7 +209,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 binding.tabLayout.removeAllTabs();
                                 binding.tabLayout.setVisibility(View.GONE);
                                 binding.emptyContainer.setVisibility(View.VISIBLE);
-                                mainViewModel.setCurrentPosition(-1);
+                                mainViewModel.setCurrentPosition(-1, false);
                             } else {
                                 binding.tabLayout.setVisibility(View.VISIBLE);
                                 binding.emptyContainer.setVisibility(View.GONE);

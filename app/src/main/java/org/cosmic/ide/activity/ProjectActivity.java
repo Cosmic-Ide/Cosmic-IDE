@@ -23,7 +23,6 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
-import org.cosmic.ide.fragment.WizardFragment;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;

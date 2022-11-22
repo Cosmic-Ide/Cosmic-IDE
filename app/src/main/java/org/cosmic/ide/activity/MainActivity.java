@@ -77,6 +77,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     public static final String BUILD_STATUS = "BUILD_STATUS";
     public static final String TAG = "MainActivity";
+    private CompileTask compileTask = null;
 
     private String temp;
     private BottomSheetDialog loadingDialog;
@@ -447,10 +448,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         .setContentIntent(pendingIntent);
 
         loadingDialog.show();
-        final var compilationThread =
+        if (compileTask == null) {
+            compileTask =
                 new CompileTask(
                         this,
-                        execute,
                         new CompileTask.CompilerListeners() {
                             private boolean compileSuccess = true;
 
@@ -490,10 +491,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 return compileSuccess;
                             }
                         });
+        }
+        compileTask.setExecution(execute);
         if (!blockMainThread) {
-            compilationThread.start();
+            CoroutineUtil.inParallel(compileTask);
         } else {
-            CoroutineUtil.execute(compilationThread);
+            CoroutineUtil.execute(compileTask);
         }
     }
 

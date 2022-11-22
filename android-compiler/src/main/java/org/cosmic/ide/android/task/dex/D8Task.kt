@@ -59,8 +59,8 @@ class D8Task : Task {
      *
      * @param root directory to search in.
      */
-    private fun getClassFiles(root: File): ArrayList<Path> {
-        val paths = arrayListOf<Path>()
+    private fun getClassFiles(root: File): List<Path> {
+        val paths = mutableListOf<Path>()
 
         root.walk().forEach {
             if (it.extension == "class") {

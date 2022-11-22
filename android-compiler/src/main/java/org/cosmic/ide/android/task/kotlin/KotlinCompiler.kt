@@ -14,26 +14,28 @@ import java.io.File
 
 class KotlinCompiler : Task {
 
-    private val collector = object : MessageCollector {
-        private val diagnostics = mutableListOf<Diagnostic>()
+    private val collector: MessageCollector by lazy {
+        object : MessageCollector {
+            private val diagnostics = mutableListOf<Diagnostic>()
 
-        override fun clear() { diagnostics.clear() }
+            override fun clear() { diagnostics.clear() }
 
-        override fun hasErrors() = diagnostics.any { it.severity.isError }
+            override fun hasErrors() = diagnostics.any { it.severity.isError }
 
-        override fun report(
-            severity: CompilerMessageSeverity,
-            message: String,
-            location: CompilerMessageSourceLocation?
-        ) {
-            // do not add redundant logging messages
-            if (severity != CompilerMessageSeverity.LOGGING) {
-                diagnostics += Diagnostic(severity, message, location)
+            override fun report(
+                severity: CompilerMessageSeverity,
+                message: String,
+                location: CompilerMessageSourceLocation?
+            ) {
+                // do not add redundant logging messages
+                if (severity != CompilerMessageSeverity.LOGGING) {
+                    diagnostics.add(Diagnostic(severity, message, location))
+                }
             }
-        }
 
-        override fun toString() = diagnostics
-            .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
+            override fun toString() = diagnostics
+                .joinToString(System.lineSeparator().repeat(2)) { it.toString() }
+        }
     }
 
     private val args = K2JVMCompilerArguments().apply {
@@ -55,7 +57,7 @@ class KotlinCompiler : Task {
         val mKotlinHome = File(project.binDirPath, "kt_home").apply { mkdirs() }
         val mClassOutput = File(project.binDirPath, "classes").apply { mkdirs() }
 
-        val claspath = arrayListOf<File>()
+        val claspath = mutableListOf<File>()
         val libs = File(project.libDirPath).listFiles()
         if (libs != null) {
             for (lib in libs) {
@@ -98,8 +100,8 @@ class KotlinCompiler : Task {
         }
     }
 
-    fun getSourceFiles(dir: File): ArrayList<String> {
-        val sourceFiles = arrayListOf<String>()
+    fun getSourceFiles(dir: File): List<String> {
+        val sourceFiles = mutableListOf<String>()
         val files = dir.listFiles()
         if (files == null) return sourceFiles
         for (file in files) {

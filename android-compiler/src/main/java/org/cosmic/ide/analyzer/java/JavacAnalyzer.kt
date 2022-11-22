@@ -14,7 +14,6 @@ import org.cosmic.ide.project.JavaProject
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
-import java.util.ArrayList
 import java.util.Locale
 import javax.tools.Diagnostic
 import javax.tools.DiagnosticCollector
@@ -49,7 +48,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         val version = prefs.getString("java_version", "7")
         val files = getSourceFiles(File(project.srcDirPath))
 
-        val javaFileObjects = arrayListOf<JavaFileObject>()
+        val javaFileObjects = mutableListOf<JavaFileObject>()
         for (file in files) {
             javaFileObjects.add(
                 object : SimpleJavaFileObject(
@@ -68,7 +67,7 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
             )
         }
 
-        val args = arrayListOf<String>()
+        val args = mutableListOf<String>()
 
         args.add("-proc:none")
         args.add("-source")
@@ -98,10 +97,10 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         diagnostics = DiagnosticCollector<JavaFileObject>()
     }
 
-    fun getDiagnostics(): ArrayList<DiagnosticRegion> {
+    fun getDiagnostics(): List<DiagnosticRegion> {
         val diagnostic = diagnostics.getDiagnostics()
         Log.d(TAG, "diagnostics=" + diagnostic)
-        val problems = arrayListOf<DiagnosticRegion>()
+        val problems = mutableListOf<DiagnosticRegion>()
         for (it in diagnostic) {
             if (it.getSource() == null) continue
             val severity = if (it.getKind() == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
@@ -114,8 +113,8 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         return problems
     }
 
-    private fun getClasspath(): ArrayList<File> {
-        val classpath = arrayListOf<File>()
+    private fun getClasspath(): List<File> {
+        val classpath = mutableListOf<File>()
         val clspath = prefs.getString("classpath", "")
 
         if (!clspath!!.isEmpty()) {
@@ -132,11 +131,11 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         return classpath
     }
 
-    private fun getSourceFiles(path: File): ArrayList<File> {
-        val sourceFiles = arrayListOf<File>()
+    private fun getSourceFiles(path: File): List<File> {
+        val sourceFiles = mutableListOf<File>()
         val files = path.listFiles()
         if (files == null) {
-            return arrayListOf<File>()
+            return mutableListOf<File>()
         }
         for (file in files) {
             if (file.isFile()) {

@@ -24,12 +24,12 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 
-public class JavacCompilationTask implements Task {
+public class JavaCompiler implements Task {
 
     private final SharedPreferences prefs;
-    private final String TAG = "JavacCompilationTask";
+    private final String TAG = "JavaCompiler";
 
-    public JavacCompilationTask(SharedPreferences preferences) {
+    public JavaCompiler(SharedPreferences preferences) {
         prefs = preferences;
     }
 

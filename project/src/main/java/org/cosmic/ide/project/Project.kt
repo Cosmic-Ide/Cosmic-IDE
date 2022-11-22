@@ -16,8 +16,6 @@ interface Project {
 
     val projectDirPath: String
 
-    val projectDirPath: String
-
     val srcDirPath: String
 
     val binDirPath: String

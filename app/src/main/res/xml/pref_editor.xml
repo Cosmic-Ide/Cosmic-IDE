@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.cosmic.ide.ui.preference.SliderPreference
+        android:valueFrom="@integer/font_size_min"
+        android:valueTo="@integer/font_size_max"
+        android:stepSize="@integer/font_size_stepsize"
+        app:key="font_size"
+        app:title="@string/font_size"
+        app:defaultValue="@integer/font_size_default" />
+
+</PreferenceScreen>

@@ -73,7 +73,7 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
         console.flushInputStream()
         supportActionBar?.setSubtitle(getString(R.string.console_state_running))
         task = ExecuteDexTask(
-            settings,
+            settings.prefs,
             classToExecute,
             console.getInputStream(),
             console.getOutputStream(),

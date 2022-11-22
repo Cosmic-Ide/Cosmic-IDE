@@ -8,7 +8,6 @@ import org.cosmic.ide.R
 import org.cosmic.ide.ui.treeview.TreeNode
 import org.cosmic.ide.ui.treeview.base.BaseNodeViewBinder
 import org.cosmic.ide.ui.treeview.model.TreeFile
-import org.cosmic.ide.util.dpToPx
 import org.cosmic.ide.util.AndroidUtilities
 
 class TreeFileNodeViewBinder(

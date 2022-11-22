@@ -79,7 +79,7 @@ class ExecuteDexTask(
             }
         }
 
-        val args = prefs.getString("ide_program_arguments", "")!!.trim()
+        val args = prefs.getString("program_arguments", "")!!.trim()
 
         // Split arguments into an array
         val param = args.split("\\s+").toTypedArray()

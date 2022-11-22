@@ -2,10 +2,17 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <org.cosmic.ide.ui.preference.IntListPreference
-        app:key="@string/key_theme"
-        app:title="@string/pref_theme"
+        app:key="theme"
+        app:title="@string/theme"
         app:defaultValue="@integer/theme_auto"
         app:entries="@array/entries_theme"
         app:entryValues="@array/values_theme" />
+
+    <SwitchPreferenceCompat
+        app:key="dynamic_theme"
+        app:title="@string/dynamic_theme"
+        app:summary="@string/dynamic_theme_desc"
+        app:defaultValue="false"
+        app:isPreferenceVisible="false" />
 
 </PreferenceScreen>

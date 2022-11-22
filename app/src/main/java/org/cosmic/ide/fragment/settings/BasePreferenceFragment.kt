@@ -8,12 +8,11 @@ import org.cosmic.ide.ui.preference.Settings
 
 abstract class BasePreferenceFragment(@StringRes private val titleId: Int) : PreferenceFragmentCompat() {
 
-    lateinit var settings: Settings
+    val settings: Settings by lazy { Settings() }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        settings = Settings(requireContext())
         listView.clipToPadding = false
     }
 

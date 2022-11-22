@@ -9,8 +9,8 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Process
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
-import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -20,6 +20,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.ui.preference.Settings
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.util.Timer
@@ -27,11 +28,11 @@ import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
 class App : Application() {
-
     override fun onCreate() {
         super.onCreate()
         context = this
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        val settings = Settings()
+        AppCompatDelegate.setDefaultNightMode(settings.theme)
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()

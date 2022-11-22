@@ -4,16 +4,21 @@
     <PreferenceScreen
         android:fragment="org.cosmic.ide.fragment.settings.AppearanceSettingsFragment"
         android:key="appearance"
-        android:title="@string/pref_appearance" />
+        android:title="@string/appearance" />
 
     <PreferenceScreen
         android:fragment="org.cosmic.ide.fragment.settings.CompilerSettingsFragment"
         android:key="compiler"
-        android:title="@string/pref_compiler" />
+        android:title="@string/compiler" />
+
+    <PreferenceScreen
+        android:fragment="org.cosmic.ide.fragment.settings.EditorSettingsFragment"
+        android:key="editor"
+        android:title="@string/editor" />
 
     <PreferenceScreen
         android:fragment="org.cosmic.ide.fragment.settings.AboutSettingsFragment"
         android:key="about"
-        android:title="@string/pref_about" />
+        android:title="@string/about" />
 
 </PreferenceScreen>

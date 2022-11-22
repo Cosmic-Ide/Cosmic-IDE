@@ -67,7 +67,7 @@ class KotlinCompiler : Task {
 
         val appClass = Class.forName("org.cosmic.ide.App")
         val prefs = appClass.getDeclaredMethod("getDefaultPreferences").invoke(null) as SharedPreferences
-        val useFastJarFS = prefs.getBoolean("ide_fastjarfs", true)
+        val useFastJarFS = prefs.getBoolean("fast_jar_fs", true)
 
         args.apply {
             classpath =

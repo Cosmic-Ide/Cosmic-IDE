@@ -82,26 +82,30 @@
     <string name="package_name">Имя пакета</string>
     <string name="use_kotlin_template">Использовать шаблон Котлина</string>
 
-    <string name="pref_java_version">Версия Java</string>
-    <string name="pref_program_arguments">Аргументы программы</string>
-    <string name="pref_settings">Настройки</string>
-    <string name="pref_appearance">Вид</string>
-    <string name="pref_fast_jar_fs">Включить Fast Jar FS</string>
-    <string name="pref_fast_jar_fs_desc">[Экспериментальный] Использовать Fast Jar FS. Улучшает скорость сборки.</string>
-    <string name="pref_compiler">Компилятор</string>
-    <string name="pref_theme">Тема</string>
-    <string name="pref_about">О программе</string>
-    <string name="pref_discord">Наш Дискорд</string> 
-    <string name="pref_discord_desc">Присоединяйтесь к нашему дискорд каналу</string>
-    <string name="pref_github">Наш Github</string>
-    <string name="pref_github_desc">Просмотрите наш репозиторий на Github</string>
-    <string name="pref_app_version">Версия %s</string>
+    <string name="java_version">Версия Java</string>
+    <string name="program_arguments">Аргументы программы</string>
+    <string name="settings">Настройки</string>
+    <string name="appearance">Оформление</string>
+    <string name="fast_jar_fs">Fast Jar FS</string>
+    <string name="fast_jar_fs_desc">[Экспериментальный] Улучшает скорость сборки</string>
+    <string name="compiler">Компилятор</string>
+    <string name="theme">Тема</string>
+    <string name="about">О программе</string>
+    <string name="discord">Дискорд</string> 
+    <string name="discord_desc">Присоединяйтесь к нашему дискорд каналу</string>
+    <string name="github">Github</string>
+    <string name="github_desc">Просмотрите наш репозиторий на Github</string>
+    <string name="app_version">Версия %s</string>
     <string name="check_for_updates">Проверить обновления</string>
-    <string name="pref_follow_system">Как в системе</string>
-    <string name="pref_theme_light">Светлая</string>
-    <string name="pref_theme_dark">Темная</string>
+    <string name="follow_system">Как в системе</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Темная</string>
     <string name="app_translation">Перевод</string>
     <string name="app_translation_desc">Помочь с переводом приложения</string>
+    <string name="dynamic_theme">Динамическая тема</string>
+    <string name="dynamic_theme_desc">Применяет тему устройства, основанную на цветовой палитре обоев на устройстве</string>
+    <string name="editor">Редактор</string>
+    <string name="font_size">Размер шрифта</string>
 
     <string name="wizard_title">Новый проект</string>
 

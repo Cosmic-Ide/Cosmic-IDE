@@ -1,13 +1,11 @@
 package org.cosmic.ide.activity
 
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -21,13 +19,14 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
     protected lateinit var binding: Binding
     protected abstract val layoutRes: Int
 
-    protected lateinit var settings: SharedPreferences
+    protected val settings: Settings by lazy { Settings() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val isDynamic = settings.isDynamicTheme
+        when {
+            isDynamic -> setTheme(R.style.Theme_CosmicIde_Monet)
+        }
         super.onCreate(savedInstanceState)
-        setupTheme()
-
-        settings = App.getDefaultPreferences()
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false)
         getRootActivityView().addSystemWindowInsetToPadding(true, false, true, false)
@@ -60,10 +59,5 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
 
     private fun getRootActivityView(): View {
         return getWindow().getDecorView().findViewById(android.R.id.content)
-    }
-
-    private fun setupTheme() {
-        val settingz = Settings(this)
-        AppCompatDelegate.setDefaultNightMode(settingz.theme)
     }
 }

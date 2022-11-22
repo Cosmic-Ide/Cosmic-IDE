@@ -24,9 +24,9 @@ class TreeFileNodeViewBinder(
 
         val isRightToLeft = ViewCompat.getLayoutDirection(viewHolder.rootView) == ViewCompat.LAYOUT_DIRECTION_RTL
         if (isRightToLeft) {
-            AndroidUtilities.setMargins(viewHolder.rootView, 0, 0, level * dpToPx.dpToPx(14f), 0)
+            AndroidUtilities.setMargins(viewHolder.rootView, 0, 0, level * AndroidUtilities.dpToPx(12f), 0)
         } else {
-            AndroidUtilities.setMargins(viewHolder.rootView, level * dpToPx.dpToPx(14f), 0, 0, 0)
+            AndroidUtilities.setMargins(viewHolder.rootView, level * AndroidUtilities.dpToPx(12f), 0, 0, 0)
         }
 
         with(viewHolder.arrow) {

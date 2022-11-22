@@ -20,7 +20,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
-import org.cosmic.ide.util.dpToPx
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.util.Timer
@@ -36,7 +35,6 @@ class App : Application() {
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.getAbsolutePath()!!)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
-            dpToPx.initializeResources(context.getResources())
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe")
             }

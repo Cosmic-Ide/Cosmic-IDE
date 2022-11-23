@@ -382,7 +382,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         if (new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
             FileUtil.deleteFile(FileUtil.getDataDir() + "compiler-modules");
         }
-        var output = new File(FileUtil.getClasspathDir() + "/core-lambda-stubs.jar");
+        var output = new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar");
         if (!output.exists()) {
             try {
                 FileUtil.writeFile(

@@ -16,10 +16,11 @@
 
 package com.github.pedrovgs.lynx;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Activity created to show a LynxView with "match_parent" configuration for LynxView
@@ -29,7 +30,7 @@ import android.os.Bundle;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class LynxActivity extends Activity {
+public class LynxActivity extends AppCompatActivity {
 
     private static final String LYNX_CONFIG_EXTRA = "extra_lynx_config";
 

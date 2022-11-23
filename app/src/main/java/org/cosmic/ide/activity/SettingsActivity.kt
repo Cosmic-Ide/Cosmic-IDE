@@ -3,7 +3,6 @@ package org.cosmic.ide.activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -52,7 +51,6 @@ class SettingsActivity :
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace(R.id.container, fragment)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             addToBackStack(null)
         }
     }

@@ -93,7 +93,7 @@
     <string name="program_arguments">Program Arguments</string>
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
-    <string name="fast_jar_fs">Fast Jar FS</string>
+    <string name="fast_jar_fs">Fast Jar File System</string>
     <string name="fast_jar_fs_desc">[Experimental] Improves build speed</string>
     <string name="compiler">Compiler</string>
     <string name="theme">Theme</string>

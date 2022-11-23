@@ -86,7 +86,7 @@
     <string name="program_arguments">Аргументы программы</string>
     <string name="settings">Настройки</string>
     <string name="appearance">Оформление</string>
-    <string name="fast_jar_fs">Fast Jar FS</string>
+    <string name="fast_jar_fs">Быстрая файловая система JAR</string>
     <string name="fast_jar_fs_desc">[Экспериментальный] Улучшает скорость сборки</string>
     <string name="compiler">Компилятор</string>
     <string name="theme">Тема</string>

@@ -8,7 +8,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
-import org.cosmic.ide.fragment.settings.SettingsHeadersFragment
+import org.cosmic.ide.fragment.settings.RootSettingsFragment
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
 class SettingsActivity :
@@ -25,9 +25,23 @@ class SettingsActivity :
 
         binding.appBar.liftOnScrollTargetViewId = androidx.preference.R.id.recycler_view
 
-        if (supportFragmentManager.findFragmentById(R.id.container) == null) {
-            openDefaultFragment()
+        if (savedInstanceState == null) {
+            val fragment = RootSettingsFragment()
+
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.container, fragment)
+            }
+        } else {
+            savedInstanceState?.let {
+                supportActionBar?.title = it.getCharSequence(TITLE_TAG)
+            }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putCharSequence(TITLE_TAG, supportActionBar?.title)
     }
 
     override fun onTitleChanged(title: CharSequence?, color: Int) {
@@ -36,14 +50,15 @@ class SettingsActivity :
     }
 
     override fun onPreferenceStartFragment(
-            caller: PreferenceFragmentCompat,
-            pref: Preference
+        caller: PreferenceFragmentCompat,
+        pref: Preference
     ) : Boolean {
         val fm = supportFragmentManager
         val fragment = fm.fragmentFactory.instantiate(classLoader, pref.fragment ?: return false)
         fragment.arguments = pref.extras
         fragment.setTargetFragment(caller, 0)
         openFragment(fragment)
+        supportActionBar?.title = pref.title ?: getString(R.string.settings)
         return true
     }
 
@@ -55,11 +70,7 @@ class SettingsActivity :
         }
     }
 
-    private fun openDefaultFragment() {
-        val fragment = SettingsHeadersFragment()
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace(R.id.container, fragment)
-        }
+    companion object {
+        private const val TITLE_TAG = "settings_title"
     }
 }

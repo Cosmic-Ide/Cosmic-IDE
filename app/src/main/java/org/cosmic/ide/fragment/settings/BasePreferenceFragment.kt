@@ -25,7 +25,6 @@ abstract class BasePreferenceFragment(@StringRes private val titleId: Int) : Pre
 
     @Suppress("UsePropertyAccessSyntax")
     protected fun setTitle(title: CharSequence) {
-        (parentFragment as? SettingsHeadersFragment)?.setTitle(title)
-            ?: activity?.setTitle(title)
+        activity?.setTitle(title)
     }
 }

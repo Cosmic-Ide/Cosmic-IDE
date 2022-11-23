@@ -29,7 +29,7 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
-    implementation("com.google.android.material:material:1.8.0-alpha02")
+    implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
     // TODO: migrate to recyclerview for better performance.
     // implementation("androidx.recyclerview:recyclerview:1.3.0-rc01")

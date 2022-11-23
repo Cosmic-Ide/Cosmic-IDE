@@ -32,11 +32,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import io.github.rosemoe.sora.lang.EmptyLanguage;
-import io.github.rosemoe.sora.lang.Language;
-import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme;
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.App;
@@ -57,6 +52,7 @@ import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.ui.editor.adapter.PageAdapter;
 import org.cosmic.ide.util.AndroidUtilities;
 import org.cosmic.ide.util.Constants;
+import org.cosmic.ide.util.EditorUtil;
 import org.cosmic.ide.util.UiUtilsKt;
 import org.eclipse.tm4e.core.registry.IGrammarSource;
 import org.eclipse.tm4e.core.registry.IThemeSource;
@@ -209,7 +205,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                 binding.tabLayout.removeAllTabs();
                                 binding.tabLayout.setVisibility(View.GONE);
                                 binding.emptyContainer.setVisibility(View.VISIBLE);
-                                mainViewModel.setCurrentPosition(-1, false);
+                                mainViewModel.setCurrentPosition(-1);
                             } else {
                                 binding.tabLayout.setVisibility(View.VISIBLE);
                                 binding.emptyContainer.setVisibility(View.GONE);
@@ -500,32 +496,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
-    private TextMateColorScheme getColorScheme() {
-        try {
-            ThemeRegistry registry = ThemeRegistry.getInstance();
-            if (App.Companion.isDarkMode(this)) {
-                registry.setTheme("darcula");
-            } else {
-                registry.setTheme("QuietLight");
-            }
-            return TextMateColorScheme.create(registry);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    private Language getJavaLanguage() {
-        return TextMateLanguage.create(
-            "source.java", true
-        );
-    }
-
-    private Language getSmaliLanguage() {
-        return TextMateLanguage.create(
-            "source.smali", true
-        );
-    }
-
     private void smali() {
         final var classes = getClassesFromDex();
         if (classes == null) return;
@@ -601,9 +571,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     final var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
-                    edi.setColorScheme(getColorScheme());
+                    edi.setColorScheme(EditorUtil.INSTANCE.getColorScheme());
                     edi.setTextSize(12);
-                    edi.setEditorLanguage(getJavaLanguage());
+                    edi.setEditorLanguage(EditorUtil.INSTANCE.getJavaLanguage());
 
                     edi.setText(temp);
 
@@ -643,9 +613,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     var edi = new CodeEditor(this);
                     edi.setTypefaceText(
                             ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
-                    edi.setColorScheme(getColorScheme());
+                    edi.setColorScheme(EditorUtil.INSTANCE.getColorScheme());
                     edi.setTextSize(12);
-                    edi.setEditorLanguage(getJavaLanguage());
+                    edi.setEditorLanguage(EditorUtil.INSTANCE.getJavaLanguage());
 
                     edi.setText(disassembled);
 

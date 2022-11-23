@@ -12,9 +12,6 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
-import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import org.cosmic.ide.App
@@ -27,6 +24,7 @@ import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
+import org.cosmic.ide.util.EditorUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
@@ -127,32 +125,12 @@ class CodeEditorFragment : Fragment() {
 
     private fun setEditorLanguage(lang: Int) {
         when (lang) {
-            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(getJavaLanguage())
+            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(EditorUtil.javaLanguage)
             LANGUAGE_KOTLIN -> binding.editor.setEditorLanguage(getKotlinLanguage())
-            LANGUAGE_SMALI -> binding.editor.setEditorLanguage(getSmaliLanguage())
+            LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
-        binding.editor.setColorScheme(getColorScheme())
-    }
-
-    private fun getColorScheme(): TextMateColorScheme {
-        try {
-            val registry = ThemeRegistry.getInstance()
-            if (App.isDarkMode(requireContext())) {
-                registry.setTheme("darcula")
-            } else {
-                registry.setTheme("QuietLight")
-            }
-            return TextMateColorScheme.create(registry)
-        } catch (e: Exception) {
-            throw IllegalStateException(e)
-        }
-    }
-
-    private fun getJavaLanguage(): Language {
-        return TextMateLanguage.create(
-            "source.java", true
-        )
+        binding.editor.setColorScheme(EditorUtil.colorScheme)
     }
 
     private fun getKotlinLanguage(): Language {
@@ -162,12 +140,6 @@ class CodeEditorFragment : Fragment() {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             return EmptyLanguage()
         }
-    }
-
-    private fun getSmaliLanguage(): Language {
-        return TextMateLanguage.create(
-           "source.smali", true
-        )
     }
 
     fun getEditor() = binding.editor

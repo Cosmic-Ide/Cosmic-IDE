@@ -3,7 +3,6 @@
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceHeaderFragmentCompat
@@ -42,7 +41,6 @@ class SettingsHeadersFragment : PreferenceHeaderFragmentCompat(), SlidingPaneLay
         childFragmentManager.commit {
             setReorderingAllowed(true)
             replace(androidx.preference.R.id.preferences_detail, fragment)
-            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             addToBackStack(null)
         }
     }

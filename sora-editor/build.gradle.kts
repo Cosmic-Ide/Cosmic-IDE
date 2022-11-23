@@ -38,5 +38,5 @@ dependencies {
     implementation("org.yaml:snakeyaml:1.33")
     implementation("com.google.code.gson:gson:2.10")
     implementation("org.jruby.jcodings:jcodings:1.0.58")
-    implementation("org.jruby.joni:joni:2.1.43")
+    implementation("org.jruby.joni:joni:2.1.44")
 }

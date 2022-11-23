@@ -42,7 +42,11 @@ class AppearanceSettingsFragment :
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
             "theme" ->  AppCompatDelegate.setDefaultNightMode(settings.theme)
-            // "dynamic_theme" -> postRestart()
+            "dynamic_theme" -> {
+                // At the moment I don't know how to recreate all activities on the back stack.
+                // Temporary hack: Set current theme to current
+                AppCompatDelegate.setDefaultNightMode(settings.theme)
+            }
         }
     }
 

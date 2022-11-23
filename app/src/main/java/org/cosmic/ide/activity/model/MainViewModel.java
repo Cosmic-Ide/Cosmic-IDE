@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ public class MainViewModel extends ViewModel {
 
     /**
      * Opens this file to the editor
+     *
      * @param file The file to be opened
      * @return whether the operation was successful
      */

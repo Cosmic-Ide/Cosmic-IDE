@@ -1,15 +1,12 @@
 package org.cosmic.ide.activity.adapter;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.cosmic.ide.R;
 import org.cosmic.ide.databinding.ProjectItemBinding;
 import org.cosmic.ide.project.Project;
 
@@ -69,7 +66,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final var binding = ProjectItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        final var binding =
+                ProjectItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         final var holder = new ViewHolder(binding);
         return holder;
     }

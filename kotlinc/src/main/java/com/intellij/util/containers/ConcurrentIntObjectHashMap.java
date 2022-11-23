@@ -6,7 +6,6 @@ package com.intellij.util.containers;
 import android.os.Build;
 
 import org.jetbrains.annotations.NotNull;
-
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import sun.misc.Unsafe;

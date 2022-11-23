@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
@@ -36,7 +35,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implements ProjectAdapter.OnProjectEventListener {
+public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
+        implements ProjectAdapter.OnProjectEventListener {
 
     public interface OnProjectCreatedListener {
         void onProjectCreated(Project project);
@@ -72,10 +72,11 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implem
                     binding.refreshLayout.setRefreshing(false);
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
-        binding.fab.setOnLongClickListener(v -> {
-            startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
-            return true;
-        });
+        binding.fab.setOnLongClickListener(
+                v -> {
+                    startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
+                    return true;
+                });
     }
 
     @Override
@@ -107,11 +108,13 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implem
     }
 
     private void buildCreateNewProjectDialog() {
-        var builder = new MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle(getString(R.string.create_project))
-                .setView(R.layout.dialog_new_project)
-                .setPositiveButton(getString(R.string.create), null)
-                .setNegativeButton(getString(android.R.string.cancel), null);
+        var builder =
+                new MaterialAlertDialogBuilder(
+                                this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                        .setTitle(getString(R.string.create_project))
+                        .setView(R.layout.dialog_new_project)
+                        .setPositiveButton(getString(R.string.create), null)
+                        .setNegativeButton(getString(android.R.string.cancel), null);
         createNewProjectDialog = builder.create();
     }
 
@@ -158,7 +161,8 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implem
                 this,
                 getString(R.string.dialog_delete),
                 getString(R.string.dialog_confirm_delete, project.getProjectName()),
-                getString(android.R.string.yes), getString(android.R.string.no),
+                getString(android.R.string.yes),
+                getString(android.R.string.no),
                 ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
                         project.delete();
@@ -166,9 +170,9 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implem
                                 () -> {
                                     /** I think it will be annoying? Or not? :D */
                                     /* AndroidUtilities.showSimpleAlert(
-                                        this,
-                                        getString(R.string.success),
-                                        getString(R.string.delete_success)); */
+                                    this,
+                                    getString(R.string.success),
+                                    getString(R.string.delete_success)); */
                                     loadProjects();
                                 });
                     }

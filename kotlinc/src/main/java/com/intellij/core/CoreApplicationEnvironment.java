@@ -5,8 +5,6 @@
 
 package com.intellij.core;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.intellij.codeInsight.folding.CodeFoldingSettings;
 import com.intellij.concurrency.JobLauncher;
 import com.intellij.ide.plugins.DisabledPluginsState;
@@ -60,6 +58,7 @@ import com.intellij.util.KeyedLazyInstanceEP;
 import com.intellij.util.graph.GraphAlgorithms;
 import com.intellij.util.graph.impl.GraphAlgorithmsImpl;
 
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.resolve.diagnostics.DiagnosticSuppressor;
 import org.picocontainer.MutablePicoContainer;
 

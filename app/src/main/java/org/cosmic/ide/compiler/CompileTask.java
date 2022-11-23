@@ -30,11 +30,11 @@ public class CompileTask extends Thread {
     public CompileTask(MainActivity context, CompilerListeners listener) {
         this.activity = context;
         this.listener = listener;
-        this.compilers = new Compilers(
-                new KotlinCompiler(),
-                new JavaCompiler(App.getDefaultPreferences()),
-                new D8Task()
-        );
+        this.compilers =
+                new Compilers(
+                        new KotlinCompiler(),
+                        new JavaCompiler(App.getDefaultPreferences()),
+                        new D8Task());
 
         STAGE_KOTLINC = context.getString(R.string.compilation_stage_kotlinc);
         STAGE_JAVAC = context.getString(R.string.compilation_stage_javac);
@@ -58,7 +58,7 @@ public class CompileTask extends Thread {
 
         executeDex();
     }
-    
+
     public void setExecution(boolean enable) {
         showExecuteDialog = enable;
     }

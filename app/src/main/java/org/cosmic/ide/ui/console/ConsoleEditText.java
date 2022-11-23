@@ -170,7 +170,10 @@ public class ConsoleEditText extends AppCompatEditText {
                 () -> {
                     var spannable = new SpannableString(str);
                     spannable.setSpan(
-                            new ForegroundColorSpan(ThemeUtils.getThemeAttrColor(getContext(), com.google.android.material.R.attr.colorError)),
+                            new ForegroundColorSpan(
+                                    ThemeUtils.getThemeAttrColor(
+                                            getContext(),
+                                            com.google.android.material.R.attr.colorError)),
                             0,
                             str.length(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

@@ -53,7 +53,7 @@ public class Trace {
                 || logcatTrace.charAt(20) != TRACE_LEVEL_SEPARATOR) {
             throw new IllegalTraceException(
                     "You are trying to create a Trace object from a invalid String. Your trace have"
-                        + " to be something like: '02-07 17:45:33.014 D/Any debug trace'.");
+                            + " to be something like: '02-07 17:45:33.014 D/Any debug trace'.");
         }
         TraceLevel level = TraceLevel.getTraceLevel(logcatTrace.charAt(TRACE_LEVEL_INDEX));
         String date = logcatTrace.substring(0, END_OF_DATE_INDEX);

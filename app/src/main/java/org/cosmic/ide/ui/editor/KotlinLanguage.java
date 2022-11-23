@@ -15,7 +15,6 @@ import io.github.rosemoe.sora.text.CharPosition;
 import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.project.Project;
 
 import java.io.File;
@@ -28,8 +27,7 @@ public class KotlinLanguage extends TextMateLanguage {
     private final String fileName;
     private final String TAG = "KotlinLanguage";
 
-    public KotlinLanguage(CodeEditor editor, Project project, File file)
-            throws Exception {
+    public KotlinLanguage(CodeEditor editor, Project project, File file) throws Exception {
         super(
                 GrammarRegistry.getInstance().findGrammar("source.kotlin"),
                 GrammarRegistry.getInstance().findLanguageConfiguration("source.kotlin"),
@@ -57,8 +55,7 @@ public class KotlinLanguage extends TextMateLanguage {
             final var text = mEditor.getText().toString();
             final var ktFile = kotlinEnvironment.updateKotlinFile(fileName, text);
             Collection<CompletionItem> itemList =
-                    kotlinEnvironment.complete(
-                             ktFile, position.getLine(), position.getColumn());
+                    kotlinEnvironment.complete(ktFile, position.getLine(), position.getColumn());
             publisher.addItems(itemList);
         } catch (Throwable e) {
             Log.e(TAG, "Failed to fetch code suggestions", e);

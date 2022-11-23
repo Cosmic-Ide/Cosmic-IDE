@@ -195,7 +195,7 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
         } catch (
                 RuntimeException
                         exception1) { // Likely cause is a TransactionTooLargeException on API
-                                      // levels 15+.
+            // levels 15+.
             try {
                 /*
                  * Limit trace size to between 100kB and 400kB, since Unicode characters can be 1-4 bytes each.
@@ -209,7 +209,7 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
             } catch (
                     RuntimeException
                             exception2) { // Likely cause is a TransactionTooLargeException on API
-                                          // levels 15+.
+                // levels 15+.
                 return false;
             }
         }

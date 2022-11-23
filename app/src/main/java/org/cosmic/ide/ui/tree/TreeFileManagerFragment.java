@@ -2,18 +2,15 @@ package org.cosmic.ide.ui.tree;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.ViewCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -75,10 +72,13 @@ public class TreeFileManagerFragment extends Fragment {
         UiUtilsKt.addSystemWindowInsetToPadding(view, false, true, false, true);
 
         SwipeRefreshLayout refreshLayout = view.findViewById(R.id.refreshLayout);
-        refreshLayout.setOnRefreshListener(() -> partialRefresh(() -> {
-            refreshLayout.setRefreshing(false);
-            treeView.refreshTreeView();
-        }));
+        refreshLayout.setOnRefreshListener(
+                () ->
+                        partialRefresh(
+                                () -> {
+                                    refreshLayout.setRefreshing(false);
+                                    treeView.refreshTreeView();
+                                }));
 
         activity = ((MainActivity) getContext());
 
@@ -86,14 +86,13 @@ public class TreeFileManagerFragment extends Fragment {
         buildCreateDirectoryDialog();
         buildRenameFileDialog();
 
-        treeView = new TreeView<TreeFile>(
-                activity, TreeNode.root(Collections.emptyList()));
+        treeView = new TreeView<TreeFile>(activity, TreeNode.root(Collections.emptyList()));
 
         HorizontalScrollView horizontalScrollView = view.findViewById(R.id.horizontalScrollView);
-        horizontalScrollView.addView(treeView.getView(), new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-        ));
+        horizontalScrollView.addView(
+                treeView.getView(),
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         treeView.getView().setNestedScrollingEnabled(false);
 
         treeView.setAdapter(
@@ -110,27 +109,36 @@ public class TreeFileManagerFragment extends Fragment {
                                             mainViewModel.setDrawerState(false);
                                         }
                                     } catch (Exception e) {
-                                        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.error_file_open), e.getLocalizedMessage(), activity.getString(R.string.dialog_close), activity.getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                                            }
-                                        }));
+                                        AndroidUtilities.showSimpleAlert(
+                                                activity,
+                                                activity.getString(R.string.error_file_open),
+                                                e.getLocalizedMessage(),
+                                                activity.getString(R.string.dialog_close),
+                                                activity.getString(R.string.copy_stacktrace),
+                                                ((dialog, which) -> {
+                                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                                        AndroidUtilities.copyToClipboard(
+                                                                e.getLocalizedMessage());
+                                                    }
+                                                }));
                                     }
                                 }
                             }
 
                             @Override
                             public boolean onNodeLongClicked(
-                                    View view,
-                                    TreeNode<TreeFile> treeNode,
-                                    boolean expanded) {
+                                    View view, TreeNode<TreeFile> treeNode, boolean expanded) {
                                 showPopup(view, treeNode);
                                 return true;
                             }
                         }));
-        fileViewModel.getNodes().observe(getViewLifecycleOwner(), node -> {
-            treeView.refreshTreeView(node);
-        });
+        fileViewModel
+                .getNodes()
+                .observe(
+                        getViewLifecycleOwner(),
+                        node -> {
+                            treeView.refreshTreeView(node);
+                        });
     }
 
     @Override
@@ -207,29 +215,37 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void buildCreateFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle(activity.getString(R.string.create_class_dialog_title))
-                .setView(R.layout.dialog_new_class)
-                .setPositiveButton(activity.getString(R.string.create_class_dialog_positive), null)
-                .setNegativeButton(activity.getString(android.R.string.cancel), null);
+        var builder =
+                new MaterialAlertDialogBuilder(
+                                activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                        .setTitle(activity.getString(R.string.create_class_dialog_title))
+                        .setView(R.layout.dialog_new_class)
+                        .setPositiveButton(
+                                activity.getString(R.string.create_class_dialog_positive), null)
+                        .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewFileDialog = builder.create();
     }
 
     private void buildCreateDirectoryDialog() {
-        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle(activity.getString(R.string.create_folder_dialog_title))
-                .setView(R.layout.dialog_new_folder)
-                .setPositiveButton(activity.getString(R.string.create_folder_dialog_positive), null)
-                .setNegativeButton(activity.getString(android.R.string.cancel), null);
+        var builder =
+                new MaterialAlertDialogBuilder(
+                                activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                        .setTitle(activity.getString(R.string.create_folder_dialog_title))
+                        .setView(R.layout.dialog_new_folder)
+                        .setPositiveButton(
+                                activity.getString(R.string.create_folder_dialog_positive), null)
+                        .setNegativeButton(activity.getString(android.R.string.cancel), null);
         createNewDirectoryDialog = builder.create();
     }
 
     private void buildRenameFileDialog() {
-        var builder = new MaterialAlertDialogBuilder(activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle(activity.getString(R.string.rename))
-                .setView(R.layout.dialog_rename)
-                .setPositiveButton(activity.getString(R.string.rename), null)
-                .setNegativeButton(activity.getString(android.R.string.cancel), null);
+        var builder =
+                new MaterialAlertDialogBuilder(
+                                activity, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                        .setTitle(activity.getString(R.string.rename))
+                        .setView(R.layout.dialog_rename)
+                        .setPositiveButton(activity.getString(R.string.rename), null)
+                        .setNegativeButton(activity.getString(android.R.string.cancel), null);
         renameFileDialog = builder.create();
     }
 
@@ -273,9 +289,7 @@ public class TreeFileManagerFragment extends Fragment {
 
             ArrayAdapter<CharSequence> adapter =
                     ArrayAdapter.createFromResource(
-                            activity,
-                            R.array.kind_class,
-                            android.R.layout.simple_spinner_item);
+                            activity, R.array.kind_class, android.R.layout.simple_spinner_item);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             classType.setAdapter(adapter);
 
@@ -391,11 +405,8 @@ public class TreeFileManagerFragment extends Fragment {
                     v -> {
                         var fileName = inputEt.getText().toString().replace("..", "");
 
-                        if (fileName != null
-                                && !fileName.isEmpty()
-                                && !fileName.contains(".")) {
-                            var filePath =
-                                    node.getValue().getFile().getPath() + "/" + fileName;
+                        if (fileName != null && !fileName.isEmpty() && !fileName.contains(".")) {
+                            var filePath = node.getValue().getFile().getPath() + "/" + fileName;
 
                             FileUtil.createDirectory(filePath);
                             var dirPth = new File(filePath);
@@ -408,7 +419,11 @@ public class TreeFileManagerFragment extends Fragment {
                             createNewDirectoryDialog.dismiss();
                         } else {
                             if (fileName.contains(".") || fileName.isEmpty()) {
-                                ((TextInputLayout) inputEt.getParent()).setError(activity.getString(R.string.create_folder_dialog_invalid_name));
+                                ((TextInputLayout) inputEt.getParent())
+                                        .setError(
+                                                activity.getString(
+                                                        R.string
+                                                                .create_folder_dialog_invalid_name));
                             }
                         }
                     });
@@ -416,12 +431,18 @@ public class TreeFileManagerFragment extends Fragment {
     }
 
     private void showConfirmDeleteDialog(TreeNode<TreeFile> node) {
-        AndroidUtilities.showSimpleAlert(activity, activity.getString(R.string.dialog_delete), getString(R.string.dialog_confirm_delete, node.getValue().getFile().getName()), activity.getString(android.R.string.yes), activity.getString(android.R.string.no), ((dialog, which) -> {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
-                FileUtil.deleteFile(node.getValue().getFile().getPath());
-                node.getParent().removeChild(node);
-                treeView.refreshTreeView();
-            }
-        }));
+        AndroidUtilities.showSimpleAlert(
+                activity,
+                activity.getString(R.string.dialog_delete),
+                getString(R.string.dialog_confirm_delete, node.getValue().getFile().getName()),
+                activity.getString(android.R.string.yes),
+                activity.getString(android.R.string.no),
+                ((dialog, which) -> {
+                    if (which == DialogInterface.BUTTON_POSITIVE) {
+                        FileUtil.deleteFile(node.getValue().getFile().getPath());
+                        node.getParent().removeChild(node);
+                        treeView.refreshTreeView();
+                    }
+                }));
     }
 }

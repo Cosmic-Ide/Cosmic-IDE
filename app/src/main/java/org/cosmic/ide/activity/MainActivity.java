@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,7 +33,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import io.github.rosemoe.sora.widget.CodeEditor;
 
-import org.cosmic.ide.App;
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.model.FileViewModel;
 import org.cosmic.ide.activity.model.MainViewModel;
@@ -54,8 +52,6 @@ import org.cosmic.ide.util.AndroidUtilities;
 import org.cosmic.ide.util.Constants;
 import org.cosmic.ide.util.EditorUtil;
 import org.cosmic.ide.util.UiUtilsKt;
-import org.eclipse.tm4e.core.registry.IGrammarSource;
-import org.eclipse.tm4e.core.registry.IThemeSource;
 import org.jf.baksmali.Baksmali;
 import org.jf.baksmali.BaksmaliOptions;
 import org.jf.dexlib2.DexFileFactory;
@@ -65,7 +61,6 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -142,7 +137,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         buildLoadingDialog();
 
         fileViewModel.refreshNode(getProject().getRootFile());
-        mainViewModel.setFiles(new ArrayList<File>()); // getProject().getIndexer().getList("lastOpenedFiles"));
+        mainViewModel.setFiles(
+                new ArrayList<File>()); // getProject().getIndexer().getList("lastOpenedFiles"));
 
         getSupportActionBar().setTitle(getProject().getProjectName());
 
@@ -260,16 +256,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final String tag =
-                "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
+        final String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
         final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         final var id = item.getItemId();
         if (id == R.id.action_format) {
             if (fragment instanceof CodeEditorFragment) {
                 CoroutineUtil.execute(
                         () -> {
-                            String current =
-                                    mainViewModel.getCurrentFile().getAbsolutePath();
+                            String current = mainViewModel.getCurrentFile().getAbsolutePath();
                             if (current.endsWith(".java")) {
                                 var formatter =
                                         new GoogleJavaFormatter(
@@ -278,8 +272,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                                         .getText()
                                                         .toString());
                                 temp = formatter.format();
-                            } else if (current.endsWith(".kt")
-                                    || current.endsWith(".kts")) {
+                            } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
                                 new ktfmtFormatter(current).format();
                                 try {
                                     temp = FileUtil.readFile(new File(current));
@@ -293,7 +286,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                                 .getText()
                                                 .toString();
                             }
-                });
+                        });
                 ((CodeEditorFragment) fragment).getEditor().setText(temp);
             }
         } else if (id == R.id.action_settings) {
@@ -357,11 +350,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 FileUtil.writeFile(
                         getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                    }
-                }));
+                AndroidUtilities.showSimpleAlert(
+                        this,
+                        getString(R.string.error_file_unzip),
+                        e.getLocalizedMessage(),
+                        getString(R.string.dialog_close),
+                        getString(R.string.copy_stacktrace),
+                        ((dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
+                            }
+                        }));
             }
         }
         final var commonStdlib =
@@ -372,11 +371,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                         getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdlib.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                    }
-                }));
+                AndroidUtilities.showSimpleAlert(
+                        this,
+                        getString(R.string.error_file_unzip),
+                        e.getLocalizedMessage(),
+                        getString(R.string.dialog_close),
+                        getString(R.string.copy_stacktrace),
+                        ((dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
+                            }
+                        }));
             }
         }
         if (new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
@@ -388,11 +393,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 FileUtil.writeFile(
                         getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
             } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_unzip), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                    }
-                }));
+                AndroidUtilities.showSimpleAlert(
+                        this,
+                        getString(R.string.error_file_unzip),
+                        e.getLocalizedMessage(),
+                        getString(R.string.dialog_close),
+                        getString(R.string.copy_stacktrace),
+                        ((dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
+                            }
+                        }));
             }
         }
     }
@@ -446,47 +457,63 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         loadingDialog.show();
         if (compileTask == null) {
             compileTask =
-                new CompileTask(
-                        this,
-                        new CompileTask.CompilerListeners() {
-                            private boolean compileSuccess = true;
+                    new CompileTask(
+                            this,
+                            new CompileTask.CompilerListeners() {
+                                private boolean compileSuccess = true;
 
-                            @Override
-                            public void onCurrentBuildStageChanged(String stage) {
-                                changeLoadingDialogBuildStage(stage);
-                            }
-
-                            @Override
-                            public void onSuccess() {
-                                notifBuilder.setContentText(getString(R.string.compilation_result_success));
-                                notifManager.notify(id, notifBuilder.build());
-                                if (loadingDialog.isShowing()) {
-                                    loadingDialog.dismiss();
+                                @Override
+                                public void onCurrentBuildStageChanged(String stage) {
+                                    changeLoadingDialogBuildStage(stage);
                                 }
-                            }
 
-                            @Override
-                            public void onFailed(String errorMessage) {
-                                compileSuccess = false;
-                                notifBuilder.setContentText(getString(R.string.compilation_result_failed));
-                                notifManager.notify(id, notifBuilder.build());
-                                if (loadingDialog.isShowing()) {
-                                    loadingDialog.dismiss();
+                                @Override
+                                public void onSuccess() {
+                                    notifBuilder.setContentText(
+                                            getString(R.string.compilation_result_success));
+                                    notifManager.notify(id, notifBuilder.build());
+                                    if (loadingDialog.isShowing()) {
+                                        loadingDialog.dismiss();
+                                    }
                                 }
-                                new Handler(Looper.getMainLooper()).post(() -> {
-                                    AndroidUtilities.showSimpleAlert(MainActivity.this, getString(R.string.compilation_result_failed), errorMessage, getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                            AndroidUtilities.copyToClipboard(errorMessage);
-                                        }
-                                    }));
-                                });
-                            }
 
-                            @Override
-                            public boolean isSuccessTillNow() {
-                                return compileSuccess;
-                            }
-                        });
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    compileSuccess = false;
+                                    notifBuilder.setContentText(
+                                            getString(R.string.compilation_result_failed));
+                                    notifManager.notify(id, notifBuilder.build());
+                                    if (loadingDialog.isShowing()) {
+                                        loadingDialog.dismiss();
+                                    }
+                                    new Handler(Looper.getMainLooper())
+                                            .post(
+                                                    () -> {
+                                                        AndroidUtilities.showSimpleAlert(
+                                                                MainActivity.this,
+                                                                getString(
+                                                                        R.string
+                                                                                .compilation_result_failed),
+                                                                errorMessage,
+                                                                getString(R.string.dialog_close),
+                                                                getString(R.string.copy_stacktrace),
+                                                                ((dialog, which) -> {
+                                                                    if (which
+                                                                            == DialogInterface
+                                                                                    .BUTTON_NEGATIVE) {
+                                                                        AndroidUtilities
+                                                                                .copyToClipboard(
+                                                                                        errorMessage);
+                                                                    }
+                                                                }));
+                                                    });
+                                }
+
+                                @Override
+                                public boolean isSuccessTillNow() {
+                                    return compileSuccess;
+                                }
+                            });
         }
         compileTask.setExecution(execute);
         if (!blockMainThread) {
@@ -526,11 +553,18 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                             1,
                                             options);
                                 } catch (Throwable e) {
-                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_file_extract_smali), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                            AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                                        }
-                                    }));
+                                    AndroidUtilities.showSimpleAlert(
+                                            this,
+                                            getString(R.string.error_file_extract_smali),
+                                            e.getLocalizedMessage(),
+                                            getString(R.string.dialog_close),
+                                            getString(R.string.copy_stacktrace),
+                                            ((dialog, which) -> {
+                                                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                                    AndroidUtilities.copyToClipboard(
+                                                            e.getLocalizedMessage());
+                                                }
+                                            }));
                                 }
                             });
 
@@ -560,17 +594,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                                                     getProject().getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
-                                    AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_decompile), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                            AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                                        }
-                                    }));
+                                    AndroidUtilities.showSimpleAlert(
+                                            this,
+                                            getString(R.string.error_class_decompile),
+                                            e.getLocalizedMessage(),
+                                            getString(R.string.dialog_close),
+                                            getString(R.string.copy_stacktrace),
+                                            ((dialog, which) -> {
+                                                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                                    AndroidUtilities.copyToClipboard(
+                                                            e.getLocalizedMessage());
+                                                }
+                                            }));
                                 }
                             });
 
                     final var edi = new CodeEditor(this);
-                    edi.setTypefaceText(
-                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
+                    edi.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
                     edi.setColorScheme(EditorUtil.INSTANCE.getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(EditorUtil.INSTANCE.getJavaLanguage());
@@ -603,16 +643,21 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                                         + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
-                        AndroidUtilities.showSimpleAlert(this, getString(R.string.error_class_disassemble), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                            }
-                        }));
+                        AndroidUtilities.showSimpleAlert(
+                                this,
+                                getString(R.string.error_class_disassemble),
+                                e.getLocalizedMessage(),
+                                getString(R.string.dialog_close),
+                                getString(R.string.copy_stacktrace),
+                                ((dialog, which) -> {
+                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                        AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
+                                    }
+                                }));
                     }
 
                     var edi = new CodeEditor(this);
-                    edi.setTypefaceText(
-                            ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
+                    edi.setTypefaceText(ResourcesCompat.getFont(this, R.font.jetbrains_mono_light));
                     edi.setColorScheme(EditorUtil.INSTANCE.getColorScheme());
                     edi.setTextSize(12);
                     edi.setEditorLanguage(EditorUtil.INSTANCE.getJavaLanguage());
@@ -656,11 +701,17 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             }
             return classes.toArray(new String[0]);
         } catch (Exception e) {
-            AndroidUtilities.showSimpleAlert(this, getString(R.string.error_classes_get_dex), e.getLocalizedMessage(), getString(R.string.dialog_close), getString(R.string.copy_stacktrace), ((dialog, which) -> {
-                if (which == DialogInterface.BUTTON_NEGATIVE) {
-                    AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                }
-            }));
+            AndroidUtilities.showSimpleAlert(
+                    this,
+                    getString(R.string.error_classes_get_dex),
+                    e.getLocalizedMessage(),
+                    getString(R.string.dialog_close),
+                    getString(R.string.copy_stacktrace),
+                    ((dialog, which) -> {
+                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                            AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
+                        }
+                    }));
             return null;
         }
     }

@@ -182,7 +182,6 @@ public final class JDOMUtil {
             throw new RuntimeException(var3);
         }
 
-
         return var10000;
     }
 

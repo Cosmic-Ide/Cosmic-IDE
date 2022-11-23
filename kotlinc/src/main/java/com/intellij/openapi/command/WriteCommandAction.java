@@ -1,9 +1,5 @@
 package com.intellij.openapi.command;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
-
 import com.intellij.codeInsight.FileModificationService2;
 import com.intellij.core.CoreBundle;
 import com.intellij.openapi.application.Application;
@@ -23,7 +19,10 @@ import com.intellij.util.ArrayUtil;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.ThrowableRunnable;
 
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
@@ -279,8 +278,7 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
 
     private void performWriteCommandAction(@NotNull RunResult<T> result) {
         if (myPsiFiles.length > 0
-                && !FileModificationService2.getInstance()
-                        .preparePsiElementsForWrite(myPsiFiles)) {
+                && !FileModificationService2.getInstance().preparePsiElementsForWrite(myPsiFiles)) {
             return;
         }
 

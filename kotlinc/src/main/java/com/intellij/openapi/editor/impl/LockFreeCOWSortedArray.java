@@ -1,9 +1,9 @@
 package com.intellij.openapi.editor.impl;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.util.ArrayFactory;
 import com.intellij.util.ArrayUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicReference;

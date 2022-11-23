@@ -1,7 +1,5 @@
 package com.intellij.openapi.editor.impl;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.openapi.util.text.LineTokenizer;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.ArrayUtil;
@@ -13,6 +11,8 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 

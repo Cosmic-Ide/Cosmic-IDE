@@ -1,9 +1,5 @@
 package com.intellij.openapi.editor.impl;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
-
 import com.intellij.core.CoreBundle;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
@@ -49,6 +45,10 @@ import com.intellij.util.text.ImmutableCharSequence;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

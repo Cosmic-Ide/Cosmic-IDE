@@ -142,7 +142,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         buildLoadingDialog();
 
         fileViewModel.refreshNode(getProject().getRootFile());
-        mainViewModel.setFiles(getProject().getIndexer().getList("lastOpenedFiles"));
+        mainViewModel.setFiles(new ArrayList<File>()); // getProject().getIndexer().getList("lastOpenedFiles"));
 
         getSupportActionBar().setTitle(getProject().getProjectName());
 

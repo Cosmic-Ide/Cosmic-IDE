@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceScreen
-        android:fragment="org.cosmic.ide.fragment.settings.AppearanceSettingsFragment"
-        android:key="appearance"
-        android:title="@string/appearance" />
+        app:fragment="org.cosmic.ide.fragment.settings.AppearanceSettingsFragment"
+        app:key="appearance"
+        app:title="@string/appearance" />
 
     <PreferenceScreen
-        android:fragment="org.cosmic.ide.fragment.settings.CompilerSettingsFragment"
-        android:key="compiler"
-        android:title="@string/compiler" />
+        app:fragment="org.cosmic.ide.fragment.settings.CompilerSettingsFragment"
+        app:key="compiler"
+        app:title="@string/compiler" />
 
     <PreferenceScreen
-        android:fragment="org.cosmic.ide.fragment.settings.EditorSettingsFragment"
-        android:key="editor"
-        android:title="@string/editor" />
+        app:fragment="org.cosmic.ide.fragment.settings.EditorSettingsFragment"
+        app:key="editor"
+        app:title="@string/editor" />
 
     <PreferenceScreen
-        android:fragment="org.cosmic.ide.fragment.settings.AboutSettingsFragment"
-        android:key="about"
-        android:title="@string/about" />
+        app:fragment="org.cosmic.ide.fragment.settings.AboutSettingsFragment"
+        app:key="about"
+        app:title="@string/about" />
 
 </PreferenceScreen>

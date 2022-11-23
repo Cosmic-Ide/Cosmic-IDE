@@ -28,8 +28,10 @@ public class JavaCompiler implements Task {
 
     private final SharedPreferences prefs;
     private final String TAG = "JavaCompiler";
+    private final JavacTool tool;
 
     public JavaCompiler(SharedPreferences preferences) {
+        tool = JavacTool.create();
         prefs = preferences;
     }
 
@@ -80,8 +82,6 @@ public class JavaCompiler implements Task {
         if (javaFileObjects.isEmpty()) {
             return;
         }
-
-        final var tool = JavacTool.create();
 
         final var standardJavaFileManager =
                 tool.getStandardFileManager(

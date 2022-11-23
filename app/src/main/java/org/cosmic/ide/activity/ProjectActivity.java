@@ -15,7 +15,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.pedrovgs.lynx.LynxActivity;
-import com.github.pedrovgs.lynx.LynxConfig;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
@@ -91,7 +90,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding> implem
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.action_logcat) {
-            startActivity(LynxActivity.getIntent(this, new LynxConfig()));
+            startActivity(LynxActivity.getIntent(this));
         }
         return super.onOptionsItemSelected(item);
     }

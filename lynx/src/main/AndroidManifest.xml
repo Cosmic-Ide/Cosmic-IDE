@@ -20,6 +20,7 @@
   <application>
     <activity
         android:name=".LynxActivity"
+        android:exported="false"
         android:windowSoftInputMode="stateHidden"/>
   </application>
 

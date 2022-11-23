@@ -16,7 +16,9 @@ class KotlinCompiler : Task {
 
     private val collector: MessageCollector by lazy {
         object : MessageCollector {
-            private val diagnostics = mutableListOf<Diagnostic>()
+            private val diagnostics: MutableList<Diagnostic> by lazy {
+                mutableListOf<Diagnostic>()
+            }
 
             override fun clear() { diagnostics.clear() }
 
@@ -38,11 +40,13 @@ class KotlinCompiler : Task {
         }
     }
 
-    private val args = K2JVMCompilerArguments().apply {
-        includeRuntime = false
-        noReflect = true
-        noStdlib = true
-        noJdk = true
+    private val args: K2JVMCompilerArguments by lazy {
+        K2JVMCompilerArguments().apply {
+            includeRuntime = false
+            noReflect = true
+            noStdlib = true
+            noJdk = true
+        }
     }
 
     @Throws(Exception::class)
@@ -85,6 +89,8 @@ class KotlinCompiler : Task {
             pluginClasspaths = plugins
             useFastJarFileSystem = useFastJarFS
         }
+
+        collector.clear()
 
         val cacheDir = File(project.binDirPath, "caches")
 

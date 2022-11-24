@@ -26,8 +26,8 @@ import com.github.pedrovgs.lynx.exception.IllegalTraceException;
 public class Trace {
 
     private static final char TRACE_LEVEL_SEPARATOR = '/';
-    private static final int START_OF_MESSAGE_INDEX = 1;
-    public static final int MIN_TRACE_SIZE = 21;
+    private static final int START_OF_MESSAGE_INDEX = 2;
+    public static final int MIN_TRACE_SIZE = 2;
     public static final int TRACE_LEVEL_INDEX = 0;
 
     private final TraceLevel level;
@@ -49,7 +49,7 @@ public class Trace {
     public static Trace fromString(String logcatTrace) throws IllegalTraceException {
         if (logcatTrace == null
                 || logcatTrace.length() < MIN_TRACE_SIZE
-                || logcatTrace.charAt(20) != TRACE_LEVEL_SEPARATOR) {
+                || logcatTrace.charAt(1) != TRACE_LEVEL_SEPARATOR) {
             throw new IllegalTraceException(
                     "You are trying to create a Trace object from a invalid String. Your trace have"
                             + " to be something like: 'D/Any debug trace'.");

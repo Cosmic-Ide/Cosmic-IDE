@@ -20,18 +20,15 @@ A next-gen Ide for JVM development on Android!
 
 - Java 17
 - Kotlin Language Support
-- Kotlin Auto Completion
+- Kotlin Code Completion
 - Javac, Javap, D8
-- Eclipse Compiler for Java (ECJ)
 - Incremental Compilation
-- Eclipse class disassembler
 - Execute Java Code
 - Error/Warning marker in editor
 - Code highlighting
 - Add Classpath
 - Decompile Class File
 - Google Java Formatter
-- Eclipse Java Formatter
 - Baksmali Dex File
 - Basic Java Keywords auto-completion
 

@@ -74,7 +74,6 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
 
     private ListView lv_traces;
     private EditText et_filter;
-    private ImageButton ib_share;
     private Spinner sp_filter;
 
     private RendererAdapter<Trace> adapter;
@@ -292,7 +291,6 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
         lv_traces = (ListView) findViewById(R.id.lv_traces);
         lv_traces.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         et_filter = (EditText) findViewById(R.id.et_filter);
-        ib_share = (ImageButton) findViewById(R.id.ib_share);
         sp_filter = (Spinner) findViewById(R.id.sp_filter);
 
         configureCursorColor();
@@ -372,13 +370,6 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
                     }
                 });
 
-        ib_share.setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        presenter.onShareButtonClicked();
-                    }
-                });
         ArrayAdapter<TraceLevel> adapter =
                 new ArrayAdapter<>(
                         getContext(), R.layout.single_line_spinner_item, TraceLevel.values());

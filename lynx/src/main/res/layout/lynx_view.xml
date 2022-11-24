@@ -21,52 +21,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <!-- Filter Layout -->
-
-  <RelativeLayout
-      android:id="@+id/filter"
-      android:layout_height="@dimen/filter_layout_height"
-      android:layout_width="match_parent"
-      android:layout_alignParentBottom="true">
-
-    <!-- Share ImageButton -->
-
-    <ImageButton
-        android:id="@+id/ib_share"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_share"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
-
     <!-- Filter Layout -->
-
     <LinearLayout
+        android:id="@+id/filter"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/ib_share"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="@dimen/filter_layout_height">
 
-      <EditText
-          android:id="@+id/et_filter"
-          android:layout_width="0dp"
-          android:layout_weight="6"
-          android:layout_height="match_parent"
-          android:hint="@string/et_filter_hint_text"
-          android:padding="@dimen/filter_edit_text_padding"
-          tools:text="Filter"
-          android:singleLine="true"/>
+        <EditText
+            android:id="@+id/et_filter"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_height="match_parent"
+            android:hint="@string/et_filter_hint_text"
+            android:padding="@dimen/filter_edit_text_padding"
+            tools:text="Filter"
+            android:singleLine="true"/>
 
-      <Spinner
-          android:id="@+id/sp_filter"
-          android:layout_width="0dp"
-          android:layout_weight="5"
-          android:layout_height="match_parent"/>
+        <Spinner
+            android:id="@+id/sp_filter"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent"/>
     </LinearLayout>
-  </RelativeLayout>
 
   <!-- ListView full of traces -->
 

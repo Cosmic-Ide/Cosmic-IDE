@@ -86,18 +86,14 @@ public class Lynx {
      * Configures a Logcat.Listener and initialize Logcat dependency to read traces from the OS log.
      */
     public void startReading() {
-        logcat.setListener(
-                new Logcat.Listener() {
-                    @Override
-                    public void onTraceRead(String logcatTrace) {
-                        try {
-                            addTraceToTheBuffer(logcatTrace);
-                        } catch (IllegalTraceException e) {
-                            return;
-                        }
-                        notifyNewTraces();
-                    }
-                });
+        logcat.setListener(logcatTrace -> {
+            try {
+                addTraceToTheBuffer(logcatTrace);
+            } catch (IllegalTraceException e) {
+                return;
+            }
+            notifyNewTraces();
+        });
         boolean logcatWasNotStarted = Thread.State.NEW.equals(logcat.getState());
         if (logcatWasNotStarted) {
             logcat.start();
@@ -206,16 +202,12 @@ public class Lynx {
     }
 
     private synchronized void notifyListeners(final List<Trace> traces) {
-        mainThread.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (Listener listener : listeners) {
-                            listener.onNewTraces(traces);
-                        }
-                        lastNotificationTime = timeProvider.getCurrentTimeMillis();
-                    }
-                });
+        mainThread.post(() -> {
+            for (Listener listener : listeners) {
+                listener.onNewTraces(traces);
+            }
+            lastNotificationTime = timeProvider.getCurrentTimeMillis();
+        });
     }
 
     public interface Listener {

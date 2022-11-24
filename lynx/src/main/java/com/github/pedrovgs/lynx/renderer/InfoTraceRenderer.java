@@ -36,6 +36,6 @@ class InfoTraceRenderer extends TraceRenderer {
 
     @Override
     protected int getTraceColor() {
-        return Color.rgb(255, 215, 0);
+        return Color.TRANSPARENT;
     }
 }

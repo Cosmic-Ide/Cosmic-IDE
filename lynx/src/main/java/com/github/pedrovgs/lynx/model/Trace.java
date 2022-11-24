@@ -26,10 +26,9 @@ import com.github.pedrovgs.lynx.exception.IllegalTraceException;
 public class Trace {
 
     private static final char TRACE_LEVEL_SEPARATOR = '/';
-    private static final int END_OF_DATE_INDEX = 18;
-    private static final int START_OF_MESSAGE_INDEX = 21;
+    private static final int START_OF_MESSAGE_INDEX = 1;
     public static final int MIN_TRACE_SIZE = 21;
-    public static final int TRACE_LEVEL_INDEX = 19;
+    public static final int TRACE_LEVEL_INDEX = 0;
 
     private final TraceLevel level;
     private final String message;
@@ -53,12 +52,11 @@ public class Trace {
                 || logcatTrace.charAt(20) != TRACE_LEVEL_SEPARATOR) {
             throw new IllegalTraceException(
                     "You are trying to create a Trace object from a invalid String. Your trace have"
-                            + " to be something like: '02-07 17:45:33.014 D/Any debug trace'.");
+                            + " to be something like: 'D/Any debug trace'.");
         }
         TraceLevel level = TraceLevel.getTraceLevel(logcatTrace.charAt(TRACE_LEVEL_INDEX));
-        String date = logcatTrace.substring(0, END_OF_DATE_INDEX);
         String message = logcatTrace.substring(START_OF_MESSAGE_INDEX, logcatTrace.length());
-        return new Trace(level, date + " " + message);
+        return new Trace(level, message);
     }
 
     public TraceLevel getLevel() {

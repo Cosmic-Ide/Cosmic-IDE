@@ -33,6 +33,6 @@ class WarningTraceRenderer extends TraceRenderer {
 
     @Override
     protected int getTraceColor() {
-        return Color.rgb(255, 165, 0);
+        return Color.YELLOW;
     }
 }

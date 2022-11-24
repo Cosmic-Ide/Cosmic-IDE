@@ -36,6 +36,6 @@ class DebugTraceRenderer extends TraceRenderer {
 
     @Override
     protected int getTraceColor() {
-        return Color.BLUE;
+        return Color.CYAN;
     }
 }

@@ -25,6 +25,5 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
 }

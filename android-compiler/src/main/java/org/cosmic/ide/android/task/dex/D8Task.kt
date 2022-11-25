@@ -21,14 +21,14 @@ class D8Task : Task {
          */
         @JvmStatic
         fun compileJar(jarFile: String) {
-            val outputDex = jarFile.replaceAfterLast('.', "dex")
+            val dex = jarFile.replaceAfterLast('.', "dex")
             D8.run(
                 D8Command.builder()
                     .setMinApiLevel(26)
                     .setMode(CompilationMode.DEBUG)
                     .addClasspathFiles(CompilerUtil.platformPaths)
                     .addProgramFiles(Paths.get(jarFile))
-                    .setOutput(Paths.get(outputDex), OutputMode.DexIndexed)
+                    .setOutput(Paths.get(dex), OutputMode.DexIndexed)
                     .build()
             )
         }
@@ -68,9 +68,5 @@ class D8Task : Task {
             }
         }
         return paths
-    }
-
-    override fun getTaskName(): String {
-        return "D8 Task"
     }
 }

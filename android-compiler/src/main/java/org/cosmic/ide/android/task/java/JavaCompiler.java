@@ -35,11 +35,6 @@ public class JavaCompiler implements Task {
         prefs = preferences;
     }
 
-    @Override
-    public String getTaskName() {
-        return TAG;
-    }
-
     /*
      * Compile the java files into classes.
      *

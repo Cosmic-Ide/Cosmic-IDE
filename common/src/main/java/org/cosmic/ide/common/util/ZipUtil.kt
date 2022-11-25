@@ -6,9 +6,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import java.nio.file.Path
-import java.nio.file.Paths
-import java.nio.file.Files
+import java.io.File
 
 object ZipUtil {
 
@@ -18,26 +16,28 @@ object ZipUtil {
     fun unzipFromAssets(context: Context, zipFile: String, destination: String) {
         try {
             val stream = context.assets.open(zipFile)
-            unzip(stream, Paths.get(destination))
+            unzip(stream, File(destination))
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    private fun unzip(stream: InputStream, targetDir: Path) {
+    private fun unzip(stream: InputStream, targetDir: File) {
         ZipInputStream(stream).use { zipIn ->
             var ze: ZipEntry? = zipIn.nextEntry
             while (ze != null) {
-              val resolvedPath = targetDir.resolve(ze.name).normalize()
-              if (!resolvedPath.startsWith(targetDir)) {
+              val resolved = targetDir.resolve(ze.name).normalize()
+              if (!resolved.startsWith(targetDir)) {
                     // see: https://snyk.io/research/zip-slip-vulnerability
                     throw SecurityException("Entry with an illegal path: " + ze.name)
                 }
                 if (ze.isDirectory) {
-                    Files.createDirectories(resolvedPath)
+                    resolved.mkdirs()
                 } else {
-                    Files.createDirectories(resolvedPath.parent)
-                    Files.copy(zipIn, resolvedPath)
+                    resolved.parentFile.mkdirs()
+                    resolved.outputStream().use { output ->
+                        zipIn.copyTo(output)
+                    }
                 }
 
                 ze = zipIn.nextEntry

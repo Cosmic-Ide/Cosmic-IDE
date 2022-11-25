@@ -41,11 +41,6 @@ public class JarTask implements Task {
         stream.close();
     }
 
-    @Override
-    public String getTaskName() {
-        return "JarTask";
-    }
-
     private Manifest buildManifest() {
         var manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");

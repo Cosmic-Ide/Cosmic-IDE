@@ -21,7 +21,10 @@ import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
 import javax.tools.StandardLocation
 
-class JavacAnalyzer(context: Context, javaProject: JavaProject) {
+class JavacAnalyzer(
+     context: Context,
+     private val project: JavaProject
+) {
 
     private val prefs: SharedPreferences
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
@@ -32,12 +35,10 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
         )
     }
     private var isFirstUse = true
-    private val project: JavaProject
     private val TAG = "JavacAnalyzer"
 
     init {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        project = javaProject
         standardFileManager.setLocation(
             StandardLocation.PLATFORM_CLASS_PATH, CompilerUtil.platformClasspath
         )
@@ -115,17 +116,11 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private fun getClasspath(): List<File> {
         val classpath = mutableListOf<File>()
-        val clspath = prefs.getString("classpath", "")
-
-        if (!clspath!!.isEmpty()) {
-            for (clas in clspath.split(":")) {
-                classpath.add(File(clas))
+        classpath.add(File(project.binDirPath, "classes"))
+        File(project.libDirPath).walk().forEach {
+            if (it.extension.equals("jar")) {
+                classpath.add(it)
             }
-        }
-        classpath.add(File(project.binDirPath + "classes"))
-        val libs = File(project.libDirPath).listFiles()
-        for (lib in libs!!) {
-            classpath.add(lib)
         }
 
         return classpath
@@ -133,19 +128,13 @@ class JavacAnalyzer(context: Context, javaProject: JavaProject) {
 
     private fun getSourceFiles(path: File): List<File> {
         val sourceFiles = mutableListOf<File>()
-        val files = path.listFiles()
-        if (files == null) {
-            return mutableListOf<File>()
-        }
-        for (file in files) {
-            if (file.isFile()) {
-                if (file.extension.equals("java")) {
-                    sourceFiles.add(file)
-                }
-            } else {
-                sourceFiles.addAll(getSourceFiles(file))
+
+        path.walk().forEach {
+            if (it.extension.equals("java")) {
+                sourceFiles.add(it)
             }
         }
+
         return sourceFiles
     }
 }

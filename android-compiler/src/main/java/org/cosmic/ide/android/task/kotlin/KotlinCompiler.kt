@@ -62,10 +62,10 @@ class KotlinCompiler : Task {
         val mClassOutput = File(project.binDirPath, "classes").apply { mkdirs() }
 
         val claspath = mutableListOf<File>()
-        val libs = File(project.libDirPath).listFiles()
-        if (libs != null) {
-            for (lib in libs) {
-                claspath.add(lib)
+
+        File(project.libDirPath).walk().forEach {
+            if (it.extension.equals("jar")) {
+                claspath.add(it)
             }
         }
 
@@ -108,16 +108,11 @@ class KotlinCompiler : Task {
 
     fun getSourceFiles(dir: File): List<String> {
         val sourceFiles = mutableListOf<String>()
-        val files = dir.listFiles()
-        if (files == null) return sourceFiles
-        for (file in files) {
-            if (file.isFile) {
-                val extension = file.extension
-                if (extension.equals("java") || extension.equals("kt")) {
-                    sourceFiles.add(file.absolutePath)
-                }
-            } else {
-                sourceFiles.addAll(getSourceFiles(file))
+
+        dir.walk().forEach {
+            val ext = it.extension
+            if (ext.equals("java") || ext.equals("kt")) {
+                sourceFiles.add(it.absolutePath)
             }
         }
         return sourceFiles
@@ -125,24 +120,15 @@ class KotlinCompiler : Task {
 
     private fun getKotlinCompilerPlugins(project: Project): List<File> {
         val pluginDir = File(project.projectDirPath, "kt_plugins")
+        val plugins = mutableListOf<File>()
 
-        if (!pluginDir.exists() || pluginDir.isFile) {
-            return listOf<File>()
+        pluginDir.walk().forEach {
+            if (it.extension.equals("jar")) {
+                plugins.add(it)
+            }
         }
 
-        val plugins = pluginDir.listFiles { file ->
-            file.extension.equals("jar")
-        }
-
-        if (plugins == null) {
-            return listOf<File>()
-        }
-
-        return plugins.toList()
-    }
-
-    override fun getTaskName(): String {
-        return "Kotlin Compiler"
+        return plugins
     }
 
     private data class Diagnostic(

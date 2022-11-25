@@ -28,10 +28,6 @@ class ExecuteDexTask(
     private val sysOut = System.`out`
     private val sysErr = System.err
 
-    override fun getTaskName(): String {
-        return "Execute Dex Task"
-    }
-
     fun release() {
         postRunnable = null
 
@@ -89,10 +85,11 @@ class ExecuteDexTask(
                 val calledClass = dexLoader.loader.loadClass(clazz)
 
                 val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
-                if (Modifier.isStatic(method.getModifiers())) {
+                val modifiers = method.getModifiers()
+                if (Modifier.isStatic(modifiers)) {
                     // If the method is static, directly call it
                     result = method.invoke(null, param as? Any)
-                } else if (Modifier.isPublic(method.getModifiers())) {
+                } else if (Modifier.isPublic(modifiers)) {
                     // If the method is public, try to create an instance of the class,
                     // and then call it on the instance
                     val classInstance = calledClass.getConstructor().newInstance()

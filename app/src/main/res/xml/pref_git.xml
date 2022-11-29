@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        app:key="git_username"
+        app:title="@string/git_username" />
+
+    <EditTextPreference
+        app:key="git_useremail"
+        app:title="@string/git_useremail" />
+
+</PreferenceScreen>

@@ -49,4 +49,18 @@ class Settings() {
                 "java_version",
                 7
             )
+
+    val gitUserName: String
+        get() =
+            prefs.getString(
+                "git_username",
+                "User"
+            )!!
+
+    val gitUserEmail: String
+        get() =
+            prefs.getString(
+                "git_useremail",
+                "user@localhost.com"
+            )!!
 }

@@ -35,6 +35,7 @@ import io.github.rosemoe.sora.widget.CodeEditor;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.model.FileViewModel;
+import org.cosmic.ide.activity.model.GitViewModel;
 import org.cosmic.ide.activity.model.MainViewModel;
 import org.cosmic.ide.android.task.jar.JarTask;
 import org.cosmic.ide.code.decompiler.FernFlowerDecompiler;
@@ -64,6 +65,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import kotlin.Unit;
+
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     public static final String BUILD_STATUS = "BUILD_STATUS";
@@ -75,6 +78,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     private JavaProject javaProject;
     private MainViewModel mainViewModel;
+    private GitViewModel gitViewModel;
     private PageAdapter tabsAdapter;
 
     @Override
@@ -85,6 +89,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         var fileViewModel = new ViewModelProvider(this).get(FileViewModel.class);
+        var gitViewModel = new ViewModelProvider(this).get(GitViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 
@@ -190,6 +195,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab)
                 .attach();
 
+        gitViewModel.setPostCheckout(() -> {
+            fileViewModel.refreshNode(getProject().getRootFile());
+            return Unit.INSTANCE;
+        });
+        gitViewModel.setOnSave(() -> {
+            mainViewModel.clear();
+            return Unit.INSTANCE;
+        });
+        gitViewModel.setPath(getProject().getProjectDirPath());
+
         mainViewModel
                 .getFiles()
                 .observe(
@@ -251,6 +266,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        if (new File(getProject().getRootFile(), ".git").exists()) {
+            menu.findItem(R.id.action_git).setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -259,36 +277,34 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         final String tag = "f" + tabsAdapter.getItemId(binding.viewPager.getCurrentItem());
         final Fragment fragment = getSupportFragmentManager().findFragmentByTag(tag);
         final var id = item.getItemId();
-        if (id == R.id.action_format) {
-            if (fragment instanceof CodeEditorFragment) {
-                CoroutineUtil.execute(
-                        () -> {
-                            String current = mainViewModel.getCurrentFile().getAbsolutePath();
-                            if (current.endsWith(".java")) {
-                                var formatter =
-                                        new GoogleJavaFormatter(
-                                                ((CodeEditorFragment) fragment)
-                                                        .getEditor()
-                                                        .getText()
-                                                        .toString());
-                                temp = formatter.format();
-                            } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
-                                new ktfmtFormatter(current).format();
-                                try {
-                                    temp = FileUtil.readFile(new File(current));
-                                } catch (IOException e) {
-                                    Log.d(TAG, getString(R.string.error_file_open), e);
-                                }
-                            } else {
-                                temp =
-                                        ((CodeEditorFragment) fragment)
-                                                .getEditor()
-                                                .getText()
-                                                .toString();
+        if (id == R.id.action_format && fragment instanceof CodeEditorFragment) {
+            CoroutineUtil.execute(
+                    () -> {
+                        String current = mainViewModel.getCurrentFile().getAbsolutePath();
+                        if (current.endsWith(".java")) {
+                            var formatter =
+                                    new GoogleJavaFormatter(
+                                            ((CodeEditorFragment) fragment)
+                                                    .getEditor()
+                                                    .getText()
+                                                    .toString());
+                            temp = formatter.format();
+                        } else if (current.endsWith(".kt") || current.endsWith(".kts")) {
+                            new ktfmtFormatter(current).format();
+                            try {
+                                temp = FileUtil.readFile(new File(current));
+                            } catch (IOException e) {
+                                Log.d(TAG, getString(R.string.error_file_open), e);
                             }
-                        });
-                ((CodeEditorFragment) fragment).getEditor().setText(temp);
-            }
+                        } else {
+                            temp =
+                                    ((CodeEditorFragment) fragment)
+                                            .getEditor()
+                                            .getText()
+                                            .toString();
+                        }
+                    });
+            ((CodeEditorFragment) fragment).getEditor().setText(temp);
         } else if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.action_run) {
@@ -307,6 +323,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             if (fragment instanceof CodeEditorFragment) {
                 ((CodeEditorFragment) fragment).redo();
             }
+        } else if (id == R.id.action_git) {
+            startActivity(new Intent(this, GitActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

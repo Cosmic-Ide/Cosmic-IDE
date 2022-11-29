@@ -10,10 +10,8 @@ public class IntegerQueue {
     public int text[];
     public int front;
     public int rear;
-    private int size;
 
     public IntegerQueue(int size) {
-        this.size = size;
         text = new int[size];
         front = 0;
         rear = 0;

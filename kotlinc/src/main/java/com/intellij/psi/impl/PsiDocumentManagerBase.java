@@ -364,16 +364,16 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
 
         assertWeAreOutsideAfterCommitHandler();
 
-        //        actionsWhenAllDocumentsAreCommitted.put(key, ClientId.decorateRunnable(action));
+//                actionsWhenAllDocumentsAreCommitted.put(key, ClientId.decorateRunnable(action));
         return false;
     }
 
-    //    @ApiStatus.Internal
+//        @ApiStatus.Internal
     public void addRunOnCommit(@NotNull Document document, @NotNull Runnable action) {
-        List<Runnable> actions =
-                myActionsAfterCommit.computeIfAbsent(
-                        document, __ -> ContainerUtil.createConcurrentList());
-        //        actions.add(ClientId.decorateRunnable(action));
+//        List<Runnable> actions =
+//                myActionsAfterCommit.computeIfAbsent(
+//                        document, __ -> ContainerUtil.createConcurrentList());
+//                actions.add(ClientId.decorateRunnable(action));
     }
 
     @NotNull

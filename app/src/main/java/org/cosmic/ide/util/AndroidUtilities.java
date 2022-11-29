@@ -94,6 +94,15 @@ public class AndroidUtilities {
             String title,
             String message,
             String positive,
+            String negative) {
+        showSimpleAlert(context, title, message, positive, negative, null);
+    }
+
+    public static void showSimpleAlert(
+            Context context,
+            String title,
+            String message,
+            String positive,
             String negative,
             DialogInterface.OnClickListener listener) {
         showSimpleAlert(context, title, message, positive, negative, null, listener);

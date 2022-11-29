@@ -3,6 +3,7 @@ package org.cosmic.ide.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,9 @@ import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.databinding.ActivityProjectBinding;
+import org.cosmic.ide.databinding.DialogNewProjectBinding;
+import org.cosmic.ide.git.model.Author;
+import org.cosmic.ide.git.usecases.UseCasesKt;
 import org.cosmic.ide.project.JavaProject;
 import org.cosmic.ide.project.KotlinProject;
 import org.cosmic.ide.project.Project;
@@ -45,6 +49,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
     private ProjectAdapter projectAdapter;
 
     private AlertDialog createNewProjectDialog;
+    private DialogNewProjectBinding projectBinding;
 
     private OnProjectCreatedListener mListener;
 
@@ -72,11 +77,6 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                     binding.refreshLayout.setRefreshing(false);
                 });
         binding.fab.setOnClickListener(v -> showCreateNewProjectDialog());
-        binding.fab.setOnLongClickListener(
-                v -> {
-                    startActivity(new Intent(ProjectActivity.this, SettingsActivity.class));
-                    return true;
-                });
     }
 
     @Override
@@ -111,10 +111,12 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
         var builder =
                 new MaterialAlertDialogBuilder(
                                 this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                        .setTitle(getString(R.string.create_project))
-                        .setView(R.layout.dialog_new_project)
-                        .setPositiveButton(getString(R.string.create), null)
-                        .setNegativeButton(getString(android.R.string.cancel), null);
+                        .setTitle(getString(R.string.create_project));
+        projectBinding = DialogNewProjectBinding.inflate(LayoutInflater.from(builder.getContext()));
+        builder
+                .setView(projectBinding.getRoot())
+                .setPositiveButton(getString(R.string.create), null)
+                .setNegativeButton(getString(android.R.string.cancel), null);
         createNewProjectDialog = builder.create();
     }
 
@@ -122,22 +124,23 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
     private void showCreateNewProjectDialog() {
         if (!createNewProjectDialog.isShowing()) {
             createNewProjectDialog.show();
-            EditText input = createNewProjectDialog.findViewById(android.R.id.text1);
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
-            MaterialSwitch kotlinTemplate =
-                    createNewProjectDialog.findViewById(R.id.use_kotlin_template);
             createBtn.setOnClickListener(
                     v -> {
-                        var projectName = input.getText().toString().trim().replace("..", "");
+                        var projectName = projectBinding.text1.getText().toString().trim().replace("..", "");
                         if (projectName.isEmpty()) {
                             return;
                         }
-                        boolean useKotlinTemplate = kotlinTemplate.isChecked();
+                        boolean useKotlinTemplate = projectBinding.useKotlinTemplate.isChecked();
                         try {
                             var project =
                                     useKotlinTemplate
                                             ? KotlinProject.newProject(projectName)
                                             : JavaProject.newProject(projectName);
+                            if (projectBinding.useGit.isChecked()) {
+                                final var author = new Author(getSettings().getGitUserName(), getSettings().getGitUserEmail());
+                                UseCasesKt.createGitRepoWith(project.getProjectDirPath(), author, "Initial Commit");
+                            }
                             if (mListener != null) {
                                 runOnUiThread(
                                         () -> {
@@ -151,7 +154,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                         }
                         loadProjects();
                     });
-            input.setText("");
+            projectBinding.text1.setText("");
         }
     }
 

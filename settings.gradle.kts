@@ -14,5 +14,6 @@ include(
     ":kotlin-completion",
     ":lynx",
     ":ktfmt",
-    ":treeview"
+    ":treeview",
+    ":git-api"
 )

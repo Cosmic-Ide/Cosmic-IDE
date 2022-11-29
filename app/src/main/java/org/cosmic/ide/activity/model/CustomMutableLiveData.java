@@ -39,21 +39,7 @@ public class CustomMutableLiveData<T> extends MutableLiveData<T> {
             mData.setAccessible(true);
             mData.set(this, value);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void incrementVersion() {
-        try {
-            Field mVersion = LiveData.class.getDeclaredField("mVersion");
-            mVersion.setAccessible(true);
-            Integer o = (Integer) mVersion.get(this);
-            if (o == null) {
-                o = 0;
-            }
-            mVersion.set(this, o + 1);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

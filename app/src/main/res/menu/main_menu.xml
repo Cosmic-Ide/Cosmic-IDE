@@ -43,4 +43,10 @@
     <item
         android:id="@+id/action_settings"
         android:title="@string/settings" />
+
+    <item
+        android:id="@+id/action_git"
+        android:title="@string/git"
+        android:visible="false" />
+
 </menu>

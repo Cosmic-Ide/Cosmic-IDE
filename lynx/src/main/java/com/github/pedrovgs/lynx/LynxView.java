@@ -32,7 +32,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -431,7 +430,7 @@ public class LynxView extends RelativeLayout implements LynxPresenter.View {
     }
 
     private void shareTracesInternal(final String plainTraces) {
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
         sharingIntent.setType(SHARE_INTENT_TYPE);
         sharingIntent.putExtra(Intent.EXTRA_TEXT, plainTraces);
         getContext().startActivity(Intent.createChooser(sharingIntent, SHARE_INTENT_TITLE));

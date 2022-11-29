@@ -3,7 +3,7 @@
 [![Chat on Discord](https://img.shields.io/discord/867985135931383809)](https://discord.gg/8Gu6YCq2eS)
 [![License](https://img.shields.io/github/license/Cosmic-Ide/Cosmic-Ide)](https://github.com/Cosmic-Ide/Cosmic-Ide/blob/main/LICENSE)
 [![CodeFactor](https://www.codefactor.io/repository/github/cosmic-ide/cosmic-ide/badge/main)](https://codefactor.io/repository/github/cosmic-ide/cosmic-ide/overview/main)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/2e411243d41f4fa8abdfd204e41ef773)](https://codacy.com/gh/Cosmic-Ide/Cosmic-Ide/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/94a4082a551c496cae031bcdb6f2040d)](https://codacy.com/gh/Cosmic-Ide/Cosmic-Ide/dashboard)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Cosmic-Ide/Cosmic-Ide)
 [![Total downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-Ide/total)](https://github.com/Cosmic-Ide/Cosmic-Ide/releases)
 ![Repository Size](https://img.shields.io/github/repo-size/Cosmic-Ide/Cosmic-Ide)

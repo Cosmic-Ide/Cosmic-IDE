@@ -597,7 +597,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                             TreeNode<V> r, p;
                             if ((r = t.root) != null && (p = r.findTreeNode(hash, key)) != null) {
                                 V pv = p.val;
-                                if (cv == null || cv == pv || (pv != null && cv.equals(pv))) {
+                                if (cv == null || cv.equals(pv) || (pv != null && cv.equals(pv))) {
                                     oldVal = pv;
                                     if (value != null) {
                                         p.val = value;

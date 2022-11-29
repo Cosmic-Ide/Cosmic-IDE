@@ -54,7 +54,6 @@ public final class JDOMUtil {
         if (factory != null) {
             return factory;
         } else {
-            Class var1 = JDOMUtil.class;
             synchronized (JDOMUtil.class) {
                 factory = XML_INPUT_FACTORY;
                 if (factory != null) {

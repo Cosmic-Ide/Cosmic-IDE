@@ -26,8 +26,7 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.appBar.addSystemWindowInsetToPadding(false, true, false, false)
-        binding.scrollView.addSystemWindowInsetToPadding(false, false, false, true)
+        binding.root.addSystemWindowInsetToPadding(false, true, false, true)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
             val isKeyboardVisible = insets.isVisible(Type.ime())

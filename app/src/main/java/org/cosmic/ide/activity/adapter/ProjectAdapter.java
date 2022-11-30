@@ -2,18 +2,15 @@ package org.cosmic.ide.activity.adapter;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.cosmic.ide.databinding.ProjectItemBinding;
+import com.google.android.material.lists.TwoLineItemViewHolder;
 import org.cosmic.ide.project.Project;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
+public class ProjectAdapter extends RecyclerView.Adapter<TwoLineItemViewHolder> {
 
     public interface OnProjectEventListener {
         void onProjectClicked(Project project);
@@ -65,37 +62,23 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final var binding =
-                ProjectItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        final var holder = new ViewHolder(binding);
+    public TwoLineItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        final var holder = new TwoLineItemViewHolder.create(parent);
+
         return holder;
     }
 
     @NonNull
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bind(mProjects.get(position));
+    public void onBindViewHolder(TwoLineItemViewHolder holder, int position) {
+        var project = mProjects.get(position);
+
+        holder.text.setText(project.getProjectName());
+        holder.secondary.setText(project.getProjectDirPath());
     }
 
     @Override
     public int getItemCount() {
         return mProjects.size();
-    }
-
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        private ProjectItemBinding binding;
-
-        public ViewHolder(ProjectItemBinding binding) {
-            super(binding.getRoot());
-            this.binding = binding;
-        }
-
-        public void bind(@NonNull Project project) {
-            binding.setProject(project);
-            binding.setListener(onProjectEventListener);
-            binding.executePendingBindings();
-        }
     }
 }

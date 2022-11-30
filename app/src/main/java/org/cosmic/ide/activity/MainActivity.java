@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView();
+        setContentView(ActivityMainBinding.inflate(getLayoutInflater()));
         setSupportActionBar(binding.toolbar);
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);

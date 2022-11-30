@@ -6,34 +6,34 @@
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
 
-    <string name="next">Дальше</string>
+    <string name="next">Далее</string>
     <string name="back">Назад</string>
     <string name="quit">Выход</string>
-    <string name="copy_stacktrace">Копировать лог</string>
+    <string name="copy_stacktrace">Скопировать лог</string>
 
     <string name="editor_action_undo">Отменить</string>
     <string name="editor_action_redo">Повторить</string>
-    <string name="editor_action_format">Формат</string>
+    <string name="editor_action_format">Форматировать</string>
 
     <string name="menu_close_file">Закрыть</string>
     <string name="menu_close_others">Закрыть другие</string>
     <string name="menu_close_all">Закрыть все</string>
 
-    <string name="compile">Компилировать</string>
+    <string name="compile">Скомпилировать</string>
     <string name="error">Ошибка</string>
     <string name="project">Проект</string>
     <string name="folder">Папка</string>
 
     <string name="no_open_file_title">Нет открытых файлов</string>
     <string name="no_open_file_desc">Попробуйте открыть файл через левое меню.</string>
-    <string name="no_projects_title">Проекты не найдены</string>
-    <string name="no_projects_suggestion">Создайте проект, нажав на кнопку ниже.</string>
+    <string name="no_projects_title">Проектов не найдено</string>
+    <string name="no_projects_suggestion">Создайте проект, нажав кнопку ниже.</string>
 
     <string name="treemenu_create_kotlin">Создать класс Kotlin</string>
     <string name="treemenu_create_java">Создать класс Java</string>
     <string name="treemenu_create_folder">Создать папку</string>
 
-    <string name="create_folder_dialog_title">Cоздать папку</string>
+    <string name="create_folder_dialog_title">Создать папку</string>
     <string name="create_folder_dialog_class_name">Название папки</string>
     <string name="create_folder_dialog_positive">Создать</string>
     <string name="create_folder_dialog_invalid_name">Недопустимое имя папки</string>
@@ -44,7 +44,7 @@
     <string name="create_class_dialog_class_type">Тип класса</string>
     <string name="create_class_dialog_invalid_name">Недопустимое имя класса</string>
 
-    <string name="select_smali_class">Выберите класс Smali для показа</string>
+    <string name="select_smali_class">Выберите класс Smali для просмотра</string>
     <string name="select_class_decompile">Выберите класс для декомпиляции</string>
     <string name="select_class_disassemble">Выберите класс для разборки</string>
     <string name="select_class_run">Выберите класс для выполнения</string>
@@ -60,7 +60,7 @@
     <string name="compilation_state_compiling">Идёт компиляция</string>
     <string name="compilation_result_success">Успешная компиляция</string>
     <string name="compilation_result_failed">Сбой компиляции</string>
-    <string name="compilation_stage">Стадия</string>
+    <string name="compilation_stage">Этап компиляции</string>
     <string name="compilation_console" translatable="false">Консоль</string>
     <string name="compilation_recompile" translatable="false">Перекомпилировать</string>
     <string name="compilation_stage_clean">Очистка сборки&#8230;</string>
@@ -77,26 +77,26 @@
     <string name="dialog_delete">Удалить</string>
     <string name="dialog_close">Закрыть</string>
 
-    <string name="logcat">Логи</string>
+    <string name="logcat">Logcat</string>
     <string name="create_project">Создать проект</string>
     <string name="project_name">Название проекта</string>
     <string name="package_name">Имя пакета</string>
-    <string name="use_kotlin_template">Использовать шаблон Котлина</string>
+    <string name="use_kotlin_template">Использовать шаблон Kotlin</string>
 
     <string name="java_version">Версия Java</string>
     <string name="program_arguments">Аргументы программы</string>
     <string name="settings">Настройки</string>
     <string name="appearance">Оформление</string>
     <string name="fast_jar_fs">Быстрая файловая система JAR</string>
-    <string name="fast_jar_fs_desc">[Экспериментальный] Улучшает скорость сборки</string>
+    <string name="fast_jar_fs_desc">[Экспериментально] Улучшает скорость сборки</string>
     <string name="compiler">Компилятор</string>
     <string name="theme">Тема</string>
-    <string name="about">О программе</string>
-    <string name="discord">Дискорд</string> 
-    <string name="discord_desc">Присоединяйтесь к нашему дискорд каналу</string>
+    <string name="about">О приложении</string>
+    <string name="discord">Discord</string>
+    <string name="discord_desc">Присоединяйтесь к нашему серверу в Discord</string>
     <string name="github">Github</string>
-    <string name="github_desc">Просмотрите наш репозиторий на Github</string>
-    <string name="app_version">Версия %s</string>
+    <string name="github_desc">Посетите наш репозиторий на Github</string>
+    <string name="app_version">Версия: %s</string>
     <string name="check_for_updates">Проверить обновления</string>
     <string name="follow_system">Как в системе</string>
     <string name="theme_light">Светлая</string>
@@ -104,7 +104,7 @@
     <string name="app_translation">Перевод</string>
     <string name="app_translation_desc">Помочь с переводом приложения</string>
     <string name="dynamic_theme">Динамическая тема</string>
-    <string name="dynamic_theme_desc">Применяет тему устройства, основанную на цветовой палитре обоев на устройстве</string>
+    <string name="dynamic_theme_desc">Использовать динамическую тему, сгенерированную на основе установленных обоев.</string>
     <string name="editor">Редактор</string>
     <string name="font_size">Размер шрифта</string>
 

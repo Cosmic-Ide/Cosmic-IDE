@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.pedrovgs.lynx.LynxActivity;
@@ -64,6 +65,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
         projectAdapter = new ProjectAdapter();
         binding.projectRecycler.setAdapter(projectAdapter);
         binding.projectRecycler.setLayoutManager(new LinearLayoutManager(this));
+        binding.projectRecycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         projectAdapter.setOnProjectEventListener(this);
         mListener = this::onProjectClicked;
 

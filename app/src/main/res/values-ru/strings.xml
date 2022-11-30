@@ -54,6 +54,7 @@
     <string name="error_file_extract_smali">Не удалось извлечь исходный код Smali</string>
     <string name="error_class_decompile">Не удалось декомпилировать класс</string>
     <string name="error_class_disassemble">Не удалось разобрать класс</string>
+    <string name="error_classes_get_dex">Не удалось получить список классов в файле dex</string>
 
     <!-- Compiler Service -->
     <string name="compilation_state_compiling">Идёт компиляция</string>

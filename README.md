@@ -64,12 +64,13 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 ## TO-DO
 
 - \[ \] Kotlin error/warning highlight in editor
-- \[ \] Git Support (possibly with JGit)
 - \[ \] Java auto-complete
 
 ## Building
 
-Clone this repository on your device and compile using Android Studio or with gradle
+Clone this repository on your device and compile using Android Studio or with gradle.
+
+Note: You need Android Studio - Flamingo or later to compile this project, or you can downgrade Android Gradle Plugin to work with previous versions.
 
 ```sh
 ./gradlew assembleDebug

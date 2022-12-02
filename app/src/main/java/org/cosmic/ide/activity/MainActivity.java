@@ -88,10 +88,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
 
-        CoroutineUtil.inParallel(
-                () -> {
-                    unzipFiles();
-                });
+        CoroutineUtil.inParallel(this::unzipFiles);
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appBar, false, true, false, false);
 
@@ -99,7 +96,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 binding.viewPager,
                 (vi, insets) -> {
                     boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-                    int bottomInset = 0;
+                    int bottomInset;
 
                     if (imeVisible) {
                         bottomInset = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
@@ -138,9 +135,9 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         fileViewModel.refreshNode(getProject().getRootFile());
         mainViewModel.setFiles(
-                new ArrayList<File>()); // getProject().getIndexer().getList("lastOpenedFiles"));
+                new ArrayList<>()); // getProject().getIndexer().getList("lastOpenedFiles"));
 
-        getSupportActionBar().setTitle(getProject().getProjectName());
+        Objects.requireNonNull(getSupportActionBar()).setTitle(getProject().getProjectName());
 
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
@@ -155,7 +152,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         binding.tabLayout.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
-                    public void onTabUnselected(TabLayout.Tab p1) {}
+                    public void onTabUnselected(TabLayout.Tab p1) {
+                    }
 
                     @Override
                     public void onTabReselected(TabLayout.Tab p1) {
@@ -263,7 +261,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             if (fragment instanceof CodeEditorFragment) {
                 CoroutineUtil.execute(
                         () -> {
-                            String current = mainViewModel.getCurrentFile().getAbsolutePath();
+                            String current = Objects.requireNonNull(mainViewModel.getCurrentFile()).getAbsolutePath();
                             if (current.endsWith(".java")) {
                                 var formatter =
                                         new GoogleJavaFormatter(
@@ -327,7 +325,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         try {
             getProject()
                     .getIndexer()
-                    .put("lastOpenedFiles", mainViewModel.getFiles().getValue())
+                    .put("lastOpenedFiles", Objects.requireNonNull(mainViewModel.getFiles().getValue()))
                     .flush();
         } catch (JSONException e) {
             Log.e(TAG, "Cannot save opened files", e);
@@ -427,6 +425,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             runOnUiThread(
                     () -> {
                         TextView stage = loadingDialog.findViewById(R.id.stage_txt);
+                        assert stage != null;
                         stage.setText(currentStage);
                     });
         }
@@ -488,25 +487,23 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                     }
                                     new Handler(Looper.getMainLooper())
                                             .post(
-                                                    () -> {
-                                                        AndroidUtilities.showSimpleAlert(
-                                                                MainActivity.this,
-                                                                getString(
-                                                                        R.string
-                                                                                .compilation_result_failed),
-                                                                errorMessage,
-                                                                getString(R.string.dialog_close),
-                                                                getString(R.string.copy_stacktrace),
-                                                                ((dialog, which) -> {
-                                                                    if (which
-                                                                            == DialogInterface
-                                                                                    .BUTTON_NEGATIVE) {
-                                                                        AndroidUtilities
-                                                                                .copyToClipboard(
-                                                                                        errorMessage);
-                                                                    }
-                                                                }));
-                                                    });
+                                                    () -> AndroidUtilities.showSimpleAlert(
+                                                            MainActivity.this,
+                                                            getString(
+                                                                    R.string
+                                                                            .compilation_result_failed),
+                                                            errorMessage,
+                                                            getString(R.string.dialog_close),
+                                                            getString(R.string.copy_stacktrace),
+                                                            ((dialog, which) -> {
+                                                                if (which
+                                                                        == DialogInterface
+                                                                        .BUTTON_NEGATIVE) {
+                                                                    AndroidUtilities
+                                                                            .copyToClipboard(
+                                                                                    errorMessage);
+                                                                }
+                                                            })));
                                 }
 
                                 @Override
@@ -636,11 +633,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     try {
                         disassembled =
                                 new JavapDisassembler(
-                                                getProject().getBinDirPath()
-                                                        + "classes"
-                                                        + "/"
-                                                        + claz
-                                                        + ".class")
+                                        getProject().getBinDirPath()
+                                                + "classes"
+                                                + "/"
+                                                + claz
+                                                + ".class")
                                         .disassemble();
                     } catch (Throwable e) {
                         AndroidUtilities.showSimpleAlert(

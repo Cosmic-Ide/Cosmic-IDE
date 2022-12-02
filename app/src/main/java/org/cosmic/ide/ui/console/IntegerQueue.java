@@ -7,10 +7,10 @@ public class IntegerQueue {
 
     public static final int QUEUE_SIZE = 4 * 1024; // 4MB ram
     private static final String TAG = "ByteQueue";
-    public int text[];
+    public int[] text;
     public int front;
     public int rear;
-    private int size;
+    private final int size;
 
     public IntegerQueue(int size) {
         this.size = size;

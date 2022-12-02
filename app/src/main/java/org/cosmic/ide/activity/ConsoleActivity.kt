@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat.Type
-import org.cosmic.ide.App
 import org.cosmic.ide.R
 import org.cosmic.ide.android.task.exec.ExecuteDexTask
 import org.cosmic.ide.databinding.ActivityConsoleBinding
@@ -38,13 +37,13 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
             insets
         }
 
-        val bundle = getIntent().getExtras()
+        val bundle = intent.extras
 
         if (bundle != null) {
             classToExecute = bundle.getString("class_to_execute")!!
             val projectPath = bundle.getString(PROJECT_PATH)
             project = JavaProject(File(projectPath!!))
-            supportActionBar?.setTitle(project.projectName)
+            supportActionBar?.title = project.projectName
             executeDex()
         }
     }
@@ -71,17 +70,16 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
     private fun executeDex() {
         val console = binding.console
         console.flushInputStream()
-        supportActionBar?.setSubtitle(getString(R.string.console_state_running))
+        supportActionBar?.subtitle = getString(R.string.console_state_running)
         task = ExecuteDexTask(
             settings.prefs,
             classToExecute,
-            console.getInputStream(),
-            console.getOutputStream(),
-            console.getErrorStream(),
-            {
-                supportActionBar?.setSubtitle(getString(R.string.console_state_stopped))
-            }
-        )
+            console.inputStream,
+            console.outputStream,
+            console.errorStream
+        ) {
+            supportActionBar?.subtitle = getString(R.string.console_state_stopped)
+        }
         task?.doFullTask(project)
     }
 }

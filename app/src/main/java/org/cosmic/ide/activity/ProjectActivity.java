@@ -126,12 +126,15 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
             Button createBtn = createNewProjectDialog.findViewById(android.R.id.button1);
             MaterialSwitch kotlinTemplate =
                     createNewProjectDialog.findViewById(R.id.use_kotlin_template);
+            assert createBtn != null;
             createBtn.setOnClickListener(
                     v -> {
+                        assert input != null;
                         var projectName = input.getText().toString().trim().replace("..", "");
                         if (projectName.isEmpty()) {
                             return;
                         }
+                        assert kotlinTemplate != null;
                         boolean useKotlinTemplate = kotlinTemplate.isChecked();
                         try {
                             var project =
@@ -151,6 +154,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                         }
                         loadProjects();
                     });
+            assert input != null;
             input.setText("");
         }
     }
@@ -166,15 +170,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                 ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
                         project.delete();
-                        runOnUiThread(
-                                () -> {
-                                    /** I think it will be annoying? Or not? :D */
-                                    /* AndroidUtilities.showSimpleAlert(
-                                    this,
-                                    getString(R.string.success),
-                                    getString(R.string.delete_success)); */
-                                    loadProjects();
-                                });
+                        runOnUiThread(this::loadProjects);
                     }
                 }));
     }

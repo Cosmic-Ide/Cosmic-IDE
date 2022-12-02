@@ -3,7 +3,6 @@ package org.cosmic.ide.fragment.settings
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
-import android.view.View
 import androidx.core.net.toUri
 import androidx.preference.Preference
 import org.cosmic.ide.BuildConfig

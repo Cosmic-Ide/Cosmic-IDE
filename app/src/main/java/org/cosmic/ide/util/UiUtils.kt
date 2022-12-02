@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.*
 
-@JvmOverloads
 fun Context.isDarkMode(): Boolean {
     val darkModeFlag = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
     return darkModeFlag == Configuration.UI_MODE_NIGHT_YES

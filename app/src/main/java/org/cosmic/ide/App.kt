@@ -1,13 +1,10 @@
 package org.cosmic.ide
 
-import android.app.AlarmManager
 import android.app.Application
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
+import android.content.SharedPreferences
 import android.os.Build
-import android.os.Process
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
@@ -23,8 +20,6 @@ import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.ui.preference.Settings
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
-import java.util.Timer
-import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
 class App : Application() {
@@ -77,6 +72,6 @@ class App : Application() {
         lateinit var context: Context
 
         @JvmStatic
-        fun getDefaultPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
+        fun getDefaultPreferences(): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     }
 }

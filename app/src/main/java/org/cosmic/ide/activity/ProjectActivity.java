@@ -104,11 +104,6 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
         loadProjects();
     }
 
-    @Override
-    public int getLayoutRes() {
-        return R.layout.activity_project;
-    }
-
     private void buildCreateNewProjectDialog() {
         var builder =
                 new MaterialAlertDialogBuilder(

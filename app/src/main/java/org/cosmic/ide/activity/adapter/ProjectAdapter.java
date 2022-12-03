@@ -75,6 +75,13 @@ public class ProjectAdapter extends RecyclerView.Adapter<TwoLineItemViewHolder> 
 
         holder.text.setText(project.getProjectName());
         holder.secondary.setText(project.getProjectDirPath());
+
+        holder.itemView.setOnClickListener(v -> {
+            onProjectEventListener.onProjectClicked(project);
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            return onProjectEventListener.onProjectLongClicked(project);
+        });
     }
 
     @Override

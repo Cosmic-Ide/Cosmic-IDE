@@ -328,11 +328,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public int getLayoutRes() {
-        return R.layout.activity_main;
-    }
-
     private void restoreViewState(@NonNull Bundle state) {
         if (binding.root instanceof DrawerLayout) {
             boolean b = state.getBoolean(Constants.DRAWER_STATE, false);

@@ -40,7 +40,6 @@ class GitActivity :
     AdapterView.OnItemSelectedListener {
 
     private val TAG = "GitActivity"
-    override val layoutRes = R.layout.activity_git
 
     val mGitViewModel: GitViewModel by lazy {
         ViewModelProvider(this).get(GitViewModel::class.java)
@@ -56,7 +55,7 @@ class GitActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView()
+        setContentView(ActivityGitBinding.inflate(layoutInflater))
         initListeners(this)
         binding.root.addSystemWindowInsetToPadding(false, true, false, true)
         logger.attach(binding.recyclerView)

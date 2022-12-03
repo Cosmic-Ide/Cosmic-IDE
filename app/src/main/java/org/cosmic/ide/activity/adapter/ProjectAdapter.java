@@ -2,15 +2,18 @@ package org.cosmic.ide.activity.adapter;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.lists.TwoLineItemViewHolder;
+
+import org.cosmic.ide.databinding.ProjectItemBinding;
 import org.cosmic.ide.project.Project;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProjectAdapter extends RecyclerView.Adapter<TwoLineItemViewHolder> {
+public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
     public interface OnProjectEventListener {
         void onProjectClicked(Project project);
@@ -62,30 +65,43 @@ public class ProjectAdapter extends RecyclerView.Adapter<TwoLineItemViewHolder> 
 
     @NonNull
     @Override
-    public TwoLineItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final var holder = new TwoLineItemViewHolder.create(parent);
-
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        final var binding =
+                ProjectItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        final var holder = new ViewHolder(binding);
         return holder;
     }
 
     @NonNull
     @Override
-    public void onBindViewHolder(TwoLineItemViewHolder holder, int position) {
-        var project = mProjects.get(position);
-
-        holder.text.setText(project.getProjectName());
-        holder.secondary.setText(project.getProjectDirPath());
-
-        holder.itemView.setOnClickListener(v -> {
-            onProjectEventListener.onProjectClicked(project);
-        });
-        holder.itemView.setOnLongClickListener(v -> {
-            return onProjectEventListener.onProjectLongClicked(project);
-        });
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.bind(mProjects.get(position));
     }
 
     @Override
     public int getItemCount() {
         return mProjects.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+        private ProjectItemBinding binding;
+
+        public ViewHolder(ProjectItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(@NonNull Project project) {
+            binding.projectName.setText(project.getProjectName());
+            binding.projectPath.setText(project.getProjectDirPath());
+
+            binding.root.setOnClickListener(v -> {
+                onProjectEventListener.onProjectClicked(project);
+            });
+            binding.root.setOnLongClickListener(v -> {
+                return onProjectEventListener.onProjectLongClicked(project);
+            });
+        }
     }
 }

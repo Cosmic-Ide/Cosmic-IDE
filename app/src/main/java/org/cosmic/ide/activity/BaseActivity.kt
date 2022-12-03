@@ -14,7 +14,6 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
 
     public lateinit var binding: Binding
-        private set
 
     protected val settings: Settings by lazy { Settings() }
 

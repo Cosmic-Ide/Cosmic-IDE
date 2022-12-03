@@ -138,11 +138,11 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         buildLoadingDialog();
 
-        fileViewModel.refreshNode(getProject().getRootFile());
+        fileViewModel.refreshNode(javaProject.getRootFile());
         mainViewModel.setFiles(
-                new ArrayList<>()); // getProject().getIndexer().getList("lastOpenedFiles"));
+                new ArrayList<>()); // javaProject.getIndexer().getList("lastOpenedFiles"));
 
-        Objects.requireNonNull(getSupportActionBar()).setTitle(getProject().getProjectName());
+        Objects.requireNonNull(getSupportActionBar()).setTitle(javaProject.getProjectName());
 
         binding.viewPager.setAdapter(tabsAdapter);
         binding.viewPager.setUserInputEnabled(false);
@@ -194,14 +194,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 .attach();
 
         gitViewModel.setPostCheckout(() -> {
-            fileViewModel.refreshNode(getProject().getRootFile());
+            fileViewModel.refreshNode(javaProject.getRootFile());
             return Unit.INSTANCE;
         });
         gitViewModel.setOnSave(() -> {
             mainViewModel.clear();
             return Unit.INSTANCE;
         });
-        gitViewModel.setPath(getProject().getProjectDirPath());
+        gitViewModel.setPath(javaProject.getProjectDirPath());
 
         mainViewModel
                 .getFiles()
@@ -264,7 +264,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        if (new File(getProject().getRootFile(), ".git").exists()) {
+        if (new File(javaProject.getRootFile(), ".git").exists()) {
             menu.findItem(R.id.action_git).setVisible(true);
         }
         return super.onCreateOptionsMenu(menu);
@@ -337,7 +337,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     private void saveOpenedFiles() {
         try {
-            getProject()
+            javaProject
                     .getIndexer()
                     .put("lastOpenedFiles", Objects.requireNonNull(mainViewModel.getFiles().getValue()))
                     .flush();
@@ -462,7 +462,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
         final var notifBuilder =
                 new Notification.Builder(this, BUILD_STATUS)
-                        .setContentTitle(getProject().getProjectName())
+                        .setContentTitle(javaProject.getProjectName())
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent);
@@ -544,7 +544,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     final var claz = classes[pos];
                     final var smaliFile =
                             new File(
-                                    getProject().getBinDirPath(),
+                                    javaProject.getBinDirPath(),
                                     "smali" + "/" + claz.replace(".", "/") + ".smali");
 
                     CoroutineUtil.execute(
@@ -553,14 +553,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                                     final var dexFile =
                                             DexFileFactory.loadDexFile(
                                                     new File(
-                                                            getProject().getBinDirPath(),
+                                                            javaProject.getBinDirPath(),
                                                             "classes.dex"),
                                                     Opcodes.forApi(32));
                                     final var options = new BaksmaliOptions();
                                     options.apiLevel = 32;
                                     Baksmali.disassembleDexFile(
                                             dexFile,
-                                            new File(getProject().getBinDirPath(), "smali"),
+                                            new File(javaProject.getBinDirPath(), "smali"),
                                             1,
                                             options);
                                 } catch (Throwable e) {
@@ -596,13 +596,13 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     CoroutineUtil.execute(
                             () -> {
                                 try {
-                                    new JarTask().doFullTask(getProject());
+                                    new JarTask().doFullTask(javaProject);
                                     temp =
                                             new FernFlowerDecompiler()
                                                     .decompile(
                                                             claz,
                                                             new File(
-                                                                    getProject().getBinDirPath()
+                                                                    javaProject.getBinDirPath()
                                                                             + "classes.jar"));
                                 } catch (Exception e) {
                                     AndroidUtilities.showSimpleAlert(
@@ -647,7 +647,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     try {
                         disassembled =
                                 new JavapDisassembler(
-                                        getProject().getBinDirPath()
+                                        javaProject.getBinDirPath()
                                                 + "classes"
                                                 + "/"
                                                 + claz
@@ -699,7 +699,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     /* Used to find all the compiled classes from the output dex file */
     public String[] getClassesFromDex() {
         try {
-            var dex = new File(getProject().getBinDirPath() + "classes.dex");
+            var dex = new File(javaProject.getBinDirPath() + "classes.dex");
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
                 compile(false, true);

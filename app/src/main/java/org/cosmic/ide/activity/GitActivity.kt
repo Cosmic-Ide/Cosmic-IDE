@@ -31,12 +31,11 @@ import org.cosmic.ide.project.Project
 import org.cosmic.ide.activity.model.GitViewModel
 import java.io.File
 
-//TODO: implement ListView for merging and deleting
-//TODO: fix wrong filetreeview after deleting file in a topic branch and checking out
-//TODO: Let select commits for reverting, restore and reset
+// TODO: Implement RecyclerView for merging and deleting
+// TODO: Automatically update project files after deleting file in a topic branch and checking out
+// TODO: Let select commits for reverting, restore and reset
 
-class GitActivity :
-    BaseActivity<ActivityGitBinding>(),
+class GitActivity : BaseActivity<ActivityGitBinding>(),
     AdapterView.OnItemSelectedListener {
 
     private val TAG = "GitActivity"

@@ -9,9 +9,8 @@ import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
 import org.cosmic.ide.fragment.settings.RootSettingsFragment
 
-class SettingsActivity :
-        BaseActivity<ActivitySettingsBinding>(),
-        PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+class SettingsActivity : BaseActivity<ActivitySettingsBinding>(),
+    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

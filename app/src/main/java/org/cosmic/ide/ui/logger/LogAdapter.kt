@@ -1,5 +1,6 @@
 package org.cosmic.ide.ui.logger
 
+import android.text.SpannableStringBuilder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -16,7 +17,10 @@ class LogAdapter(val mData: List<Log>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val log = mData[position]
 
-        holder.textView.text = log.message
+        val sb = SpannableStringBuilder()
+        sb.append("[$log.tag] $log.message")
+
+        holder.textView.text = sb
     }
 
     override fun getItemCount() = mData.size
@@ -31,4 +35,4 @@ class LogAdapter(val mData: List<Log>) :
     }
 }
 
-data class Log(val message: String)
+data class Log(val tag: String, val message: String)

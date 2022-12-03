@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
@@ -27,20 +26,7 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
-                    isTaskRoot &&
-                    supportFragmentManager.backStackEntryCount == 0
-                ) {
-                    finishAfterTransition()
-                } else {
-                    onBackPressedDispatcher.onBackPressed()
-                }
-            }
-        })
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false)
         getRootActivityView().addSystemWindowInsetToPadding(true, false, true, false)
     }
 
@@ -52,13 +38,24 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> onBackPressedDispatcher.onBackPressed()
+            android.R.id.home -> onBackPressed()
             else -> return super.onOptionsItemSelected(item)
         }
         return true
     }
 
+    override fun onBackPressed() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
+            isTaskRoot &&
+            supportFragmentManager.backStackEntryCount == 0
+        ) {
+            finishAfterTransition()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun getRootActivityView(): View {
-        return window.decorView.findViewById(android.R.id.content)
+        return getWindow().getDecorView().findViewById(android.R.id.content)
     }
 }

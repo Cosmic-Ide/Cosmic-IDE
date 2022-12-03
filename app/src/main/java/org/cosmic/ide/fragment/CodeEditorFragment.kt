@@ -14,7 +14,6 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
-import org.cosmic.ide.App
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
@@ -25,7 +24,6 @@ import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.EditorUtil
-import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
 
@@ -44,7 +42,7 @@ class CodeEditorFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
         return binding.root
     }

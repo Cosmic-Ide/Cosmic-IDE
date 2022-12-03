@@ -4,13 +4,11 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import org.cosmic.ide.R
-import org.cosmic.ide.App
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 

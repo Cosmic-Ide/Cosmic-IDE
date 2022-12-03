@@ -1,7 +1,7 @@
 package org.cosmic.ide.common
 
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
 
 import org.cosmic.ide.common.util.FileUtil
 import org.json.JSONException
@@ -10,14 +10,13 @@ import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 
-class Indexer {
+class Indexer @Throws(JSONException::class) constructor(projectCachePath: String) {
 
     private lateinit var json: JSONObject
 
     private var filePath: String
 
-    @Throws(JSONException::class)
-    constructor(projectCachePath: String) {
+    init {
         filePath = projectCachePath + "lastOpenedFiles.json"
         load()
     }
@@ -44,11 +43,12 @@ class Indexer {
     }
 
     fun getList(key: String): List<File> {
-        try {
+        return try {
             val jsonData = getString(key)
-            return Gson().fromJson(jsonData, Array<File>::class.java).toMutableList()
+            val type = object : TypeToken<List<File>>() {}.type
+            Gson().fromJson(jsonData, type)
         } catch (ignored: Exception) {
-            return mutableListOf()
+            mutableListOf()
         }
     }
 

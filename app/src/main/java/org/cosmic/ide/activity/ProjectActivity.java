@@ -132,6 +132,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                             return;
                         }
                         boolean useKotlinTemplate = projectBinding.useKotlinTemplate.isChecked();
+
                         try {
                             var project =
                                     useKotlinTemplate
@@ -169,15 +170,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
                 ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
                         project.delete();
-                        runOnUiThread(
-                                () -> {
-                                    /** I think it will be annoying? Or not? :D */
-                                    /* AndroidUtilities.showSimpleAlert(
-                                    this,
-                                    getString(R.string.success),
-                                    getString(R.string.delete_success)); */
-                                    loadProjects();
-                                });
+                        runOnUiThread(this::loadProjects);
                     }
                 }));
     }

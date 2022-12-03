@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
 
     implementation("com.google.android.material:material:1.8.0-alpha03")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")

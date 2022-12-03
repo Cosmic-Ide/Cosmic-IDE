@@ -2,14 +2,12 @@ package org.cosmic.ide.activity
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
 import org.cosmic.ide.fragment.settings.RootSettingsFragment
-import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
 class SettingsActivity :
         BaseActivity<ActivitySettingsBinding>(),
@@ -33,7 +31,7 @@ class SettingsActivity :
                 replace(R.id.container, fragment)
             }
         } else {
-            savedInstanceState?.let {
+            savedInstanceState.let {
                 supportActionBar?.title = it.getCharSequence(TITLE_TAG)
             }
         }
@@ -46,7 +44,7 @@ class SettingsActivity :
 
     override fun onTitleChanged(title: CharSequence?, color: Int) {
         super.onTitleChanged(title, color)
-        binding.collapsingToolbar?.title = title
+        binding.collapsingToolbar.title = title
     }
 
     override fun onPreferenceStartFragment(
@@ -62,7 +60,7 @@ class SettingsActivity :
         return true
     }
 
-    fun openFragment(fragment: Fragment) {
+    private fun openFragment(fragment: Fragment) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
             replace(R.id.container, fragment)

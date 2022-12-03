@@ -3,7 +3,7 @@ package org.cosmic.ide.ui.console;
 /** A circular byte buffer allowing one producer and one consumer thread. */
 public class ByteQueue {
 
-    private byte[] mBuffer;
+    private final byte[] mBuffer;
     private int mHead;
     private int mStoredBytes;
 

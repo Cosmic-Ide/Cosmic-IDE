@@ -14,7 +14,7 @@ class DebugActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = getIntent()
+        val intent = intent
         val error = intent?.getStringExtra("error")!!
 
         /** TODO: Use dialog via AndroidUtilities#showSimpleAlert(
@@ -23,14 +23,14 @@ class DebugActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
                 .setTitle(getString(R.string.error))
                 .setMessage(error)
-                .setPositiveButton(getString(R.string.quit), { _, _ -> finishAffinity() })
-                .setNegativeButton(getString(R.string.copy_stacktrace), { _, which ->
-                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                        AndroidUtilities.copyToClipboard(error)
-                    }
-                    finishAffinity()
-                })
-                .setCancelable(false)
+                .setPositiveButton(getString(R.string.quit)) { _, _ -> finishAffinity() }
+            .setNegativeButton(getString(R.string.copy_stacktrace)) { _, which ->
+                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                    AndroidUtilities.copyToClipboard(error)
+                }
+                finishAffinity()
+            }
+            .setCancelable(false)
                 .show()
     }
 }

@@ -6,16 +6,33 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical">
 
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true" />
-    </androidx.core.widget.NestedScrollView>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true" />
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/gitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/spacing_medium"
+            android:layout_marginVertical="@dimen/spacing_small"
+            tools:text="ENABLE GIT" />
+
+    </LinearLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

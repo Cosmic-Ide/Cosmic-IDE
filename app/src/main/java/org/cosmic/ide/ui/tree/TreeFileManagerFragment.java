@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -94,6 +95,13 @@ public class TreeFileManagerFragment extends Fragment {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         treeView.getView().setNestedScrollingEnabled(false);
+
+        boolean isGitEnabled = new File(activity.getProject().getRootFile(), ".git").exists();
+        MaterialButton gitButton = view.findViewById(R.id.gitButton);
+        gitButton.setText(isGitEnabled ? "DISABLE GIT" : "ENABLE GIT");
+        gitButton.setOnClickListener(v -> {
+            AndroidUtilities.showSimpleAlert(v.getContext(), "Git", "This feature is currently not available.");
+        });
 
         treeView.setAdapter(
                 new TreeFileNodeViewFactory(

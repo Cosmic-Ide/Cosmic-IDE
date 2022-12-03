@@ -8,7 +8,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/treeViewFragment"
-        android:name="org.cosmic.ide.ui.TreeViewDrawer"
+        android:name="org.cosmic.ide.ui.tree.TreeFileManagerFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"

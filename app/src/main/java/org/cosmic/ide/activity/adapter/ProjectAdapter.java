@@ -93,9 +93,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
         }
 
         public void bind(@NonNull Project project) {
-            binding.setProject(project);
-            binding.setListener(onProjectEventListener);
-            binding.executePendingBindings();
+            binding.projectTitle.setText(project.getProjectName());
+            binding.projectPath.setText(project.getProjectDirPath());
+
+            binding.background.setOnClickListener(v -> {
+                onProjectEventListener.onProjectClicked(project);
+            });
+            binding.background.setOnLongClickListener(v -> {
+                return onProjectEventListener.onProjectLongClicked(project);
+            });
         }
     }
 }

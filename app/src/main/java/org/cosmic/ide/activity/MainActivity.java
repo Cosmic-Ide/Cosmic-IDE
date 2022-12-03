@@ -84,7 +84,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView();
+        setContentView(ActivityMainBinding.inflate(getLayoutInflater()));
         setSupportActionBar(binding.toolbar);
 
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
@@ -326,11 +326,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             startActivity(new Intent(this, GitActivity.class));
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public int getLayoutRes() {
-        return R.layout.activity_main;
     }
 
     private void restoreViewState(@NonNull Bundle state) {

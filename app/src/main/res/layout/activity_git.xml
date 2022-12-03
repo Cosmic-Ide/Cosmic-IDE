@@ -1,94 +1,90 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/spacing_medium"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/spacing_medium"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:contentPadding="@dimen/spacing_small">
 
-        <com.google.android.material.card.MaterialCardView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:contentPadding="@dimen/spacing_small">
+            android:layout_height="wrap_content" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+    </com.google.android.material.card.MaterialCardView>
 
-        </com.google.android.material.card.MaterialCardView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="@dimen/spacing_small">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/spacing_small">
-
-            <androidx.constraintlayout.helper.widget.Flow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="button_create, button_commit, button_create_branch, button_merge_branch, button_delete_branch"
-                app:flow_wrapMode="chain"
-                app:flow_horizontalStyle="spread"
-                app:flow_verticalStyle="packed"
-                app:flow_maxElementsWrap="2"
-                app:flow_verticalGap="@dimen/spacing_small"
-                app:flow_horizontalGap="@dimen/spacing_tiny" />
-
-            <Button
-                android:id="@+id/button_create"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/git_new_repository"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintWidth_percent="1" />
-
-            <Button
-                android:id="@+id/button_commit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/git_commit"
-                app:layout_constraintTop_toBottomOf="@id/button_create"
-                app:layout_constraintStart_toStartOf="@id/button_create"
-                app:layout_constraintEnd_toStartOf="@id/button_create_branch" />
-
-            <Button
-                android:id="@+id/button_create_branch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/git_new_branch"
-                app:layout_constraintTop_toBottomOf="@id/button_create"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/button_commit" />
-
-            <Button
-                android:id="@+id/button_merge_branch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/git_merge_branch"
-                app:layout_constraintTop_toBottomOf="@id/button_commit"
-                app:layout_constraintEnd_toStartOf="@id/button_delete_branch" />
-
-            <Button
-                android:id="@+id/button_delete_branch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/git_delete_branch"
-                app:layout_constraintTop_toBottomOf="@id/button_create_branch"
-                app:layout_constraintStart_toEndOf="@id/button_merge_branch" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <Spinner
-            android:id="@+id/spinner_branch"
+        <androidx.constraintlayout.helper.widget.Flow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:layout_marginHorizontal="@dimen/spacing_medium" />
+            app:constraint_referenced_ids="button_create, button_commit, button_create_branch, button_merge_branch, button_delete_branch"
+            app:flow_wrapMode="chain"
+            app:flow_horizontalStyle="spread"
+            app:flow_verticalStyle="packed"
+            app:flow_maxElementsWrap="2"
+            app:flow_verticalGap="@dimen/spacing_small"
+            app:flow_horizontalGap="@dimen/spacing_tiny" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/button_create"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/git_new_repository"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintWidth_percent="1" />
 
-</layout>
+        <Button
+            android:id="@+id/button_commit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/git_commit"
+            app:layout_constraintTop_toBottomOf="@id/button_create"
+            app:layout_constraintStart_toStartOf="@id/button_create"
+            app:layout_constraintEnd_toStartOf="@id/button_create_branch" />
+
+        <Button
+            android:id="@+id/button_create_branch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/git_new_branch"
+            app:layout_constraintTop_toBottomOf="@id/button_create"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_commit" />
+
+        <Button
+            android:id="@+id/button_merge_branch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/git_merge_branch"
+            app:layout_constraintTop_toBottomOf="@id/button_commit"
+            app:layout_constraintEnd_toStartOf="@id/button_delete_branch" />
+
+        <Button
+            android:id="@+id/button_delete_branch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/git_delete_branch"
+            app:layout_constraintTop_toBottomOf="@id/button_create_branch"
+            app:layout_constraintStart_toEndOf="@id/button_merge_branch" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Spinner
+        android:id="@+id/spinner_branch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_small"
+        android:layout_marginHorizontal="@dimen/spacing_medium" />
+
+</LinearLayout>

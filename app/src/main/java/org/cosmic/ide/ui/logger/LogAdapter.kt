@@ -18,7 +18,11 @@ class LogAdapter(val mData: List<Log>) :
         val log = mData[position]
 
         val sb = SpannableStringBuilder()
-        sb.append("[$log.tag] $log.message")
+        sb.append("[")
+        sb.append(log.tag)
+        sb.append("]")
+        sb.append(" ")
+        sb.append(log.message)
 
         holder.textView.text = sb
     }

@@ -50,7 +50,9 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
         Logger()
     }
 
-    private lateinit var person: Author
+    private val person: Author by lazy {
+        Author(settings.gitUserName, settings.gitUserEmail)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

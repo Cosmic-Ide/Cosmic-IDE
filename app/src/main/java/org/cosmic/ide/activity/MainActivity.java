@@ -112,8 +112,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     return insets;
                 });
 
-        if (binding.root instanceof DrawerLayout) {
-            var drawer = (DrawerLayout) binding.root;
+        if (binding.getRoot() instanceof DrawerLayout) {
+            var drawer = (DrawerLayout) binding.getRoot();
             binding.toolbar.setNavigationOnClickListener(
                     v -> {
                         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -231,16 +231,16 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                             }
                             binding.viewPager.setCurrentItem(position);
                         });
-        if (binding.root instanceof DrawerLayout) {
+        if (binding.getRoot() instanceof DrawerLayout) {
             mainViewModel
                     .getDrawerState()
                     .observe(
                             this,
                             isOpen -> {
                                 if (isOpen) {
-                                    ((DrawerLayout) binding.root).open();
+                                    ((DrawerLayout) binding.getRoot()).open();
                                 } else {
-                                    ((DrawerLayout) binding.root).close();
+                                    ((DrawerLayout) binding.getRoot()).close();
                                 }
                             });
         }
@@ -252,10 +252,10 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        if (binding.root instanceof DrawerLayout) {
+        if (binding.getRoot() instanceof DrawerLayout) {
             outState.putBoolean(
                     Constants.DRAWER_STATE,
-                    ((DrawerLayout) binding.root).isDrawerOpen(GravityCompat.START));
+                    ((DrawerLayout) binding.getRoot()).isDrawerOpen(GravityCompat.START));
         }
         saveOpenedFiles();
         super.onSaveInstanceState(outState);
@@ -329,7 +329,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     private void restoreViewState(@NonNull Bundle state) {
-        if (binding.root instanceof DrawerLayout) {
+        if (binding.getRoot() instanceof DrawerLayout) {
             boolean b = state.getBoolean(Constants.DRAWER_STATE, false);
             mainViewModel.setDrawerState(b);
         }

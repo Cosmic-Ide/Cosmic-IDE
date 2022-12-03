@@ -96,10 +96,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHold
             binding.projectTitle.setText(project.getProjectName());
             binding.projectPath.setText(project.getProjectDirPath());
 
-            binding.background.setOnClickListener(v -> {
+            binding.getRoot().setOnClickListener(v -> {
                 onProjectEventListener.onProjectClicked(project);
             });
-            binding.background.setOnLongClickListener(v -> {
+            binding.getRoot().setOnLongClickListener(v -> {
                 return onProjectEventListener.onProjectLongClicked(project);
             });
         }

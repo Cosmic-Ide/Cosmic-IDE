@@ -6,14 +6,16 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.viewbinding.ViewBinding
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
-abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
+abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
 
     public lateinit var binding: Binding
+    protected abstract val layoutRes: Int
 
     protected val settings: Settings by lazy { Settings() }
 
@@ -28,9 +30,10 @@ abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
         getRootActivityView().addSystemWindowInsetToPadding(true, false, true, false)
     }
 
-    protected fun setContentView(binding: Binding) {
-        this.binding = binding
-        super.setContentView(binding.root)
+    protected fun setContentView() {
+        binding = DataBindingUtil.setContentView<Binding>(this, layoutRes).also {
+            it.lifecycleOwner = this
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

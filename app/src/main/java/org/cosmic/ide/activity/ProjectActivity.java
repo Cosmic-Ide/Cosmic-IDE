@@ -56,7 +56,7 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityProjectBinding.inflate(getLayoutInflater()));
+        setContentView();
         setSupportActionBar(binding.toolbar);
 
         buildCreateNewProjectDialog();
@@ -100,6 +100,11 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
     public void onResume() {
         super.onResume();
         loadProjects();
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.activity_project;
     }
 
     private void buildCreateNewProjectDialog() {

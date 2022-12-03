@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:liftOnScroll="true">
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:paddingHorizontal="@dimen/spacing_small"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <HorizontalScrollView
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true">
-            <org.cosmic.ide.ui.console.ConsoleEditText
-                android:id="@+id/console"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorSurface"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="16sp"
-                android:gravity="top|start"
-                android:singleLine="false"
-                android:fontFamily="@font/mono_font" />
-        </HorizontalScrollView>
-    </ScrollView>
+            app:liftOnScroll="true">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:paddingHorizontal="@dimen/spacing_small"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true">
+                <org.cosmic.ide.ui.console.ConsoleEditText
+                    android:id="@+id/console"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/colorSurface"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:gravity="top|start"
+                    android:singleLine="false"
+                    android:fontFamily="@font/mono_font" />
+            </HorizontalScrollView>
+        </ScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

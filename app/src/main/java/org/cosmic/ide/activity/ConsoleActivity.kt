@@ -14,13 +14,14 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 
 class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
+    override val layoutRes = R.layout.activity_console
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
     private var task: ExecuteDexTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivityConsoleBinding.inflate(layoutInflater))
+        setContentView()
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

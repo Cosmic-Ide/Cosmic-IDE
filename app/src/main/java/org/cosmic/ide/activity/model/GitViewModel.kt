@@ -21,8 +21,7 @@ class GitViewModel : ViewModel() {
     private val _hasRepo = MutableLiveData<Boolean>()
     val hasRepo: LiveData<Boolean> = _hasRepo
 
-    private val _gitLog = MutableLiveData<String>()
-    val gitLog: LiveData<String> = _gitLog
+    val gitLog = MutableLiveData<String>()
 
     private val _branchList = MutableLiveData<List<String>>()
     val branchList = _branchList
@@ -37,12 +36,13 @@ class GitViewModel : ViewModel() {
             Log.d(TAG, "Found repository")
         } else {
             _hasRepo.value = false
+            gitLog.value = "Repository not found"
             Log.d(TAG, "No repository")
         }
     }
 
     fun getLog() {
-        _gitLog.value = /*if(::git.isInitialized)*/ git.getLog() /*else ""*/
+        gitLog.value = /*if(::git.isInitialized)*/ gitLog.value + "\n" + git.getLog() /*else ""*/
     }
 
     fun getBranchList() {
@@ -114,6 +114,6 @@ class GitViewModel : ViewModel() {
         onSave = {}
         if(::git.isInitialized) git.dispose()
         _branchList.value = listOf("")
-        _gitLog.value = "Logs not available."
+        gitLog.value = "Logs not available."
     }
 }

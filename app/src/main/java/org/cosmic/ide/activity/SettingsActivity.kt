@@ -13,9 +13,11 @@ class SettingsActivity :
         BaseActivity<ActivitySettingsBinding>(),
         PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
+    override val layoutRes = R.layout.activity_settings
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivitySettingsBinding.inflate(layoutInflater))
+        setContentView()
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

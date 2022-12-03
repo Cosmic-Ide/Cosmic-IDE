@@ -1,48 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="?attr/colorSurface"
-    android:foreground="?attr/selectableItemBackground">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="project"
+            type="org.cosmic.ide.project.Project" />
+        <variable
+            name="listener"
+            type="org.cosmic.ide.activity.adapter.ProjectAdapter.OnProjectEventListener" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingVertical="@dimen/spacing_small"
-        android:paddingHorizontal="@dimen/spacing_medium">
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/colorSurface"
+        android:foreground="?attr/selectableItemBackground"
+        android:onClick="@{() -> listener.onProjectClicked(project)}"
+        android:onLongClick="@{() -> listener.onProjectLongClicked(project)}">
 
-        <TextView
-            android:id="@+id/project_name"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textSize="20sp"
-            tools:text="Abc" />
-
-        <TextView
-            android:id="@+id/project_path"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="start"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:textColorSecondary"
-            android:maxLines="2"
-            tools:text="../org.cosmic.ide/files/projects/Abc/" />
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/spacing_small"
+            android:paddingHorizontal="@dimen/spacing_medium">
+            <TextView
+                android:id="@+id/project_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@{project.getProjectName()}"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textSize="20sp"
+                tools:text="Abc" />
+    
+            <TextView
+                android:id="@+id/project_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="start"
+                android:text="@{project.getProjectDirPath()}"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="?android:textColorSecondary"
+                android:maxLines="2"
+                tools:text="../org.cosmic.ide/files/projects/Abc/" />
+        </LinearLayout>
+    
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            app:dividerInsetStart="@dimen/spacing_medium"
+            app:dividerInsetEnd="@dimen/spacing_medium" />
+    
     </LinearLayout>
-
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        app:dividerInsetStart="@dimen/spacing_medium"
-        app:dividerInsetEnd="@dimen/spacing_medium" />
-
-</LinearLayout>
+</layout>

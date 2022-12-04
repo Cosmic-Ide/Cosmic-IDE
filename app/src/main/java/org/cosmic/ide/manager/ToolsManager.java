@@ -33,7 +33,7 @@ public class ToolsManager {
                     if (error != null) {
                         Log.d(TAG, "Error extracting tools " + error);
                     }
-    
+
                     if (onFinish != null) {
                         onFinish.run();
                     }

@@ -3,7 +3,6 @@ package org.cosmic.ide.ui.editor.completion
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.SystemClock
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.widget.LinearLayout
@@ -13,6 +12,7 @@ import com.google.android.material.color.MaterialColors
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.cosmic.ide.util.AndroidUtilities
 
 class CustomCompletionLayout : CompletionLayout {
 
@@ -28,7 +28,11 @@ class CustomCompletionLayout : CompletionLayout {
         val layout = RelativeLayout(context)
 
         mBackground = GradientDrawable()
-        mBackground.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, context.getResources().getDisplayMetrics()))
+        mBackground.apply {
+            setCornerRadius(AndroidUtilities.dp(8f).toFloat())
+            setStroke(AndroidUtilities.dp(1f), MaterialColors.getColor(layout, com.google.android.material.R.attr.colorOutline))
+        }
+        mBackground.setColor(MaterialColors.getColor(layout, com.google.android.material.R.attr.colorSurface))
         layout.setBackground(mBackground)
 
         mListView = ListView(context)
@@ -42,7 +46,6 @@ class CustomCompletionLayout : CompletionLayout {
     }
 
     override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
-        mBackground.setColor(MaterialColors.getColor(mEditorAutoCompletion.getContext(), com.google.android.material.R.attr.colorSurface, colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND)))
     }
 
     override fun setLoading(state: Boolean) {

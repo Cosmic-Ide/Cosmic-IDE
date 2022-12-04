@@ -197,7 +197,7 @@ fun GitActivity.mergeBranch() {
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' merged")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' not in repository", getString(android.R.string.ok), getString(R.string.dialog_close))
+                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' not in repository")
                 else -> showSnackbar("Unknown error")
             }
         }
@@ -218,7 +218,7 @@ fun GitActivity.deleteBranch() {
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' deleted")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' must not be the current branch to delete.", getString(android.R.string.ok), getString(R.string.dialog_close))
+                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' must not be the current branch to delete.")
                 else -> showSnackbar("Unknown error")
             }
         }

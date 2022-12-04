@@ -34,10 +34,6 @@ import java.util.Objects;
 /** Created by xinyuanzhong on 2017/4/20. */
 public class TreeView<D> implements SelectableTreeAction<D> {
 
-    public interface OnTreeNodeClickListener<D> {
-        void onTreeNodeClicked(TreeNode<D> treeNode, boolean expand);
-    }
-
     private final Context context;
 
     private TreeNode<D> root;
@@ -46,6 +42,10 @@ public class TreeView<D> implements SelectableTreeAction<D> {
     private BaseNodeViewFactory<D> baseNodeViewFactory;
 
     private boolean itemSelectable = true;
+
+    public interface OnTreeNodeClickListener<D> {
+        void onTreeNodeClicked(TreeNode<D> treeNode, boolean expand);
+    }
 
     public TreeView(@NonNull Context context, @NonNull TreeNode<D> root) {
         this.context = context;

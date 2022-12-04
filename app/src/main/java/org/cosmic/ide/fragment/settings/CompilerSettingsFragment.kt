@@ -7,6 +7,7 @@ import androidx.preference.Preference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import org.cosmic.ide.R
+import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.showListPreferenceDialog
 
 class CompilerSettingsFragment :
@@ -16,7 +17,7 @@ class CompilerSettingsFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_compiler)
 
-        findPreference<EditTextPreference>("program_arguments")?.run {
+        findPreference<EditTextPreference>(Settings.PROGRAM_ARGUMENTS)?.run {
             summary = getText()
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()

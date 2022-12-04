@@ -43,16 +43,16 @@ import java.util.List;
 public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
         implements ProjectAdapter.OnProjectEventListener {
 
-    public interface OnProjectCreatedListener {
-        void onProjectCreated(Project project);
-    }
-
     private ProjectAdapter projectAdapter;
 
     private AlertDialog createNewProjectDialog;
     private DialogNewProjectBinding projectBinding;
 
     private OnProjectCreatedListener mListener;
+
+    public interface OnProjectCreatedListener {
+        void onProjectCreated(Project project);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

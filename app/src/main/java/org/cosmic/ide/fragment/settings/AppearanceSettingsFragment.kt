@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.R
+import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.IntListPreference
 import org.cosmic.ide.ui.preference.showIntListPreferenceDialog
 
@@ -16,7 +17,7 @@ class AppearanceSettingsFragment :
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_appearance)
-        findPreference<Preference>("dynamic_theme")?.isVisible = DynamicColors.isDynamicColorAvailable()
+        findPreference<Preference>(Settings.DYNAMIC_THEME)?.isVisible = DynamicColors.isDynamicColorAvailable()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,8 +42,8 @@ class AppearanceSettingsFragment :
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
-            "theme" ->  AppCompatDelegate.setDefaultNightMode(settings.theme)
-            "dynamic_theme" -> {
+            Settings.THEME ->  AppCompatDelegate.setDefaultNightMode(settings.theme)
+            Settings.DYNAMIC_THEME -> {
                 // At the moment I don't know how to recreate all activities on the back stack.
                 // Temporary hack: Set current theme to current
                 AppCompatDelegate.setDefaultNightMode(settings.theme)

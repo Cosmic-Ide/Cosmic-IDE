@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import org.cosmic.ide.R
+import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.SliderPreference
 
 class EditorSettingsFragment :
@@ -13,7 +14,7 @@ class EditorSettingsFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_editor)
 
-        findPreference<SliderPreference>("font_size")?.run {
+        findPreference<SliderPreference>(Settings.FONT_SIZE)?.run {
             summary = value.toString()
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()

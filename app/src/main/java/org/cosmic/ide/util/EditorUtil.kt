@@ -1,5 +1,6 @@
 package org.cosmic.ide.util
 
+import android.content.Context
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -17,18 +18,17 @@ object EditorUtil {
             "source.smali", true
         )
 
-    val colorScheme: TextMateColorScheme
-        get() {
-            try {
-                val registry = ThemeRegistry.getInstance()
-                if (App.context.isDarkMode()) {
-                    registry.setTheme("darcula")
-                } else {
-                    registry.setTheme("QuietLight")
-                }
-                return TextMateColorScheme.create(registry)
-            } catch (e: Exception) {
-                throw IllegalStateException(e)
+    fun getColorScheme(ctx: Context): TextMateColorScheme {
+        try {
+            val registry = ThemeRegistry.getInstance()
+            if (ctx.isDarkMode()) {
+                registry.setTheme("darcula")
+            } else {
+                registry.setTheme("QuietLight")
             }
+            return TextMateColorScheme.create(registry)
+        } catch (e: Exception) {
+            throw IllegalStateException(e)
         }
+    }
 }

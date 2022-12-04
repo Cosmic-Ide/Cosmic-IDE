@@ -128,7 +128,7 @@ class CodeEditorFragment : Fragment() {
             LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
-        binding.editor.setColorScheme(EditorUtil.colorScheme)
+        binding.editor.setColorScheme(EditorUtil.getColorScheme(requireActivity()))
     }
 
     private fun getKotlinLanguage(): Language {

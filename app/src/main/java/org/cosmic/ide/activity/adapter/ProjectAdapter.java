@@ -15,14 +15,14 @@ import java.util.List;
 
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ViewHolder> {
 
+    private final List<Project> mProjects = new ArrayList<>();
+    private static OnProjectEventListener onProjectEventListener;
+
     public interface OnProjectEventListener {
         void onProjectClicked(Project project);
 
         boolean onProjectLongClicked(Project project);
     }
-
-    private final List<Project> mProjects = new ArrayList<>();
-    private static OnProjectEventListener onProjectEventListener;
 
     public void setOnProjectEventListener(OnProjectEventListener onProjectEventListener) {
         this.onProjectEventListener = onProjectEventListener;

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.preference.EditTextPreference
 import org.cosmic.ide.R
+import org.cosmic.ide.ui.preference.Settings
 
 class GitSettingsFragment :
     BasePreferenceFragment(R.string.git),
@@ -13,14 +14,14 @@ class GitSettingsFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_git)
 
-        findPreference<EditTextPreference>("git_username")?.run {
+        findPreference<EditTextPreference>(Settings.GIT_USERNAME)?.run {
             summary = getText()
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()
                 true
             }
         }
-        findPreference<EditTextPreference>("git_useremail")?.run {
+        findPreference<EditTextPreference>(Settings.GIT_USEREMAIL)?.run {
             summary = getText()
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()
@@ -40,6 +41,6 @@ class GitSettingsFragment :
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
-        TODO("Not yet implemented")
+        // TODO
     }
 }

@@ -18,19 +18,19 @@ A next-gen Ide for JVM development on Android!
 
 <div style="display:flex;">
 
-- Java 17
-- Kotlin Language Support
-- Kotlin Code Completion
-- Javac, Javap, D8
-- Incremental Compilation
-- Execute Java Code
-- Error/Warning marker in editor
-- Code highlighting
-- Add Classpath
-- Decompile Class File
-- Google Java Formatter
-- Baksmali Dex File
-- Basic Java Keywords auto-completion
+-   Java 17
+-   Kotlin Language Support
+-   Kotlin Code Completion
+-   Javac, Javap, D8
+-   Incremental Compilation
+-   Execute Java Code
+-   Error/Warning marker in editor
+-   Code highlighting
+-   Add Classpath
+-   Decompile Class File
+-   Google Java Formatter
+-   Baksmali Dex File
+-   Basic Java Keywords auto-completion
 
 </div>
 <p>
@@ -63,8 +63,8 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 
 ## TO-DO
 
-- \[ \] Kotlin error/warning highlight in editor
-- \[ \] Java auto-complete
+-   \[ \] Kotlin error/warning highlight in editor
+-   \[ \] Java auto-complete
 
 ## Building
 
@@ -81,25 +81,25 @@ Note: You need Android Studio - Flamingo or later to compile this project, or yo
 We would appreciate any kinds of contributions.
 If you have any questions, ideas, need help or want to propose a change just open an issue/pull request.
 
-- Any type of contributions are appreciated.
-- Create a pull request and we'll merge it after review.
+-   Any type of contributions are appreciated.
+-   Create a pull request and we'll merge it after review.
 
 ## Special Thanks
 
-- [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc) and [Kotlin auto-complete library](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion)
+-   [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc) and [Kotlin auto-complete library](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion)
 
-- [TheRemakerMan](https://github.com/TheRemakerMan)
+-   [TheRemakerMan](https://github.com/TheRemakerMan)
 
-- [AidosZhaqyp](https://github.com/AidosZhaqyp)
+-   [AidosZhaqyp](https://github.com/AidosZhaqyp)
 
-- [TheWolfProd](https://github.com/TheWolfProd)
+-   [TheWolfProd](https://github.com/TheWolfProd)
 
-- [MikeAndrson](https://github.com/MikeAndrson)
+-   [MikeAndrson](https://github.com/MikeAndrson)
 
-- [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
+-   [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
 
-- [AndroidIDEOfficial](https://github.com/AndroidIDEOfficial) for [nb-javac-android](https://github.com/AndroidIDEOfficial/nb-javac-android)
+-   [AndroidIDEOfficial](https://github.com/AndroidIDEOfficial) for [nb-javac-android](https://github.com/AndroidIDEOfficial/nb-javac-android)
 
-- [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
+-   [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
 
-- [QuinnWilton](https://github.com/QuinnWilton) for [Smali Grammers](https://github.com/QuinnWilton/sublime-smali)
+-   [QuinnWilton](https://github.com/QuinnWilton) for [Smali Grammers](https://github.com/QuinnWilton/sublime-smali)

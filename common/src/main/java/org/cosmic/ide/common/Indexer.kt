@@ -5,14 +5,13 @@ import com.google.gson.reflect.TypeToken
 
 import org.cosmic.ide.common.util.FileUtil
 import org.json.JSONException
-import org.json.JSONObject
 
 import java.io.File
 import java.io.IOException
 
 class Indexer @Throws(JSONException::class) constructor(projectCachePath: String) {
 
-    private lateinit var json: JSONObject
+    private lateinit var json: String
 
     private var filePath: String
 
@@ -29,7 +28,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
                 FileUtil.writeFile(filePath, "{}")
             }
             val index = FileUtil.readFile(indexFile)
-            json = JSONObject(index)
+            json = index
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -37,59 +36,51 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
 
     @Throws(JSONException::class)
     fun put(key: String, items: List<File>): Indexer {
-        val value = Gson().toJson(items)
-        json.put(key, value)
+        val filesPath = mutableListOf<String>()
+        items.forEach {
+            filesPath.add(it.absolutePath)
+        }
+        val value = Gson().toJson(filesPath)
+        json = value
         return this
     }
 
-    fun getList(key: String): List<File> {
+    fun getList(): List<File> {
         return try {
-            val jsonData = getString(key)
-            val type = object : TypeToken<List<File>>() {}.type
-            Gson().fromJson(jsonData, type)
+            val type = object : TypeToken<List<String>>() {}.type
+            val filesPath: List<String> = Gson().fromJson(getString(), type)
+            val files = mutableListOf<File>()
+            filesPath.forEach {
+                files.add(File(it))
+            }
+            files
         } catch (ignored: Exception) {
             mutableListOf()
         }
     }
 
     @Throws(JSONException::class)
-    fun put(key: String, value: String): Indexer {
-        json.put(key, value)
-        return this
-    }
-
-    @Throws(JSONException::class)
     fun put(key: String, value: Long): Indexer {
-        json.put(key, value)
+        json = value.toString()
         return this
     }
 
     @Throws(JSONException::class)
-    fun notHas(key: String): Boolean {
-        return !json.has(key)
-    }
-
-    @Throws(JSONException::class)
-    fun getString(key: String): String {
-        return json.getString(key)
+    fun getString(): String {
+        return json
     }
 
     fun getLong(key: String): Long {
-        try {
-            return json.getLong(key)
+        return try {
+            json.toLong()
         } catch (e: JSONException) {
-            return 0
+            0
         }
-    }
-
-    @Throws(JSONException::class)
-    fun asString(): String {
-        return json.toString(4)
     }
 
     fun flush() {
         try {
-            FileUtil.writeFile(filePath, asString())
+            FileUtil.writeFile(filePath, getString())
         } catch (ignore: Throwable) {
         }
     }

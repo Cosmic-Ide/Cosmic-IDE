@@ -70,7 +70,7 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
 
         mGitViewModel.gitLog.observe(this) { log ->
             Log.d(TAG, "gitLog=$log")
-            logger.message("Git", log)
+            logger.message(log)
         }
 
         mGitViewModel.branchList.observe(this) { list ->

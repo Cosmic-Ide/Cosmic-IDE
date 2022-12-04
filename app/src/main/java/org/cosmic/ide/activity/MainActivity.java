@@ -193,6 +193,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, true, false, this::updateTab)
                 .attach();
 
+        gitViewModel.setPath(javaProject.getProjectDirPath());
         gitViewModel.setPostCheckout(() -> {
             fileViewModel.refreshNode(javaProject.getRootFile());
             return Unit.INSTANCE;
@@ -201,7 +202,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             mainViewModel.clear();
             return Unit.INSTANCE;
         });
-        gitViewModel.setPath(javaProject.getProjectDirPath());
 
         mainViewModel
                 .getFiles()

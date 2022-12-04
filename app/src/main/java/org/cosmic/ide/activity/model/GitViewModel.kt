@@ -7,8 +7,6 @@ import org.cosmic.ide.R
 import org.cosmic.ide.git.model.*
 import org.cosmic.ide.git.usecases.*
 
-lateinit var git: Gitter
-
 class GitViewModel : ViewModel() {
 
     private val TAG = "GitViewModel"
@@ -26,6 +24,8 @@ class GitViewModel : ViewModel() {
 
     private val _branchList = MutableLiveData<List<String>>()
     val branchList = _branchList
+
+    lateinit var git: Gitter
 
     fun setPath(newPath: String) {
         _projectPath.value = newPath
@@ -81,7 +81,7 @@ class GitViewModel : ViewModel() {
     }
 
     fun getBranch(): String = git.getBranch()
-    
+
     fun deleteBranch(branch: String): Result {
         if(branch !in getBranch()) {
             git.deleteBranch(branch)
@@ -97,7 +97,7 @@ class GitViewModel : ViewModel() {
             _branchList.value?.let {
                 if(it.isNotEmpty()) {
                     val branch = it[position]
-                    if(branch.isNotBlank()) {
+                    if (branch.isNotBlank()) {
                         onSave()
                         git.checkout(branch)
                         postCheckout()
@@ -112,7 +112,7 @@ class GitViewModel : ViewModel() {
     fun dispose() {
         postCheckout = {}
         onSave = {}
-        if(::git.isInitialized) git.dispose()
+        if (::git.isInitialized) git.dispose()
         _branchList.value = listOf("")
         _gitLog.value = "Logs not available."
     }

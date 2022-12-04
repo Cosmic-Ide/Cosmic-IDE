@@ -38,17 +38,13 @@ object FileUtil {
     @JvmStatic
     @Throws(IOException::class)
     fun writeFile(file: String, content: String) {
-        val path = Paths.get(file);
-        Files.createDirectories(path.parent)
-        Files.write(path, content.toByteArray())
+        File(file).writeText(content)
     }
 
     @JvmStatic
     @Throws(IOException::class)
-    fun writeFile(file: String, content: ByteArray) {
-        val path = Paths.get(file)
-        Files.createDirectories(path.parent)
-        Files.write(path, content);
+    fun writeFile(path: String, content: ByteArray) {
+        File(path).writeBytes(content)
     }
 
     @JvmStatic
@@ -58,15 +54,15 @@ object FileUtil {
     }
 
     @JvmStatic
-    fun deleteFile(p: String) {
+    fun deleteFile(path: String) {
         try {
-            val path = Paths.get(p)
-            if (Files.isRegularFile(path)) {
-                Files.delete(path)
+            val file = File(path)
+            if (file.isFile()) {
+                file.delete()
                 return
             }
 
-            File(p).deleteRecursively()
+            file.deleteRecursively()
         } catch (e: IOException) {
             e.printStackTrace()
         }

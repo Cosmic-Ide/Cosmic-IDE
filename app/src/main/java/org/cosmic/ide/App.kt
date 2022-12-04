@@ -27,9 +27,8 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = this
-        val settings = Settings()
-        AppCompatDelegate.setDefaultNightMode(settings.theme)
-        FileUtil.setDataDirectory(getExternalFilesDir(null)?.getAbsolutePath()!!)
+        AppCompatDelegate.setDefaultNightMode(Settings().theme)
+        FileUtil.setDataDirectory(getExternalFilesDir(null)?.absolutePath!!)
         ToolsManager.init(this, null)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
@@ -64,9 +63,9 @@ class App : Application() {
             val intent = Intent(context, DebugActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.putExtra("error", throwable.stackTraceToString())
-            Log.e("Crash", throwable.localizedMessage, throwable)
+            throwable.printStackTrace()
             startActivity(intent)
-            exitProcess(1)
+            exitProcess(0)
         }
     }
 

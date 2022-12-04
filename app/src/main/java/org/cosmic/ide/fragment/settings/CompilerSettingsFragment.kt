@@ -36,7 +36,6 @@ class CompilerSettingsFragment :
         super.onDestroyView()
     }
 
-    @Suppress("Deprecation")
     override fun onDisplayPreferenceDialog(preference: Preference) {
         when (preference) {
             is ListPreference -> {

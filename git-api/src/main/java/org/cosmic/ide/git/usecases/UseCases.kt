@@ -30,6 +30,10 @@ fun String.createGitRepoWith(commiter: Author, msg: String): Gitter =
 fun openGitAt(path: String): Gitter =
     path.openRepo().createGit()
 
+fun String.deleteRepoAt() {
+    File("${this}/$GIT_SUFFIX").deleteRecursively()
+}
+
 private fun String.openRepo(): Repository =
     FileRepositoryBuilder()
         .setGitDir(File("${this}/$GIT_SUFFIX"))

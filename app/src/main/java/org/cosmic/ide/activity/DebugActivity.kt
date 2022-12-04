@@ -14,7 +14,6 @@ class DebugActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = intent
         val error = intent?.getStringExtra("error")!!
 
         /** TODO: Use dialog via AndroidUtilities#showSimpleAlert(
@@ -31,6 +30,6 @@ class DebugActivity : AppCompatActivity() {
                 finishAffinity()
             }
             .setCancelable(false)
-                .show()
+            .show()
     }
 }

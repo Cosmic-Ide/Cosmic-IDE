@@ -130,5 +130,6 @@
     <string name="git_delete_branch">Delete branch</string>
     <string name="git_delete_branch_message">Branch name to delete</string>
     <string name="git_log_unavailable">Logs not available.</string>
+    <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
 
 </resources>

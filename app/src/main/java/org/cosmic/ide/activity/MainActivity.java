@@ -43,7 +43,6 @@ import org.cosmic.ide.code.disassembler.JavapDisassembler;
 import org.cosmic.ide.code.formatter.*;
 import org.cosmic.ide.common.util.CoroutineUtil;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.common.util.ZipUtil;
 import org.cosmic.ide.compiler.CompileTask;
 import org.cosmic.ide.databinding.ActivityMainBinding;
 import org.cosmic.ide.fragment.CodeEditorFragment;
@@ -92,8 +91,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         var gitViewModel = new ViewModelProvider(this).get(GitViewModel.class);
         tabsAdapter = new PageAdapter(getSupportFragmentManager(), getLifecycle());
         javaProject = new JavaProject(new File(getIntent().getStringExtra(Constants.PROJECT_PATH)));
-
-        CoroutineUtil.inParallel(this::unzipFiles);
 
         UiUtilsKt.addSystemWindowInsetToPadding(binding.appBar, false, true, false, false);
 
@@ -349,74 +346,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     public void onDestroy() {
         super.onDestroy();
         saveOpenedFiles();
-    }
-
-    private void unzipFiles() {
-        if (!new File(FileUtil.getClasspathDir(), "android.jar").exists()) {
-            ZipUtil.unzipFromAssets(this, "android.jar.zip", FileUtil.getClasspathDir());
-        }
-        final var stdlib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar");
-        if (!stdlib.exists()) {
-            try {
-                FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-1.7.20.jar"), stdlib.getAbsolutePath());
-            } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(
-                        this,
-                        getString(R.string.error_file_unzip),
-                        e.getLocalizedMessage(),
-                        getString(R.string.dialog_close),
-                        getString(R.string.copy_stacktrace),
-                        ((dialog, which) -> {
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                            }
-                        }));
-            }
-        }
-        final var commonStdlib =
-                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar");
-        if (!commonStdlib.exists()) {
-            try {
-                FileUtil.writeFile(
-                        getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
-                        commonStdlib.getAbsolutePath());
-            } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(
-                        this,
-                        getString(R.string.error_file_unzip),
-                        e.getLocalizedMessage(),
-                        getString(R.string.dialog_close),
-                        getString(R.string.copy_stacktrace),
-                        ((dialog, which) -> {
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                            }
-                        }));
-            }
-        }
-        if (new File(FileUtil.getDataDir(), "compiler-modules").exists()) {
-            FileUtil.deleteFile(FileUtil.getDataDir() + "compiler-modules");
-        }
-        var output = new File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar");
-        if (!output.exists()) {
-            try {
-                FileUtil.writeFile(
-                        getAssets().open("core-lambda-stubs.jar"), output.getAbsolutePath());
-            } catch (Exception e) {
-                AndroidUtilities.showSimpleAlert(
-                        this,
-                        getString(R.string.error_file_unzip),
-                        e.getLocalizedMessage(),
-                        getString(R.string.dialog_close),
-                        getString(R.string.copy_stacktrace),
-                        ((dialog, which) -> {
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.getLocalizedMessage());
-                            }
-                        }));
-            }
-        }
     }
 
     private void updateTab(TabLayout.Tab tab, int pos) {

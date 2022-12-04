@@ -17,6 +17,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.manager.ToolsManager
 import org.cosmic.ide.ui.preference.Settings
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
@@ -29,6 +30,7 @@ class App : Application() {
         val settings = Settings()
         AppCompatDelegate.setDefaultNightMode(settings.theme)
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.getAbsolutePath()!!)
+        ToolsManager.init(this, null)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

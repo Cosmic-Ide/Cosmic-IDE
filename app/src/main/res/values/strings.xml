@@ -126,9 +126,9 @@
     <string name="git_name_branch">Branch name</string>
     <string name="git_merge">Merge</string>
     <string name="git_merge_branch">Merge branch</string>
-    <string name="git_merge_branch_message">Enter the exact branch to merge</string>
+    <string name="git_merge_branch_message">Branch name to merge</string>
     <string name="git_delete_branch">Delete branch</string>
-    <string name="git_delete_branch_message">Enter the exact branch to delete. Should not be the current branch.</string>
+    <string name="git_delete_branch_message">Branch name to delete</string>
     <string name="git_log_unavailable">Logs not available.</string>
 
 </resources>

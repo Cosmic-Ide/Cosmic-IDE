@@ -16,9 +16,16 @@ class LogAdapter(val mData: List<Log>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val log = mData[position]
-
         val sb = SpannableStringBuilder()
-        sb.append("[$log.tag] $log.message")
+
+        if (log.tag != null) {
+            sb.append("[")
+            sb.append(log.tag)
+            sb.append("]")
+            sb.append(" ")
+        }
+
+        sb.append(log.message)
 
         holder.textView.text = sb
     }
@@ -35,4 +42,4 @@ class LogAdapter(val mData: List<Log>) :
     }
 }
 
-data class Log(val tag: String, val message: String)
+data class Log(val tag: String?, val message: String)

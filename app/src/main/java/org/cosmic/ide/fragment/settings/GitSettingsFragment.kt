@@ -3,7 +3,7 @@ package org.cosmic.ide.fragment.settings
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import androidx.preference.EditTextPreference
 import org.cosmic.ide.R
 
 class GitSettingsFragment :
@@ -12,6 +12,21 @@ class GitSettingsFragment :
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         addPreferencesFromResource(R.xml.pref_git)
+
+        findPreference<EditTextPreference>("git_username")?.run {
+            summary = getText()
+            setOnPreferenceChangeListener { preference, newValue ->
+                preference.summary = newValue.toString()
+                true
+            }
+        }
+        findPreference<EditTextPreference>("git_useremail")?.run {
+            summary = getText()
+            setOnPreferenceChangeListener { preference, newValue ->
+                preference.summary = newValue.toString()
+                true
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

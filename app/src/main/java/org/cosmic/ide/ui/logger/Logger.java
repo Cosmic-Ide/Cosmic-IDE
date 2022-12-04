@@ -26,6 +26,10 @@ public class Logger {
         mRecyclerView.setAdapter(adapter);
     }
 
+    public void message(String message) {
+        message(null, message);
+    }
+
     public void message(String tag, String message) {
         mRecyclerView.post(() -> {
             data.add(new Log(tag, message));

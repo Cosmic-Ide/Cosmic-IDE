@@ -50,7 +50,9 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
         Logger()
     }
 
-    private lateinit var person: Author
+    private val person: Author by lazy {
+        Author(settings.gitUserName, settings.gitUserEmail)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +70,7 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
 
         mGitViewModel.gitLog.observe(this) { log ->
             Log.d(TAG, "gitLog=$log")
-            logger.message("Git", log)
+            logger.message(log)
         }
 
         mGitViewModel.branchList.observe(this) { list ->
@@ -89,11 +91,6 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
         with(binding) {
             spinnerBranch.setAdapter(arrayAdapter)
             spinnerBranch.setOnItemSelectedListener(listener)
-
-            buttonCreate.setOnClickListener {
-                mGitViewModel.createGitRepo(person)
-                Log.d(TAG, "Create Git Repository complete")
-            }
 
             buttonCommit.setOnClickListener {
                 commitWith(person)
@@ -195,7 +192,7 @@ fun GitActivity.mergeBranch() {
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' merged")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' not in repository", getString(android.R.string.ok), getString(R.string.dialog_close))
+                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' not in repository")
                 else -> showSnackbar("Unknown error")
             }
         }
@@ -216,7 +213,7 @@ fun GitActivity.deleteBranch() {
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' deleted")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' must not be the current branch to delete.", getString(android.R.string.ok), getString(R.string.dialog_close))
+                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' must not be the current branch to delete.")
                 else -> showSnackbar("Unknown error")
             }
         }
@@ -226,8 +223,6 @@ fun GitActivity.deleteBranch() {
 
 fun GitActivity.showSnackbar(message: String) =
     Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
-
-fun toContent(file: File?) = file?.readText() ?: ""
 
 fun <I> ArrayAdapter<I>.listOf(items: List<I>) {
     clear()

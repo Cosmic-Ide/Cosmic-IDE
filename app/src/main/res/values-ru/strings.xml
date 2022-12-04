@@ -118,9 +118,9 @@
     <string name="git_name_branch">Название ветки</string>
     <string name="git_merge">Объединить</string>
     <string name="git_merge_branch">Объединить ветку</string>
-    <string name="git_merge_branch_message">Введите точную ветвь для слияния</string>
+    <string name="git_merge_branch_message">Название ветки для слияния</string>
     <string name="git_delete_branch">Удалить ветку</string>
-    <string name="git_delete_branch_message">Введите точную ветвь для удаления. Не должна быть текущей ветвью.</string>
+    <string name="git_delete_branch_message">Название ветки для удаления</string>
     <string name="git_log_unavailable">Логи не доступны.</string>
 
 </resources>

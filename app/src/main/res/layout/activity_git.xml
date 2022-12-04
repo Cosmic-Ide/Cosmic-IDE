@@ -26,7 +26,11 @@
         <androidx.constraintlayout.helper.widget.Flow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="button_create, button_commit, button_create_branch, button_merge_branch, button_delete_branch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:constraint_referenced_ids="button_commit, button_create_branch, button_merge_branch, button_delete_branch"
             app:flow_wrapMode="chain"
             app:flow_horizontalStyle="spread"
             app:flow_verticalStyle="packed"
@@ -35,48 +39,28 @@
             app:flow_horizontalGap="@dimen/spacing_tiny" />
 
         <Button
-            android:id="@+id/button_create"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/git_new_repository"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintWidth_percent="1" />
-
-        <Button
             android:id="@+id/button_commit"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/git_commit"
-            app:layout_constraintTop_toBottomOf="@id/button_create"
-            app:layout_constraintStart_toStartOf="@id/button_create"
-            app:layout_constraintEnd_toStartOf="@id/button_create_branch" />
+            android:text="@string/git_commit" />
 
         <Button
             android:id="@+id/button_create_branch"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/git_new_branch"
-            app:layout_constraintTop_toBottomOf="@id/button_create"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/button_commit" />
+            android:text="@string/git_new_branch" />
 
         <Button
             android:id="@+id/button_merge_branch"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/git_merge_branch"
-            app:layout_constraintTop_toBottomOf="@id/button_commit"
-            app:layout_constraintEnd_toStartOf="@id/button_delete_branch" />
+            android:text="@string/git_merge_branch" />
 
         <Button
             android:id="@+id/button_delete_branch"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/git_delete_branch"
-            app:layout_constraintTop_toBottomOf="@id/button_create_branch"
-            app:layout_constraintStart_toEndOf="@id/button_merge_branch" />
+            android:text="@string/git_delete_branch" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

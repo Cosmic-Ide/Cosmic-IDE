@@ -92,11 +92,6 @@ class GitActivity : BaseActivity<ActivityGitBinding>(),
             spinnerBranch.setAdapter(arrayAdapter)
             spinnerBranch.setOnItemSelectedListener(listener)
 
-            buttonCreate.setOnClickListener {
-                mGitViewModel.createGitRepo(person)
-                Log.d(TAG, "Create Git Repository complete")
-            }
-
             buttonCommit.setOnClickListener {
                 commitWith(person)
                 Log.d(TAG, "Commit complete")
@@ -228,8 +223,6 @@ fun GitActivity.deleteBranch() {
 
 fun GitActivity.showSnackbar(message: String) =
     Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
-
-fun toContent(file: File?) = file?.readText() ?: ""
 
 fun <I> ArrayAdapter<I>.listOf(items: List<I>) {
     clear()

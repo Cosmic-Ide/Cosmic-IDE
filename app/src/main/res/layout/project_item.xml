@@ -38,10 +38,4 @@
             tools:text="../org.cosmic.ide/files/projects/Abc/" />
     </LinearLayout>
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        app:dividerInsetStart="@dimen/spacing_medium"
-        app:dividerInsetEnd="@dimen/spacing_medium" />
-
 </LinearLayout>

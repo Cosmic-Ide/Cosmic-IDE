@@ -51,27 +51,23 @@ public class JavaCompiler implements Task {
 
         final var diagnostics = new DiagnosticCollector<JavaFileObject>();
 
-        var lastBuildTime = project.getIndexer().getLong("lastBuildTime");
-        Log.d(TAG, "lastBuildTime=" + lastBuildTime);
         if (!output.exists()) {
-            lastBuildTime = 0;
             output.mkdirs();
         }
         final var javaFileObjects = new ArrayList<JavaFileObject>();
         final var javaFiles = getSourceFiles(new File(project.getSrcDirPath()));
         for (var file : javaFiles) {
-            if (file.lastModified() > lastBuildTime) {
-                var path = file.getAbsolutePath();
-                new File(output, path.replaceFirst(project.getSrcDirPath(), "")).delete();
-                javaFileObjects.add(
-                        new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                            @Override
-                            public CharSequence getCharContent(boolean ignoreEncodingErrors)
-                                    throws IOException {
-                                return FileUtil.readFile(file);
-                            }
-                        });
-            }
+            var path = file.getAbsolutePath();
+            new File(output, path.replaceFirst(project.getSrcDirPath(), "")).delete();
+            javaFileObjects.add(
+                    new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                        @Override
+                        public CharSequence getCharContent(boolean ignoreEncodingErrors)
+                                throws IOException {
+                            return FileUtil.readFile(file);
+                        }
+                    });
+
         }
 
         if (javaFileObjects.isEmpty()) {

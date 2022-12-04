@@ -24,7 +24,7 @@ class Settings() {
     val theme: Int
         get() =
             prefs.getInt(
-                "theme",
+                THEME,
                 MODE_NIGHT_FOLLOW_SYSTEM
             )
 
@@ -32,35 +32,55 @@ class Settings() {
         get() =
             DynamicColors.isDynamicColorAvailable() &&
             prefs.getBoolean(
-                "dynamic_theme",
+                DYNAMIC_THEME,
                 false
             )
+
+    val programArguments: String
+        get() =
+            prefs.getString(
+                PROGRAM_ARGUMENTS,
+                ""
+            )!!
 
     val fontSize: Int
         get() =
             prefs.getInt(
-                "font_size",
+                FONT_SIZE,
                 14
             )
 
     val javaVersion: Int
         get() =
             prefs.getInt(
-                "java_version",
+                JAVA_VERSION,
                 7
             )
 
     val gitUserName: String
         get() =
             prefs.getString(
-                "git_username",
+                GIT_USERNAME,
                 "User"
             )!!
 
     val gitUserEmail: String
         get() =
             prefs.getString(
-                "git_useremail",
+                GIT_USEREMAIL,
                 "user@localhost.com"
             )!!
+
+    companion object {
+        const val THEME = "theme"
+        const val DYNAMIC_THEME = "dynamic_theme"
+        const val PROGRAM_ARGUMENTS = "program_arguments"
+        const val FONT_SIZE = "font_size"
+        const val JAVA_VERSION = "java_version"
+        const val GIT_USERNAME = "git_username"
+        const val GIT_USEREMAIL = "git_useremail"
+        const val DISCORD = "discord"
+        const val GITHUB = "github"
+        const val APP_VERSION = "app_version"
+    }
 }

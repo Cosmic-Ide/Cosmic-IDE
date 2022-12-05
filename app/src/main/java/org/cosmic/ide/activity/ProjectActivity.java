@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.github.pedrovgs.lynx.LynxActivity;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.adapter.ProjectAdapter;
@@ -40,13 +38,15 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
+public class ProjectActivity extends BaseActivity
         implements ProjectAdapter.OnProjectEventListener {
 
     private ProjectAdapter projectAdapter;
 
     private AlertDialog createNewProjectDialog;
     private DialogNewProjectBinding projectBinding;
+
+    private ActivityProjectBinding binding;
 
     private OnProjectCreatedListener mListener;
 
@@ -57,7 +57,8 @@ public class ProjectActivity extends BaseActivity<ActivityProjectBinding>
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityProjectBinding.inflate(getLayoutInflater()));
+        binding = ActivityProjectBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbar);
 
         buildCreateNewProjectDialog();

@@ -13,18 +13,25 @@ import org.cosmic.ide.util.Constants.PROJECT_PATH
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 
-class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
+class ConsoleActivity : BaseActivity() {
     private lateinit var project: JavaProject
     private lateinit var classToExecute: String
-    private var task: ExecuteDexTask? = null
+    private lateinit var task: ExecuteDexTask
+    private lateinit var binding: ActivityConsoleBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivityConsoleBinding.inflate(layoutInflater))
+        binding = ActivityConsoleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        binding.root.addSystemWindowInsetToPadding(false, true, false, true)
+        binding.root.addSystemWindowInsetToPadding(
+            left = false,
+            top = true,
+            right = false,
+            bottom = true
+        )
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.console) { _, insets ->
             val isKeyboardVisible = insets.isVisible(Type.ime())
@@ -62,7 +69,7 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         binding.console.release()
-        task?.release()
+        task.release()
     }
 
     private fun executeDex() {
@@ -78,6 +85,6 @@ class ConsoleActivity : BaseActivity<ActivityConsoleBinding>() {
         ) {
             supportActionBar?.subtitle = getString(R.string.console_state_stopped)
         }
-        task?.doFullTask(project)
+        task.doFullTask(project)
     }
 }

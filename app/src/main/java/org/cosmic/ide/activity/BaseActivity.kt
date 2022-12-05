@@ -8,12 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.viewbinding.ViewBinding
 import org.cosmic.ide.R
+import org.cosmic.ide.databinding.ActivityMainBinding
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
-abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
-
-    public lateinit var binding: Binding
+abstract class BaseActivity : AppCompatActivity() {
 
     protected val settings: Settings by lazy { Settings() }
 
@@ -24,13 +23,13 @@ abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false)
-        getRootActivityView().addSystemWindowInsetToPadding(true, false, true, false)
-    }
-
-    protected fun setContentView(binding: Binding) {
-        this.binding = binding
-        setContentView(binding.root)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        getRootActivityView().addSystemWindowInsetToPadding(
+            left = true,
+            top = false,
+            right = true,
+            bottom = false
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -53,6 +52,6 @@ abstract class BaseActivity<Binding : ViewBinding> : AppCompatActivity() {
     }
 
     private fun getRootActivityView(): View {
-        return getWindow().getDecorView().findViewById(android.R.id.content)
+        return window.decorView.findViewById(android.R.id.content)
     }
 }

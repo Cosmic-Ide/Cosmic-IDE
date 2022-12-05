@@ -9,12 +9,15 @@ import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
 import org.cosmic.ide.fragment.settings.RootSettingsFragment
 
-class SettingsActivity : BaseActivity<ActivitySettingsBinding>(),
+class SettingsActivity : BaseActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(ActivitySettingsBinding.inflate(layoutInflater))
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

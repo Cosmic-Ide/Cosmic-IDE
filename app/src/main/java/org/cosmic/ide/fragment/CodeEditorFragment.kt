@@ -87,7 +87,7 @@ class CodeEditorFragment : Fragment() {
                         requireActivity(),
                         getEditor(),
                         currentFile,
-                        (requireActivity() as MainActivity).getProject()
+                        (requireActivity() as MainActivity).project
                     )
                 )
         }
@@ -131,7 +131,7 @@ class CodeEditorFragment : Fragment() {
 
     private fun getKotlinLanguage(): Language {
         try {
-            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).getProject(), currentFile)
+            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).project, currentFile)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             return EmptyLanguage()

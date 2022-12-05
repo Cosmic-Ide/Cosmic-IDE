@@ -2,8 +2,6 @@ package org.cosmic.ide.activity.model
 
 import android.util.Log
 import androidx.lifecycle.*
-import org.cosmic.ide.App
-import org.cosmic.ide.R
 import org.cosmic.ide.git.model.*
 import org.cosmic.ide.git.usecases.*
 

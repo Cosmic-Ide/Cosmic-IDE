@@ -128,13 +128,13 @@ public class CompileTask extends Thread {
         }
     }
 
-    public static interface CompilerListeners {
-        public void onCurrentBuildStageChanged(String stage);
+    public interface CompilerListeners {
+        void onCurrentBuildStageChanged(String stage);
 
-        public void onSuccess();
+        void onSuccess();
 
-        public void onFailed(String errorMessage);
+        void onFailed(String errorMessage);
 
-        public boolean isSuccessTillNow();
+        boolean isSuccessTillNow();
     }
 }

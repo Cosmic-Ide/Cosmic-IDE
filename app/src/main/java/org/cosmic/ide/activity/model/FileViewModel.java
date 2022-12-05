@@ -15,9 +15,9 @@ import java.io.File;
 
 public class FileViewModel extends ViewModel {
 
-    private MutableLiveData<File> mRoot =
+    private final MutableLiveData<File> mRoot =
             new MutableLiveData<>(Environment.getExternalStorageDirectory());
-    private MutableLiveData<TreeNode<TreeFile>> mNode = new MutableLiveData<>();
+    private final MutableLiveData<TreeNode<TreeFile>> mNode = new MutableLiveData<>();
 
     public LiveData<TreeNode<TreeFile>> getNodes() {
         return mNode;

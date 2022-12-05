@@ -6,9 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.viewbinding.ViewBinding
 import org.cosmic.ide.R
-import org.cosmic.ide.databinding.ActivityMainBinding
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 

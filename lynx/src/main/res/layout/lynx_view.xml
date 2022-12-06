@@ -37,6 +37,8 @@
             android:layout_height="match_parent"
             android:hint="@string/et_filter_hint_text"
             android:padding="@dimen/filter_edit_text_padding"
+            android:inputType="text"
+            android:importantForAutofill="no"
             tools:text="Filter"
             android:singleLine="true"/>
 

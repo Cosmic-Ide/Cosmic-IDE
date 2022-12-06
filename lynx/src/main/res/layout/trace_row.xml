@@ -15,18 +15,19 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_trace"
         android:padding="@dimen/trace_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/trace_font_size"/>
+        android:textSize="@dimen/trace_font_size" />
+
     <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="1px" />
+        android:layout_width="match_parent"
+        android:layout_height="1px" />
 </LinearLayout>

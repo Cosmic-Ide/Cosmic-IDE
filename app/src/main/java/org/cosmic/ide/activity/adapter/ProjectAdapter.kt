@@ -11,8 +11,8 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
     private val mProjects: MutableList<Project> = ArrayList()
 
     interface OnProjectEventListener {
-        fun onProjectClicked(project: Project?)
-        fun onProjectLongClicked(project: Project?): Boolean
+        fun onProjectClicked(project: Project)
+        fun onProjectLongClicked(project: Project): Boolean
     }
 
     fun setOnProjectEventListener(onProjectEventListener: OnProjectEventListener?) {

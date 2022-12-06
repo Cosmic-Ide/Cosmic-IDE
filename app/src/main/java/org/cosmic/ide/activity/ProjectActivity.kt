@@ -21,6 +21,7 @@ import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.databinding.ActivityProjectBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
 import org.cosmic.ide.git.model.Author
+import org.cosmic.ide.git.usecases.createGitRepoWith
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.project.KotlinProject
 import org.cosmic.ide.project.Project
@@ -144,8 +145,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                         ) else JavaProject.newProject(projectName)
                     if (projectBinding!!.useGit.isChecked) {
                         val author: Author = Author(settings.gitUserName, settings.gitUserEmail)
-                        createGitRepoWith.createGitRepoWith(
-                            project.projectDirPath,
+                        project.projectDirPath.createGitRepoWith(
                             author,
                             "Initial Commit"
                         )

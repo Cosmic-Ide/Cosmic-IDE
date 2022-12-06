@@ -18,8 +18,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -85,25 +83,7 @@ class MainActivity : BaseActivity() {
         val gitViewModel = ViewModelProvider(this)[GitViewModel::class.java]
         tabsAdapter = PageAdapter(supportFragmentManager, lifecycle)
         project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
-        binding.appBar.addSystemWindowInsetToPadding(
-            left = false,
-            top = true,
-            right = false,
-            bottom = false
-        )
-        ViewCompat.setOnApplyWindowInsetsListener(
-            binding.viewPager
-        ) { _: View?, insets: WindowInsetsCompat ->
-            val imeVisible =
-                insets.isVisible(WindowInsetsCompat.Type.ime())
-            val bottomInset: Int = if (imeVisible) {
-                insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            } else {
-                insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-            }
-            binding.viewPager.setPadding(0, 0, 0, bottomInset)
-            insets
-        }
+        binding.appBar.addSystemWindowInsetToPadding(top = true)
         if (binding.root is DrawerLayout) {
             val drawer = binding.root as DrawerLayout
             binding.toolbar.setNavigationOnClickListener {

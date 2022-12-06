@@ -3,10 +3,14 @@ package org.cosmic.ide.ui.editor
 import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
-import com.google.android.material.color.MaterialColors
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.elevation.SurfaceColors
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.cosmic.ide.util.resolveAttr
 
 class SymbolInputView : LinearLayout {
     private var textColor = 0
@@ -23,9 +27,22 @@ class SymbolInputView : LinearLayout {
     )
 
     init {
-        setBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurface))
-        setTextColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurface))
+        setBackgroundColor(SurfaceColors.SURFACE_1.getColor(getContext()))
+        setTextColor(getContext().resolveAttr(com.google.android.material.R.attr.colorOnSurface))
         orientation = HORIZONTAL
+
+        ViewCompat.setOnApplyWindowInsetsListener(
+            this
+        ) { _: View?, insets: WindowInsetsCompat ->
+            val bottomInset: Int = if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            } else {
+                insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+            }
+            setPadding(0, 0, 0, bottomInset)
+            insets
+        }
+
     }
 
     fun bindEditor(editor: CodeEditor): SymbolInputView {

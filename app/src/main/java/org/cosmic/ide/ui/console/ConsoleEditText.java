@@ -12,7 +12,8 @@ import android.util.AttributeSet;
 
 import androidx.annotation.*;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.ThemeUtils;
+
+import org.cosmic.ide.util.UiUtilsKt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,10 +171,7 @@ public class ConsoleEditText extends AppCompatEditText {
                 () -> {
                     var spannable = new SpannableString(str);
                     spannable.setSpan(
-                            new ForegroundColorSpan(
-                                    ThemeUtils.getThemeAttrColor(
-                                            getContext(),
-                                            com.google.android.material.R.attr.colorError)),
+                            new ForegroundColorSpan(UiUtilsKt.resolveAttr(getContext(), com.google.android.material.R.attr.colorError)),
                             0,
                             str.length(),
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

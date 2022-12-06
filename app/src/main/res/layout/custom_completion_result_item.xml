@@ -2,19 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/result_item_image"
         android:layout_height="match_parent"
-        android:layout_width="20dp"
+        android:layout_width="30dp"
         android:layout_marginStart="@dimen/spacing_tiny"
-        android:textColor="?android:attr/textColorPrimary"
         android:fontFamily="@font/mono_font"
         android:gravity="center"
-        android:textStyle="bold"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textSize="12sp"
         tools:text="I" />
 
     <LinearLayout
@@ -28,7 +28,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp"
             android:singleLine="true" />
 
         <TextView
@@ -37,7 +39,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/mono_font"
             android:layout_marginStart="@dimen/spacing_tiny"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorSecondaryVariant"
+            android:textSize="11sp"
             android:singleLine="true"
             tools:text="Identifier" />
     </LinearLayout>

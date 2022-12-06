@@ -2,14 +2,28 @@ package org.cosmic.ide.util
 
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources.Theme
 import android.view.View
 import android.view.ViewGroup
+import android.util.TypedValue
 import androidx.core.view.*
 
 fun Context.isDarkMode(): Boolean {
     val darkModeFlag = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
     return darkModeFlag == Configuration.UI_MODE_NIGHT_YES
 }
+
+@JvmOverloads
+fun Context.resolveAttr(id: Int, resolveRefs: Boolean = true): Int {
+    return theme.resolveAttr(id, resolveRefs)
+}
+
+@JvmOverloads
+fun Theme.resolveAttr(id: Int, resolveRefs: Boolean = true): Int =
+    TypedValue().let {
+        resolveAttribute(id, it, resolveRefs)
+        it.data
+    }
 
 @JvmOverloads
 fun View.addSystemWindowInsetToPadding(

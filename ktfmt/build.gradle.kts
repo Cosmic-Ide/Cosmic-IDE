@@ -7,6 +7,7 @@ plugins {
 android {
     namespace = "com.facebook.ktfmt"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION

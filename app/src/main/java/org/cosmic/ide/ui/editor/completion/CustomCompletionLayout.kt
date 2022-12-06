@@ -8,11 +8,12 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.RelativeLayout
-import com.google.android.material.color.MaterialColors
+import com.google.android.material.elevation.SurfaceColors
 import io.github.rosemoe.sora.widget.component.CompletionLayout
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmic.ide.util.AndroidUtilities
+import org.cosmic.ide.util.resolveAttr
 
 class CustomCompletionLayout : CompletionLayout {
 
@@ -30,9 +31,9 @@ class CustomCompletionLayout : CompletionLayout {
         mBackground = GradientDrawable()
         mBackground.apply {
             setCornerRadius(AndroidUtilities.dp(8f).toFloat())
-            setStroke(AndroidUtilities.dp(1f), MaterialColors.getColor(layout, com.google.android.material.R.attr.colorOutline))
+            setStroke(AndroidUtilities.dp(0.8f), layout.getContext().resolveAttr(com.google.android.material.R.attr.colorOutline))
         }
-        mBackground.setColor(MaterialColors.getColor(layout, com.google.android.material.R.attr.colorSurface))
+        mBackground.setColor(SurfaceColors.SURFACE_1.getColor(layout.getContext()))
         layout.setBackground(mBackground)
 
         mListView = ListView(context)

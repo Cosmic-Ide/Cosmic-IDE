@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: set up JDK 19
-        uses: actions/setup-java@v3.7.0
+        uses: actions/setup-java@v3.6.0
         with:
           java-version: '19'
           distribution: 'temurin'
@@ -36,7 +36,7 @@ jobs:
         run: git config --global user.email "${{ secrets.EMAIL }}"
 
       - name: Setup name
-        run: git config --global user.name "PranavPurwar"
+        run: git config --global user.name "Github Actions"
 
       - name: Commit latest gradle wrapper
         run: git commit -m "Update gradle to v${{ secrets.GRADLE_VERSION }}"

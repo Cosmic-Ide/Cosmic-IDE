@@ -42,7 +42,6 @@ class SymbolInputView : LinearLayout {
             setPadding(0, 0, 0, bottomInset)
             insets
         }
-
     }
 
     fun bindEditor(editor: CodeEditor): SymbolInputView {

@@ -31,17 +31,23 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
                 }
 
                 override fun areItemsTheSame(
-                    oldItemPosition: Int, newItemPosition: Int
+                    oldItemPosition: Int,
+                    newItemPosition: Int
                 ): Boolean {
-                    return (mProjects.get(oldItemPosition)
-                            == projects.get(newItemPosition))
+                    return (
+                        mProjects.get(oldItemPosition)
+                            == projects.get(newItemPosition)
+                        )
                 }
 
                 override fun areContentsTheSame(
-                    oldItemPosition: Int, newItemPosition: Int
+                    oldItemPosition: Int,
+                    newItemPosition: Int
                 ): Boolean {
-                    return (mProjects.get(oldItemPosition)
-                            == projects.get(newItemPosition))
+                    return (
+                        mProjects.get(oldItemPosition)
+                            == projects.get(newItemPosition)
+                        )
                 }
             })
         mProjects.clear()

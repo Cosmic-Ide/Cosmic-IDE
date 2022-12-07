@@ -99,9 +99,11 @@ public class TreeFileManagerFragment extends Fragment {
         boolean isGitEnabled = new File(activity.getProject().getRootFile(), ".git").exists();
         MaterialButton gitButton = view.findViewById(R.id.gitButton);
         gitButton.setText(isGitEnabled ? "DISABLE GIT" : "ENABLE GIT");
-        gitButton.setOnClickListener(v -> {
-            AndroidUtilities.showSimpleAlert(v.getContext(), "Git", "This feature is currently not available.");
-        });
+        gitButton.setOnClickListener(
+                v -> {
+                    AndroidUtilities.showSimpleAlert(
+                            v.getContext(), "Git", "This feature is currently not available.");
+                });
 
         treeView.setAdapter(
                 new TreeFileNodeViewFactory(

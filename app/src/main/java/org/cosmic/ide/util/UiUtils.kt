@@ -3,9 +3,9 @@ package org.cosmic.ide.util
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources.Theme
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import android.util.TypedValue
 import androidx.core.view.*
 
 fun Context.isDarkMode(): Boolean {

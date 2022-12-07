@@ -1,18 +1,11 @@
 package org.cosmic.ide.common.util
 
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileFilter
-import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStream
-import java.nio.file.FileVisitResult
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
-import java.nio.file.attribute.BasicFileAttributes
 
 object FileUtil {
 

@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import org.cosmic.ide.R
 import org.cosmic.ide.util.AndroidUtilities
 

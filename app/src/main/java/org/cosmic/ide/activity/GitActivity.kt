@@ -23,7 +23,8 @@ import org.cosmic.ide.util.*
 // TODO: Automatically update project files after deleting file in a topic branch and checking out
 // TODO: Let select commits for reverting, restore and reset
 
-class GitActivity : BaseActivity(),
+class GitActivity :
+    BaseActivity(),
     AdapterView.OnItemSelectedListener {
 
     private val TAG = "GitActivity"
@@ -52,7 +53,7 @@ class GitActivity : BaseActivity(),
         logger.attach(binding.recyclerView)
 
         mGitViewModel.hasRepo.observe(this) { isRepo ->
-            Log.d(TAG, "hasRepo=$isRepo") 
+            Log.d(TAG, "hasRepo=$isRepo")
             if (!isRepo) {
                 mGitViewModel.createGitRepo(person)
             }
@@ -155,7 +156,7 @@ fun GitActivity.createBranch() {
     MaterialAlertDialogBuilder(this)
         .setTitle(getString(R.string.git_new_branch))
         .setView(binding.root)
-        .setPositiveButton(getString(R.string.create)) {_, _ ->
+        .setPositiveButton(getString(R.string.create)) { _, _ ->
             val text = binding.editText.getText().toString()
             val result = mGitViewModel.createBranch(text)
 
@@ -207,7 +208,7 @@ fun GitActivity.deleteBranch() {
                 else -> showSnackbar("Unknown error")
             }
         }
-        .setNegativeButton(getString(android.R.string.cancel)) { _, _ ->}    
+        .setNegativeButton(getString(android.R.string.cancel)) { _, _ -> }
         .show()
 }
 

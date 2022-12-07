@@ -2,10 +2,8 @@ package org.cosmic.ide.common
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-
 import org.cosmic.ide.common.util.FileUtil
 import org.json.JSONException
-
 import java.io.File
 import java.io.IOException
 

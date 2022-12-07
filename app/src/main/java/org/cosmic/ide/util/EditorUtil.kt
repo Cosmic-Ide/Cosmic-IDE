@@ -2,10 +2,9 @@ package org.cosmic.ide.util
 
 import android.content.Context
 import io.github.rosemoe.sora.lang.Language
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import org.cosmic.ide.App
 
 object EditorUtil {
     val javaLanguage: Language

@@ -1,4 +1,5 @@
- package org.cosmic.ide.fragment.settings
+ 
+package org.cosmic.ide.fragment.settings
 
 import android.os.Bundle
 import org.cosmic.ide.R

@@ -20,9 +20,9 @@ class DebugActivity : AppCompatActivity() {
          * Context, Title, Message, Positive, Negative, DialogInterface.OnClickListener)
          */
         MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                .setTitle(getString(R.string.error))
-                .setMessage(error)
-                .setPositiveButton(getString(R.string.quit)) { _, _ -> finishAffinity() }
+            .setTitle(getString(R.string.error))
+            .setMessage(error)
+            .setPositiveButton(getString(R.string.quit)) { _, _ -> finishAffinity() }
             .setNegativeButton(getString(R.string.copy_stacktrace)) { _, which ->
                 if (which == DialogInterface.BUTTON_NEGATIVE) {
                     AndroidUtilities.copyToClipboard(error)

@@ -9,7 +9,8 @@ import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
 import org.cosmic.ide.fragment.settings.RootSettingsFragment
 
-class SettingsActivity : BaseActivity(),
+class SettingsActivity :
+    BaseActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     private lateinit var binding: ActivitySettingsBinding
@@ -50,7 +51,7 @@ class SettingsActivity : BaseActivity(),
     override fun onPreferenceStartFragment(
         caller: PreferenceFragmentCompat,
         pref: Preference
-    ) : Boolean {
+    ): Boolean {
         val fm = supportFragmentManager
         val fragment = fm.fragmentFactory.instantiate(classLoader, pref.fragment ?: return false)
         fragment.arguments = pref.extras

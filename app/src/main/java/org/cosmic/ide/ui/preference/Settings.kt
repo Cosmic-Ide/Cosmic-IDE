@@ -2,10 +2,8 @@ package org.cosmic.ide.ui.preference
 
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-import androidx.core.content.edit
 import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.App
-import org.cosmic.ide.R
 
 /**
  * CosmicIde's Settings.
@@ -31,10 +29,10 @@ class Settings() {
     val isDynamicTheme: Boolean
         get() =
             DynamicColors.isDynamicColorAvailable() &&
-            prefs.getBoolean(
-                DYNAMIC_THEME,
-                false
-            )
+                prefs.getBoolean(
+                    DYNAMIC_THEME,
+                    false
+                )
 
     val programArguments: String
         get() =

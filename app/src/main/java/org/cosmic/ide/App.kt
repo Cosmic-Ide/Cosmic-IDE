@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 import com.itsaky.androidide.config.JavacConfigProvider
@@ -46,14 +45,16 @@ class App : Application() {
                 ThemeModel(
                     IThemeSource.fromInputStream(
                         FileProviderRegistry.getInstance().tryGetInputStream("textmate/darcula.json"), "darcula.json", null
-                    ), "darcula"
+                    ),
+                    "darcula"
                 )
             )
             themeRegistry.loadTheme(
                 ThemeModel(
                     IThemeSource.fromInputStream(
                         FileProviderRegistry.getInstance().tryGetInputStream("textmate/QuietLight.tmTheme"), "QuietLight.tmTheme", null
-                    ), "QuietLight"
+                    ),
+                    "QuietLight"
                 )
             )
         }

@@ -1,12 +1,11 @@
 package org.cosmic.ide.common.util
 
 import android.content.Context
-
+import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import java.io.File
 
 object ZipUtil {
 
@@ -26,8 +25,8 @@ object ZipUtil {
         ZipInputStream(stream).use { zipIn ->
             var ze: ZipEntry? = zipIn.nextEntry
             while (ze != null) {
-              val resolved = targetDir.resolve(ze.name).normalize()
-              if (!resolved.startsWith(targetDir)) {
+                val resolved = targetDir.resolve(ze.name).normalize()
+                if (!resolved.startsWith(targetDir)) {
                     // see: https://snyk.io/research/zip-slip-vulnerability
                     throw SecurityException("Entry with an illegal path: " + ze.name)
                 }

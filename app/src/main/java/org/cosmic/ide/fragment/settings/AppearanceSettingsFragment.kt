@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.R
-import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.IntListPreference
+import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.showIntListPreferenceDialog
 
 class AppearanceSettingsFragment :
@@ -41,7 +41,7 @@ class AppearanceSettingsFragment :
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
-            Settings.THEME ->  AppCompatDelegate.setDefaultNightMode(settings.theme)
+            Settings.THEME -> AppCompatDelegate.setDefaultNightMode(settings.theme)
             Settings.DYNAMIC_THEME -> {
                 showSnackbar("Restart the application to apply the dynamic colors")
             }

@@ -21,23 +21,23 @@ public class ToolsManager {
         app = application;
 
         CompletableFuture.runAsync(
-                () -> {
-                    deleteCompilerModules();
-                    extractAndroidJar();
-                    writeKotlinStdLib();
-                    writeKotlinCommonStdLib();
-                    writeLambdaStubs();
-                })
-            .whenComplete(
-                (__, error) -> {
-                    if (error != null) {
-                        Log.d(TAG, "Error extracting tools " + error);
-                    }
+                        () -> {
+                            deleteCompilerModules();
+                            extractAndroidJar();
+                            writeKotlinStdLib();
+                            writeKotlinCommonStdLib();
+                            writeLambdaStubs();
+                        })
+                .whenComplete(
+                        (__, error) -> {
+                            if (error != null) {
+                                Log.d(TAG, "Error extracting tools " + error);
+                            }
 
-                    if (onFinish != null) {
-                        onFinish.run();
-                    }
-                });
+                            if (onFinish != null) {
+                                onFinish.run();
+                            }
+                        });
     }
 
     private static void deleteCompilerModules() {
@@ -76,7 +76,8 @@ public class ToolsManager {
         if (!commonStdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        app.getAssets().open("kotlin-stdlib-common-1.7.20.jar"), commonStdLib.getAbsolutePath());
+                        app.getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
+                        commonStdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin common stdlib file");
             }
@@ -89,7 +90,8 @@ public class ToolsManager {
         if (!lambdaStubs.exists()) {
             try {
                 FileUtil.writeFile(
-                        app.getAssets().open("core-lambda-stubs.jar"), lambdaStubs.getAbsolutePath());
+                        app.getAssets().open("core-lambda-stubs.jar"),
+                        lambdaStubs.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract core lambda stubs file");
             }

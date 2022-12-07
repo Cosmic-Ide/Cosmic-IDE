@@ -67,7 +67,6 @@ public class JavaCompiler implements Task {
                             return FileUtil.readFile(file);
                         }
                     });
-
         }
 
         if (javaFileObjects.isEmpty()) {

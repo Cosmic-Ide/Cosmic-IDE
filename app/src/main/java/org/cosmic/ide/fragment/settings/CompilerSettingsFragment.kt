@@ -3,9 +3,9 @@ package org.cosmic.ide.fragment.settings
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import androidx.preference.Preference
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
+import androidx.preference.Preference
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.ui.preference.showListPreferenceDialog

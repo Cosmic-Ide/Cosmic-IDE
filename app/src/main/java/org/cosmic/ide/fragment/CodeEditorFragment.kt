@@ -61,15 +61,15 @@ class CodeEditorFragment : Fragment() {
                 binding.editor.setText(currentFile.readText())
             } catch (e: IOException) {
                 MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
-                        .setTitle(requireContext().getString(R.string.error_file_open))
-                        .setMessage(e.localizedMessage)
-                        .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
-                        .setNegativeButton(requireContext().getString(R.string.copy_stacktrace), { _, which ->
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(e.localizedMessage)
-                            }
-                        })
-                        .show()
+                    .setTitle(requireContext().getString(R.string.error_file_open))
+                    .setMessage(e.localizedMessage)
+                    .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
+                    .setNegativeButton(requireContext().getString(R.string.copy_stacktrace), { _, which ->
+                        if (which == DialogInterface.BUTTON_NEGATIVE) {
+                            AndroidUtilities.copyToClipboard(e.localizedMessage)
+                        }
+                    })
+                    .show()
             }
             if (currentFile.extension.equals("kt")) {
                 setEditorLanguage(LANGUAGE_KOTLIN)

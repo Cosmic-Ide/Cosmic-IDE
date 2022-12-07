@@ -81,7 +81,7 @@ class GitViewModel : ViewModel() {
     fun getBranch(): String = git.getBranch()
 
     fun deleteBranch(branch: String): Result {
-        if(branch !in getBranch()) {
+        if (branch !in getBranch()) {
             git.deleteBranch(branch)
             getLog()
             getBranchList()
@@ -91,9 +91,9 @@ class GitViewModel : ViewModel() {
     }
 
     fun checkout(position: Int) {
-        if(::git.isInitialized) {
+        if (::git.isInitialized) {
             _branchList.value?.let {
-                if(it.isNotEmpty()) {
+                if (it.isNotEmpty()) {
                     val branch = it[position]
                     if (branch.isNotBlank()) {
                         onSave()

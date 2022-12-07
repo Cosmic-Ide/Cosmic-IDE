@@ -1,7 +1,8 @@
 package org.cosmic.ide.ui.logger;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +31,11 @@ public class Logger {
     }
 
     public void message(String tag, String message) {
-        mRecyclerView.post(() -> {
-            data.add(new Log(tag, message));
-            adapter.notifyItemInserted(data.size());
-            mRecyclerView.smoothScrollToPosition(data.size() - 1);
-        });
+        mRecyclerView.post(
+                () -> {
+                    data.add(new Log(tag, message));
+                    adapter.notifyItemInserted(data.size());
+                    mRecyclerView.smoothScrollToPosition(data.size() - 1);
+                });
     }
 }

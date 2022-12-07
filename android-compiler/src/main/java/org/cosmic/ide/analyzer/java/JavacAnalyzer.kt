@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.sun.source.util.JavacTask
-import com.sun.tools.javac.file.JavacFileManager
 import com.sun.tools.javac.api.JavacTool
+import com.sun.tools.javac.file.JavacFileManager
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
 import org.cosmic.ide.CompilerUtil
 import org.cosmic.ide.common.util.FileUtil
@@ -22,8 +22,8 @@ import javax.tools.SimpleJavaFileObject
 import javax.tools.StandardLocation
 
 class JavacAnalyzer(
-     context: Context,
-     private val project: JavaProject
+    context: Context,
+    private val project: JavaProject
 ) {
 
     private val prefs: SharedPreferences

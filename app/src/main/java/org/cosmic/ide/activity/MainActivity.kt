@@ -53,7 +53,6 @@ import org.jf.baksmali.Baksmali
 import org.jf.baksmali.BaksmaliOptions
 import org.jf.dexlib2.DexFileFactory
 import org.jf.dexlib2.Opcodes
-import org.jf.dexlib2.dexbacked.DexBackedDexFile
 import org.jf.dexlib2.iface.ClassDef
 import org.json.JSONException
 import java.io.File
@@ -402,7 +401,8 @@ class MainActivity : BaseActivity() {
                 }
 
                 override fun isSuccessTillNow(): Boolean = compileSuccess
-            })
+            }
+        )
 
         compileTask.setExecution(execute)
         if (!blockMainThread) {
@@ -474,8 +474,8 @@ class MainActivity : BaseActivity() {
                         .decompile(
                             claz,
                             File(
-                                project.binDirPath
-                                        + "classes.jar"
+                                project.binDirPath +
+                                    "classes.jar"
                             )
                         )
                 } catch (e: Exception) {
@@ -485,13 +485,15 @@ class MainActivity : BaseActivity() {
                         e.localizedMessage,
                         getString(R.string.dialog_close),
                         getString(R.string.copy_stacktrace),
-                        (DialogInterface.OnClickListener { _, which ->
-                            if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                AndroidUtilities.copyToClipboard(
-                                    e.localizedMessage
-                                )
+                        (
+                            DialogInterface.OnClickListener { _, which ->
+                                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                    AndroidUtilities.copyToClipboard(
+                                        e.localizedMessage
+                                    )
+                                }
                             }
-                        })
+                            )
                     )
                 }
             }
@@ -521,11 +523,11 @@ class MainActivity : BaseActivity() {
             var disassembled = ""
             try {
                 disassembled = JavapDisassembler(
-                    project.binDirPath
-                            + "classes"
-                            + "/"
-                            + claz
-                            + ".class"
+                    project.binDirPath +
+                        "classes" +
+                        "/" +
+                        claz +
+                        ".class"
                 )
                     .disassemble()
             } catch (e: Throwable) {
@@ -573,7 +575,7 @@ class MainActivity : BaseActivity() {
                 .create()
                 .show()
         }
-    }// convert class name to standard form/* If the project doesn't seem to have the dex file, just recompile it */
+    } // convert class name to standard form/* If the project doesn't seem to have the dex file, just recompile it */
 
     /* Used to find all the compiled classes from the output dex file */
     val classesFromDex: Array<String>?

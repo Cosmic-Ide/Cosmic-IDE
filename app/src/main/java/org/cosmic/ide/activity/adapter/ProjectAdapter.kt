@@ -33,15 +33,15 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
                 override fun areItemsTheSame(
                     oldItemPosition: Int, newItemPosition: Int
                 ): Boolean {
-                    return (mProjects[oldItemPosition]
-                            == projects[newItemPosition])
+                    return (mProjects.get(oldItemPosition)
+                            == projects.get(newItemPosition))
                 }
 
                 override fun areContentsTheSame(
                     oldItemPosition: Int, newItemPosition: Int
                 ): Boolean {
-                    return (mProjects[oldItemPosition]
-                            == projects[newItemPosition])
+                    return (mProjects.get(oldItemPosition)
+                            == projects.get(newItemPosition))
                 }
             })
         mProjects.clear()
@@ -56,7 +56,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(mProjects[position])
+        holder.bind(mProjects.get(position))
     }
 
     override fun getItemCount(): Int {

@@ -38,7 +38,6 @@ import org.cosmic.ide.code.formatter.GoogleJavaFormatter
 import org.cosmic.ide.code.formatter.ktfmtFormatter
 import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
-import org.cosmic.ide.common.util.FileUtil.readFile
 import org.cosmic.ide.compiler.CompileTask
 import org.cosmic.ide.compiler.CompileTask.CompilerListeners
 import org.cosmic.ide.databinding.ActivityMainBinding
@@ -120,13 +119,13 @@ class MainActivity : BaseActivity() {
             })
         binding.tabLayout.addOnTabSelectedListener(
             object : OnTabSelectedListener {
-                override fun onTabUnselected(p1: TabLayout.Tab) {}
-                override fun onTabReselected(p1: TabLayout.Tab) {
-                    val popup = PopupMenu(this@MainActivity, p1.view)
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                    val popup = PopupMenu(this@MainActivity, tab.view)
                     popup.menu.add(0, 0, 1, getString(R.string.menu_close_file))
                     popup.menu.add(0, 1, 2, getString(R.string.menu_close_others))
                     popup.menu.add(0, 2, 3, getString(R.string.menu_close_all))
-                    popup.setOnMenuItemClickListener { item: MenuItem ->
+                    popup.setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             0 -> mainViewModel.removeFile(
                                 mainViewModel.currentFile
@@ -147,7 +146,7 @@ class MainActivity : BaseActivity() {
             })
         TabLayoutMediator(
             binding.tabLayout, binding.viewPager, true, false
-        ) { tab: TabLayout.Tab, pos: Int ->
+        ) { tab, pos ->
             updateTab(
                 tab,
                 pos
@@ -165,7 +164,7 @@ class MainActivity : BaseActivity() {
             .files
             .observe(
                 this
-            ) { files: List<File?> ->
+            ) { files ->
                 tabsAdapter.submitList(files)
                 if (files.isEmpty()) {
                     binding.viewPager.visibility = View.GONE
@@ -183,7 +182,7 @@ class MainActivity : BaseActivity() {
             .currentPosition
             .observe(
                 this
-            ) { position: Int ->
+            ) { position ->
                 if (position == -1) {
                     return@observe
                 }
@@ -230,8 +229,8 @@ class MainActivity : BaseActivity() {
         val id = item.itemId
         if (id == R.id.action_format && fragment is CodeEditorFragment) {
             execute {
-                val current = mainViewModel.currentFile?.absolutePath
-                if (current?.endsWith(".java") == true) {
+                val current = mainViewModel.currentFile
+                if (current?.extension.equals("java")) {
                     val formatter = GoogleJavaFormatter(
                         fragment
                             .getEditor()
@@ -239,11 +238,11 @@ class MainActivity : BaseActivity() {
                             .toString()
                     )
                     temp = formatter.format()
-                } else if (current?.endsWith(".kt") == true || current?.endsWith(".kts") == true) {
+                } else if (current?.extension.equals("kt") || current?.extension.equals("kts")) {
                     ktfmtFormatter(current.toString()).format()
                     try {
                         temp =
-                            readFile(File(current))
+                            current?.readText()!!
                     } catch (e: IOException) {
                         Log.d(
                             TAG,
@@ -295,9 +294,7 @@ class MainActivity : BaseActivity() {
             project
                 .indexer
                 .put(
-                    "lastOpenedFiles", Objects.requireNonNull(
-                        mainViewModel.files.value
-                    )
+                    "lastOpenedFiles", mainViewModel.files.value!!
                 )
                 .flush()
         } catch (e: JSONException) {
@@ -311,9 +308,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
-        val currentFile = Objects.requireNonNull(
-            mainViewModel.files.value
-        )[pos]
+        val currentFile = mainViewModel.files.value!!.get(pos)
         tab.text = if (currentFile != null) currentFile.name else "Unknown"
     }
 
@@ -390,7 +385,7 @@ class MainActivity : BaseActivity() {
                                 errorMessage,
                                 getString(R.string.dialog_close),
                                 getString(R.string.copy_stacktrace)
-                            ) { _: DialogInterface?, which: Int ->
+                            ) { _, which ->
                                 if (which
                                     == DialogInterface.BUTTON_NEGATIVE
                                 ) {
@@ -421,8 +416,8 @@ class MainActivity : BaseActivity() {
         listDialog(
             getString(R.string.select_smali_class),
             classes
-        ) { _: DialogInterface?, pos: Int ->
-            val claz = classes[pos]
+        ) { _, pos ->
+            val claz = classes.get(pos)
             val smaliFile = File(
                 project.binDirPath,
                 "smali" + "/" + claz.replace(".", "/") + ".smali"
@@ -451,7 +446,7 @@ class MainActivity : BaseActivity() {
                         e.localizedMessage,
                         getString(R.string.dialog_close),
                         getString(R.string.copy_stacktrace)
-                    ) { _: DialogInterface?, which: Int ->
+                    ) { _, which ->
                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                             AndroidUtilities.copyToClipboard(
                                 e.localizedMessage
@@ -469,8 +464,8 @@ class MainActivity : BaseActivity() {
         listDialog(
             getString(R.string.select_class_decompile),
             classes
-        ) { _: DialogInterface?, pos: Int ->
-            val claz = classes[pos].replace(".", "/")
+        ) { _, pos ->
+            val claz = classes.get(pos).replace(".", "/")
             execute {
                 try {
                     JarTask().doFullTask(project)
@@ -489,7 +484,7 @@ class MainActivity : BaseActivity() {
                         e.localizedMessage,
                         getString(R.string.dialog_close),
                         getString(R.string.copy_stacktrace),
-                        (DialogInterface.OnClickListener { _: DialogInterface?, which: Int ->
+                        (DialogInterface.OnClickListener { _, which ->
                             if (which == DialogInterface.BUTTON_NEGATIVE) {
                                 AndroidUtilities.copyToClipboard(
                                     e.localizedMessage
@@ -520,8 +515,8 @@ class MainActivity : BaseActivity() {
         listDialog(
             getString(R.string.select_class_disassemble),
             classes
-        ) { _: DialogInterface?, pos: Int ->
-            val claz = classes[pos].replace(".", "/")
+        ) { _, pos ->
+            val claz = classes.get(pos).replace(".", "/")
             var disassembled = ""
             try {
                 disassembled = JavapDisassembler(
@@ -539,7 +534,7 @@ class MainActivity : BaseActivity() {
                     e.localizedMessage,
                     getString(R.string.dialog_close),
                     getString(R.string.copy_stacktrace)
-                ) { _: DialogInterface?, which: Int ->
+                ) { _, which ->
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.localizedMessage)
                     }
@@ -600,7 +595,7 @@ class MainActivity : BaseActivity() {
                 e.localizedMessage,
                 getString(R.string.dialog_close),
                 getString(R.string.copy_stacktrace)
-            ) { _: DialogInterface?, which: Int ->
+            ) { _, which ->
                 if (which == DialogInterface.BUTTON_NEGATIVE) {
                     AndroidUtilities.copyToClipboard(e.localizedMessage)
                 }

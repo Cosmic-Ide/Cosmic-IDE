@@ -43,16 +43,8 @@ class AppearanceSettingsFragment :
         when (key) {
             Settings.THEME ->  AppCompatDelegate.setDefaultNightMode(settings.theme)
             Settings.DYNAMIC_THEME -> {
-                // At the moment I don't know how to recreate all activities on the back stack.
-                // Temporary hack: Set current theme to current
-                AppCompatDelegate.setDefaultNightMode(settings.theme)
+                showSnackbar("Restart the application to apply the dynamic colors")
             }
         }
     }
-
-    // private fun postRestart() {
-        // view?.postDelayed(400) {
-            // requireActivity().recreate()
-        // }
-    // }
 }

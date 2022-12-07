@@ -99,7 +99,7 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun configureEditor(editor: CodeEditor) {
-        val fontSize: Float = settings.fontSize.toFloat()
+        val fontSize = settings.fontSize.toFloat()
 
         with(editor) {
             getComponent(EditorAutoCompletion::class.java).setLayout(CustomCompletionLayout())
@@ -163,12 +163,10 @@ class CodeEditorFragment : Fragment() {
         const val LANGUAGE_KOTLIN = 1
         const val LANGUAGE_SMALI = 2
 
-        fun newInstance(file: File): CodeEditorFragment {
-            val args = Bundle()
-            args.putString("path", file.absolutePath)
-            val fragment = CodeEditorFragment()
-            fragment.arguments = args
-            return fragment
+        fun newInstance(file: File) = CodeEditorFragment().apply {
+            arguments = Bundle().apply {
+                putString("path", file.absolutePath)
+            }
         }
     }
 }

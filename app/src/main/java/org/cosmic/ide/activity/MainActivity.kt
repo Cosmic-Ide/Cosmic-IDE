@@ -65,21 +65,24 @@ class MainActivity : BaseActivity() {
     private lateinit var compileTask: CompileTask
     private lateinit var temp: String
     private lateinit var loadingDialog: BottomSheetDialog
-    lateinit var project: JavaProject
-    private lateinit var mainViewModel: MainViewModel
-    private val gitViewModel: GitViewModel = GitViewModel()
     private lateinit var tabsAdapter: PageAdapter
     private lateinit var binding: ActivityMainBinding
 
+    private val mainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
+    private val gitViewModel by lazy {
+        ViewModelProvider(this)[GitViewModel::class.java]
+    }
+
+    lateinit var project: JavaProject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         val fileViewModel = ViewModelProvider(this)[FileViewModel::class.java]
-        val gitViewModel = ViewModelProvider(this)[GitViewModel::class.java]
         tabsAdapter = PageAdapter(supportFragmentManager, lifecycle)
         project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
         binding.appBar.addSystemWindowInsetToPadding(top = true)
@@ -398,9 +401,7 @@ class MainActivity : BaseActivity() {
                         }
                 }
 
-                override fun isSuccessTillNow(): Boolean {
-                    return compileSuccess
-                }
+                override fun isSuccessTillNow(): Boolean = compileSuccess
             })
 
         compileTask.setExecution(execute)
@@ -424,7 +425,7 @@ class MainActivity : BaseActivity() {
             )
             execute {
                 try {
-                    val dexFile: DexBackedDexFile = DexFileFactory.loadDexFile(
+                    val dexFile = DexFileFactory.loadDexFile(
                         File(
                             project.binDirPath,
                             "classes.dex"

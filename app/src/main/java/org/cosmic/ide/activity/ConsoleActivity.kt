@@ -27,9 +27,7 @@ class ConsoleActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.root.addSystemWindowInsetToPadding(
-            left = false,
             top = true,
-            right = false,
             bottom = true
         )
 

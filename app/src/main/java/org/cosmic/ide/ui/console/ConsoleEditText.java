@@ -88,6 +88,7 @@ public class ConsoleEditText extends AppCompatEditText {
     private void init() {
         setFilters(new InputFilter[] {mTextListener});
         addTextChangedListener(mEnterListener);
+        setBackgroundColor(Color.TRANSPARENT);
 
         createIOStream();
     }

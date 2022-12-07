@@ -24,9 +24,7 @@ abstract class BaseActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         getRootActivityView().addSystemWindowInsetToPadding(
             left = true,
-            top = false,
-            right = true,
-            bottom = false
+            right = true
         )
     }
 
@@ -49,7 +47,6 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRootActivityView(): View {
-        return window.decorView.findViewById(android.R.id.content)
-    }
+    private fun getRootActivityView(): View =
+        window.decorView.findViewById(android.R.id.content)
 }

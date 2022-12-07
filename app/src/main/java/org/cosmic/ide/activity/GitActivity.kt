@@ -29,17 +29,17 @@ class GitActivity : BaseActivity(),
     private val TAG = "GitActivity"
     lateinit var binding: ActivityGitBinding
 
-    val mGitViewModel: GitViewModel by lazy {
+    val mGitViewModel by lazy {
         ViewModelProvider(this).get(GitViewModel::class.java)
     }
 
     private var arrayAdapter: ArrayAdapter<String>? = null
     private var preCheckout: () -> Unit = {}
-    private val logger: Logger by lazy {
+    private val logger by lazy {
         Logger()
     }
 
-    private val person: Author by lazy {
+    private val person by lazy {
         Author(settings.gitUserName, settings.gitUserEmail)
     }
 

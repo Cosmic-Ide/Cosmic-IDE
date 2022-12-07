@@ -48,8 +48,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/no_projects_title"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textSize="20sp" />
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        android:textColor="?attr/colorOnSurface" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
@@ -57,8 +57,8 @@
                         android:text="@string/no_projects_suggestion"
                         android:gravity="center"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:layout_marginTop="@dimen/spacing_tiny" />
+                        android:textColor="?attr/colorSecondaryVariant"
+                        android:layout_marginTop="@dimen/spacing_small" />
                 </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>

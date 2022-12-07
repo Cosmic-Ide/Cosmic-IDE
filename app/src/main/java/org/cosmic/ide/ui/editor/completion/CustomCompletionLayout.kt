@@ -31,9 +31,9 @@ class CustomCompletionLayout : CompletionLayout {
         mBackground = GradientDrawable()
         mBackground.apply {
             setCornerRadius(AndroidUtilities.dp(8f).toFloat())
-            setStroke(AndroidUtilities.dp(0.8f), layout.getContext().resolveAttr(com.google.android.material.R.attr.colorOutline))
+            setStroke(AndroidUtilities.dp(0.8f), context.resolveAttr(com.google.android.material.R.attr.colorOutline))
         }
-        mBackground.setColor(SurfaceColors.SURFACE_1.getColor(layout.getContext()))
+        mBackground.setColor(SurfaceColors.SURFACE_1.getColor(context))
         layout.setBackground(mBackground)
 
         mListView = ListView(context)

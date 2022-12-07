@@ -40,27 +40,31 @@
 
         <Button
             android:id="@+id/button_commit"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/git_commit" />
+            android:text="@string/git_commit"
+            app:layout_constraintWidth_percent="0.5" />
 
         <Button
             android:id="@+id/button_create_branch"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/git_new_branch" />
+            android:text="@string/git_new_branch"
+            app:layout_constraintWidth_percent="0.5" />
 
         <Button
             android:id="@+id/button_merge_branch"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/git_merge_branch" />
+            android:text="@string/git_merge_branch"
+            app:layout_constraintWidth_percent="0.5" />
 
         <Button
             android:id="@+id/button_delete_branch"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/git_delete_branch" />
+            android:text="@string/git_delete_branch"
+            app:layout_constraintWidth_percent="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

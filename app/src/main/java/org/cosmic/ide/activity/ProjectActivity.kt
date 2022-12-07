@@ -67,24 +67,9 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 )
             }
         }
-        binding!!.fab.addSystemWindowInsetToMargin(
-            left = false,
-            top = false,
-            right = false,
-            bottom = true
-        )
-        binding!!.appBar.addSystemWindowInsetToPadding(
-            left = false,
-            top = true,
-            right = false,
-            bottom = false
-        )
-        binding!!.projectRecycler.addSystemWindowInsetToPadding(
-            left = false,
-            top = false,
-            right = false,
-            bottom = true
-        )
+        binding!!.fab.addSystemWindowInsetToMargin(bottom = true)
+        binding!!.appBar.addSystemWindowInsetToPadding(top = true)
+        binding!!.projectRecycler.addSystemWindowInsetToPadding(bottom = true)
         binding!!.refreshLayout.setOnRefreshListener {
             loadProjects()
             binding!!.refreshLayout.isRefreshing = false
@@ -131,20 +116,20 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
             createNewProjectDialog!!.show()
             val createBtn = createNewProjectDialog!!.findViewById<Button>(android.R.id.button1)
             createBtn!!.setOnClickListener {
-                val projectName: String =
+                val projectName =
                     projectBinding!!.text1.text.toString().trim().replace("..", "")
                 if (projectName.isEmpty()) {
                     return@setOnClickListener
                 }
-                val useKotlinTemplate: Boolean =
+                val useKotlinTemplate =
                     projectBinding!!.useKotlinTemplate.isChecked
                 try {
-                    val project: Project =
+                    val project =
                         if (useKotlinTemplate) KotlinProject.newProject(
                             projectName
                         ) else JavaProject.newProject(projectName)
                     if (projectBinding!!.useGit.isChecked) {
-                        val author: Author = Author(settings.gitUserName, settings.gitUserEmail)
+                        val author = Author(settings.gitUserName, settings.gitUserEmail)
                         project.projectDirPath.createGitRepoWith(
                             author,
                             "Initial Commit"

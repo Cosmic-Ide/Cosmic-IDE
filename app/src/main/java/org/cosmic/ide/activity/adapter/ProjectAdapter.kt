@@ -49,19 +49,14 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
         diffResult.dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding: ProjectItemBinding =
-            ProjectItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(binding)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+        ViewHolder(ProjectItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(mProjects.get(position))
     }
 
-    override fun getItemCount(): Int {
-        return mProjects.size
-    }
+    override fun getItemCount() = mProjects.size
 
     class ViewHolder(private val binding: ProjectItemBinding) : RecyclerView.ViewHolder(
         binding.root

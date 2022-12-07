@@ -63,8 +63,10 @@ public class TreeFileManagerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
-        fileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
+        activity = ((MainActivity) getContext());
+
+        mainViewModel = new ViewModelProvider(activity).get(MainViewModel.class);
+        fileViewModel = new ViewModelProvider(activity).get(FileViewModel.class);
     }
 
     @Override
@@ -80,8 +82,6 @@ public class TreeFileManagerFragment extends Fragment {
                                     refreshLayout.setRefreshing(false);
                                     treeView.refreshTreeView();
                                 }));
-
-        activity = ((MainActivity) getContext());
 
         buildCreateFileDialog();
         buildCreateDirectoryDialog();

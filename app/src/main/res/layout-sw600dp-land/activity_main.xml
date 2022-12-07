@@ -52,15 +52,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/spacing_medium"
                     android:text="@string/no_open_file_title"
-                    android:textAppearance="?attr/textAppearanceTitleLarge" />
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="?attr/colorOnSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/spacing_small"
                     android:text="@string/no_open_file_desc"
-                    android:textAppearance="?attr/textAppearanceBodyLarge"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorSecondaryVariant" />
             </LinearLayout>
 
             <androidx.viewpager2.widget.ViewPager2

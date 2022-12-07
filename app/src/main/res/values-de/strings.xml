@@ -92,9 +92,5 @@
     <string name="github_desc">Sehen Sie sich unser Github-Repository an</string>
     <string name="app_version">Ausführung %s</string>
     <string name="follow_system">System folgen</string>
-    <string name="off">Aus</string>
-    <string name="on">An</string>
-
-    <string name="wizard_title">Neues Projekt</string>
 
 </resources>

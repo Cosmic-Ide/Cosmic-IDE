@@ -69,12 +69,12 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
         fun bind(project: Project) {
             binding.projectTitle.text = project.projectName
             binding.projectPath.text = project.projectDirPath
-            binding.root.setOnClickListener { v ->
+            binding.root.setOnClickListener { _ ->
                 onProjectEventListener!!.onProjectClicked(
                     project
                 )
             }
-            binding.root.setOnLongClickListener { v ->
+            binding.root.setOnLongClickListener { _ ->
                 onProjectEventListener!!.onProjectLongClicked(
                     project
                 )

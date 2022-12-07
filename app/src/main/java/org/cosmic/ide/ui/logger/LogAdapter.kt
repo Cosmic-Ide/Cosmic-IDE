@@ -33,7 +33,7 @@ class LogAdapter(val mData: List<Log>) :
     override fun getItemCount() = mData.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        lateinit var textView: TextView
+        var textView: TextView
 
         init {
             textView = TextView(itemView.context)

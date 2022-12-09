@@ -1,4 +1,3 @@
- 
 package org.cosmic.ide.fragment.settings
 
 import android.os.Bundle

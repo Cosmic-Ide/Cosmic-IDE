@@ -445,8 +445,8 @@ public class TreeFileManagerFragment extends Fragment {
                 activity,
                 activity.getString(R.string.dialog_delete),
                 getString(R.string.dialog_confirm_delete, node.getValue().getFile().getName()),
-                activity.getString(android.R.string.yes),
-                activity.getString(android.R.string.no),
+                activity.getString(android.R.string.ok),
+                activity.getString(android.R.string.cancel),
                 ((dialog, which) -> {
                     if (which == DialogInterface.BUTTON_POSITIVE) {
                         FileUtil.deleteFile(node.getValue().getFile().getPath());

@@ -255,7 +255,7 @@ class MainActivity : BaseActivity() {
         savedInstanceState?.let { restoreViewState(it) }
     }
 
-    public override fun onSaveInstanceState(outState: Bundle) {
+    override fun onSaveInstanceState(outState: Bundle) {
         if (binding.root is DrawerLayout) {
             outState.putBoolean(
                 Constants.DRAWER_STATE,

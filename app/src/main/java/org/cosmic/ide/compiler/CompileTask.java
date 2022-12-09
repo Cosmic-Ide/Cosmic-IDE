@@ -103,10 +103,10 @@ public class CompileTask extends Thread {
             }
             if (showExecuteDialog) {
                 // if there is only one class, there is no need to show a dialog
+                final var intent = new Intent(activity, ConsoleActivity.class);
+                intent.putExtra(
+                        Constants.PROJECT_PATH, activity.getProject().getProjectDirPath());
                 if (classes.length == 1) {
-                    final var intent = new Intent(activity, ConsoleActivity.class);
-                    intent.putExtra(
-                            Constants.PROJECT_PATH, activity.getProject().getProjectDirPath());
                     intent.putExtra("class_to_execute", classes[0]);
                     activity.startActivity(intent);
                     return;
@@ -115,10 +115,6 @@ public class CompileTask extends Thread {
                         activity.getString(R.string.select_class_run),
                         classes,
                         (dialog, item) -> {
-                            var intent = new Intent(activity, ConsoleActivity.class);
-                            intent.putExtra(
-                                    Constants.PROJECT_PATH,
-                                    activity.getProject().getProjectDirPath());
                             intent.putExtra("class_to_execute", classes[item]);
                             activity.startActivity(intent);
                         });

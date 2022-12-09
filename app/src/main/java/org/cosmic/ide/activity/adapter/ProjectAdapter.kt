@@ -7,15 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import org.cosmic.ide.databinding.ProjectItemBinding
 import org.cosmic.ide.project.Project
 
-class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
-    private val mProjects: MutableList<Project> = ArrayList()
+class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+    private val mProjects = mutableListOf<Project>()
 
     interface OnProjectEventListener {
         fun onProjectClicked(project: Project)
         fun onProjectLongClicked(project: Project): Boolean
     }
 
-    var onProjectEventListener: OnProjectEventListener? = null
+    lateinit var onProjectEventListener: OnProjectEventListener
 
     fun submitList(projects: List<Project>) {
         val diffResult = DiffUtil.calculateDiff(
@@ -64,19 +64,19 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
 
     class ViewHolder(
         private val binding: ProjectItemBinding,
-        val listener: ProjectAdapter.OnProjectEventListener?
+        val listener: ProjectAdapter.OnProjectEventListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(project: Project) {
             binding.projectTitle.text = project.projectName
             binding.projectPath.text = project.projectDirPath
             binding.root.setOnClickListener { _ ->
-                listener!!.onProjectClicked(
+                listener.onProjectClicked(
                     project
                 )
             }
             binding.root.setOnLongClickListener { _ ->
-                listener!!.onProjectLongClicked(
+                listener.onProjectLongClicked(
                     project
                 )
             }

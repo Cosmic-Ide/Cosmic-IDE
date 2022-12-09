@@ -40,6 +40,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.3.3
         with:
+          gradle-version: nightly
           arguments: clean assembleDebug --no-build-cache
 
       - name: Perform CodeQL Analysis

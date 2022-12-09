@@ -50,8 +50,6 @@ import org.cosmic.ide.util.Constants
 import org.cosmic.ide.util.EditorUtil.getColorScheme
 import org.cosmic.ide.util.EditorUtil.javaLanguage
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
-import org.jf.baksmali.Baksmali
-import org.jf.baksmali.BaksmaliOptions
 import org.jf.dexlib2.DexFileFactory
 import org.jf.dexlib2.Opcodes
 import org.jf.dexlib2.iface.ClassDef
@@ -313,8 +311,6 @@ class MainActivity : BaseActivity() {
             startActivity(Intent(this, SettingsActivity::class.java))
         } else if (id == R.id.action_run) {
             compile(execute = true, blockMainThread = false)
-        } else if (id == R.id.action_smali) {
-            smali()
         } else if (id == R.id.action_disassemble) {
             disassemble()
         } else if (id == R.id.action_class2java) {
@@ -366,8 +362,8 @@ class MainActivity : BaseActivity() {
     private fun changeLoadingDialogBuildStage(currentStage: String) {
         if (loadingDialog.isShowing) {
             runOnUiThread {
-                val stage =
-                    loadingDialog.findViewById<TextView>(R.id.stage_txt)!!
+                val stage: TextView =
+                    loadingDialog.findViewById(R.id.stage_txt)!!
                 stage.text = currentStage
             }
         }
@@ -375,59 +371,12 @@ class MainActivity : BaseActivity() {
 
     private fun compile(execute: Boolean, blockMainThread: Boolean) {
         compileTask.setExecution(execute)
+        loadingDialog.show()
         if (blockMainThread) {
             execute(compileTask)
             return
         }
         inParallel(compileTask)
-    }
-
-    private fun smali() {
-        val classes = classesFromDex ?: return
-        listDialog(
-            getString(R.string.select_smali_class),
-            classes
-        ) { _, pos ->
-            val claz = classes.get(pos)
-            val smaliFile = File(
-                project.binDirPath,
-                "smali" + "/" + claz.replace(".", "/") + ".smali"
-            )
-            execute {
-                try {
-                    val dexFile = DexFileFactory.loadDexFile(
-                        File(
-                            project.binDirPath,
-                            "classes.dex"
-                        ),
-                        Opcodes.forApi(32)
-                    )
-                    val options = BaksmaliOptions()
-                    options.apiLevel = 32
-                    Baksmali.disassembleDexFile(
-                        dexFile,
-                        File(project.binDirPath, "smali"),
-                        1,
-                        options
-                    )
-                } catch (e: Throwable) {
-                    AndroidUtilities.showSimpleAlert(
-                        this,
-                        getString(R.string.error_file_extract_smali),
-                        e.localizedMessage,
-                        getString(R.string.dialog_close),
-                        getString(R.string.copy_stacktrace)
-                    ) { _, which ->
-                        if (which == DialogInterface.BUTTON_NEGATIVE) {
-                            AndroidUtilities.copyToClipboard(
-                                e.localizedMessage
-                            )
-                        }
-                    }
-                }
-            }
-            mainViewModel.addFile(smaliFile)
-        }
     }
 
     private fun decompile() {
@@ -444,7 +393,7 @@ class MainActivity : BaseActivity() {
                         .decompile(
                             claz,
                             File(
-                                project.binDirPath +
+                                project.binDirPath,
                                     "classes.jar"
                             )
                         )
@@ -553,9 +502,9 @@ class MainActivity : BaseActivity() {
             val dex = File(project.binDirPath + "classes.dex")
             /* If the project doesn't seem to have the dex file, just recompile it */
             if (!dex.exists()) {
-                compile(execute = false, blockMainThread = true)
+                AndroidUtilities.showToast(getString(R.string.project_not_compiled))
             }
-            val classes = ArrayList<String>()
+            val classes = mutableListOf<String>()
             val dexfile = DexFileFactory.loadDexFile(dex.absolutePath, Opcodes.forApi(32))
             for (f in dexfile.classes.toTypedArray<ClassDef>()) {
                 val name = f.type.replace("/", ".") // convert class name to standard form

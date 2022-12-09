@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - .github/workflows/release-build.yaml
+      - .github/workflows/release-build.yml
       - app/proguard-rules.pro
 
 jobs:
@@ -29,6 +29,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.3.3
         with:
+          gradle-version: nightly
           arguments: assembleRelease
 
       - name: Upload release apk

@@ -24,6 +24,7 @@ jobs:
       - name: Build with gradle
         uses: gradle/gradle-build-action@v2.3.3
         with:
+          gradle-version: nightly
           arguments: lintDebug
       - name: Upload lint report
         uses: actions/upload-artifact@v3

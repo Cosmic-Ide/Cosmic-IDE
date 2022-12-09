@@ -1,6 +1,5 @@
 -ignorewarnings
 -dontobfuscate
--keepattributes LineNumberTable
 
 -keep class javax.** { *; }
 

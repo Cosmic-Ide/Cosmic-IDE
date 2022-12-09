@@ -85,6 +85,7 @@
 
     <string name="logcat">Logcat</string>
     <string name="create_project">Create project</string>
+    <string name="project_not_compiled">Compile the project first</string>
     <string name="project_name">Project name</string>
     <string name="package_name">Package name</string>
     <string name="use_kotlin_template">Use Kotlin Template</string>

@@ -12,7 +12,7 @@ jobs:
     # Prevent semgrep from running and failing on forks
     # due to semgrep app token not being found
 
-    if: github.repository_owner == 'Cosmic-Ide'
+    if: ${{ !github.head_ref }}
     env:
       SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
     container:

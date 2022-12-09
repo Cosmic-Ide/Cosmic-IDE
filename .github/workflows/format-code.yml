@@ -24,6 +24,7 @@ jobs:
         continue-on-error: true
         uses: gradle/gradle-build-action@v2.3.3
         with:
+          gradle-version: nightly
           arguments: ktlintFormat
 
       - uses: axel-op/googlejavaformat-action@v3.6.0

@@ -29,9 +29,6 @@
         android:title="@string/advanced">
         <menu>
             <item
-                android:id="@+id/action_smali"
-                android:title="@string/smali" />
-            <item
                 android:id="@+id/action_disassemble"
                 android:title="@string/disassemble" />
             <item

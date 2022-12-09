@@ -188,9 +188,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 projectDir.listFiles { file -> file.isDirectory }
             val projects = mutableListOf<Project>()
             if (directories != null) {
-                Arrays.sort(
-                    directories, Comparator.comparingLong { file -> file.lastModified() }
-                )
+                directories.sortWith(Comparator.comparingLong { file -> file.lastModified() })
                 for (directory in directories) {
                     val src = File(directory, "src")
                     if (src.exists()) {

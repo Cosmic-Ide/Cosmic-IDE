@@ -96,7 +96,6 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.0-rc01")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("org.smali:dexlib2:2.5.2")
-    implementation("org.smali:baksmali:2.5.2")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.treeview)

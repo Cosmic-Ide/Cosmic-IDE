@@ -34,11 +34,30 @@ import java.io.IOException
 import java.util.*
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
-    private var projectAdapter: ProjectAdapter? = null
-    private var createNewProjectDialog: AlertDialog? = null
-    private var projectBinding: DialogNewProjectBinding? = null
-    private var binding: ActivityProjectBinding? = null
-    private var mListener: OnProjectCreatedListener? = null
+    private val projectAdapter by lazy { ProjectAdapter() }
+    private val createNewProjectDialog: AlertDialog by lazy {
+        val builder = MaterialAlertDialogBuilder(
+            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
+        )
+            .setTitle(getString(R.string.create_project))
+        projectBinding = DialogNewProjectBinding.inflate(LayoutInflater.from(builder.context))
+        builder
+            .setView(projectBinding.root)
+            .setPositiveButton(getString(R.string.create), null)
+            .setNegativeButton(getString(android.R.string.cancel), null)
+            .create()
+    }
+    private lateinit var projectBinding: DialogNewProjectBinding
+    private lateinit var binding: ActivityProjectBinding
+    private val mListener by lazy {
+        object : OnProjectCreatedListener {
+            override fun onProjectCreated(project: Project?) {
+                onProjectClicked(
+                    project!!
+                )
+            }
+        }
+    }
 
     interface OnProjectCreatedListener {
         fun onProjectCreated(project: Project?)
@@ -47,34 +66,25 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProjectBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
-        setSupportActionBar(binding!!.toolbar)
-        buildCreateNewProjectDialog()
-        projectAdapter = ProjectAdapter()
-        binding!!.projectRecycler.adapter = projectAdapter
-        binding!!.projectRecycler.layoutManager = LinearLayoutManager(this)
-        binding!!.projectRecycler.addItemDecoration(
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        binding.projectRecycler.adapter = projectAdapter
+        binding.projectRecycler.layoutManager = LinearLayoutManager(this)
+        binding.projectRecycler.addItemDecoration(
             DividerItemDecoration(
                 this,
                 DividerItemDecoration.VERTICAL
             )
         )
-        projectAdapter!!.setOnProjectEventListener(this)
-        mListener = object : OnProjectCreatedListener {
-            override fun onProjectCreated(project: Project?) {
-                onProjectClicked(
-                    project!!
-                )
-            }
-        }
-        binding!!.fab.addSystemWindowInsetToMargin(bottom = true)
-        binding!!.appBar.addSystemWindowInsetToPadding(top = true)
-        binding!!.projectRecycler.addSystemWindowInsetToPadding(bottom = true)
-        binding!!.refreshLayout.setOnRefreshListener {
+        projectAdapter.setOnProjectEventListener(this)
+        binding.fab.addSystemWindowInsetToMargin(bottom = true)
+        binding.appBar.addSystemWindowInsetToPadding(top = true)
+        binding.projectRecycler.addSystemWindowInsetToPadding(bottom = true)
+        binding.refreshLayout.setOnRefreshListener {
             loadProjects()
-            binding!!.refreshLayout.isRefreshing = false
+            binding.refreshLayout.isRefreshing = false
         }
-        binding!!.fab.setOnClickListener { showCreateNewProjectDialog() }
+        binding.fab.setOnClickListener { showCreateNewProjectDialog() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -97,38 +107,25 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
         loadProjects()
     }
 
-    private fun buildCreateNewProjectDialog() {
-        val builder = MaterialAlertDialogBuilder(
-            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
-        )
-            .setTitle(getString(R.string.create_project))
-        projectBinding = DialogNewProjectBinding.inflate(LayoutInflater.from(builder.context))
-        builder
-            .setView(projectBinding!!.root)
-            .setPositiveButton(getString(R.string.create), null)
-            .setNegativeButton(getString(android.R.string.cancel), null)
-        createNewProjectDialog = builder.create()
-    }
-
     @WorkerThread
     private fun showCreateNewProjectDialog() {
-        if (!createNewProjectDialog!!.isShowing) {
-            createNewProjectDialog!!.show()
-            val createBtn = createNewProjectDialog!!.findViewById<Button>(android.R.id.button1)
+        if (!createNewProjectDialog.isShowing) {
+            createNewProjectDialog.show()
+            val createBtn = createNewProjectDialog.findViewById<Button>(android.R.id.button1)
             createBtn!!.setOnClickListener {
                 val projectName =
-                    projectBinding!!.text1.text.toString().trim().replace("..", "")
+                    projectBinding.text1.text.toString().trim().replace("..", "")
                 if (projectName.isEmpty()) {
                     return@setOnClickListener
                 }
                 val useKotlinTemplate =
-                    projectBinding!!.useKotlinTemplate.isChecked
+                    projectBinding.useKotlinTemplate.isChecked
                 try {
                     val project =
                         if (useKotlinTemplate) KotlinProject.newProject(
                             projectName
                         ) else JavaProject.newProject(projectName)
-                    if (projectBinding!!.useGit.isChecked) {
+                    if (projectBinding.useGit.isChecked) {
                         val author = Author(settings.gitUserName, settings.gitUserEmail)
                         project.projectDirPath.createGitRepoWith(
                             author,
@@ -137,8 +134,8 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                     }
                     if (mListener != null) {
                         runOnUiThread {
-                            if (createNewProjectDialog!!.isShowing) createNewProjectDialog!!.dismiss()
-                            mListener!!.onProjectCreated(project)
+                            if (createNewProjectDialog.isShowing) createNewProjectDialog.dismiss()
+                            mListener.onProjectCreated(project)
                         }
                     }
                 } catch (e: IOException) {
@@ -146,7 +143,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 }
                 loadProjects()
             }
-            projectBinding!!.text1.setText("")
+            projectBinding.text1.setText("")
         }
     }
 
@@ -161,7 +158,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
         ) { _: DialogInterface?, which: Int ->
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 project.delete()
-                runOnUiThread { loadProjects() }
+                loadProjects()
             }
         }
     }
@@ -182,25 +179,24 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     private fun loadProjects() {
         inParallel {
             val projectDir = File(JavaProject.getRootDirPath())
-            val directories: Array<File>? =
-                projectDir.listFiles { obj: File -> obj.isDirectory }
-            val projects: ArrayList<Project> =
-                ArrayList()
+            val directories =
+                projectDir.listFiles { file -> file.isDirectory }
+            val projects = mutableListOf<Project>()
             if (directories != null) {
                 Arrays.sort(
-                    directories, Comparator.comparingLong { obj: File -> obj.lastModified() }
+                    directories, Comparator.comparingLong { file -> file.lastModified() }
                 )
-                for (directory: File in directories) {
-                    val project = File(directory, "src")
-                    if (project.exists()) {
-                        val javaProject =
+                for (directory in directories) {
+                    val src = File(directory, "src")
+                    if (src.exists()) {
+                        val project =
                             JavaProject(File(directory.absolutePath))
-                        projects.add(javaProject)
+                        projects.add(project)
                     }
                 }
             }
             runOnUiThread {
-                projectAdapter!!.submitList(projects)
+                projectAdapter.submitList(projects)
                 toggleNullProject(projects)
             }
         }
@@ -208,11 +204,11 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
 
     private fun toggleNullProject(projects: List<Project>) {
         if (projects.isEmpty()) {
-            binding!!.projectRecycler.visibility = View.GONE
-            binding!!.emptyContainer.visibility = View.VISIBLE
+            binding.projectRecycler.visibility = View.GONE
+            binding.emptyContainer.visibility = View.VISIBLE
         } else {
-            binding!!.projectRecycler.visibility = View.VISIBLE
-            binding!!.emptyContainer.visibility = View.GONE
+            binding.projectRecycler.visibility = View.VISIBLE
+            binding.emptyContainer.visibility = View.GONE
         }
     }
 }

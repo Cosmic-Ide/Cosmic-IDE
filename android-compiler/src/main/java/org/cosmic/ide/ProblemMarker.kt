@@ -56,7 +56,7 @@ class ProblemMarker(
     private fun analyze(content: Content) {
         val code = content.toString()
         FileUtil.writeFile(file.getAbsolutePath(), code)
-        CoroutineUtil.inParallel thread@{
+        CoroutineUtil.inParallel {
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
             }
@@ -65,7 +65,7 @@ class ProblemMarker(
                     Handler(Looper.getMainLooper()).post {
                         editor.setDiagnostics(DiagnosticsContainer())
                     }
-                    return@thread
+                    return@inParallel
                 }
                 analyzer.analyze()
                 diagnostics.reset()

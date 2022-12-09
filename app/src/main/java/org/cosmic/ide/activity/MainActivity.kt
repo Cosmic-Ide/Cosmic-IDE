@@ -61,17 +61,61 @@ import java.util.*
 
 class MainActivity : BaseActivity() {
 
-    private lateinit var compileTask: CompileTask
     private lateinit var temp: String
     private lateinit var loadingDialog: BottomSheetDialog
     private lateinit var tabsAdapter: PageAdapter
     private lateinit var binding: ActivityMainBinding
 
     private val mainViewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        ViewModelProvider(this).get(MainViewModel::class.java)
     }
     private val gitViewModel by lazy {
-        ViewModelProvider(this)[GitViewModel::class.java]
+        ViewModelProvider(this).get(GitViewModel::class.java)
+    }
+    private val compileTask by lazy {
+        CompileTask(
+            this,
+            object : CompilerListeners {
+                private var compileSuccess = true
+                override fun onCurrentBuildStageChanged(stage: String) {
+                    changeLoadingDialogBuildStage(stage)
+                }
+
+                override fun onSuccess() {
+                    if (loadingDialog.isShowing) {
+                        loadingDialog.dismiss()
+                    }
+                }
+
+                override fun onFailed(errorMessage: String) {
+                    compileSuccess = false
+                    Handler(Looper.getMainLooper())
+                        .post {
+                            if (loadingDialog.isShowing) {
+                                loadingDialog.dismiss()
+                            }
+                            AndroidUtilities.showSimpleAlert(
+                                this@MainActivity,
+                                getString(R.string.compilation_result_failed),
+                                errorMessage,
+                                getString(R.string.dialog_close),
+                                getString(R.string.copy_stacktrace)
+                            ) { _, which ->
+                                if (which
+                                    == DialogInterface.BUTTON_NEGATIVE
+                                ) {
+                                    AndroidUtilities
+                                        .copyToClipboard(
+                                            errorMessage
+                                        )
+                                }
+                            }
+                        }
+                }
+
+                override fun isSuccessTillNow(): Boolean = compileSuccess
+            }
+        )
     }
 
     lateinit var project: JavaProject
@@ -81,7 +125,7 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        val fileViewModel = ViewModelProvider(this)[FileViewModel::class.java]
+        val fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
         tabsAdapter = PageAdapter(supportFragmentManager, lifecycle)
         project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
         binding.appBar.addSystemWindowInsetToPadding(top = true)
@@ -90,7 +134,7 @@ class MainActivity : BaseActivity() {
             binding.toolbar.setNavigationOnClickListener {
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     mainViewModel.setDrawerState(false)
-                } else if (!drawer.isDrawerOpen(GravityCompat.START)) {
+                } else {
                     mainViewModel.setDrawerState(true)
                 }
             }
@@ -195,7 +239,7 @@ class MainActivity : BaseActivity() {
                 .drawerState
                 .observe(
                     this
-                ) { isOpen: Boolean ->
+                ) { isOpen ->
                     if (isOpen) {
                         (binding.root as DrawerLayout).open()
                     } else {
@@ -334,82 +378,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun compile(execute: Boolean, blockMainThread: Boolean) {
-        val id = 201
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        val notifChannel = NotificationChannel(
-            BUILD_STATUS, "Compiler", NotificationManager.IMPORTANCE_DEFAULT
-        )
-        notifChannel.description = "Foreground notification for the compiler status"
-        val notifManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notifManager.createNotificationChannel(notifChannel)
-        val notifBuilder = Notification.Builder(this, BUILD_STATUS)
-            .setContentTitle(project.projectName)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-        loadingDialog.show()
-        compileTask = CompileTask(
-            this,
-            object : CompilerListeners {
-                private var compileSuccess = true
-                override fun onCurrentBuildStageChanged(stage: String) {
-                    changeLoadingDialogBuildStage(stage)
-                }
-
-                override fun onSuccess() {
-                    notifBuilder.setContentText(
-                        getString(R.string.compilation_result_success)
-                    )
-                    notifManager.notify(id, notifBuilder.build())
-                    if (loadingDialog.isShowing) {
-                        loadingDialog.dismiss()
-                    }
-                }
-
-                override fun onFailed(errorMessage: String) {
-                    compileSuccess = false
-                    notifBuilder.setContentText(
-                        getString(R.string.compilation_result_failed)
-                    )
-                    notifManager.notify(id, notifBuilder.build())
-                    if (loadingDialog.isShowing) {
-                        loadingDialog.dismiss()
-                    }
-                    Handler(Looper.getMainLooper())
-                        .post {
-                            AndroidUtilities.showSimpleAlert(
-                                this@MainActivity,
-                                getString(
-                                    R.string.compilation_result_failed
-                                ),
-                                errorMessage,
-                                getString(R.string.dialog_close),
-                                getString(R.string.copy_stacktrace)
-                            ) { _, which ->
-                                if (which
-                                    == DialogInterface.BUTTON_NEGATIVE
-                                ) {
-                                    AndroidUtilities
-                                        .copyToClipboard(
-                                            errorMessage
-                                        )
-                                }
-                            }
-                        }
-                }
-
-                override fun isSuccessTillNow(): Boolean = compileSuccess
-            }
-        )
-
         compileTask.setExecution(execute)
-        if (!blockMainThread) {
-            inParallel(compileTask)
-        } else {
+        if (blockMainThread) {
             execute(compileTask)
+            return
         }
+        inParallel(compileTask)
     }
 
     private fun smali() {
@@ -493,7 +467,7 @@ class MainActivity : BaseActivity() {
                                     )
                                 }
                             }
-                            )
+                        )
                     )
                 }
             }
@@ -581,7 +555,8 @@ class MainActivity : BaseActivity() {
     val classesFromDex: Array<String>?
         get() = try {
             val dex = File(project.binDirPath + "classes.dex")
-            /* If the project doesn't seem to have the dex file, just recompile it */if (!dex.exists()) {
+            /* If the project doesn't seem to have the dex file, just recompile it */
+            if (!dex.exists()) {
                 compile(execute = false, blockMainThread = true)
             }
             val classes = ArrayList<String>()

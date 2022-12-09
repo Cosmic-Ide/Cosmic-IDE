@@ -62,6 +62,6 @@
             android:paddingStart="0dp"
             android:paddingEnd="16dp"
             app:labelBehavior="gone"
-            app:tickVisible="false" />
+            app:tickVisible="true" />
     </LinearLayout>
 </LinearLayout>

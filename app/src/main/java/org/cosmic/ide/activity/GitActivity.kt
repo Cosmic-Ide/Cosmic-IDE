@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.viewModels
 import androidx.core.os.*
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -27,12 +28,9 @@ class GitActivity :
     BaseActivity(),
     AdapterView.OnItemSelectedListener {
 
-    private val TAG = "GitActivity"
     lateinit var binding: ActivityGitBinding
 
-    val mGitViewModel by lazy {
-        ViewModelProvider(this).get(GitViewModel::class.java)
-    }
+    val gitViewModel: GitViewModel by viewModels()
 
     private var arrayAdapter: ArrayAdapter<String>? = null
     private var preCheckout: () -> Unit = {}
@@ -46,29 +44,32 @@ class GitActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityGitBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = ActivityGitBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+        }
         initListeners(this)
         binding.root.addSystemWindowInsetToPadding(false, true, false, true)
         logger.attach(binding.recyclerView)
 
-        mGitViewModel.hasRepo.observe(this) { isRepo ->
-            Log.d(TAG, "hasRepo=$isRepo")
-            if (!isRepo) {
-                mGitViewModel.createGitRepo(person)
+        gitViewModel.apply {
+            hasRepo.observe(this@GitActivity) { isRepo ->
+                Log.d(TAG, "hasRepo: $isRepo")
+                if (!isRepo) {
+                    createGitRepo(person)
+                }
             }
-        }
+            gitLog.observe(this@GitActivity) { log ->
+                Log.d(TAG, "gitLog: $log")
+                logger.message(log)
+            }
 
-        mGitViewModel.gitLog.observe(this) { log ->
-            Log.d(TAG, "gitLog=$log")
-            logger.message(log)
-        }
+            branchList.observe(this@GitActivity) { list ->
+                Log.d(TAG, "branchList: $list")
+                arrayAdapter?.listOf(list)
+            }
 
-        mGitViewModel.branchList.observe(this) { list ->
-            Log.d(TAG, "branchList=$list")
-            arrayAdapter?.listOf(list)
+            getBranchList()
         }
-        mGitViewModel.getBranchList()
     }
 
     private fun initListeners(listener: AdapterView.OnItemSelectedListener) {
@@ -117,7 +118,7 @@ class GitActivity :
 
     override fun onDestroy() {
         super.onDestroy()
-        mGitViewModel.dispose()
+        gitViewModel.dispose()
     }
 
     override fun onItemSelected(
@@ -126,11 +127,12 @@ class GitActivity :
         position: Int,
         id: Long
     ) {
-        mGitViewModel.checkout(position)
+        gitViewModel.checkout(position)
     }
     override fun onNothingSelected(parent: AdapterView<*>) {}
 
     companion object {
+        const val TAG = "GitActivity"
         const val ARG_PATH_ID = "pathId"
     }
 }
@@ -143,7 +145,7 @@ fun GitActivity.commitWith(commiter: Author) {
         .setTitle(getString(R.string.git_commit))
         .setView(binding.root)
         .setPositiveButton(getString(R.string.git_commit)) { _, _ ->
-            mGitViewModel.commiting(commiter, binding.editText.getText().toString())
+            gitViewModel.commiting(commiter, binding.editText.getText().toString())
         }
         .setNegativeButton(getString(android.R.string.cancel)) { _, _ -> }
         .show()
@@ -158,7 +160,7 @@ fun GitActivity.createBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.create)) { _, _ ->
             val text = binding.editText.getText().toString()
-            val result = mGitViewModel.createBranch(text)
+            val result = gitViewModel.createBranch(text)
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' created")
@@ -179,7 +181,7 @@ fun GitActivity.mergeBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.git_merge)) { _, _ ->
             val text = binding.editText.getText().toString()
-            val result = mGitViewModel.mergeBranch(text)
+            val result = gitViewModel.mergeBranch(text)
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' merged")
@@ -200,7 +202,7 @@ fun GitActivity.deleteBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.delete)) { _, _ ->
             val text = binding.editText.getText().toString()
-            val result = mGitViewModel.deleteBranch(text)
+            val result = gitViewModel.deleteBranch(text)
 
             when (result) {
                 is Success -> showSnackbar("Branch '$text' deleted")

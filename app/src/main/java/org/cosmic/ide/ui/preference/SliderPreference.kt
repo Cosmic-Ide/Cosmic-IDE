@@ -56,13 +56,15 @@ class SliderPreference @JvmOverloads constructor(
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         val slider = holder.findViewById(R.id.slider) as? Slider ?: return
-        slider.removeOnChangeListener(sliderListener)
-        slider.addOnChangeListener(sliderListener)
-        slider.valueFrom = valueFrom.toFloat()
-        slider.valueTo = valueTo.toFloat()
-        slider.stepSize = stepSize.toFloat()
-        slider.setValueRounded(currentValue.toFloat())
-        slider.isEnabled = isEnabled
+        slider.apply {
+            removeOnChangeListener(sliderListener)
+            addOnChangeListener(sliderListener)
+            valueFrom = valueFrom.toFloat()
+            valueTo = valueTo.toFloat()
+            stepSize = stepSize.toFloat()
+            setValueRounded(currentValue.toFloat())
+            isEnabled = isEnabled
+        }
     }
 
     override fun onSetInitialValue(defaultValue: Any?) {

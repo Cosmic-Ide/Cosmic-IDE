@@ -139,7 +139,6 @@ public class JavaCompiler implements Task {
 
             throw new CompilationFailedException(warnings + "\n" + errors);
         }
-        project.getIndexer().put("lastBuildTime", System.currentTimeMillis()).flush();
     }
 
     public ArrayList<File> getSourceFiles(File path) {

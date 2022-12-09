@@ -34,57 +34,61 @@ import java.io.IOException
 import java.util.*
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
-    private val projectAdapter by lazy { ProjectAdapter() }
-    private val createNewProjectDialog: AlertDialog by lazy {
-        val builder = MaterialAlertDialogBuilder(
-            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
-        )
-            .setTitle(getString(R.string.create_project))
-        projectBinding = DialogNewProjectBinding.inflate(LayoutInflater.from(builder.context))
-        builder
-            .setView(projectBinding.root)
-            .setPositiveButton(getString(R.string.create), null)
-            .setNegativeButton(getString(android.R.string.cancel), null)
-            .create()
+    private val projectAdapter = ProjectAdapter()
+    private val projectBinding by lazy {
+        DialogNewProjectBinding.inflate(layoutInflater)
     }
-    private lateinit var projectBinding: DialogNewProjectBinding
-    private lateinit var binding: ActivityProjectBinding
-    private val mListener by lazy {
-        object : OnProjectCreatedListener {
-            override fun onProjectCreated(project: Project?) {
-                onProjectClicked(
-                    project!!
-                )
-            }
+    private val createNewProjectDialog: AlertDialog by lazy {
+        val dialog = MaterialAlertDialogBuilder(
+            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
+        ).apply {
+            setTitle(getString(R.string.create_project))
+            setView(projectBinding.root)
+            setPositiveButton(getString(R.string.create), null)
+            setNegativeButton(getString(android.R.string.cancel), null)
+        }
+        dialog.create()
+    }
+
+    private val mListener = object : OnProjectCreatedListener {
+        override fun onProjectCreated(project: Project) {
+            onProjectClicked(project)
         }
     }
+
+    private lateinit var binding: ActivityProjectBinding
 
     interface OnProjectCreatedListener {
-        fun onProjectCreated(project: Project?)
+        fun onProjectCreated(project: Project)
     }
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityProjectBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
-        binding.projectRecycler.adapter = projectAdapter
-        binding.projectRecycler.layoutManager = LinearLayoutManager(this)
-        binding.projectRecycler.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                DividerItemDecoration.VERTICAL
-            )
-        )
-        projectAdapter.setOnProjectEventListener(this)
-        binding.fab.addSystemWindowInsetToMargin(bottom = true)
-        binding.appBar.addSystemWindowInsetToPadding(top = true)
-        binding.projectRecycler.addSystemWindowInsetToPadding(bottom = true)
-        binding.refreshLayout.setOnRefreshListener {
-            loadProjects()
-            binding.refreshLayout.isRefreshing = false
+        binding = ActivityProjectBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+            setSupportActionBar(it.toolbar)
         }
-        binding.fab.setOnClickListener { showCreateNewProjectDialog() }
+        binding.projectRecycler.apply {
+            adapter = projectAdapter
+            layoutManager = LinearLayoutManager(this@ProjectActivity)
+            addItemDecoration(
+                DividerItemDecoration(
+                    this@ProjectActivity,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+            addSystemWindowInsetToPadding(bottom = true)
+        }
+        binding.apply {
+            fab.addSystemWindowInsetToMargin(bottom = true)
+            appBar.addSystemWindowInsetToPadding(top = true)
+            refreshLayout.setOnRefreshListener {
+                loadProjects()
+                refreshLayout.isRefreshing = false
+            }
+            fab.setOnClickListener { showCreateNewProjectDialog() }
+        }
+        projectAdapter.onProjectEventListener = this@ProjectActivity
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -102,7 +106,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
         return super.onOptionsItemSelected(item)
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
         loadProjects()
     }
@@ -111,8 +115,8 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     private fun showCreateNewProjectDialog() {
         if (!createNewProjectDialog.isShowing) {
             createNewProjectDialog.show()
-            val createBtn = createNewProjectDialog.findViewById<Button>(android.R.id.button1)
-            createBtn!!.setOnClickListener {
+            val createBtn: Button = createNewProjectDialog.findViewById(android.R.id.button1)!!
+            createBtn.setOnClickListener {
                 val projectName =
                     projectBinding.text1.text.toString().trim().replace("..", "")
                 if (projectName.isEmpty()) {
@@ -121,10 +125,11 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 val useKotlinTemplate =
                     projectBinding.useKotlinTemplate.isChecked
                 try {
-                    val project =
-                        if (useKotlinTemplate) KotlinProject.newProject(
-                            projectName
-                        ) else JavaProject.newProject(projectName)
+                    val project = if (useKotlinTemplate) {
+                        KotlinProject.newProject(projectName)
+                    } else {
+                        JavaProject.newProject(projectName)
+                    }
                     if (projectBinding.useGit.isChecked) {
                         val author = Author(settings.gitUserName, settings.gitUserEmail)
                         project.projectDirPath.createGitRepoWith(
@@ -132,11 +137,11 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                             "Initial Commit"
                         )
                     }
-                    if (mListener != null) {
-                        runOnUiThread {
-                            if (createNewProjectDialog.isShowing) createNewProjectDialog.dismiss()
-                            mListener.onProjectCreated(project)
+                    runOnUiThread {
+                        if (createNewProjectDialog.isShowing) {
+                            createNewProjectDialog.dismiss()
                         }
+                        mListener.onProjectCreated(project)
                     }
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -155,7 +160,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
             getString(R.string.dialog_confirm_delete, project.projectName),
             getString(android.R.string.ok),
             getString(android.R.string.cancel)
-        ) { _: DialogInterface?, which: Int ->
+        ) { _, which ->
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 project.delete()
                 loadProjects()

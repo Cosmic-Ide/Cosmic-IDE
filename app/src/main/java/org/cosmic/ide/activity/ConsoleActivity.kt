@@ -21,9 +21,10 @@ class ConsoleActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityConsoleBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        binding = ActivityConsoleBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+            setSupportActionBar(it.toolbar)
+        }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.root.addSystemWindowInsetToPadding(

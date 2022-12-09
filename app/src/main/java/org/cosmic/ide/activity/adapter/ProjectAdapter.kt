@@ -15,9 +15,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
         fun onProjectLongClicked(project: Project): Boolean
     }
 
-    fun setOnProjectEventListener(onProjectEventListener: OnProjectEventListener?) {
-        Companion.onProjectEventListener = onProjectEventListener
-    }
+    var onProjectEventListener: OnProjectEventListener? = null
 
     fun submitList(projects: List<Project>) {
         val diffResult = DiffUtil.calculateDiff(
@@ -56,7 +54,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(ProjectItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        ViewHolder(ProjectItemBinding.inflate(LayoutInflater.from(parent.context), parent, false), onProjectEventListener)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(mProjects.get(position))
@@ -64,26 +62,24 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder?>() {
 
     override fun getItemCount() = mProjects.size
 
-    class ViewHolder(private val binding: ProjectItemBinding) : RecyclerView.ViewHolder(
-        binding.root
-    ) {
+    class ViewHolder(
+        private val binding: ProjectItemBinding,
+        val listener: ProjectAdapter.OnProjectEventListener?
+    ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(project: Project) {
             binding.projectTitle.text = project.projectName
             binding.projectPath.text = project.projectDirPath
             binding.root.setOnClickListener { _ ->
-                onProjectEventListener!!.onProjectClicked(
+                listener!!.onProjectClicked(
                     project
                 )
             }
             binding.root.setOnLongClickListener { _ ->
-                onProjectEventListener!!.onProjectLongClicked(
+                listener!!.onProjectLongClicked(
                     project
                 )
             }
         }
-    }
-
-    companion object {
-        private var onProjectEventListener: OnProjectEventListener? = null
     }
 }

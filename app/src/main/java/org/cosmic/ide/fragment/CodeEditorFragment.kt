@@ -28,10 +28,12 @@ import java.io.File
 import java.io.IOException
 
 class CodeEditorFragment : Fragment() {
-    private lateinit var binding: FragmentCodeEditorBinding
-    private lateinit var currentFile: File
+    private var _binding: FragmentCodeEditorBinding? = null
+    private val binding get() = _binding!!
     private val TAG = "CodeEditorFragment"
     private val settings: Settings by lazy { Settings() }
+
+    private lateinit var currentFile: File
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +45,7 @@ class CodeEditorFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
+        _binding = FragmentCodeEditorBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,9 +95,9 @@ class CodeEditorFragment : Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        binding.editor.release()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun configureEditor(editor: CodeEditor) {

@@ -33,7 +33,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
     }
 
     @Throws(JSONException::class)
-    fun put(key: String, items: List<File>): Indexer {
+    fun putPathOpenFiles(items: List<File>): Indexer {
         val filesPath = mutableListOf<String>()
         items.forEach {
             filesPath.add(it.absolutePath)
@@ -43,7 +43,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
         return this
     }
 
-    fun getList(): List<File> {
+    fun getPathOpenFiles(): List<File> {
         return try {
             val type = object : TypeToken<List<String>>() {}.type
             val filesPath: List<String> = Gson().fromJson(getString(), type)
@@ -58,7 +58,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
     }
 
     @Throws(JSONException::class)
-    fun put(key: String, value: Long): Indexer {
+    fun put(value: Long): Indexer {
         json = value.toString()
         return this
     }
@@ -68,7 +68,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
         return json
     }
 
-    fun getLong(key: String): Long {
+    fun getLong(): Long {
         return try {
             json.toLong()
         } catch (e: JSONException) {

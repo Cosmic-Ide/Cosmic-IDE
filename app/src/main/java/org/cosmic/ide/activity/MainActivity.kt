@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
@@ -62,15 +63,21 @@ import java.util.*
 class MainActivity : BaseActivity() {
 
     private lateinit var temp: String
-    private lateinit var loadingDialog: BottomSheetDialog
-    private lateinit var tabsAdapter: PageAdapter
     private lateinit var binding: ActivityMainBinding
+    lateinit var project: JavaProject
 
-    private val mainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
+    private val tabsAdapter by lazy {
+        PageAdapter(supportFragmentManager, lifecycle)
     }
-    private val gitViewModel by lazy {
-        ViewModelProvider(this).get(GitViewModel::class.java)
+    private val mainViewModel: MainViewModel by viewModels()
+    private val gitViewModel: GitViewModel by viewModels()
+    private val fileViewModel: FileViewModel by viewModels()
+    private val loadingDialog by lazy {
+        BottomSheetDialog(this).apply {
+            setContentView(R.layout.dialog_compile_running)
+            setCancelable(false)
+            setCanceledOnTouchOutside(false)
+       }
     }
     private val compileTask by lazy {
         CompileTask(
@@ -118,15 +125,12 @@ class MainActivity : BaseActivity() {
         )
     }
 
-    lateinit var project: JavaProject
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
-        val fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
-        tabsAdapter = PageAdapter(supportFragmentManager, lifecycle)
+        binding = ActivityMainBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+            setSupportActionBar(it.toolbar)
+        }
         project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
         binding.appBar.addSystemWindowInsetToPadding(top = true)
         if (binding.root is DrawerLayout) {
@@ -149,20 +153,19 @@ class MainActivity : BaseActivity() {
                     }
                 })
         }
-        buildLoadingDialog()
         fileViewModel.refreshNode(project.rootFile)
-        mainViewModel.setFiles(project.indexer.getList())
-        supportActionBar?.setTitle(
-            project.projectName
-        )
-        binding.viewPager.adapter = tabsAdapter
-        binding.viewPager.isUserInputEnabled = false
-        binding.viewPager.registerOnPageChangeCallback(
-            object : OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    mainViewModel.setCurrentPosition(position)
-                }
-            })
+        mainViewModel.setFiles(project.indexer.getPathOpenFiles())
+        supportActionBar?.title = project.projectName
+        binding.viewPager.apply {
+            adapter = tabsAdapter
+            isUserInputEnabled = false
+            registerOnPageChangeCallback(
+                object : OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        mainViewModel.setCurrentPosition(position)
+                    }
+                })
+        }
         binding.tabLayout.addOnTabSelectedListener(
             object : OnTabSelectedListener {
                 override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -199,12 +202,14 @@ class MainActivity : BaseActivity() {
             )
         }
             .attach()
-        gitViewModel.setPath(project.projectDirPath)
-        gitViewModel.postCheckout = {
-            fileViewModel.refreshNode(project.rootFile)
-        }
-        gitViewModel.onSave = {
-            mainViewModel.clear()
+        gitViewModel.apply {
+            setPath(project.projectDirPath)
+            postCheckout = {
+                fileViewModel.refreshNode(project.rootFile)
+            }
+            onSave = {
+                mainViewModel.clear()
+            }
         }
         mainViewModel
             .files
@@ -339,16 +344,14 @@ class MainActivity : BaseActivity() {
         try {
             project
                 .indexer
-                .put(
-                    "lastOpenedFiles", mainViewModel.files.value!!
-                )
+                .putPathOpenFiles(mainViewModel.files.value!!)
                 .flush()
         } catch (e: JSONException) {
             Log.e(TAG, "Cannot save opened files", e)
         }
     }
 
-    public override fun onDestroy() {
+    override fun onDestroy() {
         super.onDestroy()
         saveOpenedFiles()
     }
@@ -356,13 +359,6 @@ class MainActivity : BaseActivity() {
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
         val currentFile = mainViewModel.files.value!!.get(pos)
         tab.text = if (currentFile != null) currentFile.name else "Unknown"
-    }
-
-    private fun buildLoadingDialog() {
-        loadingDialog = BottomSheetDialog(this)
-        loadingDialog.setContentView(R.layout.dialog_compile_running)
-        loadingDialog.setCancelable(false)
-        loadingDialog.setCanceledOnTouchOutside(false)
     }
 
     /* So, this method is also triggered from another thread (CompileTask.java)

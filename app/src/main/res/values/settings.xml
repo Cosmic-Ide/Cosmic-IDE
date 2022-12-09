@@ -33,9 +33,9 @@
     <integer name="theme_day">1</integer>
     <integer name="theme_night">2</integer>
 
-    <integer name="font_size_default">14</integer>
+    <integer name="font_size_default">12</integer>
     <integer name="font_size_min">8</integer>
-    <integer name="font_size_max">22</integer>
-    <integer name="font_size_stepsize">2</integer>
+    <integer name="font_size_max">20</integer>
+    <integer name="font_size_stepsize">1</integer>
 
 </resources>

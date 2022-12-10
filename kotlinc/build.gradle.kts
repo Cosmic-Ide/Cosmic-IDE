@@ -31,16 +31,13 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains:annotations:23.0.0")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.0-RC")
 
-    implementation("org.fusesource.jansi:jansi:2.4.0")
     implementation("it.unimi.dsi:fastutil:8.5.9")
-    implementation("org.jline:jline:3.21.0")
     implementation("one.util:streamex:0.8.1")
 
     api("com.jetbrains.intellij.platform:util-jdom:223.7571.230")

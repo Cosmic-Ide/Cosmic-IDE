@@ -5,37 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:gravity="center_vertical"
     android:clickable="true"
     android:focusable="true"
     android:background="?attr/colorSurface"
-    android:foreground="?attr/selectableItemBackground">
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:foreground="?attr/selectableItemBackground"
+    android:paddingVertical="@dimen/spacing_small"
+    android:paddingHorizontal="@dimen/spacing_medium">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/project_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:paddingVertical="@dimen/spacing_small"
-        android:paddingHorizontal="@dimen/spacing_medium">
-        <TextView
-            android:id="@+id/project_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textSize="20sp"
-            tools:text="Abc" />
+        android:singleLine="true"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textSize="20sp"
+        tools:text="Abc" />
 
-        <TextView
-            android:id="@+id/project_path"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="start"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="2"
-            tools:text="../org.cosmic.ide/files/projects/Abc/" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/project_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="start"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?android:attr/textColorSecondary"
+        android:maxLines="2"
+        tools:text="../org.cosmic.ide/files/projects/Abc/" />
 
 </LinearLayout>

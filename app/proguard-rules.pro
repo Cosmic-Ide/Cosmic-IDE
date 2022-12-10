@@ -1,5 +1,6 @@
 -ignorewarnings
 -dontobfuscate
+-dontwarn
 
 -keep class javax.** { *; }
 

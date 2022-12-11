@@ -144,7 +144,7 @@ data class KotlinEnvironment(
 
     private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
         keywords.types.mapNotNull {
-            if (it is KtKeywordToken && prefix != "" && it.value.startsWith(prefix)) {
+            if (it is KtKeywordToken && it.value.startsWith(prefix)) {
                 SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             } else {
                 null
@@ -258,9 +258,8 @@ data class KotlinEnvironment(
                 nameFilter = {
                     if (prefix.isNotEmpty()) {
                         it.identifier.startsWith(prefix)
-                    } else {
-                        true
                     }
+                    false
                 }
             ).toList()
             else -> null
@@ -323,7 +322,7 @@ data class KotlinEnvironment(
     }
 
     companion object {
-        private const val COMPLETION_SUFFIX = "COMPLETION_SUFFIX"
+        private const val COMPLETION_SUFFIX = "SUFFIX"
 
         private val excludedFromCompletion: List<String> = listOf(
             "kotlin.jvm.internal",
@@ -342,16 +341,11 @@ data class KotlinEnvironment(
                 configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
                 configuration = CompilerConfiguration().apply {
                     logTime("compilerConfig") {
-                        addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
+                        addJvmClasspathRoots(classpath)
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
                         put(CommonConfigurationKeys.MODULE_NAME, "completion")
                         put(CommonConfigurationKeys.USE_FIR, true)
-                        put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
                         put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)
-                        put(JVMConfigurationKeys.DISABLE_OPTIMIZATION, true)
-                        put(JVMConfigurationKeys.NO_OPTIMIZED_CALLABLE_REFERENCES, true)
-                        put(JVMConfigurationKeys.IGNORE_CONST_OPTIMIZATION_ERRORS, true)
-                        put(JVMConfigurationKeys.VALIDATE_BYTECODE, false)
                         put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                         put(JVMConfigurationKeys.NO_JDK, true)
                         put(JVMConfigurationKeys.NO_REFLECT, true)
@@ -362,11 +356,10 @@ data class KotlinEnvironment(
 
         fun get(module: Project): KotlinEnvironment {
             val jars = File(module.libDirPath).walkBottomUp().filter {
-                it.exists()
+                it.extension.equals("jar")
             }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
-            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar"))
             val environment = with(jars)
             File(module.srcDirPath).walkBottomUp().forEach {
                 if (it.extension == "kt") {

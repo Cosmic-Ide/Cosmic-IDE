@@ -5,6 +5,7 @@ import android.content.Intent.ACTION_VIEW
 import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.preference.Preference
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import org.cosmic.ide.BuildConfig
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.Settings
@@ -34,6 +35,10 @@ class AboutSettingsFragment : BasePreferenceFragment(R.string.about) {
             }
             Settings.GITHUB -> {
                 startActivity(Intent(ACTION_VIEW, GITHUB_URL.toUri()))
+                true
+            }
+            Settings.OSS_LICENSES -> {
+                startActivity(Intent(getActivity(), OssLicensesMenuActivity::class.java))
                 true
             }
             else -> super.onPreferenceTreeClick(preference)

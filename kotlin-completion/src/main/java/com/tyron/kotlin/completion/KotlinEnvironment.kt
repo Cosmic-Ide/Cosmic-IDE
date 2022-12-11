@@ -142,14 +142,16 @@ data class KotlinEnvironment(
         if (builder.length > symbols) builder.substring(0, symbols) + "..." else builder
 
 
-    private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String) =
-        keywords.types.mapNotNull {
-            if (it is KtKeywordToken && prefix != "" && it.value.startsWith(prefix)) {
+    private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String): List<CompletionItem?> {
+        if (prefix == "") return emptyList()
+        return keywords.types.mapNotNull {
+            if (it is KtKeywordToken && it.value.startsWith(prefix)) {
                 SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             } else {
                 null
             }
         }
+    }
 
     private fun descriptorsFrom(element: PsiElement): DescriptorInfo {
         val files = kotlinFiles.values.map { it.kotlinFile }.toList()
@@ -323,7 +325,7 @@ data class KotlinEnvironment(
     }
 
     companion object {
-        private const val COMPLETION_SUFFIX = "COMPLETION_SUFFIX"
+        private const val COMPLETION_SUFFIX = "æ"
 
         private val excludedFromCompletion: List<String> = listOf(
             "kotlin.jvm.internal",
@@ -344,7 +346,7 @@ data class KotlinEnvironment(
                     logTime("compilerConfig") {
                         addJvmClasspathRoots(classpath.filter { it.exists() && it.isFile && it.extension == "jar" })
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
-                        put(CommonConfigurationKeys.MODULE_NAME, "completion")
+                        put(CommonConfigurationKeys.MODULE_NAME, "CC")
                         put(CommonConfigurationKeys.USE_FIR, true)
                         put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
                         put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)

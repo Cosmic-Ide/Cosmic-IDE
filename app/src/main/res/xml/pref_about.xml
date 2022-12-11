@@ -22,6 +22,10 @@
             app:title="@string/github"
             app:summary="@string/github_desc" />
 
+        <Preference
+            app:key="oss_licenses"
+            app:title="Open Source Licenses" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

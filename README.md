@@ -29,7 +29,6 @@ A next-gen Ide for JVM development on Android!
 -   Add Classpath
 -   Decompile Class File
 -   Google Java Formatter
--   Baksmali Dex File
 -   Basic Java Keywords auto-completion
 
 </div>

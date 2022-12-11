@@ -80,5 +80,6 @@ class Settings() {
         const val DISCORD = "discord"
         const val GITHUB = "github"
         const val APP_VERSION = "app_version"
+        const val OSS_LICENSES = "oss_licenses"
     }
 }

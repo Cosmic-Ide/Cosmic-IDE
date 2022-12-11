@@ -2,6 +2,7 @@ plugins {
     id(BuildPlugins.ANDROID_APPLICATION)
     id(BuildPlugins.KOTLIN_ANDROID)
     id(BuildPlugins.KTLINT)
+    id(BuildPlugins.OSS_LICENSES)
 }
 
 android {
@@ -75,7 +76,7 @@ android {
                 "api_database/*",
                 "src/**",
                 "bundle.properties",
-                "**/*.kotlin_module"
+                "**/**.kotlin_module"
             )
         )
     }
@@ -84,11 +85,10 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
 
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.10")
-
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
         setChanging(true)
     }
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")
     implementation("com.google.android.material:material:1.8.0-beta01")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")

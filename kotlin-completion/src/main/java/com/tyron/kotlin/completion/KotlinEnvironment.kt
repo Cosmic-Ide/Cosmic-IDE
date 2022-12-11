@@ -103,7 +103,9 @@ data class KotlinEnvironment(
                 val prefix = getPrefix(element)
                 descriptorInfo.descriptors.toMutableList().apply {
                     sortWith { a, b ->
-                        a.presentableName().compareTo(b.presentableName(), true)
+                        val (a1, a2) = a.presentableName()
+                        val (b1, b2) = b.presentableName()
+                        "$a1$a2".compareTo("$b1$b2", true)
                     }
                 }.mapNotNull { descriptor ->
                     completionVariantFor(
@@ -140,14 +142,13 @@ data class KotlinEnvironment(
         if (builder.length > symbols) builder.substring(0, symbols) + "..." else builder
 
 
-    private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String): SimpleCompletionItem? {
-        if (prefix == "") return null
-        keywords.types.mapNotNull {
-            if (&& it.value.startsWith(prefix)) {
-                return SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
-            } else {
-                return null
+    private fun keywordsCompletionVariants(keywords: TokenSet, prefix: String): List<CompletionItem?> {
+        if (prefix == null) return emptyList()
+        return keywords.types.mapNotNull {
+            if (it is KtKeywordToken && it.value.startsWith(prefix)) {
+                SimpleCompletionItem(it.value, "Keyword", prefix.length, it.value)
             }
+            null
         }
     }
 

@@ -344,24 +344,24 @@ data class KotlinEnvironment(
                         addJvmClasspathRoots(classpath)
                         put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, LoggingMessageCollector)
                         put(CommonConfigurationKeys.MODULE_NAME, "completion")
-                        put(CommonConfigurationKeys.USE_FIR, true)
                         put(JVMConfigurationKeys.ASSERTIONS_MODE, JVMAssertionsMode.ALWAYS_DISABLE)
-                        put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                         put(JVMConfigurationKeys.NO_JDK, true)
                         put(JVMConfigurationKeys.NO_REFLECT, true)
+                        put(CommonConfigurationKeys.USE_FIR, true)
+                        put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                     }
                 }
             ))
         }
 
         fun get(module: Project): KotlinEnvironment {
-            val jars = File(module.libDirPath).walkBottomUp().filter {
-                it.extension.equals("jar")
+            val jars = File(module.libDirPath).walk().filter {
+                it.extension == "jar"
             }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
             val environment = with(jars)
-            File(module.srcDirPath).walkBottomUp().forEach {
+            File(module.srcDirPath).walk().forEach {
                 if (it.extension == "kt") {
                     environment.updateKotlinFile(it.absolutePath, it.readText())
                 }

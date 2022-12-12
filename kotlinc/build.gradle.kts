@@ -37,7 +37,7 @@ dependencies {
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.0-RC")
 
-    implementation("it.unimi.dsi:fastutil:8.5.9")
+    implementation("it.unimi.dsi:fastutil:8.5.11")
     implementation("one.util:streamex:0.8.1")
 
     api("com.jetbrains.intellij.platform:util-jdom:223.7571.230")

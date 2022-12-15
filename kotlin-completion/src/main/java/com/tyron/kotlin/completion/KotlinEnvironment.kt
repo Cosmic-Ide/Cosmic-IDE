@@ -58,7 +58,6 @@ data class KotlinEnvironment(
     }
 
     private data class DescriptorInfo(
-        val isTipsManagerCompletion: Boolean,
         val descriptors: List<DeclarationDescriptor>
     )
 
@@ -87,20 +86,17 @@ data class KotlinEnvironment(
     }
 
     fun complete(file: KotlinFile, line: Int, character: Int) =
-        with(file.insert("$COMPLETION_SUFFIX", line, character)) {
+        with(file.insert(COMPLETION_SUFFIX, line, character)) {
             kotlinFiles[file.name] = this
 
             elementAt(line, character)?.let { element ->
                 val descriptorInfo = descriptorsFrom(element)
                 val prefix = getPrefix(element)
                 descriptorInfo.descriptors
-                    .toMutableList()
-                    .apply {
-                        sortWith { a, b ->
-                            val (a1, a2) = a.presentableName()
-                            val (b1, b2) = b.presentableName()
-                            "$a1$a2".compareTo("$b1$b2", true)
-                        }
+                    .sortedWith { a, b ->
+                        val x = a.getName().toString()
+                        val y = b.getName().toString()
+                        x.compareTo(y)
                     }
                     .mapNotNull { descriptor -> completionVariantFor(prefix, descriptor) } +
                     keywordsCompletionVariants(KtTokens.KEYWORDS, prefix) +
@@ -143,15 +139,20 @@ data class KotlinEnvironment(
     private fun keywordsCompletionVariants(
         keywords: TokenSet,
         prefix: String
-    ): List<CompletionItem?> {
-        if (prefix == "") return emptyList()
-        val result = mutableListOf<CompletionItem?>()
+    ): List<CompletionItem> {
+        // Return an empty list if the prefix is empty
+        if (prefix.isEmpty()) return emptyList()
+
+        val result = mutableSetOf<CompletionItem>()
+
+        // Iterate over the keywords and add the ones that match the prefix to the result
         for (token in keywords.types) {
             if (token is KtKeywordToken && token.value.startsWith(prefix)) {
                 result.add(SimpleCompletionItem(token.value, "Keyword", prefix.length, token.value))
             }
         }
-        return result
+
+        return result.toList()
     }
 
     private fun descriptorsFrom(element: PsiElement): DescriptorInfo {
@@ -160,11 +161,10 @@ data class KotlinEnvironment(
         return with(analysis) {
             (referenceVariantsFrom(element) ?: referenceVariantsFrom(element.parent))?.let {
                 descriptors ->
-                DescriptorInfo(true, descriptors)
+                DescriptorInfo(descriptors)
             }
                 ?: element.parent.let { parent ->
                     DescriptorInfo(
-                        isTipsManagerCompletion = false,
                         descriptors =
                             when (parent) {
                                 is KtQualifiedExpression -> {
@@ -220,9 +220,7 @@ data class KotlinEnvironment(
                 },
                 { storageManager, ktFiles ->
                     FileBasedDeclarationProviderFactory(storageManager, ktFiles)
-                },
-                sourceModuleSearchScope =
-                    TopDownAnalyzerFacadeForJVM.newModuleSearchScope(project, files)
+                }
             )
         return logTime("analysis") {
             componentProvider
@@ -271,13 +269,15 @@ data class KotlinEnvironment(
                         nameFilter = {
                             if (prefix.isNotEmpty()) {
                                 it.identifier.startsWith(prefix)
-                            } else {
-                                true
                             }
-                        }
+                            true
+                        },
+                        filterOutJavaGettersAndSetters = true,
+                        filterOutShadowed = false,
+                        excludeNonInitializedVariable = false
                     )
                     .toList()
-            else -> null
+            else -> emptyList()
         }
     }
 
@@ -359,7 +359,7 @@ data class KotlinEnvironment(
                 "kotlin.reflect.jvm.internal"
             )
 
-        fun with(classpath: List<File>): KotlinEnvironment {
+        fun with(classpath: List<File>, outputPath: File): KotlinEnvironment {
             setIdeaIoUseFallback()
             setupIdeaStandaloneExecution()
             return KotlinEnvironment(
@@ -371,18 +371,17 @@ data class KotlinEnvironment(
                         CompilerConfiguration().apply {
                             logTime("compilerConfig") {
                                 addJvmClasspathRoots(
-                                    classpath.filter {
-                                        it.extension == "jar"
-                                    }
+                                    classpath
                                 )
                                 put(
                                     CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY,
                                     LoggingMessageCollector
                                 )
+                                put(JVMConfigurationKeys.NO_JDK, true)
+                                put(JVMConfigurationKeys.NO_REFLECT, true)
                                 put(CommonConfigurationKeys.MODULE_NAME, "CC")
-                                put(CommonConfigurationKeys.USE_FIR, true)
-                                put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 15)
-                                put(JVMConfigurationKeys.RETAIN_OUTPUT_IN_MEMORY, true)
+                                put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 5)
+                                put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                                 put(
                                     JVMConfigurationKeys.ASSERTIONS_MODE,
                                     JVMAssertionsMode.ALWAYS_DISABLE
@@ -392,8 +391,8 @@ data class KotlinEnvironment(
                                 put(JVMConfigurationKeys.IGNORE_CONST_OPTIMIZATION_ERRORS, true)
                                 put(JVMConfigurationKeys.VALIDATE_BYTECODE, false)
                                 put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
-                                put(JVMConfigurationKeys.NO_JDK, true)
-                                put(JVMConfigurationKeys.NO_REFLECT, true)
+                                put(CommonConfigurationKeys.USE_FIR, true)
+                                put(JVMConfigurationKeys.OUTPUT_DIRECTORY, outputPath)
                             }
                         }
                 )
@@ -401,17 +400,16 @@ data class KotlinEnvironment(
         }
 
         fun get(module: Project): KotlinEnvironment {
-            val jars = File(module.libDirPath).walkBottomUp().filter { it.extension == "jar" }.toMutableList()
+            val jars = File(module.libDirPath).walk().filter { it.extension == "jar" }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
             jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar"))
-            val environment = with(jars) {
-                File(module.srcDirPath).walk()
-                    .filter { it.extension == "kt" }
-                    .forEach {
-                        updateKotlinFile(it.absolutePath, it.readText())
-                    }
-            }
+            val environment = with(jars, File(module.binDirPath))
+            File(module.srcDirPath).walk()
+                .filter { it.extension == "kt" }
+                .forEach {
+                    environment.updateKotlinFile(it.absolutePath, it.readText())
+                }
             return environment
         }
     }

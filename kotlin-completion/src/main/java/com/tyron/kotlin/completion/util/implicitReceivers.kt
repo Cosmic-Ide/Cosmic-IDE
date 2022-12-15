@@ -111,5 +111,5 @@ private fun List<ReceiverParameterDescriptor>.shadowedByDslMarkers(): Set<Receiv
     }
 
     // for each DSL marker, all receivers except the closest one are shadowed by it; that is why we drop it
-    return typesByDslScopes.values.flatMapTo(mutableSetOf()) { it.drop(1) }
+    return typesByDslScopes.values.flatMapTo(hashSetOf()) { it.drop(1) }
 }

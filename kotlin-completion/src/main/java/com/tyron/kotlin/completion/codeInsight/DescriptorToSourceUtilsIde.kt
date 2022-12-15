@@ -18,8 +18,7 @@ object DescriptorToSourceUtilsIde {
     fun getAllDeclarations(
         targetDescriptor: DeclarationDescriptor
     ): Collection<PsiElement> {
-        val result = getDeclarationsStream(targetDescriptor)
-            .toHashSet()
+        val result = getDeclarationsStream(targetDescriptor).toHashSet()
         // filter out elements which are navigate to some other element of the result
         // this is needed to avoid duplicated results for references to declaration in same library source file
         return result.filterNot { element -> element.navigationElement == element }.toList()

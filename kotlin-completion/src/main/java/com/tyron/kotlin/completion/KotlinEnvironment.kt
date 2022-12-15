@@ -143,7 +143,7 @@ data class KotlinEnvironment(
         // Return an empty list if the prefix is empty
         if (prefix.isEmpty()) return emptyList()
 
-        val result = mutableSetOf<CompletionItem>()
+        val result = mutableListOf<CompletionItem>()
 
         // Iterate over the keywords and add the ones that match the prefix to the result
         for (token in keywords.types) {
@@ -152,7 +152,7 @@ data class KotlinEnvironment(
             }
         }
 
-        return result.toList()
+        return result
     }
 
     private fun descriptorsFrom(element: PsiElement): DescriptorInfo {
@@ -271,10 +271,7 @@ data class KotlinEnvironment(
                                 it.identifier.startsWith(prefix)
                             }
                             true
-                        },
-                        filterOutJavaGettersAndSetters = true,
-                        filterOutShadowed = false,
-                        excludeNonInitializedVariable = false
+                        }
                     )
                     .toList()
             else -> emptyList()

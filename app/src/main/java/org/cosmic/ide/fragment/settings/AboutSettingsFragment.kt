@@ -41,6 +41,7 @@ class AboutSettingsFragment : BasePreferenceFragment(R.string.about) {
                 startActivity(Intent(getActivity(), OssLicensesMenuActivity::class.java))
                 true
             }
+            Settings.T
             else -> super.onPreferenceTreeClick(preference)
         }
     }

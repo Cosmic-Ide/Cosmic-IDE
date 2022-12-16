@@ -32,7 +32,6 @@ public class CompileTask extends Thread {
         this.listener = listener;
         this.compilers =
                 new Compilers(
-                        new KotlinCompiler(),
                         new JavaCompiler(App.getDefaultPreferences()),
                         new D8Task());
 
@@ -66,7 +65,7 @@ public class CompileTask extends Thread {
     private void compileKotlin() {
         try {
             listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
-            compilers.getKotlin().doFullTask(activity.getProject());
+            new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getLocalizedMessage());
         } catch (Throwable e) {

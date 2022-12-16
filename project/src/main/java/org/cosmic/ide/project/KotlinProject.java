@@ -79,7 +79,7 @@ public class KotlinProject implements Project {
 
     @Override
     public String getBinDirPath() {
-        return getProjectDirPath() + "bin" + File.separator;
+        return getBuildDirPath() + "bin" + File.separator;
     }
 
     @Override

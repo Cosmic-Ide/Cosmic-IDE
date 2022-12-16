@@ -30,7 +30,7 @@ class GitActivity :
 
     lateinit var binding: ActivityGitBinding
 
-    val gitViewModel: GitViewModel by viewModels()
+    val gitViewModel = GitViewModel.INSTANCE
 
     private var arrayAdapter: ArrayAdapter<String>? = null
     private var preCheckout: () -> Unit = {}

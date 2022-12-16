@@ -1,24 +1,14 @@
 package org.cosmic.ide.common.util
 
-import dalvik.system.BaseDexClassLoader
+import dalvik.system.DexClassLoader
 
 /**
- * Basically a class to load multiple dex files
- *
- * @source https://github.com/Blokkok/blokkok-modsys/blob/main/module-system/src/main/java/com/blokkok/modsys/MultipleDexClassLoader.kt
+ * A class to load multiple DEX files
  */
-class MultipleDexClassLoader(private val librarySearchPath: String? = null) {
-    val loader by lazy {
-        BaseDexClassLoader("", null, librarySearchPath, javaClass.classLoader)
-    }
+class MultipleDexClassLoader {
+    var loader = ClassLoader.getSystemClassLoader()
 
-    // we're calling an internal API for adding the dex path, might not be good
-    private val addDexPath = BaseDexClassLoader::class.java
-        .getMethod("addDexPath", String::class.java)
-
-    fun loadDex(dexPath: String): BaseDexClassLoader {
-        addDexPath.invoke(loader, dexPath)
-
-        return loader
+    fun loadDex(dexPath: String) {
+        loader = DexClassLoader(dexPath, null, null, loader)
     }
 }

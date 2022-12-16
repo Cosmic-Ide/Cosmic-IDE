@@ -67,9 +67,8 @@ class MainActivity : BaseActivity() {
     private val tabsAdapter by lazy {
         PageAdapter(supportFragmentManager, lifecycle)
     }
-    private val mainViewModel: MainViewModel by viewModels()
-    private val gitViewModel: GitViewModel by viewModels()
-    private val fileViewModel: FileViewModel by viewModels()
+    private val mainViewModel by viewModels<MainViewModel>()
+    private val fileViewModel by viewModels<FileViewModel>()
     private val loadingDialog by lazy {
         BottomSheetDialog(this).apply {
             setContentView(R.layout.dialog_compile_running)
@@ -200,7 +199,7 @@ class MainActivity : BaseActivity() {
             )
         }
             .attach()
-        gitViewModel.apply {
+        GitViewModel.INSTANCE.apply {
             setPath(project.projectDirPath)
             postCheckout = {
                 fileViewModel.refreshNode(project.rootFile)

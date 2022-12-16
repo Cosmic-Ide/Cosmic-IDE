@@ -25,6 +25,10 @@ class GitViewModel : ViewModel() {
 
     lateinit var git: Gitter
 
+    companion object {
+        val INSTANCE: GitViewModel by lazy { GitViewModel() }
+    }
+
     fun setPath(newPath: String) {
         _projectPath.value = newPath
         if (isGitRepoAt(newPath)) {

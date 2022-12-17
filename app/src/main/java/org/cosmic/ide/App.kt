@@ -28,11 +28,11 @@ class App : Application() {
         context = this
         AppCompatDelegate.setDefaultNightMode(Settings().theme)
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.absolutePath!!)
-        ToolsManager.init(this, null)
+        ToolsManager.init(null)
         CoroutineUtil.inParallel {
             JavacConfigProvider.disableModules()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe")
+                HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
             }
             FileProviderRegistry.getInstance().addFileProvider(
                 AssetsFileResolver(

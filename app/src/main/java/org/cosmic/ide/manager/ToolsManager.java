@@ -1,6 +1,5 @@
 package org.cosmic.ide.manager;
 
-import android.app.Application;
 import android.util.Log;
 
 import org.cosmic.ide.App;
@@ -15,10 +14,7 @@ public class ToolsManager {
 
     private static final String TAG = "ToolsManager";
 
-    private static Application app;
-
-    public static void init(Application application, Runnable onFinish) {
-        app = application;
+    public static void init(Runnable onFinish) {
 
         CompletableFuture.runAsync(
                         () -> {
@@ -62,7 +58,7 @@ public class ToolsManager {
         if (!stdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        app.getAssets().open("kotlin-stdlib-1.7.20.jar"), stdLib.getAbsolutePath());
+                        App.context.getAssets().open("kotlin-stdlib-1.7.20.jar"), stdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin stdlib file");
             }
@@ -76,7 +72,7 @@ public class ToolsManager {
         if (!commonStdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        app.getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
+                        App.context.getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
                         commonStdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin common stdlib file");
@@ -90,7 +86,7 @@ public class ToolsManager {
         if (!lambdaStubs.exists()) {
             try {
                 FileUtil.writeFile(
-                        app.getAssets().open("core-lambda-stubs.jar"),
+                        App.context.getAssets().open("core-lambda-stubs.jar"),
                         lambdaStubs.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract core lambda stubs file");

@@ -5,7 +5,6 @@
     <org.cosmic.ide.ui.preference.SliderPreference
         android:valueFrom="@integer/font_size_min"
         android:valueTo="@integer/font_size_max"
-        android:stepSize="@integer/font_size_stepsize"
         app:key="font_size"
         app:title="@string/font_size"
         app:defaultValue="@integer/font_size_default" />

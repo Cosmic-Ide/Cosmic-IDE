@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import org.cosmic.ide.android.interfaces.Task
 import org.cosmic.ide.android.task.dex.D8Task
+import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
 import org.cosmic.ide.project.Project
@@ -53,6 +54,7 @@ class ExecuteDexTask(
         val dexLoader = MultipleDexClassLoader()
 
         dexLoader.loadDex(dexFile)
+        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0-RC.jar")
 
         // TODO: Move to D8Task
         val folder = File(project.libDirPath)

@@ -53,12 +53,12 @@ public class ToolsManager {
     }
 
     private static void writeKotlinStdLib() {
-        final var stdLib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar");
+        final var stdLib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.jar");
 
         if (!stdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        App.context.getAssets().open("kotlin-stdlib-1.7.20.jar"), stdLib.getAbsolutePath());
+                        App.context.getAssets().open("kotlin-stdlib-1.8.0-RC.jar"), stdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin stdlib file");
             }
@@ -67,12 +67,12 @@ public class ToolsManager {
 
     private static void writeKotlinCommonStdLib() {
         final var commonStdLib =
-                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar");
+                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0-RC.jar");
 
         if (!commonStdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        App.context.getAssets().open("kotlin-stdlib-common-1.7.20.jar"),
+                        App.context.getAssets().open("kotlin-stdlib-common-1.8.0-RC.jar"),
                         commonStdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin common stdlib file");

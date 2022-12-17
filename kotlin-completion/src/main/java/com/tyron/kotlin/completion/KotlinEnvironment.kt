@@ -356,7 +356,7 @@ data class KotlinEnvironment(
                 "kotlin.reflect.jvm.internal"
             )
 
-        fun with(classpath: List<File>, outputPath: File): KotlinEnvironment {
+        fun with(classpath: List<File>): KotlinEnvironment {
             setIdeaIoUseFallback()
             setupIdeaStandaloneExecution()
             return KotlinEnvironment(
@@ -396,9 +396,9 @@ data class KotlinEnvironment(
         fun get(module: Project): KotlinEnvironment {
             val jars = File(module.libDirPath).walk().filter { it.extension == "jar" }.toMutableList()
             jars.add(File(FileUtil.getClasspathDir(), "android.jar"))
-            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.7.20.jar"))
-            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.7.20.jar"))
-            val environment = with(jars, File(module.binDirPath))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.jar"))
+            jars.add(File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0-RC.jar"))
+            val environment = with(jars)
             File(module.srcDirPath).walk()
                 .filter { it.extension == "kt" }
                 .forEach {

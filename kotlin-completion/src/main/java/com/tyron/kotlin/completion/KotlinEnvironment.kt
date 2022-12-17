@@ -377,19 +377,16 @@ data class KotlinEnvironment(
                                 put(JVMConfigurationKeys.NO_JDK, true)
                                 put(JVMConfigurationKeys.NO_REFLECT, true)
                                 put(CommonConfigurationKeys.MODULE_NAME, "CC")
-                                put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 5)
+                                put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 10)
                                 put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                                 put(
                                     JVMConfigurationKeys.ASSERTIONS_MODE,
                                     JVMAssertionsMode.ALWAYS_DISABLE
                                 )
-                                put(JVMConfigurationKeys.DISABLE_OPTIMIZATION, true)
-                                put(JVMConfigurationKeys.NO_OPTIMIZED_CALLABLE_REFERENCES, true)
                                 put(JVMConfigurationKeys.IGNORE_CONST_OPTIMIZATION_ERRORS, true)
                                 put(JVMConfigurationKeys.VALIDATE_BYTECODE, false)
                                 put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                                 put(CommonConfigurationKeys.USE_FIR, true)
-                                put(JVMConfigurationKeys.OUTPUT_DIRECTORY, outputPath)
                             }
                         }
                 )

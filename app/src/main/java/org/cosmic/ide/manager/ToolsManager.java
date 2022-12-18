@@ -21,7 +21,7 @@ public class ToolsManager {
                             deleteCompilerModules();
                             extractAndroidJar();
                             writeKotlinStdLib();
-                            writeKotlinStdlibDex();
+                            writeKotlinStdLibDex();
                             writeKotlinCommonStdLib();
                             writeLambdaStubs();
                         })

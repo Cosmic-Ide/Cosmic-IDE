@@ -6,6 +6,7 @@
 
 # Files for the ART/Dalvik VM
 *.dex
+!src/main/assets/*.dex
 
 # Java class files
 *.class

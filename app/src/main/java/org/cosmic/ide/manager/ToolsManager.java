@@ -21,6 +21,7 @@ public class ToolsManager {
                             deleteCompilerModules();
                             extractAndroidJar();
                             writeKotlinStdLib();
+                            writeKotlinStdlibDex();
                             writeKotlinCommonStdLib();
                             writeLambdaStubs();
                         })
@@ -61,6 +62,19 @@ public class ToolsManager {
                         App.context.getAssets().open("kotlin-stdlib-1.8.0-RC.jar"), stdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin stdlib file");
+            }
+        }
+    }
+
+    private static void writeKotlinStdLibDex() {
+        final var dex = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.dex");
+
+        if (!dex.exists()) {
+            try {
+                FileUtil.writeFile(
+                        App.context.getAssets().open("kotlin-stdlib-1.8.0-RC.dex"), dex.getAbsolutePath());
+            } catch (IOException e) {
+                Log.d(TAG, "Unable to extract kotlin stdlib dex file");
             }
         }
     }

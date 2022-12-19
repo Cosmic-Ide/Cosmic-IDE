@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.FrontendInternals
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
+import org.jetbrains.kotlin.load.java.JvmAbi
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.renderer.ClassifierNamePolicy
 import org.jetbrains.kotlin.renderer.ParameterNameRenderingPolicy
@@ -90,7 +91,7 @@ data class KotlinEnvironment(
             kotlinFiles[file.name] = this
 
             elementAt(line, character)?.let { element ->
-                val descriptorInfo = descriptorsFrom(element)
+                val descriptorInfo = descriptorsFrom(element, file)
                 val prefix = getPrefix(element)
                 descriptorInfo.descriptors
                     .sortedWith { a, b ->
@@ -104,37 +105,40 @@ data class KotlinEnvironment(
             }
                 ?: emptyList()
         }
+
     private fun completionVariantFor(
         prefix: String,
         descriptor: DeclarationDescriptor
     ): CompletionItem? {
         val (name, tail) = descriptor.presentableName()
-        val fullName: String = formatName(name, 40)
 
-        var completionText = fullName
+        var completionText = name
         val position = completionText.indexOf('(')
         if (position != -1) {
             if (completionText[position + 1] == ')') {
-                completionText = completionText.substring(0, position + 2)
+                completionText = completionText.substringBefore(position + 2)
             } else {
-                completionText = completionText.substring(0, position + 1)
+                completionText = completionText.substringBefore(position + 1)
             }
         }
 
         val colonPosition = completionText.indexOf(":")
         if (colonPosition != -1) {
-            completionText = completionText.substring(0, colonPosition - 1)
+            completionText = completionText.substringBefore(colonPosition - 1)
         }
 
-        return if (fullName.startsWith(prefix)) {
-            SimpleCompletionItem(fullName, tail, prefix.length, completionText)
+        var tailName = tail
+        val spacePosition = tail.lastIndexOf(" ")
+        if (spacePosition != -1) {
+            tailName = tail.substring(spacePosition + 1)
+        }
+
+        return if (name.startsWith(prefix)) {
+            SimpleCompletionItem(name, tailName, prefix.length, completionText)
         } else {
             null
         }
     }
-
-    private fun formatName(builder: String, symbols: Int) =
-        if (builder.length > symbols) builder.substring(0, symbols) + "..." else builder
 
     private fun keywordsCompletionVariants(
         keywords: TokenSet,
@@ -155,9 +159,9 @@ data class KotlinEnvironment(
         return result
     }
 
-    private fun descriptorsFrom(element: PsiElement): DescriptorInfo {
+    private fun descriptorsFrom(element: PsiElement, current: KtFile): DescriptorInfo {
         val files = kotlinFiles.values.map { it.kotlinFile }.toList()
-        val analysis = analysisOf(files)
+        val analysis = analysisOf(files, current)
         return with(analysis) {
             (referenceVariantsFrom(element) ?: referenceVariantsFrom(element.parent))?.let {
                 descriptors ->
@@ -206,27 +210,25 @@ data class KotlinEnvironment(
         }
     }
 
-    private fun analysisOf(files: List<KtFile>): Analysis {
+    private fun analysisOf(files: List<KtFile>, current: KtFile): Analysis {
         val trace = CliBindingTrace()
         val project = files.first().project
         val componentProvider =
             TopDownAnalyzerFacadeForJVM.createContainer(
                 kotlinEnvironment.project,
-                files,
+                emptyList(),
                 trace,
                 kotlinEnvironment.configuration,
-                { globalSearchScope ->
-                    kotlinEnvironment.createPackagePartProvider(globalSearchScope)
-                },
-                { storageManager, ktFiles ->
-                    FileBasedDeclarationProviderFactory(storageManager, ktFiles)
+                kotlinEnvironment::createPackagePartProvider,
+                { storageManager, _ ->
+                    FileBasedDeclarationProviderFactory(storageManager, files)
                 }
             )
         return logTime("analysis") {
             componentProvider
-                .getService(LazyTopDownAnalyzer::class.java)
-                .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
-            val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
+                .get<LazyTopDownAnalyzer::class.java>()
+                .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, listOf(current))
+            val moduleDescriptor = componentProvider.get<ModuleDescriptor::class.java>()
             AnalysisHandlerExtension.getInstances(project).find {
                 it.analysisCompleted(project, moduleDescriptor, trace, files) != null
             }
@@ -247,7 +249,7 @@ data class KotlinEnvironment(
                 componentProvider = componentProvider,
                 moduleDescriptor = analysisResult.moduleDescriptor
             )
-        val inDescriptor: DeclarationDescriptor =
+        val inDescriptor =
             elementKt.getResolutionScope(bindingContext, resolutionFacade).ownerDescriptor
         return when (element) {
             is KtSimpleNameExpression ->
@@ -362,7 +364,7 @@ data class KotlinEnvironment(
             return KotlinEnvironment(
                 classpath,
                 KotlinCoreEnvironment.createForProduction(
-                    parentDisposable = Disposer.newDisposable(),
+                    parentDisposable = {},
                     configFiles = EnvironmentConfigFiles.JVM_CONFIG_FILES,
                     configuration =
                         CompilerConfiguration().apply {
@@ -376,7 +378,7 @@ data class KotlinEnvironment(
                                 )
                                 put(JVMConfigurationKeys.NO_JDK, true)
                                 put(JVMConfigurationKeys.NO_REFLECT, true)
-                                put(CommonConfigurationKeys.MODULE_NAME, "CC")
+                                put(CommonConfigurationKeys.MODULE_NAME, JvmAbi.DEFAULT_MODULE_NAME)
                                 put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 10)
                                 put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                                 put(

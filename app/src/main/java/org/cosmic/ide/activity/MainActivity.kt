@@ -386,8 +386,12 @@ class MainActivity : BaseActivity() {
                 val version = libraryBinding.version.getText().toString()
                 val repository = checkArtifact(groupId, artifactId, version)
                 if (repository != null) {
-                    repository.downloadArtifact(groupId, artifactId, version, File(project.libDirPath, "$artifactId-$version.jar"))
-                    AndroidUtilities.showToast("Library $artifactId downloaded.")
+                    execute {
+                        repository.downloadArtifact(groupId, artifactId, version, File(project.libDirPath, "$artifactId-$version.jar"))
+                        runOnUiThread {
+                            AndroidUtilities.showToast("Library $artifactId downloaded.")
+                        }
+                    }
                 } else {
                     AndroidUtilities.showToast("Library not available.")
                 }

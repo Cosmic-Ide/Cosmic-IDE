@@ -13,8 +13,6 @@
             <dict>
                 <key>settings</key>
                 <dict>
-                    <key>background</key>
-                    <string>#F5F5F5</string>
                     <key>caret</key>
                     <string>#000000</string>
                     <key>foreground</key>

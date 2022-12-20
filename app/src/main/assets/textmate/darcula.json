@@ -3,7 +3,6 @@
   "settings": [
     {
       "settings": {
-        "background": "#212121",
         "foreground": "#cccccc",
         "lineHighlight": "#2B2B2B",
         "blockLineColor": "#575757",

@@ -25,7 +25,7 @@ import org.cosmic.ide.R;
 public class AndroidUtilities {
 
     public static void showToast(String message) {
-        Toast.makeText(App.context, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(App.context, message, Toast.LENGTH_SHORT).show();
     }
 
     public static void showToast(@StringRes int id) {

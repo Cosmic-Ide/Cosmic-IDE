@@ -63,7 +63,7 @@ and the latest debug build from [Github Actions](https://github.com/Cosmic-Ide/C
 ## TO-DO
 
 -   \[ \] Kotlin error/warning highlight in editor
--   \[ \] Java auto-complete
+-   \[ \] Java code completion
 
 ## Building
 
@@ -87,12 +87,6 @@ If you have any questions, ideas, need help or want to propose a change just ope
 
 -   [tyron12233](https://github.com/tyron12233) for [Kotlinc Port for Android](https://github.com/tyron12233/CodeAssist/tree/main/build-tools/kotlinc) and [Kotlin auto-complete library](https://github.com/tyron12233/CodeAssist/tree/main/kotlin-completion)
 
--   [TheRemakerMan](https://github.com/TheRemakerMan)
-
--   [AidosZhaqyp](https://github.com/AidosZhaqyp)
-
--   [TheWolfProd](https://github.com/TheWolfProd)
-
 -   [MikeAndrson](https://github.com/MikeAndrson)
 
 -   [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor)
@@ -102,3 +96,5 @@ If you have any questions, ideas, need help or want to propose a change just ope
 -   [ShineM](https://github.com/ShineM) for [TreeView](https://github.com/ShineM/TreeView)
 
 -   [QuinnWilton](https://github.com/QuinnWilton) for [Smali Grammers](https://github.com/QuinnWilton/sublime-smali)
+
+and all other wonderful contributors that helped to make this project a reality ;)

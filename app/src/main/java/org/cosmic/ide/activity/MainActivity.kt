@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -41,7 +42,9 @@ import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.compiler.CompileTask
 import org.cosmic.ide.compiler.CompileTask.CompilerListeners
+import org.cosmic.ide.dependency.resolver.checkArtifact
 import org.cosmic.ide.databinding.ActivityMainBinding
+import org.cosmic.ide.databinding.DialogLibraryDownloaderBinding
 import org.cosmic.ide.fragment.CodeEditorFragment
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.ui.editor.adapter.PageAdapter
@@ -76,6 +79,21 @@ class MainActivity : BaseActivity() {
             setCanceledOnTouchOutside(false)
        }
     }
+    private val libraryBinding by lazy {
+        DialogLibraryDownloaderBinding.inflate(layoutInflater)
+    }
+    private val libraryDialog: AlertDialog by lazy {
+        val dialog = MaterialAlertDialogBuilder(
+            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
+        ).apply {
+            setTitle("Library Downloader")
+            setView(libraryBinding.root)
+            setPositiveButton(getString(R.string.create), null)
+            setNegativeButton(getString(android.R.string.cancel), null)
+        }
+        dialog.create()
+    }
+
     private val compileTask by lazy {
         CompileTask(
             this,
@@ -322,6 +340,8 @@ class MainActivity : BaseActivity() {
             if (fragment is CodeEditorFragment) {
                 fragment.redo()
             }
+        } else if (id == R.id.library_downloader) {
+            showLibraryDialog()
         } else if (id == R.id.action_git) {
             startActivity(Intent(this, GitActivity::class.java))
         }
@@ -354,6 +374,28 @@ class MainActivity : BaseActivity() {
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
         val currentFile = mainViewModel.files.value!!.get(pos)
         tab.text = if (currentFile != null) currentFile.name else "Unknown"
+    }
+
+    private fun showLibraryDialog() {
+        if (!libraryDialog.isShowing) {
+            libraryDialog.show()
+            val createBtn: Button = libraryDialog.findViewById(android.R.id.button1)!!
+            createBtn.setOnClickListener {
+                val groupId = libraryBinding.groupId.getText().toString()
+                val artifactId = libraryBinding.artifactId.getText().toString()
+                val version = libraryBinding.version.getText().toString()
+                val repository = checkArtifact(groupId, artifactId, version)
+                if (repository != null) {
+                    repository.downloadArtifact(groupId, artifactId, version, File(project.libDirPath, "$artifactId-$version.jar"))
+                    AndroidUtilities.showToast("Library $artifactId downloaded.")
+                } else {
+                    AndroidUtilities.showToast("Library not available.")
+                }
+            }
+            libraryBinding.groupId.setText("")
+            libraryBinding.artifactId.setText("")
+            libraryBinding.version.setText("")
+        }
     }
 
     /* So, this method is also triggered from another thread (CompileTask.java)

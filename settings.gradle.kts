@@ -15,5 +15,6 @@ include(
     ":lynx",
     ":ktfmt",
     ":treeview",
-    ":git-api"
+    ":git-api",
+    "dependency-resolver"
 )

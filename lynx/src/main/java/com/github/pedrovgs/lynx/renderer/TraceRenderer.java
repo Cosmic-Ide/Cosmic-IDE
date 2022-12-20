@@ -16,6 +16,9 @@
 
 package com.github.pedrovgs.lynx.renderer;
 
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.ClipData;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Spannable;
@@ -69,7 +72,12 @@ class TraceRenderer extends Renderer<Trace> {
 
     @Override
     protected void hookListeners(View rootView) {
-        // Empty
+        rootView.setOnLongClickListener((v) -> {
+            ClipboardManager clipboard = (ClipboardManager) rootView.getContext().getSystemService(Context.CLIPBOARD_SERVICE); 
+            ClipData clip = ClipData.newPlainText("Trace", tv_trace.getText().toString());
+            clipboard.setPrimaryClip(clip);
+            return true;
+        });
     }
 
     @Override

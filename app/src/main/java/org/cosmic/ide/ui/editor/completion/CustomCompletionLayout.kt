@@ -33,7 +33,6 @@ class CustomCompletionLayout : CompletionLayout {
             setCornerRadius(AndroidUtilities.dp(8f).toFloat())
             setStroke(AndroidUtilities.dp(0.8f), context.resolveAttr(com.google.android.material.R.attr.colorOutline))
         }
-        mBackground.setColor(SurfaceColors.SURFACE_1.getColor(context))
         layout.setBackground(mBackground)
 
         mListView = ListView(context)

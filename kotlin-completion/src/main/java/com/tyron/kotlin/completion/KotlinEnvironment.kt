@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.FrontendInternals
 import org.jetbrains.kotlin.lexer.KtKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.load.java.JvmAbi
+import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.renderer.ClassifierNamePolicy
 import org.jetbrains.kotlin.renderer.ParameterNameRenderingPolicy
@@ -91,7 +91,7 @@ data class KotlinEnvironment(
             kotlinFiles[file.name] = this
 
             elementAt(line, character)?.let { element ->
-                val descriptorInfo = descriptorsFrom(element, file)
+                val descriptorInfo = descriptorsFrom(element, file.kotlinFile)
                 val prefix = getPrefix(element)
                 descriptorInfo.descriptors
                     .sortedWith { a, b ->
@@ -116,15 +116,15 @@ data class KotlinEnvironment(
         val position = completionText.indexOf('(')
         if (position != -1) {
             if (completionText[position + 1] == ')') {
-                completionText = completionText.substringBefore(position + 2)
+                completionText = completionText.substring(0, position + 2)
             } else {
-                completionText = completionText.substringBefore(position + 1)
+                completionText = completionText.substring(0, position + 1)
             }
         }
 
         val colonPosition = completionText.indexOf(":")
         if (colonPosition != -1) {
-            completionText = completionText.substringBefore(colonPosition - 1)
+            completionText = completionText.substring(0, colonPosition - 1)
         }
 
         var tailName = tail
@@ -226,9 +226,9 @@ data class KotlinEnvironment(
             )
         return logTime("analysis") {
             componentProvider
-                .get<LazyTopDownAnalyzer::class.java>()
-                .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, listOf(current))
-            val moduleDescriptor = componentProvider.get<ModuleDescriptor::class.java>()
+                .getService(LazyTopDownAnalyzer::class.java)
+                .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
+            val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
             AnalysisHandlerExtension.getInstances(project).find {
                 it.analysisCompleted(project, moduleDescriptor, trace, files) != null
             }
@@ -378,7 +378,7 @@ data class KotlinEnvironment(
                                 )
                                 put(JVMConfigurationKeys.NO_JDK, true)
                                 put(JVMConfigurationKeys.NO_REFLECT, true)
-                                put(CommonConfigurationKeys.MODULE_NAME, JvmAbi.DEFAULT_MODULE_NAME)
+                                put(CommonConfigurationKeys.MODULE_NAME, JvmProtoBufUtil.DEFAULT_MODULE_NAME)
                                 put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 10)
                                 put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                                 put(

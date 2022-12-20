@@ -98,6 +98,7 @@ dependencies {
     implementation("org.smali:dexlib2:2.5.2")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
+    implementation(projects.dependencyResolver)
     implementation(projects.treeview)
     implementation(projects.lynx)
     implementation(projects.common)

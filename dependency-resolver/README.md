@@ -7,9 +7,9 @@ For checking if an artifact exists (in the above mentioned repositories), you ca
 ```kt
 import org.cosmic.ide.dependency.resolver.checkArtifact
 
-val groupId = ""
-val artifactId = ""
-val version = ""
+val groupId = "com.squareup.retrofit2"
+val artifactId = "retrofit"
+val version = "2.9.0"
 
 val repository = checkArtifact(groupId, artifactId, version)
 if (repository != null) {

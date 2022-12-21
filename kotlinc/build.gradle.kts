@@ -40,7 +40,7 @@ dependencies {
     implementation("it.unimi.dsi:fastutil:8.5.11")
     implementation("one.util:streamex:0.8.1")
 
-    api("com.jetbrains.intellij.platform:util-jdom:223.7571.230")
+    api("com.jetbrains.intellij.platform:util-jdom:223.8214.52")
     api("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 
     api(files("libs/kotlin-compiler-1.8.0-RC.jar"))

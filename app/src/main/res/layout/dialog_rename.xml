@@ -10,7 +10,7 @@
         android:id="@+id/til_directory_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/create_class_dialog_class_name">
+        android:hint="@string/rename_file">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@android:id/text1"

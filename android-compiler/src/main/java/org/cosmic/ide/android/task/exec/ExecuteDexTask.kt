@@ -63,12 +63,12 @@ class ExecuteDexTask(
             if (libs != null) {
                 // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val outDex = project.buildDirPath + lib.getName().replaceAfterLast('.', "dex")
+                    val outDex = project.buildDirPath + "libs/" + lib.getName().replaceAfterLast('.', "dex")
 
                     if (!File(outDex).exists()) {
                         CoroutineUtil.inParallel {
                             D8Task.compileJar(lib.absolutePath)
-                            File(project.buildDirPath, "classes.dex").renameTo(File(outDex))
+                            File(project.libDirPath, "classes.dex").renameTo(File(outDex))
                         }
                     }
                     // load library into ClassLoader

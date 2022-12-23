@@ -206,7 +206,7 @@ public class TreeFileManagerFragment extends Fragment {
                         D8Task.compileJar(nodeFile.getAbsolutePath());
                         partialRefresh(() -> treeView.refreshTreeView());
                     }
-                    return false;
+                    return true;
                 });
     }
 

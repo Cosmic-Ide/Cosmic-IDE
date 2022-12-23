@@ -49,6 +49,7 @@
     <string name="create_class_dialog_positive">Create</string>
     <string name="create_class_dialog_class_type">Class type</string>
     <string name="create_class_dialog_invalid_name">Invalid class name</string>
+    <string name="rename_file">Rename File</string>
 
     <string name="select_smali_class">Choose a smali class to show</string>
     <string name="select_class_decompile">Select class to decompile</string>

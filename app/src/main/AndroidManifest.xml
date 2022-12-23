@@ -15,12 +15,14 @@
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CosmicIde.Monet">
+        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.CosmicIde.Monet"
+        tools:targetApi="tiramisu">
 
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".activity.ProjectActivity"

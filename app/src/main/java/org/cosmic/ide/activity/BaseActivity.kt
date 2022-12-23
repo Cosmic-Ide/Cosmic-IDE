@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import org.cosmic.ide.R
@@ -26,25 +27,34 @@ abstract class BaseActivity : AppCompatActivity() {
             left = true,
             right = true
         )
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(
+            true
+        ) {
+            override fun handleOnBackPressed() {
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
+                    isTaskRoot &&
+                    supportFragmentManager.backStackEntryCount == 0
+                ) {
+                    finishAfterTransition()
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(
+            this,
+            callback
+        )
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> onBackPressed()
+            android.R.id.home -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                onBackPressedDispatcher.onBackPressed()
+            }
+
             else -> return super.onOptionsItemSelected(item)
         }
         return true
-    }
-
-    override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
-            isTaskRoot &&
-            supportFragmentManager.backStackEntryCount == 0
-        ) {
-            finishAfterTransition()
-        } else {
-            super.onBackPressed()
-        }
     }
 
     private fun getRootActivityView(): View =

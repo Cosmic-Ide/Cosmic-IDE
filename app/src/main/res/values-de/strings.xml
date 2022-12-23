@@ -5,6 +5,8 @@
     <string name="delete">Löschen</string>
     <string name="rename">Umbenennen</string>
 
+    <string name="next">Nächste</string>
+    <string name="back">Der Rücken</string>
     <string name="quit">Aufhören</string>
     <string name="copy_stacktrace">Stacktrace kopieren</string>
 
@@ -18,11 +20,14 @@
 
     <string name="compile">Kompilieren</string>
     <string name="error">Fehler</string>
+    <string name="project">Projekt</string>
+    <string name="folder">Mappe</string>
 
     <string name="no_open_file_title">Es gibt keine offenen Dateien.</string>
     <string name="no_open_file_desc">Versuchen Sie, die Datei über das linke Menü zu öffnen.</string>
     <string name="no_projects_title">Projekte nicht gefunden</string>
-    <string name="no_projects_suggestion">Erstellen Sie ein Projekt, indem Sie auf die Schaltfläche unten klicken.</string>
+    <string name="no_projects_suggestion">Erstellen Sie ein Projekt, indem Sie auf die Schaltfläche unten klicken.
+    </string>
 
     <string name="treemenu_create_kotlin">Erstellen Sie eine Kotlin-Klasse</string>
     <string name="treemenu_create_java">Java-Klasse erstellen</string>
@@ -36,24 +41,33 @@
     <string name="create_class_dialog_title">Erstellen Sie eine Klasse</string>
     <string name="create_class_dialog_class_name">Klassenname</string>
     <string name="create_class_dialog_positive">Schaffen</string>
+    <string name="create_class_dialog_class_type">Klassentyp</string>
+    <string name="create_class_dialog_invalid_name">Ungültiger Klassenname</string>
 
+    <string name="select_smali_class">Wählen Sie eine kleine Klasse aus, die Sie zeigen möchten</string>
     <string name="select_class_decompile">Klasse zum Dekompilieren auswählen</string>
     <string name="select_class_disassemble">Klasse zum Zerlegen auswählen</string>
     <string name="select_class_run">Wählen Sie eine Klasse aus, die ausgeführt werden soll</string>
 
     <string name="error_file_open">Datei konnte nicht geöffnet werden</string>
+    <string name="error_file_unzip">Datei konnte nicht entpackt werden</string>
+    <string name="error_file_extract_smali">Kleiner Quellcode konnte nicht extrahiert werden</string>
     <string name="error_class_decompile">Klasse konnte nicht dekompiliert werden</string>
     <string name="error_class_disassemble">Klasse konnte nicht zerlegt werden</string>
     <string name="error_classes_get_dex">Fehler beim Abrufen der Liste der Klassenindexe</string>
 
     <!-- Compiler Service -->
     <string name="compilation_state_compiling">Kompilieren</string>
+    <string name="compilation_result_success">Zusammenstellung erfolgreichs</string>
     <string name="compilation_result_failed">Kompilierung fehlgeschlagen</string>
     <string name="compilation_stage">Bühne</string>
+    <string name="compilation_stage_clean">Reinigungsaufbau&#8230;</string>
     <string name="compilation_stage_kotlinc">Kompilieren mit Kotlinc&#8230;</string>
     <string name="compilation_stage_javac">Kompilieren mit Javac&#8230;</string>
     <string name="compilation_stage_d8">Dexing von Klassendateien mit D8&#8230;</string>
 
+    <string name="success">Erfolg</string>
+    <string name="delete_success">Erfolg löschen.</string>
     <string name="dialog_confirm_delete">Sind Sie sicher, dass Sie löschen möchten %1$s?</string>
     <string name="dialog_delete">Löschen</string>
     <string name="dialog_close">Nah dran</string>

@@ -189,7 +189,7 @@ data class KotlinEnvironment(
                 .analyzeDeclarations(TopDownAnalysisMode.TopLevelDeclarations, files)
             val moduleDescriptor = componentProvider.getService(ModuleDescriptor::class.java)
             AnalysisHandlerExtension.getInstances(project).find {
-                it.analysisCompleted(project, moduleDescriptor, trace, files) != null
+                it.analysisCompleted(project, moduleDescriptor, trace, listOf(current)) != null
             }
             return@logTime Analysis(
                 componentProvider,

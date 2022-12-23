@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">Cosmic IDE</string>
 
+    <string name="smali" translatable="false">Smali</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="class2java" translatable="false">Class2Java</string>
     <string name="jar2dex" translatable="false">Jar2Dex</string>
@@ -11,6 +12,8 @@
     <string name="delete">Delete</string>
     <string name="rename">Rename</string>
 
+    <string name="next">Next</string>
+    <string name="back">Back</string>
     <string name="quit">Quit</string>
     <string name="copy_stacktrace">Copy stacktrace</string>
 
@@ -24,6 +27,8 @@
 
     <string name="compile">Compile</string>
     <string name="error">Error</string>
+    <string name="project">Project</string>
+    <string name="folder">Folder</string>
 
     <string name="no_open_file_title">There are no open files</string>
     <string name="no_open_file_desc">Try opening the file through the left menu.</string>
@@ -42,22 +47,30 @@
     <string name="create_class_dialog_title">Create a class</string>
     <string name="create_class_dialog_class_name">Class name</string>
     <string name="create_class_dialog_positive">Create</string>
+    <string name="create_class_dialog_class_type">Class type</string>
+    <string name="create_class_dialog_invalid_name">Invalid class name</string>
     <string name="rename_file">Rename File</string>
 
+    <string name="select_smali_class">Choose a smali class to show</string>
     <string name="select_class_decompile">Select class to decompile</string>
     <string name="select_class_disassemble">Select class to disassemble</string>
     <string name="select_class_run">Choose a class to run</string>
 
     <string name="error_file_open">Failed to open file</string>
+    <string name="error_file_unzip">Failed to unzip file</string>
+    <string name="error_file_extract_smali">Failed to extract smali source code</string>
     <string name="error_class_decompile">Failed to decompile class</string>
     <string name="error_class_disassemble">Failed to disassemble class</string>
     <string name="error_classes_get_dex">Failed to get list of classes in dex</string>
 
     <!-- Compiler Service -->
     <string name="compilation_state_compiling">Compiling</string>
+    <string name="compilation_result_success">Compilation success</string>
     <string name="compilation_result_failed">Compilation failed</string>
     <string name="compilation_stage">Stage</string>
+    <string name="compilation_console" translatable="false">Console</string>
     <string name="compilation_recompile" translatable="false">Recompile</string>
+    <string name="compilation_stage_clean">Cleaning build&#8230;</string>
     <string name="compilation_stage_kotlinc">Compiling with Kotlinc&#8230;</string>
     <string name="compilation_stage_javac">Compiling with Javac&#8230;</string>
     <string name="compilation_stage_d8">Dexing class files with D8&#8230;</string>
@@ -65,6 +78,8 @@
     <string name="console_state_running">Running</string>
     <string name="console_state_stopped">Stopped</string>
 
+    <string name="success">Success</string>
+    <string name="delete_success">Delete success.</string>
     <string name="dialog_confirm_delete">Are you sure you want to delete %1$s?</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_close">Close</string>
@@ -105,8 +120,10 @@
     <string name="git">Git</string>
     <string name="git_username">Username</string>
     <string name="git_useremail">Email address</string>
+    <string name="git_new_repository">New Git repository</string>
     <string name="git_commit">Commit</string>
     <string name="git_commit_message">Commit message</string>
+    <string name="git_branch">Branch</string>
     <string name="git_new_branch">New branch</string>
     <string name="git_name_branch">Branch name</string>
     <string name="git_merge">Merge</string>
@@ -114,6 +131,7 @@
     <string name="git_merge_branch_message">Branch name to merge</string>
     <string name="git_delete_branch">Delete branch</string>
     <string name="git_delete_branch_message">Branch name to delete</string>
+    <string name="git_log_unavailable">Logs not available.</string>
     <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
 
 </resources>

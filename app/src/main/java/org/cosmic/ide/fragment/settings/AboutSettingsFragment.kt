@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.core.net.toUri
 import androidx.preference.Preference
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import org.cosmic.ide.BuildConfig
 import org.cosmic.ide.R
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.Constants.DISCORD_URL
@@ -19,7 +18,11 @@ class AboutSettingsFragment : BasePreferenceFragment(R.string.about) {
         addPreferencesFromResource(R.xml.pref_about)
 
         findPreference<Preference>(Settings.APP_VERSION)?.run {
-            title = getString(R.string.app_version, BuildConfig.VERSION_NAME)
+            // set title to app version
+            title = getString(
+                R.string.app_version,
+                requireContext().packageManager.getPackageInfo(requireContext().packageName, 0).versionName
+            )
         }
     }
 

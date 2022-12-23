@@ -105,20 +105,6 @@ class LynxConfig : Serializable, Cloneable {
             .setSamplingRate(samplingRate)
     }
 
-    override fun toString(): String {
-        return ("LynxConfig{"
-                + "maxNumberOfTracesToShow="
-                + maxNumberOfTracesToShow
-                + ", filter='"
-                + filter
-                + '\''
-                + ", textSizeInPx="
-                + textSizeInPx
-                + ", samplingRate="
-                + samplingRate
-                + '}')
-    }
-
     companion object {
         private const val serialVersionUID = 293939299388293L
         private const val DEFAULT_TEXT_SIZE_IN_PX = 36f

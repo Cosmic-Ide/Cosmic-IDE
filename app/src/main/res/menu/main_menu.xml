@@ -18,20 +18,22 @@
         android:icon="@drawable/play_arrow"
         android:id="@+id/action_run"
         android:title="@string/compile"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_format"
-        android:title="@string/editor_action_format" />
+        android:title="@string/editor_action_format"/>
 
-    <item android:title="@string/advanced">
+    <item
+        android:id="@+id/action_advanced"
+        android:title="@string/advanced">
         <menu>
             <item
                 android:id="@+id/action_disassemble"
-                android:title="@string/disassemble" />
+                android:title="@string/disassemble"/>
             <item
                 android:id="@+id/action_class2java"
-                android:title="@string/class2java" />
+                android:title="@string/class2java"/>
         </menu>
     </item>
 

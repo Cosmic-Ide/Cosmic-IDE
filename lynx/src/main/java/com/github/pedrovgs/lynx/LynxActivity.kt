@@ -18,6 +18,7 @@ package com.github.pedrovgs.lynx
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Build
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 
@@ -42,7 +43,11 @@ class LynxActivity : AppCompatActivity() {
             val extras = intent.extras
             var lynxConfig: LynxConfig? = LynxConfig()
             if (extras != null && extras.containsKey(LYNX_CONFIG_EXTRA)) {
-                lynxConfig = extras.getSerializable(LYNX_CONFIG_EXTRA) as LynxConfig
+                lynxConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    extras.getParcelable(LYNX_CONFIG_EXTRA, LynxConfig::class.java)
+                } else {
+                    extras.getSerializable(LYNX_CONFIG_EXTRA) as LynxConfig
+                }
             }
             return lynxConfig
         }

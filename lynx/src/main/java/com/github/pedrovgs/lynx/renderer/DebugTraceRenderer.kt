@@ -27,8 +27,6 @@ import com.github.pedrovgs.lynx.LynxConfig
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-internal open class DebugTraceRenderer(lynxConfig: LynxConfig?) : TraceRenderer(lynxConfig) {
-    override fun getTraceColor(): Int {
-        return Color.CYAN
-    }
+internal open class DebugTraceRenderer(lynxConfig: LynxConfig?) : TraceRenderer(lynxConfig!!) {
+    override val traceColor = Color.CYAN
 }

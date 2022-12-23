@@ -5,9 +5,6 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.activity.viewModels
-import androidx.core.os.*
-import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import org.cosmic.ide.R
@@ -33,7 +30,6 @@ class GitActivity :
     val gitViewModel = GitViewModel.INSTANCE
 
     private var arrayAdapter: ArrayAdapter<String>? = null
-    private var preCheckout: () -> Unit = {}
     private val logger by lazy {
         Logger()
     }
@@ -48,7 +44,10 @@ class GitActivity :
             setContentView(it.root)
         }
         initListeners(this)
-        binding.root.addSystemWindowInsetToPadding(false, true, false, true)
+        binding.root.addSystemWindowInsetToPadding(
+            top = true,
+            bottom = true
+        )
         logger.attach(binding.recyclerView)
 
         gitViewModel.apply {
@@ -106,16 +105,6 @@ class GitActivity :
         }
     }
 
-    private fun switchButtons(hasRepo: Boolean) {
-        with(binding) {
-            buttonCommit.isEnabled = hasRepo
-            buttonCreateBranch.isEnabled = hasRepo
-            buttonMergeBranch.isEnabled = hasRepo
-            buttonDeleteBranch.isEnabled = hasRepo
-            spinnerBranch.isEnabled = hasRepo
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         gitViewModel.dispose()
@@ -133,7 +122,6 @@ class GitActivity :
 
     companion object {
         const val TAG = "GitActivity"
-        const val ARG_PATH_ID = "pathId"
     }
 }
 
@@ -160,9 +148,8 @@ fun GitActivity.createBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.create)) { _, _ ->
             val text = binding.editText.text.toString()
-            val result = gitViewModel.createBranch(text)
 
-            when (result) {
+            when (gitViewModel.createBranch(text)) {
                 is Success -> showSnackbar("Branch '$text' created")
                 is Failure -> showSnackbar("Branch '$text' could not created")
                 else -> showSnackbar("Unknown error")
@@ -181,11 +168,15 @@ fun GitActivity.mergeBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.git_merge)) { _, _ ->
             val text = binding.editText.text.toString()
-            val result = gitViewModel.mergeBranch(text)
 
-            when (result) {
+            when (gitViewModel.mergeBranch(text)) {
                 is Success -> showSnackbar("Branch '$text' merged")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' not in repository")
+                is Failure -> AndroidUtilities.showSimpleAlert(
+                    this,
+                    getString(R.string.error),
+                    "Branch '$text' not in repository"
+                )
+
                 else -> showSnackbar("Unknown error")
             }
         }
@@ -202,11 +193,15 @@ fun GitActivity.deleteBranch() {
         .setView(binding.root)
         .setPositiveButton(getString(R.string.delete)) { _, _ ->
             val text = binding.editText.text.toString()
-            val result = gitViewModel.deleteBranch(text)
 
-            when (result) {
+            when (gitViewModel.deleteBranch(text)) {
                 is Success -> showSnackbar("Branch '$text' deleted")
-                is Failure -> AndroidUtilities.showSimpleAlert(this, getString(R.string.error), "Branch '$text' must not be the current branch to delete.")
+                is Failure -> AndroidUtilities.showSimpleAlert(
+                    this,
+                    getString(R.string.error),
+                    "Branch '$text' must not be the current branch to delete."
+                )
+
                 else -> showSnackbar("Unknown error")
             }
         }

@@ -39,11 +39,6 @@ class Trace(val level: TraceLevel, val message: String) {
         result = 31 * result + message.hashCode()
         return result
     }
-
-    override fun toString(): String {
-        return "Trace{level=$level, message='$message'}"
-    }
-
     companion object {
         private const val TRACE_LEVEL_SEPARATOR = '/'
         private const val START_OF_MESSAGE_INDEX = 2

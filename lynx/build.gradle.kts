@@ -1,5 +1,6 @@
 plugins {
     id(BuildPlugins.ANDROID_LIBRARY)
+    id(BuildPlugins.KOTLIN_ANDROID)
 }
 
 android {
@@ -9,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     buildTypes {
@@ -24,6 +24,10 @@ android {
 
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 

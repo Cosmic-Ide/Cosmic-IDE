@@ -5,13 +5,14 @@ It was created as a lightweight alternative to Eclipse aether for Android. But t
 
 For checking if an artifact exists (in the above mentioned repositories), you can simply do
 ```kt
-import org.cosmic.ide.dependency.resolver.checkArtifact
+import org.cosmic.ide.dependency.resolver.getArtifact
 
 val groupId = "com.squareup.retrofit2"
 val artifactId = "retrofit"
 val version = "2.9.0"
 
-val repository = checkArtifact(groupId, artifactId, version)
+val artifact = getArtifact(groupId, artifactId, version)
+val repository = artifact.repository
 if (repository != null) {
     println("Artifact exists in ${ repository.getName() }")
 } else {
@@ -19,8 +20,8 @@ if (repository != null) {
 }
 ```
 
-For downloading an artifact, you can do
+For downloading an artifact with all of its dependencies, you can do
 ```kt
-val file = File("<path to download artifact>")
-repository.downloadArtifact(groupId, artifactId, version, file)
+val output = File("<directory to download artifact>")
+artifact.downloadArtifact(output)
 ```

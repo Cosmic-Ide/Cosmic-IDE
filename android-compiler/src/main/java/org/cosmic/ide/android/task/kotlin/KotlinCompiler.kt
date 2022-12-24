@@ -58,7 +58,7 @@ class KotlinCompiler : Task {
         ) {
             return
         }
-        val mKotlinHome = File(project.binDirPath, "kt_home").apply { mkdirs() }
+        val mKotlinHome = File(project.binDirPath, "kotlin").apply { mkdirs() }
         val mClassOutput = File(project.binDirPath, "classes").apply { mkdirs() }
 
         val claspath = mutableListOf<File>()
@@ -92,10 +92,8 @@ class KotlinCompiler : Task {
 
         collector.clear()
 
-        val cacheDir = File(project.binDirPath, "caches")
-
         makeIncrementally(
-            cacheDir,
+            mKotlinHome,
             listOf(File(project.srcDirPath)),
             args,
             collector

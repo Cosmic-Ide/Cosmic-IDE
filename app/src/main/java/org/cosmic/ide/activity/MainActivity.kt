@@ -42,7 +42,7 @@ import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.compiler.CompileTask
 import org.cosmic.ide.compiler.CompileTask.CompilerListeners
-import org.cosmic.ide.dependency.resolver.checkArtifact
+import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmic.ide.databinding.ActivityMainBinding
 import org.cosmic.ide.databinding.DialogLibraryDownloaderBinding
 import org.cosmic.ide.fragment.CodeEditorFragment
@@ -385,9 +385,9 @@ class MainActivity : BaseActivity() {
                 val artifactId = libraryBinding.artifactId.getText().toString()
                 val version = libraryBinding.version.getText().toString()
                 inParallel {
-                    val repository = checkArtifact(groupId, artifactId, version)
-                    if (repository != null) {
-                        repository.downloadArtifact(groupId, artifactId, version, File(project.libDirPath, "$artifactId-$version.jar"))
+                    val artifact = getArtifact(groupId, artifactId, version)
+                    if (artifact != null) {
+                        artifact.downloadArtifact(File(project.libDirPath))
                         runOnUiThread {
                             AndroidUtilities.showToast("Library $artifactId downloaded.")
                             libraryDialog.dismiss()

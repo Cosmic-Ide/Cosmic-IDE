@@ -87,5 +87,3 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-
-gradle.properties

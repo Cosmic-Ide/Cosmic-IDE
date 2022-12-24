@@ -28,7 +28,7 @@ class D8Task : Task {
                     .setMode(CompilationMode.DEBUG)
                     .addClasspathFiles(CompilerUtil.platformPaths)
                     .addProgramFiles(Paths.get(jarFile))
-                    .setOutput(Paths.get(dex), OutputMode.DexIndexed)
+                    .setOutput(Paths.get(dex).parent, OutputMode.DexIndexed)
                     .build()
             )
         }

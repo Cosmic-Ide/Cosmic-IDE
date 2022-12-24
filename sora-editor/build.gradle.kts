@@ -33,7 +33,7 @@ android {
 
 dependencies {
     api(files("libs/editor-0.19.0.jar"))
-    api("io.github.Rosemoe.sora-editor:language-textmate:0.19.0")
+    api("io.github.Rosemoe.sora-editor:language-textmate:0.20.1")
     implementation("com.google.android.material:material:1.8.0-beta01")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.yaml:snakeyaml:1.33")

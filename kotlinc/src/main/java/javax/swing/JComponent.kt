@@ -1,3 +1,3 @@
 package javax.swing
 
-open class JComponent {}
+open class JComponent

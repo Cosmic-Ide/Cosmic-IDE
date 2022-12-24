@@ -63,7 +63,7 @@ class ExecuteDexTask(
             if (libs != null) {
                 // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val outDex = project.buildDirPath + "libs/" + lib.getName().replaceAfterLast('.', "dex")
+                    val outDex = project.buildDirPath + "libs/" + lib.name.replaceAfterLast('.', "dex")
 
                     if (!File(outDex).exists()) {
                         CoroutineUtil.inParallel {
@@ -87,7 +87,7 @@ class ExecuteDexTask(
                 val calledClass = dexLoader.loader.loadClass(clazz)
 
                 val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
-                val modifiers = method.getModifiers()
+                val modifiers = method.modifiers
                 if (Modifier.isStatic(modifiers)) {
                     // If the method is static, directly call it
                     result = method.invoke(null, param as? Any)
@@ -102,7 +102,7 @@ class ExecuteDexTask(
                     println(result.toString())
                 }
             } catch (e: InvocationTargetException) {
-                e.getTargetException().printStackTrace(errorStream)
+                e.targetException.printStackTrace(errorStream)
             } catch (e: Throwable) {
                 e.printStackTrace(errorStream)
             } catch (e: Error) {

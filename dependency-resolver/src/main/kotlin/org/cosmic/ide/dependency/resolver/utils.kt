@@ -40,14 +40,14 @@ fun InputStream.resolvePOM(): List<Artifact> {
         val scopeItem = dependencyElement.getElementsByTagName("scope").item(0)
         if (scopeItem != null) {
             val scope = scopeItem.textContent
-            if (scope.length > 0 && (scope == "test" || scope == "provided")) {
+            if (scope.isNotEmpty() && (scope == "test" || scope == "provided")) {
                 continue
             }
         }
         val groupId = dependencyElement.getElementsByTagName("groupId").item(0).textContent
         val artifactId = dependencyElement.getElementsByTagName("artifactId").item(0).textContent
         val artifact = Artifact(groupId, artifactId)
-        var item = dependencyElement.getElementsByTagName("version").item(0)
+        val item = dependencyElement.getElementsByTagName("version").item(0)
         if (item != null) {
             artifact.version = item.textContent
         }

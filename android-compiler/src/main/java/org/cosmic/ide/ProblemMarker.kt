@@ -26,7 +26,7 @@ class ProblemMarker(
     private val TAG = "ProblemMarker"
 
     init {
-        analyze(editor.getText())
+        analyze(editor.text)
     }
 
     override fun beforeReplace(content: Content) {}
@@ -55,7 +55,7 @@ class ProblemMarker(
 
     private fun analyze(content: Content) {
         val code = content.toString()
-        FileUtil.writeFile(file.getAbsolutePath(), code)
+        FileUtil.writeFile(file.absolutePath, code)
         CoroutineUtil.inParallel {
             if (!analyzer.isFirstRun()) {
                 analyzer.reset()
@@ -63,7 +63,7 @@ class ProblemMarker(
             try {
                 if (!(file.extension.equals("java"))) {
                     Handler(Looper.getMainLooper()).post {
-                        editor.setDiagnostics(DiagnosticsContainer())
+                        editor.diagnostics = DiagnosticsContainer()
                     }
                     return@inParallel
                 }
@@ -71,7 +71,7 @@ class ProblemMarker(
                 diagnostics.reset()
                 diagnostics.addDiagnostics(analyzer.getDiagnostics())
                 Handler(Looper.getMainLooper()).post {
-                    editor.setDiagnostics(diagnostics)
+                    editor.diagnostics = diagnostics
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "Error while marking diagnostics.", e)

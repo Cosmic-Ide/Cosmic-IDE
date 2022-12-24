@@ -81,8 +81,8 @@ class GitActivity :
         arrayAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         with(binding) {
-            spinnerBranch.setAdapter(arrayAdapter)
-            spinnerBranch.setOnItemSelectedListener(listener)
+            spinnerBranch.adapter = arrayAdapter
+            spinnerBranch.onItemSelectedListener = listener
 
             buttonCommit.setOnClickListener {
                 commitWith(person)
@@ -108,11 +108,11 @@ class GitActivity :
 
     private fun switchButtons(hasRepo: Boolean) {
         with(binding) {
-            buttonCommit.setEnabled(hasRepo)
-            buttonCreateBranch.setEnabled(hasRepo)
-            buttonMergeBranch.setEnabled(hasRepo)
-            buttonDeleteBranch.setEnabled(hasRepo)
-            spinnerBranch.setEnabled(hasRepo)
+            buttonCommit.isEnabled = hasRepo
+            buttonCreateBranch.isEnabled = hasRepo
+            buttonMergeBranch.isEnabled = hasRepo
+            buttonDeleteBranch.isEnabled = hasRepo
+            spinnerBranch.isEnabled = hasRepo
         }
     }
 
@@ -139,13 +139,13 @@ class GitActivity :
 
 fun GitActivity.commitWith(commiter: Author) {
     val binding = LayoutEditTextBinding.inflate(layoutInflater)
-    binding.editLayout.setHint(getString(R.string.git_commit_message))
+    binding.editLayout.hint = getString(R.string.git_commit_message)
 
     MaterialAlertDialogBuilder(this)
         .setTitle(getString(R.string.git_commit))
         .setView(binding.root)
         .setPositiveButton(getString(R.string.git_commit)) { _, _ ->
-            gitViewModel.commiting(commiter, binding.editText.getText().toString())
+            gitViewModel.commiting(commiter, binding.editText.text.toString())
         }
         .setNegativeButton(getString(android.R.string.cancel)) { _, _ -> }
         .show()
@@ -153,13 +153,13 @@ fun GitActivity.commitWith(commiter: Author) {
 
 fun GitActivity.createBranch() {
     val binding = LayoutEditTextBinding.inflate(layoutInflater)
-    binding.editLayout.setHint(getString(R.string.git_name_branch))
+    binding.editLayout.hint = getString(R.string.git_name_branch)
 
     MaterialAlertDialogBuilder(this)
         .setTitle(getString(R.string.git_new_branch))
         .setView(binding.root)
         .setPositiveButton(getString(R.string.create)) { _, _ ->
-            val text = binding.editText.getText().toString()
+            val text = binding.editText.text.toString()
             val result = gitViewModel.createBranch(text)
 
             when (result) {
@@ -174,13 +174,13 @@ fun GitActivity.createBranch() {
 
 fun GitActivity.mergeBranch() {
     val binding = LayoutEditTextBinding.inflate(layoutInflater)
-    binding.editLayout.setHint(getString(R.string.git_merge_branch_message))
+    binding.editLayout.hint = getString(R.string.git_merge_branch_message)
 
     MaterialAlertDialogBuilder(this)
         .setTitle(getString(R.string.git_merge_branch))
         .setView(binding.root)
         .setPositiveButton(getString(R.string.git_merge)) { _, _ ->
-            val text = binding.editText.getText().toString()
+            val text = binding.editText.text.toString()
             val result = gitViewModel.mergeBranch(text)
 
             when (result) {
@@ -195,13 +195,13 @@ fun GitActivity.mergeBranch() {
 
 fun GitActivity.deleteBranch() {
     val binding = LayoutEditTextBinding.inflate(layoutInflater)
-    binding.editLayout.setHint(getString(R.string.git_delete_branch_message))
+    binding.editLayout.hint = getString(R.string.git_delete_branch_message)
 
     MaterialAlertDialogBuilder(this)
         .setTitle(getString(R.string.git_delete_branch))
         .setView(binding.root)
         .setPositiveButton(getString(R.string.delete)) { _, _ ->
-            val text = binding.editText.getText().toString()
+            val text = binding.editText.text.toString()
             val result = gitViewModel.deleteBranch(text)
 
             when (result) {

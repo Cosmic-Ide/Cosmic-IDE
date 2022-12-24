@@ -15,14 +15,14 @@ class GitSettingsFragment :
         addPreferencesFromResource(R.xml.pref_git)
 
         findPreference<EditTextPreference>(Settings.GIT_USERNAME)?.run {
-            summary = getText()
+            summary = text
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()
                 true
             }
         }
         findPreference<EditTextPreference>(Settings.GIT_USEREMAIL)?.run {
-            summary = getText()
+            summary = text
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()
                 true

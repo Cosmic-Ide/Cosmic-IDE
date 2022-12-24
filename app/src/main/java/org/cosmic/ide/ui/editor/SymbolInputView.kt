@@ -27,8 +27,8 @@ class SymbolInputView : LinearLayout {
     )
 
     init {
-        setBackgroundColor(SurfaceColors.SURFACE_1.getColor(getContext()))
-        setTextColor(getContext().resolveAttr(com.google.android.material.R.attr.colorOnSurface))
+        setBackgroundColor(SurfaceColors.SURFACE_1.getColor(context))
+        setTextColor(context.resolveAttr(com.google.android.material.R.attr.colorOnSurface))
         orientation = HORIZONTAL
 
         ViewCompat.setOnApplyWindowInsetsListener(

@@ -36,20 +36,20 @@ public class ConsoleEditText extends AppCompatEditText {
     private PrintStream errorStream;
 
     /** uses for input */
-    private IntegerQueue mInputBuffer = new IntegerQueue(IntegerQueue.QUEUE_SIZE);
+    private final IntegerQueue mInputBuffer = new IntegerQueue(IntegerQueue.QUEUE_SIZE);
 
     /** buffer for output */
-    private ByteQueue mStdoutBuffer = new ByteQueue(4 * 1024);
+    private final ByteQueue mStdoutBuffer = new ByteQueue(4 * 1024);
 
     /** buffer for output */
-    private ByteQueue mStderrBuffer = new ByteQueue(4 * 1024);
+    private final ByteQueue mStderrBuffer = new ByteQueue(4 * 1024);
 
-    private AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
     // filter input text, block a part of text
-    private TextListener mTextListener = new TextListener();
-    private EnterListener mEnterListener = new EnterListener();
-    private byte[] mReceiveBuffer = new byte[4 * 1024];
+    private final TextListener mTextListener = new TextListener();
+    private final EnterListener mEnterListener = new EnterListener();
+    private final byte[] mReceiveBuffer = new byte[4 * 1024];
     private final Handler mHandler =
             new Handler(Looper.getMainLooper()) {
                 @Override
@@ -193,8 +193,8 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private static class ConsoleOutputStream extends OutputStream {
-        private ByteQueue mStdoutBuffer;
-        private StdListener listener;
+        private final ByteQueue mStdoutBuffer;
+        private final StdListener listener;
 
         private ConsoleOutputStream(ByteQueue mStdoutBuffer, StdListener listener) {
             this.mStdoutBuffer = mStdoutBuffer;
@@ -218,7 +218,7 @@ public class ConsoleEditText extends AppCompatEditText {
     }
 
     private static class ConsoleErrorStream extends OutputStream {
-        private ByteQueue mStderrBuffer;
+        private final ByteQueue mStderrBuffer;
         private StdListener stdListener;
 
         public ConsoleErrorStream(ByteQueue mStderrBuffer, StdListener stdListener) {
@@ -249,7 +249,7 @@ public class ConsoleEditText extends AppCompatEditText {
 
     private static class ConsoleInputStream extends InputStream {
         private final Object mLock = new Object();
-        @NonNull private IntegerQueue mInputBuffer;
+        @NonNull private final IntegerQueue mInputBuffer;
 
         public ConsoleInputStream(@NonNull IntegerQueue mInputBuffer) {
             this.mInputBuffer = mInputBuffer;

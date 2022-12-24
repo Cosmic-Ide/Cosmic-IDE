@@ -55,7 +55,7 @@ public class Trace {
                             + " to be something like: 'D/Any debug trace'.");
         }
         TraceLevel level = TraceLevel.getTraceLevel(logcatTrace.charAt(TRACE_LEVEL_INDEX));
-        String message = logcatTrace.substring(START_OF_MESSAGE_INDEX, logcatTrace.length());
+        String message = logcatTrace.substring(START_OF_MESSAGE_INDEX);
         return new Trace(level, message);
     }
 

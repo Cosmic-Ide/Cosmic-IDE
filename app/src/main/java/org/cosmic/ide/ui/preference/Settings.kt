@@ -8,7 +8,7 @@ import org.cosmic.ide.App
 /**
  * CosmicIde's Settings.
  */
-class Settings() {
+class Settings {
     val prefs = App.getDefaultPreferences()
 
     fun subscribe(listener: OnSharedPreferenceChangeListener) {

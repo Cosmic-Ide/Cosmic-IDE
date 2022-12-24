@@ -186,7 +186,6 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             // no tree was saved in virtual file before. happens when created new document.
             // or the old tree got gc-ed, because no reachable markers retaining it are left alive.
             // good riddance.
-            return;
         }
 
         // old tree was saved in the virtual file. Have to transfer markers from there.

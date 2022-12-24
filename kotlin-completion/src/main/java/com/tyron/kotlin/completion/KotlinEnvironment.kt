@@ -95,8 +95,8 @@ data class KotlinEnvironment(
                 val prefix = getPrefix(element)
                 descriptorInfo.descriptors
                     .sortedWith { a, b ->
-                        val x = a.getName().toString()
-                        val y = b.getName().toString()
+                        val x = a.name.toString()
+                        val y = b.name.toString()
                         x.compareTo(y)
                     }
                     .mapNotNull { descriptor -> completionVariantFor(prefix, descriptor) } +
@@ -163,50 +163,9 @@ data class KotlinEnvironment(
         val files = kotlinFiles.values.map { it.kotlinFile }.toList()
         val analysis = analysisOf(files, current)
         return with(analysis) {
-            (referenceVariantsFrom(element) ?: referenceVariantsFrom(element.parent))?.let {
-                descriptors ->
+            referenceVariantsFrom(element).let { descriptors ->
                 DescriptorInfo(descriptors)
             }
-                ?: element.parent.let { parent ->
-                    DescriptorInfo(
-                        descriptors =
-                            when (parent) {
-                                is KtQualifiedExpression -> {
-                                    analysisResult.bindingContext
-                                        .get(
-                                            BindingContext.EXPRESSION_TYPE_INFO,
-                                            parent.receiverExpression
-                                        )
-                                        ?.type
-                                        ?.let { expressionType ->
-                                            analysisResult.bindingContext
-                                                .get(
-                                                    BindingContext.LEXICAL_SCOPE,
-                                                    parent.receiverExpression
-                                                )
-                                                ?.let {
-                                                    expressionType.memberScope
-                                                        .getContributedDescriptors(
-                                                            DescriptorKindFilter.ALL,
-                                                            MemberScope.ALL_NAME_FILTER
-                                                        )
-                                                }
-                                        }
-                                        ?.toList()
-                                        ?: emptyList()
-                                }
-                                else ->
-                                    analysisResult.bindingContext
-                                        .get(BindingContext.LEXICAL_SCOPE, element as KtExpression)
-                                        ?.getContributedDescriptors(
-                                            DescriptorKindFilter.ALL,
-                                            MemberScope.ALL_NAME_FILTER
-                                        )
-                                        ?.toList()
-                                        ?: emptyList()
-                            }
-                    )
-                }
         }
     }
 
@@ -239,7 +198,7 @@ data class KotlinEnvironment(
         }
     }
 
-    private fun Analysis.referenceVariantsFrom(element: PsiElement): List<DeclarationDescriptor>? {
+    private fun Analysis.referenceVariantsFrom(element: PsiElement): List<DeclarationDescriptor> {
         val prefix = getPrefix(element)
         val elementKt = element as? KtElement ?: return emptyList()
         val bindingContext = analysisResult.bindingContext

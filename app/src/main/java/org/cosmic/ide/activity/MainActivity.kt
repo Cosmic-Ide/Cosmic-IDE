@@ -381,9 +381,9 @@ class MainActivity : BaseActivity() {
             libraryDialog.show()
             val createBtn: Button = libraryDialog.findViewById(android.R.id.button1)!!
             createBtn.setOnClickListener {
-                val groupId = libraryBinding.groupId.getText().toString()
-                val artifactId = libraryBinding.artifactId.getText().toString()
-                val version = libraryBinding.version.getText().toString()
+                val groupId = libraryBinding.groupId.text.toString()
+                val artifactId = libraryBinding.artifactId.text.toString()
+                val version = libraryBinding.version.text.toString()
                 inParallel {
                     val artifact = getArtifact(groupId, artifactId, version)
                     if (artifact != null) {

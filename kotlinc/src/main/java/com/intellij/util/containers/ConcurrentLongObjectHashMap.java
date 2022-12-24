@@ -551,7 +551,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                             for (Node<V> e = f, pred = null; ; ) {
                                 if ((e.key == key)) {
                                     V ev = e.val;
-                                    if (cv == null || cv == ev || (ev != null && cv.equals(ev))) {
+                                    if (cv == null || cv == ev || (cv.equals(ev))) {
                                         oldVal = ev;
                                         if (value != null) {
                                             e.val = value;
@@ -574,7 +574,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                             TreeNode<V> r, p;
                             if ((r = t.root) != null && (p = r.findTreeNode(hash, key)) != null) {
                                 V pv = p.val;
-                                if (cv == null || cv == pv || (pv != null && cv.equals(pv))) {
+                                if (cv == null || cv == pv || (cv.equals(pv))) {
                                     oldVal = pv;
                                     if (value != null) {
                                         p.val = value;
@@ -1294,9 +1294,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                         if (counterCells == as) { // Expand table unless stale
                             ConcurrentIntObjectHashMap.CounterCell[] rs =
                                     new ConcurrentIntObjectHashMap.CounterCell[n << 1];
-                            for (int i = 0; i < n; ++i) {
-                                rs[i] = as[i];
-                            }
+                            System.arraycopy(as, 0, rs, 0, n);
                             counterCells = rs;
                         }
                     } finally {
@@ -1870,7 +1868,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                                 xpr = (xp = x.parent) == null ? null : xp.right;
                             }
                             if (xpr != null) {
-                                xpr.red = (xp == null) ? false : xp.red;
+                                xpr.red = xp != null && xp.red;
                                 if ((sr = xpr.right) != null) {
                                     sr.red = false;
                                 }
@@ -1906,7 +1904,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
                                 xpl = (xp = x.parent) == null ? null : xp.left;
                             }
                             if (xpl != null) {
-                                xpl.red = (xp == null) ? false : xp.red;
+                                xpl.red = xp != null && xp.red;
                                 if ((sl = xpl.left) != null) {
                                     sl.red = false;
                                 }
@@ -1950,10 +1948,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
             if (tl != null && !checkInvariants(tl)) {
                 return false;
             }
-            if (tr != null && !checkInvariants(tr)) {
-                return false;
-            }
-            return true;
+            return tr == null || checkInvariants(tr);
         }
 
         private static final long LOCKSTATE;

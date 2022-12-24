@@ -1,6 +1,6 @@
 package org.cosmic.ide.project
 
-import org.cosmic.ide.common.Indexer;
+import org.cosmic.ide.common.Indexer
 
 import java.io.File
 

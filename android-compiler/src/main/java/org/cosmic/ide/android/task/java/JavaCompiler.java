@@ -120,17 +120,17 @@ public class JavaCompiler implements Task {
                 switch (diagnostic.getKind()) {
                     case ERROR:
                     case OTHER:
-                        errs.append(message.toString());
+                        errs.append(message);
                         errs.append("\n");
                         break;
                     case NOTE:
                     case WARNING:
                     case MANDATORY_WARNING:
-                        warns.append(message.toString());
+                        warns.append(message);
                         warns.append("\n");
                         break;
                     default:
-                        warns.append(message.toString());
+                        warns.append(message);
                         break;
                 }
             }
@@ -171,9 +171,7 @@ public class JavaCompiler implements Task {
         classpath.add(new File(project.getBinDirPath(), "classes"));
         var libs = new File(project.getLibDirPath()).listFiles();
         if (libs != null) {
-            for (var lib : libs) {
-                classpath.add(lib);
-            }
+            Collections.addAll(classpath, libs);
         }
         return classpath;
     }

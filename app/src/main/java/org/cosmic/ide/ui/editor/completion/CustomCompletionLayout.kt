@@ -30,14 +30,14 @@ class CustomCompletionLayout : CompletionLayout {
 
         mBackground = GradientDrawable()
         mBackground.apply {
-            setCornerRadius(AndroidUtilities.dp(8f).toFloat())
+            cornerRadius = AndroidUtilities.dp(8f).toFloat()
             setStroke(AndroidUtilities.dp(0.8f), context.resolveAttr(com.google.android.material.R.attr.colorOutline))
         }
         mBackground.setColor(SurfaceColors.SURFACE_1.getColor(context))
-        layout.setBackground(mBackground)
+        layout.background = mBackground
 
         mListView = ListView(context)
-        mListView.setDividerHeight(0)
+        mListView.dividerHeight = 0
         layout.addView(mListView, LinearLayout.LayoutParams(-1, -1))
         mListView.setOnItemClickListener {
             _, _, position, _ ->
@@ -57,7 +57,7 @@ class CustomCompletionLayout : CompletionLayout {
     }
 
     private fun performScrollList(offset: Int) {
-        val adpView = getCompletionList()
+        val adpView = completionList
 
         val down = SystemClock.uptimeMillis()
         var ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
@@ -75,10 +75,10 @@ class CustomCompletionLayout : CompletionLayout {
 
     override fun ensureListPositionVisible(position: Int, increment: Int) {
         mListView.post {
-            while (mListView.getFirstVisiblePosition() + 1 > position && mListView.canScrollList(-1)) {
+            while (mListView.firstVisiblePosition + 1 > position && mListView.canScrollList(-1)) {
                 performScrollList(increment / 2)
             }
-            while (mListView.getLastVisiblePosition() - 1 < position && mListView.canScrollList(1)) {
+            while (mListView.lastVisiblePosition - 1 < position && mListView.canScrollList(1)) {
                 performScrollList(-increment / 2)
             }
         }

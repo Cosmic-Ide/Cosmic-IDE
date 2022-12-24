@@ -19,6 +19,7 @@ package com.github.pedrovgs.lynx;
 import com.github.pedrovgs.lynx.model.TraceLevel;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Lynx configuration parameters used to open main activity. All the configuration library is
@@ -119,14 +120,11 @@ public class LynxConfig implements Serializable, Cloneable {
 
         if (maxNumberOfTracesToShow != that.maxNumberOfTracesToShow) return false;
         if (samplingRate != that.samplingRate) return false;
-        if (filter != null ? !filter.equals(that.filter) : that.filter != null) return false;
-        if (textSizeInPx != null
-                ? !textSizeInPx.equals(that.textSizeInPx)
-                : that.textSizeInPx != null) {
+        if (!Objects.equals(filter, that.filter)) return false;
+        if (!Objects.equals(textSizeInPx, that.textSizeInPx)) {
             return false;
         }
-        if (filterTraceLevel != that.filterTraceLevel) return false;
-        return true;
+        return filterTraceLevel == that.filterTraceLevel;
     }
 
     @Override

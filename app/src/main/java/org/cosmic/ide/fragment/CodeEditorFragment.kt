@@ -83,7 +83,7 @@ class CodeEditorFragment : Fragment() {
                 setEditorLanguage(-1)
             }
             binding.editor
-                .getText()
+                .text
                 .addContentListener(
                     ProblemMarker(
                         requireActivity(),
@@ -106,10 +106,10 @@ class CodeEditorFragment : Fragment() {
         with(editor) {
             getComponent(EditorAutoCompletion::class.java).setLayout(CustomCompletionLayout())
             getComponent(EditorAutoCompletion::class.java).setAdapter(CustomCompletionItemAdapter())
-            setTypefaceText(ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_light))
+            typefaceText = ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_light)
             setTextSize(fontSize)
-            setEdgeEffectColor(Color.TRANSPARENT)
-            setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO)
+            edgeEffectColor = Color.TRANSPARENT
+            importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
         }
     }
 
@@ -128,7 +128,7 @@ class CodeEditorFragment : Fragment() {
             LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
-        binding.editor.setColorScheme(EditorUtil.getColorScheme(requireActivity()))
+        binding.editor.colorScheme = EditorUtil.getColorScheme(requireActivity())
     }
 
     private fun getKotlinLanguage(): Language {
@@ -150,7 +150,7 @@ class CodeEditorFragment : Fragment() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            val newContents = binding.editor.getText().toString()
+            val newContents = binding.editor.text.toString()
             if (oldContents.equals(newContents)) return
             try {
                 currentFile.writeText(newContents)

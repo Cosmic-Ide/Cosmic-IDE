@@ -16,5 +16,5 @@ object BuildTypeDebug : BuildType {
 }
 
 object BuildTypeRelease : BuildType {
-    override val isMinifyEnabled = false
+    override val isMinifyEnabled = true
 }

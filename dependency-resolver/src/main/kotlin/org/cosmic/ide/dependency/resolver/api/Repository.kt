@@ -12,11 +12,7 @@ interface Repository {
         val url = URL(dependencyUrl)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "HEAD"
-        if (connection.responseCode == 200) {
-            return true
-        } else {
-            return false
-        }
+        return connection.responseCode == 200
     }
 
     fun checkExists(artifact: Artifact): Boolean {
@@ -26,11 +22,7 @@ interface Repository {
         val url = URL(dependencyUrl)
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "HEAD"
-        if (connection.responseCode == 200) {
-            return true
-        } else {
-            return false
-        }
+        return connection.responseCode == 200
     }
 
     fun getName(): String

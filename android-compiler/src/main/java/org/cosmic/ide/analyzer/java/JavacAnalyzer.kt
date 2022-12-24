@@ -99,15 +99,15 @@ class JavacAnalyzer(
     }
 
     fun getDiagnostics(): List<DiagnosticRegion> {
-        val diagnostic = diagnostics.getDiagnostics()
+        val diagnostic = diagnostics.diagnostics
         Log.d(TAG, "diagnostics=" + diagnostic)
         val problems = mutableListOf<DiagnosticRegion>()
         for (it in diagnostic) {
-            if (it.getSource() == null) continue
-            val severity = if (it.getKind() == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
+            if (it.source == null) continue
+            val severity = if (it.kind == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
             problems.add(
                 DiagnosticRegion(
-                    it.getStartPosition().toInt(), it.getEndPosition().toInt(), severity
+                    it.startPosition.toInt(), it.endPosition.toInt(), severity
                 )
             )
         }

@@ -350,14 +350,10 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
             return true;
         }
         if (!hasEventSystemEnabledUncommittedDocuments()) {
-            if (!isCommitInProgress()) {
-                // in case of fireWriteActionFinished() we didn't execute
-                // 'actionsWhenAllDocumentsAreCommitted' yet
-                assert actionsWhenAllDocumentsAreCommitted.isEmpty()
-                        : actionsWhenAllDocumentsAreCommitted
-                                + "; uncommitted docs: "
-                                + myUncommittedDocuments;
-            }
+            assert isCommitInProgress() || actionsWhenAllDocumentsAreCommitted.isEmpty()
+                    : actionsWhenAllDocumentsAreCommitted
+                            + "; uncommitted docs: "
+                            + myUncommittedDocuments;
             action.run();
             return true;
         }
@@ -507,9 +503,7 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
             @Nullable VirtualFile virtualFile) {
         for (BooleanRunnable finishRunnable : finishProcessors) {
             boolean success = finishRunnable.run();
-            if (synchronously) {
-                assert success : finishRunnable + " in " + finishProcessors;
-            }
+            assert !synchronously || success : finishRunnable + " in " + finishProcessors;
             if (!success) {
                 return false;
             }

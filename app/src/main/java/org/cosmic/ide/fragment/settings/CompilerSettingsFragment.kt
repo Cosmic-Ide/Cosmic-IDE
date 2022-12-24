@@ -18,7 +18,7 @@ class CompilerSettingsFragment :
         addPreferencesFromResource(R.xml.pref_compiler)
 
         findPreference<EditTextPreference>(Settings.PROGRAM_ARGUMENTS)?.run {
-            summary = getText()
+            summary = text
             setOnPreferenceChangeListener { preference, newValue ->
                 preference.summary = newValue.toString()
                 true

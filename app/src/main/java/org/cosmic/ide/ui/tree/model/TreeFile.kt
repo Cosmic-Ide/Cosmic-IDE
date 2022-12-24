@@ -10,8 +10,8 @@ import java.util.Objects
 open class TreeFile {
     companion object {
         @JvmStatic
-        fun fromFile(file: File): TreeFile? {
-            if (file.isDirectory()) {
+        fun fromFile(file: File): TreeFile {
+            if (file.isDirectory) {
                 return TreeFolder(file)
             }
             if (file.extension.equals("java")) {

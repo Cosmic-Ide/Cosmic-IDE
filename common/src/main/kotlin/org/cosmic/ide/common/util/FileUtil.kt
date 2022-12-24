@@ -50,7 +50,7 @@ object FileUtil {
     fun deleteFile(path: String) {
         try {
             val file = File(path)
-            if (file.isFile()) {
+            if (file.isFile) {
                 file.delete()
                 return
             }
@@ -74,5 +74,5 @@ object FileUtil {
     fun createOrExistsDir(dirPath: String) = createOrExistsDir(File(dirPath))
 
     @JvmStatic
-    fun createOrExistsDir(file: File) = if (file.exists()) file.isDirectory() else file.mkdirs()
+    fun createOrExistsDir(file: File) = if (file.exists()) file.isDirectory else file.mkdirs()
 }

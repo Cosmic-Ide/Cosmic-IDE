@@ -36,7 +36,7 @@ class JavacLogger(
     companion object {
         fun preRegister(context: Context, messageCollector: MessageCollector) {
             context.put(
-                Log.logKey,
+                logKey,
                 Context.Factory<Log> {
                     JavacLogger(
                         it,

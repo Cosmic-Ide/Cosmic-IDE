@@ -8,6 +8,6 @@ fun Author.of() = PersonIdent(name, email)
 
 data class Gitter(val git: Git)
 
-sealed class Result()
+sealed class Result
 object Success : Result()
 object Failure : Result()

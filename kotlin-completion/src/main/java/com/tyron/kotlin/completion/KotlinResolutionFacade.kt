@@ -55,7 +55,7 @@ class KotlinResolutionFacade(
         bodyResolveMode: BodyResolveMode
     ): DeclarationDescriptor = TODO("not implemented")
 
-    override fun <T : Any> tryGetFrontendService(element: PsiElement, serviceClass: Class<T>): T? =
+    override fun <T : Any> tryGetFrontendService(element: PsiElement, serviceClass: Class<T>): T =
         TODO("not implemented")
 
     override fun getResolverForProject(): ResolverForProject<out ModuleInfo> {

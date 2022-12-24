@@ -40,7 +40,7 @@ private fun String.createRepo(): Repository =
         .setInitialBranch("main")
         .setBare(false)
         .call()
-        .getRepository()
+        .repository
 
 private fun Repository.createGit(): Gitter = Gitter(Git(this))
 
@@ -77,10 +77,10 @@ private fun Gitter.getLogList(): LogList =
 
 private fun LogList.formatLog(): String =
     map { elem ->
-        val type = Constants.typeString(elem.getType()).uppercase()
+        val type = Constants.typeString(elem.type).uppercase()
         val name = "${elem.name().substring(8)}..."
         val time = Date(elem.commitTime.toLong() * 1000)
-        val msg = elem.getFullMessage()
+        val msg = elem.fullMessage
         "\t${type}\n${name}\n${time}\n\n${msg}\n"
     }.joinToString("\n")
 
@@ -95,14 +95,14 @@ fun Gitter.createBranch(branch: String): Gitter = apply {
 }
 
 fun Gitter.getBranch(): String =
-    git.getRepository()
-        .getBranch()
+    git.repository
+        .branch
 
 fun Gitter.getBranchList(): List<String> =
     git.branchList()
         .call()
         .map { ref ->
-            Repository.shortenRefName(ref.getName())
+            Repository.shortenRefName(ref.name)
         }
 
 fun Gitter.checkout(branch: String): Gitter = apply {
@@ -132,7 +132,7 @@ suspend fun Gitter.mergeWith(branch: String): MergeCommand =
         .include(resolve(branch))
 
 suspend fun Gitter.resolve(branch: String): ObjectId =
-    git.getRepository()
+    git.repository
         .resolve(branch)
 
 fun Gitter.deleteBranch(branch: String): Gitter = apply {

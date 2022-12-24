@@ -9,7 +9,7 @@ import java.util.List;
 public class Logger {
 
     private LogAdapter adapter;
-    private List<Log> data = new ArrayList<>();
+    private final List<Log> data = new ArrayList<>();
 
     private RecyclerView mRecyclerView;
 

@@ -64,7 +64,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
 
     class ViewHolder(
         private val binding: ProjectItemBinding,
-        val listener: ProjectAdapter.OnProjectEventListener
+        val listener: OnProjectEventListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(project: Project) {

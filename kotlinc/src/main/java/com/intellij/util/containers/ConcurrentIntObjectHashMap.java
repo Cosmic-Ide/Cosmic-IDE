@@ -447,7 +447,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
             Traverser<V> it = new Traverser<>(t, t.length, 0, t.length);
             for (Node<V> p; (p = it.advance()) != null; ) {
                 V v;
-                if ((v = p.val) == value || (v != null && value.equals(v))) {
+                if ((v = p.val) == value || (value.equals(v))) {
                     return true;
                 }
             }
@@ -574,7 +574,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                             for (Node<V> e = f, pred = null; ; ) {
                                 if ((e.key == key)) {
                                     V ev = e.val;
-                                    if (cv == null || cv == ev || (ev != null && cv.equals(ev))) {
+                                    if (cv == null || cv == ev || (cv.equals(ev))) {
                                         oldVal = ev;
                                         if (value != null) {
                                             e.val = value;
@@ -597,7 +597,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                             TreeNode<V> r, p;
                             if ((r = t.root) != null && (p = r.findTreeNode(hash, key)) != null) {
                                 V pv = p.val;
-                                if (cv == null || cv.equals(pv) || (pv != null && cv.equals(pv))) {
+                                if (cv == null || cv.equals(pv) || (cv.equals(pv))) {
                                     oldVal = pv;
                                     if (value != null) {
                                         p.val = value;
@@ -1320,9 +1320,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                     try {
                         if (counterCells == as) { // Expand table unless stale
                             CounterCell[] rs = new CounterCell[n << 1];
-                            for (int i = 0; i < n; ++i) {
-                                rs[i] = as[i];
-                            }
+                            System.arraycopy(as, 0, rs, 0, n);
                             counterCells = rs;
                         }
                     } finally {
@@ -1895,7 +1893,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                                 xpr = (xp = x.parent) == null ? null : xp.right;
                             }
                             if (xpr != null) {
-                                xpr.red = (xp == null) ? false : xp.red;
+                                xpr.red = xp != null && xp.red;
                                 if ((sr = xpr.right) != null) {
                                     sr.red = false;
                                 }
@@ -1931,7 +1929,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                                 xpl = (xp = x.parent) == null ? null : xp.left;
                             }
                             if (xpl != null) {
-                                xpl.red = (xp == null) ? false : xp.red;
+                                xpl.red = xp != null && xp.red;
                                 if ((sl = xpl.left) != null) {
                                     sl.red = false;
                                 }
@@ -1975,10 +1973,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
             if (tl != null && !checkInvariants(tl)) {
                 return false;
             }
-            if (tr != null && !checkInvariants(tr)) {
-                return false;
-            }
-            return true;
+            return tr == null || checkInvariants(tr);
         }
 
         private static final long LOCKSTATE;
@@ -2530,7 +2525,7 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
     private static final long ABASE;
     private static final int ASHIFT;
 
-    private static Unsafe theUnsafe;
+    private static final Unsafe theUnsafe;
 
     static {
         try {

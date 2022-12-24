@@ -1,3 +1,3 @@
 package javax.swing
 
-open class Graphics {}
+open class Graphics

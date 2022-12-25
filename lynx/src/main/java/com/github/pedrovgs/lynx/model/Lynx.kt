@@ -13,113 +13,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.model
 
-package com.github.pedrovgs.lynx.model;
-
-import android.util.Log;
-
-import com.github.pedrovgs.lynx.LynxConfig;
-import com.github.pedrovgs.lynx.exception.IllegalTraceException;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
+import android.util.Log
+import com.github.pedrovgs.lynx.LynxConfig
+import com.github.pedrovgs.lynx.exception.IllegalTraceException
+import java.util.LinkedList
+import java.util.Locale
+import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 /**
  * Main business logic class for this project. Lynx responsibility is related to listen Logcat
  * events and notify it to the Lynx listeners transforming all the information from a plain String
  * to a Trace with all the information needed.
  *
- * <p>Given a LynxConfig object the sample rating used to notify Lynx clients about new traces can
+ *
+ * Given a LynxConfig object the sample rating used to notify Lynx clients about new traces can
  * be modified on demand. LynxConfig object will be used to filter traces if any filter has been
  * previously configured. Filtering will remove traces that contains given string or that match a
  * regular expression specified as filter.
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class Lynx {
+class Lynx(logcat: Logcat, mainThread: MainThread, timeProvider: TimeProvider) {
+    private var logcat: Logcat
+    private val mainThread: MainThread
+    private val timeProvider: TimeProvider
+    private val tracesToNotify: MutableList<Trace>
+    private val listeners: MutableList<Listener>
+    private var lynxConfig = LynxConfig()
+    private var lastNotificationTime: Long = 0
+    private var lowerCaseFilter = ""
+    private var regexpFilter: Pattern? = null
 
-    private static final String LOGTAG = "Lynx";
-
-    private Logcat logcat;
-    private final MainThread mainThread;
-    private final TimeProvider timeProvider;
-    private final List<Trace> tracesToNotify;
-    private final List<Listener> listeners;
-
-    private LynxConfig lynxConfig = new LynxConfig();
-    private long lastNotificationTime;
-
-    private String lowerCaseFilter = "";
-    private Pattern regexpFilter;
-
-    public Lynx(Logcat logcat, MainThread mainThread, TimeProvider timeProvider) {
-        this.listeners = new LinkedList<>();
-        this.tracesToNotify = new LinkedList<>();
-        this.logcat = logcat;
-        this.mainThread = mainThread;
-        this.timeProvider = timeProvider;
-        setFilters();
+    init {
+        listeners = LinkedList()
+        tracesToNotify = LinkedList()
+        this.logcat = logcat
+        this.mainThread = mainThread
+        this.timeProvider = timeProvider
+        setFilters()
     }
 
     /**
      * Indicates a custom LynxConfig object.
-     *
-     * @param lynxConfig a custom LynxConfig object
      */
-    public synchronized void setConfig(LynxConfig lynxConfig) {
-        this.lynxConfig = lynxConfig;
-        setFilters();
-    }
-
-    /**
-     * Returns a copy of the current LynxConfig object.
-     *
-     * @return a copy of the current LynxConfig object
-     */
-    public LynxConfig getConfig() {
-        return (LynxConfig) lynxConfig.clone();
-    }
+    @set:Synchronized
+    var config: LynxConfig
+        get() = lynxConfig.clone() as LynxConfig
+        set(lynxConfig) {
+            this.lynxConfig = lynxConfig
+            setFilters()
+        }
 
     /**
      * Configures a Logcat.Listener and initialize Logcat dependency to read traces from the OS log.
      */
-    public void startReading() {
-        logcat.setListener(
-                logcatTrace -> {
-                    try {
-                        addTraceToTheBuffer(logcatTrace);
-                    } catch (IllegalTraceException e) {
-                        return;
-                    }
-                    notifyNewTraces();
-                });
-        boolean logcatWasNotStarted = Thread.State.NEW.equals(logcat.getState());
+    fun startReading() {
+        logcat.listener = object : Logcat.Listener {
+
+            override fun onTraceRead(logcatTrace: String?) {
+                try {
+                    addTraceToTheBuffer(logcatTrace!!)
+                } catch (e: IllegalTraceException) {
+                    return
+                }
+                notifyNewTraces()            }
+        }
+        val logcatWasNotStarted = Thread.State.NEW == logcat.state
         if (logcatWasNotStarted) {
-            logcat.start();
+            logcat.start()
         }
     }
 
-    /** Stops Logcat dependency to stop receiving logcat traces. */
-    public void stopReading() {
-        logcat.stopReading();
-        logcat.interrupt();
+    /** Stops Logcat dependency to stop receiving logcat traces.  */
+    fun stopReading() {
+        logcat.stopReading()
+        logcat.interrupt()
     }
 
     /**
      * Stops the configured Logcat dependency and creates a clone to restart using Logcat and
      * LogcatListener configured previously.
      */
-    public synchronized void restart() {
-        Logcat.Listener previousListener = logcat.getListener();
-        logcat.stopReading();
-        logcat.interrupt();
-        logcat = (Logcat) logcat.clone();
-        logcat.setListener(previousListener);
-        lastNotificationTime = 0;
-        tracesToNotify.clear();
-        logcat.start();
+    @Synchronized
+    fun restart() {
+        val previousListener = logcat.listener
+        logcat.stopReading()
+        logcat.interrupt()
+        logcat = logcat.clone() as Logcat
+        logcat.listener = previousListener
+        lastNotificationTime = 0
+        tracesToNotify.clear()
+        logcat.start()
     }
 
     /**
@@ -127,8 +114,9 @@ public class Lynx {
      *
      * @param lynxPresenter a lynx listener
      */
-    public synchronized void registerListener(Listener lynxPresenter) {
-        listeners.add(lynxPresenter);
+    @Synchronized
+    fun registerListener(lynxPresenter: Listener) {
+        listeners.add(lynxPresenter)
     }
 
     /**
@@ -136,84 +124,95 @@ public class Lynx {
      *
      * @param lynxPresenter a lynx listener
      */
-    public synchronized void unregisterListener(Listener lynxPresenter) {
-        listeners.remove(lynxPresenter);
+    @Synchronized
+    fun unregisterListener(lynxPresenter: Listener) {
+        listeners.remove(lynxPresenter)
     }
 
-    private void setFilters() {
-        lowerCaseFilter = lynxConfig.getFilter().toLowerCase();
+    private fun setFilters() {
+        lowerCaseFilter = lynxConfig.filter!!.lowercase(Locale.getDefault())
         try {
-            regexpFilter = Pattern.compile(lowerCaseFilter);
-        } catch (PatternSyntaxException exception) {
-            regexpFilter = null;
-            Log.d(LOGTAG, "Invalid regexp filter!");
+            regexpFilter = Pattern.compile(lowerCaseFilter)
+        } catch (exception: PatternSyntaxException) {
+            regexpFilter = null
+            Log.d(LOGTAG, "Invalid regexp filter!")
         }
     }
 
-    private synchronized void addTraceToTheBuffer(String logcatTrace) throws IllegalTraceException {
+    @Synchronized
+    @Throws(IllegalTraceException::class)
+    private fun addTraceToTheBuffer(logcatTrace: String) {
         if (shouldAddTrace(logcatTrace)) {
-            Trace trace = Trace.fromString(logcatTrace);
-            tracesToNotify.add(trace);
+            val trace = Trace.fromString(logcatTrace)
+            tracesToNotify.add(trace)
         }
     }
 
-    private boolean shouldAddTrace(String logcatTrace) {
-        boolean hasFilterConfigured = lynxConfig.hasFilter();
-        boolean hasMinSize = logcatTrace.length() >= Trace.MIN_TRACE_SIZE;
-        return hasMinSize && (!hasFilterConfigured || traceMatchesFilter(logcatTrace));
+    private fun shouldAddTrace(logcatTrace: String): Boolean {
+        val hasFilterConfigured = lynxConfig.hasFilter()
+        val hasMinSize = logcatTrace.length >= Trace.MIN_TRACE_SIZE
+        return hasMinSize && (!hasFilterConfigured || traceMatchesFilter(logcatTrace))
     }
 
-    private synchronized boolean traceMatchesFilter(String logcatTrace) {
-        return traceStringMatchesFilter(logcatTrace)
-                && containsTraceLevel(logcatTrace, lynxConfig.getFilterTraceLevel());
+    @Synchronized
+    private fun traceMatchesFilter(logcatTrace: String): Boolean {
+        return (traceStringMatchesFilter(logcatTrace)
+                && containsTraceLevel(logcatTrace, lynxConfig.filterTraceLevel))
     }
 
-    private boolean traceStringMatchesFilter(String logcatTrace) {
-        String lowerCaseLogcatTrace = logcatTrace.toLowerCase();
-        boolean matchesFilter = lowerCaseLogcatTrace.contains(lowerCaseFilter);
+    private fun traceStringMatchesFilter(logcatTrace: String): Boolean {
+        val lowerCaseLogcatTrace = logcatTrace.lowercase(Locale.getDefault())
+        var matchesFilter = lowerCaseLogcatTrace.contains(lowerCaseFilter)
         if (!matchesFilter && regexpFilter != null) {
-            matchesFilter = regexpFilter.matcher(lowerCaseLogcatTrace).find();
+            matchesFilter = regexpFilter!!.matcher(lowerCaseLogcatTrace).find()
         }
-        return matchesFilter;
+        return matchesFilter
     }
 
-    private boolean containsTraceLevel(String logcatTrace, TraceLevel levelFilter) {
-        return levelFilter.equals(TraceLevel.VERBOSE)
-                || hasTraceLevelEqualOrHigher(logcatTrace, levelFilter);
+    private fun containsTraceLevel(logcatTrace: String, levelFilter: TraceLevel): Boolean {
+        return levelFilter == TraceLevel.VERBOSE || hasTraceLevelEqualOrHigher(
+            logcatTrace,
+            levelFilter
+        )
     }
 
-    private boolean hasTraceLevelEqualOrHigher(String logcatTrace, TraceLevel levelFilter) {
-        TraceLevel level = TraceLevel.getTraceLevel(logcatTrace.charAt(Trace.TRACE_LEVEL_INDEX));
-        return level.ordinal() >= levelFilter.ordinal();
+    private fun hasTraceLevelEqualOrHigher(logcatTrace: String, levelFilter: TraceLevel): Boolean {
+        val level = TraceLevel.getTraceLevel(logcatTrace[Trace.TRACE_LEVEL_INDEX])
+        return level.ordinal >= levelFilter.ordinal
     }
 
-    private synchronized void notifyNewTraces() {
+    @Synchronized
+    private fun notifyNewTraces() {
         if (shouldNotifyListeners()) {
-            final List<Trace> traces = new LinkedList<>(tracesToNotify);
-            tracesToNotify.clear();
-            notifyListeners(traces);
+            val traces: List<Trace> = LinkedList(tracesToNotify)
+            tracesToNotify.clear()
+            notifyListeners(traces)
         }
     }
 
-    private synchronized boolean shouldNotifyListeners() {
-        long now = timeProvider.getCurrentTimeMillis();
-        long timeFromLastNotification = now - lastNotificationTime;
-        boolean hasTracesToNotify = tracesToNotify.size() > 0;
-        return timeFromLastNotification > lynxConfig.getSamplingRate() && hasTracesToNotify;
+    @Synchronized
+    private fun shouldNotifyListeners(): Boolean {
+        val now = timeProvider.currentTimeMillis
+        val timeFromLastNotification = now - lastNotificationTime
+        val hasTracesToNotify = tracesToNotify.size > 0
+        return timeFromLastNotification > lynxConfig.samplingRate && hasTracesToNotify
     }
 
-    private synchronized void notifyListeners(final List<Trace> traces) {
-        mainThread.post(
-                () -> {
-                    for (Listener listener : listeners) {
-                        listener.onNewTraces(traces);
-                    }
-                    lastNotificationTime = timeProvider.getCurrentTimeMillis();
-                });
+    @Synchronized
+    private fun notifyListeners(traces: List<Trace>) {
+        mainThread.post {
+            for (listener in listeners) {
+                listener.onNewTraces(traces)
+            }
+            lastNotificationTime = timeProvider.currentTimeMillis
+        }
     }
 
-    public interface Listener {
+    interface Listener {
+        fun onNewTraces(traces: List<Trace>?)
+    }
 
-        void onNewTraces(List<Trace> traces);
+    companion object {
+        private const val LOGTAG = "Lynx"
     }
 }

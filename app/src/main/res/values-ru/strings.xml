@@ -6,8 +6,6 @@
     <string name="delete">Удалить</string>
     <string name="rename">Переименовать</string>
 
-    <string name="next">Далее</string>
-    <string name="back">Назад</string>
     <string name="quit">Выход</string>
     <string name="copy_stacktrace">Скопировать лог</string>
 
@@ -21,8 +19,6 @@
 
     <string name="compile">Скомпилировать</string>
     <string name="error">Ошибка</string>
-    <string name="project">Проект</string>
-    <string name="folder">Папка</string>
 
     <string name="no_open_file_title">Нет открытых файлов</string>
     <string name="no_open_file_desc">Попробуйте открыть файл через левое меню.</string>
@@ -41,29 +37,21 @@
     <string name="create_class_dialog_title">Создать класс</string>
     <string name="create_class_dialog_class_name">Название класса</string>
     <string name="create_class_dialog_positive">Создать</string>
-    <string name="create_class_dialog_class_type">Тип класса</string>
-    <string name="create_class_dialog_invalid_name">Недопустимое имя класса</string>
 
-    <string name="select_smali_class">Выберите класс Smali для просмотра</string>
     <string name="select_class_decompile">Выберите класс для декомпиляции</string>
     <string name="select_class_disassemble">Выберите класс для разборки</string>
     <string name="select_class_run">Выберите класс для выполнения</string>
 
     <string name="error_file_open">Не удалось открыть файл</string>
-    <string name="error_file_unzip">Не удалось разархивировать файл</string>
-    <string name="error_file_extract_smali">Не удалось извлечь исходный код Smali</string>
     <string name="error_class_decompile">Не удалось декомпилировать класс</string>
     <string name="error_class_disassemble">Не удалось разобрать класс</string>
     <string name="error_classes_get_dex">Не удалось получить список классов в файле dex</string>
 
     <!-- Compiler Service -->
     <string name="compilation_state_compiling">Идёт компиляция</string>
-    <string name="compilation_result_success">Успешная компиляция</string>
     <string name="compilation_result_failed">Сбой компиляции</string>
     <string name="compilation_stage">Этап компиляции</string>
-    <string name="compilation_console" translatable="false">Консоль</string>
     <string name="compilation_recompile" translatable="false">Перекомпилировать</string>
-    <string name="compilation_stage_clean">Очистка сборки&#8230;</string>
     <string name="compilation_stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
     <string name="compilation_stage_javac">Компиляция с Javac&#8230;</string>
     <string name="compilation_stage_d8">Расшифровка файлов классов с помощью D8&#8230;</string>
@@ -71,8 +59,6 @@
     <string name="console_state_running">Выполняется</string>
     <string name="console_state_stopped">Остановлено</string>
 
-    <string name="success">Успех</string>
-    <string name="delete_success">Успешное удаление.</string>
     <string name="dialog_confirm_delete">Вы уверены, что хотите удалить %1$s?</string>
     <string name="dialog_delete">Удалить</string>
     <string name="dialog_close">Закрыть</string>
@@ -110,10 +96,8 @@
 
     <string name="git_username">Имя пользователя</string>
     <string name="git_useremail">Электронная почта</string>
-    <string name="git_new_repository">Новый Git-репозиторий</string>
     <string name="git_commit">Коммит</string>
     <string name="git_commit_message">Сообщение коммита</string>
-    <string name="git_branch">Ветка</string>
     <string name="git_new_branch">Новая ветка</string>
     <string name="git_name_branch">Название ветки</string>
     <string name="git_merge">Объединить</string>
@@ -121,6 +105,5 @@
     <string name="git_merge_branch_message">Название ветки для слияния</string>
     <string name="git_delete_branch">Удалить ветку</string>
     <string name="git_delete_branch_message">Название ветки для удаления</string>
-    <string name="git_log_unavailable">Логи не доступны.</string>
 
 </resources>

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx
 
-package com.github.pedrovgs.lynx;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Activity created to show a LynxView with "match_parent" configuration for LynxView
@@ -30,61 +29,58 @@ import androidx.appcompat.app.AppCompatActivity;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class LynxActivity extends AppCompatActivity {
-
-    private static final String LYNX_CONFIG_EXTRA = "extra_lynx_config";
-
-    /**
-     * Generates an Intent to start LynxActivity with a default LynxConfig object as configuration.
-     *
-     * @param context the application context
-     * @return a new {@code Intent} to start {@link LynxActivity}
-     */
-    public static Intent getIntent(Context context) {
-        return getIntent(context, new LynxConfig());
+class LynxActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.lynx_activity)
+        val lynxConfig = lynxConfig
+        configureLynxView(lynxConfig)
     }
 
-    /**
-     * Generates an Intent to start LynxActivity with a LynxConfig configuration passed as
-     * parameter.
-     *
-     * @param context the application context
-     * @param lynxConfig the lynx configuration
-     * @return a new {@code Intent} to start {@link LynxActivity}
-     */
-    public static Intent getIntent(Context context, LynxConfig lynxConfig) {
-        if (lynxConfig == null) {
-            lynxConfig = new LynxConfig();
+    private val lynxConfig: LynxConfig?
+        get() {
+            val extras = intent.extras
+            var lynxConfig: LynxConfig? = LynxConfig()
+            if (extras != null && extras.containsKey(LYNX_CONFIG_EXTRA)) {
+                lynxConfig = extras.getSerializable(LYNX_CONFIG_EXTRA) as LynxConfig
+            }
+            return lynxConfig
         }
-        Intent intent = new Intent(context, LynxActivity.class);
-        intent.putExtra(LYNX_CONFIG_EXTRA, lynxConfig);
-        return intent;
+
+    private fun configureLynxView(lynxConfig: LynxConfig?) {
+        val lynxView = findViewById<View>(R.id.lynx_view) as LynxView
+        lynxView.setLynxConfig(lynxConfig!!)
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.lynx_activity);
-        LynxConfig lynxConfig = getLynxConfig();
-        configureLynxView(lynxConfig);
-    }
+    companion object {
+        private const val LYNX_CONFIG_EXTRA = "extra_lynx_config"
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    private LynxConfig getLynxConfig() {
-        Bundle extras = getIntent().getExtras();
-        LynxConfig lynxConfig = new LynxConfig();
-        if (extras != null && extras.containsKey(LYNX_CONFIG_EXTRA)) {
-            lynxConfig = (LynxConfig) extras.getSerializable(LYNX_CONFIG_EXTRA);
+        /**
+         * Generates an Intent to start LynxActivity with a default LynxConfig object as configuration.
+         *
+         * @param context the application context
+         * @return a new `Intent` to start [LynxActivity]
+         */
+        fun getIntent(context: Context?): Intent {
+            return getIntent(context, LynxConfig())
         }
-        return lynxConfig;
-    }
 
-    private void configureLynxView(LynxConfig lynxConfig) {
-        LynxView lynxView = (LynxView) findViewById(R.id.lynx_view);
-        lynxView.setLynxConfig(lynxConfig);
+        /**
+         * Generates an Intent to start LynxActivity with a LynxConfig configuration passed as
+         * parameter.
+         *
+         * @param context the application context
+         * @param lynxConfig the lynx configuration
+         * @return a new `Intent` to start [LynxActivity]
+         */
+        private fun getIntent(context: Context?, lynxConfig: LynxConfig?): Intent {
+            var config = lynxConfig
+            if (config == null) {
+                config = LynxConfig()
+            }
+            val intent = Intent(context, LynxActivity::class.java)
+            intent.putExtra(LYNX_CONFIG_EXTRA, config)
+            return intent
+        }
     }
 }

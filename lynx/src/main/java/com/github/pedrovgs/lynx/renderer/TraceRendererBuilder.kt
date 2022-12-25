@@ -13,68 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.renderer
 
-package com.github.pedrovgs.lynx.renderer;
-
-import com.github.pedrovgs.lynx.LynxConfig;
-import com.github.pedrovgs.lynx.model.Trace;
-import com.github.pedrovgs.lynx.model.TraceLevel;
-import com.pedrogomez.renderers.Renderer;
-import com.pedrogomez.renderers.RendererBuilder;
-
-import java.util.LinkedList;
-import java.util.List;
+import com.github.pedrovgs.lynx.LynxConfig
+import com.github.pedrovgs.lynx.model.Trace
+import com.github.pedrovgs.lynx.model.TraceLevel
+import com.pedrogomez.renderers.RendererBuilder
+import java.util.LinkedList
 
 /**
- * Renderer builder implementation created to return {@code Renderer<Trace>} instances based on the
- * trace level. This builder will use six different {@code Renderer<Trace>} implementations, one for
+ * Renderer builder implementation created to return `Renderer<Trace>` instances based on the
+ * trace level. This builder will use six different `Renderer<Trace>` implementations, one for
  * each TraceLevel type.
  *
- * <p>To learn more about Renderers library take a look to the repository:
+ *
+ * To learn more about Renderers library take a look to the repository:
  * https://github.com/pedrovgs/Renderers
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class TraceRendererBuilder extends RendererBuilder<Trace> {
-
-    public TraceRendererBuilder(LynxConfig lynxConfig) {
-        List<Renderer<Trace>> prototypes = new LinkedList<Renderer<Trace>>();
-        prototypes.add(new TraceRenderer(lynxConfig));
-        prototypes.add(new AssertTraceRenderer(lynxConfig));
-        prototypes.add(new DebugTraceRenderer(lynxConfig));
-        prototypes.add(new InfoTraceRenderer(lynxConfig));
-        prototypes.add(new WarningTraceRenderer(lynxConfig));
-        prototypes.add(new ErrorTraceRenderer(lynxConfig));
-        prototypes.add(new WtfTraceRenderer(lynxConfig));
-        setPrototypes(prototypes);
+class TraceRendererBuilder(lynxConfig: LynxConfig?) : RendererBuilder<Trace>() {
+    init {
+        val prototypes: MutableList<TraceRenderer> = LinkedList()
+        prototypes.add(TraceRenderer(lynxConfig!!))
+        prototypes.add(AssertTraceRenderer(lynxConfig))
+        prototypes.add(DebugTraceRenderer(lynxConfig))
+        prototypes.add(InfoTraceRenderer(lynxConfig))
+        prototypes.add(WarningTraceRenderer(lynxConfig))
+        prototypes.add(ErrorTraceRenderer(lynxConfig))
+        prototypes.add(WtfTraceRenderer(lynxConfig))
+        setPrototypes(prototypes)
     }
 
-    @Override
-    protected Class getPrototypeClass(Trace content) {
-        Class rendererClass = null;
-        TraceLevel traceLevel = content.getLevel();
-        switch (traceLevel) {
-            case ASSERT:
-                rendererClass = AssertTraceRenderer.class;
-                break;
-            case DEBUG:
-                rendererClass = DebugTraceRenderer.class;
-                break;
-            case INFO:
-                rendererClass = InfoTraceRenderer.class;
-                break;
-            case WARNING:
-                rendererClass = WarningTraceRenderer.class;
-                break;
-            case ERROR:
-                rendererClass = ErrorTraceRenderer.class;
-                break;
-            case WTF:
-                rendererClass = WtfTraceRenderer.class;
-                break;
-            default:
-                rendererClass = TraceRenderer.class;
+    override fun getPrototypeClass(content: Trace): Class<*> {
+        val rendererClass: Class<*>?
+        val traceLevel = content.level
+        rendererClass = when (traceLevel) {
+            TraceLevel.ASSERT -> AssertTraceRenderer::class.java
+            TraceLevel.DEBUG -> DebugTraceRenderer::class.java
+            TraceLevel.INFO -> InfoTraceRenderer::class.java
+            TraceLevel.WARNING -> WarningTraceRenderer::class.java
+            TraceLevel.ERROR -> ErrorTraceRenderer::class.java
+            TraceLevel.WTF -> WtfTraceRenderer::class.java
+            else -> TraceRenderer::class.java
         }
-        return rendererClass;
+        return rendererClass
     }
 }

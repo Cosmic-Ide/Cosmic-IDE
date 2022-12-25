@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.renderer
 
-package com.github.pedrovgs.lynx.renderer;
-
-import com.github.pedrovgs.lynx.LynxConfig;
+import com.github.pedrovgs.lynx.LynxConfig
 
 /**
  * TraceRenderer implementation used to render Trace objects with TraceLevel.WTF trace level.
  *
- * <p>To learn more about Renderers library take a look to the repository:
+ *
+ * To learn more about Renderers library take a look to the repository:
  * https://github.com/pedrovgs/Renderers
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-class WtfTraceRenderer extends ErrorTraceRenderer {
-
-    WtfTraceRenderer(LynxConfig lynxConfig) {
-        super(lynxConfig);
-    }
-}
+internal class WtfTraceRenderer(lynxConfig: LynxConfig?) : ErrorTraceRenderer(lynxConfig)

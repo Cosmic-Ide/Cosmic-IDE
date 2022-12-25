@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.github.pedrovgs.lynx.model;
+package com.github.pedrovgs.lynx.model
 
 /**
  * Class created to add testability in terms of time usage. Using this wrapper of
@@ -23,9 +22,7 @@ package com.github.pedrovgs.lynx.model;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class TimeProvider {
-
-    public long getCurrentTimeMillis() {
-        return System.currentTimeMillis();
-    }
+class TimeProvider {
+    val currentTimeMillis: Long
+        get() = System.currentTimeMillis()
 }

@@ -12,7 +12,6 @@
         android:hint="Group Id">
     
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/group_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:importantForAutofill="no"
@@ -27,7 +26,6 @@
         android:hint="Artifact Id">
     
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/artifact_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:importantForAutofill="no"

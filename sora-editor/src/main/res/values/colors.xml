@@ -22,7 +22,4 @@
   ~     additional information or have any questions
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<resources>
-    <color name="defaultSymbolInputBackgroundColor">@android:color/background_light</color>
-    <color name="defaultSymbolInputTextColor">@android:color/black</color>
-</resources>
+<resources></resources>

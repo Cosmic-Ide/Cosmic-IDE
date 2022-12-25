@@ -47,6 +47,7 @@ fun InputStream.resolvePOM(): List<Artifact> {
         val groupId = dependencyElement.getElementsByTagName("groupId").item(0).textContent
         val artifactId = dependencyElement.getElementsByTagName("artifactId").item(0).textContent
         val artifact = Artifact(groupId, artifactId)
+
         val item = dependencyElement.getElementsByTagName("version").item(0)
         if (item != null) {
             artifact.version = item.textContent

@@ -17,7 +17,6 @@
         android:scrollbars="none">
 
         <org.cosmic.ide.ui.editor.SymbolInputView
-            android:id="@+id/input_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="36dp" />

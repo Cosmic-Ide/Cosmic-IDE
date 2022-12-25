@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.github.pedrovgs.lynx.exception;
+package com.github.pedrovgs.lynx.exception
 
 /**
  * Custom exception created to notify when a Trace object is created with an invalid source. Review
@@ -23,9 +22,4 @@ package com.github.pedrovgs.lynx.exception;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class IllegalTraceException extends Exception {
-
-    public IllegalTraceException(String detailMessage) {
-        super(detailMessage);
-    }
-}
+class IllegalTraceException(detailMessage: String?) : Exception(detailMessage)

@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.model
 
-package com.github.pedrovgs.lynx.model;
-
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Handler
+import android.os.Looper
 
 /**
  * MainThread implementation based on Android Handler and Looper classes. This class is used to post
@@ -25,15 +24,12 @@ import android.os.Looper;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class AndroidMainThread implements MainThread {
+class AndroidMainThread : MainThread {
+    private val handler: Handler = Handler(Looper.getMainLooper())
 
-    private final Handler handler;
-
-    public AndroidMainThread() {
-        handler = new Handler(Looper.getMainLooper());
-    }
-
-    public void post(Runnable runnable) {
-        handler.post(runnable);
+    override fun post(runnable: Runnable?) {
+        if (runnable != null) {
+            handler.post(runnable)
+        }
     }
 }

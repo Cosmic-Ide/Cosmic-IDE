@@ -24,9 +24,7 @@
         android:id="@+id/action_format"
         android:title="@string/editor_action_format" />
 
-    <item
-        android:id="@+id/action_advanced"
-        android:title="@string/advanced">
+    <item android:title="@string/advanced">
         <menu>
             <item
                 android:id="@+id/action_disassemble"

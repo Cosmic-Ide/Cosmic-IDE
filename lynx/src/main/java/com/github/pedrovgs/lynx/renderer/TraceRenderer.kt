@@ -13,92 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.renderer
 
-package com.github.pedrovgs.lynx.renderer;
-
-import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.ClipData;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.github.pedrovgs.lynx.LynxConfig;
-import com.github.pedrovgs.lynx.R;
-import com.github.pedrovgs.lynx.model.Trace;
-import com.github.pedrovgs.lynx.model.TraceLevel;
-import com.pedrogomez.renderers.Renderer;
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.BackgroundColorSpan
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.github.pedrovgs.lynx.LynxConfig
+import com.github.pedrovgs.lynx.R
+import com.github.pedrovgs.lynx.model.Trace
+import com.github.pedrovgs.lynx.model.TraceLevel
+import com.pedrogomez.renderers.Renderer
 
 /**
  * Base Renderer<Trace> used to show Trace objects inside a ListView using TraceLevel and Trace
  * message as main information to show. This Renderer<Trace> is used as the base of other
  * Renderers<Trace> and to show verbose TraceLevel traces.
  *
- * <p>To learn more about Renderers library take a look to the repository:
+ *
+ * To learn more about Renderers library take a look to the repository:
  * https://github.com/pedrovgs/Renderers
  *
  * @author Pedro Vicente Gomez Sanchez.
- */
-class TraceRenderer extends Renderer<Trace> {
-
-    private final LynxConfig lynxConfig;
-
-    private TextView tv_trace;
-
-    TraceRenderer(LynxConfig lynxConfig) {
-        this.lynxConfig = lynxConfig;
+</Trace></Trace></Trace> */
+internal open class TraceRenderer(private val lynxConfig: LynxConfig) : Renderer<Trace?>() {
+    private var tvTrace: TextView? = null
+    override fun inflate(inflater: LayoutInflater, parent: ViewGroup): View {
+        return inflater.inflate(R.layout.trace_row, parent, false)
     }
 
-    @Override
-    protected View inflate(LayoutInflater inflater, ViewGroup parent) {
-        return inflater.inflate(R.layout.trace_row, parent, false);
-    }
-
-    @Override
-    protected void setUpView(View rootView) {
-        tv_trace = (TextView) rootView.findViewById(R.id.tv_trace);
-        tv_trace.setTypeface(Typeface.MONOSPACE);
+    override fun setUpView(rootView: View) {
+        tvTrace = rootView.findViewById<View>(R.id.tv_trace) as TextView
+        tvTrace!!.typeface = Typeface.MONOSPACE
         if (lynxConfig.hasTextSizeInPx()) {
-            float textSize = lynxConfig.getTextSizeInPx();
-            tv_trace.setTextSize(textSize);
+            val textSize = lynxConfig.getTextSizeInPx()
+            tvTrace!!.textSize = textSize
         }
     }
 
-    @Override
-    protected void hookListeners(View rootView) {
-        rootView.setOnLongClickListener((v) -> {
-            ClipboardManager clipboard = (ClipboardManager) rootView.getContext().getSystemService(Context.CLIPBOARD_SERVICE); 
-            ClipData clip = ClipData.newPlainText("Trace", tv_trace.getText().toString());
-            clipboard.setPrimaryClip(clip);
-            return true;
-        });
+    override fun hookListeners(rootView: View) {
+        rootView.setOnLongClickListener {
+            val clipboard =
+                rootView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Trace", tvTrace!!.text.toString())
+            clipboard.setPrimaryClip(clip)
+            true
+        }
     }
 
-    @Override
-    public void render() {
-        Trace trace = getContent();
-        String traceMessage = trace.getMessage();
-        Spannable traceRepresentation =
-                getTraceVisualRepresentation(trace.getLevel(), traceMessage);
-        tv_trace.setText(traceRepresentation);
+    override fun render() {
+        val trace = content
+        val traceMessage = trace!!.message
+        val traceRepresentation = getTraceVisualRepresentation(trace.level, traceMessage)
+        tvTrace!!.text = traceRepresentation
     }
 
-    protected int getTraceColor() {
-        return Color.GRAY;
-    }
+    protected open val traceColor: Int
+         get() = Color.GRAY
 
-    private Spannable getTraceVisualRepresentation(TraceLevel level, String traceMessage) {
-        traceMessage = " " + level.getValue() + "  " + traceMessage;
-        Spannable traceRepresentation = new SpannableString(traceMessage);
-        int traceColor = getTraceColor();
+    private fun getTraceVisualRepresentation(level: TraceLevel, traceMessage: String): Spannable {
+        val message: String = " " + level.value + "  " + traceMessage
+        val traceRepresentation: Spannable = SpannableString(message)
+        val traceColor = traceColor
         traceRepresentation.setSpan(
-                new BackgroundColorSpan(traceColor), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return traceRepresentation;
+            BackgroundColorSpan(traceColor), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        return traceRepresentation
     }
 }

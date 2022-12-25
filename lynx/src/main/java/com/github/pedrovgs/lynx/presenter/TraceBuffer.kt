@@ -13,77 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.presenter
 
-package com.github.pedrovgs.lynx.presenter;
-
-import com.github.pedrovgs.lynx.model.Trace;
-
-import java.util.LinkedList;
-import java.util.List;
+import com.github.pedrovgs.lynx.model.Trace
+import java.util.LinkedList
 
 /**
  * Buffer created to keep a max number of traces and be able to configure the size of the buffer.
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-class TraceBuffer {
+internal class TraceBuffer(private var bufferSize: Int) {
+    val traces: MutableList<Trace>
 
-    private int bufferSize;
-    private final List<Trace> traces;
-
-    TraceBuffer(int bufferSize) {
-        this.bufferSize = bufferSize;
-        traces = new LinkedList<Trace>();
+    init {
+        traces = LinkedList()
     }
 
-    /** Configures the max number of traces to keep inside the buffer */
-    void setBufferSize(int bufferSize) {
-        this.bufferSize = bufferSize;
-        removeExceededTracesIfNeeded();
+    /** Configures the max number of traces to keep inside the buffer  */
+    fun setBufferSize(bufferSize: Int) {
+        this.bufferSize = bufferSize
+        removeExceededTracesIfNeeded()
     }
 
     /**
      * Adds a list of traces to the buffer, if the buffer is full your new traces will be added and
      * the previous one will be removed.
      */
-    int add(List<Trace> traces) {
-        this.traces.addAll(traces);
-        return removeExceededTracesIfNeeded();
+    fun add(traces: List<Trace>?): Int {
+        this.traces.addAll(traces!!)
+        return removeExceededTracesIfNeeded()
     }
 
-    /** Returns the current list of traces stored in the buffer. */
-    List<Trace> getTraces() {
-        return traces;
+    /** Returns the number of traces stored in the buffer.  */
+    val currentNumberOfTraces: Int
+        get() = traces.size
+
+    /** Removes traces stored in the buffer.  */
+    fun clear() {
+        traces.clear()
     }
 
-    /** Returns the number of traes stored in the buffer. */
-    public int getCurrentNumberOfTraces() {
-        return traces.size();
-    }
-
-    /** Removes traces stored in the buffer. */
-    public void clear() {
-        traces.clear();
-    }
-
-    private int removeExceededTracesIfNeeded() {
-        int tracesToDiscard = getNumberOfTracesToDiscard();
+    private fun removeExceededTracesIfNeeded(): Int {
+        val tracesToDiscard = numberOfTracesToDiscard
         if (tracesToDiscard > 0) {
-            discardTraces(tracesToDiscard);
+            discardTraces(tracesToDiscard)
         }
-        return tracesToDiscard;
+        return tracesToDiscard
     }
 
-    private int getNumberOfTracesToDiscard() {
-        int currentTracesSize = this.traces.size();
-        int tracesToDiscard = currentTracesSize - bufferSize;
-        tracesToDiscard = tracesToDiscard < 0 ? 0 : tracesToDiscard;
-        return tracesToDiscard;
-    }
+    private val numberOfTracesToDiscard: Int
+        get() {
+            val currentTracesSize = traces.size
+            var tracesToDiscard = currentTracesSize - bufferSize
+            tracesToDiscard = if (tracesToDiscard < 0) 0 else tracesToDiscard
+            return tracesToDiscard
+        }
 
-    private void discardTraces(int tracesToDiscard) {
-        for (int i = 0; i < tracesToDiscard; i++) {
-            traces.remove(0);
+    private fun discardTraces(tracesToDiscard: Int) {
+        for (i in 0 until tracesToDiscard) {
+            traces.removeAt(0)
         }
     }
 }

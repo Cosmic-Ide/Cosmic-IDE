@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.presenter
 
-package com.github.pedrovgs.lynx.presenter;
-
-import androidx.annotation.CheckResult;
-
-import com.github.pedrovgs.lynx.LynxConfig;
-import com.github.pedrovgs.lynx.model.Lynx;
-import com.github.pedrovgs.lynx.model.Trace;
-import com.github.pedrovgs.lynx.model.TraceLevel;
-
-import java.util.LinkedList;
-import java.util.List;
+import com.github.pedrovgs.lynx.LynxConfig
+import com.github.pedrovgs.lynx.model.Lynx
+import com.github.pedrovgs.lynx.model.Trace
+import com.github.pedrovgs.lynx.model.TraceLevel
 
 /**
  * Presenter created to decouple Lynx library view implementations from Lynx model. This presenter
@@ -33,20 +27,17 @@ import java.util.List;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class LynxPresenter implements Lynx.Listener {
+class LynxPresenter(lynx: Lynx, view: View, maxNumberOfTracesToShow: Int) : Lynx.Listener {
+    private val lynx: Lynx
+    private val view: View
+    private val traceBuffer: TraceBuffer
+    private var isInitialized = false
 
-    private static final int MIN_VISIBLE_POSITION_TO_ENABLE_AUTO_SCROLL = 3;
-
-    private final Lynx lynx;
-    private final View view;
-    private final TraceBuffer traceBuffer;
-    private boolean isInitialized;
-
-    public LynxPresenter(Lynx lynx, View view, int maxNumberOfTracesToShow) {
-        validateNumberOfTracesConfiguration(maxNumberOfTracesToShow);
-        this.lynx = lynx;
-        this.view = view;
-        this.traceBuffer = new TraceBuffer(maxNumberOfTracesToShow);
+    init {
+        validateNumberOfTracesConfiguration(maxNumberOfTracesToShow.toLong())
+        this.lynx = lynx
+        this.view = view
+        traceBuffer = TraceBuffer(maxNumberOfTracesToShow)
     }
 
     /**
@@ -55,36 +46,35 @@ public class LynxPresenter implements Lynx.Listener {
      *
      * @param lynxConfig the lynx configuration
      */
-    public void setLynxConfig(LynxConfig lynxConfig) {
-        validateLynxConfig(lynxConfig);
-        updateBufferConfig(lynxConfig);
-        updateLynxConfig(lynxConfig);
+    fun setLynxConfig(lynxConfig: LynxConfig) {
+        validateLynxConfig(lynxConfig)
+        updateBufferConfig(lynxConfig)
+        updateLynxConfig(lynxConfig)
     }
 
-    /** Initializes presenter lifecycle if it wasn't initialized before. */
-    public void resume() {
+    /** Initializes presenter lifecycle if it wasn't initialized before.  */
+    fun resume() {
         if (!isInitialized) {
-            isInitialized = true;
-            lynx.registerListener(this);
-            lynx.startReading();
+            isInitialized = true
+            lynx.registerListener(this)
+            lynx.startReading()
         }
     }
 
-    /** Stops presenter lifecycle if it was previously initialized. */
-    public void pause() {
+    /** Stops presenter lifecycle if it was previously initialized.  */
+    fun pause() {
         if (isInitialized) {
-            isInitialized = false;
-            lynx.stopReading();
-            lynx.unregisterListener(this);
+            isInitialized = false
+            lynx.stopReading()
+            lynx.unregisterListener(this)
         }
     }
 
-    /** Given a list of Trace objects to show, updates the buffer of traces and refresh the view. */
-    @Override
-    public void onNewTraces(List<Trace> traces) {
-        int tracesRemoved = updateTraceBuffer(traces);
-        List<Trace> tracesToNotify = getCurrentTraces();
-        view.showTraces(tracesToNotify, tracesRemoved);
+    /** Given a list of Trace objects to show, updates the buffer of traces and refresh the view.  */
+    override fun onNewTraces(traces: List<Trace>?) {
+        val tracesRemoved = updateTraceBuffer(traces)
+        val tracesToNotify = currentTraces
+        view.showTraces(tracesToNotify, tracesRemoved)
     }
 
     /**
@@ -92,35 +82,23 @@ public class LynxPresenter implements Lynx.Listener {
      *
      * @param filter the filter to use
      */
-    public void updateFilter(String filter) {
+    fun updateFilter(filter: String?) {
         if (isInitialized) {
-            LynxConfig lynxConfig = lynx.getConfig();
-            lynxConfig.setFilter(filter);
-            lynx.setConfig(lynxConfig);
-            clearView();
-            restartLynx();
+            val lynxConfig = lynx.config
+            lynxConfig.setFilter(filter)
+            lynx.config = lynxConfig
+            clearView()
+            restartLynx()
         }
     }
 
-    public void updateFilterTraceLevel(TraceLevel level) {
+    fun updateFilterTraceLevel(level: TraceLevel?) {
         if (isInitialized) {
-            clearView();
-            LynxConfig lynxConfig = lynx.getConfig();
-            lynxConfig.setFilterTraceLevel(level);
-            lynx.setConfig(lynxConfig);
-            restartLynx();
-        }
-    }
-
-    /**
-     * Generates a plain representation of all the Trace objects this presenter has stored and share
-     * them to other applications.
-     */
-    public void onShareButtonClicked() {
-        List<Trace> tracesToShare = new LinkedList<Trace>(traceBuffer.getTraces());
-        String plainTraces = generatePlainTracesToShare(tracesToShare);
-        if (!view.shareTraces(plainTraces)) {
-            view.notifyShareTracesFailed();
+            clearView()
+            val lynxConfig = lynx.config
+            lynxConfig.setFilterTraceLevel(level)
+            lynx.config = lynxConfig
+            restartLynx()
         }
     }
 
@@ -131,11 +109,11 @@ public class LynxPresenter implements Lynx.Listener {
      *
      * @param lastVisiblePositionInTheList the index of the last visible position
      */
-    public void onScrollToPosition(int lastVisiblePositionInTheList) {
+    fun onScrollToPosition(lastVisiblePositionInTheList: Int) {
         if (shouldDisableAutoScroll(lastVisiblePositionInTheList)) {
-            view.disableAutoScroll();
+            view.disableAutoScroll()
         } else {
-            view.enableAutoScroll();
+            view.enableAutoScroll()
         }
     }
 
@@ -144,81 +122,58 @@ public class LynxPresenter implements Lynx.Listener {
      *
      * @return a list of the current traces
      */
-    public List<Trace> getCurrentTraces() {
-        return traceBuffer.getTraces();
+    val currentTraces: List<Trace>
+        get() = traceBuffer.traces
+
+    private fun clearView() {
+        traceBuffer.clear()
+        view.clear()
     }
 
-    private void clearView() {
-        traceBuffer.clear();
-        view.clear();
+    private fun restartLynx() {
+        lynx.restart()
     }
 
-    private void restartLynx() {
-        lynx.restart();
+    private fun updateBufferConfig(lynxConfig: LynxConfig) {
+        traceBuffer.setBufferSize(lynxConfig.maxNumberOfTracesToShow)
+        refreshTraces()
     }
 
-    private void updateBufferConfig(LynxConfig lynxConfig) {
-        traceBuffer.setBufferSize(lynxConfig.getMaxNumberOfTracesToShow());
-        refreshTraces();
+    private fun refreshTraces() {
+        onNewTraces(traceBuffer.traces)
     }
 
-    private void refreshTraces() {
-        onNewTraces(traceBuffer.getTraces());
+    private fun updateLynxConfig(lynxConfig: LynxConfig) {
+        lynx.config = lynxConfig
     }
 
-    private void updateLynxConfig(LynxConfig lynxConfig) {
-        lynx.setConfig(lynxConfig);
+    private fun updateTraceBuffer(traces: List<Trace>?): Int {
+        return traceBuffer.add(traces)
     }
 
-    private int updateTraceBuffer(List<Trace> traces) {
-        return traceBuffer.add(traces);
+    private fun validateNumberOfTracesConfiguration(maxNumberOfTracesToShow: Long) {
+        require(maxNumberOfTracesToShow > 0) { "You can't pass a zero or negative number of traces to show." }
     }
 
-    private void validateNumberOfTracesConfiguration(long maxNumberOfTracesToShow) {
-        if (maxNumberOfTracesToShow <= 0) {
-            throw new IllegalArgumentException(
-                    "You can't pass a zero or negative number of traces to show.");
-        }
+    private fun validateLynxConfig(lynxConfig: LynxConfig?) {
+        requireNotNull(lynxConfig) { "You can't use a null instance of LynxConfig as configuration." }
     }
 
-    private void validateLynxConfig(LynxConfig lynxConfig) {
-        if (lynxConfig == null) {
-            throw new IllegalArgumentException(
-                    "You can't use a null instance of LynxConfig as configuration.");
-        }
+    private fun shouldDisableAutoScroll(lastVisiblePosition: Int): Boolean {
+        val positionOffset = traceBuffer.currentNumberOfTraces - lastVisiblePosition
+        return positionOffset >= MIN_VISIBLE_POSITION_TO_ENABLE_AUTO_SCROLL
     }
 
-    private boolean shouldDisableAutoScroll(int lastVisiblePosition) {
-        int positionOffset = traceBuffer.getCurrentNumberOfTraces() - lastVisiblePosition;
-        return positionOffset >= MIN_VISIBLE_POSITION_TO_ENABLE_AUTO_SCROLL;
+    interface View {
+        fun showTraces(traces: List<Trace>?, removedTraces: Int)
+        fun clear()
+
+        fun notifyShareTracesFailed()
+        fun disableAutoScroll()
+        fun enableAutoScroll()
     }
 
-    private String generatePlainTracesToShare(List<Trace> tracesToShare) {
-        StringBuilder sb = new StringBuilder();
-        for (Trace trace : tracesToShare) {
-            String traceLevel = trace.getLevel().getValue();
-            String traceMessage = trace.getMessage();
-            sb.append(traceLevel);
-            sb.append("/ ");
-            sb.append(traceMessage);
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
-
-    public interface View {
-
-        void showTraces(List<Trace> traces, int removedTraces);
-
-        void clear();
-
-        @CheckResult
-        boolean shareTraces(String plainTraces);
-
-        void notifyShareTracesFailed();
-
-        void disableAutoScroll();
-
-        void enableAutoScroll();
+    companion object {
+        private const val MIN_VISIBLE_POSITION_TO_ENABLE_AUTO_SCROLL = 3
     }
 }

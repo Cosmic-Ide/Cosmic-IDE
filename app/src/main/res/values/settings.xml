@@ -36,6 +36,5 @@
     <integer name="font_size_default">12</integer>
     <integer name="font_size_min">8</integer>
     <integer name="font_size_max">20</integer>
-    <integer name="font_size_stepsize">1</integer>
 
 </resources>

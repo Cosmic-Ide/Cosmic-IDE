@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.github.pedrovgs.lynx.model;
+package com.github.pedrovgs.lynx.model
 
 /**
  * Abstraction created to represent the application main thread. This interface is used to send
@@ -23,7 +22,6 @@ package com.github.pedrovgs.lynx.model;
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public interface MainThread {
-
-    void post(Runnable runnable);
+interface MainThread {
+    fun post(runnable: Runnable?)
 }

@@ -13,141 +13,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx
 
-package com.github.pedrovgs.lynx;
-
-import com.github.pedrovgs.lynx.model.TraceLevel;
-
-import java.io.Serializable;
-import java.util.Objects;
+import com.github.pedrovgs.lynx.model.TraceLevel
+import java.io.Serializable
 
 /**
  * Lynx configuration parameters used to open main activity. All the configuration library is
  * provided by library clients using this class. With LynxConfig you can privde different values
  * for:
  *
- * <p>- Max number of traces to show in LynxView. - Filter used to get a list of traces to show. -
+ *
+ * - Max number of traces to show in LynxView. - Filter used to get a list of traces to show. -
  * Text size in DP used to render a trace. - Sampling rate used to read from the Logcat output.
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-public class LynxConfig implements Serializable, Cloneable {
-    private static final long serialVersionUID = 293939299388293L;
+class LynxConfig : Serializable, Cloneable {
+    var maxNumberOfTracesToShow = 2500
+        private set
+    var filter: String? = ""
+        private set
+    var filterTraceLevel: TraceLevel
+        private set
+    var textSizeInPx: Float? = null
+    var samplingRate = 150
 
-    private static final float DEFAULT_TEXT_SIZE_IN_PX = 36;
-
-    private int maxNumberOfTracesToShow = 2500;
-    private String filter;
-    private TraceLevel filterTraceLevel;
-    private Float textSizeInPx;
-    private int samplingRate = 150;
-
-    public LynxConfig() {
-        filter = "";
-        filterTraceLevel = TraceLevel.VERBOSE;
+    init {
+        filterTraceLevel = TraceLevel.VERBOSE
     }
 
-    public LynxConfig setMaxNumberOfTracesToShow(int maxNumberOfTracesToShow) {
-        if (maxNumberOfTracesToShow <= 0) {
-            throw new IllegalArgumentException(
-                    "You can't use a max number of traces equals or lower than zero.");
-        }
-
-        this.maxNumberOfTracesToShow = maxNumberOfTracesToShow;
-        return this;
+    fun setMaxNumberOfTracesToShow(maxNumberOfTracesToShow: Int): LynxConfig {
+        require(maxNumberOfTracesToShow > 0) { "You can't use a max number of traces equals or lower than zero." }
+        this.maxNumberOfTracesToShow = maxNumberOfTracesToShow
+        return this
     }
 
-    public LynxConfig setFilter(String filter) {
-        if (filter == null) {
-            throw new IllegalArgumentException("filter can't be null");
-        }
-        this.filter = filter;
-        return this;
+    fun setFilter(filter: String?): LynxConfig {
+        requireNotNull(filter) { "filter can't be null" }
+        this.filter = filter
+        return this
     }
 
-    public LynxConfig setFilterTraceLevel(TraceLevel filterTraceLevel) {
-        if (filterTraceLevel == null) {
-            throw new IllegalArgumentException("filterTraceLevel can't be null");
-        }
-        this.filterTraceLevel = filterTraceLevel;
-        return this;
+    fun setFilterTraceLevel(filterTraceLevel: TraceLevel?): LynxConfig {
+        requireNotNull(filterTraceLevel) { "filterTraceLevel can't be null" }
+        this.filterTraceLevel = filterTraceLevel
+        return this
     }
 
-    public LynxConfig setTextSizeInPx(float textSizeInPx) {
-        this.textSizeInPx = textSizeInPx;
-        return this;
+    private fun setSamplingRate(samplingRate: Int): LynxConfig {
+        this.samplingRate = samplingRate
+        return this
     }
 
-    public LynxConfig setSamplingRate(int samplingRate) {
-        this.samplingRate = samplingRate;
-        return this;
+    fun hasFilter(): Boolean {
+        return "" != filter || TraceLevel.VERBOSE != filterTraceLevel
     }
 
-    public int getMaxNumberOfTracesToShow() {
-        return maxNumberOfTracesToShow;
+    fun getTextSizeInPx(): Float {
+        return if (textSizeInPx == null) DEFAULT_TEXT_SIZE_IN_PX else textSizeInPx!!
     }
 
-    public String getFilter() {
-        return filter;
+    fun hasTextSizeInPx(): Boolean {
+        return textSizeInPx != null
     }
 
-    public TraceLevel getFilterTraceLevel() {
-        return filterTraceLevel;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LynxConfig) return false
+        if (maxNumberOfTracesToShow != other.maxNumberOfTracesToShow) return false
+        if (samplingRate != other.samplingRate) return false
+        if (filter != other.filter) return false
+        return if (textSizeInPx != other.textSizeInPx) {
+            false
+        } else filterTraceLevel == other.filterTraceLevel
     }
 
-    public boolean hasFilter() {
-        return !"".equals(filter) || !TraceLevel.VERBOSE.equals(filterTraceLevel);
+    override fun hashCode(): Int {
+        var result = maxNumberOfTracesToShow
+        result = 31 * result + if (filter != null) filter.hashCode() else 0
+        result = 31 * result + if (textSizeInPx != null) textSizeInPx.hashCode() else 0
+        result = 31 * result + samplingRate
+        return result
     }
 
-    public float getTextSizeInPx() {
-        return textSizeInPx == null ? DEFAULT_TEXT_SIZE_IN_PX : textSizeInPx;
+    public override fun clone(): Any {
+        return LynxConfig()
+            .setMaxNumberOfTracesToShow(maxNumberOfTracesToShow)
+            .setFilter(filter)
+            .setFilterTraceLevel(filterTraceLevel)
+            .setSamplingRate(samplingRate)
     }
 
-    public boolean hasTextSizeInPx() {
-        return textSizeInPx != null;
-    }
-
-    public int getSamplingRate() {
-        return samplingRate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof LynxConfig)) return false;
-
-        LynxConfig that = (LynxConfig) o;
-
-        if (maxNumberOfTracesToShow != that.maxNumberOfTracesToShow) return false;
-        if (samplingRate != that.samplingRate) return false;
-        if (!Objects.equals(filter, that.filter)) return false;
-        if (!Objects.equals(textSizeInPx, that.textSizeInPx)) {
-            return false;
-        }
-        return filterTraceLevel == that.filterTraceLevel;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = maxNumberOfTracesToShow;
-        result = 31 * result + (filter != null ? filter.hashCode() : 0);
-        result = 31 * result + (textSizeInPx != null ? textSizeInPx.hashCode() : 0);
-        result = 31 * result + samplingRate;
-        return result;
-    }
-
-    @Override
-    public Object clone() {
-        return new LynxConfig()
-                .setMaxNumberOfTracesToShow(getMaxNumberOfTracesToShow())
-                .setFilter(filter)
-                .setFilterTraceLevel(filterTraceLevel)
-                .setSamplingRate(getSamplingRate());
-    }
-
-    @Override
-    public String toString() {
-        return "LynxConfig{"
+    override fun toString(): String {
+        return ("LynxConfig{"
                 + "maxNumberOfTracesToShow="
                 + maxNumberOfTracesToShow
                 + ", filter='"
@@ -157,6 +116,11 @@ public class LynxConfig implements Serializable, Cloneable {
                 + textSizeInPx
                 + ", samplingRate="
                 + samplingRate
-                + '}';
+                + '}')
+    }
+
+    companion object {
+        private const val serialVersionUID = 293939299388293L
+        private const val DEFAULT_TEXT_SIZE_IN_PX = 36f
     }
 }

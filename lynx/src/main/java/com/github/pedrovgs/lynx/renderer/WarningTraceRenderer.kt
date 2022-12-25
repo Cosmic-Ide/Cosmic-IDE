@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.pedrovgs.lynx.renderer
 
-package com.github.pedrovgs.lynx.renderer;
-
-import android.graphics.Color;
-
-import com.github.pedrovgs.lynx.LynxConfig;
+import android.graphics.Color
+import com.github.pedrovgs.lynx.LynxConfig
 
 /**
  * TraceRenderer implementation used to render Trace objects with TraceLevel.WARNING trace level.
  *
  * @author Pedro Vicente Gomez Sanchez.
  */
-class WarningTraceRenderer extends TraceRenderer {
-
-    WarningTraceRenderer(LynxConfig lynxConfig) {
-        super(lynxConfig);
-    }
-
-    @Override
-    protected int getTraceColor() {
-        return Color.YELLOW;
-    }
+internal class WarningTraceRenderer(lynxConfig: LynxConfig?) : TraceRenderer(lynxConfig!!) {
+    override val traceColor: Int
+        get() = Color.YELLOW
 }

@@ -32,6 +32,9 @@ import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.EditorUtil
+import org.javacs.services.JavaLanguageServer
+import org.javacs.ConnectionFactory
+import org.javacs.launch.JLSLauncher
 import java.io.File
 import java.io.IOException
 import java.net.ServerSocket
@@ -44,6 +47,7 @@ class CodeEditorFragment : Fragment() {
     private lateinit var lspEditor: LspEditor
 
     private lateinit var currentFile: File
+    private lateinit var provider: ConnectionFactory.ConnectionProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,8 +110,10 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        binding.editor.release()
+        provider.exit()
         _binding = null
+        super.onDestroyView()
     }
 
     private fun configureEditor(editor: CodeEditor) {
@@ -150,15 +156,15 @@ class CodeEditorFragment : Fragment() {
     }
 
     private suspend fun setJavaLSPLanguage() {
-        val socket = withContext(Dispatchers.IO) {
-            ServerSocket(0)
-        }
-        val port = socket.localPort
-        withContext(Dispatchers.IO) {
-            socket.close()
-        }
+        val languageServer = JavaLanguageServer()
+		provider = ConnectionFactory.getConnectionProvider()
+		val server = JLSLauncher.createServerLauncher(languageServer, provider.inputStream, provider.outputStream)
+		val listening = server.startListening()
+		val client = server.remoteProxy
+		languageServer.connect(client)
+
         val serverDef =
-            CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { port } }
+            CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { ConnectionFactory.PORT } }
         withContext(Dispatchers.Main) {
             lspEditor =
                 LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))

@@ -33,19 +33,13 @@ import java.util.concurrent.ExecutionException;
  */
 public class ConnectionFactory {
 
-    public static final String HOST = "jls.client.host";
-    public static final String PORT = "jls.client.port";
+    public static final int PORT = 1234;
 
     public static final String DEFAULT_HOST = "localhost";
 
     public static ConnectionProvider getConnectionProvider() throws NumberFormatException, IOException, InterruptedException, ExecutionException {
-        var host = System.getProperty(HOST, DEFAULT_HOST);
-        var port = System.getProperty(PORT);
 
-        if (port == null)
-            return new StandardConnectionProvider();
-
-        return new SocketConnectionProvider(host, Integer.valueOf(port));
+        return new SocketConnectionProvider(DEFAULT_HOST, PORT);
     }
 
     public interface ConnectionProvider {
@@ -55,26 +49,6 @@ public class ConnectionFactory {
         OutputStream getOutputStream() throws Exception;
 
         void exit() throws Exception;
-    }
-
-    /**
-     * A standard connection. Using {@code System.in} and {@code System.out}.
-     */
-    public static class StandardConnectionProvider implements ConnectionProvider {
-
-        @Override
-        public InputStream getInputStream() throws Exception {
-            return System.in;
-        }
-
-        @Override
-        public OutputStream getOutputStream() throws Exception {
-            return System.out;
-        }
-
-        @Override
-        public void exit() {
-        }
     }
 
     /**

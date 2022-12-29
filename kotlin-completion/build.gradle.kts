@@ -27,8 +27,8 @@ android {
 }
 
 dependencies {
+    implementation("io.github.Rosemoe.sora-editor:editor:0.20.2")
     implementation(projects.common)
-    implementation(projects.soraEditor)
     implementation(projects.project)
     implementation(projects.kotlinc)
 }

@@ -85,6 +85,8 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
         isChanging = true
     }
+    implementation("io.github.Rosemoe.sora-editor:editor:0.20.2")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.20.2")
     implementation("io.github.Rosemoe.sora-editor:editor-lsp:0.20.2")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")
@@ -100,7 +102,6 @@ dependencies {
     implementation(projects.treeview)
     implementation(projects.lynx)
     implementation(projects.common)
-    implementation(projects.soraEditor)
     implementation(projects.kotlinc)
     implementation(projects.kotlinCompletion)
     implementation(projects.androidCompiler)

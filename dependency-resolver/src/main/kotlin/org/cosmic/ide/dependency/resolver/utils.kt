@@ -12,7 +12,7 @@ fun getArtifact(groupId: String, artifactId: String, version: String): Artifact?
     return initHost(Artifact(groupId, artifactId, version))
 }
 /*
- * Find the host repository of artifact and initialises it.
+ * Finds the host repository of the artifact and initialises it.
  * Returns null if no repository hosts this artifact
  */
 fun initHost(artifact: Artifact): Artifact? {
@@ -26,7 +26,7 @@ fun initHost(artifact: Artifact): Artifact? {
 }
 
 /*
- * Resolves a POM file through InputStream and returns the list of artifacts it depends on.
+ * Resolves a POM file from InputStream and returns the list of artifacts it depends on.
  */
 fun InputStream.resolvePOM(): List<Artifact> {
     val artifacts = mutableListOf<Artifact>()

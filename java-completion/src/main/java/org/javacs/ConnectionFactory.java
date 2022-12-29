@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.ServerSocket;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
 import java.util.concurrent.ExecutionException;
@@ -35,11 +37,9 @@ public class ConnectionFactory {
 
     public static final int PORT = 1234;
 
-    public static final String DEFAULT_HOST = "localhost";
-
     public static ConnectionProvider getConnectionProvider() throws NumberFormatException, IOException, InterruptedException, ExecutionException {
 
-        return new SocketConnectionProvider(DEFAULT_HOST, PORT);
+        return new SocketConnectionProvider(PORT);
     }
 
     public interface ConnectionProvider {
@@ -56,21 +56,20 @@ public class ConnectionFactory {
      */
     public static class SocketConnectionProvider implements ConnectionProvider {
 
-        private final AsynchronousSocketChannel server;
+        private final Socket server;
 
-        public SocketConnectionProvider(String host, int port) throws IOException, InterruptedException, ExecutionException {
-            this.server = AsynchronousSocketChannel.open();
-            this.server.connect(new InetSocketAddress(host, port)).get();
+        public SocketConnectionProvider(int port) throws IOException, InterruptedException, ExecutionException {
+            this.server = new ServerSocket(port).accept();
         }
 
         @Override
         public InputStream getInputStream() throws IOException {
-            return server != null ? Channels.newInputStream(server) : null;
+            return server != null ? server.getInputStream() : null;
         }
 
         @Override
         public OutputStream getOutputStream() throws IOException {
-            return server != null ? Channels.newOutputStream(server) : null;
+            return server != null ? server.getOutputStream() : null;
         }
 
         @Override

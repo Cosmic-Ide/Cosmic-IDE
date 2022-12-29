@@ -156,15 +156,16 @@ class CodeEditorFragment : Fragment() {
     }
 
     private suspend fun setJavaLSPLanguage() {
-        val languageServer = JavaLanguageServer()
-		provider = ConnectionFactory.getConnectionProvider()
-		val server = JLSLauncher.createServerLauncher(languageServer, provider.inputStream, provider.outputStream)
-		val listening = server.startListening()
-		val client = server.remoteProxy
-		languageServer.connect(client)
-
-        val serverDef =
-            CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { ConnectionFactory.PORT } }
+        withContext(Dispatchers.IO) {
+            val languageServer = JavaLanguageServer()
+            provider = ConnectionFactory.getConnectionProvider()
+	    	val server = JLSLauncher.createServerLauncher(languageServer, provider.inputStream, provider.outputStream)
+		    val listening = server.startListening()
+	    	val client = server.remoteProxy
+	    	languageServer.connect(client)
+        }
+        val serverDef = withContext(Dispatchers.IO) {
+                CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { ConnectionFactory.PORT } } }
         withContext(Dispatchers.Main) {
             lspEditor =
                 LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))

@@ -19,7 +19,7 @@ class DebugActivity : AppCompatActivity() {
         /** TODO: Use dialog via AndroidUtilities#showSimpleAlert(
          * Context, Title, Message, Positive, Negative, DialogInterface.OnClickListener)
          */
-        MaterialAlertDialogBuilder(this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+        MaterialAlertDialogBuilder(this, AndroidUtilities.dialogFullWidthButtonsThemeOverlay)
             .setTitle(getString(R.string.error))
             .setMessage(error)
             .setPositiveButton(getString(R.string.quit)) { _, _ -> finishAffinity() }

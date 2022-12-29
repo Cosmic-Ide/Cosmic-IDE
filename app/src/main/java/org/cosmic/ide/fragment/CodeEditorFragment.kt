@@ -9,11 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
+import io.github.rosemoe.sora.lsp.client.connection.SocketStreamConnectionProvider
+import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
+import io.github.rosemoe.sora.lsp.editor.LspEditor
+import io.github.rosemoe.sora.lsp.editor.LspEditorManager
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
@@ -26,12 +34,14 @@ import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.EditorUtil
 import java.io.File
 import java.io.IOException
+import java.net.ServerSocket
 
 class CodeEditorFragment : Fragment() {
     private var _binding: FragmentCodeEditorBinding? = null
     private val binding get() = _binding!!
     private val TAG = "CodeEditorFragment"
     private val settings: Settings by lazy { Settings() }
+    private lateinit var lspEditor: LspEditor
 
     private lateinit var currentFile: File
 
@@ -62,25 +72,25 @@ class CodeEditorFragment : Fragment() {
             try {
                 binding.editor.setText(currentFile.readText())
             } catch (e: IOException) {
-                MaterialAlertDialogBuilder(requireContext(), AndroidUtilities.getDialogFullWidthButtonsThemeOverlay())
+                MaterialAlertDialogBuilder(
+                    requireContext(),
+                    AndroidUtilities.dialogFullWidthButtonsThemeOverlay
+                )
                     .setTitle(requireContext().getString(R.string.error_file_open))
                     .setMessage(e.localizedMessage)
                     .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
-                    .setNegativeButton(requireContext().getString(R.string.copy_stacktrace), { _, which ->
+                    .setNegativeButton(requireContext().getString(R.string.copy_stacktrace)) { _, which ->
                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                             AndroidUtilities.copyToClipboard(e.localizedMessage)
                         }
-                    })
+                    }
                     .show()
             }
-            if (currentFile.extension.equals("kt")) {
-                setEditorLanguage(LANGUAGE_KOTLIN)
-            } else if (currentFile.extension.equals("java")) {
-                setEditorLanguage(LANGUAGE_JAVA)
-            } else if (currentFile.extension.equals("smali")) {
-                setEditorLanguage(LANGUAGE_SMALI)
-            } else {
-                setEditorLanguage(-1)
+            when (currentFile.extension) {
+                "kt" -> setEditorLanguage(LANGUAGE_KOTLIN)
+                "java" -> lifecycleScope.launch { setJavaLSPLanguage() }
+                "smali" -> setEditorLanguage(LANGUAGE_SMALI)
+                else -> setEditorLanguage(-1)
             }
             binding.editor
                 .text
@@ -123,7 +133,6 @@ class CodeEditorFragment : Fragment() {
 
     private fun setEditorLanguage(lang: Int) {
         when (lang) {
-            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(EditorUtil.javaLanguage)
             LANGUAGE_KOTLIN -> binding.editor.setEditorLanguage(getKotlinLanguage())
             LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
@@ -132,11 +141,42 @@ class CodeEditorFragment : Fragment() {
     }
 
     private fun getKotlinLanguage(): Language {
-        try {
-            return KotlinLanguage(binding.editor, (requireActivity() as MainActivity).project, currentFile)
+        return try {
+            KotlinLanguage(binding.editor, (requireActivity() as MainActivity).project, currentFile)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
-            return EmptyLanguage()
+            EmptyLanguage()
+        }
+    }
+
+    private suspend fun setJavaLSPLanguage() {
+        val socket = withContext(Dispatchers.IO) {
+            ServerSocket(0)
+        }
+        val port = socket.localPort
+        withContext(Dispatchers.IO) {
+            socket.close()
+        }
+        val serverDef =
+            CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { port } }
+        withContext(Dispatchers.Main) {
+            lspEditor =
+                LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))
+                    .createEditor(currentFile.absolutePath, serverDef)
+            lspEditor.setWrapperLanguage(EditorUtil.javaLanguage)
+            lspEditor.editor = binding.editor
+        }
+        try {
+            withContext(Dispatchers.IO) {
+                lspEditor.connectWithTimeout()
+            }
+
+            binding.editor.editable = true
+            println("Initialized Language server")
+        } catch (e: Exception) {
+            println("Unable to connect language server")
+            binding.editor.editable = true
+            e.printStackTrace()
         }
     }
 
@@ -151,7 +191,7 @@ class CodeEditorFragment : Fragment() {
                 e.printStackTrace()
             }
             val newContents = binding.editor.text.toString()
-            if (oldContents.equals(newContents)) return
+            if (oldContents == newContents) return
             try {
                 currentFile.writeText(newContents)
             } catch (e: IOException) {
@@ -161,7 +201,6 @@ class CodeEditorFragment : Fragment() {
     }
 
     companion object {
-        const val LANGUAGE_JAVA = 0
         const val LANGUAGE_KOTLIN = 1
         const val LANGUAGE_SMALI = 2
 

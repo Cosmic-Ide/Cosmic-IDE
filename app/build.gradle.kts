@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = BuildAndroidConfig.APPLICATION_ID
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         applicationId = BuildAndroidConfig.APPLICATION_ID
@@ -16,8 +15,6 @@ android {
         targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
         versionCode = BuildAndroidConfig.VERSION_CODE
         versionName = BuildAndroidConfig.VERSION_NAME
-
-        vectorDrawables.useSupportLibrary = BuildAndroidConfig.SUPPORT_LIBRARY_VECTOR_DRAWABLES
     }
 
     signingConfigs {
@@ -83,11 +80,12 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
         isChanging = true
     }
+    implementation("io.github.Rosemoe.sora-editor:editor-lsp:0.20.1")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")
     implementation("com.google.android.material:material:1.8.0-beta01")
@@ -108,4 +106,5 @@ dependencies {
     implementation(projects.androidCompiler)
     implementation(projects.project)
     implementation(projects.gitApi)
+    implementation(projects.javaCompletion)
 }

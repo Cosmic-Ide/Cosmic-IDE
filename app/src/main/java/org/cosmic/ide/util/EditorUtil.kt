@@ -9,12 +9,12 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 object EditorUtil {
     val javaLanguage: Language
         get() = TextMateLanguage.create(
-            "source.java", true
+            "source.java", false
         )
 
     val smaliLanguage: Language
         get() = TextMateLanguage.create(
-            "source.smali", true
+            "source.smali", false
         )
 
     fun getColorScheme(ctx: Context): TextMateColorScheme {

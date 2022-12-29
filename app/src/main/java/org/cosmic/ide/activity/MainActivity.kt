@@ -1,9 +1,5 @@
 package org.cosmic.ide.activity
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -21,7 +17,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,9 +37,9 @@ import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.compiler.CompileTask
 import org.cosmic.ide.compiler.CompileTask.CompilerListeners
-import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmic.ide.databinding.ActivityMainBinding
 import org.cosmic.ide.databinding.DialogLibraryDownloaderBinding
+import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmic.ide.fragment.CodeEditorFragment
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.ui.editor.adapter.PageAdapter
@@ -59,7 +54,6 @@ import org.jf.dexlib2.iface.ClassDef
 import org.json.JSONException
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 class MainActivity : BaseActivity() {
 
@@ -84,7 +78,7 @@ class MainActivity : BaseActivity() {
     }
     private val libraryDialog: AlertDialog by lazy {
         val dialog = MaterialAlertDialogBuilder(
-            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
+            this, AndroidUtilities.dialogFullWidthButtonsThemeOverlay
         ).apply {
             setTitle("Library Downloader")
             setView(libraryBinding.root)
@@ -327,7 +321,7 @@ class MainActivity : BaseActivity() {
         } else if (id == R.id.action_settings) {
             startActivity(Intent(this, SettingsActivity::class.java))
         } else if (id == R.id.action_run) {
-            compile(execute = true, blockMainThread = false)
+            true.compile(blockMainThread = false)
         } else if (id == R.id.action_disassemble) {
             disassemble()
         } else if (id == R.id.action_class2java) {
@@ -372,7 +366,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
-        val currentFile = mainViewModel.files.value!!.get(pos)
+        val currentFile = mainViewModel.files.value!![pos]
         tab.text = if (currentFile != null) currentFile.name else "Unknown"
     }
 
@@ -418,8 +412,8 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun compile(execute: Boolean, blockMainThread: Boolean) {
-        compileTask.setExecution(execute)
+    private fun Boolean.compile(blockMainThread: Boolean) {
+        compileTask.setExecution(this)
         loadingDialog.show()
         if (blockMainThread) {
             execute(compileTask)
@@ -434,16 +428,16 @@ class MainActivity : BaseActivity() {
             getString(R.string.select_class_decompile),
             classes
         ) { _, pos ->
-            val claz = classes.get(pos).replace(".", "/")
+            val className = classes[pos].replace(".", "/")
             execute {
                 try {
                     JarTask().doFullTask(project)
                     temp = FernFlowerDecompiler()
                         .decompile(
-                            claz,
+                            className,
                             File(
                                 project.binDirPath,
-                                    "classes.jar"
+                                "classes.jar"
                             )
                         )
                 } catch (e: Exception) {
@@ -453,15 +447,16 @@ class MainActivity : BaseActivity() {
                         e.localizedMessage,
                         getString(R.string.dialog_close),
                         getString(R.string.copy_stacktrace),
+                        null,
                         (
-                            DialogInterface.OnClickListener { _, which ->
-                                if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                    AndroidUtilities.copyToClipboard(
-                                        e.localizedMessage
-                                    )
+                                DialogInterface.OnClickListener { _, which ->
+                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                        AndroidUtilities.copyToClipboard(
+                                            e.localizedMessage
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                                )
                     )
                 }
             }
@@ -487,7 +482,7 @@ class MainActivity : BaseActivity() {
             getString(R.string.select_class_disassemble),
             classes
         ) { _, pos ->
-            val claz = classes.get(pos).replace(".", "/")
+            val claz = classes[pos].replace(".", "/")
             var disassembled = ""
             try {
                 disassembled = JavapDisassembler(
@@ -576,7 +571,6 @@ class MainActivity : BaseActivity() {
         }
 
     companion object {
-        const val BUILD_STATUS = "BUILD_STATUS"
         const val TAG = "MainActivity"
     }
 }

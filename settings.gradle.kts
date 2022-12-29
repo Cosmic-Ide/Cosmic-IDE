@@ -16,5 +16,6 @@ include(
     ":ktfmt",
     ":treeview",
     ":git-api",
-    "dependency-resolver"
+    "dependency-resolver",
+    "java-completion",
 )

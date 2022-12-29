@@ -3,7 +3,6 @@ package org.cosmic.ide.activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -31,7 +30,6 @@ import org.cosmic.ide.util.addSystemWindowInsetToMargin
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
     private val projectAdapter = ProjectAdapter()
@@ -40,7 +38,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     }
     private val createNewProjectDialog: AlertDialog by lazy {
         val dialog = MaterialAlertDialogBuilder(
-            this, AndroidUtilities.getDialogFullWidthButtonsThemeOverlay()
+            this, AndroidUtilities.dialogFullWidthButtonsThemeOverlay
         ).apply {
             setTitle(getString(R.string.create_project))
             setView(projectBinding.root)

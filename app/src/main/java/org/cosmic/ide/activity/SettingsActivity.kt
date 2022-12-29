@@ -55,7 +55,6 @@ class SettingsActivity :
         val fm = supportFragmentManager
         val fragment = fm.fragmentFactory.instantiate(classLoader, pref.fragment ?: return false)
         fragment.arguments = pref.extras
-        fragment.setTargetFragment(caller, 0)
         openFragment(fragment)
         supportActionBar?.title = pref.title ?: getString(R.string.settings)
         return true

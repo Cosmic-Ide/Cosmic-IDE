@@ -8,6 +8,7 @@ import com.sun.source.util.JavacTask
 import com.sun.tools.javac.api.JavacTool
 import com.sun.tools.javac.file.JavacFileManager
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
+import io.github.rosemoe.sora.lang.diagnostic.DiagnosticDetail
 import org.cosmic.ide.CompilerUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.project.JavaProject
@@ -107,7 +108,7 @@ class JavacAnalyzer(
             val severity = if (it.kind == Diagnostic.Kind.ERROR) DiagnosticRegion.SEVERITY_ERROR else DiagnosticRegion.SEVERITY_WARNING
             problems.add(
                 DiagnosticRegion(
-                    it.startPosition.toInt(), it.endPosition.toInt(), severity
+                    it.startPosition.toInt(), it.endPosition.toInt(), severity, 0, DiagnosticDetail(it.getMessage(Locale.getDefault()))
                 )
             )
         }

@@ -7,7 +7,6 @@ plugins {
 android {
     namespace = "io.github.rosemoe.sora"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
@@ -32,8 +31,8 @@ android {
 }
 
 dependencies {
-    api(files("libs/editor-0.19.0.jar"))
-    api("io.github.Rosemoe.sora-editor:language-textmate:0.20.1")
+    api(files("libs/editor-0.20.2.jar"))
+    api("io.github.Rosemoe.sora-editor:language-textmate:0.20.2")
     implementation("com.google.android.material:material:1.8.0-beta01")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("org.yaml:snakeyaml:1.33")

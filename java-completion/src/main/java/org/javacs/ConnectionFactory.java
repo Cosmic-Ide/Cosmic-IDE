@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.ServerSocket;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
 import java.util.concurrent.ExecutionException;
@@ -56,20 +54,28 @@ public class ConnectionFactory {
      */
     public static class SocketConnectionProvider implements ConnectionProvider {
 
-        private final Socket server;
-
+        private final AsynchronousSocketChannel server;
+ 
         public SocketConnectionProvider(int port) throws IOException, InterruptedException, ExecutionException {
-            this.server = new ServerSocket(port).accept();
+            this.server = AsynchronousSocketChannel.open();
+            var future = this.server.connect(new InetSocketAddress(port));
+            new Thread(() -> {
+                try {
+                    future.get();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
 
         @Override
         public InputStream getInputStream() throws IOException {
-            return server != null ? server.getInputStream() : null;
+            return server != null ? Channels.newInputStream(server) : null;
         }
 
         @Override
         public OutputStream getOutputStream() throws IOException {
-            return server != null ? server.getOutputStream() : null;
+            return server != null ? Channels.newOutputStream(server) : null;
         }
 
         @Override

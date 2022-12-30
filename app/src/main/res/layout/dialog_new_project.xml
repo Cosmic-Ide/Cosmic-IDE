@@ -51,12 +51,4 @@
         android:checked="true"
         android:text="@string/use_kotlin_template" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/use_git"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="@dimen/spacing_medium"
-        android:checked="false"
-        android:text="@string/use_git" />
-
 </LinearLayout>

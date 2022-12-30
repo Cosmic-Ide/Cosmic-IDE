@@ -106,6 +106,5 @@ dependencies {
     implementation(projects.kotlinCompletion)
     implementation(projects.androidCompiler)
     implementation(projects.project)
-    implementation(projects.gitApi)
     implementation(projects.javaCompletion)
 }

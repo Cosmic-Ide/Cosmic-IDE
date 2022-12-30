@@ -48,10 +48,6 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".activity.GitActivity"
-            android:exported="false" />
-
     </application>
 
 </manifest>

@@ -108,19 +108,4 @@
     <string name="editor">Редактор</string>
     <string name="font_size">Размер шрифта</string>
 
-    <string name="git_username">Имя пользователя</string>
-    <string name="git_useremail">Электронная почта</string>
-    <string name="git_new_repository">Новый Git-репозиторий</string>
-    <string name="git_commit">Коммит</string>
-    <string name="git_commit_message">Сообщение коммита</string>
-    <string name="git_branch">Ветка</string>
-    <string name="git_new_branch">Новая ветка</string>
-    <string name="git_name_branch">Название ветки</string>
-    <string name="git_merge">Объединить</string>
-    <string name="git_merge_branch">Объединить ветку</string>
-    <string name="git_merge_branch_message">Название ветки для слияния</string>
-    <string name="git_delete_branch">Удалить ветку</string>
-    <string name="git_delete_branch_message">Название ветки для удаления</string>
-    <string name="git_log_unavailable">Логи не доступны.</string>
-
 </resources>

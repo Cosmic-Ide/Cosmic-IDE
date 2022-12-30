@@ -17,11 +17,6 @@
         app:title="@string/editor" />
 
     <PreferenceScreen
-        app:fragment="org.cosmic.ide.fragment.settings.GitSettingsFragment"
-        app:key="git"
-        app:title="@string/git" />
-
-    <PreferenceScreen
         app:fragment="org.cosmic.ide.fragment.settings.AboutSettingsFragment"
         app:key="about"
         app:title="@string/about" />

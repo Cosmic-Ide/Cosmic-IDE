@@ -45,9 +45,4 @@
         android:id="@+id/library_downloader"
         android:title="Library Downloader" />
 
-    <item
-        android:id="@+id/action_git"
-        android:title="@string/git"
-        android:visible="false" />
-
 </menu>

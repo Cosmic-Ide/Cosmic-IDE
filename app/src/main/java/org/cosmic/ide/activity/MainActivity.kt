@@ -26,7 +26,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.model.FileViewModel
-import org.cosmic.ide.activity.model.GitViewModel
 import org.cosmic.ide.activity.model.MainViewModel
 import org.cosmic.ide.android.task.jar.JarTask
 import org.cosmic.ide.code.decompiler.FernFlowerDecompiler
@@ -210,15 +209,6 @@ class MainActivity : BaseActivity() {
             )
         }
             .attach()
-        GitViewModel.INSTANCE.apply {
-            setPath(project.projectDirPath)
-            postCheckout = {
-                fileViewModel.refreshNode(project.rootFile)
-            }
-            onSave = {
-                mainViewModel.clear()
-            }
-        }
         mainViewModel
             .files
             .observe(
@@ -275,9 +265,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-        if (File(project.rootFile, ".git").exists()) {
-            menu.findItem(R.id.action_git).isVisible = true
-        }
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -334,8 +321,6 @@ class MainActivity : BaseActivity() {
             }
         } else if (id == R.id.library_downloader) {
             showLibraryDialog()
-        } else if (id == R.id.action_git) {
-            startActivity(Intent(this, GitActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }

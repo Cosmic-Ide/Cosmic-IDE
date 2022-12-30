@@ -90,7 +90,6 @@
     <string name="project_name">Project name</string>
     <string name="package_name">Package name</string>
     <string name="use_kotlin_template">Use Kotlin Template</string>
-    <string name="use_git">Git</string>
 
     <string name="java_version">Java Version</string>
     <string name="program_arguments">Program Arguments</string>
@@ -117,21 +116,6 @@
     <string name="editor">Editor</string>
     <string name="font_size">Font size</string>
 
-    <string name="git">Git</string>
-    <string name="git_username">Username</string>
-    <string name="git_useremail">Email address</string>
-    <string name="git_new_repository">New Git repository</string>
-    <string name="git_commit">Commit</string>
-    <string name="git_commit_message">Commit message</string>
-    <string name="git_branch">Branch</string>
-    <string name="git_new_branch">New branch</string>
-    <string name="git_name_branch">Branch name</string>
-    <string name="git_merge">Merge</string>
-    <string name="git_merge_branch">Merge branch</string>
-    <string name="git_merge_branch_message">Branch name to merge</string>
-    <string name="git_delete_branch">Delete branch</string>
-    <string name="git_delete_branch_message">Branch name to delete</string>
-    <string name="git_log_unavailable">Logs not available.</string>
     <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
 
 </resources>

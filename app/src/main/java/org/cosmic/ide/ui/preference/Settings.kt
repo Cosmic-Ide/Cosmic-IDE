@@ -55,28 +55,12 @@ class Settings {
                 7
             )
 
-    val gitUserName: String
-        get() =
-            prefs.getString(
-                GIT_USERNAME,
-                "User"
-            )!!
-
-    val gitUserEmail: String
-        get() =
-            prefs.getString(
-                GIT_USEREMAIL,
-                "user@localhost.com"
-            )!!
-
     companion object {
         const val THEME = "theme"
         const val DYNAMIC_THEME = "dynamic_theme"
         const val PROGRAM_ARGUMENTS = "program_arguments"
         const val FONT_SIZE = "font_size"
         const val JAVA_VERSION = "java_version"
-        const val GIT_USERNAME = "git_username"
-        const val GIT_USEREMAIL = "git_useremail"
         const val DISCORD = "discord"
         const val GITHUB = "github"
         const val APP_VERSION = "app_version"

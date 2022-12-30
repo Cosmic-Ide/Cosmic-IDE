@@ -19,8 +19,6 @@ import org.cosmic.ide.activity.adapter.ProjectAdapter.OnProjectEventListener
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.databinding.ActivityProjectBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
-import org.cosmic.ide.git.model.Author
-import org.cosmic.ide.git.usecases.createGitRepoWith
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.project.KotlinProject
 import org.cosmic.ide.project.Project
@@ -127,13 +125,6 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                         KotlinProject.newProject(projectName)
                     } else {
                         JavaProject.newProject(projectName)
-                    }
-                    if (projectBinding.useGit.isChecked) {
-                        val author = Author(settings.gitUserName, settings.gitUserEmail)
-                        project.projectDirPath.createGitRepoWith(
-                            author,
-                            "Initial Commit"
-                        )
                     }
                     runOnUiThread {
                         if (createNewProjectDialog.isShowing) {

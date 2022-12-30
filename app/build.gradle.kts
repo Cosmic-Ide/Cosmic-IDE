@@ -86,7 +86,7 @@ dependencies {
         isChanging = true
     }
     implementation("io.github.Rosemoe.sora-editor:editor:0.20.2")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.20.2")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.20.4")
     implementation("io.github.Rosemoe.sora-editor:editor-lsp:0.20.2")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")

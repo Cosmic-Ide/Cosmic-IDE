@@ -173,9 +173,10 @@ class CodeEditorFragment : Fragment() {
 	        	languageServer.connect(client)
 	    	}
         }
+        binding.editor.editable = false
         val serverDef = withContext(Dispatchers.IO) {
             CustomLanguageServerDefinition("java") {
-                object : StreamConnectionProvider() {
+                object : StreamConnectionProvider {
                     override fun start() {
                     }
                     override fun getInputStream(): InputStream {
@@ -193,8 +194,8 @@ class CodeEditorFragment : Fragment() {
             lspEditor =
                 LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))
                     .createEditor(currentFile.absolutePath, serverDef)
-            lspEditor.setWrapperLanguage(EditorUtil.javaLanguage)
             lspEditor.editor = binding.editor
+            lspEditor.setWrapperLanguage(EditorUtil.javaLanguage)
             
         }
         try {

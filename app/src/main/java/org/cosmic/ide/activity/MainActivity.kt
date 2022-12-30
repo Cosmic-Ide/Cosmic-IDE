@@ -163,7 +163,6 @@ class MainActivity : BaseActivity() {
                 })
         }
         fileViewModel.refreshNode(project.rootFile)
-        mainViewModel.setFiles(project.indexer.getPathOpenFiles())
         supportActionBar?.title = project.projectName
         binding.viewPager.apply {
             adapter = tabsAdapter
@@ -271,7 +270,6 @@ class MainActivity : BaseActivity() {
                 (binding.root as DrawerLayout).isDrawerOpen(GravityCompat.START)
             )
         }
-        saveOpenedFiles()
         super.onSaveInstanceState(outState)
     }
 
@@ -349,20 +347,19 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun saveOpenedFiles() {
-        try {
-            project
-                .indexer
-                .putPathOpenFiles(mainViewModel.files.value!!)
-                .flush()
-        } catch (e: JSONException) {
-            Log.e(TAG, "Cannot save opened files", e)
-        }
-    }
+    // private fun saveOpenedFiles() {
+        // try {
+            // project
+                // .indexer
+                // .putPathOpenFiles(mainViewModel.files.value!!)
+                // .flush()
+        // } catch (e: JSONException) {
+            // Log.e(TAG, "Cannot save opened files", e)
+        // }
+    // }
 
     override fun onDestroy() {
         super.onDestroy()
-        saveOpenedFiles()
     }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {

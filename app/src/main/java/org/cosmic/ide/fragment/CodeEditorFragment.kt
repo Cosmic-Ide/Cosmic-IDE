@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
+import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
@@ -158,30 +159,38 @@ class CodeEditorFragment : Fragment() {
     private suspend fun setJavaLSPLanguage() {
         withContext(Dispatchers.IO) {
             val languageServer = JavaLanguageServer()
+            Log.d(TAG, "Getting connection provider...")
             provider = ConnectionFactory.getConnectionProvider()
 	    	val server = JLSLauncher.createServerLauncher(languageServer, provider.inputStream, provider.outputStream)
-		    val listening = server.startListening()
+	        Log.d(TAG, "Starting to listen to JLS...")
+		    server.startListening()
+		    Log.d(TAG, "Started listening to JLS.")
 	    	val client = server.remoteProxy
-	    	languageServer.connect(client)
+	    	CoroutineUtil.inParallel {
+	        	Log.d(TAG, "Connecting language server to client.")
+	        	languageServer.connect(client)
+	    	}
         }
         val serverDef = withContext(Dispatchers.IO) {
                 CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { ConnectionFactory.PORT } } }
         withContext(Dispatchers.Main) {
+            Log.d(TAG, "Setting editor language...")
             lspEditor =
                 LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))
                     .createEditor(currentFile.absolutePath, serverDef)
             lspEditor.setWrapperLanguage(EditorUtil.javaLanguage)
             lspEditor.editor = binding.editor
+            
         }
         try {
             withContext(Dispatchers.IO) {
-                lspEditor.connectWithTimeout()
+                lspEditor.connect()
             }
 
             binding.editor.editable = true
-            println("Initialized Language server")
+            Log.d(TAG, "Initialized Language server.")
         } catch (e: Exception) {
-            println("Unable to connect language server")
+            Log.d(TAG, "Unable to connect language server.")
             binding.editor.editable = true
             e.printStackTrace()
         }

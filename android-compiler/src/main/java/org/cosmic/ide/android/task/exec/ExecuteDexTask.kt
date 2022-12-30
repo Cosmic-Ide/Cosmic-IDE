@@ -63,7 +63,7 @@ class ExecuteDexTask(
             if (libs != null) {
                 // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val outDex = project.buildDirPath + "libs/" + lib.name.replaceAfterLast('.', "dex")
+                    val outDex = project.buildDirPath + "libs/" + lib.nameWithoutExtension + ".dex"
 
                     if (!File(outDex).exists()) {
                         CoroutineUtil.inParallel {

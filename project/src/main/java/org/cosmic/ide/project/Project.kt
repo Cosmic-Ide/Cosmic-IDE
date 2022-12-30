@@ -12,8 +12,6 @@ interface Project {
 
     val projectName: String
 
-    val indexer: Indexer
-
     val projectDirPath: String
 
     val srcDirPath: String
@@ -23,7 +21,4 @@ interface Project {
     val libDirPath: String
 
     val buildDirPath: String
-
-    val cacheDirPath: String
-
 }

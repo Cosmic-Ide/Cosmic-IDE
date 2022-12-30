@@ -11,15 +11,9 @@ public class KotlinProject implements Project {
     private static final String rootDirPath = FileUtil.getProjectsDir();
 
     private final File root;
-    private Indexer indexer;
 
     public KotlinProject(File root) {
         this.root = root;
-        try {
-            this.indexer = new Indexer(getCacheDirPath());
-        } catch (Exception ignore) {
-            this.indexer = null;
-        }
     }
 
     public static Project newProject(String projectName) throws IOException {
@@ -38,7 +32,6 @@ public class KotlinProject implements Project {
         FileUtil.createOrExistsDir(getBinDirPath());
         FileUtil.createOrExistsDir(getLibDirPath());
         FileUtil.createOrExistsDir(getBuildDirPath());
-        FileUtil.createOrExistsDir(getCacheDirPath());
         var classTemplate = CodeTemplate.getKotlinClassTemplate(null, "Main", true, "Class");
         FileUtil.writeFile(getSrcDirPath() + "Main.kt", classTemplate);
     }
@@ -60,11 +53,6 @@ public class KotlinProject implements Project {
     @Override
     public String getProjectName() {
         return getRootFile().getName();
-    }
-
-    @Override
-    public Indexer getIndexer() {
-        return indexer;
     }
 
     @Override
@@ -90,10 +78,5 @@ public class KotlinProject implements Project {
     @Override
     public String getBuildDirPath() {
         return getProjectDirPath() + "build" + File.separator;
-    }
-
-    @Override
-    public String getCacheDirPath() {
-        return getProjectDirPath() + "cache" + File.separator;
     }
 }

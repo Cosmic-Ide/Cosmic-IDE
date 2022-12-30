@@ -37,6 +37,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 ) {
                     finishAfterTransition()
                 }
+                finish()
             }
         }
         onBackPressedDispatcher.addCallback(

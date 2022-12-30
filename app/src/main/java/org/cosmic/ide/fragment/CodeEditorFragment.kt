@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
-import io.github.rosemoe.sora.lsp.client.connection.SocketStreamConnectionProvider
+import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
 import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
 import io.github.rosemoe.sora.lsp.editor.LspEditor
 import io.github.rosemoe.sora.lsp.editor.LspEditorManager
@@ -38,6 +38,8 @@ import org.javacs.ConnectionFactory
 import org.javacs.launch.JLSLauncher
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.ServerSocket
 
 class CodeEditorFragment : Fragment() {
@@ -172,7 +174,20 @@ class CodeEditorFragment : Fragment() {
 	    	}
         }
         val serverDef = withContext(Dispatchers.IO) {
-                CustomLanguageServerDefinition("java") { SocketStreamConnectionProvider { ConnectionFactory.PORT } } }
+            CustomLanguageServerDefinition("java") {
+                object : StreamConnectionProvider() {
+                    override fun start() {
+                    }
+                    override fun getInputStream(): InputStream {
+                        return System.`in`
+                    }
+                    override fun getOutputStream(): OutputStream {
+                        return System.`out`
+                    }
+                    override fun close() {}
+                }
+            }
+        }
         withContext(Dispatchers.Main) {
             Log.d(TAG, "Setting editor language...")
             lspEditor =

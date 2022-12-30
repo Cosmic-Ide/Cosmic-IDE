@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.ServerSocket;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.Channels;
 import java.util.concurrent.ExecutionException;
@@ -39,7 +37,7 @@ public class ConnectionFactory {
 
     public static ConnectionProvider getConnectionProvider() throws NumberFormatException, IOException, InterruptedException, ExecutionException {
 
-        return new SocketConnectionProvider(PORT);
+        return new StandardConnectionProvider();
     }
 
     public interface ConnectionProvider {
@@ -52,29 +50,21 @@ public class ConnectionFactory {
     }
 
     /**
-     * A socket connection. Connects to the provided host and port
-     */
-    public static class SocketConnectionProvider implements ConnectionProvider {
+	 * A standard connection. Using {@code System.in} and {@code System.out}.
+	 */
+	public static class StandardConnectionProvider implements ConnectionProvider {
+		
+		@Override
+		public InputStream getInputStream() throws Exception{
+			return System.in;
+		}
 
-        private final Socket server;
-
-        public SocketConnectionProvider(int port) throws IOException, InterruptedException, ExecutionException {
-            this.server = new ServerSocket(port).accept();
-        }
-
-        @Override
-        public InputStream getInputStream() throws IOException {
-            return server != null ? server.getInputStream() : null;
-        }
-
-        @Override
-        public OutputStream getOutputStream() throws IOException {
-            return server != null ? server.getOutputStream() : null;
-        }
-
-        @Override
-        public void exit() throws IOException {
-            server.close();
-        }
-    }
+		@Override
+		public OutputStream getOutputStream() throws Exception{
+			return System.out;
+		}
+		
+		@Override
+		public void exit() {}
+	}
 }

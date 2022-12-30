@@ -101,7 +101,6 @@ class JavacAnalyzer(
 
     fun getDiagnostics(): List<DiagnosticRegion> {
         val diagnostic = diagnostics.diagnostics
-        Log.d(TAG, "diagnostics=" + diagnostic)
         val problems = mutableListOf<DiagnosticRegion>()
         for (it in diagnostic) {
             if (it.source == null) continue

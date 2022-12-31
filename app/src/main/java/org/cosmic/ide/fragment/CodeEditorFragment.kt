@@ -13,10 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
-import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
-import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
-import io.github.rosemoe.sora.lsp.editor.LspEditor
-import io.github.rosemoe.sora.lsp.editor.LspEditorManager
+// import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
+// import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
+// import io.github.rosemoe.sora.lsp.editor.LspEditor
+// import io.github.rosemoe.sora.lsp.editor.LspEditorManager
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
 import kotlinx.coroutines.Dispatchers
@@ -33,9 +33,9 @@ import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.EditorUtil
-import org.javacs.services.JavaLanguageServer
-import org.javacs.ConnectionFactory
-import org.javacs.launch.JLSLauncher
+// import org.javacs.services.JavaLanguageServer
+// import org.javacs.ConnectionFactory
+// import org.javacs.launch.JLSLauncher
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -47,10 +47,10 @@ class CodeEditorFragment : Fragment() {
     private val binding get() = _binding!!
     private val TAG = "CodeEditorFragment"
     private val settings: Settings by lazy { Settings() }
-    private lateinit var lspEditor: LspEditor
+//    private lateinit var lspEditor: LspEditor
 
     private lateinit var currentFile: File
-    private lateinit var provider: ConnectionFactory.ConnectionProvider
+//    private lateinit var provider: ConnectionFactory.ConnectionProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +95,7 @@ class CodeEditorFragment : Fragment() {
             }
             when (currentFile.extension) {
                 "kt" -> setEditorLanguage(LANGUAGE_KOTLIN)
-                "java" -> lifecycleScope.launch { setJavaLSPLanguage() }
+                "java" -> setEditorLanguage(LANGUAGE_JAVA) // lifecycleScope.launch { setJavaLSPLanguage() }
                 "smali" -> setEditorLanguage(LANGUAGE_SMALI)
                 else -> setEditorLanguage(-1)
             }
@@ -114,7 +114,7 @@ class CodeEditorFragment : Fragment() {
 
     override fun onDestroyView() {
         binding.editor.release()
-        provider.exit()
+//        provider.exit()
         _binding = null
         super.onDestroyView()
     }
@@ -143,6 +143,7 @@ class CodeEditorFragment : Fragment() {
     private fun setEditorLanguage(lang: Int) {
         when (lang) {
             LANGUAGE_KOTLIN -> binding.editor.setEditorLanguage(getKotlinLanguage())
+            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(EditorUtil.javaLanguage)
             LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
@@ -157,7 +158,7 @@ class CodeEditorFragment : Fragment() {
             EmptyLanguage()
         }
     }
-
+/*
     private suspend fun setJavaLSPLanguage() {
         withContext(Dispatchers.IO) {
             val languageServer = JavaLanguageServer()
@@ -211,7 +212,7 @@ class CodeEditorFragment : Fragment() {
             e.printStackTrace()
         }
     }
-
+*/
     fun getEditor() = binding.editor
 
     fun save() {
@@ -233,6 +234,7 @@ class CodeEditorFragment : Fragment() {
     }
 
     companion object {
+        const val LANGUAGE_JAVA = 0
         const val LANGUAGE_KOTLIN = 1
         const val LANGUAGE_SMALI = 2
 

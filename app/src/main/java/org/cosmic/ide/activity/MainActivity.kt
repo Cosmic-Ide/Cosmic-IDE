@@ -58,7 +58,12 @@ import java.io.IOException
 class MainActivity : BaseActivity() {
 
     private lateinit var temp: String
-    private lateinit var binding: ActivityMainBinding
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+            setSupportActionBar(it.toolbar)
+        }
+    }
     lateinit var project: JavaProject
 
     private val tabsAdapter by lazy {
@@ -136,10 +141,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater).also {
-            setContentView(it.root)
-            setSupportActionBar(it.toolbar)
-        }
         project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
         binding.appBar.addSystemWindowInsetToPadding(top = true)
         if (binding.root is DrawerLayout) {

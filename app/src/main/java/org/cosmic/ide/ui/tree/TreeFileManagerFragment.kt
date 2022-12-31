@@ -53,6 +53,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
         get() = requireActivity() as MainActivity
     private var mainViewModel: MainViewModel? = null
     private var fileViewModel: FileViewModel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(activity)[MainViewModel::class.java]
@@ -82,7 +83,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             )
         )
         treeView!!.view.isNestedScrollingEnabled = false
-        val isGitEnabled: Boolean = File(activity.project.rootFile, ".git").exists()
+        val isGitEnabled = File(activity.project.rootFile, ".git").exists()
         val gitButton = view.findViewById<MaterialButton>(R.id.gitButton)
         gitButton.text = if (isGitEnabled) "DISABLE GIT" else "ENABLE GIT"
         gitButton.setOnClickListener { v: View ->
@@ -157,16 +158,12 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
         inflater.inflate(R.menu.treeview_menu, popup.menu)
         popup.show()
         val nodeFile = treeNode!!.value.getFile()
-        if (nodeFile.name == activity.project.projectName && treeNode.level == 0) {
-            /* Disable Option to delete the root folder  */
-            popup.menu.getItem(2).isVisible = false
-        }
         if (nodeFile.isFile) {
             popup.menu.getItem(0).isVisible = false
             popup.menu.getItem(1).isVisible = false
             popup.menu.getItem(2).isVisible = false
         }
-        if (nodeFile.name.endsWith(".jar")) {
+        if (nodeFile.extension == "jar") {
             popup.menu.getItem(5).isVisible = true
         }
         popup.setOnMenuItemClickListener { item: MenuItem ->

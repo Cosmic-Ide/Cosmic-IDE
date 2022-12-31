@@ -4,7 +4,7 @@ import android.util.Log;
 
 import org.cosmic.ide.App;
 import org.cosmic.ide.common.util.FileUtil;
-import org.cosmic.ide.common.util.ZipUtil;
+import org.cosmic.ide.common.util.ZipUtilKt;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +49,7 @@ public class ToolsManager {
         final var androidJar = new File(FileUtil.getClasspathDir(), "android.jar");
 
         if (!androidJar.exists()) {
-            ZipUtil.unzipFromAssets(App.context, "android.jar.zip", FileUtil.getClasspathDir());
+            ZipUtilKt.unzipFromAssets(App.context, "android.jar.zip", FileUtil.getClasspathDir());
         }
     }
 

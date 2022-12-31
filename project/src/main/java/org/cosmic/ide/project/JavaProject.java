@@ -62,7 +62,11 @@ public class JavaProject implements Project {
 
     @Override
     public String getSrcDirPath() {
-        return getProjectDirPath() + "src" + File.separator;
+        var path = getProjectDirPath() + "src/main/";
+        if (new File(path, "java").exists()) {
+            return path + "java" + File.separator;
+        }
+        return path + "kotlin" + File.separator;
     }
 
     @Override

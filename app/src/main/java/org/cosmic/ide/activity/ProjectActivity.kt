@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
+import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.pedrovgs.lynx.LynxActivity
@@ -17,6 +18,8 @@ import org.cosmic.ide.R
 import org.cosmic.ide.activity.adapter.ProjectAdapter
 import org.cosmic.ide.activity.adapter.ProjectAdapter.OnProjectEventListener
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
+import org.cosmic.ide.common.util.unzip
+import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.databinding.ActivityProjectBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
 import org.cosmic.ide.git.model.Author
@@ -32,6 +35,7 @@ import java.io.File
 import java.io.IOException
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
+    private val REQUEST_CODE_SELECT_PROJECT = 0
     private val projectAdapter = ProjectAdapter()
     private val projectBinding by lazy {
         DialogNewProjectBinding.inflate(layoutInflater)
@@ -84,7 +88,9 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 loadProjects()
                 refreshLayout.isRefreshing = false
             }
-            fab.setOnClickListener { showCreateNewProjectDialog() }
+            fab.setOnClickListener {
+                showCreateNewProjectDialog()
+            }
         }
         projectAdapter.onProjectEventListener = this@ProjectActivity
     }
@@ -100,8 +106,31 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         } else if (id == R.id.action_logcat) {
             startActivity(LynxActivity.getIntent(this))
+        } else if (id == R.id.import_project) {
+            // Create an intent for the user to select a directory
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                type = "application/zip"
+            }
+
+            startActivityForResult(intent, REQUEST_CODE_SELECT_PROJECT)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_SELECT_PROJECT && resultCode == RESULT_OK) {
+            val uri = data?.data
+            if (uri == null) {
+                AndroidUtilities.showToast("No file selected.")
+                return
+            }
+            val inputStream = contentResolver.openInputStream(uri)!!
+            inputStream.unzip(File(FileUtil.getProjectsDir()))
+
+            loadProjects()
+        }
     }
 
     override fun onResume() {
@@ -144,7 +173,6 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-                loadProjects()
             }
             projectBinding.text1.setText("")
         }
@@ -188,12 +216,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
             if (directories != null) {
                 directories.sortWith(Comparator.comparingLong { file -> file.lastModified() })
                 for (directory in directories) {
-                    val src = File(directory, "src")
-                    if (src.exists()) {
-                        val project =
-                            JavaProject(File(directory.absolutePath))
-                        projects.add(project)
-                    }
+                        projects.add(JavaProject(File(directory.absolutePath)))
                 }
             }
             runOnUiThread {

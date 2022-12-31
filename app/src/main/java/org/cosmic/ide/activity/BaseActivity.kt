@@ -49,9 +49,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                onBackPressedDispatcher.onBackPressed()
-            }
+            android.R.id.home -> onBackPressedDispatcher.onBackPressed()
 
             else -> return super.onOptionsItemSelected(item)
         }

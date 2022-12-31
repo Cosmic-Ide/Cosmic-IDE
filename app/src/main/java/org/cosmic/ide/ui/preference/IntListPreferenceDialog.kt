@@ -39,6 +39,5 @@ fun PreferenceFragmentCompat.showIntListPreferenceDialog(preference: IntListPref
             putString("key", preference.key)
         }
     }
-    dialog.setTargetFragment(this, 0)
     dialog.show(parentFragmentManager, "androidx.preference.PreferenceFragment.IntListPreferenceDialog")
 }

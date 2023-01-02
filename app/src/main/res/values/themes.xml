@@ -11,11 +11,9 @@
         <item name="android:navigationBarDividerColor">@null</item>
         <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:enforceStatusBarContrast">false</item>
-
         <item name="android:overScrollMode">never</item>
 
         <item name="textInputStyle">?attr/textInputFilledStyle</item>
-        <item name="toolbarStyle">@style/Widget.CosmicIde.Toolbar</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.CosmicIde</item>
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.M3</item>
 

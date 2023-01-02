@@ -1,36 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
+    android:layout_margin="@dimen/spacing_small"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?attr/colorSurface"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:foreground="?attr/selectableItemBackground"
-    android:paddingVertical="@dimen/spacing_small"
-    android:paddingHorizontal="@dimen/spacing_medium">
+    android:focusable="true">
 
-    <TextView
-        android:id="@+id/project_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textSize="20sp"
-        tools:text="Abc" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/project_path"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="start"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?android:attr/textColorSecondary"
-        android:maxLines="2"
-        tools:text="../org.cosmic.ide/files/projects/Abc/" />
+        <TextView
+            android:id="@+id/project_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:layout_marginHorizontal="12dp"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/project_path"
+            tools:text="Test project" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/project_path"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/spacing_small"
+            android:layout_marginHorizontal="12dp"
+            android:ellipsize="end"
+            android:textAlignment="viewStart"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:maxLines="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/project_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="../org.cosmic.ide/files/projects/Abc/" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
-import org.cosmic.ide.activity.MainActivity
+import org.cosmic.ide.activity.HomeActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
 import org.cosmic.ide.ui.editor.KotlinLanguage
@@ -106,7 +106,7 @@ class CodeEditorFragment : Fragment() {
                         requireActivity(),
                         getEditor(),
                         currentFile,
-                        (requireActivity() as MainActivity).project
+                        (requireActivity() as HomeActivity).project
                     )
                 )
         }
@@ -152,7 +152,7 @@ class CodeEditorFragment : Fragment() {
 
     private fun getKotlinLanguage(): Language {
         return try {
-            KotlinLanguage(binding.editor, (requireActivity() as MainActivity).project, currentFile)
+            KotlinLanguage(binding.editor, (requireActivity() as HomeActivity).project, currentFile)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             EmptyLanguage()

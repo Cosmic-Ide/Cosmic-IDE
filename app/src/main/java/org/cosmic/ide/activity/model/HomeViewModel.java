@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainViewModel extends ViewModel {
+public class HomeViewModel extends ViewModel {
 
     // The files currently opened in the editor
     private MutableLiveData<List<File>> mFiles;

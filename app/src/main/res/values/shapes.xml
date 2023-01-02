@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Shape.CosmicIde.Main.Logo" parent="">
+        <item name="cornerFamily">rounded</item>
+    </style>
+</resources>

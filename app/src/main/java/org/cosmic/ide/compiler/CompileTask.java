@@ -7,7 +7,7 @@ import android.util.Log;
 import org.cosmic.ide.App;
 import org.cosmic.ide.R;
 import org.cosmic.ide.activity.ConsoleActivity;
-import org.cosmic.ide.activity.MainActivity;
+import org.cosmic.ide.activity.HomeActivity;
 import org.cosmic.ide.android.exception.CompilationFailedException;
 import org.cosmic.ide.android.task.dex.D8Task;
 import org.cosmic.ide.android.task.java.JavaCompiler;
@@ -18,7 +18,7 @@ public class CompileTask extends Thread {
 
     private boolean showExecuteDialog;
 
-    private final MainActivity activity;
+    private final HomeActivity activity;
 
     private final CompilerListeners listener;
     private final Compilers compilers;
@@ -27,7 +27,7 @@ public class CompileTask extends Thread {
     private final String STAGE_JAVAC;
     private final String STAGE_D8;
 
-    public CompileTask(MainActivity context, CompilerListeners listener) {
+    public CompileTask(HomeActivity context, CompilerListeners listener) {
         this.activity = context;
         this.listener = listener;
         this.compilers =

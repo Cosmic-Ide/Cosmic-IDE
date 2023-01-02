@@ -26,8 +26,6 @@
 
     <string name="no_open_file_title">Нет открытых файлов</string>
     <string name="no_open_file_desc">Попробуйте открыть файл через левое меню.</string>
-    <string name="no_projects_title">Проектов не найдено</string>
-    <string name="no_projects_suggestion">Создайте проект, нажав кнопку ниже.</string>
 
     <string name="treemenu_create_kotlin">Создать класс Kotlin</string>
     <string name="treemenu_create_java">Создать класс Java</string>
@@ -44,25 +42,25 @@
     <string name="create_class_dialog_class_type">Тип класса</string>
     <string name="create_class_dialog_invalid_name">Недопустимое имя класса</string>
 
-    <string name="select_smali_class">Выберите класс Smali для просмотра</string>
+    <string name="select_smali_class">Выберите класс для просмотра</string>
     <string name="select_class_decompile">Выберите класс для декомпиляции</string>
     <string name="select_class_disassemble">Выберите класс для разборки</string>
     <string name="select_class_run">Выберите класс для выполнения</string>
 
     <string name="error_file_open">Не удалось открыть файл</string>
     <string name="error_file_unzip">Не удалось разархивировать файл</string>
-    <string name="error_file_extract_smali">Не удалось извлечь исходный код Smali</string>
+    <string name="error_file_extract_smali">Не удалось извлечь код Smali</string>
     <string name="error_class_decompile">Не удалось декомпилировать класс</string>
     <string name="error_class_disassemble">Не удалось разобрать класс</string>
-    <string name="error_classes_get_dex">Не удалось получить список классов в файле dex</string>
+    <string name="error_classes_get_dex">Не удалось получить список классов</string>
 
     <!-- Compiler Service -->
     <string name="compilation_state_compiling">Идёт компиляция</string>
     <string name="compilation_result_success">Успешная компиляция</string>
     <string name="compilation_result_failed">Сбой компиляции</string>
     <string name="compilation_stage">Этап компиляции</string>
-    <string name="compilation_console" translatable="false">Консоль</string>
-    <string name="compilation_recompile" translatable="false">Перекомпилировать</string>
+    <string name="compilation_console">Консоль</string>
+    <string name="compilation_recompile">Перекомпилировать</string>
     <string name="compilation_stage_clean">Очистка сборки&#8230;</string>
     <string name="compilation_stage_kotlinc">Компиляция с Kotlinc&#8230;</string>
     <string name="compilation_stage_javac">Компиляция с Javac&#8230;</string>
@@ -71,17 +69,15 @@
     <string name="console_state_running">Выполняется</string>
     <string name="console_state_stopped">Остановлено</string>
 
-    <string name="success">Успех</string>
-    <string name="delete_success">Успешное удаление.</string>
     <string name="dialog_confirm_delete">Вы уверены, что хотите удалить %1$s?</string>
     <string name="dialog_delete">Удалить</string>
     <string name="dialog_close">Закрыть</string>
 
-    <string name="logcat">Logcat</string>
     <string name="create_project">Создать проект</string>
+    <string name="open_project">Открыть проект</string>
     <string name="project_name">Название проекта</string>
     <string name="package_name">Имя пакета</string>
-    <string name="use_kotlin_template">Использовать шаблон Kotlin</string>
+    <string name="use_kotlin_template">Шаблон Kotlin</string>
 
     <string name="java_version">Версия Java</string>
     <string name="program_arguments">Аргументы программы</string>
@@ -93,12 +89,12 @@
     <string name="theme">Тема</string>
     <string name="about">О приложении</string>
     <string name="discord">Discord</string>
-    <string name="discord_desc">Присоединяйтесь к нашему серверу в Discord</string>
+    <string name="discord_desc">Присоединяйтесь к серверу в Discord</string>
     <string name="github">Github</string>
     <string name="github_desc">Посетите наш репозиторий на Github</string>
     <string name="app_version">Версия: %s</string>
     <string name="check_for_updates">Проверить обновления</string>
-    <string name="follow_system">Как в системе</string>
+    <string name="theme_default">По умолчанию</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Темная</string>
     <string name="app_translation">Перевод</string>
@@ -108,19 +104,7 @@
     <string name="editor">Редактор</string>
     <string name="font_size">Размер шрифта</string>
 
-    <string name="git_username">Имя пользователя</string>
-    <string name="git_useremail">Электронная почта</string>
-    <string name="git_new_repository">Новый Git-репозиторий</string>
-    <string name="git_commit">Коммит</string>
-    <string name="git_commit_message">Сообщение коммита</string>
-    <string name="git_branch">Ветка</string>
-    <string name="git_new_branch">Новая ветка</string>
-    <string name="git_name_branch">Название ветки</string>
-    <string name="git_merge">Объединить</string>
-    <string name="git_merge_branch">Объединить ветку</string>
-    <string name="git_merge_branch_message">Название ветки для слияния</string>
-    <string name="git_delete_branch">Удалить ветку</string>
-    <string name="git_delete_branch_message">Название ветки для удаления</string>
-    <string name="git_log_unavailable">Логи не доступны.</string>
+    <string name="get_started">Начало</string>
+    <string name="get_started_summary">Начните свой замечательный проект!</string>
 
 </resources>

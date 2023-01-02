@@ -20,9 +20,9 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import org.cosmic.ide.R
-import org.cosmic.ide.activity.MainActivity
+import org.cosmic.ide.activity.HomeActivity
 import org.cosmic.ide.activity.model.FileViewModel
-import org.cosmic.ide.activity.model.MainViewModel
+import org.cosmic.ide.activity.model.HomeViewModel
 import org.cosmic.ide.android.task.dex.D8Task.Companion.compileJar
 import org.cosmic.ide.common.util.FileUtil.createDirectory
 import org.cosmic.ide.common.util.FileUtil.deleteFile
@@ -49,14 +49,14 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
     private var createNewFileDialog: AlertDialog? = null
     private var createNewDirectoryDialog: AlertDialog? = null
     private var renameFileDialog: AlertDialog? = null
-    private val activity: MainActivity
-        get() = requireActivity() as MainActivity
-    private var mainViewModel: MainViewModel? = null
+    private val activity: HomeActivity
+        get() = requireActivity() as HomeActivity
+    private var homeViewModel: HomeViewModel? = null
     private var fileViewModel: FileViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProvider(activity)[MainViewModel::class.java]
+        homeViewModel = ViewModelProvider(activity)[HomeViewModel::class.java]
         fileViewModel = ViewModelProvider(activity)[FileViewModel::class.java]
     }
 
@@ -101,8 +101,8 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
                             try {
                                 val file = treeNode.value.getFile()
                                 if (file.isFile) {
-                                    mainViewModel!!.openFile(file)
-                                    mainViewModel!!.setDrawerState(false)
+                                    homeViewModel!!.openFile(file)
+                                    homeViewModel!!.setDrawerState(false)
                                 }
                             } catch (e: Exception) {
                                 showSimpleAlert(

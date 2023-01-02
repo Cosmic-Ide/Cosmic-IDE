@@ -25,9 +25,6 @@
 
     <string name="no_open_file_title">Es gibt keine offenen Dateien.</string>
     <string name="no_open_file_desc">Versuchen Sie, die Datei über das linke Menü zu öffnen.</string>
-    <string name="no_projects_title">Projekte nicht gefunden</string>
-    <string name="no_projects_suggestion">Erstellen Sie ein Projekt, indem Sie auf die Schaltfläche unten klicken.
-    </string>
 
     <string name="treemenu_create_kotlin">Erstellen Sie eine Kotlin-Klasse</string>
     <string name="treemenu_create_java">Java-Klasse erstellen</string>
@@ -66,13 +63,10 @@
     <string name="compilation_stage_javac">Kompilieren mit Javac&#8230;</string>
     <string name="compilation_stage_d8">Dexing von Klassendateien mit D8&#8230;</string>
 
-    <string name="success">Erfolg</string>
-    <string name="delete_success">Erfolg löschen.</string>
     <string name="dialog_confirm_delete">Sind Sie sicher, dass Sie löschen möchten %1$s?</string>
     <string name="dialog_delete">Löschen</string>
     <string name="dialog_close">Nah dran</string>
 
-    <string name="logcat">Logcat</string>
     <string name="create_project">Projekt erstellen</string>
     <string name="project_name">Projektname</string>
     <string name="package_name">Paketnamen</string>
@@ -92,6 +86,5 @@
     <string name="github">Unser Github</string>
     <string name="github_desc">Sehen Sie sich unser Github-Repository an</string>
     <string name="app_version">Ausführung %s</string>
-    <string name="follow_system">System folgen</string>
 
 </resources>

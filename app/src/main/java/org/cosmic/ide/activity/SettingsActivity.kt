@@ -15,6 +15,10 @@ class SettingsActivity :
 
     private lateinit var binding: ActivitySettingsBinding
 
+    companion object {
+        private const val TAG = "SettingsActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -33,14 +37,14 @@ class SettingsActivity :
             }
         } else {
             savedInstanceState.let {
-                supportActionBar?.title = it.getCharSequence(TITLE_TAG)
+                supportActionBar?.title = it.getCharSequence(TAG)
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putCharSequence(TITLE_TAG, supportActionBar?.title)
+        outState.putCharSequence(TAG, supportActionBar?.title)
     }
 
     override fun onTitleChanged(title: CharSequence?, color: Int) {
@@ -66,9 +70,5 @@ class SettingsActivity :
             replace(R.id.container, fragment)
             addToBackStack(null)
         }
-    }
-
-    companion object {
-        private const val TITLE_TAG = "settings_title"
     }
 }

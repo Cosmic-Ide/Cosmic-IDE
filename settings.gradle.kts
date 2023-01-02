@@ -13,7 +13,6 @@ include(
     ":kotlin-completion",
     ":lynx",
     ":treeview",
-    ":git-api",
     "dependency-resolver",
     "java-completion",
 )

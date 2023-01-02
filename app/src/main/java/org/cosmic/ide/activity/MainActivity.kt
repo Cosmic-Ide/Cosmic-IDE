@@ -8,9 +8,9 @@ import com.github.pedrovgs.lynx.LynxActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.adapter.MainActionsListAdapter
+import org.cosmic.ide.activity.model.MainScreenAction
 import org.cosmic.ide.databinding.ActivityMainBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
-import org.cosmic.ide.model.MainScreenAction
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.project.KotlinProject
 import org.cosmic.ide.util.addSystemWindowInsetToPadding

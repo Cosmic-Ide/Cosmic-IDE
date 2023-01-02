@@ -3,8 +3,8 @@ package org.cosmic.ide.activity.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import org.cosmic.ide.activity.model.MainScreenAction
 import org.cosmic.ide.databinding.LayoutMainActionItemBinding
-import org.cosmic.ide.model.MainScreenAction
 
 class MainActionsListAdapter
 @JvmOverloads

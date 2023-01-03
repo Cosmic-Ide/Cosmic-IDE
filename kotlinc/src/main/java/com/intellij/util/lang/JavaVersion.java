@@ -162,7 +162,7 @@ public final class JavaVersion implements Comparable<JavaVersion> {
 
     private static JavaVersion rtVersion() {
         try {
-            Object version = Runtime.class.getMethod("version").invoke((Object) null);
+            Object version = Runtime.class.getMethod("version").invoke(null);
             int major = (Integer) version.getClass().getMethod("major").invoke(version);
             int minor = (Integer) version.getClass().getMethod("minor").invoke(version);
             int security = (Integer) version.getClass().getMethod("security").invoke(version);

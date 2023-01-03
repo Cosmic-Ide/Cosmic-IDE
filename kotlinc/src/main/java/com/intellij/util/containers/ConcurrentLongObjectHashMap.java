@@ -8,8 +8,6 @@ import android.os.Build;
 import org.jetbrains.annotations.NotNull;
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
-import sun.misc.Unsafe;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -19,6 +17,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.locks.LockSupport;
+
+import sun.misc.Unsafe;
 
 /**
  * Adapted from Doug Lea ConcurrentHashMap (see
@@ -233,7 +233,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
     static <V> boolean casTabAt(Node<V>[] tab, int i, Node<V> c, @NotNull Node<V> v) {
         try {
             return theUnsafe.compareAndSwapObject(
-                    (Object) tab, ((long) i << ASHIFT) + ABASE, (Object) c, (Object) v);
+                    tab, ((long) i << ASHIFT) + ABASE, c, v);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }
@@ -241,7 +241,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
 
     static <V> void setTabAt(Node<V>[] tab, int i, Node<V> v) {
         try {
-            theUnsafe.putObjectVolatile((Object) tab, ((long) i << ASHIFT) + ABASE, (Object) v);
+            theUnsafe.putObjectVolatile(tab, ((long) i << ASHIFT) + ABASE, v);
         } catch (Throwable throwable) {
             throw new RuntimeException(throwable);
         }

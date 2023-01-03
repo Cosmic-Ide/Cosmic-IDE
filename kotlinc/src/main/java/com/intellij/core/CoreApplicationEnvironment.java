@@ -208,7 +208,7 @@ public class CoreApplicationEnvironment {
     public void registerParserDefinition(Language language, ParserDefinition parserDefinition) {
 
         this.addExplicitExtension(
-                LanguageParserDefinitions.INSTANCE, (Language) language, parserDefinition);
+                LanguageParserDefinitions.INSTANCE, language, parserDefinition);
     }
 
     public <T> void addExplicitExtension(

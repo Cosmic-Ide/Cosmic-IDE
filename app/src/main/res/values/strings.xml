@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name" translatable="false">Cosmic IDE</string>
 
-    <string name="smali" translatable="false">Smali</string>
     <string name="disassemble" translatable="false">Disassemble</string>
     <string name="class2java" translatable="false">Class2Java</string>
     <string name="jar2dex" translatable="false">Jar2Dex</string>
@@ -133,5 +132,12 @@
     <string name="git_delete_branch_message">Branch name to delete</string>
     <string name="git_log_unavailable">Logs not available.</string>
     <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+    <string name="expand">expand</string>
+    <string name="file_icon">File icon</string>
+    <string name="group_id">Group Id</string>
+    <string name="artifact_id">Artifact Id</string>
+    <string name="version">Version</string>
+    <string name="library_downloader">Library Downloader</string>
+    <string name="import_project">Import Project</string>
 
 </resources>

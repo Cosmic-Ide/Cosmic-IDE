@@ -18,12 +18,11 @@ android {
     }
 
     signingConfigs {
-        val TESTKEY = "testkey"
         getByName(BuildType.DEBUG) {
             storeFile = file("testkey.keystore")
-            storePassword = TESTKEY
-            keyAlias = TESTKEY
-            keyPassword = TESTKEY
+            storePassword = "testkey"
+            keyAlias = "testkey"
+            keyPassword = "testkey"
         }
     }
 
@@ -38,13 +37,11 @@ android {
             signingConfig = signingConfigs.getByName(BuildType.DEBUG)
             isMinifyEnabled = BuildTypeRelease.isMinifyEnabled
             isShrinkResources = BuildTypeRelease.isMinifyEnabled
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles("proguard-rules.pro")
         }
     }
 
-    buildFeatures {
-        viewBinding = true
-    }
+    buildFeatures.viewBinding = true
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
@@ -87,7 +84,6 @@ dependencies {
     }
     implementation("io.github.Rosemoe.sora-editor:editor:0.20.4")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.20.4")
-//    implementation("io.github.Rosemoe.sora-editor:editor-lsp:0.20.4")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")

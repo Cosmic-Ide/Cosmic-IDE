@@ -1,8 +1,10 @@
 package com.intellij.util.containers;
 
-import sun.misc.Unsafe;
+import android.annotation.SuppressLint;
 
 import java.lang.reflect.Field;
+
+import sun.misc.Unsafe;
 
 public class UnsafeUtil {
 
@@ -12,7 +14,7 @@ public class UnsafeUtil {
         } catch (SecurityException se) {
             Class<Unsafe> type = Unsafe.class;
             try {
-                Field field = type.getDeclaredField("theUnsafe");
+                @SuppressLint("DiscouragedPrivateApi") Field field = type.getDeclaredField("theUnsafe");
                 field.setAccessible(true);
                 return type.cast(field.get(type));
             } catch (Exception e) {

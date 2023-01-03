@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AlertDialog
 import androidx.documentfile.provider.DocumentFile
@@ -18,8 +19,8 @@ import org.cosmic.ide.R
 import org.cosmic.ide.activity.adapter.ProjectAdapter
 import org.cosmic.ide.activity.adapter.ProjectAdapter.OnProjectEventListener
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
-import org.cosmic.ide.common.util.unzip
 import org.cosmic.ide.common.util.FileUtil
+import org.cosmic.ide.common.util.unzip
 import org.cosmic.ide.databinding.ActivityProjectBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
 import org.cosmic.ide.git.model.Author
@@ -101,36 +102,52 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.action_settings) {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        } else if (id == R.id.action_logcat) {
-            startActivity(LynxActivity.getIntent(this))
-        } else if (id == R.id.import_project) {
-            // Create an intent for the user to select a directory
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                type = "application/zip"
+        when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
             }
 
-            startActivityForResult(intent, REQUEST_CODE_SELECT_PROJECT)
+            R.id.action_logcat -> {
+                startActivity(LynxActivity.getIntent(this))
+            }
+
+            R.id.import_project -> {
+                // Create an intent for the user to select a directory
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    type = "application/zip"
+                }
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                    if (result.resultCode == RESULT_OK) {
+                        result.data?.data?.let { uri ->
+                            val file = DocumentFile.fromSingleUri(this, uri)!!
+                            val name = file.name?.substringBeforeLast(".")
+                            val path = FileUtil.getProjectsDir() + name
+                            val projectDir = File(path)
+                            if (projectDir.exists()) {
+                                MaterialAlertDialogBuilder(this)
+                                    .setTitle("Project already exists")
+                                    .setMessage("Do you want to overwrite it?")
+                                    .setPositiveButton("Yes") { _, _ ->
+                                        projectDir.deleteRecursively()
+                                        contentResolver.openInputStream(uri)!!.use {
+                                            it.unzip(File(FileUtil.getProjectsDir()))
+                                            loadProjects()
+                                        }
+                                    }
+                                    .setNegativeButton("No") { _, _ -> }
+                                    .show()
+                            } else {
+                                contentResolver.openInputStream(uri)!!.use {
+                                    it.unzip(projectDir)
+                                    loadProjects()
+                                }
+                            }
+                        }
+                    }
+                }.launch(intent)
+            }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == REQUEST_CODE_SELECT_PROJECT && resultCode == RESULT_OK) {
-            val uri = data?.data
-            if (uri == null) {
-                AndroidUtilities.showToast("No file selected.")
-                return
-            }
-            val inputStream = contentResolver.openInputStream(uri)!!
-            inputStream.unzip(File(FileUtil.getProjectsDir()))
-
-            loadProjects()
-        }
     }
 
     override fun onResume() {

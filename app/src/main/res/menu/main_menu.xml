@@ -43,7 +43,7 @@
 
     <item
         android:id="@+id/library_downloader"
-        android:title="Library Downloader" />
+        android:title="@string/library_downloader" />
 
     <item
         android:id="@+id/action_git"

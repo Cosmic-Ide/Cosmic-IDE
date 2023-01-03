@@ -8,10 +8,10 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
     android:orientation="horizontal"
-    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:paddingStart="?attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?attr/listPreferredItemPaddingEnd"
     tools:ignore="PrivateResource">
 
     <include layout="@layout/image_frame" />
@@ -40,7 +40,7 @@
                 android:ellipsize="marquee"
                 android:labelFor="@id/seekbar"
                 android:singleLine="true"
-                android:textAppearance="?android:attr/textAppearanceListItem"
+                android:textAppearance="?attr/textAppearanceListItem"
                 tools:ignore="LabelFor" />
 
             <TextView

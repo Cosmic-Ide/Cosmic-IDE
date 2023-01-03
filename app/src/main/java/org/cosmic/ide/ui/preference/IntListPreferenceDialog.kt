@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.cosmic.ide.R
 
 class IntListPreferenceDialog : PreferenceDialogFragmentCompat() {
     private val listPreference: IntListPreference
@@ -34,10 +33,15 @@ class IntListPreferenceDialog : PreferenceDialogFragmentCompat() {
 }
 
 fun PreferenceFragmentCompat.showIntListPreferenceDialog(preference: IntListPreference) {
-    val dialog = IntListPreferenceDialog().apply {
+    val dialogFragment = IntListPreferenceDialog().apply {
         arguments = Bundle(1).apply {
             putString("key", preference.key)
         }
     }
-    dialog.show(parentFragmentManager, "androidx.preference.PreferenceFragment.IntListPreferenceDialog")
+    @Suppress("DEPRECATION")
+    dialogFragment.setTargetFragment(this, 0)
+    dialogFragment.show(
+        parentFragmentManager,
+        "androidx.preference.PreferenceFragment.IntListPreferenceDialog"
+    )
 }

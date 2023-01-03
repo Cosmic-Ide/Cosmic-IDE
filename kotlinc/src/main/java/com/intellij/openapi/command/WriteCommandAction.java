@@ -302,31 +302,15 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
         return false;
     }
 
-    /**
-     * See {@link CommandProcessor#executeCommand(Project, Runnable, String, Object,
-     * UndoConfirmationPolicy, boolean)} for details.
-     *
-     * @deprecated Use {@link #writeCommandAction(Project)}.withUndoConfirmationPolicy() instead
-     */
-    @Deprecated
-    @NotNull
-    protected UndoConfirmationPolicy getUndoConfirmationPolicy() {
-        return UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION;
-    }
-
     private void doExecuteCommand(@NotNull Runnable runnable) {
-        Runnable wrappedRunnable =
-                () -> {
-                    // if (isGlobalUndoAction())
-                    // CommandProcessor.getInstance().markCurrentCommandAsGlobal(getProject());
-                    runnable.run();
-                };
+        // if (isGlobalUndoAction())
+        // CommandProcessor.getInstance().markCurrentCommandAsGlobal(getProject());
         CommandProcessorEx.getInstance()
                 .executeCommand(
                         getProject(),
-                        wrappedRunnable,
+                        runnable,
                         getCommandName(),
-                        getUndoConfirmationPolicy());
+                        writeCommandAction(getProject()).withUndoConfirmationPolicy(UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION));
     }
 
     /**

@@ -1,9 +1,14 @@
 package org.cosmic.ide.git.usecases
 
-import kotlinx.coroutines.*
-import org.cosmic.ide.git.model.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.cosmic.ide.git.model.Author
+import org.cosmic.ide.git.model.Gitter
+import org.cosmic.ide.git.model.of
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.MergeCommand
+import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Repository
@@ -16,11 +21,11 @@ typealias LogList = List<RevCommit>
 
 const val GIT_SUFFIX = ".git"
 
-fun String.createGitRepoWith(commiter: Author, msg: String): Gitter =
+fun String.createGitRepoWith(author: Author, msg: String): Gitter =
     createRepo()
         .createGit()
         .addProjectFiles()
-        .commiting(commiter, msg)
+        .commiting(author, msg)
 
 fun openGitAt(path: String): Gitter =
     path.openRepo().createGit()
@@ -57,7 +62,7 @@ fun Gitter.commiting(commiter: Author, msg: String): Gitter = apply {
     }
 }
 
-private suspend fun Gitter.commit(person: Author, msg: String): Gitter = apply {
+private fun Gitter.commit(person: Author, msg: String): Gitter = apply {
     git.commit()
         .setCommitter(person.of())
         .setAuthor(person.of())
@@ -76,13 +81,13 @@ private fun Gitter.getLogList(): LogList =
         .toList()
 
 private fun LogList.formatLog(): String =
-    map { elem ->
+    joinToString("\n") { elem ->
         val type = Constants.typeString(elem.type).uppercase()
         val name = "${elem.name().substring(8)}..."
         val time = Date(elem.commitTime.toLong() * 1000)
         val msg = elem.fullMessage
         "\t${type}\n${name}\n${time}\n\n${msg}\n"
-    }.joinToString("\n")
+    }
 
 fun Gitter.createBranch(branch: String): Gitter = apply {
     runBlocking {
@@ -127,11 +132,11 @@ fun Gitter.mergeBranch(branch: String): Gitter = apply {
     }
 }
 
-suspend fun Gitter.mergeWith(branch: String): MergeCommand =
+fun Gitter.mergeWith(branch: String): MergeCommand =
     git.merge()
         .include(resolve(branch))
 
-suspend fun Gitter.resolve(branch: String): ObjectId =
+fun Gitter.resolve(branch: String): ObjectId =
     git.repository
         .resolve(branch)
 
@@ -150,4 +155,31 @@ fun isGitRepoAt(filePath: String) = File("$filePath/$GIT_SUFFIX").exists()
 
 fun Gitter.dispose() {
     git.close()
+}
+
+fun Gitter.getHead(): RevCommit =
+    git.repository
+        .exactRef("HEAD")
+        .objectId
+        .let { git.repository.parseCommit(it) }
+
+fun Gitter.getHeadId(): String =
+    git.repository
+        .exactRef("HEAD")
+        .objectId
+        .name
+
+fun Gitter.getHeadName(): String =
+    git.repository
+        .exactRef("HEAD")
+        .name
+
+fun Gitter.resetLast(): Gitter = apply {
+    runBlocking {
+        launch(Dispatchers.Default) {
+            git.reset()
+                .setMode(ResetCommand.ResetType.SOFT)
+                .call()
+        }
+    }
 }

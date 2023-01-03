@@ -1,5 +1,6 @@
 package org.cosmic.ide
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.Intent
@@ -71,6 +72,7 @@ class App : Application() {
     }
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
 
         @JvmStatic

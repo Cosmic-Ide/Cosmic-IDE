@@ -14,8 +14,6 @@
 
 package org.cosmic.ide.ui.treeview;
 
-import org.cosmic.ide.ui.treeview.helper.TreeHelper;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,7 @@ public class TreeNode<D> {
 
     private boolean selected;
 
-    private boolean itemClickEnable = true;
+    private final boolean itemClickEnable = true;
 
     public TreeNode(D value, int level) {
         this.value = value;
@@ -71,14 +69,6 @@ public class TreeNode<D> {
 
     public boolean isLeaf() {
         return children.size() == 0;
-    }
-
-    public boolean isLastChild() {
-        if (parent == null) {
-            return false;
-        }
-        var children = parent.getChildren();
-        return children.size() > 0 && children.indexOf(this) == children.size() - 1;
     }
 
     public boolean isRoot() {
@@ -120,16 +110,6 @@ public class TreeNode<D> {
         return children;
     }
 
-    public List<TreeNode<D>> getSelectedChildren() {
-        var selectedChildren = new ArrayList<TreeNode<D>>();
-        for (var child : getChildren()) {
-            if (child.isSelected()) {
-                selectedChildren.add(child);
-            }
-        }
-        return selectedChildren;
-    }
-
     public void setChildren(List<TreeNode<D>> children) {
         if (children == null) {
             return;
@@ -137,23 +117,6 @@ public class TreeNode<D> {
         this.children = new ArrayList<>();
         for (var child : children) {
             addChild(child);
-        }
-    }
-
-    /** Updating the list of children while maintaining the tree structure */
-    public void updateChildren(List<TreeNode<D>> children) {
-        var expands = new ArrayList<Boolean>();
-        var allNodesPre = TreeHelper.getAllNodes(this);
-        for (var node : allNodesPre) {
-            expands.add(node.isExpanded());
-        }
-
-        this.children = children;
-        var allNodes = TreeHelper.getAllNodes(this);
-        if (allNodes.size() == expands.size()) {
-            for (int i = 0; i < allNodes.size(); i++) {
-                allNodes.get(i).setExpanded(expands.get(i));
-            }
         }
     }
 
@@ -171,10 +134,6 @@ public class TreeNode<D> {
 
     public boolean isItemClickEnable() {
         return itemClickEnable;
-    }
-
-    public void setItemClickEnable(boolean itemClickEnable) {
-        this.itemClickEnable = itemClickEnable;
     }
 
     public String getId() {

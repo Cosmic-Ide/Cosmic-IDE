@@ -6,11 +6,9 @@ plugins {
 android {
     namespace = "org.jetbrains.kotlin"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     buildTypes {

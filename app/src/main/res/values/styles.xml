@@ -26,7 +26,7 @@
     </style>
 
     <style name="Preference.Slider" parent="Preference.SeekBarPreference.Material">
-        <item name="android:layout">@layout/preference_slider</item>
+        <item name="layout">@layout/preference_slider</item>
     </style>
 
     <style name="Preference.SwitchPreferenceCompat.M3" parent="Preference.SwitchPreferenceCompat.Material">

@@ -144,7 +144,7 @@ public final class JDOMUtil {
     }
 
     public static Element load(InputStream stream) throws JDOMException, IOException {
-        return stream == null ? null : load((InputStream) stream, (SafeJdomFactory) null);
+        return stream == null ? null : load(stream, null);
     }
 
     public static Element load(InputStream stream, SafeJdomFactory factory)
@@ -175,7 +175,7 @@ public final class JDOMUtil {
         String var10000;
         try {
             StringWriter writer = new StringWriter();
-            writeElement(element, writer, (String) lineSeparator);
+            writeElement(element, writer, lineSeparator);
             var10000 = writer.toString();
         } catch (IOException var3) {
             throw new RuntimeException(var3);
@@ -270,7 +270,7 @@ public final class JDOMUtil {
             buf.append("[");
 
             for (int idx = 0; idx < length; ++idx) {
-                Attribute attr = (Attribute) attributes.get(idx);
+                Attribute attr = attributes.get(idx);
                 if (idx != 0) {
                     buf.append(";");
                 }
@@ -294,9 +294,8 @@ public final class JDOMUtil {
     }
 
     public static List<Attribute> getAttributes(Element e) {
-        List var10000 = e.hasAttributes() ? e.getAttributes() : Collections.emptyList();
 
-        return var10000;
+        return e.hasAttributes() ? e.getAttributes() : Collections.emptyList();
     }
 
     private static class ElementInfo {

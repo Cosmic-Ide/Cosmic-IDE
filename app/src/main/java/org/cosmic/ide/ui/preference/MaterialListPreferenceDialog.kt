@@ -30,8 +30,7 @@ class MaterialListPreferenceDialog : ListPreferenceDialogFragmentCompat() {
         }
         onPrepareDialogBuilder(builder)
 
-        val dialog = builder.create()
-        return dialog
+        return builder.create()
     }
 
     /* Override the methods that access mWhichButtonClicked (because we cannot set it properly here) */
@@ -67,5 +66,10 @@ fun PreferenceFragmentCompat.showListPreferenceDialog(preference: ListPreference
             putString("key", preference.key)
         }
     }
-    dialogFragment.show(parentFragmentManager, "androidx.preference.PreferenceFragment.MaterialListPreferenceDialog")
+    @Suppress("DEPRECATION")
+    dialogFragment.setTargetFragment(this, 0)
+    dialogFragment.show(
+        parentFragmentManager,
+        "androidx.preference.PreferenceFragment.MaterialListPreferenceDialog"
+    )
 }

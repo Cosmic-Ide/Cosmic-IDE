@@ -51,7 +51,6 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.jf.dexlib2.DexFileFactory
 import org.jf.dexlib2.Opcodes
 import org.jf.dexlib2.iface.ClassDef
-import org.json.JSONException
 import java.io.File
 import java.io.IOException
 
@@ -358,10 +357,6 @@ class MainActivity : BaseActivity() {
             // Log.e(TAG, "Cannot save opened files", e)
         // }
     // }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
         val currentFile = mainViewModel.files.value!![pos]

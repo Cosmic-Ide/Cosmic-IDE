@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/spacing_medium"
@@ -9,12 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        app:cardCornerRadius="4sp"
         app:contentPadding="@dimen/spacing_small">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -24,25 +26,28 @@
         android:paddingVertical="@dimen/spacing_small">
 
         <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:constraint_referenced_ids="button_commit, button_create_branch, button_merge_branch, button_delete_branch"
-            app:flow_wrapMode="chain"
+            app:flow_horizontalGap="@dimen/spacing_tiny"
             app:flow_horizontalStyle="spread"
-            app:flow_verticalStyle="packed"
             app:flow_maxElementsWrap="2"
             app:flow_verticalGap="@dimen/spacing_small"
-            app:flow_horizontalGap="@dimen/spacing_tiny" />
+            app:flow_verticalStyle="packed"
+            app:flow_wrapMode="chain"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/button_commit"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/git_commit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintWidth_percent="0.5" />
 
         <Button
@@ -50,29 +55,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/git_new_branch"
-            app:layout_constraintWidth_percent="0.5" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/flow" />
 
         <Button
             android:id="@+id/button_merge_branch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/git_merge_branch"
-            app:layout_constraintWidth_percent="0.5" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="120dp" />
 
         <Button
             android:id="@+id/button_delete_branch"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/git_delete_branch"
-            app:layout_constraintWidth_percent="0.5" />
+            android:text="@string/git_delete_branch" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Spinner
         android:id="@+id/spinner_branch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_small"
-        android:layout_marginHorizontal="@dimen/spacing_medium" />
+        android:layout_height="40sp"
+        android:layout_marginHorizontal="@dimen/spacing_medium"
+        android:layout_marginTop="@dimen/spacing_small" />
 
 </LinearLayout>

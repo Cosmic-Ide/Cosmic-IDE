@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.CosmicIde" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:forceDarkAllowed">false</item>
+
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">?attr/isLightTheme
+        </item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/black</item>
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">@null</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+
+        <item name="android:overScrollMode">never</item>
+
+        <item name="textInputStyle">?attr/textInputFilledStyle</item>
+        <item name="toolbarStyle">@style/Widget.CosmicIde.Toolbar</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.CosmicIde</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.M3</item>
+
+        <item name="textAppearanceListItem">?attr/textAppearanceBodyLarge</item>
+        <item name="textAppearanceListItemSecondary">?attr/textAppearanceBodySmall</item>
+    </style>
+</resources>

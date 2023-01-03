@@ -1,5 +1,6 @@
 plugins {
     id(BuildPlugins.ANDROID_LIBRARY)
+    id(BuildPlugins.KOTLIN_ANDROID)
 }
 
 android {
@@ -9,19 +10,25 @@ android {
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 }
 

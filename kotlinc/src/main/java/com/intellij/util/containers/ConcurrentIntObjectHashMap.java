@@ -8,8 +8,6 @@ import android.os.Build;
 import org.jetbrains.annotations.NotNull;
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
-import sun.misc.Unsafe;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -19,6 +17,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.locks.LockSupport;
+
+import sun.misc.Unsafe;
 
 /**
  * Adapted from Doug Lea ConcurrentHashMap (see
@@ -99,71 +99,18 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
     static final int RESERVED = -3; // hash for transient reservations
     static final int HASH_BITS = 0x7fffffff; // usable bits of normal node hash
 
-    /** Number of CPUS, to place bounds on some sizings */
+    /**
+     * Number of CPUS, to place bounds on some sizings
+     */
     static final int NCPU = Runtime.getRuntime().availableProcessors();
 
     /* ---------------- Nodes -------------- */
 
-    /**
-     * Key-value entry. This class is never exported out as a user-mutable Map.Entry (i.e., one
-     * supporting setValue; see MapEntry below), but can be used for read-only traversals used in
-     * bulk tasks. Subclasses of Node with a negative hash field are special, and contain null keys
-     * and values (but are never exported). Otherwise, keys and vals are never null.
-     */
-    static class Node<V> implements Entry<V> {
-        final int hash;
-        final int key;
-        volatile V val;
-        volatile Node<V> next;
-
-        Node(int hash, int key, V val, Node<V> next) {
-            this.hash = hash;
-            this.key = key;
-            this.val = val;
-            this.next = next;
-        }
-
-        @Override
-        public final int getKey() {
-            return key;
-        }
-
-        @NotNull
-        @Override
-        public final V getValue() {
-            return val;
-        }
-
-        @Override
-        public final int hashCode() {
-            return (key ^ val.hashCode());
-        }
-
-        @Override
-        public final String toString() {
-            return key + "=" + val;
-        }
-
-        @Override
-        public final boolean equals(Object o) {
-            Object v;
-            Object u;
-            Entry<?> e;
-            return ((o instanceof Entry)
-                    && (e = (Entry<?>) o).getKey() == key
-                    && (v = e.getValue()) != null
-                    && (v == (u = val) || v.equals(u)));
-        }
-
-        /** Virtualized support for map.get(); overridden in subclasses. */
-        Node<V> find(int h, int k) {
-            Node<V> e = this;
-            do {
-                if ((e.key == k)) {
-                    return e;
-                }
-            } while ((e = e.next) != null);
-            return null;
+    static <V> void setTabAt(Node<V>[] tab, int i, Node<V> v) {
+        try {
+            theUnsafe.putObjectVolatile(tab, ((long) i << ASHIFT) + ABASE, v);
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
         }
     }
 
@@ -235,12 +182,43 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
         }
     }
 
-    static <V> void setTabAt(Node<V>[] tab, int i, Node<V> v) {
-        try {
-            theUnsafe.putObjectVolatile((Object) tab, ((long) i << ASHIFT) + ABASE, (Object) v);
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
+    /**
+     * Compares the specified object with this map for equality. Returns {@code true} if the given
+     * object is a map with the same mappings as this map. This operation may return misleading
+     * results if either map is concurrently modified during execution of this method.
+     *
+     * @param o object to be compared for equality with this map
+     * @return {@code true} if the specified object is equal to this map
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o != this) {
+            if (!(o instanceof ConcurrentIntObjectMap)) {
+                return false;
+            }
+            IntObjectMap<?> m = (IntObjectMap) o;
+            Node<V>[] t;
+            int f = (t = table) == null ? 0 : t.length;
+            Traverser<V> it = new Traverser<>(t, f, 0, f);
+            for (Node<V> p; (p = it.advance()) != null; ) {
+                V val = p.val;
+                Object v = m.get(p.key);
+                if (v == null || (v != val && !v.equals(val))) {
+                    return false;
+                }
+            }
+            for (Entry e : m.entrySet()) {
+                int mk = e.getKey();
+                Object mv;
+                V v;
+                if ((mv = e.getValue()) == null
+                        || (v = get(mk)) == null
+                        || (mv != v && !mv.equals(v))) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     /* ---------------- Fields -------------- */
@@ -756,42 +734,68 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
     }
 
     /**
-     * Compares the specified object with this map for equality. Returns {@code true} if the given
-     * object is a map with the same mappings as this map. This operation may return misleading
-     * results if either map is concurrently modified during execution of this method.
-     *
-     * @param o object to be compared for equality with this map
-     * @return {@code true} if the specified object is equal to this map
+     * Key-value entry. This class is never exported out as a user-mutable Map.Entry (i.e., one
+     * supporting setValue; see MapEntry below), but can be used for read-only traversals used in
+     * bulk tasks. Subclasses of Node with a negative hash field are special, and contain null keys
+     * and values (but are never exported). Otherwise, keys and vals are never null.
      */
-    @Override
-    public boolean equals(Object o) {
-        if (o != this) {
-            if (!(o instanceof ConcurrentIntObjectMap)) {
-                return false;
-            }
-            IntObjectMap<?> m = (IntObjectMap) o;
-            Node<V>[] t;
-            int f = (t = table) == null ? 0 : t.length;
-            Traverser<V> it = new Traverser<>(t, f, 0, f);
-            for (Node<V> p; (p = it.advance()) != null; ) {
-                V val = p.val;
-                Object v = m.get(p.key);
-                if (v == null || (v != val && !v.equals(val))) {
-                    return false;
-                }
-            }
-            for (Entry e : m.entrySet()) {
-                int mk = e.getKey();
-                Object mv;
-                Object v;
-                if ((mv = e.getValue()) == null
-                        || (v = get(mk)) == null
-                        || (mv != v && !mv.equals(v))) {
-                    return false;
-                }
-            }
+    static class Node<V> implements Entry<V> {
+        final int hash;
+        final int key;
+        volatile V val;
+        volatile Node<V> next;
+
+        Node(int hash, int key, V val, Node<V> next) {
+            this.hash = hash;
+            this.key = key;
+            this.val = val;
+            this.next = next;
         }
-        return true;
+
+        @Override
+        public final int getKey() {
+            return key;
+        }
+
+        @NotNull
+        @Override
+        public final V getValue() {
+            return val;
+        }
+
+        @Override
+        public final int hashCode() {
+            return (key ^ val.hashCode());
+        }
+
+        @Override
+        public final String toString() {
+            return key + "=" + val;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            Object v;
+            V u;
+            Entry<?> e;
+            return ((o instanceof Entry)
+                    && (e = (Entry<?>) o).getKey() == key
+                    && (v = e.getValue()) != null
+                    && (v == (u = val) || v.equals(u)));
+        }
+
+        /**
+         * Virtualized support for map.get(); overridden in subclasses.
+         */
+        Node<V> find(int h, int k) {
+            Node<V> e = this;
+            do {
+                if ((e.key == k)) {
+                    return e;
+                }
+            } while ((e = e.next) != null);
+            return null;
+        }
     }
 
     // ConcurrentMap methods

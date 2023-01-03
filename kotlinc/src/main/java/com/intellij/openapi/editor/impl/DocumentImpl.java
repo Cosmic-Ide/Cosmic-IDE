@@ -43,9 +43,6 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.text.CharArrayUtil;
 import com.intellij.util.text.ImmutableCharSequence;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -59,6 +56,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public final class DocumentImpl extends UserDataHolderBase implements DocumentEx {
     private static final Logger LOG = Logger.getInstance(DocumentImpl.class);
@@ -520,12 +520,13 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     @Override
     public RangeMarker getOffsetGuard(int offset) {
         // Way too many garbage is produced otherwise in AbstractList.iterator()
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0; i < myGuardedBlocks.size(); i++) {
+        int i = 0;
+        while (i < myGuardedBlocks.size()) {
             RangeMarker block = myGuardedBlocks.get(i);
             if (offsetInRange(offset, block.getStartOffset(), block.getEndOffset())) {
                 return block;
             }
+            i++;
         }
 
         return null;

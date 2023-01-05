@@ -15,6 +15,7 @@ data class Artifact(
         if (repository == null) {
             throw IllegalStateException("Repository is not declared.")
         }
+        output.createNewFile()
         val dependencyUrl =
             "${ repository!!.getURL() }/${groupId.replace(".", "/")}/$artifactId/$version/$artifactId-$version.jar"
         val stream = URL(dependencyUrl).openConnection().inputStream

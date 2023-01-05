@@ -10,8 +10,8 @@ object CompilerUtil {
         listOf(
             File(FileUtil.getClasspathDir(), "android.jar"),
             File(FileUtil.getClasspathDir(), "core-lambda-stubs.jar"),
-            File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.jar"),
-            File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0-RC.jar")
+            File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0.jar"),
+            File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0.jar")
         )
     }
 

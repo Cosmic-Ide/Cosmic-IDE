@@ -54,12 +54,12 @@ public class ToolsManager {
     }
 
     private static void writeKotlinStdLib() {
-        final var stdLib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.jar");
+        final var stdLib = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0.jar");
 
         if (!stdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        App.context.getAssets().open("kotlin-stdlib-1.8.0-RC.jar"), stdLib.getAbsolutePath());
+                        App.context.getAssets().open("kotlin-stdlib-1.8.0.jar"), stdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin stdlib file");
             }
@@ -67,12 +67,12 @@ public class ToolsManager {
     }
 
     private static void writeKotlinStdLibDex() {
-        final var dex = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0-RC.dex");
+        final var dex = new File(FileUtil.getClasspathDir(), "kotlin-stdlib-1.8.0.dex");
 
         if (!dex.exists()) {
             try {
                 FileUtil.writeFile(
-                        App.context.getAssets().open("kotlin-stdlib-1.8.0-RC.dex"), dex.getAbsolutePath());
+                        App.context.getAssets().open("kotlin-stdlib-1.8.0.dex"), dex.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin stdlib dex file");
             }
@@ -81,12 +81,12 @@ public class ToolsManager {
 
     private static void writeKotlinCommonStdLib() {
         final var commonStdLib =
-                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0-RC.jar");
+                new File(FileUtil.getClasspathDir(), "kotlin-stdlib-common-1.8.0.jar");
 
         if (!commonStdLib.exists()) {
             try {
                 FileUtil.writeFile(
-                        App.context.getAssets().open("kotlin-stdlib-common-1.8.0-RC.jar"),
+                        App.context.getAssets().open("kotlin-stdlib-common-1.8.0.jar"),
                         commonStdLib.getAbsolutePath());
             } catch (IOException e) {
                 Log.d(TAG, "Unable to extract kotlin common stdlib file");

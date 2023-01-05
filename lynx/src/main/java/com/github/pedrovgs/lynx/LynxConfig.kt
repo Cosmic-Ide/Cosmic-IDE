@@ -80,13 +80,14 @@ class LynxConfig : Serializable, Cloneable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is LynxConfig) return false
-        if (maxNumberOfTracesToShow != other.maxNumberOfTracesToShow) return false
-        if (samplingRate != other.samplingRate) return false
-        if (filter != other.filter) return false
-        return if (textSizeInPx != other.textSizeInPx) {
-            false
-        } else filterTraceLevel == other.filterTraceLevel
+        if (
+            other !is LynxConfig
+            || maxNumberOfTracesToShow != other.maxNumberOfTracesToShow
+            || samplingRate != other.samplingRate
+            || filter != other.filter
+            || textSizeInPx != other.textSizeInPx
+        ) return false
+        return filterTraceLevel == other.filterTraceLevel
     }
 
     override fun hashCode(): Int {

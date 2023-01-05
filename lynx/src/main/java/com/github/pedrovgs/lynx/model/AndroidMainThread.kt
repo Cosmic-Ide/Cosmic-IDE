@@ -25,7 +25,7 @@ import android.os.Looper
  * @author Pedro Vicente Gomez Sanchez.
  */
 class AndroidMainThread : MainThread {
-    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun post(runnable: Runnable?) {
         if (runnable != null) {

@@ -1,6 +1,7 @@
 package org.cosmic.ide.android.task.kotlin
 
 import android.content.SharedPreferences
+import android.util.Log
 import org.cosmic.ide.CompilerUtil
 import org.cosmic.ide.android.exception.CompilationFailedException
 import org.cosmic.ide.android.interfaces.Task
@@ -29,10 +30,13 @@ class KotlinCompiler : Task {
                 message: String,
                 location: CompilerMessageSourceLocation?
             ) {
+                val diagnostic = Diagnostic(severity, message, location)
                 // do not add redundant logging messages
-                if (severity != CompilerMessageSeverity.LOGGING) {
-                    diagnostics.add(Diagnostic(severity, message, location))
+                if (severity == CompilerMessageSeverity.LOGGING) {
+                    Log.d("KotlinCompiler", diagnostic.toString())
+                    return
                 }
+                diagnostics.add(diagnostic)
             }
 
             override fun toString() = diagnostics
@@ -64,12 +68,12 @@ class KotlinCompiler : Task {
         val claspath = mutableListOf<File>()
 
         File(project.libDirPath).walk().forEach {
-            if (it.extension.equals("jar")) {
+            if (it.extension == "jar") {
                 claspath.add(it)
             }
         }
 
-        val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
+        val plugins = getKotlinCompilerPlugins(project).map(File::absolutePath).toTypedArray()
 
         val appClass = Class.forName("org.cosmic.ide.App")
         val prefs = appClass.getDeclaredMethod("getDefaultPreferences").invoke(null) as SharedPreferences
@@ -109,7 +113,7 @@ class KotlinCompiler : Task {
 
         dir.walk().forEach {
             val ext = it.extension
-            if (ext.equals("java") || ext.equals("kt")) {
+            if (ext == "java" || ext == "kt") {
                 sourceFiles.add(it.absolutePath)
             }
         }
@@ -121,7 +125,7 @@ class KotlinCompiler : Task {
         val plugins = mutableListOf<File>()
 
         pluginDir.walk().forEach {
-            if (it.extension.equals("jar")) {
+            if (it.extension == "jar") {
                 plugins.add(it)
             }
         }

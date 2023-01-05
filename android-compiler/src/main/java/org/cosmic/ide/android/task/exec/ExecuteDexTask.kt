@@ -54,7 +54,7 @@ class ExecuteDexTask(
         val dexLoader = MultipleDexClassLoader()
 
         dexLoader.loadDex(dexFile)
-        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0-RC.dex")
+        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0.dex")
 
         // TODO: Move to D8Task
         val folder = File(project.libDirPath)

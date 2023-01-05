@@ -373,16 +373,32 @@ class MainActivity : BaseActivity() {
                 val version = libraryBinding.version.text.toString()
                 inParallel {
                     val artifact = getArtifact(groupId, artifactId, version)
-                    if (artifact != null) {
+                    if (artifact == null) {
+                        runOnUiThread {
+                            AndroidUtilities.showToast("Library not available.")
+                            libraryDialog.dismiss()
+                        }
+                        return@inParallel
+                    }
+                    try {
                         artifact.downloadArtifact(File(project.libDirPath))
                         runOnUiThread {
                             AndroidUtilities.showToast("Library $artifactId downloaded.")
                             libraryDialog.dismiss()
                         }
-                    } else {
+                    } catch (e: IllegalStateException) {
                         runOnUiThread {
-                            AndroidUtilities.showToast("Library not available.")
-                            libraryDialog.dismiss()
+                            AndroidUtilities.showSimpleAlert(
+                                this,
+                                e.localizedMessage,
+                                e.stackTraceToString(),
+                                getString(R.string.dialog_close),
+                                getString(R.string.copy_stacktrace)
+                            ) { _, which ->
+                                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                    AndroidUtilities.copyToClipboard(e.localizedMessage)
+                                }
+                            }
                         }
                     }
                 }
@@ -531,7 +547,7 @@ class MainActivity : BaseActivity() {
                 .create()
                 .show()
         }
-    } // convert class name to standard form/* If the project doesn't seem to have the dex file, just recompile it */
+    }
 
     /* Used to find all the compiled classes from the output dex file */
     val classesFromDex: Array<String>?

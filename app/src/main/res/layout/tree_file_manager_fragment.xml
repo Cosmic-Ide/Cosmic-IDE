@@ -18,11 +18,17 @@
             android:layout_weight="1"
             android:fillViewport="true">
 
-            <HorizontalScrollView
-                android:id="@+id/horizontalScrollView"
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true" />
+                android:fillViewport="true">
+
+                <HorizontalScrollView
+                    android:id="@+id/horizontalScrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true" />
+            </ScrollView>
         </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.button.MaterialButton

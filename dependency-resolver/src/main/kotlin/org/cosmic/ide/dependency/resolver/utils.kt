@@ -22,7 +22,7 @@ fun initHost(artifact: Artifact): Artifact? {
             return artifact
         }
     }
-    return null
+    throw IllegalStateException("No repository contains ${ artifact.artifactId }.")
 }
 
 /*
@@ -49,9 +49,10 @@ fun InputStream.resolvePOM(): List<Artifact> {
         val artifact = Artifact(groupId, artifactId)
 
         val item = dependencyElement.getElementsByTagName("version").item(0)
-        if (item != null) {
-            artifact.version = item.textContent
+        if (item == null) {
+            throw IllegalStateException("$groupId:$artifactId doesn't declare a version.")
         }
+        artifact.version = item.textContent
         initHost(artifact)
         artifacts.add(artifact)
     }

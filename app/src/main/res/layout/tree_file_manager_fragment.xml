@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/spacing_medium"
             android:layout_marginVertical="@dimen/spacing_small"
+            android:visible="false"
             tools:text="ENABLE GIT" />
 
     </LinearLayout>

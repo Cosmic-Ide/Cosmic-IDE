@@ -82,7 +82,7 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
         isChanging = true
     }
-    implementation("io.github.Rosemoe.sora-editor:editor:0.20.4")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.0")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
     implementation("androidx.activity:activity-ktx:1.7.0-alpha02")

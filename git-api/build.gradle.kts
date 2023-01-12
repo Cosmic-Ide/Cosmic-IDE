@@ -7,7 +7,6 @@ plugins {
 android {
     namespace = "org.cosmic.ide.git"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION

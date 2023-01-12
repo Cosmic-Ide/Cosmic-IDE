@@ -6,7 +6,6 @@ plugins {
 android {
     namespace = "com.github.pedrovgs.lynx"
     compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
-    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
@@ -15,7 +14,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
@@ -32,8 +30,6 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
-
     implementation("com.google.android.material:material:1.8.0-rc01")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
     // TODO: migrate to recyclerview for better performance.

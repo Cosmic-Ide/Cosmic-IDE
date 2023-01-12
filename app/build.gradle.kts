@@ -77,7 +77,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
         isChanging = true

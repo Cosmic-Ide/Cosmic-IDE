@@ -1,5 +1,5 @@
--dontobfuscate
--allowaccessmodification
+-dontshrink
+-repackageclasses *
 
 -keepclassmembers,allowobfuscation class * {
  @com.google.gson.annotations.SerializedName <fields>;

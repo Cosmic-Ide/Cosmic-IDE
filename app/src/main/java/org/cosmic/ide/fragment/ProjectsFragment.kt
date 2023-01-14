@@ -41,6 +41,7 @@ class ProjectsFragment : BasePickerFragment(), ProjectsAdapter.OnProjectEventLis
             addSystemWindowInsetToPadding(bottom = true)
         }
 
+        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
         binding.toolbar.setOnMenuItemClickListener {
             if (it.itemId == R.id.action_open_from_docs) {
                 pickDirectory(this::onProjectClicked)

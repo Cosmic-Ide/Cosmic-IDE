@@ -4,6 +4,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.App
+import org.cosmic.ide.common.util.FileUtil
 
 /**
  * CosmicIde's Settings.
@@ -55,6 +56,13 @@ class Settings {
                 7
             )
 
+    val projectsDirectory: String
+        get() =
+            prefs.getString(
+                PROJECTS_DIRECTORY,
+                FileUtil.getProjectsDir()
+            )!!
+
     companion object {
         const val THEME = "theme"
         const val DYNAMIC_THEME = "dynamic_theme"
@@ -65,5 +73,6 @@ class Settings {
         const val GITHUB = "github"
         const val APP_VERSION = "app_version"
         const val OSS_LICENSES = "oss_licenses"
+        const val PROJECTS_DIRECTORY = "projects_directory"
     }
 }

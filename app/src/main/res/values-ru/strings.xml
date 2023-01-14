@@ -27,6 +27,9 @@
     <string name="no_open_file_title">Нет открытых файлов</string>
     <string name="no_open_file_desc">Попробуйте открыть файл через левое меню.</string>
 
+    <string name="no_projects_title">Проектов не найдено</string>
+    <string name="no_projects_desc">Вы можете создать проект в главном меню.</string>
+
     <string name="treemenu_create_kotlin">Создать класс Kotlin</string>
     <string name="treemenu_create_java">Создать класс Java</string>
     <string name="treemenu_create_folder">Создать папку</string>
@@ -79,6 +82,7 @@
     <string name="package_name">Имя пакета</string>
     <string name="use_kotlin_template">Шаблон Kotlin</string>
 
+    <string name="general">Общее</string>
     <string name="java_version">Версия Java</string>
     <string name="program_arguments">Аргументы программы</string>
     <string name="settings">Настройки</string>
@@ -103,6 +107,8 @@
     <string name="dynamic_theme_desc">Использовать динамическую тему, сгенерированную на основе установленных обоев.</string>
     <string name="editor">Редактор</string>
     <string name="font_size">Размер шрифта</string>
+    <string name="choose_project">Выбрать проект</string>
+    <string name="projects_directory">Путь для проектов</string>
 
     <string name="get_started">Начало</string>
     <string name="get_started_summary">Начните свой замечательный проект!</string>

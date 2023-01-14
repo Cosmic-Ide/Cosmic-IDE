@@ -20,14 +20,14 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import org.cosmic.ide.R
-import org.cosmic.ide.activity.HomeActivity
-import org.cosmic.ide.activity.model.FileViewModel
-import org.cosmic.ide.activity.model.HomeViewModel
 import org.cosmic.ide.android.task.dex.D8Task.Companion.compileJar
 import org.cosmic.ide.common.util.FileUtil.createDirectory
 import org.cosmic.ide.common.util.FileUtil.deleteFile
 import org.cosmic.ide.common.util.FileUtil.writeFile
+import org.cosmic.ide.fragment.HomeFragment
 import org.cosmic.ide.project.CodeTemplate
+import org.cosmic.ide.ui.model.FileViewModel
+import org.cosmic.ide.ui.model.HomeViewModel
 import org.cosmic.ide.ui.treeview.TreeNode
 import org.cosmic.ide.ui.treeview.TreeUtil
 import org.cosmic.ide.ui.treeview.TreeView
@@ -49,21 +49,21 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
     private var createNewFileDialog: AlertDialog? = null
     private var createNewDirectoryDialog: AlertDialog? = null
     private var renameFileDialog: AlertDialog? = null
-    private val activity: HomeActivity
-        get() = requireActivity() as HomeActivity
     private var homeViewModel: HomeViewModel? = null
     private var fileViewModel: FileViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homeViewModel = ViewModelProvider(activity)[HomeViewModel::class.java]
-        fileViewModel = ViewModelProvider(activity)[FileViewModel::class.java]
+
+        homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        fileViewModel = ViewModelProvider(requireActivity())[FileViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val context = requireContext()
         ViewCompat.requestApplyInsets(view)
         view.addSystemWindowInsetToPadding(top = true, bottom = true)
-        val refreshLayout = view.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+        val refreshLayout: SwipeRefreshLayout = view.findViewById(R.id.refreshLayout)
         refreshLayout.setOnRefreshListener {
             partialRefresh {
                 refreshLayout.isRefreshing = false
@@ -73,7 +73,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
         buildCreateFileDialog()
         buildCreateDirectoryDialog()
         buildRenameFileDialog()
-        treeView = TreeView(activity, TreeNode.root(emptyList()))
+        treeView = TreeView(requireContext(), TreeNode.root(emptyList()))
         val horizontalScrollView =
             view.findViewById<HorizontalScrollView>(R.id.horizontalScrollView)
         horizontalScrollView.addView(
@@ -98,11 +98,11 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
                                 }
                             } catch (e: Exception) {
                                 showSimpleAlert(
-                                    activity,
-                                    activity.getString(R.string.error_file_open),
+                                    requireActivity(),
+                                    context.getString(R.string.error_file_open),
                                     e.localizedMessage,
-                                    activity.getString(R.string.dialog_close),
-                                    activity.getString(R.string.copy_stacktrace),
+                                    context.getString(R.string.dialog_close),
+                                    context.getString(R.string.copy_stacktrace),
                                     null
                                 ) { _, which ->
                                     if (which == DialogInterface.BUTTON_NEGATIVE) {
@@ -127,7 +127,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             .nodes
             .observe(
                 viewLifecycleOwner
-            ) { node: TreeNode<TreeFile>? ->
+            ) { node ->
                 treeView!!.refreshTreeView(
                     node!!
                 )
@@ -145,7 +145,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
     }
 
     private fun showPopup(v: View?, treeNode: TreeNode<TreeFile>?) {
-        val popup = PopupMenu(activity, v!!)
+        val popup = PopupMenu(requireActivity(), v!!)
         val inflater = popup.menuInflater
         inflater.inflate(R.menu.treeview_menu, popup.menu)
         popup.show()
@@ -158,8 +158,8 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
         if (nodeFile.extension == "jar") {
             popup.menu.getItem(5).isVisible = true
         }
-        popup.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
                 R.id.create_kotlin_class_menu_btn ->
                     showCreateNewKotlinFileDialog(treeNode)
 
@@ -198,39 +198,42 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
     }
 
     private fun buildCreateFileDialog() {
+        val context = requireContext()
         val builder = MaterialAlertDialogBuilder(
-            activity, dialogFullWidthButtonsThemeOverlay
+            requireActivity(), dialogFullWidthButtonsThemeOverlay
         )
-            .setTitle(activity.getString(R.string.create_class_dialog_title))
+            .setTitle(context.getString(R.string.create_class_dialog_title))
             .setView(R.layout.dialog_new_class)
             .setPositiveButton(
-                activity.getString(R.string.create_class_dialog_positive), null
+                context.getString(R.string.create_class_dialog_positive), null
             )
-            .setNegativeButton(activity.getString(android.R.string.cancel), null)
+            .setNegativeButton(context.getString(android.R.string.cancel), null)
         createNewFileDialog = builder.create()
     }
 
     private fun buildCreateDirectoryDialog() {
+        val context = requireContext()
         val builder = MaterialAlertDialogBuilder(
-            activity, dialogFullWidthButtonsThemeOverlay
+            requireActivity(), dialogFullWidthButtonsThemeOverlay
         )
-            .setTitle(activity.getString(R.string.create_folder_dialog_title))
+            .setTitle(context.getString(R.string.create_folder_dialog_title))
             .setView(R.layout.dialog_new_folder)
             .setPositiveButton(
-                activity.getString(R.string.create_folder_dialog_positive), null
+                context.getString(R.string.create_folder_dialog_positive), null
             )
-            .setNegativeButton(activity.getString(android.R.string.cancel), null)
+            .setNegativeButton(context.getString(android.R.string.cancel), null)
         createNewDirectoryDialog = builder.create()
     }
 
     private fun buildRenameFileDialog() {
+        val context = requireContext()
         val builder = MaterialAlertDialogBuilder(
-            activity, dialogFullWidthButtonsThemeOverlay
+            requireActivity(), dialogFullWidthButtonsThemeOverlay
         )
-            .setTitle(activity.getString(R.string.rename))
+            .setTitle(context.getString(R.string.rename))
             .setView(R.layout.dialog_rename)
-            .setPositiveButton(activity.getString(R.string.rename), null)
-            .setNegativeButton(activity.getString(android.R.string.cancel), null)
+            .setPositiveButton(context.getString(R.string.rename), null)
+            .setNegativeButton(context.getString(android.R.string.cancel), null)
         renameFileDialog = builder.create()
     }
 
@@ -242,7 +245,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             inputEt!!.setText(node!!.value.getFile().name)
             createBtn!!.setOnClickListener {
                 val fileName = inputEt.text.toString().replace("..", "")
-                if (fileName.isNotEmpty()) {
+                if (!fileName.isNullOrEmpty()) {
                     try {
                         val path = Paths.get(node.value.getFile().path)
                         Files.move(path, path.resolveSibling(fileName))
@@ -265,7 +268,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             val createBtn = createNewFileDialog!!.findViewById<Button>(android.R.id.button1)
             val classType = createNewFileDialog!!.findViewById<Spinner>(R.id.class_kind)
             val adapter = ArrayAdapter.createFromResource(
-                activity, R.array.kind_class, android.R.layout.simple_spinner_item
+                requireContext(), R.array.kind_class, android.R.layout.simple_spinner_item
             )
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             classType!!.adapter = adapter
@@ -316,7 +319,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             val createBtn = createNewFileDialog!!.findViewById<Button>(android.R.id.button1)
             val classType = createNewFileDialog!!.findViewById<Spinner>(R.id.class_kind)
             val adapter = ArrayAdapter.createFromResource(
-                activity,
+                requireContext(),
                 R.array.kind_class_kotlin,
                 android.R.layout.simple_spinner_item
             )
@@ -324,7 +327,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             classType!!.adapter = adapter
             createBtn!!.setOnClickListener {
                 val fileName = inputEt!!.text.toString().replace("..", "")
-                if (fileName.isNotEmpty()) {
+                if (!fileName.isNullOrEmpty()) {
                     try {
                         val filePth = File(
                             node!!.value.getFile().path
@@ -367,7 +370,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             val createBtn = createNewDirectoryDialog!!.findViewById<Button>(android.R.id.button1)
             createBtn!!.setOnClickListener {
                 val fileName = inputEt!!.text.toString().replace("..", "")
-                if (fileName.isNotEmpty() && !fileName.contains(".")) {
+                if ((!fileName.isNullOrEmpty()) && !fileName.contains(".")) {
                     val filePath = node!!.value.getFile().path + "/" + fileName
                     createDirectory(filePath)
                     val dirPth = File(filePath)
@@ -380,7 +383,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
                     createNewDirectoryDialog!!.dismiss()
                 } else {
                     if (fileName.contains(".") || fileName.isEmpty()) {
-                        (inputEt.parent as TextInputLayout).error = activity.getString(
+                        (inputEt.parent as TextInputLayout).error = requireContext().getString(
                             R.string.create_folder_dialog_invalid_name
                         )
                     }
@@ -390,12 +393,13 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
     }
 
     private fun showConfirmDeleteDialog(node: TreeNode<TreeFile>?) {
+        val context = requireContext()
         showSimpleAlert(
-            activity,
-            activity.getString(R.string.dialog_delete),
-            getString(R.string.dialog_confirm_delete, node!!.value.getFile().name),
-            activity.getString(android.R.string.ok),
-            activity.getString(android.R.string.cancel),
+            requireActivity(),
+            context.getString(R.string.dialog_delete),
+            context.getString(R.string.dialog_confirm_delete, node!!.value.getFile().name),
+            context.getString(android.R.string.ok),
+            context.getString(android.R.string.cancel),
             null
         ) { _, which ->
             if (which == DialogInterface.BUTTON_POSITIVE) {

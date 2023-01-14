@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.model
+package org.cosmic.ide.ui.model
 
 import android.view.View
 import androidx.annotation.DrawableRes

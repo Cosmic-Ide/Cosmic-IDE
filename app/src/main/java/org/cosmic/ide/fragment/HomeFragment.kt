@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity
+package org.cosmic.ide.fragment
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -6,27 +6,31 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.PopupMenu
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialFadeThrough
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmic.ide.R
-import org.cosmic.ide.activity.model.FileViewModel
-import org.cosmic.ide.activity.model.HomeViewModel
 import org.cosmic.ide.android.task.jar.JarTask
 import org.cosmic.ide.code.decompiler.FernFlowerDecompiler
 import org.cosmic.ide.code.disassembler.JavapDisassembler
@@ -36,17 +40,20 @@ import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.compiler.CompileTask
 import org.cosmic.ide.compiler.CompileTask.CompilerListeners
-import org.cosmic.ide.databinding.ActivityHomeBinding
+import org.cosmic.ide.databinding.FragmentHomeBinding
 import org.cosmic.ide.databinding.DialogLibraryDownloaderBinding
 import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmic.ide.fragment.CodeEditorFragment
 import org.cosmic.ide.project.JavaProject
-import org.cosmic.ide.ui.editor.adapter.PageAdapter
+import org.cosmic.ide.ui.adapter.EditorPageAdapter
+import org.cosmic.ide.ui.model.FileViewModel
+import org.cosmic.ide.ui.model.HomeViewModel
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.Constants
 import org.cosmic.ide.util.EditorUtil.getColorScheme
 import org.cosmic.ide.util.EditorUtil.javaLanguage
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
+import org.cosmic.ide.util.runOnUiThread
 import org.jf.dexlib2.DexFileFactory
 import org.jf.dexlib2.Opcodes
 import org.jf.dexlib2.iface.ClassDef
@@ -54,34 +61,38 @@ import org.json.JSONException
 import java.io.File
 import java.io.IOException
 
-class HomeActivity : BaseActivity() {
+class HomeFragment : Fragment() {
+    private val args: HomeFragmentArgs by navArgs()
     private lateinit var temp: String
-    private lateinit var binding: ActivityHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
     lateinit var project: JavaProject
 
     private val tabsAdapter by lazy {
-        PageAdapter(supportFragmentManager, lifecycle)
+        EditorPageAdapter(childFragmentManager, requireActivity().lifecycle)
     }
-    private val homeViewModel by viewModels<HomeViewModel>()
-    private val fileViewModel by viewModels<FileViewModel>()
+    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var fileViewModel: FileViewModel
     private val loadingDialog by lazy {
-        BottomSheetDialog(this).apply {
+        BottomSheetDialog(requireContext()).apply {
             setContentView(R.layout.dialog_compile_running)
             setCancelable(false)
             setCanceledOnTouchOutside(false)
        }
     }
     private val libraryBinding by lazy {
+        val layoutInflater = LayoutInflater.from(requireContext())
         DialogLibraryDownloaderBinding.inflate(layoutInflater)
     }
     private val libraryDialog: AlertDialog by lazy {
+        val context = requireContext()
         val dialog = MaterialAlertDialogBuilder(
-            this, AndroidUtilities.dialogFullWidthButtonsThemeOverlay
+            context, AndroidUtilities.dialogFullWidthButtonsThemeOverlay
         ).apply {
             setTitle("Library Downloader")
             setView(libraryBinding.root)
-            setPositiveButton(getString(R.string.create), null)
-            setNegativeButton(getString(android.R.string.cancel), null)
+            setPositiveButton(context.getString(R.string.create), null)
+            setNegativeButton(context.getString(android.R.string.cancel), null)
         }
         dialog.create()
     }
@@ -91,6 +102,7 @@ class HomeActivity : BaseActivity() {
             this,
             object : CompilerListeners {
                 private var compileSuccess = true
+                private val context = requireContext()
                 override fun onCurrentBuildStageChanged(stage: String) {
                     changeLoadingDialogBuildStage(stage)
                 }
@@ -109,15 +121,13 @@ class HomeActivity : BaseActivity() {
                                 loadingDialog.dismiss()
                             }
                             AndroidUtilities.showSimpleAlert(
-                                this@HomeActivity,
-                                getString(R.string.compilation_result_failed),
+                                context,
+                                context.getString(R.string.compilation_result_failed),
                                 errorMessage,
-                                getString(R.string.dialog_close),
-                                getString(R.string.copy_stacktrace)
+                                context.getString(R.string.dialog_close),
+                                context.getString(R.string.copy_stacktrace)
                             ) { _, which ->
-                                if (which
-                                    == DialogInterface.BUTTON_NEGATIVE
-                                ) {
+                                if (which == DialogInterface.BUTTON_NEGATIVE) {
                                     AndroidUtilities
                                         .copyToClipboard(
                                             errorMessage
@@ -133,24 +143,100 @@ class HomeActivity : BaseActivity() {
     }
 
     companion object {
-        const val TAG = "HomeActivity"
+        const val TAG = "HomeFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityHomeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
+        enterTransition = MaterialFadeThrough()
+        exitTransition = MaterialFadeThrough()
 
-        project = JavaProject(File(intent.getStringExtra(Constants.PROJECT_PATH).toString()))
+        homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
+        fileViewModel = ViewModelProvider(requireActivity())[FileViewModel::class.java]
+        project = JavaProject(File(args.projectPath))
+    }
 
-        supportActionBar?.title = project.projectName
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.appBar.addSystemWindowInsetToPadding(top = true)
-        fileViewModel.refreshNode(project.rootFile)
+
+        binding.toolbar.subtitle = project.projectName
+        binding.toolbar.setOnMenuItemClickListener {
+            val tag = "f$tabsAdapter.getItemId(binding.viewPager.currentItem)"
+            val fragment = childFragmentManager.findFragmentByTag(tag)
+            val id = it.itemId
+            if (id == R.id.action_format && fragment is CodeEditorFragment) {
+                execute {
+                    val current = homeViewModel.currentFile
+                    if (current?.extension.equals("java")) {
+                        val formatter = GoogleJavaFormatter(
+                            fragment
+                                .getEditor()
+                                .text
+                                .toString()
+                        )
+                        temp = formatter.format()
+                    } else if (current?.extension.equals("kt") || current?.extension.equals("kts")) {
+                        ktfmtFormatter(current.toString()).format()
+                        try {
+                            temp =
+                                current?.readText()!!
+                        } catch (e: IOException) {
+                            Log.d(
+                                TAG,
+                                requireContext().getString(R.string.error_file_open),
+                                e
+                            )
+                        }
+                    } else {
+                        temp = fragment
+                            .getEditor()
+                            .text
+                            .toString()
+                    }
+                }
+                fragment.getEditor().setText(temp)
+            } else if (id == R.id.action_settings) {
+                findNavController().navigate(HomeFragmentDirections.actionShowSettingsFragment())
+            } else if (id == R.id.action_run) {
+                true.compile(blockMainThread = false)
+            } else if (id == R.id.action_disassemble) {
+                disassemble()
+            } else if (id == R.id.action_class2java) {
+                decompile()
+            } else if (id == R.id.action_undo) {
+                if (fragment is CodeEditorFragment) {
+                    fragment.undo()
+                }
+            } else if (id == R.id.action_redo) {
+                if (fragment is CodeEditorFragment) {
+                    fragment.redo()
+                }
+            } else if (id == R.id.library_downloader) {
+                showLibraryDialog()
+            }
+            true
+        }
+
         initViewModelListeners()
 
+        binding.viewPager.apply {
+            adapter = tabsAdapter
+            isUserInputEnabled = false
+            registerOnPageChangeCallback(
+                object : OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        homeViewModel.setCurrentPosition(position)
+                    }
+                })
+        }
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (binding.root is DrawerLayout) {
             val drawer = binding.root as DrawerLayout
 
@@ -172,27 +258,19 @@ class HomeActivity : BaseActivity() {
                 })
         }
 
-        binding.viewPager.apply {
-            adapter = tabsAdapter
-            isUserInputEnabled = false
-            registerOnPageChangeCallback(
-                object : OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        homeViewModel.setCurrentPosition(position)
-                    }
-                })
-        }
+        fileViewModel.refreshNode(project.rootFile)
 
         binding.tabLayout.addOnTabSelectedListener(
             object : OnTabSelectedListener {
                 override fun onTabUnselected(tab: TabLayout.Tab) {}
                 override fun onTabReselected(tab: TabLayout.Tab) {
-                    val popup = PopupMenu(this@HomeActivity, tab.view)
-                    popup.menu.add(0, 0, 1, getString(R.string.menu_close_file))
-                    popup.menu.add(0, 1, 2, getString(R.string.menu_close_others))
-                    popup.menu.add(0, 2, 3, getString(R.string.menu_close_all))
-                    popup.setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
+                    val context = requireActivity()
+                    val popup = PopupMenu(context, tab.view)
+                    popup.menu.add(0, 0, 1, context.getString(R.string.menu_close_file))
+                    popup.menu.add(0, 1, 2, context.getString(R.string.menu_close_others))
+                    popup.menu.add(0, 2, 3, context.getString(R.string.menu_close_all))
+                    popup.setOnMenuItemClickListener {
+                        when (it.itemId) {
                             0 -> homeViewModel.removeFile(
                                 homeViewModel.currentFile
                             )
@@ -206,103 +284,24 @@ class HomeActivity : BaseActivity() {
                     popup.show()
                 }
 
-                override fun onTabSelected(p1: TabLayout.Tab) {
-                    updateTab(p1, p1.position)
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    updateTab(tab, tab.position)
                 }
             })
 
         TabLayoutMediator(
             binding.tabLayout, binding.viewPager, true, false
-        ) { tab, pos ->
+        ) { tab, position ->
             updateTab(
                 tab,
-                pos
+                position
             )
-        }
-            .attach()
-
-        savedInstanceState?.let { restoreViewState(it) }
+        }.attach()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        if (binding.root is DrawerLayout) {
-            outState.putBoolean(
-                Constants.DRAWER_STATE,
-                (binding.root as DrawerLayout).isDrawerOpen(GravityCompat.START)
-            )
-        }
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.home_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val tag = "f" + tabsAdapter.getItemId(binding.viewPager.currentItem)
-        val fragment = supportFragmentManager.findFragmentByTag(tag)
-        val id = item.itemId
-
-        if (id == R.id.action_format && fragment is CodeEditorFragment) {
-            execute {
-                val current = homeViewModel.currentFile
-                if (current?.extension.equals("java")) {
-                    val formatter = GoogleJavaFormatter(
-                        fragment
-                            .getEditor()
-                            .text
-                            .toString()
-                    )
-                    temp = formatter.format()
-                } else if (current?.extension.equals("kt") || current?.extension.equals("kts")) {
-                    ktfmtFormatter(current.toString()).format()
-                    try {
-                        temp =
-                            current?.readText()!!
-                    } catch (e: IOException) {
-                        Log.d(
-                            TAG,
-                            getString(R.string.error_file_open),
-                            e
-                        )
-                    }
-                } else {
-                    temp = fragment
-                        .getEditor()
-                        .text
-                        .toString()
-                }
-            }
-            fragment.getEditor().setText(temp)
-        } else if (id == R.id.action_settings) {
-            startActivity(Intent(this, SettingsActivity::class.java))
-        } else if (id == R.id.action_run) {
-            true.compile(blockMainThread = false)
-        } else if (id == R.id.action_disassemble) {
-            disassemble()
-        } else if (id == R.id.action_class2java) {
-            decompile()
-        } else if (id == R.id.action_undo) {
-            if (fragment is CodeEditorFragment) {
-                fragment.undo()
-            }
-        } else if (id == R.id.action_redo) {
-            if (fragment is CodeEditorFragment) {
-                fragment.redo()
-            }
-        } else if (id == R.id.library_downloader) {
-            showLibraryDialog()
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun restoreViewState(state: Bundle) {
-        if (binding.root is DrawerLayout) {
-            val b = state.getBoolean(Constants.DRAWER_STATE, false)
-            homeViewModel.setDrawerState(b)
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     // private fun saveOpenedFiles() {
@@ -320,7 +319,7 @@ class HomeActivity : BaseActivity() {
         homeViewModel
             .files
             .observe(
-                this
+                viewLifecycleOwner
             ) { files ->
                 tabsAdapter.submitList(files)
                 if (files.isEmpty()) {
@@ -339,7 +338,7 @@ class HomeActivity : BaseActivity() {
         homeViewModel
             .currentPosition
             .observe(
-                this
+                viewLifecycleOwner
             ) { position ->
                 if (position == -1) {
                     return@observe
@@ -351,7 +350,7 @@ class HomeActivity : BaseActivity() {
             homeViewModel
                 .drawerState
                 .observe(
-                    this
+                    viewLifecycleOwner
                 ) { isOpen ->
                     if (isOpen) {
                         (binding.root as DrawerLayout).open()
@@ -362,8 +361,8 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    private fun updateTab(tab: TabLayout.Tab, pos: Int) {
-        val currentFile = homeViewModel.files.value!![pos]
+    private fun updateTab(tab: TabLayout.Tab, position: Int) {
+        val currentFile = homeViewModel.files.value!![position]
         tab.text = if (currentFile != null) currentFile.name else "Unknown"
     }
 
@@ -427,12 +426,13 @@ class HomeActivity : BaseActivity() {
 
     private fun decompile() {
         val classes = classesFromDex ?: return
-        val decompilerEditor = CodeEditor(this).apply {
+        val context = requireContext()
+        val decompilerEditor = CodeEditor(context).apply {
             typefaceText = ResourcesCompat.getFont(
-                getContext(),
+                context,
                 R.font.jetbrains_mono_light
             )
-            colorScheme = getColorScheme(getContext())
+            colorScheme = getColorScheme(context)
             setTextSize(12f)
             setEditorLanguage(javaLanguage)
         }
@@ -458,26 +458,26 @@ class HomeActivity : BaseActivity() {
                         )
                 } catch (e: Exception) {
                     AndroidUtilities.showSimpleAlert(
-                        this,
-                        getString(R.string.error_class_decompile),
+                        context,
+                        context.getString(R.string.error_class_decompile),
                         e.localizedMessage,
-                        getString(R.string.dialog_close),
-                        getString(R.string.copy_stacktrace),
+                        context.getString(R.string.dialog_close),
+                        context.getString(R.string.copy_stacktrace),
                         null,
                         (
-                                DialogInterface.OnClickListener { _, which ->
-                                    if (which == DialogInterface.BUTTON_NEGATIVE) {
-                                        AndroidUtilities.copyToClipboard(
-                                            e.localizedMessage
-                                        )
-                                    }
+                            DialogInterface.OnClickListener { _, which ->
+                                if (which == DialogInterface.BUTTON_NEGATIVE) {
+                                    AndroidUtilities.copyToClipboard(
+                                        e.localizedMessage
+                                    )
                                 }
-                                )
+                            }
+                        )
                     )
                 }
             }
 
-            AlertDialog.Builder(this)
+            AlertDialog.Builder(context)
                 .setView(decompilerEditor)
                 .create().also {
                     it.setCanceledOnTouchOutside(true)
@@ -488,12 +488,13 @@ class HomeActivity : BaseActivity() {
 
     private fun disassemble() {
         val classes = classesFromDex ?: return
-        val disassembleEditor = CodeEditor(this).apply {
+        val context = requireContext()
+        val disassembleEditor = CodeEditor(context).apply {
             typefaceText = ResourcesCompat.getFont(
-                getContext(),
+                context,
                 R.font.jetbrains_mono_light
             )
-            colorScheme = getColorScheme(getContext())
+            colorScheme = getColorScheme(context)
             setTextSize(12f)
             setEditorLanguage(javaLanguage)
         }
@@ -517,11 +518,11 @@ class HomeActivity : BaseActivity() {
                 )
             } catch (e: Throwable) {
                 AndroidUtilities.showSimpleAlert(
-                    this,
-                    getString(R.string.error_class_disassemble),
+                    context,
+                    context.getString(R.string.error_class_disassemble),
                     e.localizedMessage,
-                    getString(R.string.dialog_close),
-                    getString(R.string.copy_stacktrace)
+                    context.getString(R.string.dialog_close),
+                    context.getString(R.string.copy_stacktrace)
                 ) { _, which ->
                     if (which == DialogInterface.BUTTON_NEGATIVE) {
                         AndroidUtilities.copyToClipboard(e.localizedMessage)
@@ -529,7 +530,7 @@ class HomeActivity : BaseActivity() {
                 }
             }
 
-            AlertDialog.Builder(this)
+            AlertDialog.Builder(context)
                 .setView(disassembleEditor)
                 .create().also {
                     it.setCanceledOnTouchOutside(true)
@@ -549,7 +550,7 @@ class HomeActivity : BaseActivity() {
                 return@runOnUiThread
             }
 
-            MaterialAlertDialogBuilder(this)
+            MaterialAlertDialogBuilder(requireContext())
                 .setTitle(title)
                 .setItems(items, listener)
                 .create()
@@ -557,36 +558,43 @@ class HomeActivity : BaseActivity() {
         }
     }
 
+    fun showConsoleFragmentFromCompileTask(projectPath: String, compileClass: String) {
+        findNavController().navigate(HomeFragmentDirections.actionShowConsoleFragment(projectPath, compileClass))
+    }
+
     /**
       * Used to find compiled classes from dex file.
       */
     val classesFromDex: Array<String>?
-        get() = try {
-            val classes = mutableListOf<String>()
-            val dex = File(project.binDirPath + "classes.dex")
-            if (!dex.exists()) {
-                AndroidUtilities.showToast(getString(R.string.project_not_compiled))
-            }
-
-            val dexFile = DexFileFactory.loadDexFile(dex.absolutePath, Opcodes.forApi(32))
-            for (f in dexFile.classes.toTypedArray<ClassDef>()) {
-                val name = f.type.replace("/", ".")
-                classes.add(name.substring(1, name.length - 1))
-            }
-
-            classes.toTypedArray()
-        } catch (e: Exception) {
-            AndroidUtilities.showSimpleAlert(
-                this,
-                getString(R.string.error_classes_get_dex),
-                e.localizedMessage,
-                getString(R.string.dialog_close),
-                getString(R.string.copy_stacktrace)
-            ) { _, which ->
-                if (which == DialogInterface.BUTTON_NEGATIVE) {
-                    AndroidUtilities.copyToClipboard(e.localizedMessage)
+        get() {
+            val context = requireContext()
+            return try {
+                val classes = mutableListOf<String>()
+                val dex = File(project.binDirPath + "classes.dex")
+                if (!dex.exists()) {
+                    AndroidUtilities.showToast(context.getString(R.string.project_not_compiled))
                 }
+
+                val dexFile = DexFileFactory.loadDexFile(dex.absolutePath, Opcodes.forApi(32))
+                for (f in dexFile.classes.toTypedArray<ClassDef>()) {
+                    val name = f.type.replace("/", ".")
+                    classes.add(name.substring(1, name.length - 1))
+                }
+
+                classes.toTypedArray()
+            } catch (e: Exception) {
+                AndroidUtilities.showSimpleAlert(
+                    context,
+                    context.getString(R.string.error_classes_get_dex),
+                    e.localizedMessage,
+                    context.getString(R.string.dialog_close),
+                    context.getString(R.string.copy_stacktrace)
+                ) { _, which ->
+                    if (which == DialogInterface.BUTTON_NEGATIVE) {
+                        AndroidUtilities.copyToClipboard(e.localizedMessage)
+                    }
+                }
+                null
             }
-            null
-        }
+    }
 }

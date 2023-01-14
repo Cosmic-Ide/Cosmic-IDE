@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.console;
+package org.cosmic.ide.ui.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,6 +13,8 @@ import android.util.AttributeSet;
 import androidx.annotation.*;
 import androidx.appcompat.widget.AppCompatEditText;
 
+import org.cosmic.ide.ui.console.ByteQueue;
+import org.cosmic.ide.ui.console.IntegerQueue;
 import org.cosmic.ide.util.UiUtilsKt;
 
 import java.io.IOException;

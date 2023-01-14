@@ -14,7 +14,9 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                app:menu="@menu/home_menu"
+                app:title="@string/app_name"
                 app:navigationIcon="@drawable/ic_menu_24" />
 
             <com.google.android.material.tabs.TabLayout

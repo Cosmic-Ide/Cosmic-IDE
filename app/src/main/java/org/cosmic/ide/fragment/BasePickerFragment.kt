@@ -1,28 +1,18 @@
-package org.cosmic.ide.activity
+package org.cosmic.ide.fragment
 
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
 import android.os.Environment
-import android.view.MenuItem
-import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.provider.DocumentsContractCompat
 import androidx.core.provider.DocumentsContractCompat.buildDocumentUriUsingTree
 import androidx.core.provider.DocumentsContractCompat.getTreeDocumentId
-import androidx.core.view.WindowCompat
 import androidx.documentfile.provider.DocumentFile
-import org.cosmic.ide.R
-import org.cosmic.ide.ui.preference.Settings
-import org.cosmic.ide.util.addSystemWindowInsetToPadding
+import androidx.fragment.app.Fragment
 import org.cosmic.ide.util.AndroidUtilities
 import java.io.File
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BasePickerFragment : Fragment() {
 
-    protected val settings: Settings by lazy { Settings() }
     private var callback: OnDirectoryPickedCallback? = null
 
     companion object {
@@ -31,7 +21,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     private val startForResult =
         registerForActivityResult(StartActivityForResult()) {
-            val context = this@BaseActivity
+            val context = requireContext()
             val uri = it?.data?.data ?: return@registerForActivityResult
             val pickedDir = DocumentFile.fromTreeUri(context, uri)
 
@@ -70,51 +60,6 @@ abstract class BaseActivity : AppCompatActivity() {
                 callback!!.onDirectoryPicked(dir)
             }
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        val isDynamic = settings.isDynamicTheme
-        when {
-            isDynamic -> setTheme(R.style.Theme_CosmicIde_Monet)
-        }
-        super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        getRootActivityView().addSystemWindowInsetToPadding(
-            left = true,
-            right = true
-        )
-        val callback: OnBackPressedCallback = object : OnBackPressedCallback(
-            true
-        ) {
-            override fun handleOnBackPressed() {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
-                    isTaskRoot &&
-                    supportFragmentManager.backStackEntryCount == 0
-                ) {
-                    finishAfterTransition()
-                }
-                finish()
-            }
-        }
-        onBackPressedDispatcher.addCallback(
-            this,
-            callback
-        )
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                onBackPressedDispatcher.onBackPressed()
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-        return true
-    }
-
-    private fun getRootActivityView(): View =
-        window.decorView.findViewById(android.R.id.content)
 
     protected fun pickDirectory(callback: OnDirectoryPickedCallback?) {
         this.callback = callback

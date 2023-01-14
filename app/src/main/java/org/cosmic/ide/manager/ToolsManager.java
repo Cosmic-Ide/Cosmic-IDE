@@ -15,7 +15,6 @@ public class ToolsManager {
     private static final String TAG = "ToolsManager";
 
     public static void init(Runnable onFinish) {
-
         CompletableFuture.runAsync(
                         () -> {
                             deleteCompilerModules();

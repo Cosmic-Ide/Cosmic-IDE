@@ -1,10 +1,10 @@
-package org.cosmic.ide.activity.adapter
+package org.cosmic.ide.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import org.cosmic.ide.activity.model.MainScreenAction
 import org.cosmic.ide.databinding.LayoutMainActionItemBinding
+import org.cosmic.ide.ui.model.MainScreenAction
 
 class MainActionsListAdapter
 @JvmOverloads

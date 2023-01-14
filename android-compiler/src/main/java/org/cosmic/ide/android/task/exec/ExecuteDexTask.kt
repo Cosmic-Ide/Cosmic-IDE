@@ -50,9 +50,9 @@ class ExecuteDexTask(
         System.setErr(errorStream)
         System.setIn(inputStream)
 
-        // Load the dex file into a [MultipleDexClassLoader]
         val dexLoader = MultipleDexClassLoader()
 
+        // Load the dex file into a [MultipleDexClassLoader]
         dexLoader.loadDex(dexFile)
         dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0-RC.dex")
 

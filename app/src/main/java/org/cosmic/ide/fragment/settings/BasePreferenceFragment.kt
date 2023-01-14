@@ -5,6 +5,7 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import org.cosmic.ide.ui.preference.Settings
 
 abstract class BasePreferenceFragment(@StringRes private val titleId: Int) : PreferenceFragmentCompat() {

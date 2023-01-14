@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- TODO: Migrate to select from file manager (UI) -->
+    <EditTextPreference
+        app:key="projects_directory"
+        app:title="@string/projects_directory" />
+
+</PreferenceScreen>

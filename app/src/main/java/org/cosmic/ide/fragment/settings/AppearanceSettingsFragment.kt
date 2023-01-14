@@ -43,7 +43,8 @@ class AppearanceSettingsFragment :
         when (key) {
             Settings.THEME -> AppCompatDelegate.setDefaultNightMode(settings.theme)
             Settings.DYNAMIC_THEME -> {
-                showSnackbar("Restart the application to apply the dynamic colors")
+                val activity = requireActivity()
+                activity.recreate()
             }
         }
     }

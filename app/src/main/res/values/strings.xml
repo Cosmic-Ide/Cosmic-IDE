@@ -35,6 +35,9 @@
     <string name="no_open_file_title">There are no open files</string>
     <string name="no_open_file_desc">Try opening the file through the left menu.</string>
 
+    <string name="no_projects_title">Projects not found</string>
+    <string name="no_projects_desc">You can create a project from the main menu.</string>
+
     <string name="treemenu_create_kotlin">Create Kotlin class</string>
     <string name="treemenu_create_java">Create Java class</string>
     <string name="treemenu_create_folder">Create folder</string>
@@ -89,6 +92,7 @@
     <string name="package_name">Package name</string>
     <string name="use_kotlin_template">Kotlin Template</string>
 
+    <string name="general">General</string>
     <string name="java_version">Java version</string>
     <string name="program_arguments">Program arguments</string>
     <string name="settings">Settings</string>
@@ -113,6 +117,8 @@
     <string name="dynamic_theme_desc">Applies a theme created on the color scheme of your wallpaper</string>
     <string name="editor">Editor</string>
     <string name="font_size">Font size</string>
+    <string name="choose_project">Choose a project</string>
+    <string name="projects_directory">Path for projects</string>
 
     <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
 

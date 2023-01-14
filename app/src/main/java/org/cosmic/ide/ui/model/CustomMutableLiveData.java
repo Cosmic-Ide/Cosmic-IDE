@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.model;
+package org.cosmic.ide.ui.model;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

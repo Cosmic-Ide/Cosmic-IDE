@@ -1,4 +1,4 @@
-package org.cosmic.ide.activity.adapter
+package org.cosmic.ide.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,12 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.cosmic.ide.databinding.ProjectItemBinding
 import org.cosmic.ide.project.Project
+import java.io.File
 
-class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectsAdapter : RecyclerView.Adapter<ProjectsAdapter.ViewHolder>() {
     private val mProjects = mutableListOf<Project>()
 
     interface OnProjectEventListener {
-        fun onProjectClicked(project: Project)
+        fun onProjectClicked(root: File)
         fun onProjectLongClicked(project: Project): Boolean
     }
 
@@ -62,7 +63,7 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
 
     override fun getItemCount() = mProjects.size
 
-    class ViewHolder(
+    inner class ViewHolder(
         private val binding: ProjectItemBinding,
         val listener: OnProjectEventListener
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -70,15 +71,11 @@ class ProjectAdapter : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
         fun bind(project: Project) {
             binding.projectTitle.text = project.projectName
             binding.projectPath.text = project.projectDirPath
-            binding.root.setOnClickListener { _ ->
-                listener.onProjectClicked(
-                    project
-                )
+            binding.root.setOnClickListener {
+                listener.onProjectClicked(project.rootFile)
             }
-            binding.root.setOnLongClickListener { _ ->
-                listener.onProjectLongClicked(
-                    project
-                )
+            binding.root.setOnLongClickListener {
+                listener.onProjectLongClicked(project)
             }
         }
     }

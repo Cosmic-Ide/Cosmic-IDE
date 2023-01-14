@@ -1,4 +1,4 @@
-package org.cosmic.ide.ui.editor.adapter
+package org.cosmic.ide.ui.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -8,7 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import org.cosmic.ide.fragment.CodeEditorFragment.Companion.newInstance
 import java.io.File
 
-class PageAdapter(fm: FragmentManager?, lifecycle: Lifecycle?) : FragmentStateAdapter(
+class EditorPageAdapter(fm: FragmentManager?, lifecycle: Lifecycle?) : FragmentStateAdapter(
     fm!!, lifecycle!!
 ) {
     private val data: MutableList<File> = ArrayList()
@@ -45,7 +45,7 @@ class PageAdapter(fm: FragmentManager?, lifecycle: Lifecycle?) : FragmentStateAd
     }
 
     override fun createFragment(p1: Int): Fragment {
-        return newInstance(data[p1])
+        return newInstance(file = data[p1])
     }
 
     override fun getItemId(position: Int): Long {

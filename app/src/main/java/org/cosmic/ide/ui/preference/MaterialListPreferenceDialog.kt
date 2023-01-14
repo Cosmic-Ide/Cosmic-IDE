@@ -67,5 +67,6 @@ fun PreferenceFragmentCompat.showListPreferenceDialog(preference: ListPreference
             putString("key", preference.key)
         }
     }
+    dialogFragment.setTargetFragment(this, 0)
     dialogFragment.show(parentFragmentManager, "androidx.preference.PreferenceFragment.MaterialListPreferenceDialog")
 }

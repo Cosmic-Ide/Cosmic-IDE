@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/main_fragment">
+
+    <fragment
+        android:id="@+id/main_fragment"
+        android:name="org.cosmic.ide.fragment.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_show_home_fragment"
+            app:destination="@id/home_fragment" />
+        <action
+            android:id="@+id/action_show_settings_fragment"
+            app:destination="@id/settings_fragment" />
+        <action
+            android:id="@+id/action_show_projects_fragment"
+            app:destination="@id/projects_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settings_fragment"
+        android:name="org.cosmic.ide.fragment.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="org.cosmic.ide.fragment.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_show_console_fragment"
+            app:destination="@id/console_fragment" />
+        <action
+            android:id="@+id/action_show_settings_fragment"
+            app:destination="@id/settings_fragment" />
+        <argument
+            android:name="projectPath"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/projects_fragment"
+        android:name="org.cosmic.ide.fragment.ProjectsFragment"
+        android:label="ProjectsFragment"
+        tools:layout="@layout/fragment_projects">
+        <action
+            android:id="@+id/action_show_home_fragment"
+            app:destination="@id/home_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/console_fragment"
+        android:name="org.cosmic.ide.fragment.ConsoleFragment"
+        android:label="ConsoleFragment"
+        tools:layout="@layout/fragment_console">
+        <argument
+            android:name="projectPath"
+            app:argType="string" />
+        <argument
+            android:name="class_to_execute"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

@@ -24,9 +24,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
-import org.cosmic.ide.activity.HomeActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
+import org.cosmic.ide.fragment.HomeFragment
+import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
@@ -67,6 +68,7 @@ class CodeEditorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val context = requireContext()
         configureEditor(binding.editor)
 
         binding.inputView.apply {
@@ -80,13 +82,13 @@ class CodeEditorFragment : Fragment() {
                 binding.editor.setText(currentFile.readText())
             } catch (e: IOException) {
                 MaterialAlertDialogBuilder(
-                    requireContext(),
+                    requireActivity(),
                     AndroidUtilities.dialogFullWidthButtonsThemeOverlay
                 )
-                    .setTitle(requireContext().getString(R.string.error_file_open))
+                    .setTitle(context.getString(R.string.error_file_open))
                     .setMessage(e.localizedMessage)
-                    .setPositiveButton(requireContext().getString(R.string.dialog_close), null)
-                    .setNegativeButton(requireContext().getString(R.string.copy_stacktrace)) { _, which ->
+                    .setPositiveButton(context.getString(R.string.dialog_close), null)
+                    .setNegativeButton(context.getString(R.string.copy_stacktrace)) { _, which ->
                         if (which == DialogInterface.BUTTON_NEGATIVE) {
                             AndroidUtilities.copyToClipboard(e.localizedMessage)
                         }
@@ -99,24 +101,24 @@ class CodeEditorFragment : Fragment() {
                 "smali" -> setEditorLanguage(LANGUAGE_SMALI)
                 else -> setEditorLanguage(-1)
             }
-            binding.editor
-                .text
-                .addContentListener(
-                    ProblemMarker(
-                        requireActivity(),
-                        getEditor(),
-                        currentFile,
-                        (requireActivity() as HomeActivity).project
-                    )
-                )
+            // binding.editor
+                // .text
+                // .addContentListener(
+                    // ProblemMarker(
+                        // requireActivity(),
+                        // getEditor(),
+                        // currentFile,
+                        // project
+                    // )
+                // )
         }
     }
 
     override fun onDestroyView() {
+        super.onDestroyView()
         binding.editor.release()
 //        provider.exit()
         _binding = null
-        super.onDestroyView()
     }
 
     private fun configureEditor(editor: CodeEditor) {
@@ -152,7 +154,7 @@ class CodeEditorFragment : Fragment() {
 
     private fun getKotlinLanguage(): Language {
         return try {
-            KotlinLanguage(binding.editor, (requireActivity() as HomeActivity).project, currentFile)
+            KotlinLanguage(binding.editor, JavaProject(File("")), currentFile)
         } catch (e: IOException) {
             Log.e(TAG, "Failed to create instance of KotlinLanguage", e)
             EmptyLanguage()

@@ -124,5 +124,8 @@
 
     <string name="get_started">Get started</string>
     <string name="get_started_summary">Start your wonderful project!</string>
+    <string name="permission_issue">Missing Permissions</string>
+    <string name="grant_permission_message">You need to grant storage permission to use the app.</string>
+    <string name="grant">Grant</string>
 
 </resources>

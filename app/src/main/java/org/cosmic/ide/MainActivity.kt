@@ -2,8 +2,13 @@ package org.cosmic.ide
 
 import android.Manifest.permission
 import android.content.pm.PackageManager
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
@@ -20,10 +25,14 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 class MainActivity : AppCompatActivity() {
     val isStoragePermissionsGranted: Boolean
         get() =
-            (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_GRANTED)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Environment.isExternalStorageManager()
+            } else {
+                (ContextCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED)
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,17 +61,39 @@ class MainActivity : AppCompatActivity() {
         if (isStoragePermissionsGranted) {
             return
         }
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE),
-            1000
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val uri = Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION,
+                    uri
+                )
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE),
+                1000
+            )
+        }
     }
 
     private fun onStorageAlreadyGranted() {}
     private fun onStorageDenied() {
-        AndroidUtilities.showToast("")
-        finishAffinity()
+        AndroidUtilities.showSimpleAlert(
+            this,
+            getString(R.string.permission_issue),
+            getString(R.string.grant_permission_message),
+            getString(R.string.grant),
+            getString(R.string.dialog_close)
+        ) { _, which ->
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                requestStorage()
+            } else {
+                finishAffinity()
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(

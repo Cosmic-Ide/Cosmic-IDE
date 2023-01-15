@@ -18,7 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import org.cosmic.ide.databinding.ActivityMainBinding
-import org.cosmic.ide.ui.preference.Settings
+import org.cosmic.ide.ui.preference.Settings as AppSettings
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                         PackageManager.PERMISSION_GRANTED)
             }
 
-    private val settings = Settings()
+    private val settings = AppSettings()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

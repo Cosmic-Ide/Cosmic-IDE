@@ -28,7 +28,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.transition.MaterialFadeThrough
+import com.google.android.material.transition.MaterialSharedAxis
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmic.ide.R
 import org.cosmic.ide.android.task.jar.JarTask
@@ -68,9 +68,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     lateinit var project: JavaProject
 
-    private val tabsAdapter by lazy {
-        EditorPageAdapter(childFragmentManager, requireActivity().lifecycle)
-    }
+    private var tabsAdapter: EditorPageAdapter? = null
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var fileViewModel: FileViewModel
     private val loadingDialog by lazy {
@@ -149,9 +147,12 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
+        enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
+        tabsAdapter = EditorPageAdapter(childFragmentManager, requireActivity().lifecycle)
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         fileViewModel = ViewModelProvider(requireActivity())[FileViewModel::class.java]
         project = JavaProject(File(args.projectPath))
@@ -221,17 +222,6 @@ class HomeFragment : Fragment() {
 
         initViewModelListeners()
 
-        binding.viewPager.apply {
-            adapter = tabsAdapter
-            isUserInputEnabled = false
-            registerOnPageChangeCallback(
-                object : OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        homeViewModel.setCurrentPosition(position)
-                    }
-                })
-        }
-
         return binding.root
     }
 
@@ -259,6 +249,18 @@ class HomeFragment : Fragment() {
         }
 
         fileViewModel.refreshNode(project.rootFile)
+        homeViewModel.clear()
+
+        binding.viewPager.apply {
+            adapter = tabsAdapter
+            isUserInputEnabled = false
+            registerOnPageChangeCallback(
+                object : OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        homeViewModel.setCurrentPosition(position)
+                    }
+                })
+        }
 
         binding.tabLayout.addOnTabSelectedListener(
             object : OnTabSelectedListener {
@@ -302,6 +304,7 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        tabsAdapter = null
     }
 
     // private fun saveOpenedFiles() {
@@ -321,7 +324,7 @@ class HomeFragment : Fragment() {
             .observe(
                 viewLifecycleOwner
             ) { files ->
-                tabsAdapter.submitList(files)
+                tabsAdapter?.submitList(files)
                 if (files.isEmpty()) {
                     binding.viewPager.visibility = View.GONE
                     binding.tabLayout.removeAllTabs()

@@ -40,6 +40,7 @@
         android:id="@+id/get_started_actions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:transitionGroup="true"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintStart_toStartOf="@id/get_started_summary"
         app:layout_constraintEnd_toEndOf="@id/get_started_summary"

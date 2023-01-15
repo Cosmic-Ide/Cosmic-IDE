@@ -23,7 +23,7 @@ import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 
 class MainActivity : AppCompatActivity() {
-    val isStoragePermissionsGranted: Boolean
+    private val isStoragePermissionsGranted: Boolean
         get() =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 Environment.isExternalStorageManager()
@@ -34,21 +34,23 @@ class MainActivity : AppCompatActivity() {
                         PackageManager.PERMISSION_GRANTED)
             }
 
+    private val settings = Settings()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupTheme()
         val binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setupTheme()
         setContentView(binding.root)
         setupEdgeToEdge(binding.root)
+
         if (!isStoragePermissionsGranted) {
             requestStorage()
             return
         }
-        // setupOnBackPressedCallback(onBackPressedDispatcher)
     }
 
     private fun setupTheme() {
-        val settings = Settings()
         AppCompatDelegate.setDefaultNightMode(settings.theme)
     }
 
@@ -79,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onStorageAlreadyGranted() {}
     private fun onStorageDenied() {
         AndroidUtilities.showSimpleAlert(
             this,
@@ -103,25 +104,9 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1000) {
-            if (grantResults.isEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 onStorageDenied()
             }
         }
-    }
-
-    /** I don't think it will be supported by NavGraph */
-    private fun setupOnBackPressedCallback(dispatcher: OnBackPressedDispatcher) {
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
-                    isTaskRoot &&
-                    supportFragmentManager.backStackEntryCount == 0
-                ) {
-                    finishAfterTransition()
-                }
-                finish()
-            }
-        }
-        dispatcher.addCallback(this, callback)
     }
 }

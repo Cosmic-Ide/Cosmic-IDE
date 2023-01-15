@@ -16,7 +16,7 @@
             app:key="discord"
             app:title="@string/discord"
             app:summary="@string/discord_desc" />
-    
+
         <Preference
             app:key="github"
             app:title="@string/github"

@@ -82,11 +82,11 @@
     <string name="package_name">Имя пакета</string>
     <string name="use_kotlin_template">Шаблон Kotlin</string>
 
-    <string name="general">Общее</string>
+    <string name="general">Основные</string>
     <string name="java_version">Версия Java</string>
     <string name="program_arguments">Аргументы программы</string>
     <string name="settings">Настройки</string>
-    <string name="appearance">Оформление</string>
+    <string name="appearance">Внешний вид</string>
     <string name="fast_jar_fs">Быстрая файловая система JAR</string>
     <string name="fast_jar_fs_desc">[Экспериментально] Улучшает скорость сборки</string>
     <string name="compiler">Компилятор</string>

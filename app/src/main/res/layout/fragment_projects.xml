@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/open_project"
+            app:titleCentered="true"
             app:menu="@menu/projects_menu"
             app:navigationIcon="@drawable/ic_back_24" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -29,9 +30,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/spacing_small"
-            android:gravity="center"
-            android:text="@string/no_open_file_title"
+            android:text="@string/no_projects_title"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?attr/colorOnSurface" />
 
@@ -39,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_small"
-            android:text="@string/no_open_file_desc"
+            android:text="@string/no_projects_desc"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorSecondaryVariant" />
 
@@ -50,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        android:transitionGroup="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

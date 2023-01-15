@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.github.pedrovgs.lynx.LynxActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.transition.MaterialSharedAxis
 import org.cosmic.ide.R
 import org.cosmic.ide.databinding.FragmentMainBinding
 import org.cosmic.ide.databinding.DialogNewProjectBinding
@@ -50,6 +51,12 @@ class MainFragment : Fragment(), OnProjectCreatedListener {
                 newProjectBinding.text1.setText("")
             }
         }.create()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

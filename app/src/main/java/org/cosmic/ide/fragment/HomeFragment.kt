@@ -152,13 +152,14 @@ class HomeFragment : Fragment() {
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
-        tabsAdapter = EditorPageAdapter(childFragmentManager, requireActivity().lifecycle)
         homeViewModel = ViewModelProvider(requireActivity())[HomeViewModel::class.java]
         fileViewModel = ViewModelProvider(requireActivity())[FileViewModel::class.java]
         project = JavaProject(File(args.projectPath))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        tabsAdapter = EditorPageAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         binding.appBar.addSystemWindowInsetToPadding(top = true)
 

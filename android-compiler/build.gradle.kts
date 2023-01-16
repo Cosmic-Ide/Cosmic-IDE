@@ -32,7 +32,7 @@ android {
 
 dependencies {
     implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("com.android.tools:r8:3.3.75")
+    implementation("com.android.tools:r8:4.0.48")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
     implementation("com.github.Cosmic-Ide:fernflower:b3493460fd")
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")

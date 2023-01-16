@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
         ) { _, which ->
             if (which != DialogInterface.BUTTON_POSITIVE) {
                 finishAffinity()
-                return
             }
             requestStorage()
         }

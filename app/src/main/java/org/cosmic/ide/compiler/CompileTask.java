@@ -89,7 +89,7 @@ public class CompileTask extends Thread {
             listener.onCurrentBuildStageChanged(STAGE_D8);
             compilers.getDex().doFullTask(fragment.getProject());
         } catch (Exception e) {
-            listener.onFailed(e.getLocalizedMessage());
+            listener.onFailed(Log.getStackTraceString(e));
         }
     }
 
@@ -114,7 +114,7 @@ public class CompileTask extends Thread {
                         });
             }
         } catch (Throwable e) {
-            listener.onFailed(e.getLocalizedMessage());
+            listener.onFailed(Log.getStackTraceString(e));
         }
     }
 

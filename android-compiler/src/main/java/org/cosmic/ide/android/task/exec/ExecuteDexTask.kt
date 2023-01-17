@@ -50,11 +50,11 @@ class ExecuteDexTask(
         System.setErr(errorStream)
         System.setIn(inputStream)
 
-        val dexLoader = MultipleDexClassLoader()
+        val dexes = mutableListOf<String>()
 
         // Load the dex file into a [MultipleDexClassLoader]
-        dexLoader.loadDex(dexFile)
-        dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0-RC.dex")
+        dexes.add(dexFile)
+        dexes.add(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0-RC.dex")
 
         // TODO: Move to D8Task
         val folder = File(project.libDirPath)
@@ -72,10 +72,12 @@ class ExecuteDexTask(
                         }
                     }
                     // load library into ClassLoader
-                    dexLoader.loadDex(outDex)
+                    dexes.add(outDex)
                 }
             }
         }
+
+        val dexLoader = MultipleDexClassLoader(dexes)
 
         val args = prefs.getString("program_arguments", "")!!.trim()
 

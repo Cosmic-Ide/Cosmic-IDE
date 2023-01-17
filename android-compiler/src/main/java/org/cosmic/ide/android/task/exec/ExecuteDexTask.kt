@@ -86,7 +86,7 @@ class ExecuteDexTask(
 
         CoroutineUtil.inParallel {
             try {
-                val calledClass = dexLoader.loader.loadClass(clazz)
+                val calledClass = dexLoader.loadClass(clazz)
 
                 val method = calledClass.getDeclaredMethod("main", Array<String>::class.java)
                 val modifiers = method.modifiers

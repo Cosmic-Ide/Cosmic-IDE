@@ -12,6 +12,7 @@ import org.cosmic.ide.databinding.FragmentProjectsBinding
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.project.Project
 import org.cosmic.ide.project.JavaProject
+import org.cosmic.ide.ui.adapter.OnProjectEventListener
 import org.cosmic.ide.ui.adapter.ProjectsAdapter
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
@@ -19,10 +20,10 @@ import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import org.cosmic.ide.util.runOnUiThread
 import java.io.File
 
-class ProjectsFragment : BasePickerFragment(), ProjectsAdapter.OnProjectEventListener {
+class ProjectsFragment : BasePickerFragment(), OnProjectEventListener {
     private var _binding: FragmentProjectsBinding? = null
     private val binding get() = _binding!!
-    private val projectsAdapter = ProjectsAdapter()
+    private val projectsAdapter = ProjectsAdapter(this)
     private val settings = Settings()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,6 @@ class ProjectsFragment : BasePickerFragment(), ProjectsAdapter.OnProjectEventLis
         _binding = FragmentProjectsBinding.inflate(inflater, container, false)
         binding.appBar.addSystemWindowInsetToPadding(top = true)
 
-        projectsAdapter.onProjectEventListener = this
         binding.projectsList.apply {
             adapter = projectsAdapter
             addSystemWindowInsetToPadding(bottom = true)
@@ -65,7 +65,8 @@ class ProjectsFragment : BasePickerFragment(), ProjectsAdapter.OnProjectEventLis
     }
 
     override fun onProjectClicked(root: File) {
-        findNavController().navigate(ProjectsFragmentDirections.actionShowHomeFragment(root.absolutePath))
+        val direction = ProjectsFragmentDirections.actionShowHomeFragment(root.absolutePath)
+        findNavController().navigate(direction)
     }
 
     override fun onProjectLongClicked(project: Project): Boolean {
@@ -94,7 +95,7 @@ class ProjectsFragment : BasePickerFragment(), ProjectsAdapter.OnProjectEventLis
             val projectsDirectory = File(settings.projectsDirectory)
             val directories =
                 projectsDirectory.listFiles { file -> file.isDirectory }
-            val projects = mutableListOf<Project>()
+            val projects = arrayListOf<Project>()
 
             if (directories != null) {
                 directories.sortWith(Comparator.comparingLong { file -> file.lastModified() })

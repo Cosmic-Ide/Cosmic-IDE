@@ -20,6 +20,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -60,6 +61,8 @@ import org.jf.dexlib2.iface.ClassDef
 import org.json.JSONException
 import java.io.File
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private val args: HomeFragmentArgs by navArgs()
@@ -563,7 +566,10 @@ class HomeFragment : Fragment() {
     }
 
     fun showConsoleFragmentFromCompileTask(projectPath: String, compileClass: String) {
-        findNavController().navigate(HomeFragmentDirections.actionShowConsoleFragment(projectPath, compileClass))
+        val direction = HomeFragmentDirections.actionShowConsoleFragment(projectPath, compileClass)
+        lifecycleScope.launch(Dispatchers.Main) {
+            findNavController().navigate(direction)
+        }
     }
 
     /**

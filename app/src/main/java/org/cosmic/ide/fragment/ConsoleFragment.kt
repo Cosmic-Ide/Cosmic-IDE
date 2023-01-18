@@ -38,7 +38,7 @@ class ConsoleFragment : Fragment() {
         reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 
         project = JavaProject(File(args.projectPath))
-        classToExecute = args.projectPath
+        classToExecute = args.classToExecute
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -35,8 +35,9 @@ android {
 
         getByName(BuildType.RELEASE) {
             signingConfig = signingConfigs.getByName(BuildType.DEBUG)
-            isMinifyEnabled = BuildTypeRelease.isMinifyEnabled
-            isShrinkResources = BuildTypeRelease.isMinifyEnabled
+            useProguard = true
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles("proguard-rules.pro")
         }
     }

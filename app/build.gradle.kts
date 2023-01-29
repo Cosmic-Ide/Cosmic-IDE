@@ -80,8 +80,8 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
 
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT") {
-        isChanging = true
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3") {
+        isChanging = false // true
     }
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.0")

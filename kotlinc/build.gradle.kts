@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 

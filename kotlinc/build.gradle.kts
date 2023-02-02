@@ -28,11 +28,12 @@ android {
 }
 
 dependencies {
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.4-SNAPSHOT")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation(projects.jaxp)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.0")
 
     implementation("it.unimi.dsi:fastutil:8.5.11")
     implementation("one.util:streamex:0.8.1")

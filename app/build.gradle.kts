@@ -35,17 +35,14 @@ android {
 
         getByName(BuildType.RELEASE) {
             signingConfig = signingConfigs.getByName(BuildType.DEBUG)
-            useProguard = true
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles("proguard-rules.pro")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 
     buildFeatures.viewBinding = true
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
 
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -78,8 +75,6 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
-
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3") {
         isChanging = false // true
     }
@@ -105,5 +100,4 @@ dependencies {
     implementation(projects.androidCompiler)
     implementation(projects.project)
     implementation(projects.gitApi)
-//    implementation(projects.javaCompletion)
 }

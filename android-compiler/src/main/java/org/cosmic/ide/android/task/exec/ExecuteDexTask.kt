@@ -65,8 +65,8 @@ class ExecuteDexTask(
                 for (lib in libs) {
                     val outDex = project.buildDirPath + "libs/" + lib.nameWithoutExtension + ".dex"
 
-                    if (!File(outDex).exists()) {
-                        CoroutineUtil.inParallel {
+                    if (lib.extension == "jar" && !File(outDex).exists()) {
+                        CoroutineUtil.execute {
                             D8Task.compileJar(lib.absolutePath)
                             File(project.libDirPath, "classes.dex").renameTo(File(outDex))
                         }

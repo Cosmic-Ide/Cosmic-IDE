@@ -34,6 +34,8 @@ import org.cosmic.ide.util.addSystemWindowInsetToMargin
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 import java.io.IOException
+import java.util.Arrays
+import java.util.Comparator
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
     private val REQUEST_CODE_SELECT_PROJECT = 0
@@ -231,9 +233,9 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 projectDir.listFiles { file -> file.isDirectory }
             val projects = mutableListOf<Project>()
             if (directories != null) {
-                directories.sortWith(Comparator.comparingLong { file -> file.lastModified() })
+                Arrays.sort(directories, Comparator.comparingLong(File::lastModified).reversed())
                 for (directory in directories) {
-                        projects.add(JavaProject(File(directory.absolutePath)))
+                    projects.add(JavaProject(directory))
                 }
             }
             runOnUiThread {

@@ -83,14 +83,6 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             )
         )
         treeView!!.view.isNestedScrollingEnabled = false
-        val isGitEnabled = File(activity.project.rootFile, ".git").exists()
-        val gitButton = view.findViewById<MaterialButton>(R.id.gitButton)
-        gitButton.text = if (isGitEnabled) "DISABLE GIT" else "ENABLE GIT"
-        gitButton.setOnClickListener { v: View ->
-            showSimpleAlert(
-                v.context, "Git", "This feature is currently not available."
-            )
-        }
         treeView!!.setAdapter(
             TreeFileNodeViewFactory(
                 object : TreeFileNodeListener {

@@ -4,6 +4,7 @@ plugins {
     id(BuildPlugins.KTLINT)
     id(BuildPlugins.OSS_LICENSES)
     id(BuildPlugins.GMS)
+    id(BuildPlugins.CRASHLYTICS)
 }
 
 android {
@@ -82,6 +83,7 @@ dependencies {
 
     // Google Analytics
     implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")

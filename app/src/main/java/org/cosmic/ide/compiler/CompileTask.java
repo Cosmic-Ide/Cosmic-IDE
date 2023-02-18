@@ -119,7 +119,7 @@ public class CompileTask extends Thread {
                         });
             }
         } catch (Throwable e) {
-            listener.onFailed(e.getLocalizedMessage());
+            listener.onFailed(Log.getStackTraceString(e));
         }
     }
 

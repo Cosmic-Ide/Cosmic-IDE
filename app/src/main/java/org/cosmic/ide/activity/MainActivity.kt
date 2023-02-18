@@ -438,6 +438,7 @@ class MainActivity : BaseActivity() {
             classes
         ) { _, pos ->
             val className = classes[pos].replace(".", "/")
+            var dec = true
             execute {
                 try {
                     JarTask().doFullTask(project)
@@ -450,6 +451,7 @@ class MainActivity : BaseActivity() {
                             )
                         )
                 } catch (e: Exception) {
+                    dec = false
                     AndroidUtilities.showSimpleAlert(
                         this,
                         getString(R.string.error_class_decompile),
@@ -469,6 +471,7 @@ class MainActivity : BaseActivity() {
                     )
                 }
             }
+            if (!dec) return@listDialog
             val edi = CodeEditor(this)
             edi.typefaceText = ResourcesCompat.getFont(
                 this,

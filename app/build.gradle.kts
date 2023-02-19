@@ -32,7 +32,6 @@ android {
     buildTypes {
         getByName(BuildType.DEBUG) {
             isMinifyEnabled = BuildTypeDebug.isMinifyEnabled
-            versionNameSuffix = BuildTypeDebug.versionNameSuffix
         }
 
         getByName(BuildType.RELEASE) {

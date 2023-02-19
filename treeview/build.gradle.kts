@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "org.cosmic.ide.ui.treeview"
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION

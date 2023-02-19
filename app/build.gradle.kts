@@ -5,11 +5,12 @@ plugins {
     id(BuildPlugins.OSS_LICENSES)
     id(BuildPlugins.GMS)
     id(BuildPlugins.CRASHLYTICS)
+    id(BuildPlugins.PERF)
 }
 
 android {
     namespace = BuildAndroidConfig.APPLICATION_ID
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
 
     defaultConfig {
         applicationId = BuildAndroidConfig.APPLICATION_ID
@@ -84,6 +85,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")

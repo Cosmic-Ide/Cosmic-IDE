@@ -11,4 +11,5 @@ object BuildPlugins {
     const val OSS_LICENSES = "com.google.android.gms.oss-licenses-plugin"
     const val GMS = "com.google.gms.google-services"
     const val CRASHLYTICS = "com.google.firebase.crashlytics"
+    const val PERF = "com.google.firebase.firebase-perf"
 }

@@ -21,7 +21,7 @@ class MessagingService : FirebaseMessagingService() {
         }
 
         remoteMessage.notification?.let {
-            sendNotification(it.title?, it.body?)
+            sendNotification(it.title!!, it.body!!)
         }
     }
 
@@ -31,7 +31,7 @@ class MessagingService : FirebaseMessagingService() {
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE)
 
-        val channelId = getString(R.string.default_notification_channel_id)
+        val channelId = "fcm_notification_channel"
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)

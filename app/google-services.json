@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:766377920996:android:e8ad1dd92643a184fd1ff1",
+        "mobilesdk_app_id": "1:766377920996:android:477b874b34f0ce4ffd1ff1",
         "android_client_info": {
-          "package_name": "org.cosmic.ide.debug"
+          "package_name": "org.cosmic.ide"
         }
       },
       "oauth_client": [

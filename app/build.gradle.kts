@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = BuildAndroidConfig.APPLICATION_ID
-    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         applicationId = BuildAndroidConfig.APPLICATION_ID
@@ -31,7 +31,6 @@ android {
     buildTypes {
         getByName(BuildType.DEBUG) {
             isMinifyEnabled = BuildTypeDebug.isMinifyEnabled
-            applicationIdSuffix = BuildTypeDebug.applicationIdSuffix
             versionNameSuffix = BuildTypeDebug.versionNameSuffix
         }
 

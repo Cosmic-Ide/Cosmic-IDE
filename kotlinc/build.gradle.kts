@@ -5,7 +5,7 @@ plugins {
 }
 android {
     namespace = "org.jetbrains.kotlin"
-    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION

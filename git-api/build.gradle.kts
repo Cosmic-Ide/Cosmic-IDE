@@ -6,11 +6,10 @@ plugins {
 
 android {
     namespace = "org.cosmic.ide.git"
-    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = BuildAndroidConfig.MIN_SDK_VERSION
-        targetSdk = BuildAndroidConfig.TARGET_SDK_VERSION
     }
 
     buildTypes {

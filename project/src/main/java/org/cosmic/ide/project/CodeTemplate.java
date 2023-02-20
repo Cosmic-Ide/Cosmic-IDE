@@ -39,7 +39,6 @@ public class CodeTemplate {
             default:
                 return header + simpleJavaClass;
         }
-        return null;
     }
 
     public static String getKotlinClassTemplate(
@@ -87,7 +86,6 @@ public class CodeTemplate {
             default:
                 return header + simpleKotlinClass;
         }
-        return null;
     }
 
     public static boolean isEmpty(final CharSequence s) {

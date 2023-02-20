@@ -16,7 +16,7 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<List<File>> mFiles;
 
     // The current position of the CodeEditor
-    private final CustomMutableLiveData<Integer> currentPosition = new CustomMutableLiveData<>(-1);
+    private final MutableLiveData<Integer> currentPosition = new MutableLiveData<>(-1);
 
     private final MutableLiveData<Boolean> mDrawerState = new MutableLiveData<>(false);
 
@@ -47,11 +47,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void setCurrentPosition(int pos) {
-        setCurrentPosition(pos, true);
-    }
-
-    public void setCurrentPosition(int pos, boolean update) {
-        currentPosition.setValue(pos, update);
+        currentPosition.setValue(pos);
     }
 
     @Nullable

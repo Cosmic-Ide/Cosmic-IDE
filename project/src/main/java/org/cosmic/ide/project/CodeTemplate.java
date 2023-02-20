@@ -13,39 +13,33 @@ public class CodeTemplate {
                                 ? "\tpublic static void main(String[] args) {\n"
                                         + "\t\tSystem.out.println(\"Hello, World!\");\n"
                                         + "\t}"
-                                : "    ")
+                                : "\t")
                         + "\n"
                         + "}\n";
 
-        var simpleJavaInterface = "interface " + className + " {\n" + "\n" + "}\n";
+        var simpleJavaInterface = "interface " + className + " {\n" + "\t" + "\n" + "}\n";
 
-        var simpleJavaAbstract = "public abstract class " + className + " {\n" + "\n" + "}\n";
+        var simpleJavaAbstract = "public abstract class " + className + " {\n" + "\t" +"\n" + "}\n";
 
-        var simpleJavaEnum = "enum " + className + " {\n" + "\t" + "}\n";
+        var simpleJavaEnum = "enum " + className + " {\n" + "\t" + "\n" + "}\n";
 
         var header = "";
-        var classBody = header + simpleJavaClass;
 
         if (!isEmpty(packageName)) {
             header = "package " + packageName + ";\n" + "\n";
         }
 
         switch (classType) {
-            case "Class":
-                classBody = header + simpleJavaClass;
-                break;
             case "Interface":
-                classBody = header + simpleJavaInterface;
-                break;
+                return header + simpleJavaInterface;
             case "Abstract":
-                classBody = header + simpleJavaAbstract;
-                break;
+                return header + simpleJavaAbstract;
             case "Enum":
-                classBody = header + simpleJavaEnum;
-                break;
+                return header + simpleJavaEnum;
+            default:
+                return header + simpleJavaClass;
         }
-
-        return classBody;
+        return null;
     }
 
     public static String getKotlinClassTemplate(
@@ -65,16 +59,15 @@ public class CodeTemplate {
 
         var simpleKotlinDataClass = "data class " + className + "()" + "\n";
 
-        var simpleKotlinObjectDeclaration = "object " + className + " {\n" + "\n" + "}\n";
+        var simpleKotlinObjectDeclaration = "object " + className + " {\n" + "\t" + "\n" + "}\n";
 
-        var simpleKotlinInterface = "interface " + className + " {\n" + "\n" + "}\n";
+        var simpleKotlinInterface = "interface " + className + " {\n" + "\t" + "\n" + "}\n";
 
-        var simpleKotlinAbstract = "abstract class " + className + " {\n" + "\n" + "}\n";
+        var simpleKotlinAbstract = "abstract class " + className + " {\n" + "\t" + "\n" + "}\n";
 
-        var simpleKotlinEnum = "enum class " + className + " {\n" + "\n" + "}\n";
+        var simpleKotlinEnum = "enum class " + className + " {\n" + "\t" + "\n" + "}\n";
 
         var header = "";
-        var classBody = header + simpleKotlinClass;
 
         if (!isEmpty(packageName)) {
             header = "package " + packageName + "\n" + "\n";
@@ -82,22 +75,19 @@ public class CodeTemplate {
 
         switch (classType) {
             case "Data":
-                classBody = header + simpleKotlinDataClass;
-                break;
+                return header + simpleKotlinDataClass;
             case "Object":
-                classBody = header + simpleKotlinObjectDeclaration;
-                break;
+                return header + simpleKotlinObjectDeclaration;
             case "Interface":
-                classBody = header + simpleKotlinInterface;
-                break;
+                return header + simpleKotlinInterface;
             case "Abstract":
-                classBody = header + simpleKotlinAbstract;
-                break;
+                return header + simpleKotlinAbstract;
             case "Enum":
-                classBody = header + simpleKotlinEnum;
-                break;
+                return header + simpleKotlinEnum;
+            default:
+                return header + simpleKotlinClass;
         }
-        return classBody;
+        return null;
     }
 
     public static boolean isEmpty(final CharSequence s) {

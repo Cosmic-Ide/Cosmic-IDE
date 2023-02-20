@@ -4,6 +4,8 @@ import org.cosmic.ide.dependency.resolver.resolvePOM
 import java.io.File
 import java.io.InputStream
 import java.net.URL
+import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Element
 
 data class Artifact(
     val groupId: String,
@@ -29,12 +31,28 @@ data class Artifact(
             artifacts.add(dependency)
             artifacts.addAll(dependency.getPOM().resolvePOM())
         }
+        for (dep in artifacts) {
+            if (dep.version.isEmpty()) {
+                val meta = URL("${ repository!!.getURL() }/${groupId.replace(".", "/")}/$artifactId/maven-metadata.xml").openConnection().inputStream
+                val factory = DocumentBuilderFactory.newInstance()
+                val builder = factory.newDocumentBuilder()
+                val doc = builder.parse(meta)
+                val v = doc.getElementsByTagName("release").item(0)
+                if (v != null) {
+                    dep.version = v.textContent
+                }
+            }
+        }
 
         val latestDeps =
             artifacts.groupBy { it.groupId to it.artifactId }.values.map { it.maxBy { it.version } }
 
         for (art in latestDeps) {
             println("Downloading ${ art.artifactId }")
+            if (art.version.isEmpty()) {
+                println("Cannot fetch any version of ${ groupId }:${ artifactId }. Skipping download.")
+                continue
+            }
             art.downloadTo(File(output, "${ art.artifactId }-${ art.version }.jar"))
         }
     }

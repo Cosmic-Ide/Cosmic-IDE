@@ -49,10 +49,9 @@ fun InputStream.resolvePOM(): List<Artifact> {
         val artifact = Artifact(groupId, artifactId)
 
         val item = dependencyElement.getElementsByTagName("version").item(0)
-        if (item == null) {
-            throw IllegalStateException("$groupId:$artifactId doesn't declare a version.")
+        if (item != null) {
+            artifact.version = item.textContent
         }
-        artifact.version = item.textContent
         initHost(artifact)
         artifacts.add(artifact)
     }

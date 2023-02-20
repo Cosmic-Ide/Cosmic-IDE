@@ -44,7 +44,6 @@ class AboutSettingsFragment : BasePreferenceFragment(R.string.about) {
                 startActivity(Intent(activity, OssLicensesMenuActivity::class.java))
                 true
             }
-            Settings.
             else -> super.onPreferenceTreeClick(preference)
         }
     }

@@ -275,7 +275,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-        if (GitViewModel.INSTANCE.hasRepo) {
+        if (GitViewModel.INSTANCE.hasRepo.value) {
             menu.findItem(R.id.action_git).isVisible = true
         }
         return super.onCreateOptionsMenu(menu)

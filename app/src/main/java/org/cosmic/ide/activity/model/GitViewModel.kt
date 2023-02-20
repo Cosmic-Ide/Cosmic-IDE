@@ -32,10 +32,14 @@ class GitViewModel : ViewModel() {
     fun setPath(newPath: String) {
         _projectPath.value = newPath
         if (isGitRepoAt(newPath)) {
-            _hasRepo.value = true
-            git = openGitAt(newPath)
-            getLog()
-            getBranchList()
+            try {
+                _hasRepo.value = true
+                git = openGitAt(newPath)
+                getLog()
+                getBranchList()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             Log.d(TAG, "Found repository")
         } else {
             _hasRepo.value = false

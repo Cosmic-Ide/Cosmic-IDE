@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:testOnly="false"
+        android:appCategory="productivity"
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.CosmicIde.Monet">
 

@@ -33,10 +33,10 @@ class GitViewModel : ViewModel() {
         _projectPath.value = newPath
         if (isGitRepoAt(newPath)) {
             try {
-                _hasRepo.value = true
                 git = openGitAt(newPath)
                 getLog()
                 getBranchList()
+                _hasRepo.value = true
             } catch (e: Exception) {
                 e.printStackTrace()
             }

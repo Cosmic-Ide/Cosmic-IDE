@@ -275,7 +275,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-        if (File(project.rootFile, ".git").exists()) {
+        if (GitViewModel.INSTANCE.hasRepo) {
             menu.findItem(R.id.action_git).isVisible = true
         }
         return super.onCreateOptionsMenu(menu)
@@ -346,17 +346,6 @@ class MainActivity : BaseActivity() {
             mainViewModel.setDrawerState(b)
         }
     }
-
-    // private fun saveOpenedFiles() {
-        // try {
-            // project
-                // .indexer
-                // .putPathOpenFiles(mainViewModel.files.value!!)
-                // .flush()
-        // } catch (e: JSONException) {
-            // Log.e(TAG, "Cannot save opened files", e)
-        // }
-    // }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
         val currentFile = mainViewModel.files.value!![pos]

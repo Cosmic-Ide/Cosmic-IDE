@@ -9,48 +9,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
-// import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
-// import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
-// import io.github.rosemoe.sora.lsp.editor.LspEditor
-// import io.github.rosemoe.sora.lsp.editor.LspEditorManager
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmic.ide.ProblemMarker
 import org.cosmic.ide.R
 import org.cosmic.ide.activity.MainActivity
-import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.databinding.FragmentCodeEditorBinding
+import org.cosmic.ide.ui.editor.JavaLanguage
 import org.cosmic.ide.ui.editor.KotlinLanguage
 import org.cosmic.ide.ui.editor.completion.CustomCompletionItemAdapter
 import org.cosmic.ide.ui.editor.completion.CustomCompletionLayout
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.AndroidUtilities
 import org.cosmic.ide.util.EditorUtil
-// import org.javacs.services.JavaLanguageServer
-// import org.javacs.ConnectionFactory
-// import org.javacs.launch.JLSLauncher
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.ServerSocket
 
 class CodeEditorFragment : Fragment() {
     private var _binding: FragmentCodeEditorBinding? = null
     private val binding get() = _binding!!
     private val TAG = "CodeEditorFragment"
     private val settings: Settings by lazy { Settings() }
-//    private lateinit var lspEditor: LspEditor
 
     private lateinit var currentFile: File
-//    private lateinit var provider: ConnectionFactory.ConnectionProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +79,7 @@ class CodeEditorFragment : Fragment() {
             }
             when (currentFile.extension) {
                 "kt" -> setEditorLanguage(LANGUAGE_KOTLIN)
-                "java" -> setEditorLanguage(LANGUAGE_JAVA) // lifecycleScope.launch { setJavaLSPLanguage() }
+                "java" -> setEditorLanguage(LANGUAGE_JAVA)
                 "smali" -> setEditorLanguage(LANGUAGE_SMALI)
                 else -> setEditorLanguage(-1)
             }
@@ -143,7 +127,7 @@ class CodeEditorFragment : Fragment() {
     private fun setEditorLanguage(lang: Int) {
         when (lang) {
             LANGUAGE_KOTLIN -> binding.editor.setEditorLanguage(getKotlinLanguage())
-            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(EditorUtil.javaLanguage)
+            LANGUAGE_JAVA -> binding.editor.setEditorLanguage(getJavaLanguage())
             LANGUAGE_SMALI -> binding.editor.setEditorLanguage(EditorUtil.smaliLanguage)
             else -> binding.editor.setEditorLanguage(EmptyLanguage())
         }
@@ -158,61 +142,15 @@ class CodeEditorFragment : Fragment() {
             EmptyLanguage()
         }
     }
-/*
-    private suspend fun setJavaLSPLanguage() {
-        withContext(Dispatchers.IO) {
-            val languageServer = JavaLanguageServer()
-            Log.d(TAG, "Getting connection provider...")
-            provider = ConnectionFactory.getConnectionProvider()
-	    	val server = JLSLauncher.createServerLauncher(languageServer, provider.inputStream, provider.outputStream)
-	        Log.d(TAG, "Starting to listen to JLS...")
-		    server.startListening()
-		    Log.d(TAG, "Started listening to JLS.")
-	    	val client = server.remoteProxy
-	    	CoroutineUtil.inParallel {
-	        	Log.d(TAG, "Connecting language server to client.")
-	        	languageServer.connect(client)
-	    	}
-        }
-        binding.editor.editable = false
-        val serverDef = withContext(Dispatchers.IO) {
-            CustomLanguageServerDefinition("java") {
-                object : StreamConnectionProvider {
-                    override fun start() {
-                    }
-                    override fun getInputStream(): InputStream {
-                        return System.`in`
-                    }
-                    override fun getOutputStream(): OutputStream {
-                        return System.`out`
-                    }
-                    override fun close() {}
-                }
-            }
-        }
-        withContext(Dispatchers.Main) {
-            Log.d(TAG, "Setting editor language...")
-            lspEditor =
-                LspEditorManager.getOrCreateEditorManager(currentFile.absolutePath.substringBefore("src"))
-                    .createEditor(currentFile.absolutePath, serverDef)
-            lspEditor.editor = binding.editor
-            lspEditor.setWrapperLanguage(EditorUtil.javaLanguage)
-            
-        }
-        try {
-            withContext(Dispatchers.IO) {
-                lspEditor.connect()
-            }
 
-            binding.editor.editable = true
-            Log.d(TAG, "Initialized Language server.")
-        } catch (e: Exception) {
-            Log.d(TAG, "Unable to connect language server.")
-            binding.editor.editable = true
-            e.printStackTrace()
+    private fun getJavaLanguage(): Language {
+        return try {
+            JavaLanguage(binding.editor, (requireActivity() as MainActivity).project, currentFile)
+        } catch (e: IOException) {
+            Log.e(TAG, "Failed to create instance of JavaLanguage", e)
+            EmptyLanguage()
         }
     }
-*/
     fun getEditor() = binding.editor
 
     fun save() {

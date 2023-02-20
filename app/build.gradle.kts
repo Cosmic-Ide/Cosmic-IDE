@@ -102,5 +102,5 @@ dependencies {
     implementation(projects.androidCompiler)
     implementation(projects.project)
     implementation(projects.gitApi)
-//    implementation(projects.javaCompletion)
+    implementation(projects.javaCompletion)
 }

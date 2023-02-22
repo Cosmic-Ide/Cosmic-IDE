@@ -26,8 +26,7 @@ data class Artifact(
 
     fun downloadArtifact(output: File) {
         val stream = getPOM()
-        val artifacts = mutableListOf<Artifact>()
-        artifacts.addAll(stream.resolvePOM())
+        val artifacts = stream.resolvePOM().toMutableList()
         for (dep in artifacts) {
             if (dep.version.isEmpty()) {
                 val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream

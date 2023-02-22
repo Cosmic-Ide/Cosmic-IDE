@@ -7,7 +7,8 @@ interface Repository {
 
     fun checkExists(groupId: String, artifactId: String, version: String): Boolean {
         val repository = getURL()
-        val dependencyUrl = if (version.isEmpty())
+        val dependencyUrl = if (!version.isEmpty())
+
             "$repository/${groupId.replace(".", "/")}/$artifactId/$version/$artifactId-$version.jar"
             else
             "$repository/${groupId.replace(".", "/")}/$artifactId/maven-metadata.xml"

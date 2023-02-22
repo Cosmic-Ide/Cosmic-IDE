@@ -26,10 +26,19 @@ data class Artifact(
 
     fun downloadArtifact(output: File) {
         val stream = getPOM()
-        val artifacts = mutableListOf<Artifact>()
-        for (dependency in stream.resolvePOM()) {
-            artifacts.add(dependency)
-            artifacts.addAll(dependency.getPOM().resolvePOM())
+        val artifacts = stream.resolvePOM().toMutableList()
+        for (dep in artifacts) {
+            if (dep.version.isEmpty()) {
+                val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream
+                val factory = DocumentBuilderFactory.newInstance()
+                val builder = factory.newDocumentBuilder()
+                val doc = builder.parse(meta)
+                val v = doc.getElementsByTagName("release").item(0)
+                if (v != null) {
+                    dep.version = v.textContent
+                }
+            }
+            artifacts.addAll(dep.getPOM().resolvePOM())
         }
         for (dep in artifacts) {
             if (dep.version.isEmpty()) {

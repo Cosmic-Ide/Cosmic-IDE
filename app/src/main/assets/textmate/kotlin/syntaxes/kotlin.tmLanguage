@@ -686,6 +686,37 @@
                             </dict>
                         </array>
                     </dict>
+                    <dict>
+                        <key>begin</key>
+                        <string>'</string>
+                        <key>beginCaptures</key>
+                        <dict>
+                            <key>0</key>
+                            <dict>
+                                <key>name</key>
+                                <string>punctuation.definition.string.begin.kotlin</string>
+                            </dict>
+                        </dict>
+                        <key>end</key>
+                        <string>'</string>
+                        <key>endCaptures</key>
+                        <dict>
+                            <key>0</key>
+                            <dict>
+                                <key>name</key>
+                                <string>punctuation.definition.string.end.kotlin</string>
+                            </dict>
+                        </dict>
+                        <key>name</key>
+                        <string>string.quoted.double.kotlin</string>
+                        <key>patterns</key>
+                        <array>
+                            <dict>
+                                <key>include</key>
+                                <string>#string-content</string>
+                            </dict>
+                        </array>
+                    </dict>
                 </array>
             </dict>
             <key>literal-raw-string</key>

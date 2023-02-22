@@ -45,7 +45,7 @@ android {
     buildFeatures.viewBinding = true
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+        // isCoreLibraryDesugaringEnabled = true
 
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -78,7 +78,14 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    // coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+
+    // Google Analytics
+    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
 
     // Google Analytics
     implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
@@ -110,4 +117,6 @@ dependencies {
     implementation(projects.androidCompiler)
     implementation(projects.project)
     implementation(projects.gitApi)
+    implementation(projects.javaCompletion)
+
 }

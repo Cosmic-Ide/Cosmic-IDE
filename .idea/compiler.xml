@@ -1,11 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.auto.value/auto-value/1.8.2/3461db13c613c40b333e8b58e842aabef2386514/auto-value-1.8.2.jar" />
+        </processorPath>
+        <module name="Cosmic-Ide.java-completion.main" />
+      </profile>
+    </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="Cosmic-Ide.android-compiler" target="19" />
+      <module name="Cosmic-Ide.app" target="19" />
+      <module name="Cosmic-Ide.buildSrc" target="19" />
+      <module name="Cosmic-Ide.buildSrc.main" target="19" />
+      <module name="Cosmic-Ide.buildSrc.test" target="19" />
+      <module name="Cosmic-Ide.common" target="11" />
+      <module name="Cosmic-Ide.common.main" target="11" />
+      <module name="Cosmic-Ide.common.test" target="11" />
+      <module name="Cosmic-Ide.dependency-resolver" target="11" />
+      <module name="Cosmic-Ide.dependency-resolver.main" target="11" />
+      <module name="Cosmic-Ide.dependency-resolver.test" target="11" />
+      <module name="Cosmic-Ide.git-api" target="19" />
+      <module name="Cosmic-Ide.google-java-format" target="11" />
+      <module name="Cosmic-Ide.google-java-format.main" target="11" />
+      <module name="Cosmic-Ide.google-java-format.test" target="11" />
+      <module name="Cosmic-Ide.java-completion" target="19" />
       <module name="Cosmic-Ide.java-completion.main" target="19" />
       <module name="Cosmic-Ide.java-completion.test" target="19" />
+      <module name="Cosmic-Ide.kotlin-completion" target="19" />
+      <module name="Cosmic-Ide.kotlinc" target="19" />
       <module name="Cosmic-Ide.ktfmt" target="19" />
+      <module name="Cosmic-Ide.lynx" target="19" />
+      <module name="Cosmic-Ide.project" target="11" />
+      <module name="Cosmic-Ide.project.main" target="11" />
+      <module name="Cosmic-Ide.project.test" target="11" />
       <module name="Cosmic-Ide.sora-editor" target="19" />
+      <module name="Cosmic-Ide.treeview" target="19" />
     </bytecodeTargetLevel>
   </component>
 </project>

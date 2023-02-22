@@ -1,3 +1,19 @@
+/*
+ *  This file is part of CodeAssist.
+ *
+ *  CodeAssist is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CodeAssist is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with CodeAssist.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.tyron.javacompletion.project;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -5,6 +21,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.nio.file.Files;
@@ -15,9 +32,6 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.util.List;
 import java.util.Optional;
-//import com.tyron.javacompletion.completion.CompletionResult;
-//import com.tyron.javacompletion.completion.Completor;
-//import com.tyron.javacompletion.completion.TextEdits;
 import com.tyron.javacompletion.completion.CompletionResult;
 import com.tyron.javacompletion.completion.Completor;
 import com.tyron.javacompletion.file.FileChangeListener;
@@ -27,25 +41,17 @@ import com.tyron.javacompletion.model.Entity;
 import com.tyron.javacompletion.model.FileScope;
 import com.tyron.javacompletion.model.Module;
 import com.tyron.javacompletion.options.IndexOptions;
-//import com.tyron.javacompletion.protocol.TextEdit;
-//import com.tyron.javacompletion.reference.DefinitionSolver;
-//import com.tyron.javacompletion.reference.MethodSignatures;
-//import com.tyron.javacompletion.reference.ReferenceSolver;
-//import com.tyron.javacompletion.reference.SignatureSolver;
 import com.tyron.javacompletion.storage.IndexStore;
-
+import org.cosmic.ide.common.util.FileUtil;
 
 public class Project {
 
     private static final JLogger logger = JLogger.createForEnclosingClass();
 
-    private static final String JDK_RESOURCE_PATH = "/resources/jdk/index.json";
     private static final String JAVA_EXTENSION = ".java";
 
     private final FileManager fileManager;
     private final Completor completor;
-//    private final DefinitionSolver definitionSolver;
-//    private final SignatureSolver signatureSolver;
     private final ModuleManager moduleManager;
     private Path lastCompletedFile = null;
 
@@ -58,8 +64,6 @@ public class Project {
     public Project(ModuleManager moduleManager, FileManager fileManager) {
         completor = new Completor(fileManager);
         this.fileManager = fileManager;
-    //    this.definitionSolver = new DefinitionSolver();
-  //      this.signatureSolver = new SignatureSolver();
         this.moduleManager = moduleManager;
     }
 
@@ -83,8 +87,7 @@ public class Project {
     public synchronized void loadJdkModule() {
         logger.info("Loading JDK module");
         try (BufferedReader reader =
-                     new BufferedReader(
-                             new InputStreamReader(this.getClass().getResourceAsStream(JDK_RESOURCE_PATH), UTF_8))) {
+                     Files.newBufferedReader(Paths.get(FileUtil.getDataDir(), "index.json"))) {
             moduleManager.addDependingModule(new IndexStore().readModule(reader));
             logger.info("JDK module loaded");
         } catch (Throwable t) {

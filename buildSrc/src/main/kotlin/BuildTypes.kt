@@ -10,9 +10,6 @@ interface BuildType {
 
 object BuildTypeDebug : BuildType {
     override val isMinifyEnabled = false
-
-    const val applicationIdSuffix = ".debug"
-    const val versionNameSuffix = "-DEBUG"
 }
 
 object BuildTypeRelease : BuildType {

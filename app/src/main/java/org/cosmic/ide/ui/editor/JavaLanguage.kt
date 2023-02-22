@@ -19,6 +19,7 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.logging.Level
 
 class JavaLanguage(
         private val mEditor: CodeEditor,
@@ -37,9 +38,12 @@ private val path: Path
 private val TAG = "JavaLanguage"
 
         init {
-                val options = JavaCompletionOptionsImpl()
+                val options = JavaCompletionOptionsImpl(project.binDirPath + "autocomplete.log",
+                                     Level.ALL,
+                                     emptyList(),
+                                     emptyList())
                  path = file.toPath()
-                completions.initialize(URI(project.projectDirPath), options)
+                completions.initialize(URI("file://" + project.projectDirPath), options)
         }
 
 @WorkerThread

@@ -1,3 +1,19 @@
+/*
+ *  This file is part of CodeAssist.
+ *
+ *  CodeAssist is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CodeAssist is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with CodeAssist.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.tyron.javacompletion.typesolver;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -63,7 +79,8 @@ public class TypeSolver {
 
         if (typeReference instanceof LambdaTypeReference) {
             String name = typeReference.getSimpleName();
-            if (parentScope instanceof LambdaEntity entity) {
+            if (parentScope instanceof LambdaEntity) {
+                LambdaEntity entity = (LambdaEntity) parentScope;
                 List<VariableEntity> parameters = entity.getParameters();
                 int index = IntStream.range(0, parameters.size())
                         .filter(i -> parameters.get(i).getSimpleName().equals(typeReference.getSimpleName()))
@@ -271,7 +288,8 @@ public class TypeSolver {
         for (Optional<EntityScope> currentScope = Optional.of(baseScope);
              currentScope.isPresent();
              currentScope = currentScope.get().getParentScope()) {
-            if (currentScope.get() instanceof ClassEntity classEntity) {
+            if (currentScope.get() instanceof ClassEntity) {
+                ClassEntity classEntity = (ClassEntity) currentScope.get();
                 EntityWithContext classWithContext = solveClassWithContext(classEntity, module);
                 List<EntityWithContext> foundClassMembers =
                         findClassMembers(name, classWithContext, module, allowedKinds);
@@ -730,7 +748,8 @@ public class TypeSolver {
             Module module) {
         if (typeArgument instanceof TypeReference) {
             return solve((TypeReference) typeArgument, contextTypeParameters, baseScope, module);
-        } else if (typeArgument instanceof WildcardTypeArgument wildCardTypeArgument) {
+        } else if (typeArgument instanceof WildcardTypeArgument) {
+            WildcardTypeArgument wildCardTypeArgument = (WildcardTypeArgument) typeArgument;
             Optional<WildcardTypeArgument.Bound> bound = wildCardTypeArgument.getBound();
             if (bound.isPresent() && bound.get().getKind() == WildcardTypeArgument.Bound.Kind.EXTENDS) {
                 return solve(bound.get().getTypeReference(), contextTypeParameters, baseScope, module);
@@ -866,7 +885,8 @@ public class TypeSolver {
             SolvedTypeParameters contextTypeParameters,
             EntityScope baseScope,
             Module module) {
-        if (solvedEntity instanceof ClassEntity classEntity) {
+        if (solvedEntity instanceof ClassEntity) {
+            ClassEntity classEntity = (ClassEntity) solvedEntity;
             return SolvedReferenceType.create(
                     classEntity,
                     solveTypeParameters(

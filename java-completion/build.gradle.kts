@@ -1,5 +1,24 @@
 plugins {
-    id(BuildPlugins.JAVA_LIBRARY)
+    id(BuildPlugins.ANDROID_LIBRARY)
+}
+android {
+    namespace = "com.tyron.javacompletion"
+    compileSdk = BuildAndroidConfig.COMPILE_SDK_VERSION
+
+    defaultConfig {
+        minSdk = BuildAndroidConfig.MIN_SDK_VERSION
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }
 
 dependencies {
@@ -12,4 +31,5 @@ dependencies {
 
     implementation("com.google.auto.value:auto-value-annotations:1.8.2")
     annotationProcessor("com.google.auto.value:auto-value:1.8.2")
+    implementation(projects.common)
 }

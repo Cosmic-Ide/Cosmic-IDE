@@ -14,7 +14,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import org.cosmic.ide.activity.DebugActivity
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.manager.ToolsManager
@@ -58,16 +57,6 @@ class App : Application() {
                     "QuietLight"
                 )
             )
-        }
-
-        Thread.setDefaultUncaughtExceptionHandler {
-            _, throwable ->
-            val intent = Intent(context, DebugActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            intent.putExtra("error", throwable.stackTraceToString())
-            throwable.printStackTrace()
-            startActivity(intent)
-            exitProcess(0)
         }
     }
 

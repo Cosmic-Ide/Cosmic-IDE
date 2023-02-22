@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "766377920996",
+    "project_id": "cosmic-ide",
+    "storage_bucket": "cosmic-ide.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:766377920996:android:477b874b34f0ce4ffd1ff1",
+        "android_client_info": {
+          "package_name": "org.cosmic.ide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "766377920996-kt1ehl6kao4rf0vk5m4e38q1oi6bq2i5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeWPR3oN3VoLLxSq-GI_SrmwAVtBbZVnY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "766377920996-kt1ehl6kao4rf0vk5m4e38q1oi6bq2i5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

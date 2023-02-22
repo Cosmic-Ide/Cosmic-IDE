@@ -87,6 +87,13 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-perf-ktx")
 
+    // Google Analytics
+    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
+
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.0")
@@ -111,4 +118,5 @@ dependencies {
     implementation(projects.project)
     implementation(projects.gitApi)
     implementation(projects.javaCompletion)
+
 }

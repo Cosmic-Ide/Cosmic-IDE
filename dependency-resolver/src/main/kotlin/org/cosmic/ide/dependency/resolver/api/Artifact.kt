@@ -41,7 +41,7 @@ data class Artifact(
         val pom = getPOM()
         if (pom == null) return mutableListOf()
         val deps = pom.resolvePOM()
-        val artifacts = mutableListOf()
+        val artifacts = mutableListOf<Artifact>()
         deps.forEach { dep ->
             if (dep.version.isEmpty()) {
                 val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream

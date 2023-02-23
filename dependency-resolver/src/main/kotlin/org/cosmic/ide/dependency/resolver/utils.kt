@@ -22,7 +22,7 @@ fun initHost(artifact: Artifact): Artifact? {
             return artifact
         }
     }
-    println("No repository contains ${ artifact.artifactId }.")
+    println("No repository contains " + artifact.artifactId + ":" + artifact.version)
     return null
 }
 

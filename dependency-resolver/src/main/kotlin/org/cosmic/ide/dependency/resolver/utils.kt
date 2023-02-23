@@ -35,7 +35,8 @@ fun InputStream.resolvePOM(): List<Artifact> {
     val builder = factory.newDocumentBuilder()
     val doc = builder.parse(this)
 
-    val dependencyElements = doc.getElementsByTagName("dependency")
+    val dependencies = doc.getElementById("dependencies")
+    val dependencyElements = dependencies.getElementsByTagName("dependency")
     for (i in 0 until dependencyElements.length) {
         val dependencyElement = dependencyElements.item(i) as Element
         val scopeItem = dependencyElement.getElementsByTagName("scope").item(0)

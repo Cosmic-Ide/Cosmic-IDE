@@ -31,7 +31,7 @@ data class Artifact(
             artifacts.groupBy { it.groupId to it.artifactId }.values.map { it.maxBy { it.version } }
 
         latestDeps.forEach { art ->
-            if (art.version.isNotEmpty()) {
+            if (art.version.isNotEmpty() && art.repository != null) {
                 art.downloadTo(File(output, "${ art.artifactId }-${ art.version }.jar"))
             }
         }
@@ -41,7 +41,7 @@ data class Artifact(
         val pom = getPOM()
         if (pom == null) return mutableListOf()
         val deps = pom.resolvePOM()
-        val artifacts = deps.toMutableList()
+        val artifacts = mutableListOf()
         deps.forEach { dep ->
             if (dep.version.isEmpty()) {
                 val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream
@@ -53,19 +53,15 @@ data class Artifact(
                     dep.version = v.textContent
                 }
             }
+            artifacts.add(dep)
             artifacts.addAll(dep.resolve())
         }
         return artifacts
     }
 
     fun getPOM(): InputStream? {
-        try {
-            val pomUrl =
-                "${ repository!!.getURL() }/${ groupId.replace(".", "/") }/$artifactId/$version/$artifactId-$version.pom"
-            return URL(pomUrl).openConnection().inputStream
-        } catch (e: NullPointerException) {
-            e.printStackTrace()
-        }
-        return null
+        val pomUrl =
+            "${ repository!!.getURL() }/${ groupId.replace(".", "/") }/$artifactId/$version/$artifactId-$version.pom"
+        return URL(pomUrl).openConnection().inputStream
     }
 }

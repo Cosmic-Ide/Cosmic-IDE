@@ -56,8 +56,9 @@ fun InputStream.resolvePOM(): List<Artifact> {
         if (item != null) {
             artifact.version = item.textContent
         }
-        initHost(artifact)
-        artifacts.add(artifact)
+        if (initHost(artifact) != null) {
+            artifacts.add(artifact)
+        }
     }
     return artifacts
 }

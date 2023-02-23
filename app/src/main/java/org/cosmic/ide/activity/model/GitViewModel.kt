@@ -40,19 +40,17 @@ class GitViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-            Log.d(TAG, "Found repository")
         } else {
             _hasRepo.value = false
-            Log.d(TAG, "No repository")
         }
     }
 
     fun getLog() {
-        _gitLog.value = /*if(::git.isInitialized)*/ git.getLog() /*else ""*/
+        _gitLog.value = git.getLog()
     }
 
     fun getBranchList() {
-        _branchList.value = /*if(::git.isInitialized)*/ git.getBranchList() /*else listOf("")*/
+        _branchList.value = git.getBranchList()
     }
 
     fun createGitRepo(commiter: Author) {

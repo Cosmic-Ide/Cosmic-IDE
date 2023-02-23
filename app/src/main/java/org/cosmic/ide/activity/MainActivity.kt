@@ -315,7 +315,7 @@ class MainActivity : BaseActivity() {
                         .toString()
                 }
             }
-            fragment.getEditor().setText(temp)
+            fragment.getEditor().text.replace(0, fragment.getEditor().text.toString().length, temp)
         } else if (id == R.id.action_settings) {
             startActivity(Intent(this, SettingsActivity::class.java))
         } else if (id == R.id.action_run) {

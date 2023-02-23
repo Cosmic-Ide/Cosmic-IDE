@@ -1,6 +1,5 @@
 package org.cosmic.ide.ui.editor
 
-
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.WorkerThread
@@ -58,8 +57,10 @@ private val TAG = "JavaLanguage"
                     Files.write(path, text.toByteArray())
             val result = completions.project.getCompletionResult(path, position.line, position.column)
             result.completionCandidates.forEach {
+                    if (it.name != "<error>") {
                     val item = SimpleCompletionItem(it.name, it.detail.orElse("Unknown"), result.prefix.length, it.name)
             publisher.addItem(item)
+                    }
             }
             } catch (e: Throwable) {
             if (e !is InterruptedException) {

@@ -19,15 +19,30 @@ data class Artifact(
         }
         output.createNewFile()
         val dependencyUrl =
-            "${ repository!!.getURL() }/${groupId.replace(".", "/")}/$artifactId/$version/$artifactId-$version.jar"
+            "${ repository!!.getURL() }/${ groupId.replace(".", "/") }/$artifactId/$version/$artifactId-$version.jar"
         val stream = URL(dependencyUrl).openConnection().inputStream
         output.outputStream().use { stream.copyTo(it) }
     }
 
     fun downloadArtifact(output: File) {
-        val stream = getPOM()
-        val artifacts = stream.resolvePOM().toMutableList()
-        for (dep in artifacts) {
+        val artifacts = resolve()
+
+        val latestDeps =
+            artifacts.groupBy { it.groupId to it.artifactId }.values.map { it.maxBy { it.version } }
+
+        latestDeps.forEach { art ->
+            if (art.version.isNotEmpty()) {
+                art.downloadTo(File(output, "${ art.artifactId }-${ art.version }.jar"))
+            }
+        }
+    }
+
+    fun resolve(): MutableList<Artifact> {
+        val pom = getPOM()
+        if (pom == null) return
+        val deps = pom.resolvePOM()
+        val artifacts = deps.toMutableList()
+        deps.forEach { dep ->
             if (dep.version.isEmpty()) {
                 val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream
                 val factory = DocumentBuilderFactory.newInstance()
@@ -38,37 +53,19 @@ data class Artifact(
                     dep.version = v.textContent
                 }
             }
-            artifacts.addAll(dep.getPOM().resolvePOM())
+            artifacts.addAll(dep.resolve())
         }
-        for (dep in artifacts) {
-            if (dep.version.isEmpty()) {
-                val meta = URL("${ repository!!.getURL() }/${groupId.replace(".", "/")}/$artifactId/maven-metadata.xml").openConnection().inputStream
-                val factory = DocumentBuilderFactory.newInstance()
-                val builder = factory.newDocumentBuilder()
-                val doc = builder.parse(meta)
-                val v = doc.getElementsByTagName("release").item(0)
-                if (v != null) {
-                    dep.version = v.textContent
-                }
-            }
-        }
-
-        val latestDeps =
-            artifacts.groupBy { it.groupId to it.artifactId }.values.map { it.maxBy { it.version } }
-
-        for (art in latestDeps) {
-            println("Downloading ${ art.artifactId }")
-            if (art.version.isEmpty()) {
-                println("Cannot fetch any version of ${ groupId }:${ artifactId }. Skipping download.")
-                continue
-            }
-            art.downloadTo(File(output, "${ art.artifactId }-${ art.version }.jar"))
-        }
+        return artifacts
     }
 
-    fun getPOM(): InputStream {
-        val pomUrl =
-            "${ repository!!.getURL() }/${groupId.replace(".", "/")}/$artifactId/$version/$artifactId-$version.pom"
-        return URL(pomUrl).openConnection().inputStream
+    fun getPOM(): InputStream? {
+        try {
+            val pomUrl =
+                "${ repository!!.getURL() }/${ groupId.replace(".", "/") }/$artifactId/$version/$artifactId-$version.pom"
+            return URL(pomUrl).openConnection().inputStream
+        } catch (e: NullPointerException) {
+            e.printStackTrace()
+        }
+        return null
     }
 }

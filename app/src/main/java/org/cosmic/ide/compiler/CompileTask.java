@@ -68,6 +68,8 @@ public class CompileTask extends Thread {
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getLocalizedMessage());
+        } catch (IllegalArgumentException e) {
+            Log.d("CompileTask", "No files", e);
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
         }

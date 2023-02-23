@@ -26,6 +26,7 @@ public class CompileTask extends Thread {
     private final String STAGE_KOTLINC;
     private final String STAGE_JAVAC;
     private final String STAGE_D8;
+    private final String TAG = "CompileTask";
 
     public CompileTask(MainActivity context, CompilerListeners listener) {
         this.activity = context;
@@ -63,16 +64,18 @@ public class CompileTask extends Thread {
     }
 
     private void compileKotlin() {
+        Log.i(TAG, "Starting kotlin compiler.");
         try {
             listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
             new KotlinCompiler().doFullTask(activity.getProject());
         } catch (CompilationFailedException e) {
             listener.onFailed(e.getLocalizedMessage());
         } catch (IllegalArgumentException e) {
-            Log.d("CompileTask", "No files", e);
+            Log.d(TAG, "No files", e);
         } catch (Throwable e) {
             listener.onFailed(Log.getStackTraceString(e));
         }
+        Log.i(TAG, "Completion successful.");
     }
 
     private void compileJava() {

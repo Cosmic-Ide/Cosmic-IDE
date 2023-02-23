@@ -39,7 +39,7 @@ data class Artifact(
 
     fun resolve(): MutableList<Artifact> {
         val pom = getPOM()
-        if (pom == null) return
+        if (pom == null) return mutableListOf()
         val deps = pom.resolvePOM()
         val artifacts = deps.toMutableList()
         deps.forEach { dep ->

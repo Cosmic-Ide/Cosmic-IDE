@@ -26,6 +26,7 @@ data class Artifact(
 
     fun downloadArtifact(output: File) {
         val artifacts = resolve()
+        artifacts.add(this)
 
         val latestDeps =
             artifacts.groupBy { it.groupId to it.artifactId }.values.map { it.maxBy { it.version } }
@@ -44,6 +45,7 @@ data class Artifact(
         val artifacts = mutableListOf<Artifact>()
         deps.forEach { dep ->
             if (dep.version.isEmpty()) {
+                println("Fetching latest version of ${ dep.artifactId }")
                 val meta = URL("${ dep.repository!!.getURL() }/${ dep.groupId.replace(".", "/") }/${ dep.artifactId }/maven-metadata.xml").openConnection().inputStream
                 val factory = DocumentBuilderFactory.newInstance()
                 val builder = factory.newDocumentBuilder()

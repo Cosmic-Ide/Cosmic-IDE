@@ -1,9 +1,9 @@
 package org.cosmic.ide.dependency.resolver
 
-import org.cosmic.ide.dependency.resolver.api.Artifact
-import org.cosmic.ide.dependency.resolver.repository.*
 import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
+import org.cosmic.ide.dependency.resolver.api.Artifact
+import org.cosmic.ide.dependency.resolver.repository.*
 import org.w3c.dom.Element
 
 private val repositories by lazy { listOf(MavenCentral(), Jitpack(), GoogleMaven()) }
@@ -35,7 +35,8 @@ fun InputStream.resolvePOM(): List<Artifact> {
     val builder = factory.newDocumentBuilder()
     val doc = builder.parse(this)
 
-    val dependencies = doc.getElementById("dependencies")
+    val dependencies = doc.getElementsByTagName("dependencies").item(0) as Element?
+    if (dependencies == null) return artifacts
     val dependencyElements = dependencies.getElementsByTagName("dependency")
     for (i in 0 until dependencyElements.length) {
         val dependencyElement = dependencyElements.item(i) as Element

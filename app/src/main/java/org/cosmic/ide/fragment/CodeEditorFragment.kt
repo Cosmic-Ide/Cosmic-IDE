@@ -55,7 +55,11 @@ class CodeEditorFragment : Fragment() {
 
         binding.inputView.apply {
             bindEditor(binding.editor)
-            addSymbols(arrayOf("→", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"), arrayOf("\t", "{}", "{", "()", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/"))
+            addSymbol("→", "\t")
+            addSymbol("{", "{}")
+            addSymbol("}", "}")
+            addSymbol("(", "()")
+            addSymbols(arrayOf(")", ",", ".", ";", "\"\"", "?", "+", "-", "*", "/"))
         }
 
         if (currentFile.exists()) {

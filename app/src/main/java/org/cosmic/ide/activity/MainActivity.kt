@@ -275,7 +275,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
-        if (File(project.rootFile, ".git").exists()) {
+        if (GitViewModel.INSTANCE.hasRepo.value!!) {
             menu.findItem(R.id.action_git).isVisible = true
         }
         return super.onCreateOptionsMenu(menu)
@@ -315,7 +315,7 @@ class MainActivity : BaseActivity() {
                         .toString()
                 }
             }
-            fragment.getEditor().setText(temp)
+            fragment.getEditor().text.replace(0, fragment.getEditor().text.toString().length, temp)
         } else if (id == R.id.action_settings) {
             startActivity(Intent(this, SettingsActivity::class.java))
         } else if (id == R.id.action_run) {
@@ -346,17 +346,6 @@ class MainActivity : BaseActivity() {
             mainViewModel.setDrawerState(b)
         }
     }
-
-    // private fun saveOpenedFiles() {
-        // try {
-            // project
-                // .indexer
-                // .putPathOpenFiles(mainViewModel.files.value!!)
-                // .flush()
-        // } catch (e: JSONException) {
-            // Log.e(TAG, "Cannot save opened files", e)
-        // }
-    // }
 
     private fun updateTab(tab: TabLayout.Tab, pos: Int) {
         val currentFile = mainViewModel.files.value!![pos]
@@ -438,6 +427,7 @@ class MainActivity : BaseActivity() {
             classes
         ) { _, pos ->
             val className = classes[pos].replace(".", "/")
+            var dec = true
             execute {
                 try {
                     JarTask().doFullTask(project)
@@ -450,6 +440,7 @@ class MainActivity : BaseActivity() {
                             )
                         )
                 } catch (e: Exception) {
+                    dec = false
                     AndroidUtilities.showSimpleAlert(
                         this,
                         getString(R.string.error_class_decompile),
@@ -469,6 +460,7 @@ class MainActivity : BaseActivity() {
                     )
                 }
             }
+            if (!dec) return@listDialog
             val edi = CodeEditor(this)
             edi.typefaceText = ResourcesCompat.getFont(
                 this,

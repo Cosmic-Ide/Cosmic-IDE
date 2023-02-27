@@ -9,7 +9,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 object EditorUtil {
     val javaLanguage: Language
         get() = TextMateLanguage.create(
-            "source.java", false
+            "source.java", true
         )
 
     val smaliLanguage: Language

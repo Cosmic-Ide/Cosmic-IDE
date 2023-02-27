@@ -60,7 +60,7 @@ class KotlinCompiler : Task {
             it.endsWith(".kt")
         }
         ) {
-            return
+            throw IllegalArgumentException("No Kotlin files are present.")
         }
         val mKotlinHome = File(project.binDirPath, "kotlin").apply { mkdirs() }
         val mClassOutput = File(project.binDirPath, "classes").apply { mkdirs() }

@@ -21,8 +21,10 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         tv.text = item.label
         tv = view.findViewById(R.id.result_item_desc)
         tv.text = item.desc
-        tv = view.findViewById(R.id.result_item_image)
-        tv.text = item.desc.subSequence(0, 1)
+        if (item.desc.length > 0) {
+            tv = view.findViewById(R.id.result_item_image)
+            tv.text = item.desc.subSequence(0, 1)
+        }
         return view
     }
 }

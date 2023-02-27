@@ -83,14 +83,6 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             )
         )
         treeView!!.view.isNestedScrollingEnabled = false
-        val isGitEnabled = File(activity.project.rootFile, ".git").exists()
-        val gitButton = view.findViewById<MaterialButton>(R.id.gitButton)
-        gitButton.text = if (isGitEnabled) "DISABLE GIT" else "ENABLE GIT"
-        gitButton.setOnClickListener { v: View ->
-            showSimpleAlert(
-                v.context, "Git", "This feature is currently not available."
-            )
-        }
         treeView!!.setAdapter(
             TreeFileNodeViewFactory(
                 object : TreeFileNodeListener {
@@ -373,6 +365,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
             createNewDirectoryDialog!!.show()
             val inputEt = createNewDirectoryDialog!!.findViewById<EditText>(android.R.id.text1)
             val createBtn = createNewDirectoryDialog!!.findViewById<Button>(android.R.id.button1)
+            val textInput = createNewDirectoryDialog!!.findViewById<TextInputLayout>(R.id.til_directory_name)
             createBtn!!.setOnClickListener {
                 val fileName = inputEt!!.text.toString().replace("..", "")
                 if (fileName.isNotEmpty() && !fileName.contains(".")) {
@@ -388,7 +381,7 @@ class TreeFileManagerFragment : Fragment(R.layout.tree_file_manager_fragment) {
                     createNewDirectoryDialog!!.dismiss()
                 } else {
                     if (fileName.contains(".") || fileName.isEmpty()) {
-                        (inputEt.parent as TextInputLayout).error = activity.getString(
+                        textInput!!.error = activity.getString(
                             R.string.create_folder_dialog_invalid_name
                         )
                     }

@@ -23,7 +23,7 @@ class KotlinLanguage(
         GrammarRegistry.getInstance().findLanguageConfiguration("source.kotlin"),
         GrammarRegistry.getInstance(),
         ThemeRegistry.getInstance(),
-        true
+        false
 ) {
 
     private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }

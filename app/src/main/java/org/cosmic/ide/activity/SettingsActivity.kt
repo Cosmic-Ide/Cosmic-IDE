@@ -1,10 +1,12 @@
 package org.cosmic.ide.activity
 
 import android.os.Bundle
+import android.os.Build
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.activity.OnBackPressedCallback
 import org.cosmic.ide.R
 import org.cosmic.ide.databinding.ActivitySettingsBinding
 import org.cosmic.ide.fragment.settings.RootSettingsFragment
@@ -36,6 +38,28 @@ class SettingsActivity :
                 supportActionBar?.title = it.getCharSequence(TITLE_TAG)
             }
         }
+        val callback: OnBackPressedCallback = object : OnBackPressedCallback(
+            true
+        ) {
+            override fun handleOnBackPressed() {
+                val current = supportFragmentManager.fragments.last()
+                if (current !is RootSettingsFragment) {
+                    openFragment(RootSettingsFragment())
+                    return
+                }
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q &&
+                    isTaskRoot &&
+                    supportFragmentManager.backStackEntryCount == 0
+                ) {
+                    finishAfterTransition()
+                }
+                finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(
+            this,
+            callback
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

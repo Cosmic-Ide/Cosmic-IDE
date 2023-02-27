@@ -1,9 +1,9 @@
 package org.cosmic.ide.dependency.resolver
 
-import org.cosmic.ide.dependency.resolver.api.Artifact
-import org.cosmic.ide.dependency.resolver.repository.*
 import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
+import org.cosmic.ide.dependency.resolver.api.Artifact
+import org.cosmic.ide.dependency.resolver.repository.*
 import org.w3c.dom.Element
 
 private val repositories by lazy { listOf(MavenCentral(), Jitpack(), GoogleMaven()) }
@@ -22,7 +22,8 @@ fun initHost(artifact: Artifact): Artifact? {
             return artifact
         }
     }
-    throw IllegalStateException("No repository contains ${ artifact.artifactId }.")
+    println("No repository contains " + artifact.artifactId + ":" + artifact.version)
+    return null
 }
 
 /*
@@ -34,7 +35,9 @@ fun InputStream.resolvePOM(): List<Artifact> {
     val builder = factory.newDocumentBuilder()
     val doc = builder.parse(this)
 
-    val dependencyElements = doc.getElementsByTagName("dependency")
+    val dependencies = doc.getElementsByTagName("dependencies").item(0) as Element?
+    if (dependencies == null) return artifacts
+    val dependencyElements = dependencies.getElementsByTagName("dependency")
     for (i in 0 until dependencyElements.length) {
         val dependencyElement = dependencyElements.item(i) as Element
         val scopeItem = dependencyElement.getElementsByTagName("scope").item(0)
@@ -46,15 +49,18 @@ fun InputStream.resolvePOM(): List<Artifact> {
         }
         val groupId = dependencyElement.getElementsByTagName("groupId").item(0).textContent
         val artifactId = dependencyElement.getElementsByTagName("artifactId").item(0).textContent
+        if (artifactId.endsWith("bom")) {
+            continue
+        }
         val artifact = Artifact(groupId, artifactId)
 
         val item = dependencyElement.getElementsByTagName("version").item(0)
-        if (item == null) {
-            throw IllegalStateException("$groupId:$artifactId doesn't declare a version.")
+        if (item != null) {
+            artifact.version = item.textContent
         }
-        artifact.version = item.textContent
-        initHost(artifact)
-        artifacts.add(artifact)
+        if (initHost(artifact) != null) {
+            artifacts.add(artifact)
+        }
     }
     return artifacts
 }

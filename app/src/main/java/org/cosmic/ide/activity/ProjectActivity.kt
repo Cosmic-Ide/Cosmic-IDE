@@ -34,6 +34,8 @@ import org.cosmic.ide.util.addSystemWindowInsetToMargin
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
 import java.io.File
 import java.io.IOException
+import java.util.Arrays
+import java.util.Comparator
 
 class ProjectActivity : BaseActivity(), OnProjectEventListener {
     private val REQUEST_CODE_SELECT_PROJECT = 0
@@ -64,6 +66,35 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
     interface OnProjectCreatedListener {
         fun onProjectCreated(project: Project)
     }
+    private val importListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                    if (result.resultCode == RESULT_OK) {
+                        result.data?.data?.let { uri ->
+                            val file = DocumentFile.fromSingleUri(this, uri)!!
+                            val name = file.name?.substringBeforeLast(".")
+                            val path = FileUtil.getProjectsDir() + name
+                            val projectDir = File(path)
+                            if (projectDir.exists()) {
+                                MaterialAlertDialogBuilder(this)
+                                    .setTitle("Project already exists")
+                                    .setMessage("Do you want to overwrite it?")
+                                    .setPositiveButton("Yes") { _, _ ->
+                                        projectDir.deleteRecursively()
+                                        contentResolver.openInputStream(uri)!!.use {
+                                            it.unzip(File(FileUtil.getProjectsDir()))
+                                            loadProjects()
+                                        }
+                                    }
+                                    .setNegativeButton("No") { _, _ -> }
+                                    .show()
+                            } else {
+                                contentResolver.openInputStream(uri)!!.use {
+                                    it.unzip(projectDir)
+                                    loadProjects()
+                                }
+                            }
+                        }
+                    }
+                }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,35 +147,7 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     type = "application/zip"
                 }
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                    if (result.resultCode == RESULT_OK) {
-                        result.data?.data?.let { uri ->
-                            val file = DocumentFile.fromSingleUri(this, uri)!!
-                            val name = file.name?.substringBeforeLast(".")
-                            val path = FileUtil.getProjectsDir() + name
-                            val projectDir = File(path)
-                            if (projectDir.exists()) {
-                                MaterialAlertDialogBuilder(this)
-                                    .setTitle("Project already exists")
-                                    .setMessage("Do you want to overwrite it?")
-                                    .setPositiveButton("Yes") { _, _ ->
-                                        projectDir.deleteRecursively()
-                                        contentResolver.openInputStream(uri)!!.use {
-                                            it.unzip(File(FileUtil.getProjectsDir()))
-                                            loadProjects()
-                                        }
-                                    }
-                                    .setNegativeButton("No") { _, _ -> }
-                                    .show()
-                            } else {
-                                contentResolver.openInputStream(uri)!!.use {
-                                    it.unzip(projectDir)
-                                    loadProjects()
-                                }
-                            }
-                        }
-                    }
-                }.launch(intent)
+                importListener.launch(intent)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -231,9 +234,9 @@ class ProjectActivity : BaseActivity(), OnProjectEventListener {
                 projectDir.listFiles { file -> file.isDirectory }
             val projects = mutableListOf<Project>()
             if (directories != null) {
-                directories.sortWith(Comparator.comparingLong { file -> file.lastModified() })
+                Arrays.sort(directories, Comparator.comparingLong(File::lastModified).reversed())
                 for (directory in directories) {
-                        projects.add(JavaProject(File(directory.absolutePath)))
+                    projects.add(JavaProject(directory))
                 }
             }
             runOnUiThread {

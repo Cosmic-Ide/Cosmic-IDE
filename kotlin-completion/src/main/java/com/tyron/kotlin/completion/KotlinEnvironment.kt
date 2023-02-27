@@ -1,3 +1,19 @@
+/*
+ *  This file is part of CodeAssist.
+ *
+ *  CodeAssist is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CodeAssist is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with CodeAssist.  If not, see <https://www.gnu.org/licenses/>.
+ */
 @file:OptIn(FrontendInternals::class)
 
 package com.tyron.kotlin.completion
@@ -338,14 +354,7 @@ data class KotlinEnvironment(
                                 put(JVMConfigurationKeys.NO_JDK, true)
                                 put(JVMConfigurationKeys.NO_REFLECT, true)
                                 put(CommonConfigurationKeys.MODULE_NAME, JvmProtoBufUtil.DEFAULT_MODULE_NAME)
-                                put(CommonConfigurationKeys.PARALLEL_BACKEND_THREADS, 10)
                                 put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
-                                put(
-                                    JVMConfigurationKeys.ASSERTIONS_MODE,
-                                    JVMAssertionsMode.ALWAYS_DISABLE
-                                )
-                                put(JVMConfigurationKeys.IGNORE_CONST_OPTIMIZATION_ERRORS, true)
-                                put(JVMConfigurationKeys.VALIDATE_BYTECODE, false)
                                 put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                                 put(CommonConfigurationKeys.USE_FIR, true)
                             }

@@ -3,6 +3,9 @@ plugins {
     id(BuildPlugins.KOTLIN_ANDROID)
     id(BuildPlugins.KTLINT)
     id(BuildPlugins.OSS_LICENSES)
+    id(BuildPlugins.GMS)
+    id(BuildPlugins.CRASHLYTICS)
+    id(BuildPlugins.PERF)
 }
 
 android {
@@ -29,8 +32,6 @@ android {
     buildTypes {
         getByName(BuildType.DEBUG) {
             isMinifyEnabled = BuildTypeDebug.isMinifyEnabled
-            applicationIdSuffix = BuildTypeDebug.applicationIdSuffix
-            versionNameSuffix = BuildTypeDebug.versionNameSuffix
         }
 
         getByName(BuildType.RELEASE) {
@@ -44,7 +45,7 @@ android {
     buildFeatures.viewBinding = true
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+        // isCoreLibraryDesugaringEnabled = true
 
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -77,16 +78,30 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.2.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.2")
+
+    // Google Analytics
+    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
+
+    // Google Analytics
+    implementation(platform("com.google.firebase:firebase-bom:31.2.2"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.0")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("androidx.activity:activity-ktx:1.7.0-alpha04")
+    implementation("androidx.activity:activity-ktx:1.7.0-beta01")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
     implementation("com.google.android.material:material:1.9.0-alpha01")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
     implementation("androidx.preference:preference-ktx:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0-rc01")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
@@ -103,4 +118,5 @@ dependencies {
     implementation(projects.project)
     implementation(projects.gitApi)
     implementation(projects.javaCompletion)
+
 }

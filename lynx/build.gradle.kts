@@ -31,7 +31,7 @@ android {
 
 dependencies {
     implementation("com.google.android.material:material:1.9.0-alpha01")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
     // TODO: migrate to recyclerview for better performance.
     // implementation("androidx.recyclerview:recyclerview:1.3.0-rc01")
     implementation("androidx.annotation:annotation:1.5.0")

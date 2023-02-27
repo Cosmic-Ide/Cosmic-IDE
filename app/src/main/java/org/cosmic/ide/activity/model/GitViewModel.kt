@@ -32,23 +32,25 @@ class GitViewModel : ViewModel() {
     fun setPath(newPath: String) {
         _projectPath.value = newPath
         if (isGitRepoAt(newPath)) {
-            _hasRepo.value = true
-            git = openGitAt(newPath)
-            getLog()
-            getBranchList()
-            Log.d(TAG, "Found repository")
+            try {
+                git = openGitAt(newPath)
+                getLog()
+                getBranchList()
+                _hasRepo.value = true
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         } else {
             _hasRepo.value = false
-            Log.d(TAG, "No repository")
         }
     }
 
     fun getLog() {
-        _gitLog.value = /*if(::git.isInitialized)*/ git.getLog() /*else ""*/
+        _gitLog.value = git.getLog()
     }
 
     fun getBranchList() {
-        _branchList.value = /*if(::git.isInitialized)*/ git.getBranchList() /*else listOf("")*/
+        _branchList.value = git.getBranchList()
     }
 
     fun createGitRepo(commiter: Author) {

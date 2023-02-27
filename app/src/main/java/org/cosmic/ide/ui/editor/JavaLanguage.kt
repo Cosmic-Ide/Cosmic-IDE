@@ -1,6 +1,5 @@
 package org.cosmic.ide.ui.editor
 
-
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.WorkerThread
@@ -19,6 +18,7 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.logging.Level
 
 class JavaLanguage(
         private val mEditor: CodeEditor,
@@ -37,9 +37,12 @@ private val path: Path
 private val TAG = "JavaLanguage"
 
         init {
-                val options = JavaCompletionOptionsImpl()
+                val options = JavaCompletionOptionsImpl(project.binDirPath + "autocomplete.log",
+                                     Level.ALL,
+                                     emptyList(),
+                                     emptyList())
                  path = file.toPath()
-                completions.initialize(URI(project.projectDirPath), options)
+                completions.initialize(URI("file://" + project.projectDirPath), options)
         }
 
 @WorkerThread
@@ -54,8 +57,10 @@ private val TAG = "JavaLanguage"
                     Files.write(path, text.toByteArray())
             val result = completions.project.getCompletionResult(path, position.line, position.column)
             result.completionCandidates.forEach {
+                    if (it.name != "<error>") {
                     val item = SimpleCompletionItem(it.name, it.detail.orElse("Unknown"), result.prefix.length, it.name)
             publisher.addItem(item)
+                    }
             }
             } catch (e: Throwable) {
             if (e !is InterruptedException) {

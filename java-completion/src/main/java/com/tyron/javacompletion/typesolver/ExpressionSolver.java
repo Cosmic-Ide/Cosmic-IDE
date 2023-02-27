@@ -1,3 +1,19 @@
+/*
+ *  This file is part of CodeAssist.
+ *
+ *  CodeAssist is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CodeAssist is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with CodeAssist.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.tyron.javacompletion.typesolver;
 
 import com.google.auto.value.AutoValue;
@@ -140,7 +156,8 @@ public class ExpressionSolver {
         EntityWithContext entityWithContext = foundEntities.get(0);
         SolvedTypeParameters solvedTypeParameters = entityWithContext.getSolvedTypeParameters();
         Entity entity = entityWithContext.getEntity();
-        if (entity instanceof MethodEntity methodEntity) {
+        if (entity instanceof MethodEntity) {
+            MethodEntity methodEntity = (MethodEntity) entity;
             if (methodEntity.isConstructor()) {
                 return entityWithContext
                         .toBuilder()
@@ -154,7 +171,8 @@ public class ExpressionSolver {
                         .orElse(null);
             }
         }
-        if (entity instanceof VariableEntity variableEntity) {
+        if (entity instanceof VariableEntity) {
+            VariableEntity variableEntity = (VariableEntity) entity;
             return typeSolver
                     .solve(variableEntity.getType(),
                             solvedTypeParameters,
@@ -477,7 +495,8 @@ public class ExpressionSolver {
             if (entity instanceof ClassEntity) {
                 return ((ClassEntity) entity).getTypeParameters();
             }
-            if (entity instanceof MethodEntity method) {
+            if (entity instanceof MethodEntity) {
+                MethodEntity method = (MethodEntity) entity;
                 if (method.isConstructor()) {
                     // Constructor inherits type parameters from the class.
                     return method.getParentClass().getTypeParameters();

@@ -1,3 +1,19 @@
+/*
+ *  This file is part of CodeAssist.
+ *
+ *  CodeAssist is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CodeAssist is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *   along with CodeAssist.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package com.tyron.javacompletion.completion;
 
 import com.google.common.collect.ImmutableList;
@@ -102,6 +118,7 @@ public class Completor {
         TextEditOptions.Builder textEditOptions =
                 TextEditOptions.builder().setAppendMethodArgumentSnippets(false);
         if (treePath.getLeaf() instanceof MemberSelectTree) {
+            logger.info("Generating completion for MemberSelectTree");
             ExpressionTree parentExpression = ((MemberSelectTree) treePath.getLeaf()).getExpression();
             Optional<ImportTree> importNode = findNodeOfType(treePath, ImportTree.class);
             if (importNode.isPresent()) {
@@ -116,15 +133,18 @@ public class Completor {
                         CompleteMemberAction.forMemberSelect(parentExpression, typeSolver, expressionSolver);
                 textEditOptions.setAppendMethodArgumentSnippets(true);
             }
-        } else if (treePath.getLeaf() instanceof MemberReferenceTree) {
+        } else if (treePath.getLeaf() instanceof MemberReferenceTree || prefix == ".") {
+            logger.info("Generating completion for MemberReferenceTree");
             ExpressionTree parentExpression =
                     ((MemberReferenceTree) treePath.getLeaf()).getQualifierExpression();
             action =
                     CompleteMemberAction.forMethodReference(parentExpression, typeSolver, expressionSolver);
         } else if (treePath.getLeaf() instanceof LiteralTree) {
+            logger.info("Generating completion for LiteralTree");
             // Do not complete on any literals, especially strings.
             action = NoCandidateAction.INSTANCE;
         } else {
+            logger.info("Generating completion for expression");
             action = new CompleteSymbolAction(typeSolver, expressionSolver);
             textEditOptions.setAppendMethodArgumentSnippets(true);
         }

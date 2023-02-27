@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConsoleEditText extends AppCompatEditText {
 
-    private static final String TAG = "ConsoleEditText";
     private static final int NEW_OUTPUT = 1;
     private static final int NEW_ERR = 2;
 

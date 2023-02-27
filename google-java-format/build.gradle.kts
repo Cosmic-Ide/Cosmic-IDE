@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-    compileOnly("com.google.guava:guava:31.1-jre")
+    compileOnly("com.google.guava:guava:31.1-android")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     api(files("libs/google-java-format-HEAD-20221027.232252-92.jar"))
 }

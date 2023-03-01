@@ -22,7 +22,7 @@ jobs:
 
       - name: Format Kotlin Source
         continue-on-error: true
-        uses: gradle/gradle-build-action@v2.3.3
+        uses: gradle/gradle-build-action@v2.4.0
         with:
           gradle-version: nightly
           arguments: ktlintFormat

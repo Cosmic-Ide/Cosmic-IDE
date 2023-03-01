@@ -1,140 +1,118 @@
-package org.cosmic.ide.compiler;
+package org.cosmic.ide.compiler
 
-import android.content.Intent;
-import android.os.Looper;
-import android.util.Log;
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Looper
+import android.util.Log
+import org.cosmic.ide.App.Companion.getDefaultPreferences
+import org.cosmic.ide.R
+import org.cosmic.ide.activity.ConsoleActivity
+import org.cosmic.ide.activity.MainActivity
+import org.cosmic.ide.android.exception.CompilationFailedException
+import org.cosmic.ide.android.task.dex.D8Task
+import org.cosmic.ide.android.task.java.JavaCompiler
+import org.cosmic.ide.android.task.kotlin.KotlinCompiler
+import org.cosmic.ide.util.Constants
 
-import org.cosmic.ide.App;
-import org.cosmic.ide.R;
-import org.cosmic.ide.activity.ConsoleActivity;
-import org.cosmic.ide.activity.MainActivity;
-import org.cosmic.ide.android.exception.CompilationFailedException;
-import org.cosmic.ide.android.task.dex.D8Task;
-import org.cosmic.ide.android.task.java.JavaCompiler;
-import org.cosmic.ide.android.task.kotlin.KotlinCompiler;
-import org.cosmic.ide.util.Constants;
+class CompileTask(private val activity: MainActivity, private val listener: CompilerListeners) :
+    Thread() {
+    private var showExecuteDialog = false
+    private val compilers: Compilers = Compilers(
+        KotlinCompiler(),
+        JavaCompiler(getDefaultPreferences()),
+        D8Task()
+    )
+    private val STAGE_KOTLINC: String = activity.getString(R.string.compilation_stage_kotlinc)
+    private val STAGE_JAVAC: String = activity.getString(R.string.compilation_stage_javac)
+    private val STAGE_D8: String = activity.getString(R.string.compilation_stage_d8)
+    private val TAG = "CompileTask"
 
-public class CompileTask extends Thread {
-
-    private boolean showExecuteDialog;
-
-    private final MainActivity activity;
-
-    private final CompilerListeners listener;
-    private final Compilers compilers;
-
-    private final String STAGE_KOTLINC;
-    private final String STAGE_JAVAC;
-    private final String STAGE_D8;
-    private final String TAG = "CompileTask";
-
-    public CompileTask(MainActivity context, CompilerListeners listener) {
-        this.activity = context;
-        this.listener = listener;
-        this.compilers =
-                new Compilers(
-                        new JavaCompiler(App.getDefaultPreferences()),
-                        new D8Task());
-
-        STAGE_KOTLINC = context.getString(R.string.compilation_stage_kotlinc);
-        STAGE_JAVAC = context.getString(R.string.compilation_stage_javac);
-        STAGE_D8 = context.getString(R.string.compilation_stage_d8);
-    }
-
-    @Override
-    public void run() {
+    override fun run() {
         if (Looper.myLooper() == null) {
-            Looper.prepare();
+            Looper.prepare()
         }
-
-        compileKotlin();
-        if (!listener.isSuccessTillNow()) return;
-
-        compileJava();
-        if (!listener.isSuccessTillNow()) return;
-
-        compileDex();
-        if (!listener.isSuccessTillNow()) return;
-
-        executeDex();
+        compileKotlin()
+        if (!listener.isSuccessTillNow) return
+        compileJava()
+        if (!listener.isSuccessTillNow) return
+        compileDex()
+        if (!listener.isSuccessTillNow) return
+        executeDex()
     }
 
-    public void setExecution(boolean enable) {
-        showExecuteDialog = enable;
+    fun setExecution(enable: Boolean) {
+        showExecuteDialog = enable
     }
 
-    private void compileKotlin() {
-        Log.i(TAG, "Starting kotlin compiler.");
+    private fun compileKotlin() {
+        Log.i(TAG, "Starting kotlin compiler.")
         try {
-            listener.onCurrentBuildStageChanged(STAGE_KOTLINC);
-            new KotlinCompiler().doFullTask(activity.getProject());
-        } catch (CompilationFailedException e) {
-            listener.onFailed(e.getLocalizedMessage());
-        } catch (IllegalArgumentException e) {
-            Log.d(TAG, "No files", e);
-        } catch (Throwable e) {
-            listener.onFailed(Log.getStackTraceString(e));
+            listener.onCurrentBuildStageChanged(STAGE_KOTLINC)
+            compilers.kotlin.doFullTask(activity.project)
+        } catch (e: CompilationFailedException) {
+            listener.onFailed(e.localizedMessage)
+        } catch (e: IllegalArgumentException) {
+            Log.d(TAG, "No files", e)
+        } catch (e: Throwable) {
+            listener.onFailed(Log.getStackTraceString(e))
         }
-        Log.i(TAG, "Completion successful.");
+        Log.i(TAG, "Kotlin compilation successful.")
     }
 
-    private void compileJava() {
+    private fun compileJava() {
+        Log.i(TAG, "Starting java compiler.")
         try {
-            listener.onCurrentBuildStageChanged(STAGE_JAVAC);
-            compilers.getJava().doFullTask(activity.getProject());
-        } catch (CompilationFailedException e) {
-            listener.onFailed(e.getLocalizedMessage());
-        } catch (Throwable e) {
-            listener.onFailed(Log.getStackTraceString(e));
+            listener.onCurrentBuildStageChanged(STAGE_JAVAC)
+            compilers.java.doFullTask(activity.project)
+        } catch (e: CompilationFailedException) {
+            listener.onFailed(e.localizedMessage)
+        } catch (e: Throwable) {
+            listener.onFailed(Log.getStackTraceString(e))
         }
+        Log.i(TAG, "Java compilation successful.")
     }
 
-    private void compileDex() {
+    private fun compileDex() {
         try {
-            listener.onCurrentBuildStageChanged(STAGE_D8);
-            compilers.getDex().doFullTask(activity.getProject());
-        } catch (Exception e) {
-            listener.onFailed(e.getLocalizedMessage());
+            listener.onCurrentBuildStageChanged(STAGE_D8)
+            compilers.dex.doFullTask(activity.project)
+        } catch (e: Exception) {
+            listener.onFailed(e.localizedMessage)
         }
     }
 
-    private void executeDex() {
+    private fun executeDex() {
         try {
-            listener.onSuccess();
-            final var classes = activity.getClassesFromDex();
-            if (classes == null) {
-                return;
-            }
+            listener.onSuccess()
+            val classes = activity.classesFromDex ?: return
             if (showExecuteDialog) {
                 // if there is only one class, there is no need to show a dialog
-                final var intent = new Intent(activity, ConsoleActivity.class);
+                val intent = Intent(activity, ConsoleActivity::class.java)
                 intent.putExtra(
-                        Constants.PROJECT_PATH, activity.getProject().getProjectDirPath());
-                if (classes.length == 1) {
-                    intent.putExtra("class_to_execute", classes[0]);
-                    activity.startActivity(intent);
-                    return;
+                    Constants.PROJECT_PATH, activity.project.projectDirPath
+                )
+                if (classes.size == 1) {
+                    intent.putExtra("class_to_execute", classes[0])
+                    activity.startActivity(intent)
+                    return
                 }
                 activity.listDialog(
-                        activity.getString(R.string.select_class_run),
-                        classes,
-                        (dialog, item) -> {
-                            intent.putExtra("class_to_execute", classes[item]);
-                            activity.startActivity(intent);
-                        });
+                    activity.getString(R.string.select_class_run),
+                    classes
+                ) { _: DialogInterface?, item: Int ->
+                    intent.putExtra("class_to_execute", classes[item])
+                    activity.startActivity(intent)
+                }
             }
-        } catch (Throwable e) {
-            listener.onFailed(Log.getStackTraceString(e));
+        } catch (e: Throwable) {
+            listener.onFailed(Log.getStackTraceString(e))
         }
     }
 
-    public interface CompilerListeners {
-        void onCurrentBuildStageChanged(String stage);
-
-        void onSuccess();
-
-        void onFailed(String errorMessage);
-
-        boolean isSuccessTillNow();
+    interface CompilerListeners {
+        fun onCurrentBuildStageChanged(stage: String)
+        fun onSuccess()
+        fun onFailed(errorMessage: String?)
+        val isSuccessTillNow: Boolean
     }
 }

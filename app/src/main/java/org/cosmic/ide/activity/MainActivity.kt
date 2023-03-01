@@ -96,8 +96,9 @@ class MainActivity : BaseActivity() {
         CompileTask(
             this,
             object : CompilerListeners {
-                private var compileSuccess = true
+                private var failed = false
                 override fun onCurrentBuildStageChanged(stage: String) {
+                    failed = false
                     changeLoadingDialogBuildStage(stage)
                 }
 
@@ -107,8 +108,8 @@ class MainActivity : BaseActivity() {
                     }
                 }
 
-                override fun onFailed(errorMessage: String) {
-                    compileSuccess = false
+                override fun onFailed(errorMessage: String?) {
+                    failed = true
                     Handler(Looper.getMainLooper())
                         .post {
                             if (loadingDialog.isShowing) {
@@ -133,7 +134,7 @@ class MainActivity : BaseActivity() {
                         }
                 }
 
-                override fun isSuccessTillNow(): Boolean = compileSuccess
+                override val isSuccessTillNow = !failed
             }
         )
     }

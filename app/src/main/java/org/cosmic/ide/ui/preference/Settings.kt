@@ -6,7 +6,7 @@ import com.google.android.material.color.DynamicColors
 import org.cosmic.ide.App
 
 /**
- * CosmicIde's Settings.
+ * Cosmic Ide's Settings.
  */
 class Settings {
     val prefs = App.getDefaultPreferences()

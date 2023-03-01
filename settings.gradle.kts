@@ -14,6 +14,5 @@ include(
     ":lynx",
     ":treeview",
     ":git-api",
-    "dependency-resolver",
     "java-completion",
 )

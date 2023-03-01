@@ -57,6 +57,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="@dimen/spacing_medium"
         android:checked="false"
+        android:visibility="gone"
         android:text="@string/use_git" />
 
 </LinearLayout>

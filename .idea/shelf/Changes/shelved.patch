@@ -1,0 +1,34 @@
+Index: app/src/main/java/org/cosmic/ide/compiler/CompileTask.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.cosmic.ide.compiler\n\nimport android.content.DialogInterface\nimport android.content.Intent\nimport android.os.Looper\nimport android.util.Log\nimport org.cosmic.ide.App.Companion.getDefaultPreferences\nimport org.cosmic.ide.R\nimport org.cosmic.ide.activity.ConsoleActivity\nimport org.cosmic.ide.activity.MainActivity\nimport org.cosmic.ide.android.exception.CompilationFailedException\nimport org.cosmic.ide.android.task.dex.D8Task\nimport org.cosmic.ide.android.task.java.JavaCompiler\nimport org.cosmic.ide.android.task.kotlin.KotlinCompiler\nimport org.cosmic.ide.util.Constants\n\nclass CompileTask(private val activity: MainActivity, private val listener: CompilerListeners) :\n    Thread() {\n    private var showExecuteDialog = false\n    private val compilers: Compilers = Compilers(\n        KotlinCompiler(),\n        JavaCompiler(getDefaultPreferences()),\n        D8Task()\n    )\n    private val STAGE_KOTLINC: String = activity.getString(R.string.compilation_stage_kotlinc)\n    private val STAGE_JAVAC: String = activity.getString(R.string.compilation_stage_javac)\n    private val STAGE_D8: String = activity.getString(R.string.compilation_stage_d8)\n    private val TAG = \"CompileTask\"\n\n    override fun run() {\n        if (Looper.myLooper() == null) {\n            Looper.prepare()\n        }\n        compileKotlin()\n        if (!listener.isSuccessTillNow) return\n        compileJava()\n        if (!listener.isSuccessTillNow) return\n        compileDex()\n        if (!listener.isSuccessTillNow) return\n        executeDex()\n    }\n\n    fun setExecution(enable: Boolean) {\n        showExecuteDialog = enable\n    }\n\n    private fun compileKotlin() {\n        Log.i(TAG, \"Starting kotlin compiler.\")\n        try {\n            listener.onCurrentBuildStageChanged(STAGE_KOTLINC)\n            compilers.kotlin.doFullTask(activity.project)\n        } catch (e: CompilationFailedException) {\n            listener.onFailed(e.localizedMessage)\n        } catch (e: IllegalArgumentException) {\n            Log.d(TAG, \"No files\", e)\n        } catch (e: Throwable) {\n            listener.onFailed(Log.getStackTraceString(e))\n        }\n        Log.i(TAG, \"Kotlin compilation successful.\")\n    }\n\n    private fun compileJava() {\n        Log.i(TAG, \"Starting java compiler.\")\n        try {\n            listener.onCurrentBuildStageChanged(STAGE_JAVAC)\n            compilers.java.doFullTask(activity.project)\n        } catch (e: CompilationFailedException) {\n            listener.onFailed(e.localizedMessage)\n        } catch (e: Throwable) {\n            listener.onFailed(Log.getStackTraceString(e))\n        }\n        Log.i(TAG, \"Java compilation successful.\")\n    }\n\n    private fun compileDex() {\n        try {\n            listener.onCurrentBuildStageChanged(STAGE_D8)\n            compilers.dex.doFullTask(activity.project)\n        } catch (e: Exception) {\n            listener.onFailed(e.localizedMessage)\n        }\n    }\n\n    private fun executeDex() {\n        try {\n            listener.onSuccess()\n            val classes = activity.classesFromDex ?: return\n            if (showExecuteDialog) {\n                // if there is only one class, there is no need to show a dialog\n                val intent = Intent(activity, ConsoleActivity::class.java)\n                intent.putExtra(\n                    Constants.PROJECT_PATH, activity.project.projectDirPath\n                )\n                if (classes.size == 1) {\n                    intent.putExtra(\"class_to_execute\", classes[0])\n                    activity.startActivity(intent)\n                    return\n                }\n                activity.listDialog(\n                    activity.getString(R.string.select_class_run),\n                    classes\n                ) { _: DialogInterface?, item: Int ->\n                    intent.putExtra(\"class_to_execute\", classes[item])\n                    activity.startActivity(intent)\n                }\n            }\n        } catch (e: Throwable) {\n            listener.onFailed(Log.getStackTraceString(e))\n        }\n    }\n\n    interface CompilerListeners {\n        fun onCurrentBuildStageChanged(stage: String)\n        fun onSuccess()\n        fun onFailed(errorMessage: String?)\n        val isSuccessTillNow: Boolean\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/org/cosmic/ide/compiler/CompileTask.kt b/app/src/main/java/org/cosmic/ide/compiler/CompileTask.kt
+--- a/app/src/main/java/org/cosmic/ide/compiler/CompileTask.kt	(revision 8d1ed1d7d45f214173dcb8b6035dbdd1a8991d69)
++++ b/app/src/main/java/org/cosmic/ide/compiler/CompileTask.kt	(date 1677685169459)
+@@ -32,11 +32,11 @@
+             Looper.prepare()
+         }
+         compileKotlin()
+-        if (!listener.isSuccessTillNow) return
++        if (listener.isFailed) return
+         compileJava()
+-        if (!listener.isSuccessTillNow) return
++        if (listener.isFailed) return
+         compileDex()
+-        if (!listener.isSuccessTillNow) return
++        if (listener.isFailed) return
+         executeDex()
+     }
+ 
+@@ -113,6 +113,6 @@
+         fun onCurrentBuildStageChanged(stage: String)
+         fun onSuccess()
+         fun onFailed(errorMessage: String?)
+-        val isSuccessTillNow: Boolean
++        val isFailed: Boolean
+     }
+ }
+\ No newline at end of file

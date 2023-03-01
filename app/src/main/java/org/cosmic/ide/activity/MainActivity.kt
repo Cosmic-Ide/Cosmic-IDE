@@ -96,13 +96,13 @@ class MainActivity : BaseActivity() {
         CompileTask(
             this,
             object : CompilerListeners {
-                private var status = true
+                private var fail = false
                 override fun onCurrentBuildStageChanged(stage: String) {
                     changeLoadingDialogBuildStage(stage)
                 }
 
                 override fun onStart() {
-                    status = true
+                    fail = false
                 }
 
                 override fun onSuccess() {
@@ -112,7 +112,7 @@ class MainActivity : BaseActivity() {
                 }
 
                 override fun onFailed(errorMessage: String?) {
-                    status = false
+                    fail = true
                     Handler(Looper.getMainLooper())
                         .post {
                             if (loadingDialog.isShowing) {
@@ -137,7 +137,8 @@ class MainActivity : BaseActivity() {
                         }
                 }
 
-                override val isSuccessTillNow = status
+                override val isSuccessTillNow: Boolean
+                    get() = !(fail)
             }
         )
     }
@@ -214,7 +215,7 @@ class MainActivity : BaseActivity() {
             )
         }
             .attach()
-        GitViewModel.INSTANCE.apply {
+/*        GitViewModel.INSTANCE.apply {
             setPath(project.projectDirPath)
             postCheckout = {
                 fileViewModel.refreshNode(project.rootFile)
@@ -222,7 +223,7 @@ class MainActivity : BaseActivity() {
             onSave = {
                 mainViewModel.clear()
             }
-        }
+        }*/
         mainViewModel
             .files
             .observe(
@@ -279,9 +280,12 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+/*
         if (GitViewModel.INSTANCE.hasRepo.value!!) {
             menu.findItem(R.id.action_git).isVisible = true
         }
+*/
+
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -108,7 +108,7 @@ class ExecuteDexTask(
             } catch (e: Error) {
                 e.printStackTrace(errorStream)
             }
-            Handler(Looper.getMainLooper()).post(postRunnable!!)
+            postRunnable?.let { Handler(Looper.getMainLooper()).post(it) }
         }
     }
 }

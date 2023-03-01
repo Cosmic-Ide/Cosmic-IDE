@@ -33,6 +33,7 @@ class CompileTask(private val activity: MainActivity, private val listener: Comp
         }
         listener.onStart()
         compileKotlin()
+        Log.i(TAG, "success till now: ${listener.isSuccessTillNow}")
         if (!listener.isSuccessTillNow) return
         compileJava()
         if (!listener.isSuccessTillNow) return
@@ -52,10 +53,13 @@ class CompileTask(private val activity: MainActivity, private val listener: Comp
             compilers.kotlin.doFullTask(activity.project)
         } catch (e: CompilationFailedException) {
             listener.onFailed(e.localizedMessage)
+            return
         } catch (e: IllegalArgumentException) {
             Log.d(TAG, "No files", e)
+            return
         } catch (e: Throwable) {
             listener.onFailed(Log.getStackTraceString(e))
+            return
         }
         Log.i(TAG, "Kotlin compilation successful.")
     }

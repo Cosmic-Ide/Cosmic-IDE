@@ -31,6 +31,7 @@ class CompileTask(private val activity: MainActivity, private val listener: Comp
         if (Looper.myLooper() == null) {
             Looper.prepare()
         }
+        listener.onStart()
         compileKotlin()
         if (!listener.isSuccessTillNow) return
         compileJava()
@@ -110,6 +111,7 @@ class CompileTask(private val activity: MainActivity, private val listener: Comp
     }
 
     interface CompilerListeners {
+        fun onStart()
         fun onCurrentBuildStageChanged(stage: String)
         fun onSuccess()
         fun onFailed(errorMessage: String?)

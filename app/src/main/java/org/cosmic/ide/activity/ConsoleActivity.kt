@@ -46,6 +46,7 @@ class ConsoleActivity : BaseActivity() {
         if (bundle != null) {
             classToExecute = bundle.getString("class_to_execute")!!
             val projectPath = bundle.getString(PROJECT_PATH)
+            System.setProperty("project.dir", projectPath)
             project = JavaProject(File(projectPath!!))
             supportActionBar?.title = project.projectName
             executeDex()

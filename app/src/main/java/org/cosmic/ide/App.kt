@@ -30,6 +30,7 @@ class App : Application() {
         FileUtil.setDataDirectory(getExternalFilesDir(null)?.absolutePath!!)
         ToolsManager.init(null)
         CoroutineUtil.inParallel {
+            Analytics.onAppStarted()
             JavacConfigProvider.disableModules()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")

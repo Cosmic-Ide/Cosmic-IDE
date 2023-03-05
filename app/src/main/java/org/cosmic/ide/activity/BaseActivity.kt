@@ -8,8 +8,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import org.cosmic.ide.R
+import org.cosmic.ide.Analytics
 import org.cosmic.ide.ui.preference.Settings
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
+import org.cosmic.ide.common.util.CoroutineUtil
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -19,6 +21,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val isDynamic = settings.isDynamicTheme
         when {
             isDynamic -> setTheme(R.style.Theme_CosmicIde_Monet)
+            else -> setTheme(R.style.Theme_CosmicIde)
         }
         super.onCreate(savedInstanceState)
 
@@ -44,7 +47,7 @@ abstract class BaseActivity : AppCompatActivity() {
             this,
             callback
         )
-
+        CoroutineUtil.inParallel { Analytics.onActivity(this) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

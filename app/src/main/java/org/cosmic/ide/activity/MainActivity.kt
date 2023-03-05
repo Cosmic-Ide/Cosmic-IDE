@@ -33,6 +33,7 @@ import org.cosmic.ide.code.decompiler.FernFlowerDecompiler
 import org.cosmic.ide.code.disassembler.JavapDisassembler
 import org.cosmic.ide.code.formatter.GoogleJavaFormatter
 import org.cosmic.ide.code.formatter.ktfmtFormatter
+import org.cosmic.ide.common.Indexer
 import org.cosmic.ide.common.util.CoroutineUtil.execute
 import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import org.cosmic.ide.compiler.CompileTask
@@ -65,6 +66,9 @@ class MainActivity : BaseActivity() {
     }
     lateinit var project: JavaProject
 
+    private val indexer by lazy {
+        Indexer(project.buildDirPath)
+    }
     private val tabsAdapter by lazy {
         PageAdapter(supportFragmentManager, lifecycle)
     }
@@ -252,6 +256,8 @@ class MainActivity : BaseActivity() {
                 }
                 binding.viewPager.currentItem = position
             }
+        mainViewModel.setFiles(indexer.getPathOpenFiles())
+        mainViewModel.setCurrentPosition(0)
         if (binding.root is DrawerLayout) {
             mainViewModel
                 .drawerState
@@ -287,6 +293,11 @@ class MainActivity : BaseActivity() {
 */
 
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        indexer.putPathOpenFiles(mainViewModel.getCurrentPosition().getValue()?, mainViewModel.getFiles().getValue()?.toList())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

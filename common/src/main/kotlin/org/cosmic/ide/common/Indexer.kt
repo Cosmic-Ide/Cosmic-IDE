@@ -33,8 +33,11 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
     }
 
     @Throws(JSONException::class)
-    fun putPathOpenFiles(items: List<File>): Indexer {
+    fun putPathOpenFiles(current: Int, files: List<File>): Indexer {
+        val items = files.toMutableList()
         val filesPath = mutableListOf<String>()
+        filesPath.add(items.get(current).absolutePath)
+        items.removeAt(current)
         items.forEach {
             filesPath.add(it.absolutePath)
         }

@@ -101,7 +101,6 @@ class CodeEditorFragment : Fragment() {
 
     override fun onDestroyView() {
         binding.editor.release()
-//        provider.exit()
         _binding = null
         super.onDestroyView()
     }

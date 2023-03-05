@@ -18,7 +18,7 @@ abstract class BaseActivity : AppCompatActivity() {
     protected val settings: Settings by lazy { Settings() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val isDynamic = Settings.isDynamicTheme
+        val isDynamic = settings.isDynamicTheme
         if (isDynamic) {
             setTheme(R.style.Theme_CosmicIde_Monet)
         }

@@ -297,7 +297,7 @@ class MainActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        indexer.putPathOpenFiles(mainViewModel.getCurrentPosition().getValue()?, mainViewModel.getFiles().getValue()?.toList())
+        indexer.putPathOpenFiles(mainViewModel.getCurrentPosition().getValue()!!, mainViewModel.getFiles().getValue()!!.toList())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

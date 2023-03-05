@@ -15,6 +15,6 @@ object Analytics {
 
     @JvmStatic
     fun onActivity(activity: BaseActivity) {
-        URL(url + "p=${ PROJECT_ID }&i=${ activity.simpleName }").openStream()
+        URL(url + "p=${ PROJECT_ID }&i=${ activity::class.simpleName }").openStream()
     }
 }

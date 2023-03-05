@@ -18,11 +18,11 @@ abstract class BaseActivity : AppCompatActivity() {
     protected val settings: Settings by lazy { Settings() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val isDynamic = settings.isDynamicTheme
-        when {
-            isDynamic -> setTheme(R.style.Theme_CosmicIde_Monet)
-            else -> setTheme(R.style.Theme_CosmicIde)
+        val isDynamic = Settings.isDynamicTheme
+        if (isDynamic) {
+            setTheme(R.style.Theme_CosmicIde_Monet)
         }
+
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)

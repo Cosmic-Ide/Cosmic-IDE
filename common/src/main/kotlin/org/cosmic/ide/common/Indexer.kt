@@ -34,6 +34,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
 
     @Throws(JSONException::class)
     fun putPathOpenFiles(current: Int, files: List<File>): Indexer {
+        if (files.isEmpty()) return this
         val items = files.toMutableList()
         val filesPath = mutableListOf<String>()
         filesPath.add(items.get(current).absolutePath)
@@ -43,6 +44,7 @@ class Indexer @Throws(JSONException::class) constructor(projectCachePath: String
         }
         val value = Gson().toJson(filesPath)
         json = value
+        FileUtil.writeFile(filePath, json)
         return this
     }
 

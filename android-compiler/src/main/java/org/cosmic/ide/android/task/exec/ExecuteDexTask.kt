@@ -63,16 +63,18 @@ class ExecuteDexTask(
             if (libs != null) {
                 // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val outDex = project.buildDirPath + "libs/" + lib.nameWithoutExtension + ".dex"
+                    val libDexes = File(project.buildDirPath, "libs")
+                    libDexes.mkdirs()
+                    val outDex = File(libDexes, lib.nameWithoutExtension + ".dex")
 
-                    if (lib.extension == "jar" && !File(outDex).exists()) {
+                    if (lib.extension == "jar" && !outDex.exists()) {
                         CoroutineUtil.execute {
                             D8Task.compileJar(lib.absolutePath)
-                            File(project.libDirPath, "classes.dex").renameTo(File(outDex))
+                            File(project.libDirPath, "classes.dex").renameTo(outDex)
                         }
                     }
                     // load library into ClassLoader
-                    dexLoader.loadDex(outDex)
+                    dexLoader.loadDex(outDex.absolutePath)
                 }
             }
         }

@@ -12,6 +12,7 @@
         android:padding="16dp">
 
         <Button
+            android:id="@+id/btn_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Project"
@@ -29,6 +30,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/project_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_project_name"
@@ -56,7 +58,6 @@
             app:layout_constraintTop_toBottomOf="@+id/use_kotlin" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -65,6 +66,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/package_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Enter package name"

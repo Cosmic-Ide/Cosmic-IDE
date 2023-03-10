@@ -12,6 +12,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/project_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:singleLine="true"
@@ -20,6 +21,7 @@
         tools:text="@string/project_name" />
 
     <TextView
+        android:id="@+id/project_path"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="start"

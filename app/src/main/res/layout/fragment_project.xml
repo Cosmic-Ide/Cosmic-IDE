@@ -11,6 +11,7 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_new_project"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="-25dp"

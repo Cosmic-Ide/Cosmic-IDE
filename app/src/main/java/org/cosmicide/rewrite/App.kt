@@ -20,14 +20,23 @@ class App : Application() {
         super.onCreate()
         FileUtil.init(this)
         CoroutineScope(Dispatchers.IO).launch {
-            JavacConfigProvider.disableModules()
+            disableModules()
             loadTextmateTheme()
             extractFiles()
         }
     }
 
     private fun extractFiles() {
-        File(FileUtil.dataDir, "index.json").writeBytes(assets.open("index.json").readBytes())
+        val indexFile = File(FileUtil.dataDir, "index.json")
+        assets.open("index.json").use { input ->
+            indexFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+    }
+
+    private fun disableModules() {
+        JavacConfigProvider.disableModules()
     }
 
     private fun loadTextmateTheme() {

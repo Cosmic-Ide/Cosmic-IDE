@@ -1,31 +1,33 @@
 package org.cosmicide.rewrite.util
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.cosmicide.project.Project
 import java.io.File
+import java.io.IOException
 
 class FileIndex(project: Project) {
 
-    private val path = File(project.cacheDir.absolutePath + File.pathSeparator + "files.json")
+    private val path = File(project.cacheDir.absolutePath + File.separator + "files.json")
 
     fun putFiles(current: Int, files: List<File>) {
         if (files.isEmpty()) return
         val items = files.toMutableList()
-        val filesPath = mutableListOf<String>()
-        filesPath.add(items[current].absolutePath)
-        items.removeAt(current)
-        items.forEach {
-            filesPath.add(it.absolutePath)
+        val filesPaths = items.map { it.absolutePath }.toMutableList()
+        filesPaths.add(0, filesPaths.removeAt(current))
+        try {
+            path.parentFile?.mkdirs()
+            path.createNewFile()
+            path.writeText(Gson().toJson(filesPaths))
+        } catch (e: IOException) {
+            // handle exception
         }
-        val value = Gson().toJson(filesPath)
-        path.parentFile?.mkdirs()
-        path.createNewFile()
-        path.writeText(value)
     }
 
     fun getFiles(): List<File> {
         if (!path.exists()) return emptyList()
         val value = path.readText()
-        return (Gson().fromJson(value, List::class.java) as List<String>).map { File(it) }
+        return Gson().fromJson<List<String>>(value, object : TypeToken<List<String>>() {}.type)
+            .map { File(it) }
     }
 }

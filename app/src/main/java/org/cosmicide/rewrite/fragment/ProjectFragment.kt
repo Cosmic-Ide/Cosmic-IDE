@@ -23,9 +23,7 @@ import java.util.Arrays
 class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
     private var _binding: FragmentProjectBinding? = null
-    private val projectAdapter = ProjectAdapter().apply {
-        onProjectEventListener = this@ProjectFragment
-    }
+    private val projectAdapter = ProjectAdapter(this)
 
     private val binding get() = _binding!!
 

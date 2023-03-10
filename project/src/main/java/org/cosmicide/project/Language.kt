@@ -1,5 +1,8 @@
 package org.cosmicide.project
 
+import org.cosmicide.project.templates.javaClass
+import org.cosmicide.project.templates.kotlinClass
+
 /**
  * A sealed interface representing a programming language.
  *
@@ -32,7 +35,7 @@ object Java : Language {
      * @return the generated Java class file content as a string
      */
     override fun classFileContent(name: String, packageName: String): String {
-        return Templates.javaClass(
+        return javaClass(
             name, packageName, """
             System.out.println("Hello, World!");
         """.trimIndent()
@@ -54,7 +57,7 @@ object Kotlin : Language {
      * @return the generated Kotlin class file content as a string
      */
     override fun classFileContent(name: String, packageName: String): String {
-        return Templates.kotlinClass(
+        return kotlinClass(
             name, packageName, """
             println("Hello World!")
         """.trimIndent()

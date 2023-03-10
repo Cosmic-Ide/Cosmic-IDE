@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/ProjectFragment">
+
+    <fragment
+        android:id="@+id/ProjectFragment"
+        android:name="org.cosmicide.rewrite.fragment.ProjectFragment"
+        android:label="@string/project"
+        tools:layout="@layout/fragment_project">
+
+        <action
+            android:id="@+id/ProjectFragment_to_NewProjectFragment"
+            app:destination="@id/NewProjectFragment" />
+        <action
+            android:id="@+id/ProjectFragment_to_EditorFragment"
+            app:destination="@id/EditorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/NewProjectFragment"
+        android:name="org.cosmicide.rewrite.fragment.NewProjectFragment"
+        android:label="@string/fragment_new_project"
+        tools:layout="@layout/fragment_new_project">
+
+        <action
+            android:id="@+id/NewProjectFragment_to_ProjectFragment"
+            app:destination="@id/ProjectFragment" />
+        <action
+            android:id="@+id/NewProjectFragment_to_EditorFragment"
+            app:destination="@id/EditorFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/EditorFragment"
+        android:name="org.cosmicide.rewrite.fragment.EditorFragment"
+        android:label="@string/fragment_editor"
+        tools:layout="@layout/fragment_editor">
+
+        <action
+            android:id="@+id/EditorFragment_to_ProjectFragment"
+            app:destination="@id/ProjectFragment" />
+    </fragment>
+</navigation>

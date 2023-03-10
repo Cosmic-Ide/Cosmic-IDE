@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Cosmic IDE Rewrite</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="import_project">Import Project</string>
+
+    <string name="project">Project</string>
+    <string name="fragment_new_project">New Project</string>
+    <string name="use_kotlin_template">Use Kotlin Template</string>
+    <string name="enter_project_name">Enter project name</string>
+    <string name="project_name">Project Name</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="fragment_editor">Editor</string>
+</resources>

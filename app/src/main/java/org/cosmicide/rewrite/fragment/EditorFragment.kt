@@ -23,7 +23,7 @@ import java.io.File
 
 class EditorFragment : Fragment() {
 
-    private lateinit var project: Project
+    private var project: Project? = null
     private lateinit var fileIndex: FileIndex
     private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
@@ -43,7 +43,7 @@ class EditorFragment : Fragment() {
                     else -> null
                 }
             }
-            fileIndex = FileIndex(project)
+            fileIndex = FileIndex(project!!)
         }
 
         fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
@@ -85,7 +85,7 @@ class EditorFragment : Fragment() {
             setEditorLanguage()
         }
 
-        fileViewModel.addFile(File(project.srcDir.invoke(), "Main." + project.language.extension))
+        fileViewModel.addFile(File(project!!.srcDir.invoke(), "Main." + project!!.language.extension))
 
         binding.editor.setTextSize(20f)
 
@@ -96,8 +96,8 @@ class EditorFragment : Fragment() {
         val file = fileViewModel.currentFile
         binding.editor.setEditorLanguage(
             when (file?.extension) {
-                "kt" -> KotlinLanguage(binding.editor, project, file)
-                "java" -> JavaLanguage(binding.editor, project, file)
+                "kt" -> KotlinLanguage(binding.editor, project!!, file)
+                "java" -> JavaLanguage(binding.editor, project!!, file)
                 else -> EmptyLanguage()
             }
         )

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -31,17 +32,22 @@ class EditorFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        super.onCreateView(inflater, container, savedInstanceState)
-        arguments?.getString(Constants.PROJECT_DIR)?.let {
-            project = if (File(it, "src/main/java").exists())
-                Project(File(it), Java)
-            else
-                Project(File(it), Kotlin)
+    ): View? {
+        binding = FragmentEditorBinding.inflate(inflater, container, false)
+
+        arguments?.getString(Constants.PROJECT_DIR)?.let { dir ->
+            project = File(dir).let {
+                when {
+                    it.isDirectory && it.resolve("src/main/java").exists() -> Project(it, Java)
+                    it.isDirectory && it.resolve("src/main/kotlin").exists() -> Project(it, Kotlin)
+                    else -> null
+                }
+            }
             fileIndex = FileIndex(project)
         }
-        fileViewModel = FileViewModel()
-        binding = FragmentEditorBinding.inflate(layoutInflater)
+
+        fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
+
         val files = fileIndex.getFiles()
         if (files.isNotEmpty()) {
             fileViewModel.updateFiles(files.toMutableList())
@@ -63,29 +69,26 @@ class EditorFragment : Fragment() {
                 binding.editor.setText(fileViewModel.files.value!![tab.position].readText())
             }
         })
-        fileViewModel.files.observe(requireActivity()) {
+
+        fileViewModel.files.observe(viewLifecycleOwner) { files ->
             binding.tabLayout.removeAllTabs()
-            it.forEach { file ->
+            files.forEach { file ->
                 binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
             }
         }
-        fileViewModel
-            .currentPosition
-            .observe(
-                requireActivity()
-            ) { position ->
-                if (position == -1) {
-                    return@observe
-                }
-                binding.editor.setText(fileViewModel.currentFile?.readText())
-                setEditorLanguage()
+
+        fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
+            if (position == -1) {
+                return@observe
             }
+            binding.editor.setText(fileViewModel.currentFile?.readText())
+            setEditorLanguage()
+        }
 
         fileViewModel.addFile(File(project.srcDir.invoke(), "Main." + project.language.extension))
 
-        binding.editor.apply {
-            setTextSize(20f)
-        }
+        binding.editor.setTextSize(20f)
+
         return binding.root
     }
 
@@ -103,7 +106,7 @@ class EditorFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        fileViewModel.getCurrentPosition().value?.let { pos ->
+        fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }

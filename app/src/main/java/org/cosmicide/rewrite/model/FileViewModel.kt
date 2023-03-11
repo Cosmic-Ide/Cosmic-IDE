@@ -5,94 +5,87 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.io.File
 
+/**
+ * ViewModel for managing a list of files and the current position in the list.
+ * Uses MutableLiveData to observe changes in the list and position.
+ */
 class FileViewModel : ViewModel() {
-    // The files currently opened in the editor
-    private var mFiles: MutableLiveData<MutableList<File>>? = null
 
-    // The current position of the CodeEditor
-    val currentPosition = MutableLiveData(-1)
-    val files: LiveData<MutableList<File>>
-        get() {
-            if (mFiles == null) {
-                mFiles = MutableLiveData(ArrayList())
-            }
-            return mFiles!!
-        }
+    private val _files = MutableLiveData<List<File>>(emptyList())
+    val files: LiveData<List<File>> = _files
 
-    fun setFiles(files: MutableList<File>) {
-        if (mFiles == null) {
-            mFiles = MutableLiveData(ArrayList())
-        }
-        mFiles!!.value = files
-    }
-
-    fun getCurrentPosition(): LiveData<Int> {
-        return currentPosition
-    }
-
-    fun setCurrentPosition(pos: Int) {
-        currentPosition.value = pos
-    }
+    private val _currentPosition = MutableLiveData(-1)
+    val currentPosition: LiveData<Int> = _currentPosition
 
     val currentFile: File?
-        get() {
-            val files = files.value ?: return null
-            val currentPos = currentPosition.value
-            if (currentPos == null || currentPos == -1) {
-                return null
-            }
-            return if (files.size - 1 < currentPos) {
-                null
-            } else files[currentPos]
-        }
+        get() = files.value?.getOrNull(currentPosition.value ?: -1)
 
-    fun clear() {
-        mFiles!!.value = ArrayList()
+    /**
+     * Sets the current position in the list to the specified integer.
+     *
+     * @param pos an integer representing the new position in the list.
+     */
+    fun setCurrentPosition(pos: Int) {
+        _currentPosition.value = pos
     }
 
     /**
-     * Opens this file to the editor
+     * Adds the specified [File] object to the list of files, if not already present.
+     * Sets the current position in the list to the newly added file.
      *
-     * @param file The file to be opened
-     * @return whether the operation was successful
+     * @param file a [File] object to be added to the list.
      */
-    fun openFile(file: File): Boolean {
-        var index = -1
-        val value: List<File>? = files.value
-        if (value != null) {
-            index = value.indexOf(file)
-        }
-        if (index != -1) {
-            setCurrentPosition(index)
-            return true
-        }
-        addFile(file)
-        return true
-    }
-
     fun addFile(file: File) {
-        var files = files.value
-        if (files == null) {
-            files = ArrayList()
-        }
+        val files = _files.value.orEmpty().toMutableList()
         if (!files.contains(file)) {
             files.add(file)
-            mFiles!!.value = files
+            _files.value = files
         }
         setCurrentPosition(files.indexOf(file))
     }
 
+    /**
+     * Removes the specified [File] object from the list of files.
+     *
+     * @param file a [File] object to be removed from the list.
+     */
     fun removeFile(file: File) {
-        val files = files.value ?: return
-        files.remove(file)
-        mFiles!!.value = files
+        val files = _files.value.orEmpty().toMutableList().apply {
+            remove(file)
+        }
+        _files.value = files
     }
 
-    // Remove all the files except the given file
+    /**
+     * Removes all files from the list except for the specified [File] object.
+     * Sets the current position in the list to the specified file.
+     *
+     * @param file a [File] object to be kept in the list, all others are removed.
+     */
     fun removeOthers(file: File) {
-        val files = files.value ?: return
-        files.clear()
-        files.add(file)
-        setFiles(files)
+        _files.value = listOf(file)
+        setCurrentPosition(0)
+    }
+
+    /**
+     * Adds the specified [File] object to the list of files and returns true.
+     *
+     * @param file a [File] object to be added to the list.
+     * @return true
+     */
+    fun openFile(file: File): Boolean {
+        addFile(file)
+        return true
+    }
+
+    /**
+     * Updates the list of files with the specified list of [File] objects.
+     * Sets the current position in the list to -1.
+     *
+     * @param newFiles a list of [File] objects to update the list.
+     */
+    fun updateFiles(newFiles: List<File>) {
+        _files.value = newFiles
+        setCurrentPosition(-1)
     }
 }

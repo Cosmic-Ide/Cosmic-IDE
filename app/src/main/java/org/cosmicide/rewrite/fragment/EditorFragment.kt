@@ -44,23 +44,23 @@ class EditorFragment : Fragment() {
         binding = FragmentEditorBinding.inflate(layoutInflater)
         val files = fileIndex.getFiles()
         if (files.isNotEmpty()) {
-            fileViewModel.setFiles(files.toMutableList())
+            fileViewModel.updateFiles(files.toMutableList())
             for (file in files) {
                 binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
             }
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                fileViewModel.setCurrentPosition(tab?.position!!)
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                fileViewModel.setCurrentPosition(tab.position)
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                fileViewModel.removeFile(fileViewModel.files.value!![tab?.position!!])
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
             }
 
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-                binding.editor.setText(fileViewModel.files.value!![tab?.position!!].readText())
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                binding.editor.setText(fileViewModel.files.value!![tab.position].readText())
             }
         })
         fileViewModel.files.observe(requireActivity()) {
@@ -103,9 +103,9 @@ class EditorFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (fileViewModel.getCurrentPosition().value!! != -1 && fileViewModel.currentFile!!.exists()) {
-            fileViewModel.currentFile?.writeText(binding.editor.text.toString())
+        fileViewModel.getCurrentPosition().value?.let { pos ->
+            fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
+            fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
-        fileIndex.putFiles(fileViewModel.getCurrentPosition().value!!, fileViewModel.files.value!!)
     }
 }

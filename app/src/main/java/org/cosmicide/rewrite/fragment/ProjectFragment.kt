@@ -6,24 +6,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import org.cosmicide.project.Java
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.MainActivity
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
+import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.Constants
-import org.cosmicide.rewrite.util.FileUtil
-import java.io.File
-import java.util.Arrays
+import java.util.*
 
 class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
     private var _binding: FragmentProjectBinding? = null
     private val projectAdapter = ProjectAdapter(this)
+    private val viewModel by viewModels<ProjectViewModel>()
 
     private val binding get() = _binding!!
 
@@ -31,56 +30,56 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentProjectBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setOnClickListeners()
+        setUpProjectList()
+
+        observeViewModelProjects()
+    }
+
+    private fun setOnClickListeners() {
         binding.importButton.setOnClickListener {
-            findNavController().navigate(R.id.ProjectFragment_to_NewProjectFragment)
+            navigateToNewProjectFragment()
         }
 
         binding.fabNewProject.setOnClickListener {
-            findNavController().navigate(R.id.ProjectFragment_to_NewProjectFragment)
+            navigateToNewProjectFragment()
         }
+    }
 
+    private fun navigateToNewProjectFragment() {
+        findNavController().navigate(R.id.ProjectFragment_to_NewProjectFragment)
+    }
+
+    private fun setUpProjectList() {
         binding.projectList.apply {
             adapter = projectAdapter
-            layoutManager = LinearLayoutManager(requireActivity())
+            layoutManager = LinearLayoutManager(requireContext())
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        loadProjects()
+    private fun observeViewModelProjects() {
+        viewModel.projects.observe(viewLifecycleOwner) { projects ->
+            showSnackbarIfNoProjects(projects)
+            projectAdapter.submitList(projects)
+        }
     }
 
-    private fun loadProjects() {
-        val projects = mutableListOf<Project>()
-        val projectDir = FileUtil.projectDir
-        val directories =
-            projectDir.listFiles { file -> file.isDirectory }
-        if (directories != null) {
-            Arrays.sort(directories, Comparator.comparingLong(File::lastModified).reversed())
-            for (directory in directories) {
-                projects.add(Project(directory, Java))
-            }
-        }
-        projectAdapter.submitList(projects)
-        Log.d("ProjectFragment", "Projects: $projects")
+    private fun showSnackbarIfNoProjects(projects: List<Project>) {
         if (projects.isEmpty()) {
             Snackbar.make(
-                (requireActivity() as MainActivity).binding.root,
+                requireView(),
                 "No projects found",
                 Snackbar.LENGTH_LONG
             ).show()
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -88,13 +87,17 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     override fun onProjectClicked(project: Project) {
-        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment, Bundle().apply {
-            putString(Constants.PROJECT_DIR, project.root.absolutePath)
-        })
+        navigateToEditorFragment(project.root.absolutePath)
+    }
+
+    private fun navigateToEditorFragment(projectDir: String) {
+        val bundle = Bundle().apply {
+            putString(Constants.PROJECT_DIR, projectDir)
+        }
+        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment, bundle)
     }
 
     override fun onProjectLongClicked(project: Project): Boolean {
-        return true
+        return false
     }
-
 }

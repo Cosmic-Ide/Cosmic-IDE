@@ -15,26 +15,29 @@ import org.cosmicide.project.Project
 import java.io.File
 
 class KotlinLanguage(
-    private val mEditor: CodeEditor,
-    project: Project,
-    file: File
+    private val editor: CodeEditor,
+    private val project: Project,
+    private val file: File
 ) : TextMateLanguage(
-    GrammarRegistry.getInstance().findGrammar("source.kotlin"),
-    GrammarRegistry.getInstance().findLanguageConfiguration("source.kotlin"),
-    GrammarRegistry.getInstance(),
-    ThemeRegistry.getInstance(),
+    grammarRegistry.findGrammar("source.kotlin"),
+    grammarRegistry.findLanguageConfiguration("source.kotlin"),
+    grammarRegistry,
+    themeRegistry,
     false
 ) {
 
     private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
-    private val fileName: String
-    private val TAG = "KotlinLanguage"
+    private var fileName = file.name
 
     init {
-        val ktFile = kotlinEnvironment.updateKotlinFile(
-            file.absolutePath, mEditor.text.toString()
-        )
-        fileName = ktFile.name
+        try {
+            val ktFile = kotlinEnvironment.updateKotlinFile(
+                file.absolutePath, editor.text.toString()
+            )
+            fileName = ktFile.name
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update Kotlin file", e)
+        }
     }
 
     @WorkerThread
@@ -45,7 +48,7 @@ class KotlinLanguage(
         extraArguments: Bundle
     ) {
         try {
-            val text = mEditor.text.toString()
+            val text = editor.text.toString()
             val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
             val itemList = kotlinEnvironment.complete(
                 ktFile, position.line, position.column
@@ -57,5 +60,11 @@ class KotlinLanguage(
             }
         }
         super.requireAutoComplete(content, position, publisher, extraArguments)
+    }
+
+    companion object {
+        private const val TAG = "KotlinLanguage"
+        private val grammarRegistry = GrammarRegistry.getInstance()
+        private val themeRegistry = ThemeRegistry.getInstance()
     }
 }

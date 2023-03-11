@@ -1,5 +1,14 @@
 package org.cosmicide.project.templates
 
+import com.squareup.javapoet.JavaFile
+import com.squareup.javapoet.MethodSpec
+import com.squareup.javapoet.TypeSpec
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import javax.lang.model.element.Modifier
+import com.squareup.kotlinpoet.TypeSpec as KotlinTypeSpec
+
 /**
  * Returns the template for a Java class.
  *
@@ -9,15 +18,25 @@ package org.cosmicide.project.templates
  * @return The template for a Java class.
  */
 fun javaClass(className: String, packageName: String, body: String = ""): String {
-    return StringBuilder()
-        .appendLine("package $packageName;")
-        .appendLine()
-        .appendLine("public class $className {")
-        .appendLine("    public static void main(String[] args) {")
-        .append(body)
-        .appendLine("    }")
-        .appendLine("}")
-        .toString()
+
+    val main = MethodSpec.methodBuilder("main").apply {
+        addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        returns(Void.TYPE)
+        addParameter(Array<String>::class.java, "args")
+        if (body.isNotEmpty()) {
+            addCode(body)
+        }
+    }.build()
+
+    val clazz: TypeSpec = TypeSpec.classBuilder(className)
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+        .addMethod(main)
+        .build()
+
+    val javaFile =
+        JavaFile.builder(packageName, clazz).indent("\t").skipJavaLangImports(true).build()
+
+    return javaFile.toString()
 }
 
 /**
@@ -28,12 +47,12 @@ fun javaClass(className: String, packageName: String, body: String = ""): String
  * @return The template for a Java interface.
  */
 fun javaInterface(interfaceName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName;")
-        .appendLine()
-        .appendLine("public interface $interfaceName {")
-        .appendLine("}")
-        .toString()
+    val clazz: TypeSpec = TypeSpec.interfaceBuilder(interfaceName)
+        .addModifiers(Modifier.PUBLIC)
+        .build()
+
+    val javaFile = JavaFile.builder(packageName, clazz).indent("\t").build()
+    return javaFile.toString()
 }
 
 /**
@@ -44,12 +63,13 @@ fun javaInterface(interfaceName: String, packageName: String): String {
  * @return The template for a Java enum.
  */
 fun javaEnum(enumName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName;")
-        .appendLine()
-        .appendLine("public enum $enumName {")
-        .appendLine("}")
-        .toString()
+    val clazz: TypeSpec = TypeSpec.enumBuilder(enumName)
+        .addModifiers(Modifier.PUBLIC)
+        .addEnumConstant("EXAMPLE")
+        .build()
+
+    val javaFile = JavaFile.builder(packageName, clazz).indent("\t").build()
+    return javaFile.toString()
 }
 
 /**
@@ -61,15 +81,24 @@ fun javaEnum(enumName: String, packageName: String): String {
  * @return The template for a Kotlin class.
  */
 fun kotlinClass(className: String, packageName: String, body: String = ""): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("class $className {")
-        .appendLine("    fun main(args: Array<String>) {")
-        .append(body)
-        .appendLine("    }")
-        .appendLine("}")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.classBuilder(className)
+        .addModifiers(KModifier.PUBLIC, KModifier.FINAL)
+        .addFunction(FunSpec.builder("main").apply {
+            addModifiers(KModifier.PUBLIC)
+            returns(Void.TYPE)
+            addParameter("args", Array<String>::class.java)
+            if (body.isNotEmpty()) {
+                addCode(body)
+            }
+        }.build())
+        .build()
+
+    val file = FileSpec.builder(packageName, className)
+        .addType(clazz)
+        .indent("\t")
+        .addKotlinDefaultImports(true)
+        .build()
+    return file.toString()
 }
 
 /**
@@ -80,12 +109,14 @@ fun kotlinClass(className: String, packageName: String, body: String = ""): Stri
  * @return The template for a Kotlin interface.
  */
 fun kotlinInterface(interfaceName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("interface $interfaceName {")
-        .appendLine("}")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.interfaceBuilder(interfaceName)
+        .addModifiers(KModifier.PUBLIC)
+        .build()
+    val file = FileSpec.builder(packageName, interfaceName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }
 
 /**
@@ -96,12 +127,14 @@ fun kotlinInterface(interfaceName: String, packageName: String): String {
  * @return The template for a Kotlin object.
  */
 fun kotlinObject(objectName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("object $objectName {")
-        .appendLine("}")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.objectBuilder(objectName)
+        .addModifiers(KModifier.PUBLIC)
+        .build()
+    val file = FileSpec.builder(packageName, objectName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }
 
 /**
@@ -112,12 +145,14 @@ fun kotlinObject(objectName: String, packageName: String): String {
  * @return The template for a Kotlin enum.
  */
 fun kotlinEnum(enumName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("enum class $enumName {")
-        .appendLine("}")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.enumBuilder(enumName)
+        .addModifiers(KModifier.PUBLIC)
+        .build()
+    val file = FileSpec.builder(packageName, enumName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }
 
 /**
@@ -128,11 +163,14 @@ fun kotlinEnum(enumName: String, packageName: String): String {
  * @return The template for a Kotlin annotation.
  */
 fun kotlinAnnotation(annotationName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("annotation class $annotationName")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.annotationBuilder(annotationName)
+        .addModifiers(KModifier.PUBLIC)
+        .build()
+    val file = FileSpec.builder(packageName, annotationName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }
 
 /**
@@ -143,12 +181,14 @@ fun kotlinAnnotation(annotationName: String, packageName: String): String {
  * @return The template for a Kotlin data class.
  */
 fun kotlinDataClass(dataClassName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("data class $dataClassName(")
-        .appendLine(")")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.classBuilder(dataClassName)
+        .addModifiers(KModifier.PUBLIC, KModifier.DATA)
+        .build()
+    val file = FileSpec.builder(packageName, dataClassName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }
 
 /**
@@ -159,10 +199,12 @@ fun kotlinDataClass(dataClassName: String, packageName: String): String {
  * @return The template for a Kotlin sealed class.
  */
 fun kotlinSealedClass(sealedClassName: String, packageName: String): String {
-    return StringBuilder()
-        .appendLine("package $packageName")
-        .appendLine()
-        .appendLine("sealed class $sealedClassName {")
-        .appendLine("}")
-        .toString()
+    val clazz: KotlinTypeSpec = KotlinTypeSpec.classBuilder(sealedClassName)
+        .addModifiers(KModifier.PUBLIC, KModifier.SEALED)
+        .build()
+    val file = FileSpec.builder(packageName, sealedClassName)
+        .addType(clazz)
+        .indent("\t")
+        .build()
+    return file.toString()
 }

@@ -20,16 +20,16 @@ class ProjectViewModel : ViewModel() {
     val projects: LiveData<List<Project>> = _projects
 
     init {
+        loadProjects()
+    }
+
+    fun loadProjects() {
         viewModelScope.launch(Dispatchers.IO) {
-            val projectsList = mutableListOf<Project>()
-            val projectDir = FileUtil.projectDir
-            val directories = projectDir.listFiles { file -> file.isDirectory }
-            if (directories != null) {
-                Arrays.sort(directories, Comparator.comparingLong(File::lastModified).reversed())
-                for (directory in directories) {
-                    projectsList.add(Project(directory, Java))
-                }
-            }
+            val projectsList = FileUtil.projectDir.listFiles { file -> file.isDirectory }
+                ?.sortedByDescending { it.lastModified() }
+                ?.map { Project(it, Java) }
+                ?: emptyList()
+
             withContext(Dispatchers.Main) {
                 _projects.value = projectsList
                 Log.d(TAG, "Projects: $projectsList")

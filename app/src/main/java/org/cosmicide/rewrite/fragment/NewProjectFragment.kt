@@ -52,7 +52,7 @@ class NewProjectFragment : Fragment() {
             val srcDir = project.srcDir.invoke()
             srcDir.mkdirs()
             File(srcDir, "Main.${language.extension}").writeText(
-                language.getClassFile(
+                language.classFileContent(
                     "Main",
                     binding.packageName.text.toString()
                 )

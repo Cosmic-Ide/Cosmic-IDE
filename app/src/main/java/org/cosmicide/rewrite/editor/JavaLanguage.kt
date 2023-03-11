@@ -21,30 +21,28 @@ import java.nio.file.Path
 import java.util.logging.Level
 
 class JavaLanguage(
-    private val mEditor: CodeEditor,
-    project: Project,
-    file: File
+    private val editor: CodeEditor,
+    private val project: Project,
+    private val file: File
 ) : TextMateLanguage(
-    GrammarRegistry.getInstance().findGrammar("source.java"),
-    GrammarRegistry.getInstance().findLanguageConfiguration("source.java"),
-    GrammarRegistry.getInstance(),
-    ThemeRegistry.getInstance(),
+    grammarRegistry.findGrammar("source.java"),
+    grammarRegistry.findLanguageConfiguration("source.java"),
+    grammarRegistry,
+    themeRegistry,
     false
 ) {
 
     private val completions: JavaCompletions by lazy { JavaCompletions() }
-    private val path: Path
-    private val TAG = "JavaLanguage"
+    private val path: Path = file.toPath()
 
     init {
         val options = JavaCompletionOptionsImpl(
-            project.binDir.absolutePath + File.pathSeparator + "autocomplete.log",
+            "${project.binDir.absolutePath}${File.pathSeparator}autocomplete.log",
             Level.ALL,
             emptyList(),
             emptyList()
         )
-        path = file.toPath()
-        completions.initialize(URI("file://" + project.root.absolutePath), options)
+        completions.initialize(URI("file://${project.root.absolutePath}"), options)
     }
 
     @WorkerThread
@@ -55,17 +53,16 @@ class JavaLanguage(
         extraArguments: Bundle
     ) {
         try {
-            val text = mEditor.text.toString()
+            val text = editor.text.toString()
             Files.write(path, text.toByteArray())
-            val result =
-                completions.project.getCompletionResult(path, position.line, position.column)
-            result.completionCandidates.forEach {
-                if (it.name != "<error>") {
+            val result = completions.project.getCompletionResult(path, position.line, position.column)
+            result.completionCandidates.forEach { candidate ->
+                if (candidate.name != "<error>") {
                     val item = SimpleCompletionItem(
-                        it.name,
-                        it.detail.orElse("Unknown"),
+                        candidate.name,
+                        candidate.detail.orElse("Unknown"),
                         result.prefix.length,
-                        it.name
+                        candidate.name
                     )
                     publisher.addItem(item)
                 }
@@ -76,5 +73,11 @@ class JavaLanguage(
             }
         }
         super.requireAutoComplete(content, position, publisher, extraArguments)
+    }
+
+    companion object {
+        private const val TAG = "JavaLanguage"
+        private val grammarRegistry = GrammarRegistry.getInstance()
+        private val themeRegistry = ThemeRegistry.getInstance()
     }
 }

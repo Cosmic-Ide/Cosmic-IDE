@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import org.cosmicide.project.Java
 import org.cosmicide.project.Kotlin
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
+import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
@@ -22,6 +24,7 @@ class NewProjectFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val viewModel by activityViewModels<ProjectViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +60,7 @@ class NewProjectFragment : Fragment() {
                     binding.packageName.text.toString()
                 )
             )
+            viewModel.loadProjects()
             findNavController().navigate(R.id.NewProjectFragment_to_EditorFragment, Bundle().apply {
                 putString(Constants.PROJECT_DIR, project.root.absolutePath)
             })

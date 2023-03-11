@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -22,7 +22,7 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
     private var _binding: FragmentProjectBinding? = null
     private val projectAdapter = ProjectAdapter(this)
-    private val viewModel by viewModels<ProjectViewModel>()
+    private val viewModel by activityViewModels<ProjectViewModel>()
 
     private val binding get() = _binding!!
 

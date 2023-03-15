@@ -48,6 +48,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation(projects.project)
     implementation(projects.util)
+    implementation(projects.kotlinc)
     implementation(projects.kotlinCompletion)
     implementation(projects.javaCompletion)
     implementation("androidx.recyclerview:recyclerview:1.3.0")
@@ -55,5 +56,4 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:editor")
     implementation("io.github.Rosemoe.sora-editor:language-textmate")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 }

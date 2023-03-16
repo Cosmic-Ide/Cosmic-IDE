@@ -68,10 +68,6 @@ data class KotlinEnvironment(
         return kotlinFile
     }
 
-    fun removeKotlinFile(name: String) {
-        kotlinFiles.remove(name)
-    }
-
     private data class DescriptorInfo(
         val descriptors: List<DeclarationDescriptor>
     )
@@ -84,7 +80,7 @@ data class KotlinEnvironment(
             typeNormalizer = { if (it.isFlexible()) it.asFlexibleType().upperBound else it }
         }
 
-    fun getPrefix(element: PsiElement): String {
+    private fun getPrefix(element: PsiElement): String {
         var text = (element as? KtSimpleNameExpression)?.text
         if (text == null) {
             val type = PsiUtils.findParent(element)
@@ -129,10 +125,10 @@ data class KotlinEnvironment(
         var completionText = name
         val position = completionText.indexOf('(')
         if (position != -1) {
-            if (completionText[position + 1] == ')') {
-                completionText = completionText.substring(0, position + 2)
+            completionText = if (completionText[position + 1] == ')') {
+                completionText.substring(0, position + 2)
             } else {
-                completionText = completionText.substring(0, position + 1)
+                completionText.substring(0, position + 1)
             }
         }
 
@@ -177,9 +173,7 @@ data class KotlinEnvironment(
         val files = kotlinFiles.values.map { it.kotlinFile }.toList()
         val analysis = analysisOf(files, current)
         return with(analysis) {
-            referenceVariantsFrom(element).let { descriptors ->
-                DescriptorInfo(descriptors)
-            }
+            DescriptorInfo(referenceVariantsFrom(element))
         }
     }
 
@@ -283,17 +277,13 @@ data class KotlinEnvironment(
                         }
         }
 
-    // This code is a fragment of org.jetbrains.kotlin.idea.completion.CompletionSession from Kotlin
-    // IDE Plugin
-    // with a few simplifications which were possible because webdemo has very restricted
-    // environment (and well,
-    // because requirements on compeltion' quality in web-demo are lower)
     private inner class VisibilityFilter(
         private val inDescriptor: DeclarationDescriptor,
         private val bindingContext: BindingContext,
         private val element: KtElement,
         private val resolutionFacade: KotlinResolutionFacade
     ) : (DeclarationDescriptor) -> Boolean {
+        @OptIn(FrontendInternals::class)
         override fun invoke(descriptor: DeclarationDescriptor): Boolean {
             if (descriptor is TypeParameterDescriptor && !isTypeParameterVisible(descriptor))
                 return false

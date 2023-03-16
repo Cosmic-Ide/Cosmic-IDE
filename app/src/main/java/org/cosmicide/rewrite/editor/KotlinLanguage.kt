@@ -36,7 +36,9 @@ class KotlinLanguage(
             )
             fileName = ktFile.name
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to update Kotlin file", e)
+            if (e !is InterruptedException) {
+                Log.e(TAG, "Failed to update Kotlin file", e)
+            }
         }
     }
 
@@ -49,10 +51,13 @@ class KotlinLanguage(
     ) {
         try {
             val text = editor.text.toString()
+            file.writeText(text)
             val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
-            val itemList = kotlinEnvironment.complete(
-                ktFile, position.line, position.column
-            )
+            val itemList = ktFile.let {
+                kotlinEnvironment.complete(
+                    it, position.line, position.column
+                )
+            }
             publisher.addItems(itemList)
         } catch (e: Throwable) {
             if (e !is InterruptedException) {

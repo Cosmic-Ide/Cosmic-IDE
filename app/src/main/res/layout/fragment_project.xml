@@ -37,7 +37,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/project_list"
             android:layout_width="0dp"
-            android:layout_height="735dp"
+            android:layout_height="675sp"
             android:layout_margin="5sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

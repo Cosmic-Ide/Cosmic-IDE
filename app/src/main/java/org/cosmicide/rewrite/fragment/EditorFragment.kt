@@ -32,7 +32,7 @@ class EditorFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
         arguments?.getString(Constants.PROJECT_DIR)?.let { dir ->
@@ -70,9 +70,9 @@ class EditorFragment : Fragment() {
             }
         })
 
-        fileViewModel.files.observe(viewLifecycleOwner) { files ->
+        fileViewModel.files.observe(viewLifecycleOwner) { filess ->
             binding.tabLayout.removeAllTabs()
-            files.forEach { file ->
+            filess.forEach { file ->
                 binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
             }
         }

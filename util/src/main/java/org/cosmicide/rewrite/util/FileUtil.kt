@@ -10,7 +10,7 @@ object FileUtil {
     lateinit var dataDir: File
 
     fun init(context: Context) {
-        dataDir = context.filesDir
+        dataDir = context.getExternalFilesDir(null)!!
         projectDir = File(dataDir, "projects").apply { mkdirs() }
         classpathDir = File(dataDir, "classpath").apply { mkdirs() }
     }

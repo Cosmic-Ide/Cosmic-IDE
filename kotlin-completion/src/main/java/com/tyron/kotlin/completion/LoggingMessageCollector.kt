@@ -30,7 +30,7 @@ object LoggingMessageCollector : MessageCollector {
         message: String,
         location: CompilerMessageSourceLocation?
     ) {
-        println("Kotlin compiler: [$severity}] $message @ $location}")
+        // not needed
     }
 
     override fun hasErrors() = false

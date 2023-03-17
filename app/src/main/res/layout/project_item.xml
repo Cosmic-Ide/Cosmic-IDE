@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:ellipsize="start"
         android:maxLines="2"
-        android:text="Project Path"
+        android:text="@string/project_path"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?android:attr/textColorSecondary" />
 

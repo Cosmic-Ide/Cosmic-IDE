@@ -17,7 +17,7 @@
             android:id="@+id/btn_create"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Create Project"
+            android:text="@string/create_project"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -51,7 +51,7 @@
                 android:id="@+id/package_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter package name"
+                android:hint="@string/enter_package_name"
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 

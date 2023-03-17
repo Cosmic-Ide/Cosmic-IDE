@@ -2,13 +2,14 @@ package org.cosmicide.project
 
 import org.cosmicide.project.templates.javaClass
 import org.cosmicide.project.templates.kotlinClass
+import java.io.Serializable
 
 /**
  * A sealed interface representing a programming language.
  *
  * @property extension the file extension associated with the language
  */
-sealed interface Language {
+sealed interface Language : Serializable {
     val extension: String
 
     /**

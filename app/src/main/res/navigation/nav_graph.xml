@@ -16,6 +16,9 @@
         <action
             android:id="@+id/ProjectFragment_to_EditorFragment"
             app:destination="@id/EditorFragment" />
+        <action
+            android:id="@+id/ProjectFragment_to_CompileInfoFragment"
+            app:destination="@id/CompileInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/NewProjectFragment"
@@ -40,4 +43,10 @@
             android:id="@+id/EditorFragment_to_ProjectFragment"
             app:destination="@id/ProjectFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/CompileInfoFragment"
+        android:name="org.cosmicide.rewrite.fragment.CompileInfoFragment"
+        android:label="Compile Info"
+        tools:layout="@layout/fragment_compile_info"></fragment>
 </navigation>

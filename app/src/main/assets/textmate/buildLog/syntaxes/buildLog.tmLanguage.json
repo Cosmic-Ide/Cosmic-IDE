@@ -1,0 +1,45 @@
+{
+  "name": "Build",
+  "patterns": [
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    }
+  ],
+  "repository": {
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.build",
+          "match": "\\b(if|while|for|return)\\b"
+        },
+        {
+          "name": "token.warn-token",
+          "match": "WARNING|warning|warn|WARN|Warning"
+        },
+        {
+          "name": "token.info-token",
+          "match": "INFO|info|Info"
+        },
+        {
+          "name": "token.error-token",
+          "match": "ERROR|error|Error"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.build",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.build",
+          "match": "\\\\."
+        }
+      ]
+    }
+  },
+  "scopeName": "source.build"
+}

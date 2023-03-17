@@ -51,6 +51,7 @@ dependencies {
     implementation(projects.kotlinc)
     implementation(projects.kotlinCompletion)
     implementation(projects.javaCompletion)
+    implementation(projects.buildTools)
     implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
     implementation("io.github.Rosemoe.sora-editor:editor")

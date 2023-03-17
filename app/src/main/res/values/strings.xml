@@ -10,7 +10,6 @@
     <string name="use_kotlin_template">Use Kotlin Template</string>
     <string name="enter_project_name">Enter project name</string>
     <string name="project_name">Project Name</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="fragment_editor">Editor</string>
     <string name="create_project">Create Project</string>
     <string name="enter_package_name">Enter package name</string>

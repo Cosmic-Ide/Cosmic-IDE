@@ -9,10 +9,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.project.Java
+import org.cosmicide.project.Kotlin
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
-import java.util.Arrays
 
 class ProjectViewModel : ViewModel() {
 
@@ -27,7 +27,13 @@ class ProjectViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val projectsList = FileUtil.projectDir.listFiles { file -> file.isDirectory }
                 ?.sortedByDescending { it.lastModified() }
-                ?.map { Project(it, Java) }
+                ?.map {
+                    if (File(it, "src/main/java").exists()) {
+                        Project(it, Java)
+                    } else {
+                        Project(it, Kotlin)
+                    }
+                }
                 ?: emptyList()
 
             withContext(Dispatchers.Main) {

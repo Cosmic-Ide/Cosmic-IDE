@@ -27,7 +27,7 @@ class KotlinLanguage(
 ) {
 
     private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
-    private var fileName = file.name
+    private var fileName: String = file.name
 
     init {
         try {

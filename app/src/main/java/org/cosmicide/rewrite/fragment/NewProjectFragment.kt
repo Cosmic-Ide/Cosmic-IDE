@@ -62,7 +62,7 @@ class NewProjectFragment : Fragment() {
             )
             viewModel.loadProjects()
             findNavController().navigate(R.id.NewProjectFragment_to_EditorFragment, Bundle().apply {
-                putString(Constants.PROJECT_DIR, project.root.absolutePath)
+                putSerializable(Constants.PROJECT, project)
             })
         }
     }

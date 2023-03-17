@@ -1,21 +1,22 @@
 package org.cosmicide.rewrite.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import org.cosmicide.project.Java
-import org.cosmicide.project.Kotlin
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
+import org.cosmicide.rewrite.editor.util.EditorUtil
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
@@ -28,6 +29,7 @@ class EditorFragment : Fragment() {
     private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,18 +37,14 @@ class EditorFragment : Fragment() {
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
-        arguments?.getString(Constants.PROJECT_DIR)?.let { dir ->
-            project = File(dir).let {
-                when {
-                    it.isDirectory && it.resolve("src/main/java").exists() -> Project(it, Java)
-                    it.isDirectory && it.resolve("src/main/kotlin").exists() -> Project(it, Kotlin)
-                    else -> null
-                }
-            }
-            fileIndex = FileIndex(project!!)
+        project = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getSerializable(Constants.PROJECT, Project::class.java)
+        } else {
+            arguments?.getSerializable(Constants.PROJECT) as Project
         }
+        fileIndex = FileIndex(project!!)
 
-        fileViewModel = ViewModelProvider(this).get(FileViewModel::class.java)
+        fileViewModel = ViewModelProvider(this)[FileViewModel::class.java]
 
         val files = fileIndex.getFiles()
         if (files.isNotEmpty()) {
@@ -102,6 +100,7 @@ class EditorFragment : Fragment() {
             }
         )
         binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+        EditorUtil.setEditorFont(binding.editor)
     }
 
     override fun onDestroy() {

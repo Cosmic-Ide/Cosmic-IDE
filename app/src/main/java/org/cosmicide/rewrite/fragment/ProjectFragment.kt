@@ -1,7 +1,6 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.Constants
-import java.util.*
 
 class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
@@ -87,17 +85,26 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     override fun onProjectClicked(project: Project) {
-        navigateToEditorFragment(project.root.absolutePath)
+        navigateToEditorFragment(project)
     }
 
-    private fun navigateToEditorFragment(projectDir: String) {
+    private fun navigateToEditorFragment(project: Project) {
         val bundle = Bundle().apply {
-            putString(Constants.PROJECT_DIR, projectDir)
+            putSerializable(Constants.PROJECT, project)
         }
         findNavController().navigate(R.id.ProjectFragment_to_EditorFragment, bundle)
     }
 
+    private fun navigateToCompileInfoFragment(project: Project) {
+        val bundle = Bundle().apply {
+            putSerializable(Constants.PROJECT, project)
+        }
+        findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment, bundle)
+    }
+
+
     override fun onProjectLongClicked(project: Project): Boolean {
+        navigateToCompileInfoFragment(project)
         return false
     }
 }

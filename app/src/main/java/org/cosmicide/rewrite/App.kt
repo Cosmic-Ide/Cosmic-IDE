@@ -75,7 +75,9 @@ class App : Application() {
             val themeRegistry = ThemeRegistry.getInstance()
             themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
             themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
-            themeRegistry.setTheme(QUIET_LIGHT_THEME_NAME)
+            // TODO: if dark theme is enabled, set the darcula theme
+            // TODO: otherwise, set the quiet light theme
+            themeRegistry.setTheme(DARCULA_THEME_NAME)
         }
     }
 

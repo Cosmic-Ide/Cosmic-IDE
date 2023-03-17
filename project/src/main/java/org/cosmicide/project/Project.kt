@@ -1,11 +1,12 @@
 package org.cosmicide.project
 
 import java.io.File
+import java.io.Serializable
 
 /**
  * A data class representing a project.
  */
-data class Project(val root: File, val language: Language) {
+data class Project(val root: File, val language: Language) : Serializable {
 
     val name: String = root.name
 

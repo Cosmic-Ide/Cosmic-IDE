@@ -11,6 +11,7 @@ import org.cosmic.ide.databinding.ActivityConsoleBinding
 import org.cosmic.ide.project.JavaProject
 import org.cosmic.ide.util.Constants.PROJECT_PATH
 import org.cosmic.ide.util.addSystemWindowInsetToPadding
+import org.cosmic.ide.common.util.CoroutineUtil.inParallel
 import java.io.File
 
 class ConsoleActivity : BaseActivity() {
@@ -83,8 +84,12 @@ class ConsoleActivity : BaseActivity() {
             console.outputStream,
             console.errorStream
         ) {
-            supportActionBar?.subtitle = getString(R.string.console_state_stopped)
+            runOnUiThread {
+                supportActionBar?.subtitle = getString(R.string.console_state_stopped)
+            }
         }
-        task.doFullTask(project)
+        inParallel {
+            task.doFullTask(project)
+        }
     }
 }

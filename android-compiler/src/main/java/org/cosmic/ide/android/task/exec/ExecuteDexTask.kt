@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import org.cosmic.ide.android.interfaces.Task
-import org.cosmic.ide.android.task.dex.D8Task
 import org.cosmic.ide.common.util.FileUtil
 import org.cosmic.ide.common.util.CoroutineUtil
 import org.cosmic.ide.common.util.MultipleDexClassLoader
@@ -56,23 +55,13 @@ class ExecuteDexTask(
         dexLoader.loadDex(dexFile)
         dexLoader.loadDex(FileUtil.getClasspathDir() + "kotlin-stdlib-1.8.0.dex")
 
-        // TODO: Move to D8Task
         val folder = File(project.libDirPath)
         if (folder.exists() && folder.isDirectory) {
             val libs = folder.listFiles()
             if (libs != null) {
-                // Check if all libs have been pre-dexed or not
                 for (lib in libs) {
-                    val libDexes = File(project.buildDirPath, "libs")
-                    libDexes.mkdirs()
                     val outDex = File(libDexes, lib.nameWithoutExtension + ".dex")
 
-                    if (lib.extension == "jar" && !outDex.exists()) {
-                        CoroutineUtil.execute {
-                            D8Task.compileJar(lib.absolutePath)
-                            File(project.libDirPath, "classes.dex").renameTo(outDex)
-                        }
-                    }
                     // load library into ClassLoader
                     dexLoader.loadDex(outDex.absolutePath)
                 }

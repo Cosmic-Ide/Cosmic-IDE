@@ -59,6 +59,7 @@ class ExecuteDexTask(
         if (folder.exists() && folder.isDirectory) {
             val libs = folder.listFiles()
             if (libs != null) {
+                val libDexes = File(project.buildDirPath, "libs")
                 for (lib in libs) {
                     val outDex = File(libDexes, lib.nameWithoutExtension + ".dex")
 

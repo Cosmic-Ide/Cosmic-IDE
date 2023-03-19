@@ -27,7 +27,7 @@ class D8Task : Task {
                 .addClasspathFiles(CompilerUtil.platformPaths)
                 .addProgramFiles(jarFiles)
                 .setOutput(dir, OutputMode.DexIndexed)
-                .setDexIndexedConsumer(
+                .setProgramConsumer(
                     DirectoryConsumer(dir)
                 )
                 .build()
@@ -69,7 +69,7 @@ class D8Task : Task {
                         toDex.add(lib.toPath())
                     }
                 }
-                compileJars(toDex, Paths.get(project.buildDirPath, "libs")
+                compileJars(toDex, Paths.get(project.buildDirPath, "libs"))
             }
         }
     }

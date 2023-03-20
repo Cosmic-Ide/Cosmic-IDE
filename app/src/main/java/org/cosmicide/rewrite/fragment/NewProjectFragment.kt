@@ -63,6 +63,8 @@ class NewProjectFragment : Fragment() {
             viewModel.loadProjects()
             findNavController().navigate(R.id.NewProjectFragment_to_EditorFragment, Bundle().apply {
                 putSerializable(Constants.PROJECT, project)
+                // for clearing this fragment from backstack
+                putBoolean(Constants.NEW_PROJECT, true)
             })
         }
     }

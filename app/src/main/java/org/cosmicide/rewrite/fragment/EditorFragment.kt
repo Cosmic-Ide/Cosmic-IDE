@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
@@ -38,9 +40,9 @@ class EditorFragment : Fragment() {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
         project = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getSerializable(Constants.PROJECT, Project::class.java)
+            requireArguments().getSerializable(Constants.PROJECT, Project::class.java)
         } else {
-            arguments?.getSerializable(Constants.PROJECT) as Project
+            requireArguments().getSerializable(Constants.PROJECT) as Project
         }
         fileIndex = FileIndex(project!!)
 
@@ -106,8 +108,12 @@ class EditorFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
+            fileViewModel.currentFile?.takeIf { it.exists() }
+                ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
+        }
+        if (requireArguments().getBoolean(Constants.NEW_PROJECT, false)) {
+            findNavController().popBackStack(R.id.ProjectFragment, false)
         }
     }
 }

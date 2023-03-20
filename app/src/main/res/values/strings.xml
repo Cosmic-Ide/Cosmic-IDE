@@ -11,7 +11,5 @@
     <string name="enter_project_name">Enter project name</string>
     <string name="project_name">Project Name</string>
     <string name="fragment_editor">Editor</string>
-    <string name="create_project">Create Project</string>
-    <string name="enter_package_name">Enter package name</string>
-    <string name="project_path">Project Path</string>
+    <string name="create_project">Create project</string>
 </resources>

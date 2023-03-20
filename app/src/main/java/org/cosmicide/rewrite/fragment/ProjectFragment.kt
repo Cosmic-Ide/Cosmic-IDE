@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -42,12 +43,20 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     private fun setOnClickListeners() {
-        binding.importButton.setOnClickListener {
-            navigateToNewProjectFragment()
-        }
 
-        binding.fabNewProject.setOnClickListener {
-            navigateToNewProjectFragment()
+        binding.fabs.importButton.visibility = View.GONE
+        binding.fabs.newProjectTextview.visibility = View.GONE
+
+        binding.fabs.fabNewProject.setOnClickListener {
+            if (!binding.fabs.importButton.isVisible) {
+                binding.fabs.importButton.visibility = View.VISIBLE
+                binding.fabs.newProjectTextview.visibility = View.VISIBLE
+                binding.fabs.importButton.setOnClickListener {
+                    navigateToNewProjectFragment()
+                }
+            } else {
+                navigateToNewProjectFragment()
+            }
         }
     }
 
@@ -64,12 +73,12 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
     private fun observeViewModelProjects() {
         viewModel.projects.observe(viewLifecycleOwner) { projects ->
-            showSnackbarIfNoProjects(projects)
+            showSnackBarIfNoProjects(projects)
             projectAdapter.submitList(projects)
         }
     }
 
-    private fun showSnackbarIfNoProjects(projects: List<Project>) {
+    private fun showSnackBarIfNoProjects(projects: List<Project>) {
         if (projects.isEmpty()) {
             Snackbar.make(
                 requireView(),

@@ -12,8 +12,8 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import org.cosmicide.build.BuildReporter
-import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.editor.util.EditorUtil
 import org.cosmicide.rewrite.util.Constants
@@ -21,6 +21,7 @@ import org.cosmicide.rewrite.util.Constants
 class CompileInfoFragment : Fragment() {
     private lateinit var project: Project
     private lateinit var binding: FragmentCompileInfoBinding
+    private lateinit var compiler: Compiler
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class CompileInfoFragment : Fragment() {
         } else {
             arguments?.getSerializable(Constants.PROJECT) as Project
         }
+        compiler = Compiler(project)
         super.onCreate(savedInstanceState)
     }
 
@@ -42,11 +44,11 @@ class CompileInfoFragment : Fragment() {
         binding.infoEditor.setEditorLanguage(TextMateLanguage.create("source.build", false))
         binding.infoEditor.editable = false
         binding.infoEditor.isWordwrap = true
-        binding.infoEditor.setTextSize(18f)
+        binding.infoEditor.setTextSize(14f)
         EditorUtil.setEditorFont(binding.infoEditor)
         // Inflate the layout for this fragment
         requireActivity().lifecycleScope.launchWhenStarted {
-            JavaCompileTask(project).execute(BuildReporter { kind, message ->
+            compiler.compile(BuildReporter { kind, message ->
                 if (message.isEmpty()) return@BuildReporter
                 val text = binding.infoEditor.text
                 val cursor = text.cursor

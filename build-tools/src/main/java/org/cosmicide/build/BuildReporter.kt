@@ -18,6 +18,18 @@ sealed interface KIND {
             return "ERROR"
         }
     }
+
+    object LOGGING : KIND {
+        override fun toString(): String {
+            return "LOGGING"
+        }
+    }
+
+    object OUTPUT : KIND {
+        override fun toString(): String {
+            return "OUTPUT"
+        }
+    }
 }
 
 class BuildReporter(val callback: (KIND, String) -> Unit) {
@@ -31,5 +43,13 @@ class BuildReporter(val callback: (KIND, String) -> Unit) {
 
     fun reportError(message: String) {
         callback(KIND.ERROR, message)
+    }
+
+    fun reportLogging(message: String) {
+        callback(KIND.LOGGING, message)
+    }
+
+    fun reportOutput(message: String) {
+        callback(KIND.OUTPUT, message)
     }
 }

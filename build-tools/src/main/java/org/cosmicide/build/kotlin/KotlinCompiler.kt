@@ -1,6 +1,5 @@
 package org.cosmicide.build.kotlin
 
-import android.content.SharedPreferences
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSourceFiles
@@ -26,7 +25,7 @@ class KotlinCompiler(val project: Project) : Task {
 
     @Throws(Exception::class)
     override fun execute(reporter: BuildReporter) {
-        val sourceFiles = getSourceFiles(project.srcDir.invoke())
+        val sourceFiles = getSourceFiles(project.srcDir.invoke(), "kt")
         if (!sourceFiles.any {
                 it.extension == "kt"
             }
@@ -47,11 +46,6 @@ class KotlinCompiler(val project: Project) : Task {
 
         val plugins = getKotlinCompilerPlugins(project).map(File::getAbsolutePath).toTypedArray()
 
-        val appClass = Class.forName("org.cosmic.ide.App")
-        val prefs =
-            appClass.getDeclaredMethod("getDefaultPreferences").invoke(null) as SharedPreferences
-        val useFastJarFS = prefs.getBoolean("fast_jar_fs", true)
-
         args.apply {
             classpath =
                 getSystemClasspath().joinToString(separator = File.pathSeparator) { it.absolutePath } +
@@ -67,7 +61,7 @@ class KotlinCompiler(val project: Project) : Task {
             // incremental compiler needs the module name for generating .kotlin_module files
             moduleName = project.name
             pluginClasspaths = plugins
-            useFastJarFileSystem = useFastJarFS
+            useFastJarFileSystem = true
         }
 
         val collector = object : MessageCollector {

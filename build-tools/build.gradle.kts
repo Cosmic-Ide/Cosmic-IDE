@@ -32,4 +32,5 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.kotlinc)
+    implementation("com.android.tools:r8:8.0.34")
 }

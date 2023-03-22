@@ -33,6 +33,8 @@ sealed interface KIND {
 }
 
 class BuildReporter(val callback: (KIND, String) -> Unit) {
+
+    var compileSuccess = false
     fun reportInfo(message: String) {
         callback(KIND.INFO, message)
     }
@@ -51,5 +53,9 @@ class BuildReporter(val callback: (KIND, String) -> Unit) {
 
     fun reportOutput(message: String) {
         callback(KIND.OUTPUT, message)
+    }
+
+    fun reportSuccess() {
+        compileSuccess = true
     }
 }

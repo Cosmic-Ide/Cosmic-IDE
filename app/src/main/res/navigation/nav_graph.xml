@@ -48,5 +48,16 @@
         android:id="@+id/CompileInfoFragment"
         android:name="org.cosmicide.rewrite.fragment.CompileInfoFragment"
         android:label="Compile Info"
-        tools:layout="@layout/fragment_compile_info"></fragment>
+        tools:layout="@layout/fragment_compile_info">
+
+        <action
+            android:id="@+id/CompileInfoFragment_to_ProjectOutputFragment"
+            app:destination="@id/ProjectOutputFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ProjectOutputFragment"
+        android:name="org.cosmicide.rewrite.fragment.ProjectOutputFragment"
+        android:label="Project Output"
+        tools:layout="@layout/fragment_compile_info" />
 </navigation>

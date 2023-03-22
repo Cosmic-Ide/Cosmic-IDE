@@ -8,19 +8,19 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
+import dalvik.system.DexClassLoader
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.editor.util.EditorUtil
 import org.cosmicide.rewrite.util.Constants
+import java.io.OutputStream
+import java.io.PrintStream
 
-class CompileInfoFragment : Fragment() {
+class ProjectOutputFragment : Fragment() {
     private lateinit var project: Project
     private lateinit var binding: FragmentCompileInfoBinding
     private lateinit var compiler: Compiler
@@ -36,16 +36,6 @@ class CompileInfoFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-
-    private fun navigateToProjectOutputFragment() {
-        findNavController().navigate(
-            R.id.CompileInfoFragment_to_ProjectOutputFragment,
-            Bundle().apply {
-                putSerializable(Constants.PROJECT, project)
-            })
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,16 +50,23 @@ class CompileInfoFragment : Fragment() {
         EditorUtil.setEditorFont(binding.infoEditor)
         // Inflate the layout for this fragment
         requireActivity().lifecycleScope.launchWhenStarted {
-            val reporter = BuildReporter { kind, message ->
-                if (message.isEmpty()) return@BuildReporter
-                val text = binding.infoEditor.text
-                val cursor = text.cursor
-                text.insert(cursor.rightLine, cursor.rightColumn, "$kind: $message\n")
-            }
-            compiler.compile(reporter)
-            if (reporter.compileSuccess) {
-                navigateToProjectOutputFragment()
-            }
+            val systemOut = PrintStream(object : OutputStream() {
+                override fun write(p0: Int) {
+                    val text = binding.infoEditor.text
+                    val cursor = text.cursor
+                    text.insert(cursor.rightLine, cursor.rightColumn, p0.toChar().toString())
+                }
+            })
+            System.setOut(systemOut)
+            System.setErr(systemOut)
+            val loader = DexClassLoader(
+                project.binDir.resolve("classes.dex").absolutePath,
+                project.binDir.toString(),
+                null,
+                ClassLoader.getSystemClassLoader()
+            )
+            loader.loadClass("Main").getDeclaredMethod("main", Array<String>::class.java)
+                .invoke(null, arrayOf<String>())
         }
         return binding.root
     }

@@ -3,12 +3,12 @@ package org.cosmicide.build.util
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 
-fun getSourceFiles(dir: File): List<File> {
+fun getSourceFiles(dir: File, extension: String): List<File> {
     val files = mutableListOf<File>()
     for (file in dir.listFiles()!!) {
         if (file.isDirectory) {
-            files.addAll(getSourceFiles(file))
-        } else {
+            files.addAll(getSourceFiles(file, extension))
+        } else if (file.extension == extension) {
             files.add(file)
         }
     }

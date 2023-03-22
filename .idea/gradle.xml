@@ -11,6 +11,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/build-tools" />
             <option value="$PROJECT_DIR$/java-completion" />
             <option value="$PROJECT_DIR$/kotlin-completion" />
             <option value="$PROJECT_DIR$/kotlinc" />

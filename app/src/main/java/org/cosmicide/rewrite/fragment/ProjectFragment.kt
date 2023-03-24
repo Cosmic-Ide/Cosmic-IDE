@@ -15,7 +15,7 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
-import org.cosmicide.rewrite.util.Constants
+import org.cosmicide.rewrite.util.ProjectHandler
 
 class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
@@ -94,26 +94,20 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     override fun onProjectClicked(project: Project) {
-        navigateToEditorFragment(project)
+        ProjectHandler.project = project
+        navigateToEditorFragment()
     }
 
-    private fun navigateToEditorFragment(project: Project) {
-        val bundle = Bundle().apply {
-            putSerializable(Constants.PROJECT, project)
-        }
-        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment, bundle)
+    private fun navigateToEditorFragment() {
+        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment)
     }
 
-    private fun navigateToCompileInfoFragment(project: Project) {
-        val bundle = Bundle().apply {
-            putSerializable(Constants.PROJECT, project)
-        }
-        findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment, bundle)
+    private fun navigateToCompileInfoFragment() {
+        findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment)
     }
 
 
     override fun onProjectLongClicked(project: Project): Boolean {
-        navigateToCompileInfoFragment(project)
         return false
     }
 }

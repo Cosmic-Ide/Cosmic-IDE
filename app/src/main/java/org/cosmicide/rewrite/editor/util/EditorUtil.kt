@@ -29,5 +29,9 @@ object EditorUtil {
     fun setEditorFont(editor: CodeEditor) {
         editor.typefaceText =
             Typeface.createFromAsset(editor.context.assets, "fonts/JetBrainsMono-Light.ttf")
+        editor.setPinLineNumber(true)
+        editor.isHighlightCurrentLine = true
+        editor.lineNumberMarginLeft = 1f
+        editor.lineNumberMetrics.top = 2
     }
 }

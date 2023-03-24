@@ -1,6 +1,7 @@
 package org.cosmicide.rewrite
 
 import android.app.Application
+import android.content.res.Configuration
 import android.util.Log
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
@@ -75,15 +76,29 @@ class App : Application() {
             val themeRegistry = ThemeRegistry.getInstance()
             themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
             themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
-            // TODO: if dark theme is enabled, set the darcula theme
-            // TODO: otherwise, set the quiet light theme
-            themeRegistry.setTheme(DARCULA_THEME_NAME)
+
+
+            if (resources.configuration.uiMode == Configuration.UI_MODE_NIGHT_YES) {
+                ThemeRegistry.getInstance().setTheme(DARCULA_THEME_NAME)
+            } else {
+                ThemeRegistry.getInstance().setTheme(QUIET_LIGHT_THEME_NAME)
+            }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.uiMode == Configuration.UI_MODE_NIGHT_YES) {
+            ThemeRegistry.getInstance().setTheme(DARCULA_THEME_NAME)
+        } else {
+            ThemeRegistry.getInstance().setTheme(QUIET_LIGHT_THEME_NAME)
         }
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {
-        val inputStream = FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
-            ?: throw FileNotFoundException("Theme file not found: $fileName")
+        val inputStream =
+            FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
+                ?: throw FileNotFoundException("Theme file not found: $fileName")
         val source = IThemeSource.fromInputStream(inputStream, fileName, null)
         return ThemeModel(source, themeName)
     }

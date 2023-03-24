@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="bottom|end"
@@ -13,16 +12,15 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:gravity="end|center_vertical"
-        android:orientation="horizontal"
-        android:padding="2dp">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="1"
             android:text="@string/import_project"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -30,6 +28,7 @@
             android:layout_weight="1"
             android:clickable="false"
             android:contentDescription="@string/import_project"
+            app:elevation="0dp"
             app:srcCompat="@drawable/ic_import" />
     </LinearLayout>
 
@@ -40,17 +39,16 @@
         android:clickable="true"
         android:gravity="end|center_vertical"
         android:orientation="horizontal"
-        android:padding="2dp"
-        tools:layout_marginTop="30dp">
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/new_project_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_weight="1"
             android:text="@string/create_project"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -58,6 +56,7 @@
             android:layout_weight="1"
             android:clickable="false"
             android:contentDescription="@string/create_project"
+            app:elevation="0dp"
             app:srcCompat="@android:drawable/ic_input_add" />
     </LinearLayout>
 </LinearLayout>

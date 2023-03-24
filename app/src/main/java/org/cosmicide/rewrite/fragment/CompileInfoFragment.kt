@@ -12,13 +12,15 @@ import androidx.navigation.fragment.findNavController
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.editor.util.EditorUtil
-import org.cosmicide.rewrite.util.Constants
+import org.cosmicide.rewrite.util.ProjectHandler
 
 class CompileInfoFragment : Fragment() {
     private lateinit var project: Project
@@ -27,22 +29,18 @@ class CompileInfoFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
-        project = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getSerializable(Constants.PROJECT, Project::class.java)!!
-        } else {
-            arguments?.getSerializable(Constants.PROJECT) as Project
-        }
+        project = ProjectHandler.project!!
         compiler = Compiler(project)
         super.onCreate(savedInstanceState)
     }
 
 
     private fun navigateToProjectOutputFragment() {
-        findNavController().navigate(
-            R.id.CompileInfoFragment_to_ProjectOutputFragment,
-            Bundle().apply {
-                putSerializable(Constants.PROJECT, project)
-            })
+        val navController = findNavController()
+        navController.popBackStack(R.id.EditorFragment_to_CompileInfoFragment, false)
+        navController.navigate(
+            R.id.CompileInfoFragment_to_ProjectOutputFragment
+        )
     }
 
 
@@ -56,10 +54,10 @@ class CompileInfoFragment : Fragment() {
         binding.infoEditor.setEditorLanguage(TextMateLanguage.create("source.build", false))
         binding.infoEditor.editable = false
         binding.infoEditor.isWordwrap = true
-        binding.infoEditor.setTextSize(14f)
+        binding.infoEditor.setTextSize(16f)
         EditorUtil.setEditorFont(binding.infoEditor)
         // Inflate the layout for this fragment
-        requireActivity().lifecycleScope.launchWhenStarted {
+        CoroutineScope(lifecycleScope.coroutineContext).launch {
             val reporter = BuildReporter { kind, message ->
                 if (message.isEmpty()) return@BuildReporter
                 val text = binding.infoEditor.text
@@ -67,6 +65,7 @@ class CompileInfoFragment : Fragment() {
                 text.insert(cursor.rightLine, cursor.rightColumn, "$kind: $message\n")
             }
             compiler.compile(reporter)
+            println("Compile")
             if (reporter.compileSuccess) {
                 navigateToProjectOutputFragment()
             }

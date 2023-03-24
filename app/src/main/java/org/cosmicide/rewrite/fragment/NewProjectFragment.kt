@@ -15,6 +15,7 @@ import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
 class NewProjectFragment : Fragment() {
@@ -61,9 +62,8 @@ class NewProjectFragment : Fragment() {
                 )
             )
             viewModel.loadProjects()
+            ProjectHandler.project = project
             findNavController().navigate(R.id.NewProjectFragment_to_EditorFragment, Bundle().apply {
-                putSerializable(Constants.PROJECT, project)
-                // for clearing this fragment from backstack
                 putBoolean(Constants.NEW_PROJECT, true)
             })
         }

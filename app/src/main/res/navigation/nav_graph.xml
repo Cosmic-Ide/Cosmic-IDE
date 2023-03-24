@@ -42,6 +42,10 @@
         <action
             android:id="@+id/EditorFragment_to_ProjectFragment"
             app:destination="@id/ProjectFragment" />
+
+        <action
+            android:id="@+id/EditorFragment_to_CompileInfoFragment"
+            app:destination="@id/CompileInfoFragment" />
     </fragment>
 
     <fragment

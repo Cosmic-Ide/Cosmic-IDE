@@ -13,6 +13,9 @@ import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
@@ -22,6 +25,7 @@ import org.cosmicide.rewrite.editor.util.EditorUtil
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
+import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
 class EditorFragment : Fragment() {
@@ -39,57 +43,67 @@ class EditorFragment : Fragment() {
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
-        project = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getSerializable(Constants.PROJECT, Project::class.java)
-        } else {
-            requireArguments().getSerializable(Constants.PROJECT) as Project
+        CoroutineScope(Dispatchers.Main).launch {
+            project = ProjectHandler.project!!
+            fileIndex = FileIndex(project!!)
+
+            fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
+
+            val files = fileIndex.getFiles()
+            if (files.isNotEmpty()) {
+                requireActivity().runOnUiThread {
+                    fileViewModel.updateFiles(files.toMutableList())
+                    for (file in files) {
+                        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
+                    }
+                }
+            }
+
+            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    fileViewModel.setCurrentPosition(tab.position)
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab) {
+                    fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                    binding.editor.setText(fileViewModel.files.value!![tab.position].readText())
+                }
+            })
+
+            fileViewModel.files.observe(viewLifecycleOwner) { filess ->
+                binding.tabLayout.removeAllTabs()
+                filess.forEach { file ->
+                    binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
+                }
+            }
+
+            fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
+                if (position == -1) {
+                    return@observe
+                }
+                binding.editor.setText(fileViewModel.currentFile?.readText())
+                setEditorLanguage()
+            }
+
+            fileViewModel.addFile(
+                File(
+                    project!!.srcDir.invoke(),
+                    "Main." + project!!.language.extension
+                )
+            )
         }
-        fileIndex = FileIndex(project!!)
-
-        fileViewModel = ViewModelProvider(this)[FileViewModel::class.java]
-
-        val files = fileIndex.getFiles()
-        if (files.isNotEmpty()) {
-            fileViewModel.updateFiles(files.toMutableList())
-            for (file in files) {
-                binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
-            }
-        }
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                fileViewModel.setCurrentPosition(tab.position)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-                fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                binding.editor.setText(fileViewModel.files.value!![tab.position].readText())
-            }
-        })
-
-        fileViewModel.files.observe(viewLifecycleOwner) { filess ->
-            binding.tabLayout.removeAllTabs()
-            filess.forEach { file ->
-                binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
-            }
-        }
-
-        fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-            if (position == -1) {
-                return@observe
-            }
-            binding.editor.setText(fileViewModel.currentFile?.readText())
-            setEditorLanguage()
-        }
-
-        fileViewModel.addFile(File(project!!.srcDir.invoke(), "Main." + project!!.language.extension))
 
         binding.editor.setTextSize(20f)
 
         return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ProjectHandler.onEditorFragmentChange(true)
     }
 
     private fun setEditorLanguage() {
@@ -105,6 +119,11 @@ class EditorFragment : Fragment() {
         EditorUtil.setEditorFont(binding.editor)
     }
 
+    override fun onStop() {
+        super.onStop()
+        ProjectHandler.onEditorFragmentChange(false)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
@@ -112,8 +131,9 @@ class EditorFragment : Fragment() {
                 ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
-        if (requireArguments().getBoolean(Constants.NEW_PROJECT, false)) {
+        if (arguments?.getBoolean(Constants.NEW_PROJECT, false) == true) {
             findNavController().popBackStack(R.id.ProjectFragment, false)
         }
+        ProjectHandler.onEditorFragmentChange(false)
     }
 }

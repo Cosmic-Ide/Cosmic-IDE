@@ -1,61 +1,78 @@
 package org.cosmicide.build
 
-sealed interface KIND {
-    object INFO : KIND {
-        override fun toString(): String {
-            return "INFO"
-        }
-    }
-
-    object WARNING : KIND {
-        override fun toString(): String {
-            return "WARNING"
-        }
-    }
-
-    object ERROR : KIND {
-        override fun toString(): String {
-            return "ERROR"
-        }
-    }
-
-    object LOGGING : KIND {
-        override fun toString(): String {
-            return "LOGGING"
-        }
-    }
-
-    object OUTPUT : KIND {
-        override fun toString(): String {
-            return "OUTPUT"
-        }
-    }
+/**
+ * Enum to represent different kinds of build reports.
+ */
+enum class KIND {
+    INFO,
+    WARNING,
+    ERROR,
+    LOGGING,
+    OUTPUT
 }
 
-class BuildReporter(val callback: (KIND, String) -> Unit) {
+/**
+ * Data class to represent a build report.
+ * @property kind The kind of build report.
+ * @property message The message associated with the build report.
+ */
+data class BuildReport(val kind: KIND, val message: String)
 
-    var compileSuccess = false
+/**
+ * Class for reporting build progress.
+ * @property callback A function that takes a [BuildReport] as input and handles it.
+ */
+class BuildReporter(
+    val callback: (BuildReport) -> Unit = { report -> println("${report.kind}: ${report.message}") }
+) {
+    var buildSuccess = false
+
+    /**
+     * Generates an informational build report.
+     * @param message The message associated with the build report.
+     */
     fun reportInfo(message: String) {
-        callback(KIND.INFO, message)
+        callback(BuildReport(KIND.INFO, message))
     }
 
+    /**
+     * Generates a warning build report.
+     * @param message The message associated with the build report.
+     */
     fun reportWarning(message: String) {
-        callback(KIND.WARNING, message)
+        callback(BuildReport(KIND.WARNING, message))
     }
 
+    /**
+     * Generates an error build report.
+     * @param message The message associated with the build report.
+     */
     fun reportError(message: String) {
-        callback(KIND.ERROR, message)
+        callback(BuildReport(KIND.ERROR, message))
     }
 
+    /**
+     * Generates a logging build report.
+     * @param message The message associated with the build report.
+     */
     fun reportLogging(message: String) {
-        callback(KIND.LOGGING, message)
+        callback(BuildReport(KIND.LOGGING, message))
     }
 
+    /**
+     * Generates an output build report.
+     * @param message The message associated with the build report.
+     */
     fun reportOutput(message: String) {
-        callback(KIND.OUTPUT, message)
+        callback(BuildReport(KIND.OUTPUT, message))
     }
 
+    /**
+     * Generates a success build report.
+     * Reports that the build completed successfully.
+     */
     fun reportSuccess() {
-        compileSuccess = true
+        reportOutput("Build completed successfully.")
+        buildSuccess = true
     }
 }

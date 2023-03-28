@@ -8,7 +8,16 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.databinding.ProjectItemBinding
 import kotlin.properties.Delegates
 
+/**
+ * Adapter for displaying a list of [Project] objects in a [RecyclerView].
+ *
+ * @param listener Listener for handling user interactions with the items in the list.
+ */
 class ProjectAdapter(private val listener: OnProjectEventListener) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+
+    /**
+     * List of [Project] objects to be displayed in the [RecyclerView].
+     */
     private var projects: List<Project> by Delegates.observable(emptyList()) { _, oldList, newList ->
         DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize() = oldList.size
@@ -20,11 +29,19 @@ class ProjectAdapter(private val listener: OnProjectEventListener) : RecyclerVie
         }).dispatchUpdatesTo(this)
     }
 
+    /**
+     * Interface for handling user interactions with the items in the list.
+     */
     interface OnProjectEventListener {
         fun onProjectClicked(project: Project)
         fun onProjectLongClicked(project: Project): Boolean
     }
 
+    /**
+     * Sets the list of projects to be displayed in the [RecyclerView].
+     *
+     * @param projects The list of [Project] objects.
+     */
     fun submitList(projects: List<Project>) {
         this.projects = projects
     }
@@ -41,11 +58,22 @@ class ProjectAdapter(private val listener: OnProjectEventListener) : RecyclerVie
 
     override fun getItemCount() = projects.size
 
+    /**
+     * ViewHolder for displaying a single [Project] object in the [RecyclerView].
+     *
+     * @param binding The [ProjectItemBinding] object for the item view.
+     * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
+     */
     class ViewHolder(
         private val binding: ProjectItemBinding,
         private val listener: OnProjectEventListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
+        /**
+         * Binds the given [Project] object to the item view.
+         *
+         * @param project The [Project] object to be displayed.
+         */
         fun bind(project: Project) {
             binding.projectTitle.text = project.name
             binding.projectPath.text = project.root.absolutePath

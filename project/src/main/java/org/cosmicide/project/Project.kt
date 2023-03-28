@@ -4,22 +4,29 @@ import java.io.File
 import java.io.Serializable
 
 /**
- * A data class representing a project.
+ * Represents a project.
+ *
+ * @property root The root directory of the project.
+ * @property language The programming language used in the project.
  */
-data class Project(val root: File, val language: Language) : Serializable {
+data class Project(
+    val root: File,
+    val language: Language
+) {
 
+    /**
+     * The name of the project, derived from the root directory.
+     */
     val name: String = root.name
 
     /**
-     * Returns the source directory of the project based on the language used.
-     *
-     * @return the source directory as a [File]
+     * The source directory of the project, based on the language used.
      */
     val srcDir: () -> File
         get() = {
             when (language) {
-                is Java -> File(root, "src/main/java")
-                is Kotlin -> File(root, "src/main/kotlin")
+                is Language.Java -> File(root, "src/main/java")
+                is Language.Kotlin -> File(root, "src/main/kotlin")
             }
         }
 
@@ -45,8 +52,14 @@ data class Project(val root: File, val language: Language) : Serializable {
 
     /**
      * Deletes the project directory.
+     *
+     * @throws IllegalStateException if the root directory is not a valid project directory.
      */
     fun delete() {
-        root.deleteRecursively()
+        if (root.isDirectory && root.name == name) {
+            root.deleteRecursively()
+        } else {
+            throw IllegalStateException("Cannot delete directory: ${root.absolutePath}")
+        }
     }
 }

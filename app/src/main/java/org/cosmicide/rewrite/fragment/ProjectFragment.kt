@@ -94,7 +94,7 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     override fun onProjectClicked(project: Project) {
-        ProjectHandler.project = project
+        ProjectHandler.setProject(project)
         navigateToEditorFragment()
     }
 
@@ -105,7 +105,6 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     private fun navigateToCompileInfoFragment() {
         findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment)
     }
-
 
     override fun onProjectLongClicked(project: Project): Boolean {
         return false

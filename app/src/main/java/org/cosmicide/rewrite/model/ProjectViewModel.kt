@@ -8,8 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.cosmicide.project.Java
-import org.cosmicide.project.Kotlin
+import org.cosmicide.project.Language
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
@@ -29,9 +28,9 @@ class ProjectViewModel : ViewModel() {
                 ?.sortedByDescending { it.lastModified() }
                 ?.map {
                     if (File(it, "src/main/java").exists()) {
-                        Project(it, Java)
+                        Project(it, Language.Java)
                     } else {
-                        Project(it, Kotlin)
+                        Project(it, Language.Kotlin)
                     }
                 }
                 ?: emptyList()

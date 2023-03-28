@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
@@ -29,15 +29,33 @@ class CompileInfoFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         project = ProjectHandler.project!!
         compiler = Compiler(project)
-        super.onCreate(savedInstanceState)
+        CoroutineScope(Dispatchers.IO).launch {
+            val reporter = BuildReporter { kind, message ->
+                if (message.isEmpty()) return@BuildReporter
+
+                requireActivity().runOnUiThread {
+                    val text = binding.infoEditor.text
+                    val cursor = text.cursor
+                    text.insert(cursor.rightLine, cursor.rightColumn, "$kind: $message\n")
+                }
+            }
+            compiler.compile(reporter)
+            println("Compile")
+            if (reporter.compileSuccess) {
+                requireActivity().runOnUiThread {
+                    navigateToProjectOutputFragment()
+                }
+            }
+        }
     }
 
 
     private fun navigateToProjectOutputFragment() {
         val navController = findNavController()
-        navController.popBackStack(R.id.EditorFragment_to_CompileInfoFragment, false)
+        navController.popBackStack(R.id.CompileInfoFragment, false)
         navController.navigate(
             R.id.CompileInfoFragment_to_ProjectOutputFragment
         )
@@ -55,21 +73,13 @@ class CompileInfoFragment : Fragment() {
         binding.infoEditor.editable = false
         binding.infoEditor.isWordwrap = true
         binding.infoEditor.setTextSize(16f)
+        binding.infoEditor.isLineNumberEnabled = false
         EditorUtil.setEditorFont(binding.infoEditor)
-        // Inflate the layout for this fragment
-        CoroutineScope(lifecycleScope.coroutineContext).launch {
-            val reporter = BuildReporter { kind, message ->
-                if (message.isEmpty()) return@BuildReporter
-                val text = binding.infoEditor.text
-                val cursor = text.cursor
-                text.insert(cursor.rightLine, cursor.rightColumn, "$kind: $message\n")
-            }
-            compiler.compile(reporter)
-            println("Compile")
-            if (reporter.compileSuccess) {
-                navigateToProjectOutputFragment()
-            }
-        }
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.infoEditor.release()
     }
 }

@@ -1,8 +1,9 @@
 package org.cosmicide.rewrite.editor.util
 
-import android.graphics.Typeface
+import androidx.core.content.res.ResourcesCompat
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.widget.CodeEditor
+import org.cosmicide.rewrite.R
 
 sealed interface EditorLanguage {
     object Kotlin : EditorLanguage
@@ -27,11 +28,7 @@ object EditorUtil {
     }
 
     fun setEditorFont(editor: CodeEditor) {
-        editor.typefaceText =
-            Typeface.createFromAsset(editor.context.assets, "fonts/JetBrainsMono-Light.ttf")
-        editor.setPinLineNumber(true)
+        editor.typefaceText = ResourcesCompat.getCachedFont(editor.context, R.font.noto_sans_mono)
         editor.isHighlightCurrentLine = true
-        editor.lineNumberMarginLeft = 1f
-        editor.lineNumberMetrics.top = 2
     }
 }

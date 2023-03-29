@@ -87,9 +87,6 @@ class CompileInfoFragment : Fragment() {
         super.onDestroyView()
     }
 
-    /**
-     * Navigates to the project output fragment.
-     */
     private fun navigateToProjectOutputFragment() {
         val navController = findNavController()
         // navController.popBackStack(R.id.CompileInfoFragment, false)

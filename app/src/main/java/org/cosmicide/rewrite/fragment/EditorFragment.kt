@@ -32,16 +32,11 @@ import java.io.File
 
 class EditorFragment : Fragment() {
 
-    private lateinit var project: Project
-    private lateinit var fileIndex: FileIndex
+    private val project: Project = ProjectHandler.getProject()
+        ?: throw IllegalStateException("No project set")
+    private val fileIndex: FileIndex = FileIndex(project)
     private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        project = ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
-        fileIndex = FileIndex(project)
-    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(

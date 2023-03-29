@@ -22,16 +22,10 @@ import java.io.PrintStream
 import java.lang.reflect.Modifier
 
 class ProjectOutputFragment : Fragment() {
-    private lateinit var project: Project
+    private val project: Project = ProjectHandler.getProject()
+        ?: throw IllegalStateException("No project set")
     private lateinit var binding: FragmentCompileInfoBinding
-    private lateinit var compiler: Compiler
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("ProjectOutputFragment.onCreate")
-        project = ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
-        compiler = Compiler(project)
-    }
+    private val compiler: Compiler = Compiler(project)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,4 +89,6 @@ class ProjectOutputFragment : Fragment() {
 
         return binding.root
     }
+
+    
 }

@@ -33,7 +33,7 @@ dependencies {
     implementation(projects.jaxp)
 
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
-    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.20")
 
     implementation("it.unimi.dsi:fastutil:8.5.12")
     implementation("one.util:streamex:0.8.1")

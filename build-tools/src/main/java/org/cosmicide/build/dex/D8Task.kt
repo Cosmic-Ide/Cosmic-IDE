@@ -3,7 +3,6 @@ package org.cosmicide.build.dex
 import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
-import com.android.tools.r8.DexIndexedConsumer.DirectoryConsumer
 import com.android.tools.r8.OutputMode
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
@@ -13,111 +12,84 @@ import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class D8Task(
-    val project: Project
-) : Task {
+/**
+ * Task to compile the class files of a project to a Dalvik Executable (Dex) file using D8.
+ *
+ * @property project The project to compile.
+ */
+class D8Task(private val project: Project) : Task {
 
     companion object {
-        /*
-        * Compile a jar file to a Dalvik Executable (Dex) File.
-        *
-        * @param jarFile the jar file to compile
-        */
-        @JvmStatic
-        fun compileJar(jarFile: String) {
-            val dex = jarFile.replaceAfterLast('.', "dex")
-            D8.run(
-                D8Command.builder()
-                    .setMinApiLevel(26)
-                    .setMode(CompilationMode.DEBUG)
-                    .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                    .addProgramFiles(Paths.get(jarFile))
-                    .setOutput(Paths.get(dex).parent, OutputMode.DexIndexed)
-                    .build()
-            )
-        }
+        private const val MIN_API_LEVEL = 26
+        private val COMPILATION_MODE = CompilationMode.DEBUG
     }
 
-    /*
-     * Compile a jar file to a Dalvik Executable (Dex) File.
+    /**
+     * Compiles the project classes to a Dex file.
      *
-     * @param jarFile the jar file to compile
-     */
-    private fun compileJars(jarFiles: List<Path>, dir: Path) {
-        D8.run(
-            D8Command.builder()
-                .setMinApiLevel(26)
-                .setMode(CompilationMode.DEBUG)
-                .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                .addProgramFiles(jarFiles)
-                .setOutput(dir, OutputMode.DexIndexed)
-                .setProgramConsumer(
-                    DirectoryConsumer(dir)
-                )
-                .build()
-        )
-    }
-
-    /*
-     * Compile class files of project to a Dalvik Executable (Dex) File.
-     *
-     * @param project the project to compile.
+     * @param reporter The BuildReporter instance to report any errors to.
      */
     override fun execute(reporter: BuildReporter) {
         try {
             D8.run(
                 D8Command.builder()
-                    .setMinApiLevel(26)
-                    .setMode(CompilationMode.DEBUG)
+                    .setMinApiLevel(MIN_API_LEVEL)
+                    .setMode(COMPILATION_MODE)
                     .addClasspathFiles(getSystemClasspath().map { it.toPath() })
                     .addProgramFiles(
-                        getClassFiles(project.binDir.resolve("classes"))
+                        getClassFilePaths(project.binDir.resolve("classes"))
                     )
                     .setOutput(project.binDir.toPath(), OutputMode.DexIndexed)
                     .build()
             )
         } catch (e: Exception) {
-            reporter.reportError(e.stackTraceToString())
+            reporter.reportError("Error compiling project classes: ${e.message}")
         }
 
         // Compile libraries
-        val folder = project.libDir
-        if (folder.exists() && folder.isDirectory) {
-            val libs = folder.listFiles()
-            if (libs != null) {
-                val toDex = mutableListOf<Path>()
-                val libDexes = File(project.buildDir, "libs")
-                libDexes.mkdirs()
-                // Check if all libs have been pre-dexed or not
-                for (lib in libs) {
-                    val outDex = File(libDexes, lib.nameWithoutExtension + ".dex")
-
-                    if (lib.extension == "jar" && !outDex.exists()) {
-                        toDex.add(lib.toPath())
-                    }
+        val libDir = project.libDir
+        if (libDir.exists() && libDir.isDirectory) {
+            val toDex = mutableListOf<Path>()
+            val libDexDir = File(project.buildDir, "libs").apply { mkdirs() }
+            // Check if all libs have been pre-dexed or not
+            libDir.listFiles()?.forEach { lib ->
+                val outDex = File(libDexDir, lib.nameWithoutExtension + ".dex")
+                if (lib.extension == "jar" && !outDex.exists()) {
+                    toDex.add(lib.toPath())
                 }
-                try {
-                    compileJars(toDex, project.buildDir.toPath().resolve("libs"))
-                } catch (e: Exception) {
-                    reporter.reportError(e.stackTraceToString())
-                }
+            }
+            if (toDex.isNotEmpty()) {
+                compileJars(toDex, libDexDir.toPath())
             }
         }
     }
 
-    /*
-     * Find all classes recursively in a directory.
+    /**
+     * Compiles a list of jar files to a directory of dex files.
      *
-     * @param root directory to search in.
+     * @param jarFiles The jar files to compile.
+     * @param outputDir The directory to output the dex files to.
      */
-    private fun getClassFiles(root: File): List<Path> {
-        val paths = mutableListOf<Path>()
-
-        root.walk().forEach {
-            if (it.extension == "class") {
-                paths.add(it.toPath())
-            }
-        }
-        return paths
+    private fun compileJars(jarFiles: List<Path>, outputDir: Path) {
+        D8.run(
+            D8Command.builder()
+                .setMinApiLevel(MIN_API_LEVEL)
+                .setMode(COMPILATION_MODE)
+                .addClasspathFiles(getSystemClasspath().map { it.toPath() })
+                .addProgramFiles(jarFiles)
+                .setOutput(outputDir, OutputMode.DexIndexed)
+                .build()
+        )
     }
+
+    /**
+     * Returns a list of paths to all class files recursively in a directory.
+     *
+     * @param root The directory to search in.
+     * @return A list of paths to all class files in the directory.
+     */
+    private fun getClassFilePaths(root: File): List<Path> {
+        return root.walk().filter { it.extension == "class" }.map { it.toPath() }.toList()
+    }
+
 }

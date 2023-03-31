@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
@@ -21,7 +22,8 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
-import org.cosmicide.rewrite.editor.util.EditorUtil
+import org.cosmicide.rewrite.extension.setFont
+import org.cosmicide.rewrite.extension.setLanguageTheme
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
@@ -30,8 +32,9 @@ import java.io.File
 
 class EditorFragment : Fragment() {
 
-    private var project: Project? = null
-    private lateinit var fileIndex: FileIndex
+    private val project: Project = ProjectHandler.getProject()
+        ?: throw IllegalStateException("No project set")
+    private val fileIndex: FileIndex = FileIndex(project)
     private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
 
@@ -43,17 +46,13 @@ class EditorFragment : Fragment() {
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            project = ProjectHandler.project!!
-            fileIndex = FileIndex(project!!)
-
+        lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
-            val files = fileIndex.getFiles()
-            if (files.isNotEmpty()) {
+            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
                 requireActivity().runOnUiThread {
                     fileViewModel.updateFiles(files.toMutableList())
-                    for (file in files) {
+                    files.forEach { file ->
                         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
                     }
                 }
@@ -73,27 +72,21 @@ class EditorFragment : Fragment() {
                 }
             })
 
-            fileViewModel.files.observe(viewLifecycleOwner) { filess ->
+            fileViewModel.files.observe(viewLifecycleOwner) { files ->
                 binding.tabLayout.removeAllTabs()
-                filess.forEach { file ->
+                files.forEach { file ->
                     binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
                 }
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-                if (position == -1) {
-                    return@observe
+                position?.takeIf { it != -1 }?.let {
+                    binding.editor.setText(fileViewModel.currentFile?.readText())
+                    setEditorLanguage()
                 }
-                binding.editor.setText(fileViewModel.currentFile?.readText())
-                setEditorLanguage()
             }
 
-            fileViewModel.addFile(
-                File(
-                    project!!.srcDir.invoke(),
-                    "Main." + project!!.language.extension
-                )
-            )
+            fileViewModel.addFile(File(project.srcDir.invoke(),"Main.${project.language.extension}"))
         }
 
         binding.editor.setTextSize(20f)
@@ -106,17 +99,22 @@ class EditorFragment : Fragment() {
         ProjectHandler.onEditorFragmentChange(true)
     }
 
+    override fun onResume() {
+        super.onResume()
+        ProjectHandler.onEditorFragmentChange(true)
+    }
+
     private fun setEditorLanguage() {
         val file = fileViewModel.currentFile
         binding.editor.setEditorLanguage(
             when (file?.extension) {
-                "kt" -> KotlinLanguage(binding.editor, project!!, file)
-                "java" -> JavaLanguage(binding.editor, project!!, file)
+                "kt" -> KotlinLanguage(binding.editor, project, file)
+                "java" -> JavaLanguage(binding.editor, project, file)
                 else -> EmptyLanguage()
             }
         )
         binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-        EditorUtil.setEditorFont(binding.editor)
+        binding.editor.setFont()
     }
 
     override fun onStop() {
@@ -127,8 +125,7 @@ class EditorFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }
-                ?.writeText(binding.editor.text.toString())
+            fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
         if (arguments?.getBoolean(Constants.NEW_PROJECT, false) == true) {

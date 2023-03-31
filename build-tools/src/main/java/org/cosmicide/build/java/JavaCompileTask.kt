@@ -7,14 +7,12 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.Writer
-import java.nio.charset.Charset
+import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.Collections
 import java.util.Locale
-import javax.tools.Diagnostic.Kind.ERROR
-import javax.tools.Diagnostic.Kind.MANDATORY_WARNING
-import javax.tools.Diagnostic.Kind.NOTE
-import javax.tools.Diagnostic.Kind.OTHER
-import javax.tools.Diagnostic.Kind.WARNING
+import javax.tools.Diagnostic.Kind.*
 import javax.tools.DiagnosticCollector
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
@@ -29,65 +27,52 @@ class JavaCompileTask(val project: Project) : Task {
     override fun execute(reporter: BuildReporter) {
         val output = File(project.binDir, "classes")
         val version = "8"
-        println("Current Java Version: $version")
+        reporter.reportInfo("Current Java Version: $version")
 
         val diagnostics = DiagnosticCollector<JavaFileObject>()
 
-        if (!output.exists()) {
-            output.mkdirs()
+        try {
+            Files.createDirectories(output.toPath())
+            reporter.reportInfo("Output directory created")
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to create output directory", e)
         }
-        val javaFileObjects = mutableListOf<SimpleJavaFileObject>()
+
         val javaFiles = getSourceFiles(project.srcDir.invoke())
-        for (file in javaFiles) {
-            val path = file.absolutePath
-            File(output, path.replaceFirst(project.srcDir.invoke().absolutePath, "")).delete()
-            javaFileObjects.add(
-                object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                    override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
-                        return file.readText()
-                    }
-                })
+        val javaFileObjects = javaFiles.map { file ->
+            object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                override fun openInputStream(): InputStream {
+                    return Files.newInputStream(file.toPath())
+                }
+            }
         }
 
         if (javaFileObjects.isEmpty()) {
             return
         }
 
-        val standardJavaFileManager =
-            tool.getStandardFileManager(
-                diagnostics, Locale.getDefault(), Charset.defaultCharset()
-            )
-        standardJavaFileManager.setLocation(
-            StandardLocation.CLASS_OUTPUT, Collections.singletonList(output)
-        )
-        standardJavaFileManager.setLocation(
-            StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath()
-        )
-        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
-        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
+        tool.getStandardFileManager(diagnostics, null, Charsets.UTF_8).use { standardJavaFileManager ->
+            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_OUTPUT, Collections.singletonList(output.toPath()))
+            standardJavaFileManager.setLocationFromPaths(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
+            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_PATH, getClasspath(project))
 
-        val args = arrayListOf<String>()
+            val args = mutableListOf<String>().apply {
+                add("-proc:none")
+                add("-Werror")
+                add("-source")
+                add(version)
+                add("-target")
+                add(version)
+            }
 
-        args.add("-proc:none")
-        args.add("-Werror")
-        args.add("-source")
-        args.add(version)
-        args.add("-target")
-        args.add(version)
-
-        val task =
-            tool.getTask(
+            val task = tool.getTask(
                 object : Writer() {
                     val sb = StringBuilder()
-                    override fun close() {
-                        flush()
-                    }
-
+                    override fun close() = flush()
                     override fun flush() {
                         reporter.reportInfo(sb.toString())
                         sb.clear()
                     }
-
                     override fun write(cbuf: CharArray?, off: Int, len: Int) {
                         sb.appendRange(cbuf!!, off, off + len)
                         reporter.reportInfo(sb.toString())
@@ -101,63 +86,51 @@ class JavaCompileTask(val project: Project) : Task {
                 javaFileObjects
             )
 
-        task.call()
-        for (diagnostic in diagnostics.diagnostics) {
-            val message = StringBuilder()
-            if (diagnostic.source != null) {
-                message.append(diagnostic.source.name)
-                message.append(":")
-                message.append(diagnostic.lineNumber)
-                message.append(": ")
-            }
-            message.append(diagnostic.kind.name)
-            message.append(": ")
-            message.append(diagnostic.getMessage(Locale.getDefault()))
+            task.call()
 
-            when (diagnostic.kind) {
-                ERROR, OTHER -> {
-                    reporter.reportError(message.toString())
+            for (diagnostic in diagnostics.diagnostics) {
+                val message = StringBuilder()
+
+                diagnostic.source?.apply {
+                    message.append("$name:${diagnostic.lineNumber}: ")
                 }
 
-                NOTE, WARNING, MANDATORY_WARNING -> {
-                    reporter.reportWarning(message.toString())
-                }
+                // We ourselves add the names of the kinds. [INFO, ERROR, WARNING]
+                // message.append("${diagnostic.kind.name}: ${diagnostic.getMessage(Locale.getDefault())}")
+                message.append("${diagnostic.getMessage(Locale.getDefault())}")
 
-                else -> reporter.reportInfo(message.toString())
+                when (diagnostic.kind) {
+                    ERROR, OTHER -> reporter.reportError(message.toString())
+                    NOTE, WARNING, MANDATORY_WARNING -> reporter.reportWarning(message.toString())
+                    else -> reporter.reportInfo(message.toString())
+                }
             }
         }
-
     }
 
-    private fun getSourceFiles(path: File): List<File> {
-        val sourceFiles = arrayListOf<File>()
-        val files = path.listFiles() ?: return sourceFiles
-        for (file in files) {
-            if (file.isFile) {
-                if (file.extension == "java") {
-                    sourceFiles.add(file)
-                }
-            } else {
-                sourceFiles.addAll(getSourceFiles(file))
-            }
-        }
-        return sourceFiles
+    private fun getSourceFiles(directory: File): List<File> {
+        return directory.listFiles()?.filter {
+            it.isFile && it.extension == "java"
+        } ?: emptyList()
     }
 
-    private fun getClasspath(project: Project): List<File> {
-        val classpath = arrayListOf<File>()
+    private fun getClasspath(project: Project): List<Path> {
+        val classpath = arrayListOf<Path>()
+        classpath.add(File(project.binDir, "classes").toPath())
 
-        classpath.add(File(project.binDir, "classes"))
-        val libs = project.libDir.listFiles()
-        if (libs != null) {
-            classpath.addAll(libs)
+        // Check if the libDir exists before calling listFiles()
+        if (project.libDir.exists() && project.libDir.isDirectory()) {
+            project.libDir.listFiles()?.let {
+                it.mapTo(classpath) { file -> file.toPath() }
+            }
         }
+
         return classpath
     }
 
-    private fun getSystemClasspath(): List<File> {
-        val classpath = arrayListOf<File>()
-        FileUtil.classpathDir.listFiles()?.forEach { classpath.add(it) }
+    private fun getSystemClasspath(): List<Path> {
+        val classpath = arrayListOf<Path>()
+        FileUtil.classpathDir.listFiles()?.forEach { classpath.add(it.toPath()) }
         return classpath
     }
 }

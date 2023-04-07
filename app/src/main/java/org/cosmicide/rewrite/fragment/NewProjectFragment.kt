@@ -50,7 +50,8 @@ class NewProjectFragment : Fragment() {
 
             val language = if (binding.useKotlin.isChecked) Language.Kotlin else Language.Java
             createProject(language, projectName, packageName)
-            findNavController().navigate(R.id.NewProjectFragment_to_ProjectFragment)
+            requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, ProjectFragment()).addToBackStack("ProjectFragment").commit()
+
         }
     }
 

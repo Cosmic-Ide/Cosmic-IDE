@@ -1,5 +1,6 @@
 package org.cosmicide.rewrite.extension
 
+import android.graphics.drawable.ColorDrawable
 import androidx.core.content.res.ResourcesCompat
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.widget.CodeEditor

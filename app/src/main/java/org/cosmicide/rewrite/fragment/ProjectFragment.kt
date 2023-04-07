@@ -52,16 +52,12 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.newProjectTextview.visibility = View.VISIBLE
                 binding.fabs.importButton.setOnClickListener {
-                    navigateToNewProjectFragment()
+                  requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
                 }
             } else {
-                navigateToNewProjectFragment()
+                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
             }
         }
-    }
-
-    private fun navigateToNewProjectFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_NewProjectFragment)
     }
 
     private fun setUpProjectList() {
@@ -95,16 +91,9 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
     override fun onProjectClicked(project: Project) {
         ProjectHandler.setProject(project)
-        navigateToEditorFragment()
+        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, EditorFragment()).addToBackStack("EditorFragment").commit()
     }
 
-    private fun navigateToEditorFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment)
-    }
-
-    private fun navigateToCompileInfoFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment)
-    }
 
     override fun onProjectLongClicked(project: Project): Boolean {
         return false

@@ -1,38 +1,51 @@
-<androidx.constraintlayout.widget.ConstraintLayout 
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".fragment.ProjectFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/project_list"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/fab_guideline"
-        android:orientation="horizontal"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintGuide_percent="0.8" />
+        android:fitsSystemWindows="true">
 
-    <include
-        android:id="@+id/fabs"
-        layout="@layout/project_fragment_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="15dp"
-        android:clickable="true"
-        android:padding="2dp"
-        app:layout_constraintBottom_toTopOf="@id/fab_guideline"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/project_list"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <include
+            android:id="@+id/fabs"
+            layout="@layout/project_fragment_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="15dp"
+            android:clickable="true"
+            android:padding="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

@@ -46,6 +46,12 @@ class EditorFragment : Fragment() {
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
+
+
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawer.open()
+        }
+
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
@@ -127,9 +133,6 @@ class EditorFragment : Fragment() {
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
-        }
-        if (arguments?.getBoolean(Constants.NEW_PROJECT, false) == true) {
-            findNavController().popBackStack(R.id.ProjectFragment, false)
         }
         ProjectHandler.onEditorFragmentChange(false)
     }

@@ -54,5 +54,4 @@
         <include layout="@layout/drawer_content" />
 
     </com.google.android.material.navigation.NavigationView>
-
 </androidx.drawerlayout.widget.DrawerLayout>

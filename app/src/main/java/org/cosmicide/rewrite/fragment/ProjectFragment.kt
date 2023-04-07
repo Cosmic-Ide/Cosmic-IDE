@@ -40,10 +40,10 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.newProjectTextview.visibility = View.VISIBLE
                 binding.fabs.importButton.setOnClickListener {
-                    navigateToNewProjectFragment()
+                  requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
                 }
             } else {
-                navigateToNewProjectFragment()
+                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
             }
         }
     }

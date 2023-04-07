@@ -42,6 +42,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
+        binding.toolbar.setNavigationOnClickListener {
+            binding.drawer.open()
+        }
+
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 

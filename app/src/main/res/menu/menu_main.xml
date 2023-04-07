@@ -1,18 +1,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.cosmicide.rewrite.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
+
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_compile"
         android:icon="@drawable/outline_play_arrow_24"
-        android:orderInCategory="100"
         android:title="@string/action_compile"
-        android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>

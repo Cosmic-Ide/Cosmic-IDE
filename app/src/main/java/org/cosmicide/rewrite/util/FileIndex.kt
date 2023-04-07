@@ -8,7 +8,7 @@ import java.io.IOException
 
 class FileIndex(project: Project) {
 
-    private val path = File(project.cacheDir.absolutePath + File.separator + "files.json")
+    private val path = File(project.cacheDir, "files.json")
 
     fun putFiles(current: Int, files: List<File>) {
         if (files.isEmpty()) return

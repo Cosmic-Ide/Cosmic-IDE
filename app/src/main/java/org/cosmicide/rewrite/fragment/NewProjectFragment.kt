@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
@@ -50,7 +49,7 @@ class NewProjectFragment : Fragment() {
 
             val language = if (binding.useKotlin.isChecked) Language.Kotlin else Language.Java
             createProject(language, projectName, packageName)
-            findNavController().navigate(R.id.NewProjectFragment_to_ProjectFragment)
+            parentFragmentManager.popBackStack()
         }
     }
 

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -28,7 +27,6 @@ import org.cosmicide.rewrite.util.ProjectHandler
  * A fragment for displaying information about the compilation process.
  */
 class CompileInfoFragment : Fragment() {
-
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val compiler: Compiler = Compiler(project)
@@ -40,6 +38,7 @@ class CompileInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCompileInfoBinding.inflate(inflater, container, false)
+        binding.toolbar.setTitle(R.string.compile_info)
 
         binding.infoEditor.apply {
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
@@ -88,8 +87,9 @@ class CompileInfoFragment : Fragment() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        val navController = findNavController()
-        // navController.popBackStack(R.id.CompileInfoFragment, false)
-        navController.navigate(R.id.CompileInfoFragment_to_ProjectOutputFragment)
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ProjectOutputFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }

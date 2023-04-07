@@ -13,6 +13,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
@@ -33,6 +34,7 @@ class ProjectOutputFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCompileInfoBinding.inflate(inflater, container, false)
+        binding.toolbar.setTitle(R.string.project_output)
 
         binding.infoEditor.apply {
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
@@ -89,6 +91,4 @@ class ProjectOutputFragment : Fragment() {
 
         return binding.root
     }
-
-    
 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Project
@@ -19,17 +18,16 @@ import org.cosmicide.rewrite.util.ProjectHandler
 
 class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
 
-    private var _binding: FragmentProjectBinding? = null
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
 
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentProjectBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentProjectBinding.inflate(inflater, container, false)
+        binding = FragmentProjectBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -43,7 +41,6 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     private fun setOnClickListeners() {
-
         binding.fabs.importButton.visibility = View.GONE
         binding.fabs.newProjectTextview.visibility = View.GONE
 
@@ -58,10 +55,6 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
                 navigateToNewProjectFragment()
             }
         }
-    }
-
-    private fun navigateToNewProjectFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_NewProjectFragment)
     }
 
     private fun setUpProjectList() {
@@ -88,25 +81,26 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onProjectClicked(project: Project) {
         ProjectHandler.setProject(project)
         navigateToEditorFragment()
     }
 
-    private fun navigateToEditorFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_EditorFragment)
-    }
-
-    private fun navigateToCompileInfoFragment() {
-        findNavController().navigate(R.id.ProjectFragment_to_CompileInfoFragment)
-    }
-
     override fun onProjectLongClicked(project: Project): Boolean {
         return false
+    }
+
+    private fun navigateToNewProjectFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, NewProjectFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToEditorFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, EditorFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }

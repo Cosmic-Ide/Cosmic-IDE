@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -31,7 +30,6 @@ import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
 class EditorFragment : Fragment() {
-
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
@@ -46,11 +44,13 @@ class EditorFragment : Fragment() {
     ): View {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
+        configureToolbar()
+
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                requireActivity().runOnUiThread {
+                binding.root.post {
                     fileViewModel.updateFiles(files.toMutableList())
                     files.forEach { file ->
                         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
@@ -94,16 +94,6 @@ class EditorFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        ProjectHandler.onEditorFragmentChange(true)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ProjectHandler.onEditorFragmentChange(true)
-    }
-
     private fun setEditorLanguage() {
         val file = fileViewModel.currentFile
         binding.editor.setEditorLanguage(
@@ -117,20 +107,35 @@ class EditorFragment : Fragment() {
         binding.editor.setFont()
     }
 
-    override fun onStop() {
-        super.onStop()
-        ProjectHandler.onEditorFragmentChange(false)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
-        if (arguments?.getBoolean(Constants.NEW_PROJECT, false) == true) {
-            findNavController().popBackStack(R.id.ProjectFragment, false)
+    }
+
+    private fun configureToolbar() {
+        binding.toolbar.apply {
+            setNavigationOnClickListener {
+                binding.drawer.open()
+            }
+            setOnMenuItemClickListener {
+                val id = it.itemId
+                if (id == R.id.action_compile) {
+                    navigateToCompileInfoFragment()
+                    true
+                } else {
+                    false
+                }
+            }
         }
-        ProjectHandler.onEditorFragmentChange(false)
+    }
+
+    private fun navigateToCompileInfoFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, CompileInfoFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }

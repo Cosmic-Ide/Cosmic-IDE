@@ -10,11 +10,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -42,53 +38,43 @@ class App : Application() {
         }
     }
 
-    private suspend fun extractFiles() {
-        withContext(Dispatchers.IO) {
-            assets.open(INDEX_FILE_NAME).use { input ->
-                indexFile.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            assets.open(ANDROID_JAR).use { input ->
-                File(FileUtil.classpathDir, ANDROID_JAR).outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            assets.open(KOTLIN_STDLIB).use { input ->
-                File(FileUtil.classpathDir, KOTLIN_STDLIB).outputStream().use { output ->
-                    input.copyTo(output)
-                }
+    private suspend fun extractFiles() = withContext(Dispatchers.IO) {
+        extractAsset(INDEX_FILE_NAME, indexFile)
+        extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR))
+        extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB))
+    }
+
+    private suspend fun extractAsset(assetName: String, outputFile: File) = withContext(Dispatchers.IO) {
+        assets.open(assetName).use { input ->
+            outputFile.outputStream().use { output ->
+                input.copyTo(output)
             }
         }
     }
 
-    private suspend fun disableModules() {
-        withContext(Dispatchers.IO) {
-            JavacConfigProvider.disableModules()
-        }
+    private suspend fun disableModules() = withContext(Dispatchers.IO) {
+        JavacConfigProvider.disableModules()
     }
 
-    private suspend fun loadTextmateTheme() {
-        withContext(Dispatchers.IO) {
-            val fileProvider = AssetsFileResolver(assets)
-            FileProviderRegistry.getInstance().addFileProvider(fileProvider)
-            GrammarRegistry.getInstance().loadGrammars(LANGUAGES_FILE_PATH)
-            val themeRegistry = ThemeRegistry.getInstance()
-            themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
-            themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
+    private suspend fun loadTextmateTheme() = withContext(Dispatchers.IO) {
+        val fileProvider = AssetsFileResolver(assets)
+        FileProviderRegistry.getInstance().addFileProvider(fileProvider)
+        GrammarRegistry.getInstance().loadGrammars(LANGUAGES_FILE_PATH)
 
+        val themeRegistry = ThemeRegistry.getInstance()
+        themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
+        themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
 
-            if (resources.configuration.uiMode == Configuration.UI_MODE_NIGHT_YES) {
-                ThemeRegistry.getInstance().setTheme(DARCULA_THEME_NAME)
-            } else {
-                ThemeRegistry.getInstance().setTheme(QUIET_LIGHT_THEME_NAME)
-            }
-        }
+        applyThemeBasedOnConfiguration(resources.configuration)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (newConfig.uiMode == Configuration.UI_MODE_NIGHT_YES) {
+        applyThemeBasedOnConfiguration(newConfig)
+    }
+
+    private fun applyThemeBasedOnConfiguration(config: Configuration) {
+        if (config.uiMode == Configuration.UI_MODE_NIGHT_YES) {
             ThemeRegistry.getInstance().setTheme(DARCULA_THEME_NAME)
         } else {
             ThemeRegistry.getInstance().setTheme(QUIET_LIGHT_THEME_NAME)
@@ -96,9 +82,8 @@ class App : Application() {
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {
-        val inputStream =
-            FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
-                ?: throw FileNotFoundException("Theme file not found: $fileName")
+        val inputStream = FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
+            ?: throw FileNotFoundException("Theme file not found: $fileName")
         val source = IThemeSource.fromInputStream(inputStream, fileName, null)
         return ThemeModel(source, themeName)
     }

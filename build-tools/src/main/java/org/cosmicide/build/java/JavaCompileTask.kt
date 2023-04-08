@@ -8,6 +8,7 @@ import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.Writer
 import java.io.InputStream
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Collections
@@ -27,13 +28,12 @@ class JavaCompileTask(val project: Project) : Task {
     override fun execute(reporter: BuildReporter) {
         val output = File(project.binDir, "classes")
         val version = "8"
-        reporter.reportInfo("Current Java Version: $version")
+        reporter.reportInfo("Compiling on Java version: $version")
 
         val diagnostics = DiagnosticCollector<JavaFileObject>()
 
         try {
             Files.createDirectories(output.toPath())
-            reporter.reportInfo("Output directory created")
         } catch (e: Exception) {
             throw RuntimeException("Failed to create output directory", e)
         }
@@ -41,8 +41,8 @@ class JavaCompileTask(val project: Project) : Task {
         val javaFiles = getSourceFiles(project.srcDir.invoke())
         val javaFileObjects = javaFiles.map { file ->
             object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                override fun openInputStream(): InputStream {
-                    return Files.newInputStream(file.toPath())
+                override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
+                    return file.readText()
                 }
             }
         }
@@ -51,19 +51,20 @@ class JavaCompileTask(val project: Project) : Task {
             return
         }
 
-        tool.getStandardFileManager(diagnostics, null, Charsets.UTF_8).use { standardJavaFileManager ->
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_OUTPUT, Collections.singletonList(output.toPath()))
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_PATH, getClasspath(project))
+        val fileManager = tool.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset())
 
-            val args = mutableListOf<String>().apply {
-                add("-proc:none")
-                add("-Werror")
-                add("-source")
-                add(version)
-                add("-target")
-                add(version)
-            }
+        fileManager.use { fm ->
+            fm.setLocation(StandardLocation.CLASS_OUTPUT, listOf(output))
+            fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
+            fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
+            fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
+
+            val options = listOf(
+                "-proc:none",
+                "-Werror",
+                "-source $version",
+                "-target $version"
+            )
 
             val task = tool.getTask(
                 object : Writer() {
@@ -79,9 +80,9 @@ class JavaCompileTask(val project: Project) : Task {
                     }
 
                 },
-                standardJavaFileManager,
+                fm,
                 diagnostics,
-                args,
+                options,
                 null,
                 javaFileObjects
             )
@@ -97,7 +98,7 @@ class JavaCompileTask(val project: Project) : Task {
 
                 // We ourselves add the names of the kinds. [INFO, ERROR, WARNING]
                 // message.append("${diagnostic.kind.name}: ${diagnostic.getMessage(Locale.getDefault())}")
-                message.append("${diagnostic.getMessage(Locale.getDefault())}")
+                message.append(diagnostic.getMessage(Locale.getDefault()))
 
                 when (diagnostic.kind) {
                     ERROR, OTHER -> reporter.reportError(message.toString())
@@ -108,29 +109,30 @@ class JavaCompileTask(val project: Project) : Task {
         }
     }
 
-    private fun getSourceFiles(directory: File): List<File> {
-        return directory.listFiles()?.filter {
-            it.isFile && it.extension == "java"
-        } ?: emptyList()
-    }
+    private fun getSourceFiles(path: File): List<File> {
+        val sourceFiles = mutableListOf<File>()
 
-    private fun getClasspath(project: Project): List<Path> {
-        val classpath = arrayListOf<Path>()
-        classpath.add(File(project.binDir, "classes").toPath())
-
-        // Check if the libDir exists before calling listFiles()
-        if (project.libDir.exists() && project.libDir.isDirectory()) {
-            project.libDir.listFiles()?.let {
-                it.mapTo(classpath) { file -> file.toPath() }
+        path.listFiles()?.forEach { file ->
+            if (file.isFile && file.extension == "java") {
+                sourceFiles.add(file)
+            } else if (file.isDirectory) {
+                sourceFiles.addAll(getSourceFiles(file))
             }
         }
 
+        return sourceFiles
+    }
+
+    private fun getClasspath(project: Project): List<File> {
+        val classpath = mutableListOf(File(project.binDir, "classes"))
+        val libDir = project.libDir
+        if (libDir.exists() && libDir.isDirectory()) {
+            classpath += libDir.listFiles()?.toList() ?: emptyList()
+        }
         return classpath
     }
 
-    private fun getSystemClasspath(): List<Path> {
-        val classpath = arrayListOf<Path>()
-        FileUtil.classpathDir.listFiles()?.forEach { classpath.add(it.toPath()) }
-        return classpath
+    private fun getSystemClasspath(): List<File> {
+        return FileUtil.classpathDir.listFiles()?.toList() ?: emptyList()
     }
 }

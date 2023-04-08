@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -13,23 +12,15 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
 
-class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
-
+class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAdapter.OnProjectEventListener {
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
 
-    private lateinit var binding: FragmentProjectBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentProjectBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

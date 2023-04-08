@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
-import androidx.fragment.app.Fragment
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -18,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
@@ -26,18 +26,16 @@ import org.cosmicide.rewrite.util.ProjectHandler
 /**
  * A fragment for displaying information about the compilation process.
  */
-class CompileInfoFragment : Fragment() {
+class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val compiler: Compiler = Compiler(project)
-    private lateinit var binding: FragmentCompileInfoBinding
+
+    override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentCompileInfoBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setTitle(R.string.compile_info)
 
         binding.infoEditor.apply {
@@ -77,8 +75,6 @@ class CompileInfoFragment : Fragment() {
                 } */
             }
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {

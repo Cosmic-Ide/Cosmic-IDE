@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
@@ -23,34 +22,31 @@ import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.extension.setLanguageTheme
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
-class EditorFragment : Fragment() {
+class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
-    private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentEditorBinding.inflate(inflater, container, false)
+    override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                binding.root.post {
+                view.post {
                     fileViewModel.updateFiles(files.toMutableList())
                     files.forEach { file ->
                         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
@@ -90,8 +86,6 @@ class EditorFragment : Fragment() {
         }
 
         binding.editor.setTextSize(20f)
-
-        return binding.root
     }
 
     private fun setEditorLanguage() {

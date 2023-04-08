@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dalvik.system.DexClassLoader
 import dalvik.system.DexFile
@@ -16,24 +15,22 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
 
-class ProjectOutputFragment : Fragment() {
+class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
-    private lateinit var binding: FragmentCompileInfoBinding
     private val compiler: Compiler = Compiler(project)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentCompileInfoBinding.inflate(inflater, container, false)
+    override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setTitle(R.string.project_output)
 
         binding.infoEditor.apply {
@@ -88,7 +85,5 @@ class ProjectOutputFragment : Fragment() {
                 systemOut.close()
             }
         }
-
-        return binding.root
     }
 }

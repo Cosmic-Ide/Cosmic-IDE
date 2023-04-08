@@ -101,12 +101,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.editor.setFont()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
+        super.onDestroyView()
     }
 
     private fun configureToolbar() {

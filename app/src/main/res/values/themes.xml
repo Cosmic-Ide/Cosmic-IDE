@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:fontFamily">@font/noto_sans_mono</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->

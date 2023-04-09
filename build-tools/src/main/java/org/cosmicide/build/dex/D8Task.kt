@@ -10,18 +10,17 @@ import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
 import java.io.File
 import java.nio.file.Path
-import java.nio.file.Paths
 
 /**
  * Task to compile the class files of a project to a Dalvik Executable (Dex) file using D8.
  *
  * @property project The project to compile.
  */
-class D8Task(private val project: Project) : Task {
+class D8Task(val project: Project) : Task {
 
     companion object {
-        private const val MIN_API_LEVEL = 26
-        private val COMPILATION_MODE = CompilationMode.DEBUG
+        const val MIN_API_LEVEL = 26
+        val COMPILATION_MODE = CompilationMode.DEBUG
     }
 
     /**
@@ -70,7 +69,7 @@ class D8Task(private val project: Project) : Task {
      * @param jarFiles The jar files to compile.
      * @param outputDir The directory to output the dex files to.
      */
-    private fun compileJars(jarFiles: List<Path>, outputDir: Path) {
+    fun compileJars(jarFiles: List<Path>, outputDir: Path) {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(MIN_API_LEVEL)
@@ -88,7 +87,7 @@ class D8Task(private val project: Project) : Task {
      * @param root The directory to search in.
      * @return A list of paths to all class files in the directory.
      */
-    private fun getClassFilePaths(root: File): List<Path> {
+    fun getClassFilePaths(root: File): List<Path> {
         return root.walk().filter { it.extension == "class" }.map { it.toPath() }.toList()
     }
 

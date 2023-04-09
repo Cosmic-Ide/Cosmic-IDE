@@ -6,14 +6,18 @@ import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
-import java.io.Writer
 import java.io.InputStream
 import java.nio.charset.Charset
+import java.io.Writer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.Collections
 import java.util.Locale
-import javax.tools.Diagnostic.Kind.*
+import javax.tools.Diagnostic.Kind.ERROR
+import javax.tools.Diagnostic.Kind.MANDATORY_WARNING
+import javax.tools.Diagnostic.Kind.NOTE
+import javax.tools.Diagnostic.Kind.OTHER
+import javax.tools.Diagnostic.Kind.WARNING
 import javax.tools.DiagnosticCollector
 import javax.tools.JavaFileObject
 import javax.tools.SimpleJavaFileObject
@@ -21,7 +25,7 @@ import javax.tools.StandardLocation
 
 class JavaCompileTask(val project: Project) : Task {
 
-    private val tool by lazy {
+    val tool by lazy {
         JavacTool.create()
     }
 
@@ -61,9 +65,10 @@ class JavaCompileTask(val project: Project) : Task {
 
             val options = listOf(
                 "-proc:none",
-                "-Werror",
-                "-source $version",
-                "-target $version"
+                "-source",
+                version,
+                "-target",
+                version
             )
 
             val task = tool.getTask(
@@ -109,21 +114,13 @@ class JavaCompileTask(val project: Project) : Task {
         }
     }
 
-    private fun getSourceFiles(path: File): List<File> {
-        val sourceFiles = mutableListOf<File>()
-
-        path.listFiles()?.forEach { file ->
-            if (file.isFile && file.extension == "java") {
-                sourceFiles.add(file)
-            } else if (file.isDirectory) {
-                sourceFiles.addAll(getSourceFiles(file))
-            }
-        }
-
-        return sourceFiles
+    fun getSourceFiles(directory: File): List<File> {
+        return directory.listFiles()?.filter {
+            it.isFile && it.extension == "java"
+        } ?: emptyList()
     }
 
-    private fun getClasspath(project: Project): List<File> {
+    fun getClasspath(project: Project): List<File> {
         val classpath = mutableListOf(File(project.binDir, "classes"))
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory()) {
@@ -132,7 +129,7 @@ class JavaCompileTask(val project: Project) : Task {
         return classpath
     }
 
-    private fun getSystemClasspath(): List<File> {
+    fun getSystemClasspath(): List<File> {
         return FileUtil.classpathDir.listFiles()?.toList() ?: emptyList()
     }
 }

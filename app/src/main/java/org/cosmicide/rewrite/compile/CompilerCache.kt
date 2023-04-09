@@ -12,8 +12,14 @@ import org.cosmicide.build.kotlin.KotlinCompiler
  * @property kotlinCompiler an instance of [KotlinCompiler]
  * @property dexTask an instance of [D8Task]
  */
-data class CompilerCache(
-    val javaCompiler: JavaCompileTask,
-    val kotlinCompiler: KotlinCompiler,
-    val dexTask: D8Task
-)
+object CompilerCache {
+
+    val cacheMap = mutableMapOf<Class<*>, Any>()
+    fun <T> saveCache(compiler: T) {
+        cacheMap[compiler!!::class.java] = compiler
+    }
+
+    inline fun <reified T> getCache(): T {
+        return cacheMap[T::class.java] as T
+    }
+}

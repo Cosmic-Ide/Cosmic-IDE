@@ -5,7 +5,7 @@ import org.cosmicide.project.Project
 /**
  * A utility class for handling the current project.
  */
-class ProjectHandler private constructor() {
+class ProjectHandler {
 
     companion object {
         private var project: Project? = null

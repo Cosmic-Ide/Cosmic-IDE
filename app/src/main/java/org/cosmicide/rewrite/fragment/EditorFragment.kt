@@ -1,21 +1,16 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
@@ -23,9 +18,7 @@ import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
-import org.cosmicide.rewrite.extension.setLanguageTheme
 import org.cosmicide.rewrite.model.FileViewModel
-import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
@@ -38,7 +31,6 @@ class EditorFragment : Fragment() {
     private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,9 +39,20 @@ class EditorFragment : Fragment() {
         binding = FragmentEditorBinding.inflate(inflater, container, false)
 
 
-
+        binding.toolbar.title = project.name
         binding.toolbar.setNavigationOnClickListener {
             binding.drawer.open()
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_main)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_compile -> {
+                    navigateToCompileInfoFragment()
+                    true
+                }
+
+                else -> false
+            }
         }
 
         lifecycleScope.launch {
@@ -123,6 +126,13 @@ class EditorFragment : Fragment() {
         binding.editor.setFont()
     }
 
+
+    private fun navigateToCompileInfoFragment() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.container, CompileInfoFragment())
+            .commit()
+    }
+
     override fun onStop() {
         super.onStop()
         ProjectHandler.onEditorFragmentChange(false)
@@ -131,7 +141,8 @@ class EditorFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
+            fileViewModel.currentFile?.takeIf { it.exists() }
+                ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
         ProjectHandler.onEditorFragmentChange(false)

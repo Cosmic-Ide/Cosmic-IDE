@@ -6,7 +6,6 @@ import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
-import java.io.InputStream
 import java.io.Writer
 import java.nio.file.Files
 import java.nio.file.Path
@@ -45,8 +44,8 @@ class JavaCompileTask(val project: Project) : Task {
         val javaFiles = getSourceFiles(project.srcDir.invoke())
         val javaFileObjects = javaFiles.map { file ->
             object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                override fun openInputStream(): InputStream {
-                    return Files.newInputStream(file.toPath())
+                override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
+                    return file.readText()
                 }
             }
         }
@@ -100,7 +99,7 @@ class JavaCompileTask(val project: Project) : Task {
 
                 // We ourselves add the names of the kinds. [INFO, ERROR, WARNING]
                 // message.append("${diagnostic.kind.name}: ${diagnostic.getMessage(Locale.getDefault())}")
-                message.append("${diagnostic.getMessage(Locale.getDefault())}")
+                message.append(diagnostic.getMessage(Locale.getDefault()))
 
                 when (diagnostic.kind) {
                     ERROR, OTHER -> reporter.reportError(message.toString())

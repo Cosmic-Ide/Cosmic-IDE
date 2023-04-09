@@ -1,19 +1,15 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.build.BuildReporter
@@ -34,7 +30,6 @@ class CompileInfoFragment : Fragment() {
     private val compiler: Compiler = Compiler(project)
     private lateinit var binding: FragmentCompileInfoBinding
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,6 +44,11 @@ class CompileInfoFragment : Fragment() {
             isWordwrap = true
             isLineNumberEnabled = false
             setFont()
+        }
+
+        binding.toolbar.title = "Compiling ${project.name}"
+        binding.toolbar.setNavigationOnClickListener {
+            childFragmentManager.popBackStack()
         }
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -88,8 +88,8 @@ class CompileInfoFragment : Fragment() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        val navController = findNavController()
-        // navController.popBackStack(R.id.CompileInfoFragment, false)
-        navController.navigate(R.id.CompileInfoFragment_to_ProjectOutputFragment)
+        childFragmentManager.beginTransaction()
+            .replace(R.id.container, ProjectOutputFragment())
+            .commit()
     }
 }

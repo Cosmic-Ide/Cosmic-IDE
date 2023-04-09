@@ -4,15 +4,12 @@
     tools:context="org.cosmicide.rewrite.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_compile"
         android:icon="@drawable/outline_play_arrow_24"
-        android:orderInCategory="100"
         android:title="@string/action_compile"
-        android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>

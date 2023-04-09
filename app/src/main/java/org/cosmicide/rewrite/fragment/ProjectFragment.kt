@@ -83,14 +83,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
 
     private fun navigateToNewProjectFragment() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, NewProjectFragment())
+            .add(R.id.fragment_container, NewProjectFragment())
             .addToBackStack(null)
             .commit()
     }
 
     private fun navigateToEditorFragment() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, EditorFragment())
+            .add(R.id.fragment_container, EditorFragment())
             .addToBackStack(null)
             .commit()
     }

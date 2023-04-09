@@ -6,61 +6,53 @@ import androidx.lifecycle.ViewModel
 import java.io.File
 
 /**
- * ViewModel for managing a list of files and the current position in the list.
- * Uses MutableLiveData to observe changes in the list and position.
+ * A ViewModel for managing a list of files and the current position within the list.
  */
 class FileViewModel : ViewModel() {
 
     private val _files = MutableLiveData<List<File>>(emptyList())
-    val files: LiveData<List<File>> = _files
+    val files: LiveData<List<File>> get() = _files
 
-    private val _currentPosition = MutableLiveData(-1)
-    val currentPosition: LiveData<Int> = _currentPosition
+    private val _currentPosition = MutableLiveData<Int>(-1)
+    val currentPosition: LiveData<Int> get() = _currentPosition
 
+    /**
+     * Returns the current file at the current position, or null if the list is empty or the current position is out of range.
+     */
     val currentFile: File?
         get() = files.value?.getOrNull(currentPosition.value ?: -1)
 
-    /**
-     * Sets the current position in the list to the specified integer.
-     *
-     * @param pos an integer representing the new position in the list.
-     */
     fun setCurrentPosition(pos: Int) {
         _currentPosition.value = pos
     }
 
     /**
-     * Adds the specified [File] object to the list of files, if not already present.
-     * Sets the current position in the list to the newly added file.
-     *
-     * @param file a [File] object to be added to the list.
+     * Adds the given file to the list of files.
+     * If the file is not already in the list, it is added to the end and the current position is set to the last index.
+     * If the file is already in the list, the current position is set to its index.
      */
     fun addFile(file: File) {
-        val files = _files.value.orEmpty().toMutableList()
-        if (!files.contains(file)) {
-            files.add(file)
-            _files.value = files
+        val index = _files.value?.indexOf(file) ?: -1
+        if (index == -1) {
+            _files.value = (_files.value ?: emptyList()) + file
+            setCurrentPosition(_files.value?.lastIndex ?: -1)
+        } else {
+            setCurrentPosition(index)
         }
-        setCurrentPosition(files.indexOf(file))
     }
 
     /**
-     * Removes the specified [File] object from the list of files.
-     *
-     * @param file a [File] object to be removed from the list.
+     * Removes the given file from the list of files.
      */
     fun removeFile(file: File) {
-        val files = _files.value.orEmpty().toMutableList().apply {
+        _files.value?.toMutableList()?.apply {
             remove(file)
+            _files.value = this
         }
-        _files.value = files
     }
 
     /**
-     * Removes all files from the list except for the specified [File] object.
-     * Sets the current position in the list to the specified file.
-     *
-     * @param file a [File] object to be kept in the list, all others are removed.
+     * Removes all files from the list except for the given file, and sets the current position to 0.
      */
     fun removeOthers(file: File) {
         _files.value = listOf(file)
@@ -68,10 +60,8 @@ class FileViewModel : ViewModel() {
     }
 
     /**
-     * Adds the specified [File] object to the list of files and returns true.
-     *
-     * @param file a [File] object to be added to the list.
-     * @return true
+     * Adds the given file to the list of files and sets it as the current file.
+     * Returns true if the file was successfully added, false otherwise.
      */
     fun openFile(file: File): Boolean {
         addFile(file)
@@ -79,13 +69,10 @@ class FileViewModel : ViewModel() {
     }
 
     /**
-     * Updates the list of files with the specified list of [File] objects.
-     * Sets the current position in the list to -1.
-     *
-     * @param newFiles a list of [File] objects to update the list.
+     * Updates the list of files with the given new files.
+     * Any files in the new list that are already in the current list are not added again.
      */
-    fun updateFiles(newFiles: List<File>) {
-        _files.value = newFiles
-        setCurrentPosition(-1)
+    fun updateFiles(newFiles: MutableList<File>) {
+        _files.value = (_files.value ?: emptyList()) + newFiles.filterNot { it in _files.value.orEmpty() }
     }
 }

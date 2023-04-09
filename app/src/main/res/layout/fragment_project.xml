@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:transitionGroup="true"
     tools:context=".fragment.ProjectFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -23,6 +24,7 @@
         android:layout_height="match_parent"
         android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
+        android:transitionGroup="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <include
@@ -34,6 +36,7 @@
         android:layout_marginBottom="16dp"
         android:layout_gravity="bottom|end"
         android:focusable="true"
-        android:clickable="true" />
+        android:clickable="true"
+        android:transitionGroup="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -99,6 +99,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         )
         binding.editor.setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
         binding.editor.setFont()
+        binding.editor.invalidate()
     }
 
     override fun onDestroyView() {
@@ -128,7 +129,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, CompileInfoFragment())
+            .add(R.id.fragment_container, CompileInfoFragment())
             .addToBackStack(null)
             .commit()
     }

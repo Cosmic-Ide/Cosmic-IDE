@@ -3,8 +3,9 @@
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:fontFamily">@font/noto_sans_mono</item>
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite" />
+    <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
 </resources>

@@ -46,6 +46,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
             isWordwrap = true
             isLineNumberEnabled = false
             setFont()
+            invalidate()
         }
 
         lifecycleScope.launchWhenCreated {
@@ -84,7 +85,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
 
     private fun navigateToProjectOutputFragment() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, ProjectOutputFragment())
+            .add(R.id.fragment_container, ProjectOutputFragment())
             .addToBackStack(null)
             .commit()
     }

@@ -25,6 +25,8 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbar.title = "Projects"
+
         setOnClickListeners()
         setUpProjectList()
 

@@ -1,6 +1,5 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +9,8 @@ import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.build.BuildReporter
@@ -47,6 +46,11 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
             isLineNumberEnabled = false
             setFont()
             invalidate()
+        }
+
+        binding.toolbar.title = "Compiling ${project.name}"
+        binding.toolbar.setNavigationOnClickListener {
+            childFragmentManager.popBackStack()
         }
 
         lifecycleScope.launchWhenCreated {

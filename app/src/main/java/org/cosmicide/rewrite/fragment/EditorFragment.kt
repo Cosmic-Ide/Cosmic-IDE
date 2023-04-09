@@ -1,6 +1,5 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +11,6 @@ import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
@@ -24,7 +21,6 @@ import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.extension.setLanguageTheme
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.FileViewModel
-import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
@@ -41,10 +37,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
-
-        binding.toolbar.setNavigationOnClickListener {
-            binding.drawer.open()
-        }
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
@@ -106,9 +98,16 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.editor.invalidate()
     }
 
+    private fun navigateToCompileInfoFragment() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.container, CompileInfoFragment())
+            .commit()
+    }
+
     override fun onDestroyView() {
         fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }?.writeText(binding.editor.text.toString())
+            fileViewModel.currentFile?.takeIf { it.exists() }
+                ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
         super.onDestroyView()
@@ -116,16 +115,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun configureToolbar() {
         binding.toolbar.apply {
+            title = project.name
             setNavigationOnClickListener {
                 binding.drawer.open()
             }
             setOnMenuItemClickListener {
-                val id = it.itemId
-                if (id == R.id.action_compile) {
-                    navigateToCompileInfoFragment()
-                    true
-                } else {
-                    false
+                when (it.itemId) {
+                    R.id.action_compile -> {
+                        navigateToCompileInfoFragment()
+                        true
+                    }
+
+                    else -> false
                 }
             }
         }

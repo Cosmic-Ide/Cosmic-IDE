@@ -13,12 +13,10 @@ import org.cosmicide.project.Project
  */
 class Compiler(private val project: Project) {
 
-    private val compilerCache: CompilerCache by lazy {
-        CompilerCache(
-            JavaCompileTask(project),
-            KotlinCompiler(project),
-            D8Task(project)
-        )
+    init {
+        CompilerCache.saveCache(JavaCompileTask(project))
+        CompilerCache.saveCache(KotlinCompiler(project))
+        CompilerCache.saveCache(D8Task(project))
     }
 
     /**
@@ -39,19 +37,19 @@ class Compiler(private val project: Project) {
 
     private fun compileJava(reporter: BuildReporter) {
         reporter.reportInfo("Compiling Java code...")
-        compilerCache.javaCompiler.execute(reporter)
+        CompilerCache.getCache<JavaCompileTask>().execute(reporter)
         reporter.reportInfo("Successfully compiled Java code.")
     }
 
     private fun compileKotlin(reporter: BuildReporter) {
         reporter.reportInfo("Compiling Kotlin code...")
-        compilerCache.kotlinCompiler.execute(reporter)
+        CompilerCache.getCache<KotlinCompiler>().execute(reporter)
         reporter.reportInfo("Successfully compiled Kotlin code.")
     }
 
     private fun convertClassFilesToDex(reporter: BuildReporter) {
         reporter.reportInfo("Converting class files to dex format...")
-        compilerCache.dexTask.execute(reporter)
+        CompilerCache.getCache<D8Task>().execute(reporter)
         reporter.reportInfo("Successfully converted class files to dex format.")
     }
 

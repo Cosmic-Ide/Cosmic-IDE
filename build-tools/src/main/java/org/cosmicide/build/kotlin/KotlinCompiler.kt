@@ -12,9 +12,9 @@ import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
 
-class KotlinCompiler(private val project: Project) : Task {
+class KotlinCompiler(val project: Project) : Task {
 
-    private val args: K2JVMCompilerArguments by lazy {
+    val args: K2JVMCompilerArguments by lazy {
         K2JVMCompilerArguments().apply {
             noReflect = true
             noStdlib = true
@@ -22,7 +22,6 @@ class KotlinCompiler(private val project: Project) : Task {
         }
     }
 
-    @Throws(Exception::class)
     override fun execute(reporter: BuildReporter) {
         val kotlinSourceFiles = getSourceFiles(project.srcDir.invoke(), "kt")
         if (kotlinSourceFiles.isEmpty()) {
@@ -49,11 +48,11 @@ class KotlinCompiler(private val project: Project) : Task {
         makeIncrementally(kotlinHome, listOf(project.srcDir.invoke()), args, collector)
     }
 
-    private fun collectClasspathFiles(): List<File> {
+    fun collectClasspathFiles(): List<File> {
         val classpath = mutableListOf<File>()
 
         project.libDir.walk().forEach {
-            if (it.isFile()) {
+            if (it.isFile) {
                 classpath.add(it)
             }
         }
@@ -61,12 +60,12 @@ class KotlinCompiler(private val project: Project) : Task {
         return classpath
     }
 
-    private fun getKotlinCompilerPlugins(): List<File> {
+    fun getKotlinCompilerPlugins(): List<File> {
         val pluginDir = File(project.root, "kt_plugins")
         val plugins = mutableListOf<File>()
 
         pluginDir.walk().forEach {
-            if (it.isFile()) {
+            if (it.isFile) {
                 plugins.add(it)
             }
         }
@@ -74,7 +73,7 @@ class KotlinCompiler(private val project: Project) : Task {
         return plugins
     }
 
-    private fun createMessageCollector(reporter: BuildReporter): MessageCollector {
+    fun createMessageCollector(reporter: BuildReporter): MessageCollector {
         return object : MessageCollector {
 
             private var hasErrors: Boolean = false
@@ -103,11 +102,13 @@ class KotlinCompiler(private val project: Project) : Task {
         }
     }
 
-    private data class Diagnostic(
+    data class Diagnostic(
         val severity: CompilerMessageSeverity,
         val message: String,
         val location: CompilerMessageSourceLocation?
     ) {
-        override fun toString() = "${severity.presentableName.uppercase()}: ${location?.toString()?.substringAfter("src/")} $message"
+        override fun toString() = "${severity.presentableName.uppercase()}: ${
+            location?.toString()?.substringAfter("src/")
+        } $message"
     }
 }

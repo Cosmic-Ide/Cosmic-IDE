@@ -39,7 +39,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         binding.toolbar.setTitle(R.string.compile_info)
 
         binding.infoEditor.apply {
-            colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+            setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             setTextSize(16f)
@@ -48,7 +48,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
             setFont()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launchWhenCreated {
             try {
                 val reporter = BuildReporter { report ->
                     if (report.message.isEmpty()) {

@@ -97,7 +97,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 else -> EmptyLanguage()
             }
         )
-        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+        binding.editor.setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
         binding.editor.setFont()
     }
 

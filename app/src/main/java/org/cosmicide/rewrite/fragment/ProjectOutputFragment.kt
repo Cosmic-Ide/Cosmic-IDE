@@ -42,6 +42,11 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             setFont()
         }
 
+        binding.toolbar.title = "Running ${project.name}"
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack("EditorFragment", 0)
+        }
+
         lifecycleScope.launch {
             val systemOut = PrintStream(object : OutputStream() {
                 override fun write(p0: Int) {

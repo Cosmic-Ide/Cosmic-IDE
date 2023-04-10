@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,7 +34,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setTitle(R.string.compile_info)
 
         binding.infoEditor.apply {
             setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
@@ -50,10 +48,10 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
 
         binding.toolbar.title = "Compiling ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            childFragmentManager.popBackStack()
+            navigateToProjectOutputFragment()
         }
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val reporter = BuildReporter { report ->
                     if (report.message.isEmpty()) {
@@ -88,9 +86,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, ProjectOutputFragment())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.popBackStack()
     }
 }

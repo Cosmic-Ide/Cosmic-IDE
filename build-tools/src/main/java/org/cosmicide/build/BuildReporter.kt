@@ -26,6 +26,7 @@ class BuildReporter(
     val callback: (BuildReport) -> Unit = { report -> println("${report.kind}: ${report.message}") }
 ) {
     var buildSuccess = false
+    var failure = false
 
     /**
      * Generates an informational build report.
@@ -49,6 +50,7 @@ class BuildReporter(
      */
     fun reportError(message: String) {
         callback(BuildReport(KIND.ERROR, message))
+        failure = true
     }
 
     /**

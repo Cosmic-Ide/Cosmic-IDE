@@ -101,6 +101,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction()
             .add(R.id.container, CompileInfoFragment())
+            .addToBackStack(null)
             .commit()
     }
 
@@ -135,7 +136,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction()
             .add(R.id.fragment_container, CompileInfoFragment())
-            .addToBackStack(null)
+            .addToBackStack("EditorFragment")
             .commit()
     }
 }

@@ -29,8 +29,7 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="@color/design_default_color_surface" />
+                android:layout_height="?actionBarSize" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

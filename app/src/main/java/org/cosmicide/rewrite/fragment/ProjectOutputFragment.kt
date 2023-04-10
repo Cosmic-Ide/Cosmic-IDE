@@ -13,7 +13,6 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -21,11 +20,11 @@ import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
 
+
 class ProjectOutputFragment : Fragment() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private lateinit var binding: FragmentCompileInfoBinding
-    private val compiler: Compiler = Compiler(project)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +40,11 @@ class ProjectOutputFragment : Fragment() {
             isWordwrap = true
             setTextSize(14f)
             setFont()
+        }
+        binding.toolbar.title = "Running ${project.name}"
+        binding.toolbar.setNavigationIconTint(resources.getColor(android.R.color.black, null))
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack("EditorFragment", 0)
         }
 
         lifecycleScope.launch {

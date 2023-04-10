@@ -5,10 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
+import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,7 +52,7 @@ class CompileInfoFragment : Fragment() {
             childFragmentManager.popBackStack()
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val reporter = BuildReporter { report ->
                     if (report.message.isEmpty()) {
@@ -88,8 +89,12 @@ class CompileInfoFragment : Fragment() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        childFragmentManager.beginTransaction()
+        parentFragmentManager.popBackStack()
+        parentFragmentManager.beginTransaction()
             .replace(R.id.container, ProjectOutputFragment())
+            .addToBackStack(null)
+            .setReorderingAllowed(true)
+            .setTransition(TRANSIT_FRAGMENT_OPEN)
             .commit()
     }
 }

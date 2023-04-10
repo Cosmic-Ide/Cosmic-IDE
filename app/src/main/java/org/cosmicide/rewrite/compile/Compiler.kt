@@ -38,18 +38,27 @@ class Compiler(private val project: Project) {
     private fun compileJava(reporter: BuildReporter) {
         reporter.reportInfo("Compiling Java code...")
         CompilerCache.getCache<JavaCompileTask>().execute(reporter)
+        if (reporter.failure) {
+            throw Exception("Failed to compile Java code.")
+        }
         reporter.reportInfo("Successfully compiled Java code.")
     }
 
     private fun compileKotlin(reporter: BuildReporter) {
         reporter.reportInfo("Compiling Kotlin code...")
         CompilerCache.getCache<KotlinCompiler>().execute(reporter)
+        if (reporter.failure) {
+            throw Exception("Failed to compile Java code.")
+        }
         reporter.reportInfo("Successfully compiled Kotlin code.")
     }
 
     private fun convertClassFilesToDex(reporter: BuildReporter) {
         reporter.reportInfo("Converting class files to dex format...")
         CompilerCache.getCache<D8Task>().execute(reporter)
+        if (reporter.failure) {
+            throw Exception("Failed to compile Java code.")
+        }
         reporter.reportInfo("Successfully converted class files to dex format.")
     }
 

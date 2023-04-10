@@ -130,6 +130,7 @@ class EditorFragment : Fragment() {
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction()
             .add(R.id.container, CompileInfoFragment())
+            .addToBackStack(null)
             .commit()
     }
 
@@ -138,7 +139,7 @@ class EditorFragment : Fragment() {
         ProjectHandler.onEditorFragmentChange(false)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }

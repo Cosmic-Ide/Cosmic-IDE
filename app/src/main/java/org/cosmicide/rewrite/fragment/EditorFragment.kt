@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -18,48 +18,31 @@ import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
+import org.cosmicide.rewrite.extension.setLanguageTheme
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
-class EditorFragment : Fragment() {
-
+class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
-    private lateinit var binding: FragmentEditorBinding
     private lateinit var fileViewModel: FileViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentEditorBinding.inflate(inflater, container, false)
+    override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
-
-        binding.toolbar.title = project.name
-        binding.toolbar.setNavigationOnClickListener {
-            binding.drawer.open()
-        }
-        binding.toolbar.inflateMenu(R.menu.menu_main)
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_compile -> {
-                    navigateToCompileInfoFragment()
-                    true
-                }
-
-                else -> false
-            }
-        }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        configureToolbar()
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                requireActivity().runOnUiThread {
+                view.post {
                     fileViewModel.updateFiles(files.toMutableList())
                     files.forEach { file ->
                         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
@@ -99,18 +82,6 @@ class EditorFragment : Fragment() {
         }
 
         binding.editor.setTextSize(20f)
-
-        return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        ProjectHandler.onEditorFragmentChange(true)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ProjectHandler.onEditorFragmentChange(true)
     }
 
     private fun setEditorLanguage() {
@@ -122,30 +93,50 @@ class EditorFragment : Fragment() {
                 else -> EmptyLanguage()
             }
         )
-        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+        binding.editor.setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
         binding.editor.setFont()
+        binding.editor.invalidate()
     }
-
 
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction()
-            .add(R.id.container, CompileInfoFragment())
+            .add(R.id.fragment_container, CompileInfoFragment())
             .addToBackStack(null)
             .commit()
     }
 
-    override fun onStop() {
-        super.onStop()
-        ProjectHandler.onEditorFragmentChange(false)
-    }
-
     override fun onDestroyView() {
-        super.onDestroy()
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }
                 ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
-        ProjectHandler.onEditorFragmentChange(false)
+        super.onDestroyView()
+    }
+
+    private fun configureToolbar() {
+        binding.toolbar.apply {
+            title = project.name
+            setNavigationOnClickListener {
+                binding.drawer.open()
+            }
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_compile -> {
+                        navigateToCompileInfoFragment()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+
+    private fun navigateToCompileInfoFragment() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, CompileInfoFragment())
+            .addToBackStack("EditorFragment")
+            .commit()
     }
 }

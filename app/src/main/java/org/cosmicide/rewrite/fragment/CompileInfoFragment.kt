@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -16,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
@@ -24,32 +24,31 @@ import org.cosmicide.rewrite.util.ProjectHandler
 /**
  * A fragment for displaying information about the compilation process.
  */
-class CompileInfoFragment : Fragment() {
-
+class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
     private val compiler: Compiler = Compiler(project)
-    private lateinit var binding: FragmentCompileInfoBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentCompileInfoBinding.inflate(inflater, container, false)
+    override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.infoEditor.apply {
-            colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+            setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             setTextSize(16f)
             isWordwrap = true
             isLineNumberEnabled = false
             setFont()
+            invalidate()
         }
 
         binding.toolbar.title = "Compiling ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            childFragmentManager.popBackStack()
+            navigateToProjectOutputFragment()
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -79,8 +78,6 @@ class CompileInfoFragment : Fragment() {
                 } */
             }
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {
@@ -90,11 +87,5 @@ class CompileInfoFragment : Fragment() {
 
     private fun navigateToProjectOutputFragment() {
         parentFragmentManager.popBackStack()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, ProjectOutputFragment())
-            .addToBackStack(null)
-            .setReorderingAllowed(true)
-            .setTransition(TRANSIT_FRAGMENT_OPEN)
-            .commit()
     }
 }

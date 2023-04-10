@@ -5,13 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileUtil
@@ -19,19 +18,10 @@ import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 import java.io.IOException
 
-class NewProjectFragment : Fragment() {
-
-    private lateinit var binding: FragmentNewProjectBinding
+class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     private val viewModel: ProjectViewModel by activityViewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentNewProjectBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun getViewBinding() = FragmentNewProjectBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,8 +40,7 @@ class NewProjectFragment : Fragment() {
 
             val language = if (binding.useKotlin.isChecked) Language.Kotlin else Language.Java
             createProject(language, projectName, packageName)
-            requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, ProjectFragment()).addToBackStack("ProjectFragment").commit()
-
+            parentFragmentManager.popBackStack()
         }
     }
 

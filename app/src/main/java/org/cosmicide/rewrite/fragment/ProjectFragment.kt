@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -13,24 +12,15 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
 
-class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
-
-    private var _binding: FragmentProjectBinding? = null
+class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAdapter.OnProjectEventListener {
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
 
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProjectBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,7 +34,6 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
     }
 
     private fun setOnClickListeners() {
-
         binding.fabs.importButton.visibility = View.GONE
         binding.fabs.newProjectTextview.visibility = View.GONE
 
@@ -85,18 +74,26 @@ class ProjectFragment : Fragment(), ProjectAdapter.OnProjectEventListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onProjectClicked(project: Project) {
         ProjectHandler.setProject(project)
-        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, EditorFragment()).addToBackStack("EditorFragment").commit()
+        navigateToEditorFragment()
     }
-
 
     override fun onProjectLongClicked(project: Project): Boolean {
         return false
+    }
+
+    private fun navigateToNewProjectFragment() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, NewProjectFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToEditorFragment() {
+        parentFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, EditorFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }

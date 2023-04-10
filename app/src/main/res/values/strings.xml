@@ -6,14 +6,16 @@
     <string name="import_project">Import Project</string>
 
     <string name="project">Project</string>
-    <string name="fragment_new_project">New Project</string>
+    <string name="new_project">New Project</string>
     <string name="use_kotlin_template">Use Kotlin Template</string>
     <string name="enter_project_name">Enter project name</string>
     <string name="project_name">Project Name</string>
-    <string name="fragment_editor">Editor</string>
+    <string name="editor">Editor</string>
     <string name="enter_package_name">Enter package name</string>
 
     <string name="create_project">Create project</string>
     <string name="project_path">Project path</string>
     <string name="action_compile">Compile</string>
+    <string name="compile_info">Compile info</string>
+    <string name="project_output">Project output</string>
 </resources>

@@ -6,6 +6,8 @@ import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
+import java.io.InputStream
+import java.nio.charset.Charset
 import java.io.Writer
 import java.nio.file.Files
 import java.nio.file.Path
@@ -30,13 +32,12 @@ class JavaCompileTask(val project: Project) : Task {
     override fun execute(reporter: BuildReporter) {
         val output = File(project.binDir, "classes")
         val version = "8"
-        reporter.reportInfo("Current Java Version: $version")
+        reporter.reportInfo("Compiling on Java version: $version")
 
         val diagnostics = DiagnosticCollector<JavaFileObject>()
 
         try {
             Files.createDirectories(output.toPath())
-            reporter.reportInfo("Output directory created")
         } catch (e: Exception) {
             throw RuntimeException("Failed to create output directory", e)
         }
@@ -54,18 +55,21 @@ class JavaCompileTask(val project: Project) : Task {
             return
         }
 
-        tool.getStandardFileManager(diagnostics, null, Charsets.UTF_8).use { standardJavaFileManager ->
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_OUTPUT, Collections.singletonList(output.toPath()))
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
-            standardJavaFileManager.setLocationFromPaths(StandardLocation.CLASS_PATH, getClasspath(project))
+        val fileManager = tool.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset())
 
-            val args = mutableListOf<String>().apply {
-                add("-proc:none")
-                add("-source")
-                add(version)
-                add("-target")
-                add(version)
-            }
+        fileManager.use { fm ->
+            fm.setLocation(StandardLocation.CLASS_OUTPUT, listOf(output))
+            fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
+            fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
+            fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
+
+            val options = listOf(
+                "-proc:none",
+                "-source",
+                version,
+                "-target",
+                version
+            )
 
             val task = tool.getTask(
                 object : Writer() {
@@ -81,9 +85,9 @@ class JavaCompileTask(val project: Project) : Task {
                     }
 
                 },
-                standardJavaFileManager,
+                fm,
                 diagnostics,
-                args,
+                options,
                 null,
                 javaFileObjects
             )
@@ -116,23 +120,16 @@ class JavaCompileTask(val project: Project) : Task {
         } ?: emptyList()
     }
 
-    fun getClasspath(project: Project): List<Path> {
-        val classpath = arrayListOf<Path>()
-        classpath.add(File(project.binDir, "classes").toPath())
-
-        // Check if the libDir exists before calling listFiles()
-        if (project.libDir.exists() && project.libDir.isDirectory) {
-            project.libDir.listFiles()?.let {
-                it.mapTo(classpath) { file -> file.toPath() }
-            }
+    fun getClasspath(project: Project): List<File> {
+        val classpath = mutableListOf(File(project.binDir, "classes"))
+        val libDir = project.libDir
+        if (libDir.exists() && libDir.isDirectory()) {
+            classpath += libDir.listFiles()?.toList() ?: emptyList()
         }
-
         return classpath
     }
 
-    fun getSystemClasspath(): List<Path> {
-        val classpath = arrayListOf<Path>()
-        FileUtil.classpathDir.listFiles()?.forEach { classpath.add(it.toPath()) }
-        return classpath
+    fun getSystemClasspath(): List<File> {
+        return FileUtil.classpathDir.listFiles()?.toList() ?: emptyList()
     }
 }

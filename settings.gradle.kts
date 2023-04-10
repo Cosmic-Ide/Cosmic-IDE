@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "CosmicIDE-Rewrite"
 include(":app")
+include(":common")
 include(":project")
 include(":kotlinc")
 include(":kotlin-completion")

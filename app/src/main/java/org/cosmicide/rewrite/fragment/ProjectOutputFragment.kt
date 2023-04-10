@@ -43,7 +43,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.toolbar.title = "Running ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack("EditorFragment", 0)
+            parentFragmentManager.popBackStack()
         }
 
         lifecycleScope.launch {

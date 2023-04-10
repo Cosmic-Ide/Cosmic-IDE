@@ -87,6 +87,8 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        parentFragmentManager.popBackStack()
+        parentFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, ProjectOutputFragment())
+            .commit()
     }
 }

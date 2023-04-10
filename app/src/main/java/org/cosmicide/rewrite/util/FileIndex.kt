@@ -26,11 +26,14 @@ class FileIndex(private val project: Project) {
         val filePaths = uniqueFiles.map { it.absolutePath }.toMutableList()
         filePaths.add(0, filePaths.removeAt(currentIndex))
 
-        if (!filePath.exists()) {
-            filePath.createNewFile()
+        if (!filePath.parentFile.exists()) {
+            filePath.parentFile.mkdirs()
         }
-        val json = Gson().toJson(filePaths)
-        FileOutputStream(filePath).use { it.write(json.toByteArray()) }
+
+        FileOutputStream(filePath).use { stream ->
+            val json = Gson().toJson(filePaths)
+            stream.write(json.toByteArray())
+        }
     }
 
     /**
@@ -38,12 +41,16 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (!filePath.exists()) {
+            if (!filePath.parentFile.exists()) {
+                filePath.parentFile.mkdirs()
+            }
             filePath.createNewFile()
             return emptyList()
         }
 
         val json = filePath.readText()
         val filePaths = Gson().fromJson<List<String>>(json, object : TypeToken<List<String>>() {}.type)
+        if (filePaths.isNullOrEmpty()) return emptyList()
         return filePaths.map { File(it) }.distinctBy { it.absolutePath }
     }
 }

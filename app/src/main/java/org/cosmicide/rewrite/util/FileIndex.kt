@@ -38,6 +38,7 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (!filePath.exists()) {
+            filePath.parentFile.mkdirs()
             filePath.createNewFile()
             return emptyList()
         }

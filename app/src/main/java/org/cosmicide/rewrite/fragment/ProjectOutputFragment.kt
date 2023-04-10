@@ -31,7 +31,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setTitle(R.string.project_output)
 
         binding.infoEditor.apply {
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())

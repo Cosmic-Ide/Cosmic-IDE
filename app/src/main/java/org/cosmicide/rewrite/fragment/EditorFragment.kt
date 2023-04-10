@@ -1,5 +1,6 @@
 package org.cosmicide.rewrite.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -96,13 +97,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.editor.setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
         binding.editor.setFont()
         binding.editor.invalidate()
-    }
-
-    private fun navigateToCompileInfoFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, CompileInfoFragment())
-            .addToBackStack(null)
-            .commit()
     }
 
     override fun onDestroyView() {

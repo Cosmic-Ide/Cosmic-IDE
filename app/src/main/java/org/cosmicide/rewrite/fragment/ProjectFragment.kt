@@ -25,8 +25,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.title = "Projects"
-
         setOnClickListeners()
         setUpProjectList()
 
@@ -42,10 +40,10 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.newProjectTextview.visibility = View.VISIBLE
                 binding.fabs.importButton.setOnClickListener {
-                  requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
+                    navigateToNewProjectFragment()
                 }
             } else {
-                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, NewProjectFragment()).addToBackStack("NewProjectFragment").commit()
+                navigateToNewProjectFragment()
             }
         }
     }

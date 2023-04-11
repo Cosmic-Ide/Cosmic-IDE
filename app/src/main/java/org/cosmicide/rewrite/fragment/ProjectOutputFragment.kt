@@ -1,9 +1,7 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import dalvik.system.DexClassLoader
 import dalvik.system.DexFile
@@ -12,10 +10,8 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.R
-import org.cosmicide.rewrite.compile.Compiler
-import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
@@ -25,7 +21,6 @@ import java.lang.reflect.Modifier
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     private val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
-    private val compiler: Compiler = Compiler(project)
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 

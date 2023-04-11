@@ -36,9 +36,7 @@ class KotlinLanguage(
             )
             fileName = ktFile.name
         } catch (e: Exception) {
-            if (e !is InterruptedException) {
-                Log.e(TAG, "Failed to update Kotlin file", e)
-            }
+            Log.e(TAG, "Failed to update Kotlin file", e)
         }
     }
 

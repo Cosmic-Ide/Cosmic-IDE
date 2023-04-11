@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import org.cosmicide.project.Project
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
 
 class FileIndex(private val project: Project) {
     private val filePath = File(project.cacheDir, "files.json")
@@ -25,10 +26,8 @@ class FileIndex(private val project: Project) {
         val uniqueFiles = files.distinctBy { it.absolutePath }
         val filePaths = uniqueFiles.map { it.absolutePath }.toMutableList()
         filePaths.add(0, filePaths.removeAt(currentIndex))
-
-        if (!filePath.parentFile.exists()) {
-            filePath.parentFile.mkdirs()
-        }
+        val cacheDir = project.cacheDir.toPath()
+        Files.createDirectories(cacheDir)
 
         FileOutputStream(filePath).use { stream ->
             val json = Gson().toJson(filePaths)
@@ -41,9 +40,7 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (!filePath.exists()) {
-            if (!filePath.parentFile.exists()) {
-                filePath.parentFile.mkdirs()
-            }
+            Files.createDirectories(filePath.parentFile!!.toPath())
             filePath.createNewFile()
             return emptyList()
         }

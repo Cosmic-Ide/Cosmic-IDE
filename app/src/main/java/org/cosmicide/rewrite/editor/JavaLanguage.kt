@@ -21,9 +21,9 @@ import java.nio.file.Path
 import java.util.logging.Level
 
 class JavaLanguage(
-    private val editor: CodeEditor,
-    private val project: Project,
-    private val file: File
+    val editor: CodeEditor,
+    val project: Project,
+    val file: File
 ) : TextMateLanguage(
     grammarRegistry.findGrammar("source.java"),
     grammarRegistry.findLanguageConfiguration("source.java"),

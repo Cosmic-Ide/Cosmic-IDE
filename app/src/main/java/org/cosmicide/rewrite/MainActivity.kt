@@ -1,8 +1,6 @@
 package org.cosmicide.rewrite
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
 import org.cosmicide.rewrite.fragment.ProjectFragment
@@ -22,3 +20,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+

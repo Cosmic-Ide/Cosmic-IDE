@@ -88,15 +88,14 @@ class KotlinCompiler(val project: Project) : Task {
             ) {
                 val diagnostic = Diagnostic(severity, message, location)
                 when (severity) {
-                    CompilerMessageSeverity.ERROR -> {
+                    CompilerMessageSeverity.ERROR, CompilerMessageSeverity.EXCEPTION -> {
                         hasErrors = true
                         reporter.reportError(diagnostic.toString())
                     }
-                    CompilerMessageSeverity.WARNING -> reporter.reportWarning(diagnostic.toString())
+                    CompilerMessageSeverity.WARNING, CompilerMessageSeverity.STRONG_WARNING -> reporter.reportWarning(diagnostic.toString())
                     CompilerMessageSeverity.INFO -> reporter.reportInfo(diagnostic.toString())
                     CompilerMessageSeverity.LOGGING -> reporter.reportLogging(diagnostic.toString())
                     CompilerMessageSeverity.OUTPUT -> reporter.reportOutput(diagnostic.toString())
-                    else -> reporter.reportInfo(diagnostic.toString())
                 }
             }
         }

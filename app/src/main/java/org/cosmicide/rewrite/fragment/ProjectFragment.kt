@@ -1,9 +1,7 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,8 +9,8 @@ import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
-import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
 
@@ -83,7 +81,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
 
     private fun navigateToNewProjectFragment() {
         parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, NewProjectFragment())
+            .replace(R.id.fragment_container, NewProjectFragment())
             .addToBackStack(null)
             .commit()
     }

@@ -1,14 +1,10 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.RequiresApi
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,57 +22,58 @@ import org.cosmicide.rewrite.util.ProjectHandler
  * A fragment for displaying information about the compilation process.
  */
 class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
-    private val project: Project = ProjectHandler.getProject()
+    val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
-    private val compiler: Compiler = Compiler(project)
+    val reporter by lazy {
+        BuildReporter { report ->
+            if (report.message.isEmpty()) return@BuildReporter
+            // Update the info editor with the build output
+            val text = binding.infoEditor.text
+            val cursor = text.cursor
+            text.insert(
+                cursor.rightLine,
+                cursor.rightColumn,
+                "${report.kind}: ${report.message}\n"
+            )
+        }
+    }
+    val compiler: Compiler = Compiler(project, reporter)
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.infoEditor.apply {
-            setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
-            setEditorLanguage(TextMateLanguage.create("source.build", false))
+            setFont()
+            colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             editable = false
             setTextSize(16f)
-            isWordwrap = true
             isLineNumberEnabled = false
-            setFont()
-            invalidate()
+            isWordwrap = true
         }
 
-        binding.toolbar.title = "Compiling ${project.name}"
-        binding.toolbar.setNavigationOnClickListener {
-            navigateToProjectOutputFragment()
+        binding.toolbar.apply {
+            title = "Compiling ${project.name}"
+            navigationIcon =
+                ResourcesCompat.getDrawable(resources, R.drawable.baseline_arrow_back_ios_24, null)
+            setNavigationOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val reporter = BuildReporter { report ->
-                    if (report.message.isEmpty()) {
-                        return@BuildReporter
-                    }
-
-                    // Update the info editor with the build output
-                    launch(Dispatchers.Main) {
-                        val text = binding.infoEditor.text
-                        val cursor = text.cursor
-                        text.insert(cursor.rightLine, cursor.rightColumn, "${report.kind}: ${report.message}\n")
-                    }
-                }
-
-                compiler.compile(reporter)
+                compiler.compile()
                 if (reporter.buildSuccess) {
                     withContext(Dispatchers.Main) {
                         navigateToProjectOutputFragment()
                     }
                 }
             } catch (e: Exception) {
-                /* withContext(Dispatchers.Main) {
-                    binding.infoEditor.text = e.message ?: "Unknown error"
-                } */
+                withContext(Dispatchers.Main) {
+                    binding.infoEditor.setText(e.stackTraceToString())
+                }
             }
         }
     }
@@ -87,6 +84,9 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        parentFragmentManager.popBackStack()
+        parentFragmentManager.beginTransaction()
+            .add(R.id.fragment_container, ProjectOutputFragment())
+            .addToBackStack(null)
+            .commit()
     }
 }

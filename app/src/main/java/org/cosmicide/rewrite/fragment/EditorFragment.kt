@@ -1,13 +1,9 @@
 package org.cosmicide.rewrite.fragment
 
-import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.RequiresApi
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -15,12 +11,11 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
-import org.cosmicide.rewrite.extension.setLanguageTheme
-import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -34,22 +29,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
-
-            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                view.post {
-                    fileViewModel.updateFiles(files.toMutableList())
-                    files.forEach { file ->
-                        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
-                    }
-                }
-            }
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
@@ -79,7 +64,19 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             }
 
-            fileViewModel.addFile(File(project.srcDir.invoke(),"Main.${project.language.extension}"))
+            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
+                view.post {
+                    fileViewModel.updateFiles(files.toMutableList())
+                }
+            }
+            if (fileViewModel.files.value!!.isEmpty()) {
+                fileViewModel.addFile(
+                    File(
+                        project.srcDir.invoke(),
+                        "Main.${project.language.extension}"
+                    )
+                )
+            }
         }
 
         binding.editor.setTextSize(20f)
@@ -94,7 +91,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 else -> EmptyLanguage()
             }
         )
-        binding.editor.setColorScheme(TextMateColorScheme.create(ThemeRegistry.getInstance()))
+        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         binding.editor.setFont()
         binding.editor.invalidate()
     }

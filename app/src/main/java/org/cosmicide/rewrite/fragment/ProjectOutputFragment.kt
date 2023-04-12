@@ -1,21 +1,22 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import dalvik.system.DexClassLoader
 import dalvik.system.DexFile
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
-import org.cosmicide.rewrite.compile.Compiler
-import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
@@ -23,14 +24,26 @@ import java.io.PrintStream
 import java.lang.reflect.Modifier
 
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
-    private val project: Project = ProjectHandler.getProject()
+    val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
-    private val compiler: Compiler = Compiler(project)
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.inflateMenu(R.menu.output_menu)
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.reload -> {
+                    val text = binding.infoEditor.text
+                    text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
+                    runProject()
+                    true
+                }
+
+                else -> false
+            }
+        }
 
         binding.infoEditor.apply {
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
@@ -43,19 +56,27 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.toolbar.title = "Running ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack("EditorFragment", 0)
+            parentFragmentManager.popBackStack()
         }
-
         lifecycleScope.launch {
-            val systemOut = PrintStream(object : OutputStream() {
-                override fun write(p0: Int) {
-                    val text = binding.infoEditor.text
-                    val cursor = text.cursor
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                runProject()
+            }
+        }
+    }
+
+    fun runProject() = CoroutineScope(Dispatchers.IO).launch {
+        val systemOut = PrintStream(object : OutputStream() {
+            override fun write(p0: Int) {
+                val text = binding.infoEditor.text
+                val cursor = text.cursor
+                lifecycleScope.launch(Dispatchers.Main) {
                     text.insert(cursor.rightLine, cursor.rightColumn, p0.toChar().toString())
                 }
-            })
-            System.setOut(systemOut)
-            System.setErr(systemOut)
+            }
+        })
+        System.setOut(systemOut)
+        System.setErr(systemOut)
 
             val dexFile = DexFile(project.binDir.resolve("classes.dex"))
             val classes = dexFile.entries().toList()
@@ -89,5 +110,4 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 systemOut.close()
             }
         }
-    }
 }

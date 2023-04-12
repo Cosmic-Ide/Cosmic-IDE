@@ -1,6 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_settings"
@@ -11,5 +10,5 @@
         android:id="@+id/action_compile"
         android:icon="@drawable/outline_play_arrow_24"
         android:title="@string/action_compile"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

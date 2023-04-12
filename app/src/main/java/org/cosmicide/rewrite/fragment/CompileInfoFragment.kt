@@ -1,11 +1,10 @@
 package org.cosmicide.rewrite.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,18 +45,21 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.infoEditor.apply {
-            setEditorLanguage(TextMateLanguage.create("source.build", false))
+            setFont()
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             editable = false
             setTextSize(16f)
-            isWordwrap = true
             isLineNumberEnabled = false
-            setFont()
+            isWordwrap = true
         }
 
-        binding.toolbar.title = "Compiling ${project.name}"
-        binding.toolbar.setNavigationOnClickListener {
-            navigateToProjectOutputFragment()
+        binding.toolbar.apply {
+            title = "Compiling ${project.name}"
+            navigationIcon =
+                ResourcesCompat.getDrawable(resources, R.drawable.baseline_arrow_back_ios_24, null)
+            setNavigationOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -81,7 +83,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         super.onDestroyView()
     }
 
-    @SuppressLint("CommitTransaction")
     private fun navigateToProjectOutputFragment() {
         parentFragmentManager.beginTransaction()
             .add(R.id.fragment_container, ProjectOutputFragment())

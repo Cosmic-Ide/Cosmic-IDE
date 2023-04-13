@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import io.github.dingyi222666.view.treeview.Branch
-import io.github.dingyi222666.view.treeview.CreateDataScope
 import io.github.dingyi222666.view.treeview.DataSource
 import io.github.dingyi222666.view.treeview.DataSourceScope
 import io.github.dingyi222666.view.treeview.Leaf
@@ -29,7 +28,6 @@ import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
-import java.util.UUID
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project = ProjectHandler.getProject()
@@ -75,8 +73,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
                     val tab = binding.tabLayout.newTab().setText(file.name)
-                    binding.tabLayout.addTab(tab)
-                    binding.tabLayout.selectTab(tab)
+                    binding.tabLayout.apply {
+                        addTab(tab)
+                        selectTab(tab, true)
+                    }
                 }
             }
 

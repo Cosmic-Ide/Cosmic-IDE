@@ -55,6 +55,7 @@ dependencies {
 
     implementation("io.github.Rosemoe.sora-editor:editor")
     implementation("io.github.Rosemoe.sora-editor:language-textmate")
+    implementation("io.github.dingyi222666:treeview:1.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 

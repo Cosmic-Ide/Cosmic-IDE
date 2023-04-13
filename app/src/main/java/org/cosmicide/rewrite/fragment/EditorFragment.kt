@@ -5,6 +5,14 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
+import io.github.dingyi222666.view.treeview.Branch
+import io.github.dingyi222666.view.treeview.CreateDataScope
+import io.github.dingyi222666.view.treeview.DataSource
+import io.github.dingyi222666.view.treeview.DataSourceScope
+import io.github.dingyi222666.view.treeview.Leaf
+import io.github.dingyi222666.view.treeview.Tree
+import io.github.dingyi222666.view.treeview.TreeView
+import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -17,9 +25,11 @@ import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
+import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
+import java.util.UUID
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project = ProjectHandler.getProject()
@@ -33,7 +43,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
+        val tree = createTree()
+
+        (binding.included.treeview as TreeView<DataSource<String>>).apply {
+            bindCoroutineScope(lifecycleScope)
+            this.tree = tree
+            binder = ViewBinder(layoutInflater)
+            nodeEventListener = binder
+        }
+
+
         lifecycleScope.launch {
+            binding.included.treeview.refresh()
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -130,4 +151,28 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             .addToBackStack("EditorFragment")
             .commit()
     }
+
+    private fun createTree(): Tree<DataSource<String>> {
+        val dataCreator: CreateDataScope<String> = { _, _ -> UUID.randomUUID().toString() }
+        return buildTree(dataCreator) {
+            val rootDir = project.root
+            Branch(rootDir.name) {
+                transverseTree(rootDir, this)
+            }
+        }
+    }
+
+    private fun transverseTree(dir: File, parentBranch: DataSourceScope<String>) {
+        for (file in dir.listFiles()) {
+            when {
+                file.isFile -> parentBranch.Leaf(file.name)
+                file.isDirectory -> {
+                    parentBranch.Branch(file.name){
+                        transverseTree(file, this)
+                    }
+                }
+            }
+        }
+    }
+
 }

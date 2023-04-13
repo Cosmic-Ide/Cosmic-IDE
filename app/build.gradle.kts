@@ -81,7 +81,7 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
     implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("androidx.activity:activity-ktx:1.7.0-beta01")
+    implementation("androidx.activity:activity-ktx:1.8.0-alpha03")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
     implementation("com.google.android.material:material:1.9.0-alpha02")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")

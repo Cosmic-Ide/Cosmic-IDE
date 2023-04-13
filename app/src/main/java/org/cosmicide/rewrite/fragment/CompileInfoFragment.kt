@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
 
         binding.infoEditor.apply {
             setFont()
+            setEditorLanguage(TextMateLanguage.create("source.build", true))
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             editable = false
             setTextSize(16f)

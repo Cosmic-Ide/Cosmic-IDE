@@ -2,9 +2,7 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import dalvik.system.DexClassLoader
 import dalvik.system.DexFile
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
@@ -26,6 +24,8 @@ import java.lang.reflect.Modifier
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
+    lateinit var runThread: Thread
+    var isRunning: Boolean = false
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
 
@@ -36,8 +36,23 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             when (it.itemId) {
                 R.id.reload -> {
                     val text = binding.infoEditor.text
+                    if (isRunning) {
+                        runThread.destroy()
+                    }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
                     runProject()
+                    true
+                }
+
+                R.id.cancel -> {
+                    if (isRunning) {
+                        try {
+                            runThread.destroy()
+                        } catch (_: Throwable) {
+                        }
+                    }
+                    parentFragmentManager.popBackStack()
+
                     true
                 }
 
@@ -52,6 +67,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             isWordwrap = true
             setTextSize(14f)
             setFont()
+            invalidate()
         }
 
         binding.toolbar.title = "Running ${project.name}"
@@ -59,9 +75,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             parentFragmentManager.popBackStack()
         }
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                runProject()
-            }
+            runProject()
         }
     }
 
@@ -73,25 +87,27 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 lifecycleScope.launch(Dispatchers.Main) {
                     text.insert(cursor.rightLine, cursor.rightColumn, p0.toChar().toString())
                 }
+                Thread.sleep(1)
             }
         })
         System.setOut(systemOut)
         System.setErr(systemOut)
 
-            val dexFile = DexFile(project.binDir.resolve("classes.dex"))
-            val classes = dexFile.entries().toList()
-            val className = classes[0]
+        val dexFile = DexFile(project.binDir.resolve("classes.dex"))
+        val classes = dexFile.entries().toList()
+        val className = classes[0]
 
-            val loader = DexClassLoader(
-                project.binDir.resolve("classes.dex").absolutePath,
-                project.binDir.toString(),
-                null,
-                this@ProjectOutputFragment.javaClass.classLoader
-            )
-
+        val loader = DexClassLoader(
+            project.binDir.resolve("classes.dex").absolutePath,
+            project.binDir.toString(),
+            null,
+            this@ProjectOutputFragment.javaClass.classLoader
+        )
+        runThread = Thread(kotlinx.coroutines.Runnable {
             runCatching {
                 loader.loadClass(className)
             }.onSuccess { clazz ->
+                isRunning = true
                 if (clazz.declaredMethods.any { it.name == "main" }) {
                     val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                     if (Modifier.isStatic(method.modifiers)) {
@@ -108,6 +124,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 System.err.println("Error loading class: ${e.message}")
             }.also {
                 systemOut.close()
+                isRunning = false
             }
+        })
+        runThread.start()
         }
 }

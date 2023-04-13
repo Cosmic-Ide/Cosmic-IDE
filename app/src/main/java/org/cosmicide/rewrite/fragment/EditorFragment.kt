@@ -43,19 +43,19 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
-        val tree = createTree()
-
-        (binding.included.treeview as TreeView<DataSource<String>>).apply {
-            bindCoroutineScope(lifecycleScope)
-            this.tree = tree
-            binder = ViewBinder(layoutInflater)
-            nodeEventListener = binder
-        }
-
-
         lifecycleScope.launch {
-            binding.included.treeview.refresh()
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
+
+            val tree = createTree()
+
+            (binding.included.treeview as TreeView<DataSource<File>>).apply {
+                bindCoroutineScope(lifecycleScope)
+                this.tree = tree
+                binder = ViewBinder(layoutInflater, fileViewModel)
+                nodeEventListener = binder
+            }
+
+            binding.included.treeview.refresh()
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
@@ -152,22 +152,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             .commit()
     }
 
-    private fun createTree(): Tree<DataSource<String>> {
-        val dataCreator: CreateDataScope<String> = { _, _ -> UUID.randomUUID().toString() }
-        return buildTree(dataCreator) {
+    private fun createTree(): Tree<DataSource<File>> {
+        return buildTree {
             val rootDir = project.root
-            Branch(rootDir.name) {
+            Branch(rootDir.name, data = rootDir) {
                 transverseTree(rootDir, this)
             }
         }
     }
 
-    private fun transverseTree(dir: File, parentBranch: DataSourceScope<String>) {
+    private fun transverseTree(dir: File, parentBranch: DataSourceScope<File>) {
         for (file in dir.listFiles()) {
             when {
-                file.isFile -> parentBranch.Leaf(file.name)
+                file.isFile -> parentBranch.Leaf(file.name, file)
                 file.isDirectory -> {
-                    parentBranch.Branch(file.name){
+                    parentBranch.Branch(file.name, file){
                         transverseTree(file, this)
                     }
                 }

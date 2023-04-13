@@ -14,10 +14,12 @@ import io.github.dingyi222666.view.treeview.TreeViewBinder
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding
+import org.cosmicide.rewrite.model.FileViewModel
+import java.io.File
 
 
-class ViewBinder(var layoutInflater: LayoutInflater) : TreeViewBinder<DataSource<String>>(),
-    TreeNodeEventListener<DataSource<String>> {
+class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileViewModel) : TreeViewBinder<DataSource<File>>(),
+    TreeNodeEventListener<DataSource<File>> {
 
     override fun createView(parent: ViewGroup, viewType: Int): View {
         return if (viewType == 1) {
@@ -27,7 +29,7 @@ class ViewBinder(var layoutInflater: LayoutInflater) : TreeViewBinder<DataSource
         }
     }
 
-    override fun getItemViewType(node: TreeNode<DataSource<String>>): Int {
+    override fun getItemViewType(node: TreeNode<DataSource<File>>): Int {
         if (node.isChild) {
             return 1
         }
@@ -36,8 +38,8 @@ class ViewBinder(var layoutInflater: LayoutInflater) : TreeViewBinder<DataSource
 
     override fun bindView(
         holder: TreeView.ViewHolder,
-        node: TreeNode<DataSource<String>>,
-        listener: TreeNodeEventListener<DataSource<String>>
+        node: TreeNode<DataSource<File>>,
+        listener: TreeNodeEventListener<DataSource<File>>
     ) {
         if (node.isChild) {
             applyDir(holder, node)
@@ -53,12 +55,12 @@ class ViewBinder(var layoutInflater: LayoutInflater) : TreeViewBinder<DataSource
 
     }
 
-    private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<DataSource<String>>) {
+    private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<DataSource<File>>) {
         val binding = TreeviewItemFileBinding.bind(holder.itemView)
         binding.textView.text = node.name.toString()
     }
 
-    private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<DataSource<String>>) {
+    private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<DataSource<File>>) {
         val binding = TreeviewItemDirBinding.bind(holder.itemView)
         binding.textView.text = node.name.toString()
 
@@ -71,14 +73,16 @@ class ViewBinder(var layoutInflater: LayoutInflater) : TreeViewBinder<DataSource
     }
 
 
-    override fun onClick(node: TreeNode<DataSource<String>>, holder: TreeView.ViewHolder) {
+    override fun onClick(node: TreeNode<DataSource<File>>, holder: TreeView.ViewHolder) {
         if (node.isChild) {
             applyDir(holder, node)
+        } else {
+            fileViewModel.addFile(node.data?.data!!)
         }
     }
 
     override fun onToggle(
-        node: TreeNode<DataSource<String>>,
+        node: TreeNode<DataSource<File>>,
         isExpand: Boolean,
         holder: TreeView.ViewHolder
     ) {

@@ -6,12 +6,9 @@ import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
-import java.io.InputStream
-import java.nio.charset.Charset
 import java.io.Writer
+import java.nio.charset.Charset
 import java.nio.file.Files
-import java.nio.file.Path
-import java.util.Collections
 import java.util.Locale
 import javax.tools.Diagnostic.Kind.ERROR
 import javax.tools.Diagnostic.Kind.MANDATORY_WARNING
@@ -39,7 +36,7 @@ class JavaCompileTask(val project: Project) : Task {
         try {
             Files.createDirectories(output.toPath())
         } catch (e: Exception) {
-            throw RuntimeException("Failed to create output directory", e)
+            reporter.reportWarning(e.stackTraceToString())
         }
 
         val javaFiles = getSourceFiles(project.srcDir.invoke())
@@ -123,7 +120,7 @@ class JavaCompileTask(val project: Project) : Task {
     fun getClasspath(project: Project): List<File> {
         val classpath = mutableListOf(File(project.binDir, "classes"))
         val libDir = project.libDir
-        if (libDir.exists() && libDir.isDirectory()) {
+        if (libDir.exists() && libDir.isDirectory) {
             classpath += libDir.listFiles()?.toList() ?: emptyList()
         }
         return classpath

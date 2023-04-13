@@ -10,7 +10,11 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -74,11 +78,13 @@ class App : Application() {
     }
 
     private fun applyThemeBasedOnConfiguration(config: Configuration) {
-        if (config.uiMode == Configuration.UI_MODE_NIGHT_YES) {
-            ThemeRegistry.getInstance().setTheme(DARCULA_THEME_NAME)
-        } else {
-            ThemeRegistry.getInstance().setTheme(QUIET_LIGHT_THEME_NAME)
-        }
+        val themeName =
+            if (config.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+                DARCULA_THEME_NAME
+            } else {
+                QUIET_LIGHT_THEME_NAME
+            }
+        ThemeRegistry.getInstance().setTheme(themeName)
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {

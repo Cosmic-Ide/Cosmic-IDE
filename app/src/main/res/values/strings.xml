@@ -19,4 +19,5 @@
     <string name="compile_info">Compile info</string>
     <string name="project_output">Project output</string>
     <string name="reload">Reload</string>
+    <string name="cancel">Cancel</string>
 </resources>

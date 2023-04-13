@@ -63,7 +63,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
-                    fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
+
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {
@@ -74,7 +74,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             fileViewModel.files.observe(viewLifecycleOwner) { files ->
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
-                    binding.tabLayout.addTab(binding.tabLayout.newTab().setText(file.name))
+                    val tab = binding.tabLayout.newTab().setText(file.name)
+                    binding.tabLayout.addTab(tab)
+                    binding.tabLayout.selectTab(tab)
                 }
             }
 

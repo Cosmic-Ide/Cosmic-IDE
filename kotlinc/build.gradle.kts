@@ -29,7 +29,7 @@ android {
 dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.10")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
     implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.10")
     api("io.github.itsaky:nb-javac-android:17.0.0.3")
 

@@ -9,6 +9,9 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.cosmicide.rewrite.R
 
+/**
+ * A [PreferenceFragmentCompat] subclass to display the preferences UI.
+ */
 class PreferencesFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

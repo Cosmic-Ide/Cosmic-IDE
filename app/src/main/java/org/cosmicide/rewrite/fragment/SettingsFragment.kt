@@ -5,6 +5,9 @@ import android.view.View
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentSettingsBinding
 
+/**
+ * Fragment for displaying settings screen.
+ */
 class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
     override fun getViewBinding() = FragmentSettingsBinding.inflate(layoutInflater)

@@ -83,6 +83,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
                     binding.tabLayout.apply {
+                        addTab(tab)
                         selectTab(tab, true)
                     }
                 }

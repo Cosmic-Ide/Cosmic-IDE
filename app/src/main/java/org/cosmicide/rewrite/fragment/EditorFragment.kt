@@ -17,7 +17,9 @@ import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
@@ -71,6 +73,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             })
 
+
             fileViewModel.files.observe(viewLifecycleOwner) { files ->
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
@@ -80,8 +83,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
                     binding.tabLayout.apply {
-                        addTab(tab)
                         selectTab(tab, true)
+                    }
+                }
+
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO){
+                        binding.included.treeview.refresh()
                     }
                 }
             }
@@ -194,13 +202,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 R.id.close_right_tab -> fileViewModel.removeRight(position)
                 R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
             }
-            // Respond to menu item click.
             true
         }
-        popup.setOnDismissListener {
-            // Respond to popup being dismissed.
-        }
-        // Show the popup menu.
         popup.show()
     }
 

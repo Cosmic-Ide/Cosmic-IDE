@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/create_kotlin_class"
+        android:title="Create kotlin class" />
+    <item
+        android:id="@+id/create_java_class"
+        android:title="Create java class" />
+    <item
+        android:id="@+id/create_folder"
+        android:title="Create folder" />
+    <item
+        android:id="@+id/rename"
+        android:title="Rename" />
+    <item
+        android:id="@+id/delete"
+        android:title="Delete" />
+</menu>

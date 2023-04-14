@@ -7,7 +7,6 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.Writer
-import java.nio.charset.Charset
 import java.nio.file.Files
 import java.util.Locale
 import javax.tools.Diagnostic.Kind.ERROR
@@ -22,16 +21,20 @@ import javax.tools.StandardLocation
 
 class JavaCompileTask(val project: Project) : Task {
 
+    val diagnostics by lazy {
+        DiagnosticCollector<JavaFileObject>()
+    }
     val tool by lazy {
         JavacTool.create()
     }
 
+    val fileManager by lazy {
+        tool.getStandardFileManager(diagnostics, null, null)
+    }
+
     override fun execute(reporter: BuildReporter) {
         val output = File(project.binDir, "classes")
-        val version = "8"
-        reporter.reportInfo("Compiling on Java version: $version")
-
-        val diagnostics = DiagnosticCollector<JavaFileObject>()
+        val version = "17"
 
         try {
             Files.createDirectories(output.toPath())
@@ -40,6 +43,11 @@ class JavaCompileTask(val project: Project) : Task {
         }
 
         val javaFiles = getSourceFiles(project.srcDir.invoke())
+        if (javaFiles.isEmpty()) {
+            reporter.reportInfo("> Task :compileJava NO-SOURCE")
+        } else {
+            reporter.reportInfo("> Task :compileJava")
+        }
         val javaFileObjects = javaFiles.map { file ->
             object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
                 override fun getCharContent(ignoreEncodingErrors: Boolean): CharSequence {
@@ -52,7 +60,6 @@ class JavaCompileTask(val project: Project) : Task {
             return
         }
 
-        val fileManager = tool.getStandardFileManager(diagnostics, Locale.getDefault(), Charset.defaultCharset())
 
         fileManager.use { fm ->
             fm.setLocation(StandardLocation.CLASS_OUTPUT, listOf(output))

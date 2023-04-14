@@ -37,7 +37,7 @@ class JavaLanguage(
 
     init {
         val options = JavaCompletionOptionsImpl(
-            "${project.binDir.absolutePath}${File.pathSeparator}autocomplete.log",
+            "${project.binDir.absolutePath}${File.separator}autocomplete.log",
             Level.ALL,
             emptyList(),
             emptyList()

@@ -57,7 +57,7 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-textmate")
     implementation("io.github.dingyi222666:treeview:1.1.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation(projects.buildTools)
     implementation(projects.common)
@@ -68,4 +68,6 @@ dependencies {
     implementation(projects.util)
 
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
+    androidTestImplementation("junit:junit:4.12")
 }

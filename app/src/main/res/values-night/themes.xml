@@ -2,6 +2,5 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <item name="android:fontFamily">@font/noto_sans_mono</item>
     </style>
 </resources>

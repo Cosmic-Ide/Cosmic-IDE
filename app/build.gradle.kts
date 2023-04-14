@@ -68,4 +68,6 @@ dependencies {
     implementation(projects.util)
 
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
+    androidTestImplementation("junit:junit:4.12")
 }

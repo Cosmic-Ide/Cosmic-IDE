@@ -14,7 +14,7 @@ import org.cosmicide.project.Project
  */
 class Compiler(val project: Project, val reporter: BuildReporter) {
     companion object {
-        var compileListener: (Class<*>, BuildStatus) -> Unit = { _, _ -> {} }
+        var compileListener: (Class<*>, BuildStatus) -> Unit = { _, _ -> }
     }
 
     init {

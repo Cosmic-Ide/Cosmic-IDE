@@ -33,11 +33,16 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.inflateMenu(R.menu.output_menu)
         binding.toolbar.setOnMenuItemClickListener {
+            val transaction = parentFragmentManager.beginTransaction()
             when (it.itemId) {
                 R.id.reload -> {
                     val text = binding.infoEditor.text
                     if (isRunning) {
                         runThread.destroy()
+                        transaction.apply {
+                            replace(R.id.fragment_container, ProjectOutputFragment())
+                            commit()
+                        }
                     }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
                     runProject()
@@ -51,7 +56,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         } catch (_: Throwable) {
                         }
                     }
-                    parentFragmentManager.popBackStack()
+                    transaction.remove(this).commit()
 
                     true
                 }

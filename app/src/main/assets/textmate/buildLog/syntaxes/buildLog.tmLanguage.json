@@ -26,6 +26,10 @@
         {
           "name": "token.error-token",
           "match": "ERROR|error|Error"
+        },
+        {
+          "name": "token.debug-token",
+          "match": "OUTPUT|out|OUT"
         }
       ]
     },

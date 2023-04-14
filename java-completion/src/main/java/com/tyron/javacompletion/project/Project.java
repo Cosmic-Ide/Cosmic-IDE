@@ -83,11 +83,9 @@ public class Project {
     }
 
     public synchronized void loadJdkModule() {
-        logger.info("Loading JDK module");
         try (BufferedReader reader =
                      Files.newBufferedReader(Paths.get(FileUtil.dataDir.getAbsolutePath(), "index.json"))) {
             moduleManager.addDependingModule(new IndexStore().readModule(reader));
-            logger.info("JDK module loaded");
         } catch (Throwable t) {
             logger.warning(t, "Unable to load JDK module");
         }

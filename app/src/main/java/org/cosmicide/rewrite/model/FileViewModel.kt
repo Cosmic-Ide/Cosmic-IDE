@@ -60,6 +60,42 @@ class FileViewModel : ViewModel() {
     }
 
     /**
+     * Removes all files from the list totally
+     */
+    fun removeAll(){
+        _files.value = emptyList()
+        setCurrentPosition(0)
+    }
+
+    /**
+     * Removes a file immediately close to the position at Right
+     */
+    fun removeRight(pos: Int){
+        when (pos) {
+            _files.value?.size?.minus(1) -> removeFile(_files.value!![(_files.value?.size?.minus(1)!!)!!])
+            _files.value?.size?.minus(1) -> removeFile(_files.value!![_files.value?.size?.minus(1)!!])
+            else -> _files.value?.toMutableList()?.apply {
+                removeAt(pos + 1)
+                _files.value = this
+            }
+        }
+    }
+
+    /**
+     * Removes a file immediately close to the position at Left
+     */
+    fun removeLeft(pos: Int){
+        when (pos) {
+            0 -> removeFile(_files.value?.get(0)!!)
+            _files.value?.size?.minus(1) -> removeFile(_files.value!!.get(_files.value?.size?.minus(1)!!))
+            else -> _files.value?.toMutableList()?.apply {
+                removeAt(pos - 1)
+                _files.value = this
+            }
+        }
+    }
+
+    /**
      * Adds the given file to the list of files and sets it as the current file.
      * Returns true if the file was successfully added, false otherwise.
      */

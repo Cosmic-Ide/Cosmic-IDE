@@ -2,6 +2,8 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.PopupMenu
+import androidx.annotation.MenuRes
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
@@ -73,6 +75,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
                     val tab = binding.tabLayout.newTab().setText(file.name)
+                    tab.view.setOnLongClickListener {
+                        showMenu(it, R.menu.tab_menu, tab.position)
+                        true
+                    }
                     binding.tabLayout.apply {
                         addTab(tab)
                         selectTab(tab, true)
@@ -174,6 +180,28 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             }
         }
+    }
+
+    private fun showMenu(v: View, @MenuRes menuRes: Int, position: Int) {
+        val popup = PopupMenu(context, v)
+        popup.menuInflater.inflate(menuRes, popup.menu)
+
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.currentFile!!)
+                R.id.close_all_tab -> fileViewModel.removeAll()
+                R.id.close_left_tab -> fileViewModel.removeLeft(position)
+                R.id.close_right_tab -> fileViewModel.removeRight(position)
+                R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
+            }
+            // Respond to menu item click.
+            true
+        }
+        popup.setOnDismissListener {
+            // Respond to popup being dismissed.
+        }
+        // Show the popup menu.
+        popup.show()
     }
 
 }

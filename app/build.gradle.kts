@@ -48,6 +48,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.5.6")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.preference:preference-ktx:1.2.0")
 
     implementation("com.github.TutorialsAndroid:crashx:v4.0.19")
     implementation("com.google.android.material:material:1.8.0")

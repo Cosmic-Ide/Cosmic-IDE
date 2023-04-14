@@ -144,6 +144,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         navigateToCompileInfoFragment()
                         true
                     }
+                    R.id.action_settings -> {
+                        navigateToSettingsFragment()
+                        true
+                    }
 
                     else -> false
                 }
@@ -155,6 +159,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         parentFragmentManager.beginTransaction()
             .add(R.id.fragment_container, CompileInfoFragment())
             .addToBackStack("EditorFragment")
+            .commit()
+    }
+
+    private fun navigateToSettingsFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, SettingsFragment())
+            .addToBackStack(null)
             .commit()
     }
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="java_version_entries">
+        <item>8</item>
+        <item>11</item>
+        <item>17</item>
+    </string-array>
+</resources>

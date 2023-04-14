@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="Editor">
+
+        <SeekBarPreference
+            android:key="font_size"
+            android:title="Font Size"
+            android:summary="Set the font size for the editor"
+            android:defaultValue="14"
+            android:min="12"
+            android:max="22" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Compiler">
+
+        <SwitchPreference
+            android:key="use_fast_jarfs"
+            android:title="Use fast implementation for Jar FS"
+            android:summary="This experimental mode may speed up compilation time, but use with caution"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="java_version"
+            android:title="Java Version"
+            android:summary="Select the version of Java to use for compilation"
+            android:entries="@array/java_version_entries"
+            android:entryValues="@array/java_version_entries"
+            android:defaultValue="17" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="About">
+
+        <Preference
+            android:key="version"
+            android:title="Version"
+            android:summary="1.0" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

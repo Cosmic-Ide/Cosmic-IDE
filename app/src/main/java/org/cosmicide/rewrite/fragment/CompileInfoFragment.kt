@@ -16,6 +16,7 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
+import org.cosmicide.rewrite.util.Prefs
 import org.cosmicide.rewrite.util.ProjectHandler
 
 /**
@@ -49,7 +50,7 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             setEditorLanguage(TextMateLanguage.create("source.build", true))
             editable = false
-            setTextSize(16f)
+            setTextSize(Prefs.editorFontSize)
             isLineNumberEnabled = false
             isWordwrap = true
             invalidate()

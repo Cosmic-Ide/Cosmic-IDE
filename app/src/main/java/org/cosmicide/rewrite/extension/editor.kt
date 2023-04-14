@@ -24,6 +24,6 @@ fun CodeEditor.setLanguageTheme(language: EditorLanguage) {
  * Sets the font and enables highlighting of the current line for the code editor.
  */
 fun CodeEditor.setFont() {
-    typefaceText = ResourcesCompat.getCachedFont(context, R.font.noto_sans_mono)
+    typefaceText = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
     isHighlightCurrentLine = true
 }

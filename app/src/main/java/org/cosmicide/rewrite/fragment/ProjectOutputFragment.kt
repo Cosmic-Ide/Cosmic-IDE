@@ -16,6 +16,7 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
+import org.cosmicide.rewrite.util.Prefs
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
@@ -70,7 +71,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             isWordwrap = true
-            setTextSize(14f)
+            setTextSize(Prefs.editorFontSize)
             setFont()
             invalidate()
         }

@@ -14,6 +14,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
             app:title="Settings" />
 
     </com.google.android.material.appbar.AppBarLayout>

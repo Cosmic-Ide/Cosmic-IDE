@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.Prefs
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.FileNotFoundException
@@ -30,6 +31,7 @@ class App : Application() {
         super.onCreate()
         DynamicColors.applyToActivitiesIfAvailable(this)
         FileUtil.init(this)
+        Prefs.init(applicationContext)
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
         scope.launch {
             try {

@@ -28,6 +28,7 @@ import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileIndex
+import org.cosmicide.rewrite.util.Prefs
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
@@ -106,7 +107,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
 
-        binding.editor.setTextSize(20f)
+        binding.editor.setTextSize(Prefs.editorFontSize)
     }
 
     private fun setEditorLanguage() {

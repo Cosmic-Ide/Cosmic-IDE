@@ -14,20 +14,24 @@ object Prefs {
      * The font size selected by the user.
      */
     val editorFontSize: Float
-        get() = try {
-            prefs.getString("font_size", "12")?.toFloat() ?: 12f
-        } catch (e: NumberFormatException) {
-            12f
+        get() {
+            return try {
+                prefs.getString("font_size", "12")?.toFloat() ?: 12f
+            } catch (e: Exception) {
+                12f
+            }
         }
 
     /**
      * The Java version selected by the user.
      */
     val compilerJavaVersion: Int
-        get() = try {
-            prefs.getString("java_version", "17")?.toInt() ?: 17
-        } catch (e: NumberFormatException) {
-            17
+        get() {
+            return try {
+                prefs.getString("java_version", "17")?.toInt() ?: 17
+            } catch (e: Exception) {
+                17
+            }
         }
 
     /**

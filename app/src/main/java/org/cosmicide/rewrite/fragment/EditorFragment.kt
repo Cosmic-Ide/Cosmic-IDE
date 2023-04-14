@@ -17,7 +17,9 @@ import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
@@ -48,7 +50,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             val tree = createTree()
-            @Suppress("UNCHECKED_CAST")
+
             (binding.included.treeview as TreeView<DataSource<File>>).apply {
                 bindCoroutineScope(lifecycleScope)
                 this.tree = tree
@@ -72,6 +74,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             })
 
+
             fileViewModel.files.observe(viewLifecycleOwner) { files ->
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
@@ -80,13 +83,20 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         showMenu(it, R.menu.tab_menu, tab.position)
                         true
                     }
-                    binding.tabLayout.addTab(tab)
+                    binding.tabLayout.apply {
+                        selectTab(tab, true)
+                    }
+                }
+
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO){
+                        binding.included.treeview.refresh()
+                    }
                 }
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
                 position?.takeIf { it != -1 }?.let {
-                    binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position), true)
                     binding.editor.setText(fileViewModel.currentFile?.readText())
                     setEditorLanguage()
                 }
@@ -180,12 +190,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun transverseTree(dir: File, parentBranch: DataSourceScope<File>) {
-        val files = dir.listFiles()
-        for (file in files!!) {
+        for (file in dir.listFiles()) {
             when {
                 file.isFile -> parentBranch.Leaf(file.name, file)
                 file.isDirectory -> {
-                    parentBranch.Branch(file.name, file) {
+                    parentBranch.Branch(file.name, file){
                         transverseTree(file, this)
                     }
                 }
@@ -199,22 +208,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.files.value!![position])
+                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.currentFile!!)
                 R.id.close_all_tab -> fileViewModel.removeAll()
-                R.id.close_left_tab -> {
-                    fileViewModel.removeLeft(position)
-                }
-
+                R.id.close_left_tab -> fileViewModel.removeLeft(position)
                 R.id.close_right_tab -> fileViewModel.removeRight(position)
                 R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
             }
-            // Respond to menu item click.
             true
         }
-        popup.setOnDismissListener {
-            // Respond to popup being dismissed.
-        }
-        // Show the popup menu.
         popup.show()
     }
 

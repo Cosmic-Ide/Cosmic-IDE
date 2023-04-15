@@ -4,6 +4,7 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSourceFiles
 import org.cosmicide.build.util.getSystemClasspath
+import org.cosmicide.common.Prefs
 import org.cosmicide.project.Project
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
@@ -41,7 +42,7 @@ class KotlinCompiler(val project: Project) : Task {
         args.javaSourceRoots = kotlinSourceFiles.filter { it.extension == "java" }.map { it.absolutePath }.toTypedArray()
         args.moduleName = project.name
         args.pluginClasspaths = plugins
-        args.useFastJarFileSystem = true
+        args.useFastJarFileSystem = Prefs.useFastJarFs
 
         val collector = createMessageCollector(reporter)
 

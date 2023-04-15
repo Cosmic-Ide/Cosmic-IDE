@@ -35,6 +35,12 @@ object Prefs {
         }
 
     /**
+     * The FastJarFs selected by user.
+     */
+    val useFastJarFs: Boolean
+        get() = prefs.getBoolean("use_fastjarfs", false)
+
+    /**
      * Initializes shared preferences.
      * @param context The context of the application.
      */

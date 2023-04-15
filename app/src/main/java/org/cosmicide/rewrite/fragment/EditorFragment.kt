@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
@@ -30,7 +31,6 @@ import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileIndex
-import org.cosmicide.rewrite.util.Prefs
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 

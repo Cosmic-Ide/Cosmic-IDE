@@ -13,10 +13,10 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.compile.Compiler
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
-import org.cosmicide.rewrite.util.Prefs
 import org.cosmicide.rewrite.util.ProjectHandler
 
 /**

@@ -1,4 +1,4 @@
-package org.cosmicide.rewrite.util
+package org.cosmicide.rewrite.common
 
 import android.content.Context
 import android.content.SharedPreferences

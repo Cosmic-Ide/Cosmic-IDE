@@ -99,7 +99,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
                 }
 
-                TODO("refresh tab")
+//                TODO("refresh treeview")
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->

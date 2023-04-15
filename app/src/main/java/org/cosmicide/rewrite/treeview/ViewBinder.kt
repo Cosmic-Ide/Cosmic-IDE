@@ -77,7 +77,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
     }
 
     override fun onLongClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder): Boolean {
-        showMenu(holder.itemView, R.menu.treeview_menu, node.data?.file!!, node)
+        showMenu(holder.itemView.findViewById(R.id.textView), R.menu.treeview_menu, node.data?.file!!, node)
         return super<TreeViewBinder>.onLongClick(node, holder)
     }
 

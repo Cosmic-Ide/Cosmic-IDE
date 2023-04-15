@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:background="?selectableItemBackground"
+    android:id="@+id/root"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingTop="10dp"

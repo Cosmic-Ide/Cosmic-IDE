@@ -15,8 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.Prefs
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.FileNotFoundException

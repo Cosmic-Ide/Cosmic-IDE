@@ -19,7 +19,7 @@
         android:title="Compiler">
 
         <SwitchPreference
-            android:key="use_fast_jarfs"
+            android:key="use_fastjarfs"
             android:title="Use fast implementation for Jar FS"
             android:summary="This experimental mode may speed up compilation time, but use with caution"
             android:defaultValue="false" />
@@ -39,8 +39,7 @@
 
         <Preference
             android:key="version"
-            android:title="Version"
-            android:summary="1.0" />
+            android:title="Version" />
 
     </PreferenceCategory>
 

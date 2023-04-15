@@ -53,8 +53,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 transverseTree(project.root) as MutableSet<FileSet>
             )
 
+            val generator = FileTreeNodeGenerator(rootItem)
+
             val tree = Tree.createTree<FileSet>().apply {
-                generator = FileTreeNodeGenerator(rootItem)
+                this.generator = generator
                 initTree()
             }
 
@@ -97,16 +99,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
                 }
 
-//                (binding.included.treeview as TreeView<File>).apply {
-//                    bindCoroutineScope(lifecycleScope)
-//                    this.tree = tree
-//                    binder = ViewBinder(layoutInflater, fileViewModel)
-//                    nodeEventListener = binder
-//                }
-//
-//                lifecycleScope.launch {
-//                    binding.included.treeview.refresh()
-//                }
+                TODO("refresh tab")
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->

@@ -15,17 +15,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/baseline_insert_drive_file_24" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="6dp"
+        android:drawableLeft="@drawable/outline_insert_drive_file_24"
+        android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:text="TextView"
         android:textSize="16sp" />

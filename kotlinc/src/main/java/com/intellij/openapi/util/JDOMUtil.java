@@ -59,9 +59,7 @@ public final class JDOMUtil {
         } else {
             synchronized (JDOMUtil.class) {
                 factory = XML_INPUT_FACTORY;
-                if (factory != null) {
-                    return factory;
-                } else {
+                if (factory == null) {
                     String property =
                             System.setProperty(
                                     "javax.xml.stream.XMLInputFactory",
@@ -69,6 +67,7 @@ public final class JDOMUtil {
 
                     try {
                         factory = XMLInputFactory.newFactory();
+
                     } finally {
                         if (property != null) {
                             System.setProperty("javax.xml.stream.XMLInputFactory", property);
@@ -91,12 +90,13 @@ public final class JDOMUtil {
                         }
                     }
 
-                    factory.setProperty("javax.xml.stream.isCoalescing", true);
-                    factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
-                    factory.setProperty("javax.xml.stream.supportDTD", false);
                     XML_INPUT_FACTORY = factory;
-                    return factory;
                 }
+
+                factory.setProperty("javax.xml.stream.isCoalescing", true);
+                factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+                factory.setProperty("javax.xml.stream.supportDTD", false);
+                return factory;
             }
         }
     }
@@ -132,11 +132,11 @@ public final class JDOMUtil {
 
     public static Element load(Path file, SafeJdomFactory factory)
             throws JDOMException, IOException {
-        try {
+        try (var reader = new BufferedInputStream(Files.newInputStream(file))) {
             return loadUsingStaX(
                     new InputStreamReader(
                             CharsetToolkit.inputStreamSkippingBOM(
-                                    new BufferedInputStream(Files.newInputStream(file))),
+                                    reader),
                             StandardCharsets.UTF_8),
                     factory);
         } catch (ClosedFileSystemException var3) {

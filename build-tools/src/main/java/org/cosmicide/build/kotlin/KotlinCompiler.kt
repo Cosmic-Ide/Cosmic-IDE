@@ -86,7 +86,7 @@ class KotlinCompiler(val project: Project) : Task {
                 message: String,
                 location: CompilerMessageSourceLocation?
             ) {
-                val diagnostic = Diagnostic(severity, message, location)
+                val diagnostic = Diagnostic(message, location)
                 when (severity) {
                     CompilerMessageSeverity.ERROR, CompilerMessageSeverity.EXCEPTION -> {
                         hasErrors = true
@@ -102,12 +102,10 @@ class KotlinCompiler(val project: Project) : Task {
     }
 
     data class Diagnostic(
-        val severity: CompilerMessageSeverity,
         val message: String,
         val location: CompilerMessageSourceLocation?
     ) {
-        override fun toString() = "${severity.presentableName.uppercase()}: ${
-            location?.toString()?.substringAfter("src/")
-        } $message"
+        override fun toString() =
+            location?.toString()?.substringAfter("src/main/").orEmpty() + " " + message
     }
 }

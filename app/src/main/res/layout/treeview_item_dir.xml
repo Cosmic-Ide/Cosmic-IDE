@@ -25,10 +25,8 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
-        android:drawableLeft="@drawable/baseline_folder_open_24"
-        android:drawablePadding="8dp"
+        android:layout_marginStart="2sp"
         android:gravity="center_vertical"
         android:text="TextView"
-        android:textSize="16sp" />
+        android:textSize="18sp" />
 </LinearLayout>

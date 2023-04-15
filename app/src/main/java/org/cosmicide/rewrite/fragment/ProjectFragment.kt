@@ -80,16 +80,18 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
     }
 
     private fun navigateToNewProjectFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, NewProjectFragment())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container, NewProjectFragment())
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            addToBackStack(null)
+        }.commit()
     }
 
     private fun navigateToEditorFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, EditorFragment())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container, EditorFragment())
+            addToBackStack(null)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        }.commit()
     }
 }

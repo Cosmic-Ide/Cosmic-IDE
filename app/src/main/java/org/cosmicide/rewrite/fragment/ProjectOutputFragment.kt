@@ -2,9 +2,11 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
+import com.android.tools.smali.dexlib2.Opcodes
+import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import dalvik.system.DexClassLoader
-import dalvik.system.DexFile
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -41,11 +43,12 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         runThread.destroy()
                         transaction.apply {
                             replace(R.id.fragment_container, ProjectOutputFragment())
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                             commit()
                         }
                     }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
-                    runProject()
+                    checkClasses()
                     true
                 }
 
@@ -56,7 +59,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         } catch (_: Throwable) {
                         }
                     }
-                    transaction.remove(this).commit()
+                    transaction.apply {
+                        remove(this@ProjectOutputFragment)
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                    }.commit()
 
                     true
                 }
@@ -77,14 +83,33 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.toolbar.title = "Running ${project.name}"
         binding.toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+            parentFragmentManager.beginTransaction().apply {
+                remove(this@ProjectOutputFragment)
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+            }.commit()
         }
         lifecycleScope.launch {
-            runProject()
+            checkClasses()
         }
     }
 
-    fun runProject() = CoroutineScope(Dispatchers.IO).launch {
+    fun checkClasses() {
+        // TODO: Show a recyclerview with all classes and allow the user to select one
+        val dexFile = DexBackedDexFile.fromInputStream(
+            Opcodes.forApi(33),
+            project.binDir.resolve("classes.dex").inputStream().buffered()
+        )
+        val classes = dexFile.classes.map { it.type.substring(1, it.type.length - 1) }
+        if (classes.isEmpty()) {
+            binding.infoEditor.setText("No classes found")
+            return
+        }
+        val index = classes.firstOrNull { it.endsWith("Main") } ?: classes.first()
+
+        runClass(index)
+    }
+
+    fun runClass(className: String) = CoroutineScope(Dispatchers.IO).launch {
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
                 val text = binding.infoEditor.text
@@ -92,21 +117,18 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 lifecycleScope.launch(Dispatchers.Main) {
                     text.insert(cursor.rightLine, cursor.rightColumn, p0.toChar().toString())
                 }
+                // This is a hack to allow the editor to update properly even when in a while(true) loop
                 Thread.sleep(1)
             }
         })
         System.setOut(systemOut)
         System.setErr(systemOut)
 
-        val dexFile = DexFile(project.binDir.resolve("classes.dex"))
-        val classes = dexFile.entries().toList()
-        val className = classes[0]
-
         val loader = DexClassLoader(
             project.binDir.resolve("classes.dex").absolutePath,
             project.binDir.toString(),
             null,
-            this@ProjectOutputFragment.javaClass.classLoader
+            javaClass.classLoader
         )
         runThread = Thread(kotlinx.coroutines.Runnable {
             runCatching {
@@ -133,5 +155,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             }
         })
         runThread.start()
-        }
+    }
+
 }

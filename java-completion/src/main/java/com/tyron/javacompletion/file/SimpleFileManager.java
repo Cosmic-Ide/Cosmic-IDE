@@ -97,14 +97,13 @@ public class SimpleFileManager implements FileManager {
     @Override
     public Optional<CharSequence> getFileContent(Path filePath) {
         if (snapshots.containsKey(filePath.toAbsolutePath())) {
-            return Optional.of(snapshots.get(filePath.toAbsolutePath()));
+            return Optional.ofNullable(snapshots.get(filePath.toAbsolutePath()));
         }
         try {
             return Optional.of(new String(Files.readAllBytes(filePath), UTF_8));
         } catch (IOException e) {
-            // fall through.
+            return Optional.ofNullable(null);
         }
-        return Optional.ofNullable(null);
     }
 
     @Override

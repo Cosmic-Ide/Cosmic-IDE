@@ -161,7 +161,12 @@ public class PathUtils {
         } catch (URISyntaxException e) {
             throw new IOException(e);
         }
-        FileSystem fs = new JarFileSystemProvider().newFileSystem(uri, ImmutableMap.of() /* env */);
-        return fs.getPath("/");
+        Path path = null;
+        try (FileSystem fs = new JarFileSystemProvider().newFileSystem(uri, ImmutableMap.of() /* env */)) {
+            path = fs.getPath("/");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 }

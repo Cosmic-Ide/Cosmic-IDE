@@ -45,9 +45,10 @@ class JavaCompileTask(val project: Project) : Task {
 
         val javaFiles = getSourceFiles(project.srcDir.invoke())
         if (javaFiles.isEmpty()) {
-            reporter.reportInfo("> Task :compileJava NO-SOURCE")
+            reporter.reportInfo("No java files found. Skipping compilation.")
         } else {
-            reporter.reportInfo("> Task :compileJava")
+            val size = javaFiles.size
+            reporter.reportInfo("Compiling $size java ${if (size == 1) "file" else "files"}...")
         }
         val javaFileObjects = javaFiles.map { file ->
             object : SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {

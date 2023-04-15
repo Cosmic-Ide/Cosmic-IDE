@@ -25,8 +25,8 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
+        android:layout_marginStart="2sp"
         android:gravity="center_vertical"
-        android:textSize="16sp"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textSize="18sp" />
 </LinearLayout>

@@ -56,7 +56,12 @@ public class JavaCompletions {
 
         logger.info("Initializing project: %s", projectRootUri);
         logger.info(
-                "Options:\n  logPath: %s\n  logLevel: %s\n" + "  ignorePaths: %s\n  typeIndexFiles: %s",
+                """
+                        Options:
+                          logPath: %s
+                          logLevel: %s
+                          ignorePaths: %s
+                          typeIndexFiles: %s""",
                 options.getLogPath(), options.getLogLevel(), options.getIgnorePaths(), options.getTypeIndexFiles());
         if (options.getLogPath() != null) {
             JLogger.setLogFile(options.getLogPath());
@@ -85,11 +90,6 @@ public class JavaCompletions {
         checkState(mInitialized, "shutdown() called without being initialized.");
         mInitialized = false;
         mExecutor.shutdown();
-    }
-
-    public synchronized FileManager getFileManager() {
-        checkState(mInitialized, "Not yet initialized.");
-        return checkNotNull(mFileManager);
     }
 
     public synchronized Project getProject() {

@@ -30,14 +30,6 @@ public interface CompletionCandidate {
 
     Optional<String> getDetail();
 
-    default Optional<String> getInsertPlainText(TextEditOptions textEditOptions) {
-        return Optional.empty();
-    }
-
-    default Optional<String> getInsertSnippet(TextEditOptions textEditOptions) {
-        return Optional.empty();
-    }
-
     default SortCategory getSortCategory() {
         return SortCategory.UNKNOWN;
     }

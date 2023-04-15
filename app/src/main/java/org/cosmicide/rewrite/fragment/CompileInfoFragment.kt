@@ -86,9 +86,10 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     }
 
     private fun navigateToProjectOutputFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, ProjectOutputFragment())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container, ProjectOutputFragment())
+            addToBackStack(null)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+        }.commit()
     }
 }

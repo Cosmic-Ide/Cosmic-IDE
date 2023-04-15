@@ -50,7 +50,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
 
             val tree = createTree()
-
+            @Suppress("UNCHECKED_CAST")
             (binding.included.treeview as TreeView<DataSource<File>>).apply {
                 bindCoroutineScope(lifecycleScope)
                 this.tree = tree
@@ -84,35 +84,30 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
                     binding.tabLayout.apply {
-                        selectTab(tab, true)
-                    }
-                }
-
-                lifecycleScope.launch {
-                    withContext(Dispatchers.IO){
-                        binding.included.treeview.refresh()
+                        addTab(tab)
                     }
                 }
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
                 position?.takeIf { it != -1 }?.let {
+                    binding.tabLayout.getTabAt(it)?.select()
                     binding.editor.setText(fileViewModel.currentFile?.readText())
                     setEditorLanguage()
                 }
             }
 
-            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                view.post {
-                    fileViewModel.updateFiles(files.toMutableList())
-                }
+            withContext(Dispatchers.IO) {
+                fileIndex.getFiles()
+            }.takeIf { it.isNotEmpty() }?.let { files ->
+                fileViewModel.updateFiles(files.toMutableList())
             }
+
             if (fileViewModel.files.value!!.isEmpty()) {
+                val file = File(project.srcDir.invoke(), "Main.${project.language.extension}")
+                if (!file.exists()) return@launch
                 fileViewModel.addFile(
-                    File(
-                        project.srcDir.invoke(),
-                        "Main.${project.language.extension}"
-                    )
+                    file
                 )
             }
         }
@@ -167,10 +162,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun navigateToCompileInfoFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, CompileInfoFragment())
-            .addToBackStack("EditorFragment")
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container, CompileInfoFragment())
+            addToBackStack("EditorFragment")
+        }.commit()
     }
 
     private fun navigateToSettingsFragment() {
@@ -190,11 +185,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun transverseTree(dir: File, parentBranch: DataSourceScope<File>) {
-        for (file in dir.listFiles()) {
+        val files = dir.listFiles() ?: return
+        for (file in files) {
             when {
                 file.isFile -> parentBranch.Leaf(file.name, file)
                 file.isDirectory -> {
-                    parentBranch.Branch(file.name, file){
+                    parentBranch.Branch(file.name, file) {
                         transverseTree(file, this)
                     }
                 }
@@ -208,10 +204,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.currentFile!!)
+                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.files.value!![position])
                 R.id.close_all_tab -> fileViewModel.removeAll()
-                R.id.close_left_tab -> fileViewModel.removeLeft(position)
-                R.id.close_right_tab -> fileViewModel.removeRight(position)
+                R.id.close_left_tab -> fileViewModel.removeLeft(
+                    position,
+                    fileViewModel.currentPosition.value!!
+                )
+
+                R.id.close_right_tab -> fileViewModel.removeRight(
+                    position,
+                    fileViewModel.currentPosition.value!!
+                )
+
                 R.id.close_other_tab -> fileViewModel.removeOthers(fileViewModel.currentFile!!)
             }
             true

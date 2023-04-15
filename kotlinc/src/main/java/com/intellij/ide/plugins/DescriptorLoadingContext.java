@@ -52,6 +52,7 @@ final class DescriptorLoadingContext implements AutoCloseable {
             try {
                 file.close();
             } catch (IOException ignore) {
+                //noinspection UnusedCatchParameter
             }
         }
     }

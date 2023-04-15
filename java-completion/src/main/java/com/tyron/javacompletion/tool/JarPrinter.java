@@ -130,6 +130,12 @@ public class JarPrinter {
                     });
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                fs.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

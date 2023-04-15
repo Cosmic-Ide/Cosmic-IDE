@@ -13,7 +13,7 @@ class FileViewModel : ViewModel() {
     private val _files = MutableLiveData<List<File>>(emptyList())
     val files: LiveData<List<File>> get() = _files
 
-    private val _currentPosition = MutableLiveData<Int>(-1)
+    private val _currentPosition = MutableLiveData(-1)
     val currentPosition: LiveData<Int> get() = _currentPosition
 
     /**
@@ -70,29 +70,28 @@ class FileViewModel : ViewModel() {
     /**
      * Removes a file immediately close to the position at Right
      */
-    fun removeRight(pos: Int){
-        when (pos) {
-            _files.value?.size?.minus(1) -> removeFile(_files.value!![(_files.value?.size?.minus(1)!!)!!])
-            else -> _files.value?.toMutableList()?.apply {
-                removeAt(pos + 1)
-                _files.value = this
-            }
+    fun removeRight(pos: Int, currentPos: Int) {
+        if (pos == files.value!!.size.minus(1)) return
+        _files.value!!.toMutableList().apply {
+            removeAt(pos + 1)
+            _files.value = this
         }
-        setCurrentPosition(pos)
+        if (currentPos > pos + 1) setCurrentPosition(currentPos - 1)
+        else setCurrentPosition(currentPos)
     }
 
     /**
      * Removes a file immediately close to the position at Left
      */
-    fun removeLeft(pos: Int){
-        when (pos) {
-            0 -> removeFile(_files.value?.get(0)!!)
-            else -> _files.value?.toMutableList()?.apply {
-                removeAt(pos - 1)
-                _files.value = this
-            }
+    fun removeLeft(pos: Int, currentPos: Int) {
+        if (pos == 0) return
+        _files.value!!.toMutableList().apply {
+            removeAt(pos - 1)
+            _files.value = this
         }
-        setCurrentPosition(pos)
+
+        if (currentPos > pos - 1) setCurrentPosition(currentPos - 1)
+        else setCurrentPosition(currentPos - 1)
     }
 
     /**

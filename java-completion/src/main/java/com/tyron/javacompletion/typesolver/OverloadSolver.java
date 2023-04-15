@@ -180,6 +180,7 @@ public class OverloadSolver {
      */
     public MethodEntity solve(
             List<EntityWithContext> entities, List<Optional<SolvedType>> argumentTypes, Module module) {
+        if (entities == null) return null;
         List<MethodEntity> methods =
                 entities.stream()
                         .map(EntityWithContext::getEntity)

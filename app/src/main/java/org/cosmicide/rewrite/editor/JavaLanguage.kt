@@ -16,7 +16,6 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.project.Project
 import java.io.File
 import java.net.URI
-import java.nio.file.Files
 import java.nio.file.Path
 import java.util.logging.Level
 
@@ -54,8 +53,8 @@ class JavaLanguage(
     ) {
         try {
             val text = editor.text.toString()
-            Files.write(path, text.toByteArray())
-            val result = completions.project.getCompletionResult(path, position.line, position.column)
+            completions.updateFileContent(path, text)
+            val result = completions.getCompletions(path, position.line, position.column)
             result.completionCandidates.forEach { candidate ->
                 if (candidate.name != "<error>") {
                     val item = SimpleCompletionItem(
@@ -73,6 +72,11 @@ class JavaLanguage(
             }
         }
         super.requireAutoComplete(content, position, publisher, extraArguments)
+    }
+
+    override fun destroy() {
+        super.destroy()
+        completions.shutdown()
     }
 
     companion object {

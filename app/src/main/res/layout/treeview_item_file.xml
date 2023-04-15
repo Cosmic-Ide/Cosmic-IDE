@@ -24,6 +24,5 @@
         android:drawableLeft="@drawable/outline_insert_drive_file_24"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        android:text="TextView"
-        android:textSize="16sp" />
+        android:text="TextView" />
 </LinearLayout>

@@ -12,6 +12,7 @@ import io.github.dingyi222666.view.treeview.DataSource
 import io.github.dingyi222666.view.treeview.DataSourceScope
 import io.github.dingyi222666.view.treeview.Leaf
 import io.github.dingyi222666.view.treeview.Tree
+import io.github.dingyi222666.view.treeview.TreeNode
 import io.github.dingyi222666.view.treeview.TreeView
 import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
@@ -61,6 +62,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
 
+
             (binding.included.treeview as TreeView<FileSet>).apply {
                 bindCoroutineScope(lifecycleScope)
                 this.tree = tree
@@ -98,8 +100,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         selectTab(tab)
                     }
                 }
-
-//                TODO("refresh treeview")
             }
 
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->

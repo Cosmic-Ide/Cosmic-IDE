@@ -50,7 +50,6 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
         } else {
             applyFile(holder, node)
         }
-
         val itemView = holder.itemView.findViewById<Space>(R.id.space)
 
         itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -110,6 +109,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
             when (it.itemId) {
                 R.id.create_kotlin_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".kt"
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Create kotlin class")
                         .setView(binding.root)
@@ -127,6 +127,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                 }
                 R.id.create_java_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".java"
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Create java class")
                         .setView(binding.root)
@@ -157,6 +158,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                 }
                 R.id.rename -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.edittext.setText(file.name)
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Rename")
                         .setView(binding.root)
@@ -170,13 +172,11 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                         .show()
                 }
                 R.id.delete -> {
-                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Delete")
                         .setMessage("Are you sure you want to delete this file")
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
-                            binding.edittext.text.toString()
                             File(file.absolutePath).deleteRecursively()
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->

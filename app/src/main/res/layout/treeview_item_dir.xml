@@ -18,8 +18,9 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:scaleType="center"
         app:srcCompat="@drawable/baseline_arrow_forward_ios_24" />
 
     <TextView
@@ -30,6 +31,5 @@
         android:drawableLeft="@drawable/baseline_folder_open_24"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        android:text="TextView"
-        android:textSize="16sp" />
+        android:text="TextView" />
 </LinearLayout>

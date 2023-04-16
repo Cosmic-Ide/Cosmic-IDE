@@ -9,7 +9,6 @@ import android.widget.Space
 import androidx.annotation.MenuRes
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.github.dingyi222666.view.treeview.DataSource
 import io.github.dingyi222666.view.treeview.TreeNode
 import io.github.dingyi222666.view.treeview.TreeNodeEventListener
 import io.github.dingyi222666.view.treeview.TreeView
@@ -23,8 +22,8 @@ import org.jetbrains.kotlin.incremental.createDirectory
 import java.io.File
 
 
-class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileViewModel) : TreeViewBinder<DataSource<File>>(),
-    TreeNodeEventListener<DataSource<File>> {
+class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileViewModel) : TreeViewBinder<FileSet>(),
+    TreeNodeEventListener<FileSet> {
 
     override fun createView(parent: ViewGroup, viewType: Int): View {
         return if (viewType == 1) {
@@ -34,7 +33,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
         }
     }
 
-    override fun getItemViewType(node: TreeNode<DataSource<File>>): Int {
+    override fun getItemViewType(node: TreeNode<FileSet>): Int {
         if (node.isChild) {
             return 1
         }
@@ -43,15 +42,14 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
 
     override fun bindView(
         holder: TreeView.ViewHolder,
-        node: TreeNode<DataSource<File>>,
-        listener: TreeNodeEventListener<DataSource<File>>
+        node: TreeNode<FileSet>,
+        listener: TreeNodeEventListener<FileSet>
     ) {
         if (node.isChild) {
             applyDir(holder, node)
         } else {
             applyFile(holder, node)
         }
-
         val itemView = holder.itemView.findViewById<Space>(R.id.space)
 
         itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -60,12 +58,12 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
 
     }
 
-    private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<DataSource<File>>) {
+    private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
         val binding = TreeviewItemFileBinding.bind(holder.itemView)
         binding.textView.text = node.name.toString()
     }
 
-    private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<DataSource<File>>) {
+    private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
         val binding = TreeviewItemDirBinding.bind(holder.itemView)
         binding.textView.text = node.name.toString()
 
@@ -77,38 +75,41 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
             .start()
     }
 
-    override fun onLongClick(
-        node: TreeNode<DataSource<File>>,
-        holder: TreeView.ViewHolder
-    ): Boolean {
-        showMenu(holder.itemView, R.menu.treeview_menu, node.data!!.data!!)
+    override fun onLongClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder): Boolean {
+        showMenu(holder.itemView.findViewById(R.id.textView), R.menu.treeview_menu, node.data?.file!!, node)
         return super<TreeViewBinder>.onLongClick(node, holder)
     }
 
-    override fun onClick(node: TreeNode<DataSource<File>>, holder: TreeView.ViewHolder) {
+    override fun onClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder) {
         if (node.isChild) {
             applyDir(holder, node)
         } else {
-            fileViewModel.addFile(node.data!!.data!!)
+            fileViewModel.addFile(node.data?.file!!)
         }
     }
 
-    override fun onToggle(
-        node: TreeNode<DataSource<File>>,
-        isExpand: Boolean,
-        holder: TreeView.ViewHolder
-    ) {
+    override fun onToggle(node: TreeNode<FileSet>, isExpand: Boolean, holder: TreeView.ViewHolder) {
         applyDir(holder, node)
     }
 
-    private fun showMenu(v: View, @MenuRes menuRes: Int, file: File) {
+    private fun showMenu(
+        v: View,
+        @MenuRes menuRes: Int,
+        file: File,
+        node: TreeNode<FileSet>
+    ) {
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
-
+        if (node.isChild.not()){
+            popup.menu.removeItem(R.id.create_kotlin_class)
+            popup.menu.removeItem(R.id.create_java_class)
+            popup.menu.removeItem(R.id.create_folder)
+        }
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.create_kotlin_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".kt"
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Create kotlin class")
                         .setView(binding.root)
@@ -126,6 +127,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                 }
                 R.id.create_java_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.textInputLayout.suffixText = ".java"
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Create java class")
                         .setView(binding.root)
@@ -156,6 +158,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                 }
                 R.id.rename -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    binding.edittext.setText(file.name)
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Rename")
                         .setView(binding.root)
@@ -169,13 +172,11 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                         .show()
                 }
                 R.id.delete -> {
-                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Delete")
                         .setMessage("Are you sure you want to delete this file")
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
-                            binding.edittext.text.toString()
                             File(file.absolutePath).deleteRecursively()
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->

@@ -49,7 +49,6 @@ class KotlinLanguage(
     ) {
         try {
             val text = editor.text.toString()
-            file.writeText(text)
             val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
             val itemList = ktFile.let {
                 kotlinEnvironment.complete(

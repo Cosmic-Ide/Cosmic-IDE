@@ -115,10 +115,10 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                         .setView(binding.root)
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
-                            var name = binding.edittext.text.toString()
-                            val file = File(file, "$name.kt")
-                            file.createNewFile()
-                            fileViewModel.addFile(file)
+                            val name = binding.edittext.text.toString()
+                            val f = File(file, "$name.kt")
+                            f.createNewFile()
+                            fileViewModel.addFile(f)
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()

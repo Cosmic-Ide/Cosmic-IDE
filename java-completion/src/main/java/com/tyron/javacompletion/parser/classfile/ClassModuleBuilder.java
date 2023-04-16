@@ -20,21 +20,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import com.tyron.javacompletion.logging.JLogger;
 import com.tyron.javacompletion.model.ClassEntity;
 import com.tyron.javacompletion.model.Entity;
 import com.tyron.javacompletion.model.EntityScope;
 import com.tyron.javacompletion.model.FileScope;
 import com.tyron.javacompletion.model.MethodEntity;
 import com.tyron.javacompletion.model.Module;
-import com.tyron.javacompletion.model.PackageScope;
 import com.tyron.javacompletion.model.TypeReference;
 import com.tyron.javacompletion.model.VariableEntity;
 import com.tyron.javacompletion.parser.classfile.ParsedClassFile.ParsedField;
 import com.tyron.javacompletion.parser.classfile.ParsedClassFile.ParsedMethod;
 
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +42,6 @@ import java.util.Optional;
  * Builder of {@link Module} with classes parsed from .class files.
  */
 public class ClassModuleBuilder {
-    private static final JLogger logger = JLogger.createForEnclosingClass();
 
     private static final Range<Integer> EMPTY_RANGE = Range.closedOpen(0, 0);
 
@@ -73,7 +68,6 @@ public class ClassModuleBuilder {
 
     public void processClassFile(Path classFilePath) {
         try {
-            InputStream input = Files.newInputStream(classFilePath);
             ClassFileInfo classFileInfo = parser.parse(classFilePath);
             ParsedClassFile parsedClassFile = classInfoConverter.convert(classFileInfo);
 
@@ -84,7 +78,6 @@ public class ClassModuleBuilder {
                     parentScope = classEntityMap.get(outerClassBinaryName);
                 }
             } else {
-                PackageScope packageScope = module.getOrCreatePackage(parsedClassFile.getClassQualifiers());
                 FileScope fileScope =
                         FileScope.createFromClassFile(classFilePath, parsedClassFile.getClassQualifiers());
                 module.addOrReplaceFileScope(fileScope);
@@ -156,19 +149,17 @@ public class ClassModuleBuilder {
                             EMPTY_RANGE));
         }
 
-        MethodEntity method =
-                new MethodEntity(
-                        parsedMethod.getSimpleName(),
-                        qualifiers,
-                        parsedMethod.isStatic(),
-                        signature.getResult(),
-                        parameters,
-                        signature.getTypeParameters(),
-                        parentClass,
-                        Optional.empty() /* javadoc */,
-                        EMPTY_RANGE,
-                        EMPTY_RANGE);
-        return method;
+        return new MethodEntity(
+                parsedMethod.getSimpleName(),
+                qualifiers,
+                parsedMethod.isStatic(),
+                signature.getResult(),
+                parameters,
+                signature.getTypeParameters(),
+                parentClass,
+                Optional.empty() /* javadoc */,
+                EMPTY_RANGE,
+                EMPTY_RANGE);
     }
 
     private VariableEntity createVariableEntity(
@@ -190,9 +181,10 @@ public class ClassModuleBuilder {
     private void addClassEntity(String binaryName, ClassEntity classEntity) {
         classEntityMap.put(binaryName, classEntity);
         processInnerClasses(binaryName, classEntity);
-
-        EntityScope parentScope = classEntity.getParentScope().get();
-        parentScope.addEntity(classEntity);
+        if (classEntity.getParentScope().isPresent()) {
+            EntityScope parentScope = classEntity.getParentScope().get();
+            parentScope.addEntity(classEntity);
+        }
     }
 
     private void processInnerClasses(String binaryName, ClassEntity classEntity) {

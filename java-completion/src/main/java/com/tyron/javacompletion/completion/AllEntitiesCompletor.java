@@ -17,15 +17,14 @@
 package com.tyron.javacompletion.completion;
 
 import com.google.common.collect.ImmutableList;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import com.tyron.javacompletion.model.ClassEntity;
 import com.tyron.javacompletion.model.Entity;
 import com.tyron.javacompletion.model.FileScope;
 import com.tyron.javacompletion.model.Module;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  * Completor for all entities accessible from a module
@@ -54,11 +53,8 @@ class AllEntitiesCompletor {
             visitedFiles.add(fileScope);
 
             for (Entity entity : fileScope.getMemberEntities().values()) {
-                if (entity instanceof ClassEntity) {
+                if (entity instanceof ClassEntity)
                     addAllClasses(builder, (ClassEntity) entity, prefix);
-                } else {
-                    continue;
-                }
             }
         }
 

@@ -137,7 +137,7 @@ class FileWatcher {
         try {
             watchService.close();
         } catch (IOException e) {
-            // Ignore.
+            e.printStackTrace();
         }
         if (watchFuture != null) {
             watchFuture.cancel(true /* mayInterrupt */);

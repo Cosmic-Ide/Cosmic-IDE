@@ -1,18 +1,14 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
-import org.cosmicide.rewrite.R
-import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
-import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
@@ -39,13 +35,22 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             }
 
             val language = if (binding.useKotlin.isChecked) Language.Kotlin else Language.Java
-            createProject(language, projectName, packageName)
-            parentFragmentManager.popBackStack()
+            val success = createProject(language, projectName, packageName)
+            if (success) {
+                parentFragmentManager.beginTransaction().apply {
+                    remove(this@NewProjectFragment)
+                    setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+                }.commit()
+            }
         }
     }
 
-    private fun createProject(language: Language, projectName: String, packageName: String) {
-        try {
+    private fun createProject(
+        language: Language,
+        projectName: String,
+        packageName: String
+    ): Boolean {
+        return try {
             val root = File(FileUtil.projectDir, projectName).apply { mkdirs() }
             val project = Project(root = root, language = language)
             val srcDir = project.srcDir.invoke().apply { mkdirs() }
@@ -53,8 +58,10 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()
             ProjectHandler.setProject(project)
+            true
         } catch (e: IOException) {
             Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
+            false
         }
     }
 

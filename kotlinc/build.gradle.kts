@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "org.jetbrains.kotlin"
-    compileSdk = 31
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = 26
@@ -23,6 +23,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+        languageVersion = "2.0"
     }
 }
 

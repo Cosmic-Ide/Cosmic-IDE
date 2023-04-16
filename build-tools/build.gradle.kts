@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide.build"
-    compileSdk = 31
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = 26
@@ -24,6 +24,7 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+
     }
 }
 
@@ -32,5 +33,5 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.kotlinc)
-    implementation("com.android.tools:r8:8.0.34")
+    implementation("com.android.tools:r8:8.0.40")
 }

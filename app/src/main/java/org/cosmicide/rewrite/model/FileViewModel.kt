@@ -70,28 +70,30 @@ class FileViewModel : ViewModel() {
     /**
      * Removes a file immediately close to the position at Right
      */
-    fun removeRight(pos: Int, currentPos: Int) {
-        if (pos == files.value!!.size.minus(1)) return
-        _files.value!!.toMutableList().apply {
-            removeAt(pos + 1)
+    fun removeRight(pos: Int) {
+        val currentPos = currentPosition.value!!
+        if (pos == _files.value?.lastIndex) return
+        _files.value?.toMutableList()?.apply {
+            if (pos == currentPos)
+                removeAt(0)
+            else
+                removeAt(pos + 1)
             _files.value = this
+            setCurrentPosition(currentPos)
         }
-        if (currentPos > pos + 1) setCurrentPosition(currentPos - 1)
-        else setCurrentPosition(currentPos)
     }
 
     /**
      * Removes a file immediately close to the position at Left
      */
-    fun removeLeft(pos: Int, currentPos: Int) {
+    fun removeLeft(pos: Int) {
         if (pos == 0) return
-        _files.value!!.toMutableList().apply {
+        val currentPos = currentPosition.value!!
+        _files.value?.toMutableList()?.apply {
             removeAt(pos - 1)
             _files.value = this
+            setCurrentPosition(currentPos - 1)
         }
-
-        if (currentPos > pos - 1) setCurrentPosition(currentPos - 1)
-        else setCurrentPosition(currentPos - 1)
     }
 
     /**

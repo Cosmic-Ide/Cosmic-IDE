@@ -45,7 +45,6 @@ import com.intellij.util.text.ImmutableCharSequence;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -304,12 +303,10 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         isStripTrailingSpacesEnabled = isEnabled;
     }
 
-    @VisibleForTesting
     public boolean stripTrailingSpaces(Project project) {
         return stripTrailingSpaces(project, false);
     }
 
-    @VisibleForTesting
     public boolean stripTrailingSpaces(Project project, boolean inChangedLinesOnly) {
         return stripTrailingSpaces(project, inChangedLinesOnly, null);
     }
@@ -496,12 +493,10 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         // false, layer);
     }
 
-    @VisibleForTesting
     int getRangeMarkersSize() {
         return myRangeMarkers.size() + myPersistentRangeMarkers.size();
     }
 
-    @VisibleForTesting
     int getRangeMarkersNodeSize() {
         return myRangeMarkers.nodeSize() + myPersistentRangeMarkers.nodeSize();
     }

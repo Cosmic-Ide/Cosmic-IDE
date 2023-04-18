@@ -9,7 +9,6 @@ import com.intellij.util.containers.ConcurrentList;
 import com.intellij.util.containers.ContainerUtil;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,6 @@ public final class ReadMostlyRWLock {
                         assert added : readers + "; " + Thread.currentThread();
                         return status;
                     });
-    @VisibleForTesting
     volatile boolean writeRequested;
     private volatile boolean writeAcquired;
     private volatile boolean writeSuspended;

@@ -21,7 +21,6 @@ import com.intellij.util.ThrowableRunnable;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -88,7 +87,6 @@ public abstract class WriteCommandAction<T> extends BaseActionRunnable2<T> {
      * <p>Please use {@link #runWriteCommandAction(Project, String, String, Runnable, PsiFile...)}
      * instead.
      */
-    @VisibleForTesting
     public static void runWriteCommandAction(Project project, @NotNull Runnable runnable) {
         runWriteCommandAction(project, getDefaultCommandName(), DEFAULT_GROUP_ID, runnable);
     }

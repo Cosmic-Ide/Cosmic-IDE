@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "com.tyron.kotlin.completion"
-    compileSdk = 31
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = 26

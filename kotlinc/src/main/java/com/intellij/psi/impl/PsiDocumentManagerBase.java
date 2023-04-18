@@ -71,7 +71,6 @@ import com.intellij.util.ui.EdtInvocationManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1250,14 +1249,12 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
         return !myProject.isDisposed() && !virtualFile.getFileType().isBinary();
     }
 
-    @VisibleForTesting
     public void clearUncommittedDocuments() {
         myUncommittedInfos.clear();
         myUncommittedDocuments.clear();
         mySynchronizer.cleanupForNextTest();
     }
 
-    @VisibleForTesting
     public void disableBackgroundCommit(@NotNull Disposable parentDisposable) {
         assert myPerformBackgroundCommit;
         myPerformBackgroundCommit = false;
@@ -1302,7 +1299,6 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
         return Collections.emptyList();
     }
 
-    @VisibleForTesting
     public boolean isDefaultProject() {
         return myProject.isDefault();
     }

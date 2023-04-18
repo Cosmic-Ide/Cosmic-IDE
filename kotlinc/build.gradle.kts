@@ -26,6 +26,9 @@ android {
     }
 }
 
+configurations.all {
+    exclude("org.jline", "jline")
+}
 dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 

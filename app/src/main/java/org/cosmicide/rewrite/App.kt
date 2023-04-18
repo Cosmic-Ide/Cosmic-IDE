@@ -48,9 +48,13 @@ class App : Application() {
         extractAsset(INDEX_FILE_NAME, indexFile)
         extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR))
         extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB))
+        extractAsset("rt.jar", FileUtil.classpathDir.resolve("joe/rt.jar"))
     }
 
     private suspend fun extractAsset(assetName: String, outputFile: File) = withContext(Dispatchers.IO) {
+        if (outputFile.exists()) {
+            return@withContext
+        }
         assets.open(assetName).use { input ->
             outputFile.outputStream().use { output ->
                 input.copyTo(output)

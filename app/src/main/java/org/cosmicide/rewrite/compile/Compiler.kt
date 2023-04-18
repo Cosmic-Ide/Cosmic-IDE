@@ -28,8 +28,8 @@ class Compiler(val project: Project, val reporter: BuildReporter) {
      */
     fun compile() {
         try {
-            compileJava(reporter)
             compileKotlin(reporter)
+            compileJava(reporter)
             convertClassFilesToDex(reporter)
             reportSuccess(reporter)
         } catch (e: Exception) {
@@ -54,7 +54,7 @@ class Compiler(val project: Project, val reporter: BuildReporter) {
         CompilerCache.getCache<KotlinCompiler>().execute(reporter)
         compileListener(KotlinCompiler::class.java, BuildStatus.FINISHED)
         if (reporter.failure) {
-            throw Exception("Failed to compile Java code.")
+            throw Exception("Failed to compile Kotlin code.")
         }
         reporter.reportInfo("Successfully compiled Kotlin code.")
     }
@@ -65,7 +65,7 @@ class Compiler(val project: Project, val reporter: BuildReporter) {
         CompilerCache.getCache<D8Task>().execute(reporter)
         compileListener(D8Task::class.java, BuildStatus.FINISHED)
         if (reporter.failure) {
-            throw Exception("Failed to compile Java code.")
+            throw Exception("Failed to compile dex files.")
         }
         reporter.reportInfo("Successfully converted class files to dex format.")
     }

@@ -103,15 +103,17 @@ data class KotlinEnvironment(
             elementAt(line, character)?.let { element ->
                 val descriptorInfo = descriptorsFrom(element, file.kotlinFile)
                 val prefix = getPrefix(element)
-                descriptorInfo.descriptors
+                val items = descriptorInfo.descriptors
                     .sortedWith { a, b ->
                         val x = a.name.toString()
                         val y = b.name.toString()
                         x.compareTo(y)
                     }
-                    .mapNotNull { descriptor -> completionVariantFor(prefix, descriptor) } +
-                        keywordsCompletionVariants(KtTokens.KEYWORDS, prefix) +
-                        keywordsCompletionVariants(KtTokens.SOFT_KEYWORDS, prefix)
+                    .mapNotNull { descriptor ->
+                        completionVariantFor(prefix, descriptor)
+                    }
+                if (items.size > 50) items.subList(0, 50) else items +
+                        keywordsCompletionVariants(KtTokens.KEYWORDS, prefix)
             }
                 ?: emptyList()
         }
@@ -173,7 +175,9 @@ data class KotlinEnvironment(
         val files = kotlinFiles.values.map { it.kotlinFile }.toList()
         val analysis = analysisOf(files, current)
         return with(analysis) {
-            DescriptorInfo(referenceVariantsFrom(element))
+            logTime("referenceVariants") {
+                DescriptorInfo(referenceVariantsFrom(element))
+            }
         }
     }
 

@@ -7,22 +7,26 @@ import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
 import dalvik.system.DexClassLoader
+import dev.xdark.ssvm.execution.VMException
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.cosmicide.build.BuildReporter
+import org.cosmicide.build.java.JarTask
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.rewrite.compile.ssvm.SSVM
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
+import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
-import java.lang.reflect.Modifier
+import java.util.zip.ZipFile
 
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     val project: Project = ProjectHandler.getProject()
@@ -68,7 +72,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             isWordwrap = true
-            setTextSize(Prefs.editorFontSize)
+            setTextSize(14f)
             setFont()
             invalidate()
         }
@@ -125,28 +129,81 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         runCatching {
             loader.loadClass(className)
         }.onSuccess { clazz ->
-                isRunning = true
-                if (clazz.declaredMethods.any { it.name == "main" }) {
-                    val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
-                    if (Modifier.isStatic(method.modifiers)) {
-                        method.invoke(null, arrayOf<String>())
-                    } else if (Modifier.isPublic(method.modifiers)) {
-                        method.invoke(
-                            clazz.getDeclaredConstructor().newInstance(),
-                            arrayOf<String>()
-                        )
-                    } else {
-                        System.err.println("Main method is not public or static")
-                    }
+            isRunning = true
+            initVM()
+            invoke(className)
+            /*if (clazz.declaredMethods.any { it.name == "main" }) {
+                val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
+                if (Modifier.isStatic(method.modifiers)) {
+                    method.invoke(null, arrayOf<String>())
+                } else if (Modifier.isPublic(method.modifiers)) {
+                    method.invoke(
+                        clazz.getDeclaredConstructor().newInstance(),
+                        arrayOf<String>()
+                    )
                 } else {
-                    System.err.println("No main method found")
+                    System.err.println("Main method is not public or static")
                 }
-            }.onFailure { e ->
-                System.err.println("Error loading class: ${e.message}")
-            }.also {
-                systemOut.close()
-                isRunning = false
-            }
+            } else {
+                System.err.println("No main method found")
+            }*/
+        }.onFailure { e ->
+            System.err.println("Error loading class: ${e.message}")
+        }.also {
+            systemOut.close()
+            isRunning = false
+        }
     }
+
+    private val ssvm by lazy {
+        SSVM(
+            ZipFile(
+                FileUtil.classpathDir.resolve("joe/rt.jar"),
+                Charsets.UTF_8
+            )
+        )
+    }
+
+    private fun initVM() {
+        val time = System.currentTimeMillis()
+        JarTask(project).execute(BuildReporter())
+
+        catchVMException {
+            // init VM
+            ssvm.initVM()
+
+            // add test JAR
+            FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {
+                ssvm.addURL(it)
+            }
+
+            ssvm.addURL(project.binDir.resolve("classes.jar"))
+        }
+
+        println("[VM] Initialized in ${System.currentTimeMillis() - time} ms")
+    }
+
+    private fun invoke(className: String) {
+        catchVMException {
+            ssvm.invokeMainMethod(className)
+        }
+    }
+
+    private fun catchVMException(runnable: () -> Unit) {
+        try {
+            runnable()
+        } catch (ex: Throwable) {
+            val cause = ex.cause
+            System.err.println(
+                "[VM] VM exception: ${
+                    if (cause is VMException)
+                        SSVM.throwableToString(cause.oop)
+                    else
+                        ex.stackTraceToString()
+                }"
+            )
+        }
+    }
+
 
 }

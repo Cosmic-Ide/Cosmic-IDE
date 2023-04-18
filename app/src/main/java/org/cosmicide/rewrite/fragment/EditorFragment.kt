@@ -74,7 +74,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
-
+                    binding.editor.setText("")
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {

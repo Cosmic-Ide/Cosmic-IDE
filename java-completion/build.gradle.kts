@@ -1,10 +1,9 @@
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
 }
 android {
     namespace = "com.tyron.javacompletion"
-    compileSdk = 31
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         minSdk = 26
@@ -20,10 +19,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions {
-        jvmTarget = "17"
-    }
 }
 
 dependencies {
@@ -31,7 +26,6 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
     api("com.google.guava:guava:31.1-android")
-
     implementation(projects.kotlinc)
 
     implementation("com.google.auto.value:auto-value-annotations:1.10.1")

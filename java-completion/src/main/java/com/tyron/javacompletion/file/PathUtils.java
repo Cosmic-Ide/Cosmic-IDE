@@ -155,7 +155,7 @@ public class PathUtils {
         // JAR specific URI pattern.
         // See https://docs.oracle.com/javase/8/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
         logger.fine("Parsing jar file: %s", jarFilePath);
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI("jar", jarFilePath.toUri().toString(), null);
         } catch (URISyntaxException e) {

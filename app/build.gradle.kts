@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide.rewrite"
-    compileSdk = 33
+    compileSdkPreview = "UpsideDownCake"
 
     defaultConfig {
         applicationId = "org.cosmicide.rewrite"
@@ -53,8 +53,8 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("io.github.Rosemoe.sora-editor:editor")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
     implementation("io.github.dingyi222666:treeview:1.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")

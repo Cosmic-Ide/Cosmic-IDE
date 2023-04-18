@@ -26,7 +26,6 @@ import java.lang.reflect.Modifier
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
     val project: Project = ProjectHandler.getProject()
         ?: throw IllegalStateException("No project set")
-    lateinit var runThread: Thread
     var isRunning: Boolean = false
 
     override fun getViewBinding() = FragmentCompileInfoBinding.inflate(layoutInflater)
@@ -40,7 +39,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 R.id.reload -> {
                     val text = binding.infoEditor.text
                     if (isRunning) {
-                        runThread.destroy()
                         transaction.apply {
                             replace(R.id.fragment_container, ProjectOutputFragment())
                             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
@@ -53,17 +51,10 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 }
 
                 R.id.cancel -> {
-                    if (isRunning) {
-                        try {
-                            runThread.destroy()
-                        } catch (_: Throwable) {
-                        }
-                    }
                     transaction.apply {
                         remove(this@ProjectOutputFragment)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                     }.commit()
-
                     true
                 }
 
@@ -130,17 +121,19 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             null,
             javaClass.classLoader
         )
-        runThread = Thread(kotlinx.coroutines.Runnable {
-            runCatching {
-                loader.loadClass(className)
-            }.onSuccess { clazz ->
+        runCatching {
+            loader.loadClass(className)
+        }.onSuccess { clazz ->
                 isRunning = true
                 if (clazz.declaredMethods.any { it.name == "main" }) {
                     val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                     if (Modifier.isStatic(method.modifiers)) {
                         method.invoke(null, arrayOf<String>())
                     } else if (Modifier.isPublic(method.modifiers)) {
-                        method.invoke(clazz.newInstance(), arrayOf<String>())
+                        method.invoke(
+                            clazz.getDeclaredConstructor().newInstance(),
+                            arrayOf<String>()
+                        )
                     } else {
                         System.err.println("Main method is not public or static")
                     }
@@ -153,8 +146,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 systemOut.close()
                 isRunning = false
             }
-        })
-        runThread.start()
     }
 
 }

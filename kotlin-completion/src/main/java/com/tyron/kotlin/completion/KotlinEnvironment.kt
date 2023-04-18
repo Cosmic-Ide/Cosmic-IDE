@@ -241,7 +241,11 @@ data class KotlinEnvironment(
                                 it.identifier.startsWith(prefix)
                             }
                             true
-                        }
+                        },
+                        filterOutJavaGettersAndSetters = true,
+                        filterOutShadowed = true,
+                        excludeNonInitializedVariable = true,
+                        useReceiverType = null
                     )
                     .toList()
 
@@ -302,7 +306,7 @@ data class KotlinEnvironment(
             var parent: DeclarationDescriptor? = inDescriptor
             while (parent != null) {
                 if (parent == owner) return true
-                if (parent is ClassDescriptor && !parent.isInner) return false
+                if ((parent is ClassDescriptor) && !parent.isInner) return false
                 parent = parent.containingDeclaration
             }
             return true
@@ -352,6 +356,34 @@ data class KotlinEnvironment(
                             put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                             put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                             put(CommonConfigurationKeys.USE_FIR, true)
+                            put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, false)
+                            put(JVMConfigurationKeys.VALIDATE_IR, false)
+                            put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, true)
+                            put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, true)
+                            put(JVMConfigurationKeys.DISABLE_RECEIVER_ASSERTIONS, true)
+                            put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
+
+                            // enable all language features
+                            val langFeatures =
+                                mutableMapOf<LanguageFeature, LanguageFeature.State>()
+                            for (langFeature in LanguageFeature.values()) {
+                                langFeatures[langFeature] = LanguageFeature.State.ENABLED
+                            }
+                            val languageVersionSettings = LanguageVersionSettingsImpl(
+                                LanguageVersion.KOTLIN_2_0,
+                                ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
+                                mapOf(
+                                    AnalysisFlags.extendedCompilerChecks to false,
+                                    AnalysisFlags.ideMode to true,
+                                    AnalysisFlags.skipMetadataVersionCheck to true,
+                                    AnalysisFlags.skipPrereleaseCheck to true,
+                                ),
+                                langFeatures
+                            )
+                            put(
+                                CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS,
+                                languageVersionSettings
+                            )
                         }
                     }
                 )

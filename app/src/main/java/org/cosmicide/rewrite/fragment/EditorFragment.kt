@@ -7,14 +7,8 @@ import androidx.annotation.MenuRes
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
-import io.github.dingyi222666.view.treeview.Branch
-import io.github.dingyi222666.view.treeview.DataSource
-import io.github.dingyi222666.view.treeview.DataSourceScope
-import io.github.dingyi222666.view.treeview.Leaf
 import io.github.dingyi222666.view.treeview.Tree
-import io.github.dingyi222666.view.treeview.TreeNode
 import io.github.dingyi222666.view.treeview.TreeView
-import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -78,7 +72,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
-
+                    binding.editor.setText("")
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {

@@ -55,7 +55,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         remove(this@ProjectOutputFragment)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                     }.commit()
-
                     true
                 }
 

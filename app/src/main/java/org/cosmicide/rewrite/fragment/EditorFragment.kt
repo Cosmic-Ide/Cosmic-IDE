@@ -60,7 +60,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             (binding.included.treeview as TreeView<FileSet>).apply {
                 bindCoroutineScope(lifecycleScope)
                 this.tree = tree
-                binder = ViewBinder(layoutInflater, fileViewModel)
+                binder = ViewBinder(layoutInflater, fileViewModel, tree)
                 nodeEventListener = binder
             }
 

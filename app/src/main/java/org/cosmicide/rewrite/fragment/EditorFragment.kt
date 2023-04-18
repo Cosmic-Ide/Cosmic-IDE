@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
@@ -121,7 +122,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
 
-        binding.editor.setTextSize(20f)
+        binding.editor.setTextSize(Prefs.editorFontSize)
     }
 
     private fun setEditorLanguage() {
@@ -159,6 +160,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         navigateToCompileInfoFragment()
                         true
                     }
+                    R.id.action_settings -> {
+                        navigateToSettingsFragment()
+                        true
+                    }
 
                     else -> false
                 }
@@ -173,6 +178,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             .commit()
     }
 
+    private fun navigateToSettingsFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, SettingsFragment())
+            .addToBackStack(null)
+            .commit()
+    }
+    
     private fun transverseTree(dir: File) : Set<FileSet>{
         val set = mutableSetOf<FileSet>()
         for (file in dir.listFiles()) {

@@ -30,6 +30,7 @@ android {
 
 
 dependencies {
+    implementation(projects.common)
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.kotlinc)

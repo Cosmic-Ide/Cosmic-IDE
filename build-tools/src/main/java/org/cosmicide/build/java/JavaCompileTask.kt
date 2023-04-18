@@ -4,6 +4,7 @@ import com.sun.tools.javac.api.JavacTool
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import java.io.File
 import java.io.Writer
@@ -34,7 +35,7 @@ class JavaCompileTask(val project: Project) : Task {
 
     override fun execute(reporter: BuildReporter) {
         val output = File(project.binDir, "classes")
-        val version = "17"
+        val version = Prefs.compilerJavaVersion.toString()
 
         try {
             Files.createDirectories(output.toPath())
@@ -60,7 +61,6 @@ class JavaCompileTask(val project: Project) : Task {
         if (javaFileObjects.isEmpty()) {
             return
         }
-
 
         fileManager.use { fm ->
             fm.setLocation(StandardLocation.CLASS_OUTPUT, listOf(output))

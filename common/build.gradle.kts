@@ -31,4 +31,5 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.databinding:viewbinding:7.4.2")
+    api("androidx.preference:preference-ktx:1.2.0")
 }

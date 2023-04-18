@@ -40,6 +40,9 @@ object Prefs {
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", false)
 
+    val useSSVM: Boolean
+        get() = prefs.getBoolean("use_ssvm", false)
+
     /**
      * Initializes shared preferences.
      * @param context The context of the application.

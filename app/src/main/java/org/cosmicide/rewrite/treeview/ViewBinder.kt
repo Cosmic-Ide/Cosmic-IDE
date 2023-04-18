@@ -145,7 +145,7 @@ class ViewBinder(
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             var name = binding.edittext.text.toString()
-                            val file = File(file, "$name.java").apply {
+                            File(file, "$name.java").apply {
                                 createNewFile()
                             }
 

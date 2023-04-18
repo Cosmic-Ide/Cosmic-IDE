@@ -19,6 +19,7 @@ import org.cosmicide.build.java.JarTask
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.compile.ssvm.SSVM
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.extension.setFont
@@ -26,6 +27,7 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
+import java.lang.reflect.Modifier
 import java.util.zip.ZipFile
 
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
@@ -72,7 +74,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             isWordwrap = true
-            setTextSize(14f)
+            setTextSize(Prefs.editorFontSize)
             setFont()
             invalidate()
         }
@@ -130,9 +132,12 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             loader.loadClass(className)
         }.onSuccess { clazz ->
             isRunning = true
-            initVM()
-            invoke(className)
-            /*if (clazz.declaredMethods.any { it.name == "main" }) {
+            if (Prefs.useSSVM) {
+                initVM()
+                invoke(className)
+                return@onSuccess
+            }
+            if (clazz.declaredMethods.any { it.name == "main" }) {
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.modifiers)) {
                     method.invoke(null, arrayOf<String>())
@@ -146,7 +151,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 }
             } else {
                 System.err.println("No main method found")
-            }*/
+            }
         }.onFailure { e ->
             System.err.println("Error loading class: ${e.message}")
         }.also {

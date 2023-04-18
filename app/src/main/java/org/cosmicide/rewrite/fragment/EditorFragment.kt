@@ -187,7 +187,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     
     private fun transverseTree(dir: File) : Set<FileSet>{
         val set = mutableSetOf<FileSet>()
-        for (file in dir.listFiles()) {
+        val files = dir.listFiles() ?: return set
+        for (file in files) {
             when {
                 file.isFile -> set.add(FileSet(file))
                 file.isDirectory -> {
@@ -198,7 +199,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             }
         }
-        return  set
+        return set
     }
 
     private fun showMenu(v: View, @MenuRes menuRes: Int, position: Int) {

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
         android:title="Editor">
@@ -15,14 +14,18 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="Compiler">
+    <PreferenceCategory android:title="Compiler">
 
         <SwitchPreference
             android:key="use_fastjarfs"
             android:title="Use fast implementation for Jar FS"
             android:summary="This experimental mode may speed up compilation time, but use with caution"
             android:defaultValue="false" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_ssvm"
+            android:summary="This is a very experimental feature. Use with caution."
+            android:title="Use SSVM for running." />
 
         <ListPreference
             android:key="java_version"

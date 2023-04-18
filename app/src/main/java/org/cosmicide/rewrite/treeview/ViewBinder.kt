@@ -10,27 +10,29 @@ import android.widget.Space
 import androidx.annotation.MenuRes
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
 import io.github.dingyi222666.view.treeview.TreeNodeEventListener
 import io.github.dingyi222666.view.treeview.TreeView
 import io.github.dingyi222666.view.treeview.TreeViewBinder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding
 import org.cosmicide.rewrite.model.FileViewModel
-import org.jetbrains.kotlin.context.GlobalContext
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.io.File
 
 
-class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileViewModel, val tree: Tree<FileSet>) : TreeViewBinder<FileSet>(),
+class ViewBinder(
+    private val lifeScope: CoroutineScope,
+    private val layoutInflater: LayoutInflater,
+    private val fileViewModel: FileViewModel,
+    private val treeView: TreeView<FileSet>
+) : TreeViewBinder<FileSet>(),
     TreeNodeEventListener<FileSet> {
+
 
     override fun createView(parent: ViewGroup, viewType: Int): View {
         return if (viewType == 1) {
@@ -123,12 +125,10 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             val name = binding.edittext.text.toString()
-                            val f = File(file, "$name.kt")
-                            f.createNewFile()
-                            fileViewModel.addFile(f)
-                            GlobalScope.launch {
-                                Log.d("AmeenDebug", "refreshed ${node.data}")
-                                tree.refresh(node)
+                            File(file, "$name.kt").createNewFile()
+                            lifeScope.launch {
+                                Log.d("TREEVIEW", "Refresh called")
+                                treeView.refresh(false, node)
                             }
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
@@ -145,7 +145,10 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             var name = binding.edittext.text.toString()
-                            File(file, "$name.java").createNewFile()
+                            val file = File(file, "$name.java").apply {
+                                createNewFile()
+                            }
+
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()
@@ -200,6 +203,7 @@ class ViewBinder(var layoutInflater: LayoutInflater, val fileViewModel: FileView
         }
         popup.show()
     }
+
 }
 
 inline val Int.dp: Int

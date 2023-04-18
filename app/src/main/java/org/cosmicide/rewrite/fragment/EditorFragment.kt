@@ -7,14 +7,8 @@ import androidx.annotation.MenuRes
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
-import io.github.dingyi222666.view.treeview.Branch
-import io.github.dingyi222666.view.treeview.DataSource
-import io.github.dingyi222666.view.treeview.DataSourceScope
-import io.github.dingyi222666.view.treeview.Leaf
 import io.github.dingyi222666.view.treeview.Tree
-import io.github.dingyi222666.view.treeview.TreeNode
 import io.github.dingyi222666.view.treeview.TreeView
-import io.github.dingyi222666.view.treeview.buildTree
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -39,7 +33,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
     private lateinit var fileViewModel: FileViewModel
-    private var savedTabPos = -1
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
@@ -49,6 +42,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
+            val binder = ViewBinder(
+                lifecycleScope,
+                layoutInflater,
+                fileViewModel,
+                binding.included.treeview as TreeView<FileSet>
+            )
 
             val rootItem = FileSet(project.root,
                 transverseTree(project.root) as MutableSet<FileSet>
@@ -61,16 +60,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 initTree()
             }
 
-
-
             (binding.included.treeview as TreeView<FileSet>).apply {
                 bindCoroutineScope(lifecycleScope)
                 this.tree = tree
-                binder = ViewBinder(layoutInflater, fileViewModel, tree)
+                this.binder = binder
                 nodeEventListener = binder
+                refresh()
             }
-
-            binding.included.treeview.refresh()
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {

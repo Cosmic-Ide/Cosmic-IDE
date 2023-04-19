@@ -40,6 +40,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
+        binding.editor.setTextSize(Prefs.editorFontSize)
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
@@ -78,9 +79,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     binding.editor.setText("")
                 }
 
-                override fun onTabReselected(tab: TabLayout.Tab) {
-                    binding.editor.setText(fileViewModel.files.value!![tab.position].readText())
-                }
+                override fun onTabReselected(tab: TabLayout.Tab) {}
             })
 
 
@@ -121,8 +120,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 )
             }
         }
-
-        binding.editor.setTextSize(Prefs.editorFontSize)
     }
 
     private fun setEditorLanguage() {

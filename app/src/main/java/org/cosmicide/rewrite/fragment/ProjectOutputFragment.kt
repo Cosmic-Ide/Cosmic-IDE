@@ -163,7 +163,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
     private val ssvm by lazy {
         SSVM(
             ZipFile(
-                FileUtil.classpathDir.resolve("joe/rt.jar"),
+                FileUtil.dataDir.resolve("rt.jar"),
                 Charsets.UTF_8
             )
         )

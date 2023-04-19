@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        android:title="Editor">
+    <PreferenceCategory android:title="Editor">
 
         <SeekBarPreference
             android:key="font_size"
             android:title="Font Size"
             android:summary="Set the font size for the editor"
             android:defaultValue="14"
+            android:max="32"
             android:min="12"
-            android:max="22" />
+            app:showSeekBarValue="true" />
 
     </PreferenceCategory>
 

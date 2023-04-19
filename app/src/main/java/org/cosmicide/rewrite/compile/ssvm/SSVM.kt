@@ -86,7 +86,7 @@ class SSVM(
             setProperty("user.dir", "/home/mike")
             setProperty("user.name", "mike")
             setProperty("os.version", "10.0")
-            setProperty("os.arch", "amd64")
+            setProperty("os.arch", "arm64")
             setProperty("os.name", "Linux")
         }
 

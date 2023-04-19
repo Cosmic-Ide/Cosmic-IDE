@@ -48,7 +48,7 @@ class App : Application() {
         extractAsset(INDEX_FILE_NAME, indexFile)
         extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR))
         extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB))
-        extractAsset("rt.jar", FileUtil.classpathDir.resolve("joe/rt.jar"))
+        extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
     }
 
     private suspend fun extractAsset(assetName: String, outputFile: File) = withContext(Dispatchers.IO) {

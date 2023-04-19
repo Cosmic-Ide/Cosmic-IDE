@@ -16,9 +16,9 @@ object Prefs {
     val editorFontSize: Float
         get() {
             return try {
-                prefs.getString("font_size", "12")?.toFloat() ?: 12f
+                prefs.getString("font_size", "16")?.toFloat() ?: 16f
             } catch (e: Exception) {
-                12f
+                16f
             }
         }
 

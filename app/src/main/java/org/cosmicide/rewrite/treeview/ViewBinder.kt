@@ -109,12 +109,13 @@ class ViewBinder(
     ) {
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
-        if (node.isChild.not()){
+        if (node.isChild.not()) {
             popup.menu.removeItem(R.id.create_kotlin_class)
             popup.menu.removeItem(R.id.create_java_class)
             popup.menu.removeItem(R.id.create_folder)
         }
         popup.setOnMenuItemClickListener {
+            val parentNode = treeView.tree.getParentNode(node)
             when (it.itemId) {
                 R.id.create_kotlin_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
@@ -127,15 +128,15 @@ class ViewBinder(
                             val name = binding.edittext.text.toString()
                             File(file, "$name.kt").createNewFile()
                             lifeScope.launch {
-                                Log.d("TREEVIEW", "Refresh called")
-                                treeView.refresh(false, node)
+                                treeView.refresh(node = parentNode)
                             }
                         }
-                        .setNegativeButton("Cancel"){ dialog ,_ ->
+                        .setNegativeButton("Cancel") { dialog, _ ->
                             dialog.dismiss()
                         }
                         .show()
                 }
+
                 R.id.create_java_class -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     binding.textInputLayout.suffixText = ".java"
@@ -145,16 +146,21 @@ class ViewBinder(
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
                             File(file, "$name.java").apply {
                                 createNewFile()
                             }
-
+                            lifeScope.launch {
+                                Log.d("ViewBinder", "Refresh treeview")
+                                treeView.refresh(node = parentNode)
+                            }
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()
                         }
                         .show()
                 }
+
                 R.id.create_folder -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     MaterialAlertDialogBuilder(v.context)
@@ -163,13 +169,19 @@ class ViewBinder(
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             var name = binding.edittext.text.toString()
-                            File(file, "$name").createDirectory()
+                            name = name.replace("\\.", "")
+                            file.resolve(name).createDirectory()
+                            lifeScope.launch {
+                                Log.d("ViewBinder", "Refresh treeview")
+                                treeView.refresh(node = parentNode)
+                            }
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()
                         }
                         .show()
                 }
+
                 R.id.rename -> {
                     val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
                     binding.edittext.setText(file.name)
@@ -178,20 +190,29 @@ class ViewBinder(
                         .setView(binding.root)
                         .setPositiveButton("Create") { _, _ ->
                             var name = binding.edittext.text.toString()
-                            File(file.absolutePath).renameTo(File("${file.parent}, $name"))
+                            name = name.replace("\\.", "")
+                            file.renameTo(file.parentFile!!.resolve(name))
+                            lifeScope.launch {
+                                Log.d("ViewBinder", "Refresh treeview")
+                                treeView.refresh(node = parentNode)
+                            }
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()
                         }
                         .show()
                 }
+
                 R.id.delete -> {
                     MaterialAlertDialogBuilder(v.context)
                         .setTitle("Delete")
                         .setMessage("Are you sure you want to delete this file")
                         .setPositiveButton("Create") { _, _ ->
-                            file.absolutePath
-                            File(file.absolutePath).deleteRecursively()
+                            file.deleteRecursively()
+                            lifeScope.launch {
+                                Log.d("ViewBinder", "Refresh treeview")
+                                treeView.refresh(node = parentNode)
+                            }
                         }
                         .setNegativeButton("Cancel"){ dialog ,_ ->
                             dialog.dismiss()

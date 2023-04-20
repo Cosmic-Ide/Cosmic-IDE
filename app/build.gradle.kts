@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    implementation("com.android.tools:desugar_jdk_libs_nio:2.0.3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.10.0")
@@ -53,8 +54,9 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
+    implementation("io.github.Rosemoe.sora-editor:editor")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate")
     implementation("io.github.dingyi222666:treeview:1.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
@@ -70,7 +72,6 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
 
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
     androidTestImplementation("junit:junit:4.13.2")
 }

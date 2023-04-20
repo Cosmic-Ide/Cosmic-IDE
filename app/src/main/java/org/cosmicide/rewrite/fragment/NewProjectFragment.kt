@@ -47,10 +47,11 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
 
     private fun createProject(
         language: Language,
-        projectName: String,
+        name: String,
         packageName: String
     ): Boolean {
         return try {
+            val projectName = name.replace("\\.", "")
             val root = File(FileUtil.projectDir, projectName).apply { mkdirs() }
             val project = Project(root = root, language = language)
             val srcDir = project.srcDir.invoke().apply { mkdirs() }

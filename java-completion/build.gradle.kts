@@ -26,9 +26,9 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
     api("com.google.guava:guava:31.1-android")
-    implementation(projects.kotlinc)
 
     implementation("com.google.auto.value:auto-value-annotations:1.10.1")
     annotationProcessor("com.google.auto.value:auto-value:1.10.1")
+    implementation(projects.kotlinc)
     implementation(projects.util)
 }

@@ -39,8 +39,6 @@ class SSVM(
     private lateinit var vm: VirtualMachine
 
     private var initialized: Boolean = false
-    val isInitialized: Boolean
-        get() = initialized
 
     fun initVM() {
         vm = object : VirtualMachine() {
@@ -232,7 +230,8 @@ class SSVM(
     fun release() {
         try {
             rtJar.close()
-        } catch (e: Throwable) {
+
+        } catch (_: Throwable) {
         }
     }
 

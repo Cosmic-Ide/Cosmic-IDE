@@ -111,9 +111,12 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
                 val text = binding.infoEditor.text
-                val cursor = text.cursor
                 lifecycleScope.launch(Dispatchers.Main) {
-                    text.insert(cursor.rightLine, cursor.rightColumn, p0.toChar().toString())
+                    text.insert(
+                        text.lineCount - 1,
+                        text.getColumnCount(text.lineCount - 1),
+                        p0.toChar().toString()
+                    )
                 }
                 // This is a hack to allow the editor to update properly even when in a while(true) loop
                 Thread.sleep(1)
@@ -210,5 +213,8 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         }
     }
 
-
+    override fun onDestroy() {
+        ssvm.release()
+        super.onDestroy()
+    }
 }

@@ -13,6 +13,22 @@
             android:min="12"
             app:showSeekBarValue="true" />
 
+
+        <SeekBarPreference
+            android:defaultValue="4"
+            android:key="tab_size"
+            android:max="16"
+            android:min="1"
+            android:summary="Set the tab size for the editor"
+            android:title="Tab Size"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_spaces"
+            android:summary="Use spaces instead of tabs for indentation in the editor"
+            android:title="Use spaces instead of tabs" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Compiler">

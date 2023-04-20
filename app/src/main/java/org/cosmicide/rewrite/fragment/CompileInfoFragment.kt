@@ -30,12 +30,13 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
             if (report.message.isEmpty()) return@BuildReporter
             // Update the info editor with the build output
             val text = binding.infoEditor.text
-            val cursor = text.cursor
-            text.insert(
-                cursor.rightLine,
-                cursor.rightColumn,
-                "${report.kind}: ${report.message}\n"
-            )
+            lifecycleScope.launch {
+                text.insert(
+                    text.lineCount - 1,
+                    0,
+                    "${report.kind}: ${report.message}\n"
+                )
+            }
         }
     }
     val compiler: Compiler = Compiler(project, reporter)

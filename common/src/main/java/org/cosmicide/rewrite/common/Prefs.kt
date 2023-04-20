@@ -40,6 +40,12 @@ object Prefs {
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", false)
 
+    val useSpaces: Boolean
+        get() = prefs.getBoolean("use_spaces", false)
+
+    val tabSize: Int
+        get() = prefs.getString("tab_size", "4")?.toInt() ?: 4
+
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)
 

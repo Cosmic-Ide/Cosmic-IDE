@@ -106,11 +106,6 @@ public class MethodEntity extends Entity implements EntityScope {
     }
 
     @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.copyOf(childScopes);
-    }
-
-    @Override
     public void addEntity(Entity entity) {
         entities.put(entity.getSimpleName(), entity);
         childScopes.add(entity.getScope());

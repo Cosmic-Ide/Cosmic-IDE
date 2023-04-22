@@ -112,13 +112,9 @@ public class Completor {
                 ContentWithLineMap.create(positionContext.get().getFileScope(), fileManager, filePath);
         String prefix = contentWithLineMap.extractCompletionPrefix(line, column);
         // TODO: limit the number of the candidates.
-        if (cachedCompletion.isIncrementalCompletion(filePath, line, column, prefix)) {
-            return getCompletionCandidatesFromCache(line, column, prefix);
-        } else {
             cachedCompletion =
                     computeCompletionResult(positionContext.get(), contentWithLineMap, line, column, prefix);
             return cachedCompletion;
-        }
     }
 
     private CompletionResult computeCompletionResult(
@@ -131,7 +127,7 @@ public class Completor {
         CompletionAction action;
         TextEditOptions.Builder textEditOptions =
                 TextEditOptions.builder().setAppendMethodArgumentSnippets(false);
-        if (treePath.getLeaf() instanceof MemberSelectTree) {
+        if (treePath.getLeaf() instanceof MemberSelectTree || treePath.getLeaf() instanceof ImportTree) {
             logger.info("Generating completion for MemberSelectTree");
             ExpressionTree parentExpression = ((MemberSelectTree) treePath.getLeaf()).getExpression();
             Optional<ImportTree> importNode = findNodeOfType(treePath, ImportTree.class);
@@ -153,14 +149,15 @@ public class Completor {
                     ((MemberReferenceTree) treePath.getLeaf()).getQualifierExpression();
             action =
                     CompleteMemberAction.forMethodReference(parentExpression, typeSolver, expressionSolver);
-        } else if (treePath.getLeaf() instanceof LiteralTree) {
+        } else if (treePath.getLeaf() instanceof LiteralTree ||
+                "\"".equals(contentWithLineMap.substring(line, column - 1, 1))) {
             logger.info("Generating completion for LiteralTree");
             // Do not complete on any literals, especially strings.
             action = NoCandidateAction.INSTANCE;
         } else {
             logger.info("Generating completion for expression");
             action = new CompleteSymbolAction(typeSolver, expressionSolver);
-            textEditOptions.setAppendMethodArgumentSnippets(true);
+            textEditOptions.setAppendMethodArgumentSnippets(false);
         }
 
         // When the cursor is before an opening parenthesis, it's likely the user is

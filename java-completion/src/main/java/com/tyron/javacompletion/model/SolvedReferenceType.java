@@ -59,7 +59,7 @@ public abstract class SolvedReferenceType extends SolvedEntityType {
         Deque<SimpleType> enclosingClasses = new ArrayDeque<>();
         Deque<String> packages = new ArrayDeque<>();
         Optional<Entity> parent =
-                getEntity().getParentScope().map(scope -> scope.getDefiningEntity().orElse(null));
+                getEntity().getParentScope().flatMap(EntityScope::getDefiningEntity);
         ClassEntity lastClass = getEntity();
         SolvedTypeParameters typeParameters = getTypeParameters();
         while (parent.isPresent()) {
@@ -72,7 +72,7 @@ public abstract class SolvedReferenceType extends SolvedEntityType {
             } else if (parent.get() instanceof PackageEntity) {
                 packages.addFirst(parent.get().getSimpleName());
             }
-            parent = parent.get().getParentScope().map(scope -> scope.getDefiningEntity().orElse(null));
+            parent = parent.get().getParentScope().flatMap(EntityScope::getDefiningEntity);
         }
         return TypeReference.formalizedBuilder()
                 .setPrimitive(false)

@@ -24,7 +24,7 @@ import java.util.List;
 @AutoValue
 abstract class Insertion {
     private static final Ordering<Insertion> REVERSE_INSERTION =
-            Ordering.natural().onResultOf((Insertion insertion) -> insertion.getPos()).reverse();
+            Ordering.natural().onResultOf(Insertion::getPos).reverse();
 
     public static Insertion create(int pos, String text) {
         return new AutoValue_Insertion(pos, text);

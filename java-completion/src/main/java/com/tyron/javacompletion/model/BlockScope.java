@@ -17,13 +17,11 @@
 package com.tyron.javacompletion.model;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -73,8 +71,4 @@ public class BlockScope implements EntityScope {
         return definitionRange;
     }
 
-    @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.copyOf(childScopes);
-    }
 }

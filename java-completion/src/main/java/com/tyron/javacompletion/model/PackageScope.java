@@ -19,13 +19,11 @@ package com.tyron.javacompletion.model;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -89,11 +87,6 @@ public class PackageScope implements EntityScope {
     @Override
     public Optional<EntityScope> getParentScope() {
         return Optional.empty();
-    }
-
-    @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.copyOf(files);
     }
 
     @Override

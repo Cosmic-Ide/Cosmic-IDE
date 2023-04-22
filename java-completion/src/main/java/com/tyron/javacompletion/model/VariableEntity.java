@@ -18,7 +18,8 @@ package com.tyron.javacompletion.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.google.common.collect.ImmutableList;
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
@@ -71,15 +72,11 @@ public class VariableEntity extends Entity implements EntityScope {
     }
 
     @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.of();
-    }
-
-    @Override
     public Multimap<String, Entity> getMemberEntities() {
         return ImmutableMultimap.of();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "VariableEntity<" + getType().getSimpleName() + ' ' + getSimpleName() + ">";

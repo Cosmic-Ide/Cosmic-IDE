@@ -63,7 +63,6 @@ public class JarPrinter {
         if (args.length < 1) {
             printHelp();
         }
-        boolean fixFileContent = false;
         Optional<String> jarFilename = Optional.empty();
         Optional<String> classFilename = Optional.empty();
         for (int i = 0; i < args.length; i++) {
@@ -167,7 +166,7 @@ public class JarPrinter {
             constantIndex++;
         }
 
-        System.out.println("    Interface indeces: " + classFileInfo.getInterfaceIndeces());
+        System.out.println("    Interface indeces: " + classFileInfo.getInterfaceIndices());
 
         System.out.println("    Fields");
         for (FieldInfo field : classFileInfo.getFields()) {

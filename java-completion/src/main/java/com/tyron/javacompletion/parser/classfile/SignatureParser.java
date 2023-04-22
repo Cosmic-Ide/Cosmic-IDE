@@ -121,17 +121,13 @@ public class SignatureParser {
             lexer.skipChar();
             ch = lexer.nextChar();
             switch (ch) {
-                case 'L':
-                    builder.addThrowsSignature(parseClassTypeSignatureContent(false /* endsWithEos */));
-                    break;
-                case 'T':
-                    builder.addThrowsSignature(parseTypeVariableSignatureContent());
-                    break;
-                default:
-                    throw new IllegalStateException(
-                            "Unknown leading character for method throws signature: "
-                                    + ch
-                                    + lexer.remainingContent());
+                case 'L' ->
+                        builder.addThrowsSignature(parseClassTypeSignatureContent(false /* endsWithEos */));
+                case 'T' -> builder.addThrowsSignature(parseTypeVariableSignatureContent());
+                default -> throw new IllegalStateException(
+                        "Unknown leading character for method throws signature: "
+                                + ch
+                                + lexer.remainingContent());
             }
             ch = lexer.peekChar();
         }
@@ -261,6 +257,7 @@ public class SignatureParser {
             String innerName;
             if (innerClassMap.containsKey(originalBinaryName)) {
                 InnerClassEntry innerClassEntry = innerClassMap.get(originalBinaryName);
+                assert innerClassEntry != null;
                 binaryName = innerClassEntry.getOuterClassName();
                 innerName = innerClassEntry.getInnerName();
             } else {
@@ -312,7 +309,7 @@ public class SignatureParser {
     /**
      * Parses class and interface binary names.
      *
-     * <p>See JVMS 4.2.1: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1
+     * <p>See JVMS 4.2.1: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1">...</a>
      */
     public TypeReference parseClassBinaryName() {
         // The binary name is a subset of the class type signature, with the exception that it doesn't
@@ -377,23 +374,27 @@ public class SignatureParser {
     private TypeArgument parseTypeArgument() {
         char ch = lexer.peekChar();
         switch (ch) {
-            case '*':
+            case '*' -> {
                 lexer.skipChar();
                 return WildcardTypeArgument.create(Optional.empty() /* bound */);
-            case '+':
+            }
+            case '+' -> {
                 lexer.skipChar();
                 return WildcardTypeArgument.create(
                         Optional.of(
                                 WildcardTypeArgument.Bound.create(
                                         WildcardTypeArgument.Bound.Kind.EXTENDS, parseReferenceTypeSignature())));
-            case '-':
+            }
+            case '-' -> {
                 lexer.skipChar();
                 return WildcardTypeArgument.create(
                         Optional.of(
                                 WildcardTypeArgument.Bound.create(
                                         WildcardTypeArgument.Bound.Kind.SUPER, parseReferenceTypeSignature())));
-            default:
+            }
+            default -> {
                 return parseReferenceTypeSignature();
+            }
         }
     }
 
@@ -411,18 +412,15 @@ public class SignatureParser {
     @VisibleForTesting
     TypeReference parseReferenceTypeSignature() {
         char ch = lexer.nextChar();
-        switch (ch) {
-            case 'L':
-                return parseClassTypeSignatureContent(false /* endsWithEos */);
-            case 'T':
-                return parseTypeVariableSignatureContent();
-            case '[':
+        return switch (ch) {
+            case 'L' -> parseClassTypeSignatureContent(false /* endsWithEos */);
+            case 'T' -> parseTypeVariableSignatureContent();
+            case '[' ->
                 // TODO: support multi-dimensional array.
-                return parseJavaTypeSignature().toBuilder().setArray(true).build();
-            default:
-                throw new IllegalStateException(
-                        "Invalid referenceTypeSignature: " + ch + lexer.remainingContent());
-        }
+                    parseJavaTypeSignature().toBuilder().setArray(true).build();
+            default -> throw new IllegalStateException(
+                    "Invalid referenceTypeSignature: " + ch + lexer.remainingContent());
+        };
     }
 
     private boolean isReferenceTypeSignatureLeadingChar(char ch) {

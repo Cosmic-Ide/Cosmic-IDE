@@ -34,7 +34,7 @@ public class LambdaTypeReference extends TypeReference {
     }
 
     @Override
-    protected ImmutableList<String> getUnformalizedFullName() {
+    protected ImmutableList<String> getUnFormalizedFullName() {
         return ImmutableList.of();
     }
 

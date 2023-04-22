@@ -19,7 +19,6 @@ package com.tyron.javacompletion.model.util;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.ImmutableRangeMap;
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeMap;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -28,7 +27,7 @@ import java.util.Deque;
 import java.util.List;
 
 /**
- * Build a {@link RangeMap} from non-overlapping {@link Range} instances.
+ * Build a {@link ImmutableRangeMap} from non-overlapping {@link Range} instances.
  */
 public class NestedRangeMapBuilder<V> {
     private final List<Entry<V>> entries = new ArrayList<>();
@@ -39,7 +38,7 @@ public class NestedRangeMapBuilder<V> {
      * <p>All existing ranges must be disconnected with {@code range}, encloses {@code range}, or is
      * enclosed in {@code range}.
      */
-    public NestedRangeMapBuilder put(Range<Integer> range, V value) {
+    public NestedRangeMapBuilder<V> put(Range<Integer> range, V value) {
         range = range.canonical(DiscreteDomain.integers());
         if (!range.isEmpty()) {
             entries.add(new Entry<>(range, value));
@@ -56,7 +55,7 @@ public class NestedRangeMapBuilder<V> {
         for (Entry<V> entry : entries) {
             while (!stack.isEmpty()) {
                 Entry<V> topEntry = stack.pollFirst();
-                if (topEntry.range.encloses(entry.range)) {
+                if (topEntry != null && topEntry.range.encloses(entry.range)) {
                     if (topEntry.range.lowerEndpoint() < entry.range.lowerEndpoint()) {
                         builder.put(
                                 Range.closedOpen(topEntry.range.lowerEndpoint(), entry.range.lowerEndpoint()),
@@ -72,7 +71,9 @@ public class NestedRangeMapBuilder<V> {
                     break;
                 } else {
                     // Disconnected with top entry, add the whole range of the top entry to the builder
-                    builder.put(topEntry.range, topEntry.value);
+                    if (topEntry != null) {
+                        builder.put(topEntry.range, topEntry.value);
+                    }
                 }
             }
             stack.addFirst(entry);

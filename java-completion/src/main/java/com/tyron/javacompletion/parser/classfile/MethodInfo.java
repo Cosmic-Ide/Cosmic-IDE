@@ -24,7 +24,7 @@ import java.util.EnumSet;
 /**
  * method_info structure in a .class file.
  *
- * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.6
+ * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.6">...</a>
  */
 @AutoValue
 public abstract class MethodInfo {
@@ -32,8 +32,8 @@ public abstract class MethodInfo {
             EnumSet<AccessFlag> accessFlags,
             int nameIndex,
             int descriptorIndex,
-            ImmutableList<AttributeInfo> attributeInfos) {
-        return new AutoValue_MethodInfo(accessFlags, nameIndex, descriptorIndex, attributeInfos);
+            ImmutableList<AttributeInfo> attributeInfo) {
+        return new AutoValue_MethodInfo(accessFlags, nameIndex, descriptorIndex, attributeInfo);
     }
 
     public abstract EnumSet<AccessFlag> getAccessFlags();

@@ -19,7 +19,6 @@ package com.tyron.javacompletion.parser.classfile;
 import com.google.common.collect.ImmutableList;
 import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantClassInfo;
 import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantDoubleInfo;
-import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantFieldrefInfo;
 import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantFloatInfo;
 import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantIntegerInfo;
 import com.tyron.javacompletion.parser.classfile.ConstantPoolInfo.ConstantInterfaceMethodrefInfo;
@@ -41,15 +40,15 @@ import java.util.EnumSet;
 /**
  * A parser for Java .class files.
  *
- * <p>Format spec is defined at https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html
+ * <p>Format spec is defined at <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html">...</a>
  */
 public class ClassFileParser {
     private static final int CLASS_MAGIC = 0xCAFEBABE;
     // Constant pool tags:
     private static final int CONSTANT_CLASS = 7;
-    private static final int CONSTANT_FIELDREF = 9;
-    private static final int CONSTANT_METHODREF = 10;
-    private static final int CONSTANT_INTERFACE_METHODREF = 11;
+    private static final int CONSTANT_FIELD_REF = 9;
+    private static final int CONSTANT_METHOD_REF = 10;
+    private static final int CONSTANT_INTERFACE_METHOD_REF = 11;
     private static final int CONSTANT_STRING = 8;
     private static final int CONSTANT_INTEGER = 3;
     private static final int CONSTANT_FLOAT = 4;
@@ -91,7 +90,7 @@ public class ClassFileParser {
         builder.setThisClassIndex(inStream.readUnsignedShort());
         builder.setSuperClassIndex(inStream.readUnsignedShort());
 
-        builder.setInterfaceIndeces(parseInterfaces(inStream));
+        builder.setInterfaceIndices(parseInterfaces(inStream));
         builder.setFields(parseFields(inStream));
         builder.setMethods(parseMethods(inStream));
         builder.setAttributes(parseAttributes(inStream));
@@ -110,53 +109,23 @@ public class ClassFileParser {
         for (int i = 1; i < constantPoolCount; i++) {
             // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4
             byte tag = inStream.readByte();
-            ConstantPoolInfo info;
-            switch (tag) {
-                case CONSTANT_CLASS:
-                    info = parseConstantClass(inStream);
-                    break;
-                case CONSTANT_FIELDREF:
-                    info = parseConstantFieldref(inStream);
-                    break;
-                case CONSTANT_METHODREF:
-                    info = parseConstantMethodref(inStream);
-                    break;
-                case CONSTANT_INTERFACE_METHODREF:
-                    info = parseConstantInterfaceMethodref(inStream);
-                    break;
-                case CONSTANT_STRING:
-                    info = parseConstantString(inStream);
-                    break;
-                case CONSTANT_INTEGER:
-                    info = parseConstantInteger(inStream);
-                    break;
-                case CONSTANT_FLOAT:
-                    info = parseConstantFloat(inStream);
-                    break;
-                case CONSTANT_LONG:
-                    info = parseConstantLong(inStream);
-                    break;
-                case CONSTANT_DOUBLE:
-                    info = parseConstantDouble(inStream);
-                    break;
-                case CONSTANT_NAME_AND_TYPE:
-                    info = parseConstantNameAndType(inStream);
-                    break;
-                case CONSTANT_UTF8:
-                    info = parseConstantUtf8(inStream);
-                    break;
-                case CONSTANT_METHOD_HANDLE:
-                    info = parseConstantMethodHandle(inStream);
-                    break;
-                case CONSTANT_METHOD_TYPE:
-                    info = parseConstantMethodTypeInfo(inStream);
-                    break;
-                case CONSTANT_INVOKE_DYNAMIC:
-                    info = parseConstantInvokeDynamicInfo(inStream);
-                    break;
-                default:
-                    throw new ClassFileParserError("Unknown constant pool tag %s", tag);
-            }
+            ConstantPoolInfo info = switch (tag) {
+                case CONSTANT_CLASS -> parseConstantClass(inStream);
+                case CONSTANT_FIELD_REF -> parseConstantFieldref(inStream);
+                case CONSTANT_METHOD_REF -> parseConstantMethodref(inStream);
+                case CONSTANT_INTERFACE_METHOD_REF -> parseConstantInterfaceMethodref(inStream);
+                case CONSTANT_STRING -> parseConstantString(inStream);
+                case CONSTANT_INTEGER -> parseConstantInteger(inStream);
+                case CONSTANT_FLOAT -> parseConstantFloat(inStream);
+                case CONSTANT_LONG -> parseConstantLong(inStream);
+                case CONSTANT_DOUBLE -> parseConstantDouble(inStream);
+                case CONSTANT_NAME_AND_TYPE -> parseConstantNameAndType(inStream);
+                case CONSTANT_UTF8 -> parseConstantUtf8(inStream);
+                case CONSTANT_METHOD_HANDLE -> parseConstantMethodHandle(inStream);
+                case CONSTANT_METHOD_TYPE -> parseConstantMethodTypeInfo(inStream);
+                case CONSTANT_INVOKE_DYNAMIC -> parseConstantInvokeDynamicInfo(inStream);
+                default -> throw new ClassFileParserError("Unknown constant pool tag %s", tag);
+            };
             builder.add(info);
 
             if (tag == CONSTANT_DOUBLE || tag == CONSTANT_LONG) {
@@ -188,11 +157,11 @@ public class ClassFileParser {
         return ConstantClassInfo.create(nameIndex);
     }
 
-    private ConstantFieldrefInfo parseConstantFieldref(DataInputStream inStream) throws IOException {
+    private ConstantPoolInfo.ConstantFieldRefInfo parseConstantFieldref(DataInputStream inStream) throws IOException {
         // https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2
         int classIndex = inStream.readUnsignedShort();
         int nameAndTypeIndex = inStream.readUnsignedShort();
-        return ConstantFieldrefInfo.create(classIndex, nameAndTypeIndex);
+        return ConstantPoolInfo.ConstantFieldRefInfo.create(classIndex, nameAndTypeIndex);
     }
 
     private ConstantMethodrefInfo parseConstantMethodref(DataInputStream inStream)

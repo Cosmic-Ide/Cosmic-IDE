@@ -16,10 +16,8 @@
  */
 package com.tyron.javacompletion.parser;
 
-import static com.google.common.base.Charsets.UTF_8;
 import static com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 
-import com.sun.tools.javac.file.JavacFileManager;
 import com.sun.tools.javac.parser.JavacParser;
 import com.sun.tools.javac.parser.ParserFactory;
 import com.sun.tools.javac.parser.Scanner;
@@ -32,11 +30,9 @@ import com.sun.tools.javac.util.Log;
  */
 public class ParserContext {
     private final Context javacContext;
-    private final JavacFileManager javacFileManager;
 
     public ParserContext() {
         javacContext = new Context();
-        javacFileManager = new JavacFileManager(javacContext, true /* register */, UTF_8);
     }
 
     /**

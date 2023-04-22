@@ -48,9 +48,6 @@ public class Indexer {
 
     private final ParserContext parserContext = new ParserContext();
 
-    public Indexer() {
-    }
-
     /**
      * Convenience method for invoking the Indexer through code
      *

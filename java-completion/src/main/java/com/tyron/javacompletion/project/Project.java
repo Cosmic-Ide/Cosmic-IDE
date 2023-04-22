@@ -100,7 +100,7 @@ public class Project {
                             fileManager.getProjectRootPath().resolve(Paths.get(typeIndexFile)));
             moduleManager.addDependingModule(module);
             logger.info("Loaded type index file %s", typeIndexFile);
-        } catch (NoSuchFileException nsfe) {
+        } catch (NoSuchFileException e) {
             logger.warning("Unable to load type index file %s: file doesn't exist", typeIndexFile);
         } catch (Throwable t) {
             logger.warning(t, "Unable to load type index file %s", typeIndexFile);

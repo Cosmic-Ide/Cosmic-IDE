@@ -18,6 +18,8 @@ package com.tyron.javacompletion.parser.classfile;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import android.annotation.SuppressLint;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.tyron.javacompletion.model.Entity;
@@ -55,6 +57,7 @@ public class ClassInfoConverter {
         builder.setClassQualifiers(className.getQualifiers());
         if (reader.getInnerClassMap().containsKey(classBinaryName)) {
             InnerClassEntry innerClassEntry = reader.getInnerClassMap().get(classBinaryName);
+            assert innerClassEntry != null;
             builder.setOuterClassBinaryName(Optional.of(innerClassEntry.getOuterClassName()));
             accessFlags = innerClassEntry.getAccessFlags();
             builder.setStatic(accessFlags.contains(ClassAccessFlag.STATIC));
@@ -96,7 +99,7 @@ public class ClassInfoConverter {
             classSignatureBuilder.setSuperClass(TypeReference.JAVA_LANG_OBJECT);
         }
 
-        for (int interfaceIndex : reader.getClassFileInfo().getInterfaceIndeces()) {
+        for (int interfaceIndex : reader.getClassFileInfo().getInterfaceIndices()) {
             String interfaceName = reader.getClassName(interfaceIndex);
             classSignatureBuilder.addInterface(
                     new SignatureParser(interfaceName, reader.getInnerClassMap()).parseClassBinaryName());
@@ -121,11 +124,7 @@ public class ClassInfoConverter {
             Optional<AttributeInfo.Signature> signature =
                     reader.getSignature(methodInfo.getAttributeInfos());
             int signatureIndex;
-            if (signature.isPresent()) {
-                signatureIndex = signature.get().getSignatureIndex();
-            } else {
-                signatureIndex = methodInfo.getDescriptorIndex();
-            }
+            signatureIndex = signature.map(AttributeInfo.Signature::getSignatureIndex).orElseGet(methodInfo::getDescriptorIndex);
             MethodSignature methodSignature =
                     new SignatureParser(reader.getUtf8(signatureIndex), reader.getInnerClassMap())
                             .parseMethodSignature();
@@ -134,6 +133,7 @@ public class ClassInfoConverter {
         }
     }
 
+    @SuppressLint("VisibleForTests")
     private void convertFields(ParsedClassFile.Builder builder, ClassInfoReader reader) {
         for (FieldInfo fieldInfo : reader.getClassFileInfo().getFields()) {
             String simpleName = reader.getUtf8(fieldInfo.getNameIndex());
@@ -187,7 +187,7 @@ public class ClassInfoConverter {
             for (AttributeInfo.InnerClass.ClassInfo classInfo : innerClass.get().getClasses()) {
                 int innerNameIndex = classInfo.getInnerNameIndex();
                 if (innerNameIndex == 0) {
-                    // This is an annonymous class. Ignore it since it has no name.
+                    // This is an anonymous class. Ignore it since it has no name.
                     continue;
                 }
                 int outerClassInfoIndex = classInfo.getOuterClassInfoIndex();

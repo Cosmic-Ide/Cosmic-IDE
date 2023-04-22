@@ -28,6 +28,7 @@ import com.tyron.javacompletion.options.IndexOptions;
 import com.tyron.javacompletion.options.JavaCompletionOptions;
 import com.tyron.javacompletion.project.Project;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -36,7 +37,6 @@ import java.util.concurrent.Executors;
 
 public class JavaCompletions {
     private static final JLogger logger = JLogger.createForEnclosingClass();
-    private static final int NUM_THREADS = 10;
 
     private final ExecutorService mExecutor;
 
@@ -45,7 +45,7 @@ public class JavaCompletions {
     private Project mProject;
 
     public JavaCompletions() {
-        mExecutor = Executors.newFixedThreadPool(NUM_THREADS);
+        mExecutor = Executors.newCachedThreadPool();
     }
 
     public synchronized void initialize(URI projectRootUri, JavaCompletionOptions options) {
@@ -90,6 +90,7 @@ public class JavaCompletions {
         checkState(mInitialized, "shutdown() called without being initialized.");
         mInitialized = false;
         mExecutor.shutdown();
+        mFileManager.shutdown();
     }
 
     public synchronized Project getProject() {
@@ -105,6 +106,11 @@ public class JavaCompletions {
     public synchronized void updateFileContent(Path file, String newContent) {
         checkState(mInitialized, "Not yet initialized.");
         mFileManager.setSnaphotContent(file.toUri(), newContent);
+    }
+
+    public synchronized void openFile(Path file, String content) throws IOException {
+        checkState(mInitialized, "Not yet initialized.");
+        mFileManager.openFileForSnapshot(file.toUri(), content);
     }
 
     /**

@@ -21,14 +21,14 @@ import com.google.auto.value.AutoValue;
 /**
  * cp_info structure in a .class file.
  *
- * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4
+ * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4">...</a>
  */
 public class ConstantPoolInfo {
 
     /**
      * CONSTANT_Class_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.1
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.1">...</a>
      */
     @AutoValue
     public abstract static class ConstantClassInfo extends ConstantPoolInfo {
@@ -46,14 +46,14 @@ public class ConstantPoolInfo {
     }
 
     /**
-     * CONSTANT_Fieldref_info structure.
+     * ConstantFieldRefInfo structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2">...</a>
      */
     @AutoValue
-    public abstract static class ConstantFieldrefInfo extends ConstantPoolInfo {
-        public static ConstantFieldrefInfo create(int classIndex, int nameAndTypeIndex) {
-            return new AutoValue_ConstantPoolInfo_ConstantFieldrefInfo(classIndex, nameAndTypeIndex);
+    public abstract static class ConstantFieldRefInfo extends ConstantPoolInfo {
+        public static ConstantFieldRefInfo create(int classIndex, int nameAndTypeIndex) {
+            return new AutoValue_ConstantPoolInfo_ConstantFieldRefInfo(classIndex, nameAndTypeIndex);
         }
 
         /**
@@ -74,7 +74,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Methodref_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2">...</a>
      */
     @AutoValue
     public abstract static class ConstantMethodrefInfo extends ConstantPoolInfo {
@@ -100,7 +100,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_InterfaceMethodref_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.2">...</a>
      */
     @AutoValue
     public abstract static class ConstantInterfaceMethodrefInfo extends ConstantPoolInfo {
@@ -127,7 +127,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_String_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.3
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.3">...</a>
      */
     @AutoValue
     public abstract static class ConstantStringInfo extends ConstantPoolInfo {
@@ -146,7 +146,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Integer_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.4
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.4">...</a>
      */
     @AutoValue
     public abstract static class ConstantIntegerInfo extends ConstantPoolInfo {
@@ -163,7 +163,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Float_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.4
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.4">...</a>
      */
     @AutoValue
     public abstract static class ConstantFloatInfo extends ConstantPoolInfo {
@@ -180,7 +180,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Long_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.5
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.5">...</a>
      */
     @AutoValue
     public abstract static class ConstantLongInfo extends ConstantPoolInfo {
@@ -197,7 +197,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Double_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.5
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.5">...</a>
      */
     @AutoValue
     public abstract static class ConstantDoubleInfo extends ConstantPoolInfo {
@@ -214,7 +214,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_NameAndType_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.6
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.6">...</a>
      */
     @AutoValue
     public abstract static class ConstantNameAndTypeInfo extends ConstantPoolInfo {
@@ -242,7 +242,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_Utf8_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.7
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.7">...</a>
      */
     @AutoValue
     public abstract static class ConstantUtf8Info extends ConstantPoolInfo {
@@ -259,7 +259,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_MethodHandle_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.8
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.8">...</a>
      */
     @AutoValue
     public abstract static class ConstantMethodHandleInfo extends ConstantPoolInfo {
@@ -280,7 +280,7 @@ public class ConstantPoolInfo {
          * <ol>
          *   <li>If the value of the {@link #getReferenceKind()} is 1 (REF_getField), 2 (REF_getStatic),
          *       3 (REF_putField), or 4 (REF_putStatic), then the constant pool entry at that index must
-         *       be a {@link ConstantFieldrefInfo} structure representing a field for which a method
+         *       be a {@link ConstantFieldRefInfo} structure representing a field for which a method
          *       handle is to be created.
          *   <li>If the value of the {@link #getReferenceKind()} is 5 (REF_invokeVirtual) or 8
          *       (REF_newInvokeSpecial), then the constant pool entry at that index must be a {@link
@@ -314,7 +314,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_MethodType_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.9
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.9">...</a>
      */
     @AutoValue
     public abstract static class ConstantMethodTypeInfo extends ConstantPoolInfo {
@@ -333,7 +333,7 @@ public class ConstantPoolInfo {
     /**
      * CONSTANT_InvokeDynamic_info structure.
      *
-     * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.9
+     * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.4.9">...</a>
      */
     @AutoValue
     public abstract static class ConstantInvokeDynamicInfo extends ConstantPoolInfo {

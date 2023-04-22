@@ -43,7 +43,7 @@ public abstract class TypeParameter {
         return getName()
                 + " extends "
                 + getExtendBounds().stream()
-                .map(b -> b.toDisplayString())
+                .map(TypeReference::toDisplayString)
                 .collect(Collectors.joining(", "));
     }
 }

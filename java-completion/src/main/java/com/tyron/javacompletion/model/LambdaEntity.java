@@ -30,13 +30,11 @@ public class LambdaEntity extends Entity implements EntityScope {
 
     private final EntityScope parent;
     private final Multimap<String, Entity> entities;
-    private final List<EntityScope> childScopes;
     private ImmutableList<VariableEntity> parameters;
 
     public LambdaEntity(EntityScope parent) {
         super("", Kind.METHOD, ImmutableList.of(), false, Optional.empty(), Range.open(0, 1));
         this.parent = parent;
-        this.childScopes = new ArrayList<>();
         this.entities = HashMultimap.create();
     }
 
@@ -61,11 +59,6 @@ public class LambdaEntity extends Entity implements EntityScope {
     }
 
     @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.copyOf(childScopes);
-    }
-
-    @Override
     public Optional<Entity> getDefiningEntity() {
         return Optional.of(this);
     }
@@ -78,12 +71,11 @@ public class LambdaEntity extends Entity implements EntityScope {
     @Override
     public void addEntity(Entity entity) {
         entities.put(entity.getSimpleName(), entity);
-        childScopes.add(entity.getScope());
     }
 
     @Override
     public void addChildScope(EntityScope entityScope) {
-        childScopes.add(entityScope);
+        throw new UnsupportedOperationException();
     }
 
     public ImmutableList<VariableEntity> getParameters() {

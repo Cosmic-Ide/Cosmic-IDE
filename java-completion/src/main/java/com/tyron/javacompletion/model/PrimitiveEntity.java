@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
@@ -99,6 +101,7 @@ public class PrimitiveEntity extends Entity {
         return Optional.empty();
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "PrimitiveEntity: " + getSimpleName();

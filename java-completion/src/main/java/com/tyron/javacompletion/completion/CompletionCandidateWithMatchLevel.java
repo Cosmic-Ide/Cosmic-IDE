@@ -21,7 +21,7 @@ import com.google.auto.value.AutoValue;
 import java.util.Comparator;
 
 /**
- * A wrapper of {@link CompletionCandidate} and {@link CompletionPrefixMatcher#MatchLevel}.
+ * A wrapper of {@link CompletionCandidate} and {@link CompletionPrefixMatcher#computeMatchLevel(String, String)}.
  */
 @AutoValue
 public abstract class CompletionCandidateWithMatchLevel

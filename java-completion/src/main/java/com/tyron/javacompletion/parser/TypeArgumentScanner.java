@@ -46,26 +46,21 @@ public class TypeArgumentScanner extends TreeScanner<TypeArgument, Void> {
     private WildcardTypeArgument createWildcardTypeArgument(WildcardTree node) {
         Optional<WildcardTypeArgument.Bound> bound;
         switch (node.getKind()) {
-            case SUPER_WILDCARD:
-                bound =
-                        Optional.of(
-                                WildcardTypeArgument.Bound.create(
-                                        WildcardTypeArgument.Bound.Kind.SUPER,
-                                        new TypeReferenceScanner().getTypeReference(node.getBound())));
-                break;
-            case EXTENDS_WILDCARD:
-                bound =
-                        Optional.of(
-                                WildcardTypeArgument.Bound.create(
-                                        WildcardTypeArgument.Bound.Kind.EXTENDS,
-                                        new TypeReferenceScanner().getTypeReference(node.getBound())));
-                break;
-            case UNBOUNDED_WILDCARD:
-                bound = Optional.empty();
-                break;
-            default:
+            case SUPER_WILDCARD -> bound =
+                    Optional.of(
+                            WildcardTypeArgument.Bound.create(
+                                    WildcardTypeArgument.Bound.Kind.SUPER,
+                                    new TypeReferenceScanner().getTypeReference(node.getBound())));
+            case EXTENDS_WILDCARD -> bound =
+                    Optional.of(
+                            WildcardTypeArgument.Bound.create(
+                                    WildcardTypeArgument.Bound.Kind.EXTENDS,
+                                    new TypeReferenceScanner().getTypeReference(node.getBound())));
+            case UNBOUNDED_WILDCARD -> bound = Optional.empty();
+            default -> {
                 logger.warning("Unknown wildcard type varialbe kind: %s", node.getKind());
                 bound = Optional.empty();
+            }
         }
         return WildcardTypeArgument.create(bound);
     }

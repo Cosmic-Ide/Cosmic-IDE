@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.protocol;
 
+import androidx.annotation.NonNull;
+
 import com.tyron.javacompletion.file.TextRange;
 
 import java.util.Objects;
@@ -28,7 +30,7 @@ import java.util.Objects;
  * <p>NOTE: the start and end position are character offsets, not byte offsets.
  *
  * <p>This class corresponds to the Range type defined by Language Server Protocol:
- * https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#range
+ * <a href="https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#range">...</a>
  */
 public class Range extends TextRange {
     private final Position start;
@@ -45,16 +47,6 @@ public class Range extends TextRange {
         this.end = end;
     }
 
-    public static Range createFromTextRange(TextRange textRange) {
-        if (textRange instanceof Range) {
-            return (Range) textRange;
-        }
-
-        return new Range(
-                Position.createFromTextPosition(textRange.getStart()),
-                Position.createFromTextPosition(textRange.getEnd()));
-    }
-
     @Override
     public Position getStart() {
         return start;
@@ -65,6 +57,7 @@ public class Range extends TextRange {
         return end;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return String.format("{start=%s, end=%s}", start, end);

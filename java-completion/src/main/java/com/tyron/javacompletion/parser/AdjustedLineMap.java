@@ -117,10 +117,6 @@ public class AdjustedLineMap implements LineMap {
         return getLineNumberAndPosDelta(pos).lineNumber;
     }
 
-    public LineMap getOriginalLineMap() {
-        return originalLineMap;
-    }
-
     private LineNumberAndPosDelta getLineNumberAndPosDelta(long pos) {
         List<Adjustment> adjustments = findAdjusted(lineStartAdjustments, pos);
         Adjustment lowerBound = adjustments.get(0);
@@ -141,7 +137,7 @@ public class AdjustedLineMap implements LineMap {
                 // Line start position + original length + line delta exceeds content length. Use upperBound
                 // to get line number below.
             }
-            if (upperBound != null && upperBound.getOriginal() <= lineNumber) {
+            if (upperBound.getOriginal() <= lineNumber) {
                 // This can happen if there are insertions on the original line and the column of the
                 // adjusted
                 // pos is greater than the length of the original line.
@@ -194,15 +190,10 @@ public class AdjustedLineMap implements LineMap {
 
     static class Builder {
         static final Ordering<Insertion> ORDER_BY_POS =
-                Ordering.natural().onResultOf((Insertion insertion) -> insertion.getPos());
+                Ordering.natural().onResultOf(Insertion::getPos);
 
         private final List<Insertion> insertions = new ArrayList<>();
         private LineMap originalLineMap;
-
-        Builder addInsertion(Insertion insertion) {
-            insertions.add(insertion);
-            return this;
-        }
 
         Builder addInsertions(Collection<Insertion> insertions) {
             this.insertions.addAll(insertions);
@@ -249,6 +240,7 @@ public class AdjustedLineMap implements LineMap {
                 long delta = insertion.getText().length();
                 nextLineDelta += delta;
                 columnDelta += delta;
+                assert currentColumntAdjustments != null;
                 currentColumntAdjustments.add(Adjustment.create(column + 1, column + 1 + columnDelta));
             }
 

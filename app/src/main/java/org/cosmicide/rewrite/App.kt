@@ -20,6 +20,7 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.FileNotFoundException
+import javax.lang.model.SourceVersion
 
 class App : Application() {
 

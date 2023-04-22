@@ -35,7 +35,7 @@ public abstract class ClassFileInfo {
 
     public abstract int getSuperClassIndex();
 
-    public abstract ImmutableList<Integer> getInterfaceIndeces();
+    public abstract ImmutableList<Integer> getInterfaceIndices();
 
     public abstract ImmutableList<FieldInfo> getFields();
 
@@ -53,7 +53,7 @@ public abstract class ClassFileInfo {
 
         public abstract Builder setSuperClassIndex(int value);
 
-        public abstract Builder setInterfaceIndeces(ImmutableList<Integer> value);
+        public abstract Builder setInterfaceIndices(ImmutableList<Integer> value);
 
         public abstract Builder setFields(ImmutableList<FieldInfo> value);
 

@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 
@@ -47,6 +49,7 @@ public class NullEntity extends Entity {
         return EmptyScope.INSTANCE;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "NullEntity";

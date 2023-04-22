@@ -42,9 +42,8 @@ public abstract class SolvedTypeParameters {
     public abstract static class Builder {
         protected abstract ImmutableMap.Builder<String, SolvedType> typeVariableMapBuilder();
 
-        public Builder putTypeParameter(String name, SolvedType solvedTypeParameter) {
+        public void putTypeParameter(String name, SolvedType solvedTypeParameter) {
             typeVariableMapBuilder().put(name, solvedTypeParameter);
-            return this;
         }
 
         public Builder putTypeParameters(Map<String, SolvedType> solvedTypeParameters) {

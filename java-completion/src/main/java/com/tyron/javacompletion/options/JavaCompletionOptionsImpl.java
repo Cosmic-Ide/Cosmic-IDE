@@ -18,8 +18,6 @@ package com.tyron.javacompletion.options;
 
 import androidx.annotation.Nullable;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.List;
 import java.util.logging.Level;
 
@@ -29,10 +27,6 @@ public class JavaCompletionOptionsImpl implements JavaCompletionOptions {
     private final Level logLevel;
     private final List<String> ignoredPaths;
     private final List<String> indexFiles;
-
-    public JavaCompletionOptionsImpl() {
-        this(null, Level.OFF, ImmutableList.of(), ImmutableList.of());
-    }
 
     public JavaCompletionOptionsImpl(String logPath,
                                      Level logLevel,

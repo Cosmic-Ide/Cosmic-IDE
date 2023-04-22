@@ -46,11 +46,15 @@ abstract class ContentWithLineMap {
             logger.warning("Cannot get file content of %s", filePath);
             content = "";
         }
+        if (fileScope.getCompilationUnit().isPresent()) {
+            JCCompilationUnit compilationUnit = fileScope.getCompilationUnit().get();
+            LineMap lineMap = compilationUnit.getLineMap();
 
-        JCCompilationUnit compilationUnit = fileScope.getCompilationUnit().get();
-        LineMap lineMap = compilationUnit.getLineMap();
-
-        return new AutoValue_ContentWithLineMap(content, lineMap, filePath);
+            return new AutoValue_ContentWithLineMap(content, lineMap, filePath);
+        } else {
+            logger.warning("Cannot get compilation unit of %s", filePath);
+            return new AutoValue_ContentWithLineMap(content, null, filePath);
+        }
     }
 
     abstract CharSequence getContent();

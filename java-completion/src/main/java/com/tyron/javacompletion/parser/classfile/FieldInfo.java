@@ -24,7 +24,7 @@ import java.util.EnumSet;
 /**
  * field_info structure in a .class file.
  *
- * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.5
+ * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.5">...</a>
  */
 @AutoValue
 public abstract class FieldInfo {

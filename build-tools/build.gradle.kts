@@ -24,7 +24,6 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
-
     }
 }
 
@@ -34,5 +33,8 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.kotlinc)
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("com.google.guava:guava:31.1-jre")
     implementation("com.android.tools:r8:8.0.40")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
 }

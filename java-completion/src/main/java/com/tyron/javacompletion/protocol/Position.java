@@ -16,15 +16,18 @@
  */
 package com.tyron.javacompletion.protocol;
 
+import androidx.annotation.NonNull;
+
 import com.tyron.javacompletion.file.TextPosition;
 
+import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Position in a text document expressed as zero-based line and character offset. A position is
  * between two characters like an 'insert' cursor in a editor.
  *
- * <p>See: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#position
+ * <p>See: <a href="https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#position">...</a>
  */
 public class Position extends TextPosition {
     private final int line;
@@ -58,9 +61,10 @@ public class Position extends TextPosition {
         return character;
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return String.format("(%d, %d)", line, character);
+        return String.format(Locale.getDefault(), "(%d, %d)", line, character);
     }
 
     @Override

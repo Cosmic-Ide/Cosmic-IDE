@@ -24,12 +24,12 @@ import java.util.EnumSet;
 /**
  * attribute_info structure in a .class file.
  *
- * <p>See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7
+ * <p>See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7">...</a>
  */
 public abstract class AttributeInfo {
 
     /**
-     * See https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.6
+     * See <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.7.6">...</a>
      */
     @AutoValue
     public abstract static class InnerClass extends AttributeInfo {
@@ -55,8 +55,7 @@ public abstract class AttributeInfo {
             /**
              * A valid index into the constant_pool table.
              *
-             * <p>The constant pool entry at that index must be a {@link
-             * ConstantPoolInfo#ConstantClassInfo} structure representing the class. The remaining items
+             * <p>The constant pool entry at that index must be a  structure representing the class. The remaining items
              * in the classes array entry give information about the class.
              */
             public abstract int getInnerClassInfoIndex();
@@ -67,7 +66,7 @@ public abstract class AttributeInfo {
              * zero.
              *
              * <p>Otherwise, the value must be a valid index into the constant pool table, and the entry
-             * at that index must be a {@link ConstantPoolInfo#ConstantClassInfo} representing the class
+             * at that index must be representing the class
              * or interface of which this class is a member.
              */
             public abstract int getOuterClassInfoIndex();
@@ -76,7 +75,7 @@ public abstract class AttributeInfo {
              * If the class is anonymous, the value must be zero.
              *
              * <p>Otherwise, the value must be a valid index into the constant pool table, and the entry
-             * at that index must be a {@link ConstantPoolInfo#ConstantUtf8Info} that represents the
+             * at that index must represent the
              * original simple name of the class, as given in the source code from which this class file
              * was compiled.
              */

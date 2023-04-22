@@ -164,18 +164,16 @@ public class ClassModuleBuilder {
 
     private VariableEntity createVariableEntity(
             ParsedField parsedField, ClassEntity parentClass, ImmutableList<String> qualifiers) {
-        VariableEntity field =
-                new VariableEntity(
-                        parsedField.getSimpleName(),
-                        Entity.Kind.FIELD,
-                        qualifiers,
-                        parsedField.isStatic(),
-                        parsedField.getFieldType(),
-                        parentClass,
-                        Optional.empty() /* javadoc */,
-                        EMPTY_RANGE,
-                        EMPTY_RANGE);
-        return field;
+        return new VariableEntity(
+                parsedField.getSimpleName(),
+                Entity.Kind.FIELD,
+                qualifiers,
+                parsedField.isStatic(),
+                parsedField.getFieldType(),
+                parentClass,
+                Optional.empty() /* javadoc */,
+                EMPTY_RANGE,
+                EMPTY_RANGE);
     }
 
     private void addClassEntity(String binaryName, ClassEntity classEntity) {

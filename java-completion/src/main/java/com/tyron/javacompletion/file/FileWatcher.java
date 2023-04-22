@@ -88,13 +88,13 @@ class FileWatcher {
 
         if (PathUtils.shouldIgnorePath(path, this.projectRoot, this.ignorePathMatchers)) {
             logger.info("Ignore watching directory %s", path);
-            return false;
+            return true;
         }
 
         Path normalizedPath = path.normalize();
         if (watchKeyMap.containsKey(normalizedPath)) {
             logger.info("Directory %s has already been watched.", path);
-            return false;
+            return true;
         }
 
         try {
@@ -105,11 +105,11 @@ class FileWatcher {
                             StandardWatchEventKinds.ENTRY_DELETE,
                             StandardWatchEventKinds.ENTRY_MODIFY);
             watchKeyMap.put(path, watchKey);
-            return true;
+            return false;
         } catch (IOException e) {
             logger.warning(e, "Cannot watch directory %s.", path);
         }
-        return false;
+        return true;
     }
 
     private synchronized void unwatchDirectory(Path path) {
@@ -120,17 +120,13 @@ class FileWatcher {
         }
 
         WatchKey watchKey = watchKeyMap.remove(normalizedPath);
-        watchKey.cancel();
+        if (watchKey != null) {
+            watchKey.cancel();
+        }
     }
 
     synchronized void watchFileSnapshotPath(Path path) {
-        Path normalizedPath = path.normalize();
         fileSnapshotPaths.add(path);
-    }
-
-    synchronized void unwatchFileSnapshotPath(Path path) {
-        Path normalizedPath = path.normalize();
-        fileSnapshotPaths.remove(path);
     }
 
     synchronized void shutdown() {
@@ -165,7 +161,7 @@ class FileWatcher {
     private class WatchRunnable implements Runnable {
         @Override
         public void run() {
-            for (; ; ) {
+            while (true) {
                 WatchKey watchKey;
                 try {
                     watchKey = watchService.take();
@@ -173,7 +169,6 @@ class FileWatcher {
                     // The watcher is shutdown, stop running
                     return;
                 }
-                @SuppressWarnings("unchecked")
                 Path dir = (Path) watchKey.watchable();
                 synchronized (FileWatcher.this) {
                     checkState(listener != null, "Watcher doesn't have listener");
@@ -192,6 +187,7 @@ class FileWatcher {
             if (eventKind == StandardWatchEventKinds.OVERFLOW) {
                 return;
             }
+
 
             Path fullPath = dir.resolve(event.context());
 
@@ -227,7 +223,7 @@ class FileWatcher {
             newDirectories.add(path);
             while (!newDirectories.isEmpty()) {
                 Path dir = newDirectories.remove();
-                if (!watchDirectory(dir)) {
+                if (watchDirectory(dir)) {
                     // The directory is being monitored, skip files under it.
                     continue;
                 }

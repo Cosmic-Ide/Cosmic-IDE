@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -82,10 +83,7 @@ public class IndexStore {
         if (lhs == rhs) {
             return 0;
         }
-        if (lhs == null && rhs != null) {
-            return -1;
-        }
-        if (rhs == null) {
+        if (lhs == null || rhs == null) {
             return 1;
         }
 
@@ -196,7 +194,7 @@ public class IndexStore {
         SerializedEntity ret = new SerializedEntity();
         ret.members =
                 entity.getConstructors().stream()
-                        .map(constructor -> serializeEntity(constructor))
+                        .map(this::serializeEntity)
                         .collect(Collectors.toList());
         ret.members.addAll(
                 entity.getMemberEntities().values().stream()
@@ -216,7 +214,7 @@ public class IndexStore {
                                     return serializeEntity(childEntity);
                                 })
                         .sorted()
-                        .collect(Collectors.toList()));
+                        .toList());
         if (entity.getSuperClass().isPresent()) {
             ret.superClass =
                     serializeTypeReference(entity.getSuperClass().get(), entity.getParentScope().get());
@@ -239,7 +237,7 @@ public class IndexStore {
         SerializedEntity ret = new SerializedEntity();
         ret.parameters =
                 entity.getParameters().stream()
-                        .map(param -> serializeEntity(param))
+                        .map(this::serializeEntity)
                         .collect(Collectors.toList());
         if (!entity.getSimpleName().equals("<init>")) {
             ret.type = serializeTypeReference(entity.getReturnType(), entity.getScope());
@@ -265,9 +263,6 @@ public class IndexStore {
         checkNotNull(serializedEntity.simpleName, "serializedEntity.simpleName is null");
 
         Entity.Kind entityKind = Entity.Kind.valueOf(serializedEntity.kind);
-        if (entityKind == null) {
-            throw new IllegalArgumentException("Unknown entity kind: " + serializedEntity.kind);
-        }
 
         if (VariableEntity.ALLOWED_KINDS.contains(entityKind)) {
             return deserializeVariableEntity(serializedEntity, entityKind, qualifiers, parentScope);
@@ -277,7 +272,7 @@ public class IndexStore {
             checkArgument(
                     parentScope instanceof ClassEntity, "parentScope must be ClassEntity for methods.");
             return deserializeMethodEntity(
-                    serializedEntity, entityKind, qualifiers, (ClassEntity) parentScope);
+                    serializedEntity, qualifiers, (ClassEntity) parentScope);
         } else {
             throw new UnsupportedOperationException("Unsupported entity kind " + entityKind);
         }
@@ -324,7 +319,6 @@ public class IndexStore {
 
     private MethodEntity deserializeMethodEntity(
             SerializedEntity serializedEntity,
-            Entity.Kind entityKind,
             List<String> qualifiers,
             ClassEntity classEntity) {
         TypeReference returnType =
@@ -411,7 +405,6 @@ public class IndexStore {
                 optionalEntityWithContext.get().getEntity().getSimpleName(),
                 typeToSolve.getSimpleName())) {
             EntityWithContext entityWithContext = optionalEntityWithContext.get();
-            boolean isArray = entityWithContext.getArrayLevel() > 0;
             ret.fullName = entityWithContext.getEntity().getQualifiedName();
         } else {
             ret.fullName = QUALIFIER_JOINER.join(type.getFullName());
@@ -433,12 +426,11 @@ public class IndexStore {
             return ImmutableList.of();
         }
         return types.stream()
-                .map(t -> deserializeTypeReference(t))
+                .map(this::deserializeTypeReference)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
 
     private TypeReference deserializeTypeReference(SerializedType type) {
-        String fullName = type.fullName != null ? type.fullName : "";
         List<TypeArgument> typeArguments = ImmutableList.of();
 
         if (type.typeArguments != null && !type.typeArguments.isEmpty()) {
@@ -454,14 +446,12 @@ public class IndexStore {
             }
         }
 
-        TypeReference ret =
-                TypeReference.builder()
-                        .setFullName(type.fullName.split(QUALIFIER_SEPARATOR))
-                        .setPrimitive(PrimitiveEntity.isPrimitive(type.fullName))
-                        .setArray(type.isArray)
-                        .setTypeArguments(typeArguments)
-                        .build();
-        return ret;
+        return TypeReference.builder()
+                .setFullName(type.fullName.split(QUALIFIER_SEPARATOR))
+                .setPrimitive(PrimitiveEntity.isPrimitive(type.fullName))
+                .setArray(type.isArray)
+                .setTypeArguments(typeArguments)
+                .build();
     }
 
     private SerializedTypeArgument serializeTypeArgument(
@@ -474,12 +464,8 @@ public class IndexStore {
             if (wildcardTypeArgument.getBound().isPresent()) {
                 WildcardTypeArgument.Bound.Kind boundKind = wildcardTypeArgument.getBound().get().getKind();
                 switch (boundKind) {
-                    case SUPER:
-                        ret.kind = SerializedTypeArgumentKind.WILDCARD_SUPER;
-                        break;
-                    case EXTENDS:
-                        ret.kind = SerializedTypeArgumentKind.WILDCARD_EXTENDS;
-                        break;
+                    case SUPER -> ret.kind = SerializedTypeArgumentKind.WILDCARD_SUPER;
+                    case EXTENDS -> ret.kind = SerializedTypeArgumentKind.WILDCARD_EXTENDS;
                 }
                 ret.bound =
                         serializeTypeReference(
@@ -495,32 +481,33 @@ public class IndexStore {
 
     private TypeArgument deserializeTypeArgument(SerializedTypeArgument typeArgument) {
         switch (typeArgument.kind) {
-            case EXPLICIT:
+            case EXPLICIT -> {
                 checkNotNull(
                         typeArgument.explicitType,
                         "Type Argument with kind %s should have explicit type set",
                         typeArgument.kind);
                 return deserializeTypeReference(typeArgument.explicitType);
-            case WILDCARD_UNBOUNDED:
+            }
+            case WILDCARD_UNBOUNDED -> {
                 return WildcardTypeArgument.create(Optional.empty());
-            case WILDCARD_SUPER:
-            case WILDCARD_EXTENDS:
+            }
+            case WILDCARD_SUPER, WILDCARD_EXTENDS -> {
                 checkNotNull(
                         typeArgument.bound,
                         "Type Argument with kind %s should have bound set",
                         typeArgument.kind);
-            {
-                WildcardTypeArgument.Bound.Kind boundKind =
-                        typeArgument.kind == SerializedTypeArgumentKind.WILDCARD_SUPER
-                                ? WildcardTypeArgument.Bound.Kind.SUPER
-                                : WildcardTypeArgument.Bound.Kind.EXTENDS;
-                WildcardTypeArgument.Bound bound =
-                        WildcardTypeArgument.Bound.create(
-                                boundKind, deserializeTypeReference(typeArgument.bound));
-                return WildcardTypeArgument.create(Optional.of(bound));
+                {
+                    WildcardTypeArgument.Bound.Kind boundKind =
+                            typeArgument.kind == SerializedTypeArgumentKind.WILDCARD_SUPER
+                                    ? WildcardTypeArgument.Bound.Kind.SUPER
+                                    : WildcardTypeArgument.Bound.Kind.EXTENDS;
+                    WildcardTypeArgument.Bound bound =
+                            WildcardTypeArgument.Bound.create(
+                                    boundKind, deserializeTypeReference(typeArgument.bound));
+                    return WildcardTypeArgument.create(Optional.of(bound));
+                }
             }
-            default:
-                throw new RuntimeException("Unknown type argument " + typeArgument);
+            default -> throw new RuntimeException("Unknown type argument " + typeArgument);
         }
     }
 
@@ -543,7 +530,7 @@ public class IndexStore {
             return ImmutableList.of();
         }
         return typeParameters.stream()
-                .map(tp -> deserializeTypeParameter(tp))
+                .map(this::deserializeTypeParameter)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
     }
 
@@ -675,6 +662,7 @@ public class IndexStore {
         private SerializedType explicitType;
         private SerializedType bound;
 
+        @NonNull
         @Override
         public String toString() {
             return "kind: " + kind + ", explicitType: " + explicitType + ", bound: " + bound;

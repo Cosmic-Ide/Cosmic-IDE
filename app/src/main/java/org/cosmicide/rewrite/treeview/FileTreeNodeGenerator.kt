@@ -35,7 +35,7 @@ class FileTreeNodeGenerator(val rootItem: FileSet) : TreeNodeGenerator<FileSet> 
             name = rootItem.file.name,
             id = Tree.ROOT_NODE_ID,
             hasChild = true,
-            isChild = true
+            isChild = false
         )
     }
 }

@@ -42,18 +42,12 @@ public abstract class ClassSignature {
 
         public abstract Builder setTypeParameters(ImmutableList<TypeParameter> typeParameters);
 
-        public Builder addTypeParameter(TypeParameter typeParameter) {
-            typeParametersBuilder().add(typeParameter);
-            return this;
-        }
-
-        public abstract Builder setSuperClass(TypeReference superClass);
+        public abstract ClassSignature.Builder setSuperClass(TypeReference superClass);
 
         protected abstract ImmutableList.Builder<TypeReference> interfacesBuilder();
 
-        public Builder addInterface(TypeReference iface) {
+        public void addInterface(TypeReference iface) {
             interfacesBuilder().add(iface);
-            return this;
         }
 
         public abstract ClassSignature build();

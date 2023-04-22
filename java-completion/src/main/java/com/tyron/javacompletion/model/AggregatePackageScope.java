@@ -60,10 +60,9 @@ public class AggregatePackageScope extends PackageScope {
                 continue;
             }
 
-            AggregatePackageScope aggregatePackageScope = null;
             AggregatePackageEntity aggregatePackageEntity =
                     new AggregatePackageEntity(name, Iterables.getFirst(entities, null).getQualifiers());
-            aggregatePackageScope = aggregatePackageEntity.getScope();
+            AggregatePackageScope aggregatePackageScope = aggregatePackageEntity.getScope();
             members.put(name, aggregatePackageEntity);
 
             // Aggregate all packages into one.

@@ -53,20 +53,17 @@ public class MutableSolvedTypeParameters extends SolvedTypeParameters {
         throw new UnsupportedOperationException();
     }
 
-    public MutableSolvedTypeParameters putTypeParameter(String name, SolvedType solvedType) {
+    public void putTypeParameter(String name, SolvedType solvedType) {
         typeVariableMap.put(name, solvedType);
-        return this;
     }
 
-    public MutableSolvedTypeParameters putAllTypeParameters(
+    public void putAllTypeParameters(
             Map<String, SolvedType> allTypeParameters) {
         typeVariableMap.putAll(allTypeParameters);
-        return this;
     }
 
-    public MutableSolvedTypeParameters removeTypeParameter(String name) {
+    public void removeTypeParameter(String name) {
         typeVariableMap.remove(name);
-        return this;
     }
 
     public SolvedTypeParameters toImmutable() {

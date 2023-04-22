@@ -19,7 +19,7 @@ package com.tyron.javacompletion.protocol;
 /**
  * A textual edit applicable to a text document.
  *
- * <p>See: https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textedit
+ * <p>See: <a href="https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md#textedit">...</a>
  */
 public class TextEdit {
     /**

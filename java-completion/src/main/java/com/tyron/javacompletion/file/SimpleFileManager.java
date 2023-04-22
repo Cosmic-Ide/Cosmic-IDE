@@ -64,19 +64,8 @@ public class SimpleFileManager implements FileManager {
     }
 
     @Override
-    public void applyEditToSnapshot(
-            URI fileUri, TextRange editRange, Optional<Integer> rangeLength, String newText) {
-        // No-op
-    }
-
-    @Override
     public void setSnaphotContent(URI fileUri, String newText) {
         // No-op
-    }
-
-    @Override
-    public void closeFileForSnapshot(URI fileUri) {
-        snapshots.remove(Paths.get(fileUri));
     }
 
     @Override
@@ -90,11 +79,6 @@ public class SimpleFileManager implements FileManager {
     }
 
     @Override
-    public Optional<EditHistory> getFileEditHistory(Path filePath) {
-        throw new RuntimeException("Not supported");
-    }
-
-    @Override
     public Optional<CharSequence> getFileContent(Path filePath) {
         if (snapshots.containsKey(filePath.toAbsolutePath())) {
             return Optional.ofNullable(snapshots.get(filePath.toAbsolutePath()));
@@ -102,7 +86,7 @@ public class SimpleFileManager implements FileManager {
         try {
             return Optional.of(new String(Files.readAllBytes(filePath), UTF_8));
         } catch (IOException e) {
-            return Optional.ofNullable(null);
+            return Optional.empty();
         }
     }
 

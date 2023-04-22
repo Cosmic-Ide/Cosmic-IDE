@@ -4,25 +4,20 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.tyron.javacompletion.JavaCompletions
+import com.tyron.javacompletion.completion.CompletionCandidate
 import com.tyron.javacompletion.options.JavaCompletionOptionsImpl
+import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandleResult
-import io.github.rosemoe.sora.lang.smartEnter.NewlineHandler
-import io.github.rosemoe.sora.lang.styling.Styles
-import io.github.rosemoe.sora.lang.styling.StylesUtils
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
-import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentReference
-import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.common.Prefs
 import java.io.File
-import java.lang.Character.isWhitespace
 import java.net.URI
 import java.nio.file.Path
 import java.util.logging.Level
@@ -47,12 +42,13 @@ class JavaLanguage(
         tabSize = Prefs.tabSize
         useTab(!Prefs.useSpaces)
         val options = JavaCompletionOptionsImpl(
-            "${project.binDir.absolutePath}${File.separator}autocomplete.log",
+            "${project.binDir.absolutePath}/autocomplete.log",
             Level.ALL,
             emptyList(),
             emptyList()
         )
-        completions.initialize(URI("file://${project.root.absolutePath}"), options)
+        completions.initialize(URI("file://" + project.root.absolutePath), options)
+        completions.openFile(file.toPath(), editor.text.toString())
     }
 
     @WorkerThread
@@ -70,10 +66,25 @@ class JavaLanguage(
                 if (candidate.name != "<error>") {
                     val item = SimpleCompletionItem(
                         candidate.name,
-                        candidate.detail.orElse("Unknown"),
+                        candidate.detail.orElse(candidate.kind.name),
                         result.prefix.length,
                         candidate.name
                     )
+                    val kind = when (candidate.kind) {
+                        CompletionCandidate.Kind.CLASS -> CompletionItemKind.Class
+                        CompletionCandidate.Kind.INTERFACE -> CompletionItemKind.Interface
+                        CompletionCandidate.Kind.ENUM -> CompletionItemKind.Enum
+                        CompletionCandidate.Kind.METHOD -> CompletionItemKind.Method
+                        CompletionCandidate.Kind.FIELD -> CompletionItemKind.Field
+                        CompletionCandidate.Kind.VARIABLE -> CompletionItemKind.Variable
+                        CompletionCandidate.Kind.PACKAGE -> CompletionItemKind.Module
+                        CompletionCandidate.Kind.KEYWORD -> CompletionItemKind.Keyword
+
+                        else -> {
+                            CompletionItemKind.Text
+                        }
+                    }
+                    item.kind(kind)
                     publisher.addItem(item)
                 }
             }
@@ -83,87 +94,6 @@ class JavaLanguage(
             }
         }
         super.requireAutoComplete(content, position, publisher, extraArguments)
-    }
-
-
-    private val newLineHandlers = arrayOf<NewlineHandler>(
-        BraceHandler()
-    )
-
-    override fun getNewlineHandlers(): Array<NewlineHandler> {
-        return newLineHandlers
-    }
-
-    class BraceHandler : NewlineHandler {
-
-        override fun matchesRequirement(
-            text: Content,
-            position: CharPosition,
-            style: Styles?
-        ): Boolean {
-            val line = text.getLine(position.line - 1)
-            return !StylesUtils.checkNoCompletion(style, position) && getNonEmptyTextBefore(
-                line,
-                position.column,
-                1
-            ).equals("{") &&
-                    getNonEmptyTextAfter(line, position.column, 1).equals("}")
-        }
-
-        override fun handleNewline(
-            text: Content,
-            position: CharPosition,
-            style: Styles?,
-            tabSize: Int
-        ): NewlineHandleResult {
-            val line = text.getLine(position.line)
-            val index = position.column
-            val beforeText = line.subSequence(0, index).toString()
-            val afterText = line.subSequence(index, line.length).toString()
-            return handleNewline(beforeText, afterText, tabSize)
-        }
-
-        fun handleNewline(
-            beforeText: String,
-            afterText: String,
-            tabSize: Int
-        ): NewlineHandleResult {
-            val count = TextUtils.countLeadingSpaceCount(beforeText, tabSize)
-            val advanceBefore = getIndentAdvance(beforeText)
-            val advanceAfter = getIndentAdvance(afterText)
-            val sb = StringBuilder("\n")
-                .append(TextUtils.createIndent(count, tabSize, (!Prefs.useSpaces)))
-                .append('\n')
-                .append(TextUtils.createIndent(count, tabSize, (!Prefs.useSpaces)))
-            val shiftLeft = sb.length + 1
-            return NewlineHandleResult(sb, shiftLeft)
-        }
-
-        private fun getNonEmptyTextBefore(text: CharSequence, index: Int, length: Int): String {
-            var index = index
-            while (index > 0 && isWhitespace(text[index - 1])) {
-                index--
-            }
-            return text.subSequence(Math.max(0, index - length), index).toString()
-        }
-
-        private fun getNonEmptyTextAfter(text: CharSequence, index: Int, length: Int): String {
-            var index = index
-            while (index < text.length && isWhitespace(text[index])) {
-                index++
-            }
-            return text.subSequence(index, (index + length).coerceAtMost(text.length)).toString()
-        }
-
-        private fun getIndentAdvance(content: String): Int {
-            var advance = 0
-            for (c in content) {
-                if (c == '{')
-                    advance++
-            }
-            advance = 0.coerceAtLeast(advance)
-            return advance * 4
-        }
     }
 
     override fun destroy() {

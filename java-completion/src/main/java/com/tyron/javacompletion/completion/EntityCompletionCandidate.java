@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.completion;
 
+import androidx.annotation.NonNull;
+
 import com.tyron.javacompletion.model.ClassEntity;
 import com.tyron.javacompletion.model.Entity;
 import com.tyron.javacompletion.model.MethodEntity;
@@ -38,27 +40,16 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
     }
 
     public static Kind toCandidateKind(Entity.Kind entityKind) {
-        switch (entityKind) {
-            case CLASS:
-                return Kind.CLASS;
-            case ANNOTATION:
-            case INTERFACE:
-                return Kind.INTERFACE;
-            case ENUM:
-                return Kind.ENUM;
-            case METHOD:
-                return Kind.METHOD;
-            case VARIABLE:
-            case PRIMITIVE:
-                return Kind.VARIABLE;
-            case FIELD:
-                return Kind.FIELD;
-            case QUALIFIER:
-                return Kind.PACKAGE;
-            case REFERENCE:
-            default:
-                return Kind.UNKNOWN;
-        }
+        return switch (entityKind) {
+            case CLASS -> Kind.CLASS;
+            case ANNOTATION, INTERFACE -> Kind.INTERFACE;
+            case ENUM -> Kind.ENUM;
+            case METHOD -> Kind.METHOD;
+            case VARIABLE, PRIMITIVE -> Kind.VARIABLE;
+            case FIELD -> Kind.FIELD;
+            case QUALIFIER -> Kind.PACKAGE;
+            default -> Kind.UNKNOWN;
+        };
     }
 
     private static void appendTypeParameters(StringBuilder sb, List<TypeParameter> typeParameters) {
@@ -89,7 +80,7 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
     public Optional<String> getDetail() {
         Entity entity = getEntity();
         switch (entity.getKind()) {
-            case METHOD: {
+            case METHOD -> {
                 StringBuilder sb = new StringBuilder();
                 MethodEntity method = (MethodEntity) entity;
                 if (!method.getTypeParameters().isEmpty()) {
@@ -112,8 +103,7 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
                 sb.append(method.getReturnType().toDisplayString());
                 return Optional.of(sb.toString());
             }
-            case CLASS:
-            case INTERFACE: {
+            case CLASS, INTERFACE -> {
                 ClassEntity classEntity = (ClassEntity) entity;
                 if (classEntity.getTypeParameters().isEmpty()
                         && !classEntity.getSuperClass().isPresent()
@@ -137,13 +127,13 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
                 }
                 return Optional.of(sb.toString());
             }
-            case VARIABLE:
-            case FIELD: {
+            case VARIABLE, FIELD -> {
                 VariableEntity variable = (VariableEntity) entity;
                 return Optional.of(variable.getType().toDisplayString());
             }
-            default:
+            default -> {
                 return Optional.empty();
+            }
         }
     }
 
@@ -152,6 +142,7 @@ class EntityCompletionCandidate extends EntityBasedCompletionCandidate {
         return sortCategory;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return getKind().name() + " " + getName();

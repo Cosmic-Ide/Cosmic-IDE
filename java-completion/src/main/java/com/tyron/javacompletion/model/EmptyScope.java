@@ -17,12 +17,10 @@
 package com.tyron.javacompletion.model;
 
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,11 +35,6 @@ public class EmptyScope implements EntityScope {
     @Override
     public Multimap<String, Entity> getMemberEntities() {
         return ImmutableMultimap.of();
-    }
-
-    @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.of();
     }
 
     @Override

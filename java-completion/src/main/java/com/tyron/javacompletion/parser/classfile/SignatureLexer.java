@@ -28,7 +28,6 @@ public class SignatureLexer {
     private static final ImmutableSet<Character> NON_IDENTIFIER_CHARS =
             ImmutableSet.of('.', ';', '[', '/', '<', '>', ':');
     private final String content;
-    private final int identifierEndPos = -1;
     private int pos;
 
     public SignatureLexer(String content) {

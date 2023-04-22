@@ -81,7 +81,6 @@ public class ExpressionSolver {
                     .build();
     private static final String IDENT_THIS = "this";
     private static final String IDENT_SUPER = "super";
-    private static final String IDENT_LENGTH = "length";
 
     private final TypeSolver typeSolver;
     private final OverloadSolver overloadSolver;
@@ -390,6 +389,7 @@ public class ExpressionSolver {
 
             if (IDENT_THIS.equals(identifier)) {
                 ClassEntity enclosingClass = findEnclosingClass(params.baseScope());
+                assert enclosingClass != null;
                 return toList(
                         enclosingClass,
                         true /* isInstanceContext */,
@@ -563,10 +563,7 @@ public class ExpressionSolver {
         }
 
         private List<EntityWithContext> toList(Optional<EntityWithContext> optionalEntityWithContext) {
-            if (optionalEntityWithContext.isPresent()) {
-                return ImmutableList.of(optionalEntityWithContext.get());
-            }
-            return ImmutableList.of();
+            return optionalEntityWithContext.<List<EntityWithContext>>map(ImmutableList::of).orElseGet(ImmutableList::of);
         }
 
         private List<EntityWithContext> toList(

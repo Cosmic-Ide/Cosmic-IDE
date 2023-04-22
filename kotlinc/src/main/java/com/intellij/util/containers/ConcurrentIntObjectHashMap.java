@@ -1617,7 +1617,13 @@ public final class ConcurrentIntObjectHashMap<V> implements ConcurrentIntObjectM
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     return (int)
                             HiddenApiBypass.invoke(
-                                    Unsafe.class, theUnsafe, "getAndAddInt", object, offset, v);
+                                    Unsafe.class,
+                                    theUnsafe,
+                                    "getAndAddInt",
+                                    new Class<?>[]{Object.class, long.class, int.class},
+                                    object,
+                                    offset,
+                                    v);
                 } else {
                     return theUnsafe.getAndAddInt(object, offset, v);
                 }

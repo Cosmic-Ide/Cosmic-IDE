@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -70,7 +72,7 @@ public abstract class TypeReference implements TypeArgument {
     }
 
     public static Builder formalizedBuilder() {
-        return new AutoValue_TypeReference.Builder().setUnformalizedFullName(ImmutableList.of());
+        return new AutoValue_TypeReference.Builder().setUnFormalizedFullName(ImmutableList.of());
     }
 
     private static CharSequence typeArgumentString(ImmutableList<TypeArgument> typeArguments) {
@@ -101,7 +103,7 @@ public abstract class TypeReference implements TypeArgument {
                 .build();
     }
 
-    protected abstract ImmutableList<String> getUnformalizedFullName();
+    protected abstract ImmutableList<String> getUnFormalizedFullName();
 
     protected abstract SimpleType getSimpleType();
 
@@ -127,7 +129,7 @@ public abstract class TypeReference implements TypeArgument {
             }
             return builder.add(getSimpleName()).build();
         } else {
-            return getUnformalizedFullName();
+            return getUnFormalizedFullName();
         }
     }
 
@@ -144,7 +146,7 @@ public abstract class TypeReference implements TypeArgument {
             }
             return builder.build();
         } else {
-            ImmutableList<String> unformalizedFullName = getUnformalizedFullName();
+            ImmutableList<String> unformalizedFullName = getUnFormalizedFullName();
             return unformalizedFullName.subList(0, unformalizedFullName.size() - 1);
         }
     }
@@ -200,6 +202,7 @@ public abstract class TypeReference implements TypeArgument {
                 .setTypeArguments(getTypeArguments());
     }
 
+    @NonNull
     @Override
     public String toString() {
         StringBuilder sb =
@@ -214,7 +217,7 @@ public abstract class TypeReference implements TypeArgument {
 
     @Override
     public String toDisplayString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(getSimpleName());
         if (!getTypeArguments().isEmpty()) {
             sb.append("<");
@@ -262,11 +265,7 @@ public abstract class TypeReference implements TypeArgument {
             return setEnclosingClasses(ImmutableList.copyOf(enclosingClassName));
         }
 
-        public Builder setEnclosingClasses(SimpleType... enclosingClassNames) {
-            return setEnclosingClasses(ImmutableList.copyOf(enclosingClassNames));
-        }
-
-        protected abstract Builder setUnformalizedFullName(ImmutableList<String> fullName);
+        protected abstract Builder setUnFormalizedFullName(ImmutableList<String> fullName);
 
         public abstract Builder setSimpleType(SimpleType simpleType);
 
@@ -289,10 +288,6 @@ public abstract class TypeReference implements TypeArgument {
             return setTypeArguments(ImmutableList.copyOf(typeArguments));
         }
 
-        public Builder setTypeArguments(TypeArgument... typeArguments) {
-            return setTypeArguments(ImmutableList.copyOf(typeArguments));
-        }
-
         public Builder setFullName(String... fullName) {
             return setFullName(ImmutableList.copyOf(fullName));
         }
@@ -302,7 +297,7 @@ public abstract class TypeReference implements TypeArgument {
         }
 
         public Builder setFullName(ImmutableList<String> fullName) {
-            setUnformalizedFullName(fullName);
+            setUnFormalizedFullName(fullName);
             if (fullName.isEmpty()) {
                 setSimpleName("");
             } else {

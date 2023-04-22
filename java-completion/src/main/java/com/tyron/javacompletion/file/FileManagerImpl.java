@@ -16,8 +16,6 @@
  */
 package com.tyron.javacompletion.file;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import com.google.common.collect.ImmutableList;
 import com.tyron.javacompletion.logging.JLogger;
 
@@ -35,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
@@ -116,19 +115,6 @@ public class FileManagerImpl implements FileManager {
     }
 
     @Override
-    public void applyEditToSnapshot(
-            URI fileUri, TextRange editRange, Optional<Integer> rangeLength, String newText) {
-        Path filePath = uriToNormalizedPath(fileUri);
-        if (!fileSnapshots.containsKey(filePath)) {
-            throw new IllegalStateException(
-                    String.format("Cannot apply edit to file %s: file is not opened.", fileUri));
-        }
-
-        fileSnapshots.get(filePath).applyEdit(editRange, rangeLength, newText);
-        fileWatcher.notifyFileChange(filePath, StandardWatchEventKinds.ENTRY_MODIFY);
-    }
-
-    @Override
     public void setSnaphotContent(URI fileUri, String newText) {
         Path filePath = uriToNormalizedPath(fileUri);
         if (!fileSnapshots.containsKey(filePath)) {
@@ -136,24 +122,8 @@ public class FileManagerImpl implements FileManager {
                     String.format("Cannot apply edit to file %s: file is not opened.", fileUri));
         }
 
-        fileSnapshots.get(filePath).setContent(newText);
+        Objects.requireNonNull(fileSnapshots.get(filePath)).setContent(newText);
         fileWatcher.notifyFileChange(filePath, StandardWatchEventKinds.ENTRY_MODIFY);
-    }
-
-    @Override
-    public void closeFileForSnapshot(URI fileUri) {
-        Path filePath = uriToNormalizedPath(fileUri);
-        if (!fileSnapshots.containsKey(filePath)) {
-            throw new IllegalStateException(
-                    String.format("Cannot close file %s: file is not opened.", fileUri));
-        }
-
-        fileSnapshots.remove(filePath);
-        if (Files.exists(filePath)) {
-            fileWatcher.notifyFileChange(filePath, StandardWatchEventKinds.ENTRY_MODIFY);
-        } else {
-            fileWatcher.notifyFileChange(filePath, StandardWatchEventKinds.ENTRY_DELETE);
-        }
     }
 
     @Override
@@ -166,12 +136,12 @@ public class FileManagerImpl implements FileManager {
 
         while (!directories.isEmpty()) {
             Path directory = directories.remove();
-            if (!fileWatcher.watchDirectory(directory)) {
+            if (fileWatcher.watchDirectory(directory)) {
                 continue;
             }
 
             try (DirectoryStream<Path> directoryStream =
-                         Files.newDirectoryStream(directory, file -> Files.isDirectory(file))) {
+                         Files.newDirectoryStream(directory, Files::isDirectory)) {
                 for (Path subDir : directoryStream) {
                     directories.add(subDir);
                 }
@@ -191,11 +161,11 @@ public class FileManagerImpl implements FileManager {
         Path normalizedPath = filePath.normalize();
         if (fileSnapshots.containsKey(normalizedPath)) {
             return Optional.of(
-                    fileSnapshots.get(normalizedPath).getCharContent(true /* ignoreEncodingErrors */));
+                    Objects.requireNonNull(fileSnapshots.get(normalizedPath)).getCharContent(true /* ignoreEncodingErrors */));
         }
 
         try {
-            return Optional.of(new String(Files.readAllBytes(normalizedPath), UTF_8));
+            return Optional.of(new String(Files.readAllBytes(normalizedPath)));
         } catch (Exception e) {
             logger.severe(e, "Failed to read content from file %s", normalizedPath);
         }
@@ -203,17 +173,10 @@ public class FileManagerImpl implements FileManager {
     }
 
     @Override
-    public Optional<EditHistory> getFileEditHistory(Path filePath) {
-        Path normalizedPath = filePath.normalize();
-        if (fileSnapshots.containsKey(normalizedPath)) {
-            return Optional.of(fileSnapshots.get(normalizedPath).getEditHistory());
-        }
-        return Optional.empty();
-    }
-
-    @Override
     public void shutdown() {
+
         fileSnapshots.clear();
+        fileWatcher.shutdown();
     }
 
     @Override

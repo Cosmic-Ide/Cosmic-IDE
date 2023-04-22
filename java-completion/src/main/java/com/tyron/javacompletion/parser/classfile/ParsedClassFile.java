@@ -35,7 +35,7 @@ public abstract class ParsedClassFile {
     /**
      * foo/bar/EnclosingClass$SimpleName
      *
-     * <p>See JVMS 4.2.1: https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1
+     * <p>See JVMS 4.2.1: <a href="https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.2.1">...</a>
      */
     public abstract String getClassBinaryName();
 
@@ -96,16 +96,14 @@ public abstract class ParsedClassFile {
 
         public abstract ImmutableList.Builder<ParsedMethod> methodsBuilder();
 
-        public Builder addMethod(ParsedMethod method) {
+        public void addMethod(ParsedMethod method) {
             methodsBuilder().add(method);
-            return this;
         }
 
         public abstract ImmutableList.Builder<ParsedField> fieldsBuilder();
 
-        public Builder addField(ParsedField field) {
+        public void addField(ParsedField field) {
             fieldsBuilder().add(field);
-            return this;
         }
 
         public abstract Builder setEntityKind(Entity.Kind value);

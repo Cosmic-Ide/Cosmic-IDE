@@ -76,9 +76,9 @@ public class FileSystemModuleManager implements ModuleManager {
                                 .build());
             }
             for (Module dependency : module.getDependingModules()) {
-                if (!visitedModules.contains(module)) {
-                    visitedModules.add(module);
-                    queue.addLast(module);
+                if (!visitedModules.contains(dependency)) {
+                    visitedModules.add(dependency);
+                    queue.addLast(dependency);
                 }
             }
         }
@@ -96,9 +96,7 @@ public class FileSystemModuleManager implements ModuleManager {
     private void addOrUpdateFile(Module module, Path path, boolean fixContentForParsing) {
         try {
             Optional<FileScope> fileScope = parser.parseSourceFile(path, fixContentForParsing);
-            if (fileScope.isPresent()) {
-                module.addOrReplaceFileScope(fileScope.get());
-            }
+            fileScope.ifPresent(module::addOrReplaceFileScope);
         } catch (Throwable e) {
             logger.warning(e, "Failed to process file %s", path);
         }
@@ -120,11 +118,11 @@ public class FileSystemModuleManager implements ModuleManager {
                         JAVA_EXTENSION,
                         path -> addOrUpdateFile(projectModule, path, /* fixContentForParsing= */ false),
                         JAR_EXTENSION,
-                        path -> addJarModule(path),
+                        this::addJarModule,
                         SRCJAR_EXTENSION,
-                        path -> addJarModule(path));
+                        this::addJarModule);
 
-        PathUtils.walkDirectory(rootDir, handlers, path -> fileManager.shouldIgnorePath(path));
+        PathUtils.walkDirectory(rootDir, handlers, fileManager::shouldIgnorePath);
     }
 
     private void addJarModule(Path path) {

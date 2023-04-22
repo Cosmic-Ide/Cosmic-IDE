@@ -63,6 +63,9 @@ class ClassMemberCompletor {
                     continue;
                 }
                 if (!options.includeAllMethodOverloads() && member.getKind() == Entity.Kind.METHOD) {
+                    if (addedMethodNames == null) {
+                        addedMethodNames = new HashSet<>();
+                    }
                     if (addedMethodNames.contains(member.getSimpleName())) {
                         continue;
                     }

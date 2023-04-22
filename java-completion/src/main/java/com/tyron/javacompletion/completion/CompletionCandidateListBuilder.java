@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,12 +51,11 @@ public class CompletionCandidateListBuilder {
         return candidateMap.containsKey(name);
     }
 
-    public CompletionCandidateListBuilder addEntities(
+    public void addEntities(
             Multimap<String, Entity> entities, CompletionCandidate.SortCategory sortCategory) {
         for (Entity entity : entities.values()) {
             addEntity(entity, sortCategory);
         }
-        return this;
     }
 
     public CompletionCandidateListBuilder addCandidates(Collection<CompletionCandidate> candidates) {
@@ -81,7 +81,7 @@ public class CompletionCandidateListBuilder {
         if (!candidateMap.containsKey(name)) {
             candidateMap.put(name, new EntityShadowingListBuilder<>(GET_ELEMENT_FUNCTION));
         }
-        candidateMap.get(name).add(CompletionCandidateWithMatchLevel.create(candidate, matchLevel));
+        Objects.requireNonNull(candidateMap.get(name)).add(CompletionCandidateWithMatchLevel.create(candidate, matchLevel));
         return this;
     }
 

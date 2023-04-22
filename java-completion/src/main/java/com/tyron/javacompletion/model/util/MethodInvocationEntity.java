@@ -17,13 +17,11 @@
 package com.tyron.javacompletion.model.util;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.tyron.javacompletion.model.Entity;
 import com.tyron.javacompletion.model.EntityScope;
-import com.tyron.javacompletion.model.TypeParameter;
 import com.tyron.javacompletion.model.VariableEntity;
 
 import java.util.ArrayList;
@@ -33,7 +31,6 @@ import java.util.Optional;
 public class MethodInvocationEntity extends Entity implements EntityScope {
 
     private final Multimap<String, Entity> entities;
-    private final List<TypeParameter> typeParameters;
     private final List<VariableEntity> parameters;
     private final List<EntityScope> childScopes;
     private final EntityScope parent;
@@ -41,13 +38,11 @@ public class MethodInvocationEntity extends Entity implements EntityScope {
     public MethodInvocationEntity(String simpleName,
                                   EntityScope parent,
                                   List<String> qualifiers,
-                                  List<TypeParameter> typeParameters,
                                   List<VariableEntity> parameters,
                                   Range<Integer> symbolRange
     ) {
         super(simpleName, Kind.REFERENCE, qualifiers, false, Optional.empty(), symbolRange);
         this.parent = parent;
-        this.typeParameters = typeParameters;
         this.parameters = parameters;
         this.entities = HashMultimap.create();
         this.childScopes = new ArrayList<>();
@@ -71,11 +66,6 @@ public class MethodInvocationEntity extends Entity implements EntityScope {
     @Override
     public Optional<EntityScope> getParentScope() {
         return Optional.of(parent);
-    }
-
-    @Override
-    public List<EntityScope> getChildScopes() {
-        return ImmutableList.copyOf(childScopes);
     }
 
     @Override

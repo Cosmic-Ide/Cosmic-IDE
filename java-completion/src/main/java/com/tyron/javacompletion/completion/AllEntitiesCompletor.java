@@ -67,7 +67,7 @@ class AllEntitiesCompletor {
 
     private void addAllClasses(
             ImmutableList.Builder<ClassEntity> builder, ClassEntity parentClass, String prefix) {
-        LinkedList<ClassEntity> queue = new LinkedList<ClassEntity>();
+        LinkedList<ClassEntity> queue = new LinkedList<>();
         queue.addLast(parentClass);
         while (!queue.isEmpty()) {
             ClassEntity classEntity = queue.removeFirst();

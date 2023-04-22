@@ -73,7 +73,7 @@ public class CompletionItem {
 
     /**
      * The format of the insert text. The format applies to both the {@link #insertText} property and
-     * the {@link #newText} property of a provided {@link #textEdit}.
+     * the  property of a provided {@link #textEdit}.
      */
     @Nullable
     public InsertTextFormat insertTextFormat;

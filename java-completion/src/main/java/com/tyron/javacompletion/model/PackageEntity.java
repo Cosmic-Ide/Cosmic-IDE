@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.Range;
 import com.tyron.javacompletion.model.util.QualifiedNames;
 
@@ -44,6 +46,7 @@ public class PackageEntity extends Entity {
         return packageScope;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "PackageEntity<"

@@ -88,6 +88,6 @@ enum KeywordCompletionCandidate implements CompletionCandidate {
 
     @Override
     public Optional<String> getDetail() {
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 }

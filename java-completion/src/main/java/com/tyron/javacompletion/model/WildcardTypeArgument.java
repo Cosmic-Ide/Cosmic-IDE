@@ -16,6 +16,8 @@
  */
 package com.tyron.javacompletion.model;
 
+import androidx.annotation.NonNull;
+
 import com.google.auto.value.AutoValue;
 
 import java.util.Optional;
@@ -45,11 +47,7 @@ public abstract class WildcardTypeArgument implements TypeArgument {
         }
         Optional<TypeReference> typeReference =
                 bound.get().getTypeReference().applyTypeParameters(solvedTypeParameters);
-        if (!typeReference.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(
-                WildcardTypeArgument.create(Bound.create(bound.get().getKind(), typeReference.get())));
+        return typeReference.map(reference -> WildcardTypeArgument.create(Bound.create(bound.get().getKind(), reference)));
     }
 
     @Override
@@ -60,6 +58,7 @@ public abstract class WildcardTypeArgument implements TypeArgument {
         return "?";
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "WildcardTypeArgument<" + getBound() + ">";
@@ -81,6 +80,7 @@ public abstract class WildcardTypeArgument implements TypeArgument {
                     + getTypeReference().toDisplayString();
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "Bound<" + getKind() + " " + getTypeReference() + ">";

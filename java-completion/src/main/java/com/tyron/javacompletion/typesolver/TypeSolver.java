@@ -57,9 +57,7 @@ import com.tyron.javacompletion.model.WildcardTypeArgument;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -77,8 +75,6 @@ public class TypeSolver {
     public static final List<String> JAVA_LANG_STRING_QUALIFIERS =
             ImmutableList.of("java", "lang", "String");
     private static final JLogger logger = JLogger.createForEnclosingClass();
-    private static final Optional<SolvedType> UNSOLVED = Optional.empty();
-    private static final Set<Entity.Kind> CLASS_KINDS = ClassEntity.ALLOWED_KINDS;
     private static final Set<Entity.Kind> CLASS_OR_PACKAGE_KINDS =
             new ImmutableSet.Builder<Entity.Kind>()
                     .addAll(ClassEntity.ALLOWED_KINDS)
@@ -182,7 +178,7 @@ public class TypeSolver {
      *                         documented by JLS 6.7. In short, fully qualified name allows inner classes declared in
      *                         super classes or interfaces, while canonical name only allows inner classes declared in the
      *                         parent class itself. See
-     *                         https://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.7
+     *                         <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-6.html#jls-6.7">...</a>
      */
     private Optional<Entity> findClassOrPackageInModule(
             List<String> qualifiers, Module module, boolean useCanonicalName) {
@@ -205,7 +201,7 @@ public class TypeSolver {
         }
 
         // Try finding in java.lang
-        Optional<Entity> classInJavaLang = findClassInPackage(qualifiers, JAVA_LANG_QUALIFIERS, module);
+        Optional<Entity> classInJavaLang = findClassInPackage(qualifiers, module);
         if (classInJavaLang.isPresent()) {
             return Optional.of(classInJavaLang.get());
         }
@@ -215,7 +211,7 @@ public class TypeSolver {
 
     public AggregatePackageScope getAggregateRootPackageScope(Module module) {
         AggregatePackageScope aggregatedPackageScope = new AggregatePackageScope();
-        fillAggregateRootPackageScope(aggregatedPackageScope, module, new HashSet<Module>());
+        fillAggregateRootPackageScope(aggregatedPackageScope, module, new HashSet<>());
         return aggregatedPackageScope;
     }
 
@@ -233,12 +229,12 @@ public class TypeSolver {
     }
 
     private Optional<Entity> findClassInPackage(
-            List<String> qualifiedName, List<String> packageQualifiers, Module module) {
+            List<String> qualifiedName, Module module) {
         if (qualifiedName.isEmpty()) {
             return Optional.empty();
         }
 
-        Optional<? extends EntityScope> currentScope = findPackageInModule(packageQualifiers, module);
+        Optional<? extends EntityScope> currentScope = findPackageInModule(TypeSolver.JAVA_LANG_QUALIFIERS, module);
         Optional<Entity> currentEntity = Optional.empty();
         for (String name : qualifiedName) {
             if (!currentScope.isPresent()) {
@@ -247,7 +243,7 @@ public class TypeSolver {
             currentEntity =
                     findClassOrPackageInClassOrPackage(
                             name, currentScope.get(), module, false /* useCanonicalName */);
-            currentScope = currentEntity.map(entity -> entity.getScope());
+            currentScope = currentEntity.map(Entity::getScope);
         }
         return currentEntity.filter(entity -> entity instanceof ClassEntity);
     }
@@ -334,7 +330,7 @@ public class TypeSolver {
                 }
                 List<EntityWithContext> foundEntities =
                         findEntitiesInBlock(
-                                name, typeParametersFromScope, currentScope.get(), module, position, allowedKinds);
+                                name, typeParametersFromScope, currentScope.get(), position, allowedKinds);
                 if (!foundEntities.isEmpty()) {
                     return foundEntities;
                 }
@@ -497,7 +493,7 @@ public class TypeSolver {
              currentScope = currentScope.getParentScope().orElse(null)) {
             if (currentScope instanceof ClassEntity) {
                 Optional<Entity> innerClass =
-                        findInnerClassInClassHierachy(name, (ClassEntity) currentScope, module);
+                        findInnerClassInClassHierarachy(name, (ClassEntity) currentScope, module);
                 if (innerClass.isPresent()) {
                     return innerClass;
                 }
@@ -532,7 +528,7 @@ public class TypeSolver {
         return Optional.empty();
     }
 
-    private Optional<Entity> findInnerClassInClassHierachy(
+    private Optional<Entity> findInnerClassInClassHierarachy(
             String name, ClassEntity fromClass, Module module) {
         for (ClassEntity classInHierachy : classHierarchyWithoutContext(fromClass, module)) {
             ClassEntity innerClass = classInHierachy.getInnerClasses().get(name);
@@ -546,7 +542,7 @@ public class TypeSolver {
     private Optional<Entity> findClassOrPackageInClassOrPackage(
             String name, EntityScope classOrPackage, Module module, boolean useCanonicalName) {
         if (classOrPackage instanceof ClassEntity && !useCanonicalName) {
-            return findInnerClassInClassHierachy(name, (ClassEntity) classOrPackage, module);
+            return findInnerClassInClassHierarachy(name, (ClassEntity) classOrPackage, module);
         } else {
             for (Entity entity : classOrPackage.getMemberEntities().get(name)) {
                 if (entity instanceof ClassEntity || entity instanceof PackageEntity) {
@@ -565,12 +561,10 @@ public class TypeSolver {
             String name,
             SolvedTypeParameters contextTypeParameters,
             EntityScope baseScope,
-            Module module,
             int position,
             Set<Entity.Kind> allowedKinds) {
         ImmutableList.Builder<EntityWithContext> builder = new ImmutableList.Builder<>();
         if (allowedKinds.contains(Entity.Kind.VARIABLE)) {
-            allowedKinds = Sets.difference(allowedKinds, EnumSet.of(Entity.Kind.VARIABLE));
 
             baseScope.getMemberEntities().get(name).stream()
                     .filter(entity -> {
@@ -585,7 +579,6 @@ public class TypeSolver {
                                     .setSolvedTypeParameters(contextTypeParameters)
                                     .build()));
 
-            baseScope = baseScope.getParentScope().orElse(null);
         }
 
         return builder.build();
@@ -666,7 +659,7 @@ public class TypeSolver {
 
         Optional<ClassEntity> classOfStaticMember = solveClassOfStaticImport(name, fileScope, module);
         if (classOfStaticMember.isPresent()) {
-            return classOfStaticMember.get().getFieldWithName(name).filter(field -> field.isStatic());
+            return classOfStaticMember.get().getFieldWithName(name).filter(Entity::isStatic);
         }
 
         for (List<String> qualifiers : fileScope.getOnDemandStaticImportQualifiers()) {
@@ -927,25 +920,15 @@ public class TypeSolver {
      */
     public Iterable<EntityWithContext> classHierarchy(
             EntityWithContext classWithContext, Module module) {
-        return new Iterable<EntityWithContext>() {
-            @Override
-            public Iterator<EntityWithContext> iterator() {
-                return new ClassHierarchyIterator(classWithContext, module, true /* solveTypeParmeters */);
-            }
-        };
+        return () -> new ClassHierarchyIterator(classWithContext, module, true /* solveTypeParmeters */);
     }
 
     public Iterable<ClassEntity> classHierarchyWithoutContext(
-            ClassEntity classEnitty, Module module) {
-        return new Iterable<ClassEntity>() {
-            @Override
-            public Iterator<ClassEntity> iterator() {
-                return Iterators.transform(
-                        new ClassHierarchyIterator(
-                                EntityWithContext.ofEntity(classEnitty), module, false /* solveTypeParmeters */),
-                        classWithContext -> (ClassEntity) classWithContext.getEntity());
-            }
-        };
+            ClassEntity classEntity, Module module) {
+        return () -> Iterators.transform(
+                new ClassHierarchyIterator(
+                        EntityWithContext.ofEntity(classEntity), module, true /* solveTypeParmeters */),
+                classWithContext -> (ClassEntity) classWithContext.getEntity());
     }
 
     public Entity applyTypeParameters(Entity entity, SolvedTypeParameters solvedTypeParameters) {

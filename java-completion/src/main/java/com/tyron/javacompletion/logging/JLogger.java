@@ -17,7 +17,6 @@
 package com.tyron.javacompletion.logging;
 
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -50,15 +49,7 @@ public class JLogger {
             FileHandler fileHandler = new FileHandler(filePath);
             fileHandler.setFormatter(new SimpleFormatter());
             rootLogger.addHandler(fileHandler);
-        } catch (Exception e) {
-        }
-    }
-
-    public static synchronized void setLogLevel(Level level) {
-        Logger rootLogger = Logger.getLogger("");
-        rootLogger.setLevel(level);
-        for (Handler handler : rootLogger.getHandlers()) {
-            handler.setLevel(level);
+        } catch (Exception ignored) {
         }
     }
 
@@ -76,26 +67,14 @@ public class JLogger {
         Throwable throwable = new Throwable();
         StackTraceElement[] stackTrace = throwable.getStackTrace();
 
-        boolean loggerStackTraceFound = true;
         for (StackTraceElement stackTraceElement : stackTrace) {
             String className = stackTraceElement.getClassName();
-            if (JLogger.class.getCanonicalName().equals(className)) {
-                loggerStackTraceFound = true;
-            } else {
-                if (loggerStackTraceFound) {
-                    // We've skipped all JLogger. This is the caller.
-                    return stackTraceElement;
-                }
+            if (!JLogger.class.getCanonicalName().equals(className)) {
+                // We've skipped all JLogger. This is the caller.
+                return stackTraceElement;
             }
         }
         return null;
-    }
-
-    /**
-     * Logs a message at severe level.
-     */
-    public void severe(String msg) {
-        log(Level.SEVERE, msg, null /* thrown */);
     }
 
     /**
@@ -163,13 +142,6 @@ public class JLogger {
      */
     public void info(String msgfmt, Object... args) {
         log(Level.INFO, String.format(msgfmt, args), null /* thrown */);
-    }
-
-    /**
-     * Logs a message at fine level.
-     */
-    public void fine(String msg) {
-        log(Level.FINE, msg, null /* thrown */);
     }
 
     /**

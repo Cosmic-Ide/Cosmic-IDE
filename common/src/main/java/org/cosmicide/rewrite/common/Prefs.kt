@@ -28,7 +28,7 @@ object Prefs {
     val compilerJavaVersion: Int
         get() {
             return try {
-                prefs.getString("java_version", "17")?.toInt() ?: 17
+                prefs.getInt("java_version", 17)
             } catch (e: Exception) {
                 17
             }
@@ -44,7 +44,7 @@ object Prefs {
         get() = prefs.getBoolean("use_spaces", false)
 
     val tabSize: Int
-        get() = prefs.getString("tab_size", "4")?.toInt() ?: 4
+        get() = prefs.getInt("tab_size", 4)
 
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)

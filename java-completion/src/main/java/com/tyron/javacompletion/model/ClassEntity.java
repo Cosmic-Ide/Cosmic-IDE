@@ -18,6 +18,8 @@ package com.tyron.javacompletion.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import androidx.annotation.NonNull;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -95,11 +97,6 @@ public class ClassEntity extends Entity implements EntityScope {
     @Override
     public ClassEntity getScope() {
         return this;
-    }
-
-    @Override
-    public List<EntityScope> getChildScopes() {
-        return childScopes;
     }
 
     @Override
@@ -184,6 +181,7 @@ public class ClassEntity extends Entity implements EntityScope {
         return ImmutableList.copyOf(methods.values());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ClassEntity<"

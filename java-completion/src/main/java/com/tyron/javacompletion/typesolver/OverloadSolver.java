@@ -40,6 +40,7 @@ import com.tyron.javacompletion.model.SolvedPrimitiveType;
 import com.tyron.javacompletion.model.SolvedReferenceType;
 import com.tyron.javacompletion.model.SolvedType;
 import com.tyron.javacompletion.model.TypeReference;
+import com.tyron.javacompletion.model.VariableEntity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
  * Find which method overload should be invoked with given arguments
  *
  * <p>Java 8 language spec 15.12.2 for method invocation:
- * https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.12.2
+ * <a href="https://docs.oracle.com/javase/specs/jls/se8/html/jls-15.html#jls-15.12.2">...</a>
  */
 public class OverloadSolver {
     private static final String OBJECT_FULL_NAME = "java.lang.Object";
@@ -156,13 +157,7 @@ public class OverloadSolver {
     private static int compareMatchLevel(SignatureMatchLevel rhs, SignatureMatchLevel lhs) {
         int rordinal = rhs.ordinal();
         int lordinal = lhs.ordinal();
-        if (rordinal < lordinal) {
-            return -1;
-        } else if (rordinal > lordinal) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(rordinal, lordinal);
     }
 
     /**
@@ -199,21 +194,21 @@ public class OverloadSolver {
         for (MethodEntity method : methods) {
             SignatureMatchLevel matchLevel = matchMethodSignature(method, argumentTypes, module);
             switch (compareMatchLevel(matchLevel, previousMatchLevel)) {
-                case -1:
+                case -1 -> {
                     // The previous matched methods are better match than this method, skip it.
                     continue;
-                case 0:
+                }
+                case 0 ->
                     // This method is as good as previously matched methods. Add it the the list of matched
                     // methods.
-                    matchedMethods.add(method);
-                    break;
-                case 1:
+                        matchedMethods.add(method);
+                case 1 -> {
                     // The method is better than previously matched methods. Clear all matched methods and add
                     // it.
                     previousMatchLevel = matchLevel;
                     matchedMethods.clear();
                     matchedMethods.add(method);
-                    break;
+                }
             }
         }
 
@@ -224,7 +219,7 @@ public class OverloadSolver {
             MethodEntity method, List<Optional<SolvedType>> argumentTypes, Module module) {
         List<TypeReference> parameterTypes =
                 method.getParameters().stream()
-                        .map(p -> p.getType())
+                        .map(VariableEntity::getType)
                         .collect(collectingAndThen(toList(), ImmutableList::copyOf));
 
         boolean isVariableArityInvocation =
@@ -483,9 +478,7 @@ public class OverloadSolver {
                         .map(p -> typeSolver.solve(p.getType(), rhs.getScope().getParentScope().get(), module))
                         .collect(Collectors.toList());
         if (methodMoreSpecific(
-                lhs,
                 lhsParameterTypes,
-                rhs,
                 rhsParameterTypes,
                 numArguments,
                 signatureMatchLevel,
@@ -493,9 +486,7 @@ public class OverloadSolver {
             return 1;
         }
         if (methodMoreSpecific(
-                rhs,
                 rhsParameterTypes,
-                lhs,
                 lhsParameterTypes,
                 numArguments,
                 signatureMatchLevel,
@@ -545,9 +536,7 @@ public class OverloadSolver {
      * Determines if {@code lhs} method is more specific than {@code rhs} method.
      */
     private boolean methodMoreSpecific(
-            MethodEntity lhs,
             List<Optional<SolvedType>> lhsParameterTypes,
-            MethodEntity rhs,
             List<Optional<SolvedType>> rhsParameterTypes,
             int numArguments,
             SignatureMatchLevel signatureMatchLevel,

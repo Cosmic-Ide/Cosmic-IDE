@@ -78,7 +78,7 @@ public abstract class EntityWithContext {
 
     public SolvedType toSolvedType() {
         Entity entity = getEntity();
-        SolvedType solvedType = null;
+        SolvedType solvedType;
         if (entity instanceof PrimitiveEntity) {
             solvedType = SolvedPrimitiveType.create((PrimitiveEntity) entity);
         } else if (entity instanceof NullEntity) {

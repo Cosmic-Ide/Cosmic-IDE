@@ -31,6 +31,12 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
         observeViewModelProjects()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadProjects()
+        setOnClickListeners()
+    }
+
     private fun setOnClickListeners() {
         binding.fabs.importButton.visibility = View.GONE
         binding.fabs.newProjectTextview.visibility = View.GONE

@@ -17,6 +17,7 @@ import io.github.dingyi222666.view.treeview.TreeViewBinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.databinding.DrawerContentBinding
 import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding

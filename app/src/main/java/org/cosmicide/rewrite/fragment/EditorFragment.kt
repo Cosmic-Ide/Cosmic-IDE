@@ -13,6 +13,7 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
+import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
@@ -20,6 +21,7 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.JavaLanguage
 import org.cosmicide.rewrite.editor.KotlinLanguage
+import org.cosmicide.rewrite.extension.setCompletionLayout
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.FileSet
@@ -41,6 +43,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
         binding.editor.setTextSize(Prefs.editorFontSize)
+        binding.editor.tabWidth = Prefs.tabSize
+        binding.editor.setCompletionLayout()
+
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
@@ -73,10 +78,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     fileViewModel.setCurrentPosition(tab.position)
+                    binding.editor.setText(fileViewModel.currentFile?.readText())
+                    setEditorLanguage()
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
-                    binding.editor.setText("")
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {}
@@ -93,24 +99,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
                     binding.tabLayout.apply {
                         addTab(tab)
-                        selectTab(tab)
                     }
                 }
             }
 
-            fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-                position?.takeIf { it != -1 }?.let {
-                    binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position), true)
-                    binding.editor.setText(fileViewModel.currentFile?.readText())
-                    setEditorLanguage()
-                }
-            }
-
-            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                view.post {
-                    fileViewModel.updateFiles(files.toMutableList())
-                }
-            }
             if (fileViewModel.files.value!!.isEmpty()) {
                 fileViewModel.addFile(
                     File(
@@ -119,6 +111,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     )
                 )
             }
+
+            fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
+                position?.takeIf { it != -1 }?.let {
+                    if (binding.drawer.isOpen) {
+                        binding.drawer.close()
+                    }
+                    binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position), true)
+                }
+            }
+
+            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
+                view.post {
+                    fileViewModel.updateFiles(files.toMutableList())
+                }
+            }
         }
     }
 
@@ -126,14 +133,27 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         val file = fileViewModel.currentFile
         binding.editor.setEditorLanguage(
             when (file?.extension) {
-                "kt" -> KotlinLanguage(binding.editor, project, file)
-                "java" -> JavaLanguage(binding.editor, project, file)
+                "kt" -> {
+                    KotlinLanguage(binding.editor, project, file)
+                }
+
+                "java" -> {
+                    IllegalStateException().printStackTrace()
+                    binding.editor.text.addContentListener(
+                        EditorDiagnosticsMarker(
+                            binding.editor,
+                            file,
+                            project
+                        )
+                    )
+                    JavaLanguage(binding.editor, project, file)
+                }
+
                 else -> EmptyLanguage()
             }
         )
         binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         binding.editor.setFont()
-        binding.editor.invalidate()
     }
 
     override fun onDestroyView() {
@@ -169,17 +189,17 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun navigateToCompileInfoFragment() {
-        parentFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, CompileInfoFragment())
-            .addToBackStack("EditorFragment")
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            add(R.id.fragment_container, CompileInfoFragment())
+            addToBackStack("EditorFragment")
+        }.commit()
     }
 
     private fun navigateToSettingsFragment() {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, SettingsFragment())
-            .addToBackStack(null)
-            .commit()
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, SettingsFragment())
+            addToBackStack(null)
+        }.commit()
     }
     
     private fun transverseTree(dir: File) : Set<FileSet>{
@@ -205,7 +225,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.close_tab -> fileViewModel.removeFile(fileViewModel.files.value!![position])
+                R.id.close_tab -> {
+                    fileViewModel.removeFile(fileViewModel.files.value!![position])
+                    binding.editor.setText("")
+                }
+
                 R.id.close_all_tab -> fileViewModel.removeAll()
                 R.id.close_left_tab -> fileViewModel.removeLeft(position)
                 R.id.close_right_tab -> fileViewModel.removeRight(position)

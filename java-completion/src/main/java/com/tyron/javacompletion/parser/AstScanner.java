@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import com.tyron.javacompletion.model.*;
 import com.tyron.javacompletion.model.util.MethodInvocationEntity;
@@ -58,7 +57,6 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     private final TypeReferenceScanner typeReferenceScanner;
     private final ParameterScanner parameterScanner;
     private final IndexOptions indexOptions;
-    private final Set<Modifier> implicitModifiers = ImmutableSet.of();
     private FileScope fileScope = null;
     private List<String> currentQualifiers = new ArrayList<>();
     private EndPosTable endPosTable = null;
@@ -141,7 +139,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
             }
         }
 
-        // Handle toplevel type declarations (class, interface, enum, annotation, etc).
+        // Handle top level type declarations (class, interface, enum, annotation, etc).
         for (Tree decl : node.getTypeDecls()) {
             this.scan(decl, this.fileScope);
         }
@@ -156,28 +154,22 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
 
     @Override
     public Void visitClass(ClassTree node, EntityScope currentScope) {
-        if (!shouldScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
+        if (shouldNotScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
             return null;
         }
 
         Entity.Kind entityKind;
         switch (node.getKind()) {
-            case CLASS:
-                entityKind = Entity.Kind.CLASS;
-                break;
-            case INTERFACE:
-                entityKind = Entity.Kind.INTERFACE;
-                // All members in interface are considered public by default.
-                break;
-            case ENUM:
-                entityKind = Entity.Kind.ENUM;
-                break;
-            case ANNOTATION_TYPE:
-                entityKind = Entity.Kind.ANNOTATION;
-                break;
-            default:
+            case CLASS -> entityKind = Entity.Kind.CLASS;
+            case INTERFACE -> entityKind = Entity.Kind.INTERFACE;
+
+            // All members in interface are considered public by default.
+            case ENUM -> entityKind = Entity.Kind.ENUM;
+            case ANNOTATION_TYPE -> entityKind = Entity.Kind.ANNOTATION;
+            default -> {
                 logger.severe("Unknown entity kind for class: %s", node.getKind());
                 return null;
+            }
         }
         ImmutableList.Builder<TypeReference> interfaceBuilder = new ImmutableList.Builder<>();
         Optional<TypeReference> superClass = Optional.empty();
@@ -238,7 +230,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     @Override
     public Void visitMethod(MethodTree node, EntityScope currentScope) {
         JCMethodDecl methodNode = (JCMethodDecl) node;
-        if (!shouldScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
+        if (shouldNotScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
             return null;
         }
 
@@ -296,9 +288,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
                         currentScope,
                         this.currentQualifiers,
                         ImmutableList.of(),
-                        ImmutableList.of(),
                         Range.open(0, 1));
-        List<?> args = invocationNode.getArguments();
 
         currentScope.addEntity(entity);
         for (JCTree.JCExpression argument : invocationNode.getArguments()) {
@@ -330,7 +320,7 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
     @Override
     public Void visitVariable(VariableTree node, EntityScope currentScope) {
         JCVariableDecl variableNode = (JCVariableDecl) node;
-        if (!shouldScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
+        if (shouldNotScanWithModifiers(currentScope, node.getModifiers().getFlags())) {
             return null;
         }
 
@@ -447,15 +437,15 @@ public class AstScanner extends TreePathScanner<Void, EntityScope> {
         scopeRangeBuilder.put(range, scope);
     }
 
-    private boolean shouldScanWithModifiers(EntityScope scope, Set<Modifier> modifiers) {
+    private boolean shouldNotScanWithModifiers(EntityScope scope, Set<Modifier> modifiers) {
         if (scope instanceof ClassEntity) {
             Entity.Kind parentEntityKind = ((ClassEntity) scope).getKind();
             if (parentEntityKind == Entity.Kind.INTERFACE || parentEntityKind == Entity.Kind.ANNOTATION) {
                 // Interface and annotation members are public by default.
-                return true;
+                return false;
             }
         }
-        return indexOptions.shouldIndexPrivate() || !modifiers.contains(Modifier.PRIVATE);
+        return !indexOptions.shouldIndexPrivate() && modifiers.contains(Modifier.PRIVATE);
     }
 
     private Range<Integer> getVariableNameRange(JCVariableDecl node) {

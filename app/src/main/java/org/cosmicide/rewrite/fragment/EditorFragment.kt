@@ -103,15 +103,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             }
 
-            if (fileViewModel.files.value!!.isEmpty()) {
-                fileViewModel.addFile(
-                    File(
-                        project.srcDir.invoke(),
-                        "Main.${project.language.extension}"
-                    )
-                )
-            }
-
             fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
                 position?.takeIf { it != -1 }?.let {
                     if (binding.drawer.isOpen) {
@@ -191,7 +182,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private fun navigateToCompileInfoFragment() {
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, CompileInfoFragment())
-            addToBackStack("EditorFragment")
+            addToBackStack(null)
         }.commit()
     }
 

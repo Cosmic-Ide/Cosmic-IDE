@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.cosmicide.project.Project
 import java.io.File
-import java.io.FileOutputStream
-import java.nio.file.Files
 
 class FileIndex(private val project: Project) {
     private val filePath = File(project.cacheDir, "files.json")
@@ -26,13 +24,12 @@ class FileIndex(private val project: Project) {
         val uniqueFiles = files.distinctBy { it.absolutePath }
         val filePaths = uniqueFiles.map { it.absolutePath }.toMutableList()
         filePaths.add(0, filePaths.removeAt(currentIndex))
-        val cacheDir = project.cacheDir.toPath()
-        Files.createDirectories(cacheDir)
-
-        FileOutputStream(filePath).use { stream ->
-            val json = Gson().toJson(filePaths)
-            stream.write(json.toByteArray())
+        val cacheDir = project.cacheDir
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
         }
+        val json = Gson().toJson(filePaths)
+        filePath.writeText(json)
     }
 
     /**
@@ -40,14 +37,18 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (!filePath.exists()) {
-            Files.createDirectories(filePath.parentFile!!.toPath())
+            filePath.parentFile!!.mkdirs()
             filePath.createNewFile()
             return emptyList()
         }
 
         val json = filePath.readText()
-        val filePaths = Gson().fromJson<List<String>>(json, object : TypeToken<List<String>>() {}.type)
+        val filePaths =
+            Gson().fromJson<List<String>>(json, object : TypeToken<List<String>>() {}.type)
         if (filePaths.isNullOrEmpty()) return emptyList()
-        return filePaths.map { File(it) }.distinctBy { it.absolutePath }
+        return filePaths
+            .map { File(it) }
+            .distinctBy { it.absolutePath }
+            .filter(File::exists)
     }
 }

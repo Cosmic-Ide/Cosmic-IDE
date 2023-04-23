@@ -14,7 +14,6 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.ProjectHandler
-import java.io.File
 
 class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAdapter.OnProjectEventListener {
     private val projectAdapter = ProjectAdapter(this)
@@ -99,6 +98,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
     }
 
     private fun navigateToNewProjectFragment() {
+        setOnClickListeners()
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, NewProjectFragment())
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)

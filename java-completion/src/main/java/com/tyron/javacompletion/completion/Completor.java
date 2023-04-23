@@ -35,6 +35,7 @@ import com.tyron.javacompletion.typesolver.TypeSolver;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -112,9 +113,13 @@ public class Completor {
                 ContentWithLineMap.create(positionContext.get().getFileScope(), fileManager, filePath);
         String prefix = contentWithLineMap.extractCompletionPrefix(line, column);
         // TODO: limit the number of the candidates.
-            cachedCompletion =
-                    computeCompletionResult(positionContext.get(), contentWithLineMap, line, column, prefix);
-            return cachedCompletion;
+        if (cachedCompletion.isIncrementalCompletion(filePath, line, column, prefix)) {
+            return getCompletionCandidatesFromCache(line, column, prefix);
+        }
+        System.out.println("Prefix: " + prefix);
+        cachedCompletion =
+                computeCompletionResult(positionContext.get(), contentWithLineMap, line, contextColumn, prefix);
+        return cachedCompletion;
     }
 
     private CompletionResult computeCompletionResult(
@@ -143,7 +148,7 @@ public class Completor {
                         CompleteMemberAction.forMemberSelect(parentExpression, typeSolver, expressionSolver);
                 textEditOptions.setAppendMethodArgumentSnippets(true);
             }
-        } else if (treePath.getLeaf() instanceof MemberReferenceTree || prefix == ".") {
+        } else if (treePath.getLeaf() instanceof MemberReferenceTree || Objects.equals(prefix, ".")) {
             logger.info("Generating completion for MemberReferenceTree");
             ExpressionTree parentExpression =
                     ((MemberReferenceTree) treePath.getLeaf()).getQualifierExpression();

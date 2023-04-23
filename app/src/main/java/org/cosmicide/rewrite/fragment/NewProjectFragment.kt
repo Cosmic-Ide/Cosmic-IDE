@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
@@ -59,11 +60,19 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()
             ProjectHandler.setProject(project)
+            navigateToEditorFragment()
             true
         } catch (e: IOException) {
             Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
             false
         }
+    }
+
+    private fun navigateToEditorFragment() {
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, EditorFragment())
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        }.commit()
     }
 
     private fun File.createMainFile(language: Language, packageName: String) {

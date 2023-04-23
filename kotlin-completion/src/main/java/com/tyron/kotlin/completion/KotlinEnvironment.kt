@@ -25,8 +25,9 @@ import com.tyron.kotlin.completion.model.Analysis
 import com.tyron.kotlin.completion.util.*
 import com.tyron.kotlin_completion.util.PsiUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
-import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
+import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
@@ -146,7 +147,17 @@ data class KotlinEnvironment(
         }
 
         return if (name.startsWith(prefix)) {
-            SimpleCompletionItem(name, tailName, prefix.length, completionText)
+            EditorCompletionItem(name, tailName, prefix.length, completionText).kind(
+                when (descriptor) {
+                    is ClassDescriptor -> CompletionItemKind.Class
+                    is ConstructorDescriptor -> CompletionItemKind.Constructor
+                    is FunctionDescriptor -> CompletionItemKind.Method
+                    is PropertyDescriptor -> CompletionItemKind.Property
+                    is VariableDescriptor -> CompletionItemKind.Variable
+                    is PackageViewDescriptor -> CompletionItemKind.Module
+                    else -> CompletionItemKind.Text
+                }
+            )
         } else {
             null
         }
@@ -164,7 +175,14 @@ data class KotlinEnvironment(
         // Iterate over the keywords and add the ones that match the prefix to the result
         for (token in keywords.types) {
             if (token is KtKeywordToken && token.value.startsWith(prefix)) {
-                result.add(SimpleCompletionItem(token.value, "Keyword", prefix.length, token.value))
+                result.add(
+                    EditorCompletionItem(
+                        token.value,
+                        "Keyword",
+                        prefix.length,
+                        token.value
+                    ).kind(CompletionItemKind.Keyword)
+                )
             }
         }
 

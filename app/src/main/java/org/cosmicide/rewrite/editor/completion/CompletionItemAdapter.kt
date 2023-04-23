@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.rewrite.databinding.CompletionResultBinding
+import org.cosmicide.rewrite.editor.EditorCompletionItem
 
 
 class CustomCompletionItemAdapter : EditorCompletionAdapter() {
@@ -20,6 +21,10 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
             65f,
             context.resources.displayMetrics
         ).toInt()
+    }
+
+    override fun getItem(position: Int): EditorCompletionItem {
+        return super.getItem(position) as EditorCompletionItem
     }
 
     override fun getView(

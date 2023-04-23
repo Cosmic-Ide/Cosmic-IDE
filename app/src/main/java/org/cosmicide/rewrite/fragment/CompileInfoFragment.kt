@@ -49,12 +49,10 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         binding.infoEditor.apply {
             setFont()
             colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-            setEditorLanguage(TextMateLanguage.create("source.build", true))
+            setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             setTextSize(Prefs.editorFontSize)
             isLineNumberEnabled = false
-            isWordwrap = true
-            invalidate()
         }
 
         binding.toolbar.apply {

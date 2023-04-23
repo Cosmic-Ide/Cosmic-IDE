@@ -8,7 +8,6 @@ import com.tyron.javacompletion.completion.CompletionCandidate
 import com.tyron.javacompletion.options.JavaCompletionOptionsImpl
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
-import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -64,7 +63,7 @@ class JavaLanguage(
             val result = completions.getCompletions(path, position.line, position.column)
             result.completionCandidates.forEach { candidate ->
                 if (candidate.name != "<error>") {
-                    val item = SimpleCompletionItem(
+                    val item = EditorCompletionItem(
                         candidate.name,
                         candidate.detail.orElse(candidate.kind.name),
                         result.prefix.length,

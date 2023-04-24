@@ -21,6 +21,28 @@ class JavaAnalyzer(
     val project: Project,
     val currentFile: File
 ) {
+    private val args by lazy {
+        listOf(
+            "-XDcompilePolicy=byfile",
+            "-XD-Xprefer=source",
+            "-XDide",
+            "-XDsuppressAbortOnBadClassFile",
+            "-XDshould-stop.at=GENERATE",
+            "-XDdiags.formatterOptions=-source",
+            "-XDdiags.layout=%L%m|%L%m|%L%m",
+            "-XDbreakDocCommentParsingOnError=false",
+            "-Xlint:cast",
+            "-Xlint:deprecation",
+            "-Xlint:empty",
+            "-Xlint:fallthrough",
+            "-Xlint:finally",
+            "-Xlint:path",
+            "-Xlint:unchecked",
+            "-Xlint:varargs",
+            "-Xlint:static",
+            "-proc:none"
+        )
+    }
     private var diagnostics = DiagnosticCollector<JavaFileObject>()
     private val tool: JavacTool by lazy { JavacTool.create() }
     private val standardFileManager: JavacFileManager by lazy {
@@ -52,13 +74,13 @@ class JavaAnalyzer(
             autoClose = false
         }
 
-        val args = mutableListOf<String>()
-
-        args.add("-proc:none")
-        args.add("-source")
-        args.add(version.toString())
-        args.add("-target")
-        args.add(version.toString())
+        val copy = args.toMutableList()
+        copy.apply {
+            add("-source")
+            add(version.toString())
+            add("-target")
+            add(version.toString())
+        }
 
         /*val borrow =
             reusableCompiler.getTask(
@@ -68,8 +90,7 @@ class JavaAnalyzer(
                 null,
                 toCompile
             )*/
-
-        tool.getTask(null, standardFileManager, diagnostics, args, null, toCompile).apply {
+        tool.getTask(null, standardFileManager, diagnostics, copy, null, toCompile).apply {
             parse()
             analyze()
             if (diagnostics.diagnostics.isEmpty()) {

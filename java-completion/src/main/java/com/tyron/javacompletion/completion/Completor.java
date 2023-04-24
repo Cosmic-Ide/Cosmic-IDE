@@ -111,14 +111,15 @@ public class Completor {
 
         ContentWithLineMap contentWithLineMap =
                 ContentWithLineMap.create(positionContext.get().getFileScope(), fileManager, filePath);
+        line++;
         String prefix = contentWithLineMap.extractCompletionPrefix(line, column);
+        System.out.println("prefix: " + prefix);
         // TODO: limit the number of the candidates.
-        if (cachedCompletion.isIncrementalCompletion(filePath, line, column, prefix)) {
-            return getCompletionCandidatesFromCache(line, column, prefix);
+        if (cachedCompletion.isIncrementalCompletion(filePath, line - 1, column, prefix)) {
+            return getCompletionCandidatesFromCache(line - 1, column, prefix);
         }
-        System.out.println("Prefix: " + prefix);
         cachedCompletion =
-                computeCompletionResult(positionContext.get(), contentWithLineMap, line, contextColumn, prefix);
+                computeCompletionResult(positionContext.get(), contentWithLineMap, line - 1, contextColumn, prefix);
         return cachedCompletion;
     }
 
@@ -129,10 +130,11 @@ public class Completor {
             int column,
             String prefix) {
         TreePath treePath = positionContext.getTreePath();
+        System.out.println("treePath: " + treePath.getClass());
         CompletionAction action;
         TextEditOptions.Builder textEditOptions =
                 TextEditOptions.builder().setAppendMethodArgumentSnippets(false);
-        if (treePath.getLeaf() instanceof MemberSelectTree || treePath.getLeaf() instanceof ImportTree) {
+        if (treePath.getLeaf() instanceof MemberSelectTree || Objects.equals(prefix, ".")) {
             logger.info("Generating completion for MemberSelectTree");
             ExpressionTree parentExpression = ((MemberSelectTree) treePath.getLeaf()).getExpression();
             Optional<ImportTree> importNode = findNodeOfType(treePath, ImportTree.class);
@@ -148,14 +150,13 @@ public class Completor {
                         CompleteMemberAction.forMemberSelect(parentExpression, typeSolver, expressionSolver);
                 textEditOptions.setAppendMethodArgumentSnippets(true);
             }
-        } else if (treePath.getLeaf() instanceof MemberReferenceTree || Objects.equals(prefix, ".")) {
+        } else if (treePath.getLeaf() instanceof MemberReferenceTree) {
             logger.info("Generating completion for MemberReferenceTree");
             ExpressionTree parentExpression =
                     ((MemberReferenceTree) treePath.getLeaf()).getQualifierExpression();
             action =
                     CompleteMemberAction.forMethodReference(parentExpression, typeSolver, expressionSolver);
-        } else if (treePath.getLeaf() instanceof LiteralTree ||
-                "\"".equals(contentWithLineMap.substring(line, column - 1, 1))) {
+        } else if (treePath.getLeaf() instanceof LiteralTree) {
             logger.info("Generating completion for LiteralTree");
             // Do not complete on any literals, especially strings.
             action = NoCandidateAction.INSTANCE;

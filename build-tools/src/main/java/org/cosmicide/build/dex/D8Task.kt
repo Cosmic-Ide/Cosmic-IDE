@@ -23,7 +23,7 @@ import kotlin.io.path.name
 class D8Task(val project: Project) : Task {
 
     companion object {
-        const val MIN_API_LEVEL = 26
+        var MIN_API_LEVEL = 26
         val COMPILATION_MODE = CompilationMode.DEBUG
     }
 
@@ -40,7 +40,7 @@ class D8Task(val project: Project) : Task {
                     .setMode(COMPILATION_MODE)
                     .addClasspathFiles(getSystemClasspath().map { it.toPath() })
                     .addProgramFiles(
-                        getClassFilePaths(project.binDir.resolve("classes"))
+                        getClassFiles(project.binDir.resolve("classes"))
                     )
                     .setOutput(project.binDir.toPath(), OutputMode.DexIndexed)
                     .build()
@@ -98,7 +98,7 @@ class D8Task(val project: Project) : Task {
      * @param root The directory to search in.
      * @return A list of paths to all class files in the directory.
      */
-    fun getClassFilePaths(root: File): List<Path> {
+    fun getClassFiles(root: File): List<Path> {
         return root.walk().filter { it.extension == "class" }.map { it.toPath() }.toList()
     }
 

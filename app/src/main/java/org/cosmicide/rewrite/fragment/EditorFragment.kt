@@ -129,7 +129,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 "java" -> {
-                    IllegalStateException().printStackTrace()
                     binding.editor.text.addContentListener(
                         EditorDiagnosticsMarker(
                             binding.editor,

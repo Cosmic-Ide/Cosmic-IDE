@@ -1,6 +1,5 @@
 package org.cosmicide.editor.analyzers.services;
 
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.comp.Attr;
 import com.sun.tools.javac.comp.AttrContext;
@@ -9,12 +8,10 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.JCTree.JCBlock;
 import com.sun.tools.javac.tree.JCTree.JCCatch;
 import com.sun.tools.javac.tree.JCTree.JCClassDecl;
-import com.sun.tools.javac.tree.JCTree.JCExpression;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.JCDiagnostic.DiagnosticPosition;
 import com.sun.tools.javac.util.List;
 
 import java.lang.invoke.MethodHandles;
@@ -28,7 +25,6 @@ public class NBAttr extends Attr {
     private final CancelService cancelService;
     private final TreeMaker tm;
     private boolean fullyAttribute;
-    private Env<AttrContext> fullyAttributeResult;
 
     public NBAttr(Context context) {
         super(context);
@@ -37,11 +33,7 @@ public class NBAttr extends Attr {
     }
 
     public static void preRegister(Context context) {
-        context.put(attrKey, new Context.Factory<Attr>() {
-            public Attr make(Context c) {
-                return new NBAttr(c);
-            }
-        });
+        context.put(attrKey, (Context.Factory<Attr>) c -> new NBAttr(c));
     }
 
     @Override
@@ -80,23 +72,8 @@ public class NBAttr extends Attr {
         super.visitBlock(tm.Block(0, List.of(that.param, that.body)));
     }
 
-    protected void breakTreeFound(Env<AttrContext> env) {
-        if (fullyAttribute) {
-            fullyAttributeResult = env;
-        } else {
-            try {
-                MethodHandles.lookup()
-                        .findSpecial(Attr.class, "breakTreeFound", MethodType.methodType(void.class, Env.class), NBAttr.class)
-                        .invokeExact(this, env);
-            } catch (Throwable ex) {
-                sneakyThrows(ex);
-            }
-        }
-    }
-
     protected void breakTreeFound(Env<AttrContext> env, Type result) {
         if (fullyAttribute) {
-            fullyAttributeResult = env;
         } else {
             try {
                 MethodHandles.lookup()
@@ -108,21 +85,9 @@ public class NBAttr extends Attr {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Throwable> void sneakyThrows(Throwable t) throws T {
         throw (T) t;
     }
 
-    public Env<AttrContext> attributeAndCapture(JCTree tree, Env<AttrContext> env, JCTree to) {
-        try {
-            fullyAttribute = true;
-
-            Env<AttrContext> result = tree instanceof JCExpression ?
-                    attribExprToTree((JCExpression) tree, env, to) :
-                    attribStatToTree(tree, env, to);
-
-            return fullyAttributeResult != null ? fullyAttributeResult : result;
-        } finally {
-            fullyAttribute = false;
-        }
-    }
 }

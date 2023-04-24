@@ -26,7 +26,6 @@ public final class LineMapUtil {
     }
 
     public static int getPositionFromZeroBasedLineAndColumn(LineMap lineMap, int line, int column) {
-        // LineMap accepts 1-based line and column numbers.
-        return (int) lineMap.getPosition(line + 1, column + 1);
+        return (int) lineMap.getPosition(line, column);
     }
 }

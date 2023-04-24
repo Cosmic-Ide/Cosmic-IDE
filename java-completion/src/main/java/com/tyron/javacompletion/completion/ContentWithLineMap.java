@@ -67,24 +67,30 @@ abstract class ContentWithLineMap {
      * Gets the content before cursor position (line, column) as prefix for completion.
      */
     String extractCompletionPrefix(int line, int column) {
-        int position = LineMapUtil.getPositionFromZeroBasedLineAndColumn(getLineMap(), line, column);
+        int position = (int) getLineMap().getPosition(line, column);
         if (position < 0) {
-            logger.warning(
+            System.out.printf(
                     "Position of (%s, %s): %s is negative when getting completion prefix for file %s",
                     line, column, position, getFilePath());
         }
         if (position >= getContent().length()) {
-            logger.warning(
+            System.out.printf(
                     "Position of (%s, %s): %s is greater than the length of the content %s when "
-                            + "getting completion prefix for file %s",
+                            + "getting completion prefix for file %s%n",
                     line, column, position, getContent().length(), getFilePath());
         }
 
-        int start = position - 1;
-        while (start >= 0 && Character.isJavaIdentifierPart(getContent().charAt(start))) {
+        int start = position;
+        char c = getContent().charAt(start);
+        while (start >= 0 && c != '.' && Character.isJavaIdentifierPart(c)) {
             start--;
+            c = getContent().charAt(start);
         }
-        return getContent().subSequence(start + 1, position).toString();
+        if (c == '.') {
+            return ".";
+        }
+        String result = getContent().toString().substring(start + 1, position + 1);
+        return result;
     }
 
     String substring(int line, int column, int length) {
@@ -104,5 +110,9 @@ abstract class ContentWithLineMap {
             return "";
         }
         return content.subSequence(position, Math.min(content.length(), position + length)).toString();
+    }
+
+    public boolean isJavaIdentifierStart(char c) {
+        return c == ' ' || c == '\t' || c == '\n' || c == '{' || c == '(' || c == '[';
     }
 }

@@ -32,7 +32,16 @@ class EditorCompletionItem(
         text.replace(line, column - prefixLength, line, column, commitText + suffix)
         if (kind == CompletionItemKind.Method || kind == CompletionItemKind.Constructor) {
             desc.apply {
-                if (substring(indexOf('(') + 1, indexOf(')')).isNotEmpty()) {
+                var start = indexOf('(')
+                var end = indexOf(')')
+                if (start == -1) {
+                    start = label.indexOf('(')
+                    end = label.indexOf(')')
+                }
+                if (start == -1) {
+                    return
+                }
+                if (substring(start + 1, end).isNotEmpty()) {
                     text.cursor.set(text.cursor.leftLine, text.cursor.leftColumn - 1)
                 }
             }

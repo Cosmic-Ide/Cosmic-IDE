@@ -4,12 +4,16 @@ import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.name
 
 /**
  * Task to compile the class files of a project to a Dalvik Executable (Dex) file using D8.
@@ -57,8 +61,15 @@ class D8Task(val project: Project) : Task {
                     toDex.add(lib.toPath())
                 }
             }
-            if (toDex.isNotEmpty()) {
-                compileJars(toDex, libDexDir.toPath())
+            toDex.forEach {
+                reporter.reportInfo("Compiling library ${it.name}")
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        compileJar(it, libDexDir.toPath())
+                    } catch (e: Throwable) {
+                        reporter.reportError("Error compiling library ${it.name}: ${e.stackTraceToString()}")
+                    }
+                }
             }
         }
     }
@@ -66,16 +77,16 @@ class D8Task(val project: Project) : Task {
     /**
      * Compiles a list of jar files to a directory of dex files.
      *
-     * @param jarFiles The jar files to compile.
+     * @param jarFile The jar files to compile.
      * @param outputDir The directory to output the dex files to.
      */
-    fun compileJars(jarFiles: List<Path>, outputDir: Path) {
+    fun compileJar(jarFile: Path, outputDir: Path) {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(MIN_API_LEVEL)
                 .setMode(COMPILATION_MODE)
                 .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                .addProgramFiles(jarFiles)
+                .addProgramFiles(jarFile)
                 .setOutput(outputDir, OutputMode.DexIndexed)
                 .build()
         )

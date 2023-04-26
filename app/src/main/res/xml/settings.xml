@@ -33,6 +33,11 @@
 
     <PreferenceCategory android:title="Compiler">
 
+        <Preference
+            android:key="plugins"
+            android:summary="Unsupported for now"
+            android:title="Plugins" />
+
         <SwitchPreference
             android:key="use_fastjarfs"
             android:title="Use fast implementation for Jar FS"

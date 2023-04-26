@@ -5,7 +5,6 @@
     </style>
 
     <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
-        <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:fontFamily">@font/inter</item>
         <item name="fontFamily">@font/inter</item>
     </style>

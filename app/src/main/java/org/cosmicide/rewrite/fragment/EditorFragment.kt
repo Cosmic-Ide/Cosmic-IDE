@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
 import androidx.annotation.MenuRes
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
@@ -182,6 +183,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }.commit()
     }
 
@@ -189,6 +191,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }.commit()
     }
     

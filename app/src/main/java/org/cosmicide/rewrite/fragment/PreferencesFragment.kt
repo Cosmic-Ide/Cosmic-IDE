@@ -2,14 +2,14 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.fragment.app.FragmentTransaction
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
-import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.BuildConfig
+import org.cosmicide.rewrite.R
 
 /**
  * A [PreferenceFragmentCompat] subclass to display the preferences UI.
@@ -22,6 +22,16 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         findPreference<Preference>("version")?.run {
             summary = BuildConfig.VERSION_NAME
         }
+        findPreference<Preference>("plugins")?.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener {
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    add(R.id.fragment_container, PluginsFragment())
+                    addToBackStack(null)
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                }.commit()
+
+                true
+            }
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {

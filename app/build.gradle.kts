@@ -64,6 +64,8 @@ dependencies {
     implementation("com.github.xxdark:ssvm:6e795448e4")
     implementation("com.android.tools:r8:8.0.40")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("io.noties.markwon:linkify:4.6.2")
 
     implementation(projects.buildTools)
     implementation(projects.common)

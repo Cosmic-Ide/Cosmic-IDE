@@ -14,9 +14,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (supportFragmentManager.findFragmentByTag("ProjectFragment") == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ProjectFragment(), "ProjectFragment")
-                .commit()
+            supportFragmentManager.beginTransaction().apply {
+                add(binding.fragmentContainer.id, ProjectFragment(), "ProjectFragment")
+                setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            }.commit()
         }
     }
 }

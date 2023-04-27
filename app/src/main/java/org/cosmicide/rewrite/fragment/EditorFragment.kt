@@ -12,8 +12,10 @@ import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
+import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
@@ -79,7 +81,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     fileViewModel.setCurrentPosition(tab.position)
-                    binding.editor.setText(fileViewModel.currentFile?.readText())
+                    val file = fileViewModel.currentFile
+                    if (file?.extension == "class") {
+                        binding.editor.setText(Javap().disassemble(file.absolutePath))
+                    } else {
+                        binding.editor.setText(fileViewModel.currentFile?.readText())
+                    }
                     setEditorLanguage()
                 }
 
@@ -138,6 +145,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         )
                     )
                     JavaLanguage(binding.editor, project, file)
+                }
+
+                "class" -> {
+
+                    TextMateLanguage.create("source.java", true)
                 }
 
                 else -> EmptyLanguage()

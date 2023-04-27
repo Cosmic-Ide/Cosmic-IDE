@@ -76,7 +76,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             isWordwrap = true
             setTextSize(Prefs.editorFontSize)
             setFont()
-            invalidate()
         }
 
         binding.toolbar.title = "Running ${project.name}"

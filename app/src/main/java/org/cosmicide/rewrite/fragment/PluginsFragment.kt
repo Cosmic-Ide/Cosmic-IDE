@@ -16,7 +16,7 @@ import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
 
-class PluginsFragment : BaseBindingFragment() {
+class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
 
     override fun getViewBinding() = FragmentPluginsBinding.inflate(layoutInflater)
 

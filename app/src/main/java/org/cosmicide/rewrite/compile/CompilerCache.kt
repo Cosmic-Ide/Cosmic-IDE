@@ -11,11 +11,11 @@ object CompilerCache {
 
     val cacheMap = mutableMapOf<Class<*>, Any>()
 
-    fun <T> saveCache(compiler: T) {
-        cacheMap[compiler::class.java] = compiler
+    fun <T : Any> saveCache(compiler: T) {
+        cacheMap[compiler:class.java] = compiler
     }
 
-    inline fun <reified T> getCache(): T {
+    inline fun <reified T : Any> getCache(): T {
         return cacheMap[T::class.java] as T
     }
 }

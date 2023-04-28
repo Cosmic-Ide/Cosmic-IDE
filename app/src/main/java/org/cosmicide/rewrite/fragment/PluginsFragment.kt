@@ -5,38 +5,28 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.PluginAdapter
+import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
 
-class PluginsFragment : Fragment() {
+class PluginsFragment : BaseBindingFragment() {
 
-    private lateinit var binding: FragmentPluginsBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentPluginsBinding.inflate(inflater)
-        return binding.root
-    }
+    override fun getViewBinding() = FragmentPluginsBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.apply {
-            title = "Plugins"
-            setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
-            setNavigationOnClickListener {
-                parentFragmentManager.popBackStack()
-            }
+
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
         }
+
         binding.pluginsList.apply {
             adapter = PluginAdapter(object : PluginAdapter.OnPluginEventListener {
                 override fun onPluginClicked(plugin: Plugin) {
@@ -62,7 +52,6 @@ class PluginsFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
-
 
     fun getPlugins(): List<Plugin> {
         return listOf(

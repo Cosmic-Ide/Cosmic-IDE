@@ -18,7 +18,7 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     RecyclerView.Adapter<PluginAdapter.ViewHolder>() {
 
     /**
-     * List of [Project] objects to be displayed in the [RecyclerView].
+     * List of [Plugin] objects to be displayed in the [RecyclerView].
      */
     private var plugins: List<Plugin> by Delegates.observable(emptyList()) { _, oldList, newList ->
         DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -40,9 +40,9 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     }
 
     /**
-     * Sets the list of projects to be displayed in the [RecyclerView].
+     * Sets the list of plugins to be displayed in the [RecyclerView].
      *
-     * @param projects The list of [Project] objects.
+     * @param projects The list of [Plugin] objects.
      */
     fun submitList(plugins: List<Plugin>) {
         this.plugins = plugins
@@ -61,7 +61,7 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     override fun getItemCount() = plugins.size
 
     /**
-     * ViewHolder for displaying a single [Project] object in the [RecyclerView].
+     * ViewHolder for displaying a single [Plugin] object in the [RecyclerView].
      *
      * @param binding The [PluginItemBinding] object for the item view.
      * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
@@ -72,9 +72,9 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     ) : RecyclerView.ViewHolder(binding.root) {
 
         /**
-         * Binds the given [Project] object to the item view.
+         * Binds the given [Plugin] object to the item view.
          *
-         * @param plugin The [Project] object to be displayed.
+         * @param plugin The [Plugin] object to be displayed.
          */
         fun bind(plugin: Plugin) {
             val title = "${plugin.getName()} v${plugin.getVersion()}"

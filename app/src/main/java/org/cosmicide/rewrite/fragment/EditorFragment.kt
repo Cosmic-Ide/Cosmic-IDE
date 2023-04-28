@@ -49,7 +49,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.editor.tabWidth = Prefs.tabSize
         binding.editor.setCompletionLayout()
 
-
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
             val binder = ViewBinder(
@@ -196,7 +195,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commit()
+        }.commitNow()
     }
 
     private fun navigateToSettingsFragment() {
@@ -204,9 +203,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             replace(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commit()
+        }.commitNow()
     }
-    
+
     private fun transverseTree(dir: File) : Set<FileSet>{
         val set = mutableSetOf<FileSet>()
         val files = dir.listFiles() ?: return set
@@ -244,5 +243,4 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
         popup.show()
     }
-
 }

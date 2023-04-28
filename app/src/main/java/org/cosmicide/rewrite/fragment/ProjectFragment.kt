@@ -103,7 +103,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
             add(R.id.fragment_container, NewProjectFragment())
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             addToBackStack(null)
-        }.commit()
+        }.commitNow()
     }
 
     private fun navigateToEditorFragment() {
@@ -111,6 +111,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
             add(R.id.fragment_container, EditorFragment())
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        }.commit()
+        }.commitNow()
     }
 }

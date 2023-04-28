@@ -41,7 +41,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
                 parentFragmentManager.beginTransaction().apply {
                     remove(this@NewProjectFragment)
                     setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                }.commit()
+                }.commitNow()
             }
         }
     }
@@ -72,7 +72,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
         parentFragmentManager.beginTransaction().apply {
             replace(R.id.fragment_container, EditorFragment())
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commit()
+        }.commitNow()
     }
 
     private fun File.createMainFile(language: Language, packageName: String) {

@@ -5,6 +5,8 @@ import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 
@@ -17,22 +19,24 @@ class JarTask(val project: Project) : Task {
         val directory = project.binDir.resolve("classes")
         reporter.reportInfo("Creating JAR file from directory: ${directory.absolutePath}")
 
-        val jarFile = File(project.binDir, "classes.jar")
+        val jarFile = project.binDir.resolve("classes.jar").toFile()
         if (jarFile.exists()) {
             jarFile.delete()
         }
 
         JarOutputStream(FileOutputStream(jarFile)).use { jar ->
-            directory.walkTopDown().filter { it.isFile && it.extension == "class" }
-                .forEach { classFile ->
-                    val entryName = classFile.relativeTo(directory).path.replace("\\", "/")
-                    jar.putNextEntry(ZipEntry(entryName))
-                    classFile.inputStream().use { input ->
-                        input.copyTo(jar)
+            Files.walk(directory.toPath()).use { paths ->
+                paths.filter { it.toFile().isFile && it.toString().endsWith(".class") }
+                    .forEach { classFilePath ->
+                        val entryName = directory.toPath().relativize(classFilePath).toString().replace("\\", "/")
+                        jar.putNextEntry(ZipEntry(entryName))
+
+                        Files.copy(classFilePath, jar)
+                        jar.closeEntry()
+
+                        reporter.reportInfo("Added $entryName to JAR")
                     }
-                    jar.closeEntry()
-                    reporter.reportInfo("Added $entryName to JAR")
-                }
+            }
         }
 
         reporter.reportInfo("JAR file created: ${jarFile.absolutePath}")

@@ -16,22 +16,29 @@ import org.cosmicide.rewrite.R
  */
 class PreferencesFragment : PreferenceFragmentCompat() {
 
+    companion object {
+        const val KEY_VERSION = "version"
+        const val KEY_PLUGINS = "plugins"
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
 
-        findPreference<Preference>("version")?.run {
+        findPreference<Preference>(KEY_VERSION)?.apply {
             summary = BuildConfig.VERSION_NAME
         }
-        findPreference<Preference>("plugins")?.onPreferenceClickListener =
-            Preference.OnPreferenceClickListener {
+
+        findPreference<Preference>(KEY_PLUGINS)?.let { pluginsPreference ->
+            pluginsPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     add(R.id.fragment_container, PluginsFragment())
                     addToBackStack(null)
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                }.commit()
+                }.commitNow()
 
                 true
             }
+        }
     }
 
     override fun onCreateRecyclerView(inflater: LayoutInflater, parent: ViewGroup, savedInstanceState: Bundle?): RecyclerView {

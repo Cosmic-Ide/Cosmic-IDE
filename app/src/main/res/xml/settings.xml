@@ -13,7 +13,6 @@
             android:min="12"
             app:showSeekBarValue="true" />
 
-
         <SeekBarPreference
             android:defaultValue="4"
             android:key="tab_size"
@@ -43,6 +42,7 @@
             android:title="Use fast implementation for Jar FS"
             android:summary="This experimental mode may speed up compilation time, but use with caution"
             android:defaultValue="false" />
+
         <SwitchPreference
             android:defaultValue="false"
             android:key="use_ssvm"

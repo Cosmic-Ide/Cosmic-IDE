@@ -83,7 +83,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     fileViewModel.setCurrentPosition(tab.position)
                     val file = fileViewModel.currentFile
                     if (file?.extension == "class") {
-                        binding.editor.setText(Javap().disassemble(file.absolutePath))
+                        binding.editor.setText(Javap.disassemble(file.absolutePath))
                     } else {
                         binding.editor.setText(fileViewModel.currentFile?.readText())
                     }

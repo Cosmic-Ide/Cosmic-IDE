@@ -49,7 +49,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         transaction.apply {
                             replace(R.id.fragment_container, ProjectOutputFragment())
                             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                            commitNow()
+                            commit()
                         }
                     }
                     text.insert(text.cursor.rightLine, text.cursor.rightColumn, "--- Stopped ---\n")
@@ -61,7 +61,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                     transaction.apply {
                         remove(this@ProjectOutputFragment)
                         setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-                    }.commitNow()
+                    }.commit()
                     true
                 }
 
@@ -83,7 +83,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             parentFragmentManager.beginTransaction().apply {
                 remove(this@ProjectOutputFragment)
                 setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            }.commitNow()
+            }.commit()
         }
         lifecycleScope.launch {
             checkClasses()

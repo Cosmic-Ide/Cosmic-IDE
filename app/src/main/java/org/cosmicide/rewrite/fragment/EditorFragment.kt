@@ -195,7 +195,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commitNow()
+        }.commit()
     }
 
     private fun navigateToSettingsFragment() {
@@ -203,7 +203,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             replace(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        }.commitNow()
+        }.commit()
     }
 
     private fun transverseTree(dir: File) : Set<FileSet>{

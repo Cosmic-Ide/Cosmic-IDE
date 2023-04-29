@@ -34,7 +34,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                     add(R.id.fragment_container, PluginsFragment())
                     addToBackStack(null)
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                }.commitNow()
+                }.commit()
 
                 true
             }

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
@@ -6,6 +6,8 @@
 
     <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
         <item name="android:fontFamily">@font/inter</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@drawable/banner
+        </item>
         <item name="fontFamily">@font/inter</item>
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>
     </style>

@@ -60,12 +60,13 @@ dependencies {
     implementation("io.github.dingyi222666:treeview:1.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation("com.android.tools.smali:smali-dexlib2:3.0.2")
+    implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.github.xxdark:ssvm:6e795448e4")
     implementation("com.android.tools:r8:8.0.40")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation(projects.buildTools)
     implementation(projects.common)

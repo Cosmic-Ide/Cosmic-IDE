@@ -22,7 +22,7 @@
             android:title="Tab Size"
             app:showSeekBarValue="true" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="use_spaces"
             android:summary="Use spaces instead of tabs for indentation in the editor"
@@ -37,13 +37,13 @@
             android:summary="Unsupported for now"
             android:title="Plugins" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:key="use_fastjarfs"
             android:title="Use fast implementation for Jar FS"
             android:summary="This experimental mode may speed up compilation time, but use with caution"
             android:defaultValue="false" />
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="use_ssvm"
             android:summary="This is a very experimental feature. Use with caution."

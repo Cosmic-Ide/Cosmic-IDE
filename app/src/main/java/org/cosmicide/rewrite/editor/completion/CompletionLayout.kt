@@ -1,84 +1,27 @@
 package org.cosmicide.rewrite.editor.completion
 
-import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.GradientDrawable
-import android.os.SystemClock
-import android.view.MotionEvent
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.RelativeLayout
-import com.google.android.material.elevation.SurfaceColors
-import io.github.rosemoe.sora.widget.component.CompletionLayout
-import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
+import android.view.ViewGroup
+import io.github.rosemoe.sora.widget.component.DefaultCompletionLayout
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
-class CustomCompletionLayout : CompletionLayout {
-
-    private lateinit var mListView: ListView
-    private lateinit var mBackground: GradientDrawable
-    private lateinit var mEditorAutoCompletion: EditorAutoCompletion
-
-    override fun setEditorCompletion(completion: EditorAutoCompletion) {
-        mEditorAutoCompletion = completion
-    }
-
-    override fun inflate(context: Context): View {
-        val layout = RelativeLayout(context)
-
-        mBackground = GradientDrawable()
-        mBackground.apply {
-            cornerRadius = 16f
-            setStroke(1, SurfaceColors.SURFACE_2.getColor(context))
-        }
-        mBackground.setColor(SurfaceColors.SURFACE_1.getColor(context))
-        layout.background = mBackground
-
-        mListView = ListView(context)
-        mListView.dividerHeight = 0
-        layout.addView(mListView, LinearLayout.LayoutParams(-1, -1))
-        mListView.setOnItemClickListener { _, _, position, _ ->
-            mEditorAutoCompletion.select(position)
-        }
-        return layout
-    }
+class CustomCompletionLayout : DefaultCompletionLayout() {
 
     override fun onApplyColorScheme(colorScheme: EditorColorScheme) {
+        super.onApplyColorScheme(colorScheme)
+
+        val completionListParent = completionList.parent as? ViewGroup
+            ?: throw IllegalArgumentException("Completion list parent view is null")
+
+        val backgroundDrawable = completionListParent.background as? GradientDrawable
+            ?: throw IllegalArgumentException("Completion list parent view background is null or not a GradientDrawable")
+
+        backgroundDrawable.setStroke(1f.dpToPx(), requireNotNull(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER)))
     }
 
-    override fun setLoading(state: Boolean) {
-
-    }
-
-    override fun getCompletionList(): ListView {
-        return mListView
-    }
-
-    private fun performScrollList(offset: Int) {
-        val adpView = completionList
-
-        val down = SystemClock.uptimeMillis()
-        var ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_DOWN, 0f, 0f, 0)
-        adpView.onTouchEvent(ev)
-        ev.recycle()
-
-        ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_MOVE, 0f, offset.toFloat(), 0)
-        adpView.onTouchEvent(ev)
-        ev.recycle()
-
-        ev = MotionEvent.obtain(down, down, MotionEvent.ACTION_CANCEL, 0f, offset.toFloat(), 0)
-        adpView.onTouchEvent(ev)
-        ev.recycle()
-    }
-
-    override fun ensureListPositionVisible(position: Int, increment: Int) {
-        mListView.post {
-            while (mListView.firstVisiblePosition + 1 > position && mListView.canScrollList(-1)) {
-                performScrollList(increment / 2)
-            }
-            while (mListView.lastVisiblePosition - 1 < position && mListView.canScrollList(1)) {
-                performScrollList(-increment / 2)
-            }
-        }
+    fun Float.dpToPx(): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (this * scale + 0.5f).toInt()
     }
 }

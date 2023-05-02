@@ -8,7 +8,6 @@ import io.github.rosemoe.sora.widget.component.EditorCompletionAdapter
 import org.cosmicide.rewrite.databinding.CompletionResultBinding
 import org.cosmicide.rewrite.editor.EditorCompletionItem
 
-
 class CustomCompletionItemAdapter : EditorCompletionAdapter() {
 
     override fun areAllItemsEnabled(): Boolean {
@@ -18,7 +17,7 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
     override fun getItemHeight(): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
-            65f,
+            60f,
             context.resources.displayMetrics
         ).toInt()
     }
@@ -33,7 +32,9 @@ class CustomCompletionItemAdapter : EditorCompletionAdapter() {
         parent: ViewGroup,
         isCurrentCursorPosition: Boolean
     ): View {
-        val binding = CompletionResultBinding.inflate(LayoutInflater.from(context))
+        val binding = 
+            v?.let { CompletionResultBinding.bind(it) }
+                ?: CompletionResultBinding.inflate(LayoutInflater.from(context), parent, false)
         val item = getItem(pos)
         binding.resultItemLabel.text = item.label
         binding.resultItemDesc.text = item.desc

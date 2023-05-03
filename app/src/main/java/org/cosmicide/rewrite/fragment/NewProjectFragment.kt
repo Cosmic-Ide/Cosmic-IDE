@@ -14,6 +14,7 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 import java.io.IOException
+import kotlin.text.Regex
 
 class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     private val viewModel: ProjectViewModel by activityViewModels()
@@ -24,19 +25,36 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnCreate.setOnClickListener {
-            val projectName = binding.projectName.text?.toString()
-            val packageName = binding.packageName.text?.toString()
-            if (projectName.isNullOrEmpty()) {
+            val projectName = binding.projectName.text.toString()
+            val packageName = binding.packageName.text.toString()
+
+            if (projectName.isEmpty()) {
                 binding.projectName.error = "Project name cannot be empty"
                 return@setOnClickListener
             }
-            if (packageName.isNullOrEmpty()) {
+
+            if (packageName.isEmpty()) {
                 binding.packageName.error = "Package name cannot be empty"
                 return@setOnClickListener
             }
 
-            val language = if (binding.useKotlin.isChecked) Language.Kotlin else Language.Java
+            if (!projectName.matches(Regex("^[а-яА-Яa-zA-Z0-9]+$"))) {
+                binding.projectName.error = "Project name contains invalid characters"
+                return@setOnClickListener
+            }
+
+            if (!packageName.matches(Regex("^[a-zA-Z0-9.]+$"))) {
+                binding.packageName.error = "Package name contains invalid characters"
+                return@setOnClickListener
+            }
+
+            val language = when {
+                binding.useKotlin.isChecked -> Language.Kotlin
+                else -> Language.Java
+            }
+
             val success = createProject(language, projectName, packageName)
+
             if (success) {
                 parentFragmentManager.beginTransaction().apply {
                     remove(this@NewProjectFragment)

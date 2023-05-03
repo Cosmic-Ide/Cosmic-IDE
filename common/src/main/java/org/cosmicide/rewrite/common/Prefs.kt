@@ -8,6 +8,12 @@ import androidx.preference.PreferenceManager
  * A utility object to access shared preferences easily.
  */
 object Prefs {
+    @JvmField val useFastJarFs: Boolean = prefs.getBoolean("use_fastjarfs", false)
+    @JvmField val useSpaces: Boolean = prefs.getBoolean("use_spaces", false)
+    @JvmField val tabSize: Int = prefs.getInt("tab_size", 4)
+    @JvmField val compilerJavaVersion: Int = prefs.getInt("java_version", 17)
+    @JvmField val useSSVM: Boolean = prefs.getBoolean("use_ssvm", false)
+
     private lateinit var prefs: SharedPreferences
 
     /**
@@ -15,39 +21,11 @@ object Prefs {
      */
     val editorFontSize: Float
         get() {
-            return try {
-                prefs.getString("font_size", "16")?.toFloat() ?: 16f
-            } catch (e: Exception) {
-                16f
-            }
+            return runCatching {
+                val fontSizeString = prefs.getString("font_size", "16") ?: "16"
+                fontSizeString.toFloat().coerceIn(1f, 32f)
+            }.getOrDefault(16f)
         }
-
-    /**
-     * The Java version selected by the user.
-     */
-    val compilerJavaVersion: Int
-        get() {
-            return try {
-                prefs.getInt("java_version", 17)
-            } catch (e: Exception) {
-                17
-            }
-        }
-
-    /**
-     * The FastJarFs selected by user.
-     */
-    val useFastJarFs: Boolean
-        get() = prefs.getBoolean("use_fastjarfs", false)
-
-    val useSpaces: Boolean
-        get() = prefs.getBoolean("use_spaces", false)
-
-    val tabSize: Int
-        get() = prefs.getInt("tab_size", 4)
-
-    val useSSVM: Boolean
-        get() = prefs.getBoolean("use_ssvm", false)
 
     /**
      * Initializes shared preferences.

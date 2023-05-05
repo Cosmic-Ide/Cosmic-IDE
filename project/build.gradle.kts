@@ -14,5 +14,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 dependencies {
     implementation("com.squareup:javapoet:1.13.0")
-    implementation("com.squareup:kotlinpoet:1.13.0")
+    implementation("com.squareup:kotlinpoet:1.13.1")
 }

@@ -2,19 +2,20 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
-import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.PluginAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
+import org.cosmicide.rewrite.util.FileUtil
 
 class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
 
@@ -54,6 +55,57 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
     }
 
     fun getPlugins(): List<Plugin> {
+        val plugins = mutableListOf<Plugin>()
+        FileUtil.pluginDir.listFiles { file -> file.isDirectory }?.forEach { file ->
+            val config = file.resolve("config.json")
+            config.writeText(
+                """
+{
+"name":"Mama",
+"version":"1.0.0",
+"author":"Pranav",
+"description": "Pro Plugin",
+"source": "earth"
+}
+                        """
+            )
+            if (config.exists()) {
+                Toast.makeText(
+                    requireContext(),
+                    " plugin ${file.name}, daata: ${config.readText()}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                val data =
+                    Gson().fromJson<Map<String, String>>(
+                        config.readText(),
+                        object : TypeToken<Map<String, String>>() {}.type
+                    )
+                plugins.add(object : Plugin {
+                    override fun getName(): String {
+                        return data.getValue("name")
+                    }
+
+                    override fun getVersion(): String {
+                        return data.getValue("version")
+                    }
+
+                    override fun getAuthor(): String {
+                        return data.getValue("author")
+                    }
+
+                    override fun getDescription(): String {
+                        return data.getValue("description")
+                    }
+
+                    override fun getSource(): String {
+                        return data["source"] ?: "No source"
+                    }
+                })
+            }
+        }
+        if (plugins.isNotEmpty()) {
+            return plugins
+        }
         return listOf(
             object : Plugin {
                 override fun getName(): String {
@@ -70,7 +122,7 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
 
                 override fun getDescription(): String {
                     return """
-                        ![logo](./art/markwon_logo.png)
+                        ![logo](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFoQPtmBERD2pJMkx-T1syaPNHuiWv5jYKDnN3z_I&s)
 
                         # Markwon
 

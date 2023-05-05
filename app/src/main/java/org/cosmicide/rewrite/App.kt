@@ -2,7 +2,6 @@ package org.cosmicide.rewrite
 
 import android.app.Application
 import android.content.res.Configuration
-import android.util.Log
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -14,13 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.FileNotFoundException
-import javax.lang.model.SourceVersion
 
 class App : Application() {
 
@@ -34,27 +31,21 @@ class App : Application() {
         FileUtil.init(this)
         Prefs.init(applicationContext)
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
-        scope.launch {
-            try {
-                disableModules()
-                loadTextmateTheme()
-                extractFiles()
-            } catch (e: Throwable) {
-                Log.e("App", "Initialization failed: $e")
-            }
-        }
+        extractFiles()
+        disableModules()
+        scope.launch { loadTextmateTheme() }
     }
 
-    private suspend fun extractFiles() = withContext(Dispatchers.IO) {
-        extractAsset(INDEX_FILE_NAME, indexFile)
-        extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR))
-        extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB))
-        extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
+    private fun extractFiles() {
+        scope.launch { extractAsset(INDEX_FILE_NAME, indexFile) }
+        scope.launch { extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR)) }
+        scope.launch { extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB)) }
+        scope.launch { extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar")) }
     }
 
-    private suspend fun extractAsset(assetName: String, outputFile: File) = withContext(Dispatchers.IO) {
+    private fun extractAsset(assetName: String, outputFile: File) {
         if (outputFile.exists()) {
-            return@withContext
+            return
         }
         assets.open(assetName).use { input ->
             outputFile.outputStream().use { output ->
@@ -63,11 +54,11 @@ class App : Application() {
         }
     }
 
-    private suspend fun disableModules() = withContext(Dispatchers.IO) {
+    private fun disableModules() {
         JavacConfigProvider.disableModules()
     }
 
-    private suspend fun loadTextmateTheme() = withContext(Dispatchers.IO) {
+    private fun loadTextmateTheme() {
         val fileProvider = AssetsFileResolver(assets)
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
         GrammarRegistry.getInstance().loadGrammars(LANGUAGES_FILE_PATH)

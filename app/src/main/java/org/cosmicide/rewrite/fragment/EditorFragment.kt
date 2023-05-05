@@ -90,6 +90,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {
+                    fileViewModel.currentFile?.writeText(binding.editor.text.toString())
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {}

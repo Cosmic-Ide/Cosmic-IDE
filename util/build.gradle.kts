@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "org.cosmicide.rewrite.util"
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = 31
 
     defaultConfig {
         minSdk = 26

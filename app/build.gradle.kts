@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide.rewrite"
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "org.cosmicide.rewrite"
@@ -33,11 +33,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
-    buildFeatures {
-        viewBinding = true
+    viewBinding {
+        enable = true
     }
 }
 
@@ -46,7 +46,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.10.0")
-    implementation("androidx.fragment:fragment-ktx:1.5.6")
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
@@ -57,7 +57,7 @@ dependencies {
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
     implementation("io.github.Rosemoe.sora-editor:editor")
     implementation("io.github.Rosemoe.sora-editor:language-textmate")
-    implementation("io.github.dingyi222666:treeview:1.1.0")
+    implementation("io.github.dingyi222666:treeview:1.2.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
@@ -67,6 +67,7 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("org.slf4j:slf4j-simple:2.0.7")
 
     implementation(projects.buildTools)
     implementation(projects.common)

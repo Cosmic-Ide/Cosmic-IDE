@@ -4,7 +4,7 @@ plugins {
 }
 android {
     namespace = "org.jetbrains.kotlin"
-    compileSdkPreview = "UpsideDownCake"
+    compileSdk = 31
 
     defaultConfig {
         minSdk = 26
@@ -32,8 +32,8 @@ configurations.all {
 dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
-    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.20")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.20")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.21")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
 

@@ -6,7 +6,10 @@
 
     <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
         <item name="android:fontFamily">@font/inter</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:ignore="NewApi">@drawable/banner
+        <item name="android:windowSplashScreenBackground" tools:ignore="NewApi">?attr/colorSurface
+        </item>
+        <item name="android:windowSplashScreenBrandingImage" tools:ignore="NewApi">
+            @drawable/banner
         </item>
         <item name="fontFamily">@font/inter</item>
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>

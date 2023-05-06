@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="advanced">Lanjutan</string>
+    <string name="create">Buat</string>
+    <string name="delete">Hapus</string>
+    <string name="rename">Ganti Nama</string>
+
+    <string name="next">Selanjutnya</string>
+    <string name="back">Kembali</string>
+    <string name="quit">Keluar</string>
+    <string name="copy_stacktrace">Salin stacktrace</string>
+
+    <string name="editor_action_undo">Undo</string>
+    <string name="editor_action_redo">Redo</string>
+    <string name="editor_action_format">Format</string>
+
+    <string name="menu_close_file">Tutup</string>
+    <string name="menu_close_others">Tutup yang lain</string>
+    <string name="menu_close_all">Tutup semua</string>
+
+    <string name="compile">Compile</string>
+    <string name="error">Error</string>
+    <string name="project">Project</string>
+    <string name="folder">Folder</string>
+
+    <string name="no_open_file_title">Tidak ada file yang terbuka</string>
+    <string name="no_open_file_desc">Coba buka file melalui menu sebelah kiri.</string>
+    <string name="no_projects_title">Proyek tidak ditemukan</string>
+    <string name="no_projects_suggestion">Buat proyek dengan mengklik tombol di bawah ini.</string>
+
+    <string name="treemenu_create_kotlin">Buat kelas Kotlin</string>
+    <string name="treemenu_create_java">Buat kelas Java</string>
+    <string name="treemenu_create_folder">Buat folder</string>
+
+    <string name="create_folder_dialog_title">Buat folder</string>
+    <string name="create_folder_dialog_class_name">Nama folder</string>
+    <string name="create_folder_dialog_positive">Buat</string>
+    <string name="create_folder_dialog_invalid_name">Nama folder tidak valid</string>
+
+    <string name="create_class_dialog_title">Buat kelas</string>
+    <string name="create_class_dialog_class_name">Nama kelas</string>
+    <string name="create_class_dialog_positive">Buat</string>
+    <string name="create_class_dialog_class_type">Tipe kelas</string>
+    <string name="create_class_dialog_invalid_name">Nama kelas tidak valid</string>
+    <string name="rename_file">Ganti nama File</string>
+
+    <string name="select_smali_class">Pilih kelas smali untuk ditampilkan</string>
+    <string name="select_class_decompile">Pilih kelas untuk didekompilasi</string>
+    <string name="select_class_disassemble">Pilih kelas untuk didisassemble</string>
+    <string name="select_class_run">Pilih kelas untuk dijalankan</string>
+
+    <string name="error_file_open">Gagal membuka file</string>
+    <string name="error_file_unzip">Gagal membuka file zip</string>
+    <string name="error_file_extract_smali">Gagal mengekstrak kode sumber smali</string>
+    <string name="error_class_decompile">Gagal mendekompilasi kelas</string>
+    <string name="error_class_disassemble">Gagal disassemble kelas</string>
+    <string name="error_classes_get_dex">Gagal mendapatkan daftar kelas di dex</string>
+
+    <!-- Compiler Service -->
+    <string name="compilation_state_compiling">Mengompilasi</string>
+    <string name="compilation_result_success">Berhasil mengompilasi</string>
+    <string name="compilation_result_failed">Gagal mengompilasi</string>
+    <string name="compilation_stage">Tahap</string>
+    <string name="compilation_stage_clean">Membersihkan build&#8230;</string>
+    <string name="compilation_stage_kotlinc">Mengompilasi dengan Kotlinc&#8230;</string>
+    <string name="compilation_stage_javac">Mengompilasi dengan Javac&#8230;</string>
+    <string name="compilation_stage_d8">Dexing file kelas dengan D8&#8230;</string>
+
+    <string name="console_state_running">Running</string>
+    <string name="console_state_stopped">Stopped</string>
+
+    <string name="success">Success</string>
+    <string name="delete_success">Hapus success.</string>
+    <string name="dialog_confirm_delete">Anda yakin ingin menghapus %1$s?</string>
+    <string name="dialog_delete">Hapus</string>
+    <string name="dialog_close">Tutup</string>
+
+    <string name="logcat">Logcat</string>
+    <string name="create_project">Buat proyek</string>
+    <string name="project_not_compiled">Kompilasi proyek terlebih dahulu</string>
+    <string name="project_name">Nama proyek</string>
+    <string name="package_name">Nama paket</string>
+    <string name="use_kotlin_template">Gunakan Template Kotlin</string>
+    <string name="use_git">Git</string>
+
+    <string name="java_version">Versi Java</string>
+    <string name="program_arguments">Program Arguments</string>
+    <string name="settings">Pengaturan</string>
+    <string name="appearance">Penampilan</string>
+    <string name="fast_jar_fs">Sistem File Jar Cepat</string>
+    <string name="fast_jar_fs_desc">[Eksperimental] Tingkatkan kecepatan build</string>
+    <string name="compiler">Compiler</string>
+    <string name="theme">Tema</string>
+    <string name="about">Tentang</string>
+    <string name="discord">Discord</string> 
+    <string name="discord_desc">Bergabunglah dengan saluran discord kami</string>
+    <string name="github">Github</string>
+    <string name="github_desc">Lihat repositori github kami</string>
+    <string name="app_version">Versi %s</string>
+    <string name="check_for_updates">Periksa pembaruan</string>
+    <string name="follow_system">Ikuti Sistem</string>
+    <string name="theme_light">Terang</string>
+    <string name="theme_dark">Gelap</string>
+    <string name="app_translation">Terjemahan</string>
+    <string name="app_translation_desc">Terjemahkan aplikasi ini</string>
+    <string name="dynamic_theme">Tema dinamis</string>
+    <string name="dynamic_theme_desc">Menerapkan tema yang dibuat pada skema warna wallpaper Anda</string>
+    <string name="editor">Editor</string>
+    <string name="font_size">Ukuran font</string>
+
+    <string name="git">Git</string>
+    <string name="git_username">Nama pengguna</string>
+    <string name="git_useremail">Alamat email</string>
+    <string name="git_new_repository">Repositori Git baru</string>
+    <string name="git_commit">Commit</string>
+    <string name="git_commit_message">Pesan commit</string>
+    <string name="git_branch">Branch</string>
+    <string name="git_new_branch">Branch baru</string>
+    <string name="git_name_branch">Nama branch</string>
+    <string name="git_merge">Gabung</string>
+    <string name="git_merge_branch">Gabung branch</string>
+    <string name="git_merge_branch_message">Nama branch untuk digabungkan</string>
+    <string name="git_delete_branch">Hapus branch</string>
+    <string name="git_delete_branch_message">Nama cabang untuk dihapus</string>
+    <string name="git_log_unavailable">Logs tidak tersedia.</string>
+    <string name="allowed_characters">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+    <string name="expand">Perluas</string>
+    <string name="file_icon">Ikon file</string>
+    <string name="group_id">Id Group</string>
+    <string name="artifact_id">Id Artifact</string>
+    <string name="version">Versi</string>
+    <string name="library_downloader">Pengunduh Library</string>
+    <string name="import_project">Impor Proyek</string>
+
+</resources>

@@ -25,76 +25,71 @@ import org.cosmicide.rewrite.model.FileViewModel
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.io.File
 
-
 class ViewBinder(
     private val lifeScope: CoroutineScope,
     private val layoutInflater: LayoutInflater,
     private val fileViewModel: FileViewModel,
     private val treeView: TreeView<FileSet>
-) : TreeViewBinder<FileSet>(),
-    TreeNodeEventListener<FileSet> {
-
+) : TreeViewBinder<FileSet>(), TreeNodeEventListener<FileSet> {
+    private lateinit var dirBinding: TreeviewItemDirBinding
+    private lateinit var fileBinding: TreeviewItemFileBinding
 
     override fun createView(parent: ViewGroup, viewType: Int): View {
-        return if (viewType == 1) {
-            TreeviewItemDirBinding.inflate(layoutInflater, parent, false).root
-        } else {
-            TreeviewItemFileBinding.inflate(layoutInflater, parent, false).root
+        return when (viewType) {
+            ViewType.DIRECTORY.ordinal -> {
+                dirBinding = TreeviewItemDirBinding.inflate(layoutInflater, parent, false)
+                dirBinding.root
+            }
+            ViewType.FILE.ordinal -> {
+                fileBinding = TreeviewItemFileBinding.inflate(layoutInflater, parent, false)
+                fileBinding.root
+            }
+            else -> throw IllegalArgumentException("Invalid view type: $viewType")
         }
     }
 
     override fun getItemViewType(node: TreeNode<FileSet>): Int {
-        if (node.isChild) {
-            return 1
-        }
-        return 0
+        return if (node.isChild) ViewType.DIRECTORY.ordinal else ViewType.FILE.ordinal
     }
 
-    override fun bindView(
-        holder: TreeView.ViewHolder,
-        node: TreeNode<FileSet>,
-        listener: TreeNodeEventListener<FileSet>
-    ) {
-        if (node.isChild) {
-            applyDir(holder, node)
-        } else {
-            applyFile(holder, node)
-        }
-        val itemView = holder.itemView.findViewById<Space>(R.id.space)
-
-        itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-            width = node.depth * 22.dp
+    override fun bindView(holder: TreeView.ViewHolder, node: TreeNode<FileSet>, listener: TreeNodeEventListener<FileSet>) {
+        with(holder.itemView.findViewById<Space>(R.id.space)) {
+            updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                width = node.depth * 22.dp
+            }
         }
 
+        when {
+            node.isChild -> applyDir(holder, node)
+            else -> applyFile(holder, node)
+        }
     }
 
     private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
-        val binding = TreeviewItemFileBinding.bind(holder.itemView)
-        binding.textView.text = node.name.toString()
+        with(fileBinding) {
+            textView.text = node.name.toString()
+        }
     }
 
     private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
-        val binding = TreeviewItemDirBinding.bind(holder.itemView)
-        binding.textView.text = node.name.toString()
-
-        binding
-            .imageView
-            .animate()
-            .rotation(if (node.expand) 90f else 0f)
-            .setDuration(200)
-            .start()
+        with(dirBinding) {
+            textView.text = node.name.toString()
+            imageView.animate()
+                .rotation(if (node.expand) 90f else 0f)
+                .setDuration(200)
+                .start()
+        }
     }
 
     override fun onLongClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder): Boolean {
-        showMenu(holder.itemView.findViewById(R.id.textView), R.menu.treeview_menu, node.data?.file!!, node)
-        return super<TreeViewBinder>.onLongClick(node, holder)
+        showMenu(holder.itemView.findViewById(R.id.textView), R.menu.treeview_menu, node.data!!.file, node)
+        return false
     }
 
     override fun onClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder) {
-        if (node.isChild) {
-            applyDir(holder, node)
-        } else {
-            fileViewModel.addFile(node.data?.file!!)
+        when {
+            node.isChild -> applyDir(holder, node)
+            else -> fileViewModel.addFile(node.data!!.file)
         }
     }
 
@@ -102,19 +97,18 @@ class ViewBinder(
         applyDir(holder, node)
     }
 
-    private fun showMenu(
-        v: View,
-        @MenuRes menuRes: Int,
-        file: File,
-        node: TreeNode<FileSet>
-    ) {
+    private fun showMenu(v: View, @MenuRes menuRes: Int, file: File, node: TreeNode<FileSet>) {
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
-        if (node.isChild.not()) {
-            popup.menu.removeItem(R.id.create_kotlin_class)
-            popup.menu.removeItem(R.id.create_java_class)
-            popup.menu.removeItem(R.id.create_folder)
+
+        when {
+            node.isChild.not() -> {
+                popup.menu.removeItem(R.id.create_kotlin_class)
+                popup.menu.removeItem(R.id.create_java_class)
+                popup.menu.removeItem(R.id.create_folder)
+            }
         }
+
         popup.setOnMenuItemClickListener {
             val parentNode = treeView.tree.getParentNode(node)
             when (it.itemId) {
@@ -225,7 +219,10 @@ class ViewBinder(
         }
         popup.show()
     }
+}
 
+enum class ViewType {
+    DIRECTORY, FILE
 }
 
 inline val Int.dp: Int

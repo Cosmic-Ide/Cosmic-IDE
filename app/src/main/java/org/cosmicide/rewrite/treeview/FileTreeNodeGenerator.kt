@@ -17,13 +17,13 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
         tree: AbstractTree<FileSet>
     ): TreeNode<FileSet> {
         return TreeNode(
-            currentData,
-            parentNode.depth + 1,
-            currentData.file.name,
-            tree.generateId(),
-            currentData.file.isDirectory,
-            currentData.file.isDirectory,
-            false
+            data = currentData,
+            depth = parentNode.depth + 1,
+            name = currentData.file.name,
+            id = tree.generateId(),
+            hasChild = currentData.file.isDirectory,
+            isChild = currentData.file.isDirectory,
+            expand = false
         )
     }
 

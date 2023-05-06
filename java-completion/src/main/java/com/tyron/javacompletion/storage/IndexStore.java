@@ -197,24 +197,24 @@ public class IndexStore {
                         .map(this::serializeEntity)
                         .collect(Collectors.toList());
         ret.members.addAll(
-                entity.getMemberEntities().values().stream()
-                        .map(
-                                childEntity -> {
-                                    if (visitedEntities.containsKey(childEntity)) {
-                                        throw new RuntimeException(
-                                                "Entity "
-                                                        + childEntity
-                                                        + "Has already been added by "
-                                                        + visitedEntities.get(childEntity)
-                                                        + ", it's being added by "
-                                                        + entity
-                                                        + " again");
-                                    }
-                                    visitedEntities.put(childEntity, entity);
-                                    return serializeEntity(childEntity);
-                                })
-                        .sorted()
-                        .toList());
+            entity.getMemberEntities().values().stream()
+                .map(childEntity -> {
+                    if (visitedEntities.containsKey(childEntity)) {
+                        throw new RuntimeException(
+                                "Entity "
+                                        + childEntity
+                                        + "Has already been added by "
+                                        + visitedEntities.get(childEntity)
+                                        + ", it's being added by "
+                                        + entity
+                                        + " again");
+                    }
+                    visitedEntities.put(childEntity, entity);
+                    return serializeEntity(childEntity);
+                })
+                .sorted()
+                .collect(Collectors.toList())
+        );
         if (entity.getSuperClass().isPresent()) {
             ret.superClass =
                     serializeTypeReference(entity.getSuperClass().get(), entity.getParentScope().get());

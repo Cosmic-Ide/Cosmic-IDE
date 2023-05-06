@@ -80,12 +80,7 @@ class CodeEditorFragment : Fragment() {
                     }
                     .show()
             }
-            when (currentFile.extension) {
-                "kt" -> setEditorLanguage(LANGUAGE_KOTLIN)
-                "java" -> setEditorLanguage(LANGUAGE_JAVA)
-                "smali" -> setEditorLanguage(LANGUAGE_SMALI)
-                else -> setEditorLanguage(-1)
-            }
+
             binding.editor
                 .text
                 .addContentListener(
@@ -96,6 +91,12 @@ class CodeEditorFragment : Fragment() {
                         (requireActivity() as MainActivity).project
                     )
                 )
+            when (currentFile.extension) {
+                "kt" -> setEditorLanguage(LANGUAGE_KOTLIN)
+                "java" -> setEditorLanguage(LANGUAGE_JAVA)
+                "smali" -> setEditorLanguage(LANGUAGE_SMALI)
+                else -> setEditorLanguage(-1)
+            }
         }
     }
 

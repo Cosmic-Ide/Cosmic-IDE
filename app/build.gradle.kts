@@ -75,18 +75,18 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.2")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
-    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.0")
-    implementation("com.google.android.gms:play-services-oss-licenses:17.0.0")
-    implementation("androidx.activity:activity-ktx:1.7.0-beta01")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
+    implementation("com.google.android.gms:play-services-oss-licenses:17.0.1")
+    implementation("androidx.activity:activity-ktx:1.7.1")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("com.google.android.material:material:1.9.0-alpha02")
+    implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
     implementation("androidx.preference:preference-ktx:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.3.0-rc01")
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation("org.smali:dexlib2:2.5.2")
     implementation("com.google.guava:guava:31.1-android")

@@ -44,7 +44,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with gradle
-        uses: gradle/gradle-build-action@v2.4.0
+        uses: gradle/gradle-build-action@v2.4.2
         with:
           gradle-version: nightly
           arguments: assembleDebug

@@ -1,5 +1,5 @@
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:drawable="@drawable/ic_launcher_foreground">
+    android:drawable="@drawable/ic_launcher_foreground_splash">
     <target
         android:name="logoGroup"
         android:animation="@animator/splashscreen_animator" />

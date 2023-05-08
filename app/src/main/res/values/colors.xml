@@ -54,7 +54,7 @@
     <color name="light_colorTertiary">#ff805159</color>
     <color name="light_colorTertiaryContainer">#ffffd9de</color>
 
-    <color name="logo_background">@color/light_colorBackground</color>
-    <color name="logo_stroke">@color/light_colorOnBackground</color>
-    <color name="logo_accent">@color/light_colorPrimary</color>
+    <color name="logo_background">#1F1E2B</color>
+    <color name="logo_stroke">#FFFFFF</color>
+    <color name="logo_accent">#7C22D6</color>
 </resources>

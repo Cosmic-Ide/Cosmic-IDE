@@ -4,35 +4,31 @@
     android:viewportWidth="1445"
     android:viewportHeight="1445">
 
-    <group android:name="logoGroup">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
+        android:strokeWidth="40"
+        android:strokeColor="@color/logo_stroke"
+        android:strokeLineCap="round" />
 
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
-            android:strokeWidth="40"
-            android:strokeColor="@color/logo_stroke"
-            android:strokeLineCap="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M404.3,898.8C307.2,722.7 371.2,501.3 547.2,404.3C723.3,307.2 944.7,371.2 1041.7,547.2"
+        android:strokeWidth="100"
+        android:strokeColor="@color/logo_accent"
+        android:strokeLineCap="round" />
 
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M404.3,898.8C307.2,722.7 371.2,501.3 547.2,404.3C723.3,307.2 944.7,371.2 1041.7,547.2"
-            android:strokeWidth="100"
-            android:strokeColor="@color/logo_accent"
-            android:strokeLineCap="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
+        android:strokeWidth="100"
+        android:strokeColor="@color/logo_stroke"
+        android:strokeLineCap="round" />
 
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
-            android:strokeWidth="100"
-            android:strokeColor="@color/logo_stroke"
-            android:strokeLineCap="round" />
-
-        <path
-            android:fillColor="#00000000"
-            android:pathData="M723,723m-153,0a153,153 0,1 1,306 0a153,153 0,1 1,-306 0"
-            android:strokeWidth="150"
-            android:strokeColor="@color/logo_stroke" />
-
-    </group>
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M723,723m-153,0a153,153 0,1 1,306 0a153,153 0,1 1,-306 0"
+        android:strokeWidth="150"
+        android:strokeColor="@color/logo_stroke" />
 
 </vector>

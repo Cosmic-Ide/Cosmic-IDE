@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="logo_background">@color/dark_colorBackground</color>
-    <color name="logo_stroke">@color/dark_colorOnBackground</color>
-    <color name="logo_accent">@color/dark_colorPrimary</color>
-</resources>

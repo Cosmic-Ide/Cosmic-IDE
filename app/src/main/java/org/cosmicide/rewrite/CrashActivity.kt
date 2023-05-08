@@ -8,7 +8,7 @@ import org.cosmicide.rewrite.util.CommonUtils
 class CrashActivity : AppCompatActivity() {
 
     companion object {
-        const val REPORT_CRASH = "REPORT_CRASH"
+        const val REPORT_CRASH = "org.cosmicide.rewrite.REPORT_CRASH"
         const val DEFAULT_ERROR_MESSAGE = "Unable to get stacktrace."
     }
 

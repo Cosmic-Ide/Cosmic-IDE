@@ -49,6 +49,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -65,7 +66,6 @@ dependencies {
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
-    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("org.slf4j:slf4j-simple:2.0.7")
 
     implementation(projects.buildTools)

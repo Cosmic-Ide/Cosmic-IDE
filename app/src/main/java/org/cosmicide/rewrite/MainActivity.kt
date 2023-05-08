@@ -12,9 +12,8 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         installSplashScreen()
-        splashScreen.setSplashScreenTheme(R.style.Theme_CosmicIDERewrite)
+        super.onCreate(savedInstanceState)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

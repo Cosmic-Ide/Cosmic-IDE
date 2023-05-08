@@ -19,14 +19,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CosmicIDERewrite"
+        android:theme="@style/Theme.CosmicIDERewrite.Start"
         android:allowClearUserData="false"
         android:banner="@drawable/banner"
         tools:targetApi="33">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.CosmicIDERewrite">
+            android:theme="@style/Theme.CosmicIDERewrite.Start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -5,14 +5,14 @@
     android:viewportHeight="1445">
 
     <group
-        android:translateX="126"
-        android:translateY="126">
+        android:translateX="96"
+        android:translateY="96">
 
         <path
             android:fillColor="#00000000"
             android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
             android:strokeWidth="40"
-            android:strokeColor="#ffffff"
+            android:strokeColor="@color/logo_stroke"
             android:strokeLineCap="round" />
 
         <path
@@ -26,14 +26,14 @@
             android:fillColor="#00000000"
             android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
             android:strokeWidth="100"
-            android:strokeColor="#ffffff"
+            android:strokeColor="@color/logo_stroke"
             android:strokeLineCap="round" />
 
         <path
             android:fillColor="#00000000"
             android:pathData="M723,723m-153,0a153,153 0,1 1,306 0a153,153 0,1 1,-306 0"
             android:strokeWidth="150"
-            android:strokeColor="#ffffff" />
+            android:strokeColor="@color/logo_stroke" />
 
     </group>
 

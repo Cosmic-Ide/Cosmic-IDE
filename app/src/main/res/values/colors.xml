@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="logo_background">#1F1E2B</color>
+    <color name="logo_stroke">#FFFFFF</color>
     <color name="logo_accent">#7C22D6</color>
 </resources>

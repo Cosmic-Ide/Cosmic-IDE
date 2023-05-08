@@ -10,7 +10,10 @@
     <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite" />
 
     <style name="Theme.CosmicIDERewrite.Start" parent="Theme.SplashScreen">
-       <item name="windowSplashScreenBackground">?attr/colorSurface</item>
+       <item name="windowSplashScreenBackground">@color/logo_background</item>
+       <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
+       <!-- Integer.MAX_VALUE -->
+       <item name="android:windowSplashScreenAnimationDuration">2147483647</item>
        <item name="postSplashScreenTheme">@style/Theme.CosmicIDERewrite</item>
     </style>
 </resources>

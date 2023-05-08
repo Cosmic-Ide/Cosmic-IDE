@@ -1,0 +1,8 @@
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="1500"
+    android:interpolator="@android:anim/linear_interpolator"
+    android:propertyName="rotation"
+    android:repeatCount="-1"
+    android:repeatMode="restart"
+    android:valueFrom="0"
+    android:valueTo="360" />

@@ -4,7 +4,7 @@
     android:viewportWidth="1445"
     android:viewportHeight="1445">
     <path
-        android:fillColor="#1F1E2B"
+        android:fillColor="@color/logo_background"
         android:pathData="M0,0h1445v1445h-1445z" />
     <path
         android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"
@@ -16,7 +16,7 @@
         android:pathData="M404.3,898.8C307.2,722.7 371.2,501.3 547.2,404.3C723.3,307.2 944.7,371.2 1041.8,547.2"
         android:strokeWidth="100"
         android:fillColor="#00000000"
-        android:strokeColor="#7C22D6"
+        android:strokeColor="@color/logo_accent"
         android:strokeLineCap="round" />
     <path
         android:pathData="M723,1087C522,1087 359,924 359,723C359,522 522,359 723,359"

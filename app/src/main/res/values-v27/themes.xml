@@ -1,0 +1,9 @@
+<resources>
+    <style name="Base.V27.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite">
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar">?attr/isLightTheme</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+
+    <style name="Theme.CosmicIDERewrite" parent="Base.V27.CosmicIDERewrite" />
+</resources>

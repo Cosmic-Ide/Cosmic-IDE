@@ -1,6 +1,6 @@
 <resources>
     <style name="Base.V31.CosmicIDERewrite" parent="Base.V27.CosmicIDERewrite">
-        <item name="android:windowSplashScreenBackground">?attr/colorSurface</item>
+        <item name="android:windowSplashScreenBackground">@color/logo_background</item>
         <item name="android:windowSplashScreenBrandingImage">@drawable/banner</item>
     </style>
 

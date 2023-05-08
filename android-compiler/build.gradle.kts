@@ -35,7 +35,7 @@ dependencies {
     implementation("com.android.tools:r8:8.0.34")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("com.github.Cosmic-Ide:fernflower:b3493460fd")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.0")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation(projects.googleJavaFormat)
     implementation(projects.common)
     implementation(projects.project)

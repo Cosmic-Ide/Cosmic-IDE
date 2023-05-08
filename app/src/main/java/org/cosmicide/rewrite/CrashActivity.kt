@@ -9,6 +9,7 @@ class CrashActivity : AppCompatActivity() {
 
     companion object {
         const val REPORT_CRASH = "org.cosmicide.rewrite.REPORT_CRASH"
+        const val STACKTRACE = "stacktrace"
         const val DEFAULT_ERROR_MESSAGE = "Unable to get stacktrace."
     }
 
@@ -24,7 +25,7 @@ class CrashActivity : AppCompatActivity() {
             return
         }
 
-        val trace = extras.getString(REPORT_CRASH, DEFAULT_ERROR_MESSAGE)
+        val trace = extras.getString(STACKTRACE, DEFAULT_ERROR_MESSAGE)
         binding.errorText.text = trace
 
         binding.copyButton.setOnClickListener {

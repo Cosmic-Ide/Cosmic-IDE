@@ -52,7 +52,7 @@ class App : Application() {
         runCatching {
             val intent = Intent().apply {
                 action = CrashActivity.REPORT_CRASH
-                putExtra("trace", Log.getStackTraceString(th))
+                putExtra(CrashActivity.STACKTRACE, Log.getStackTraceString(th))
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)

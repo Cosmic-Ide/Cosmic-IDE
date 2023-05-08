@@ -32,7 +32,7 @@
     <color name="light_colorErrorContainer">#ffffdad6</color>
     <color name="light_colorInverseOnSurface">#fff5eff4</color>
     <color name="light_colorInverseSurface">#ff322f33</color>
-    <color name="light_coloronBackground">#ff1d1b1e</color>
+    <color name="light_colorOnBackground">#ff1d1b1e</color>
     <color name="light_colorOnError">#ffffffff</color>
     <color name="light_colorOnErrorContainer">#ff410002</color>
     <color name="light_colorOnPrimary">#ffffffff</color>

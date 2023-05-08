@@ -1,7 +1,9 @@
 package org.cosmicide.rewrite
 
 import android.app.Application
+import android.content.Intent
 import android.content.res.Configuration
+import android.util.Log
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -16,24 +18,49 @@ import kotlinx.coroutines.launch
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
+import java.lang.Thread.UncaughtExceptionHandler
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.system.exitProcess
 
 class App : Application() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
 
     private lateinit var indexFile: File
 
     override fun onCreate() {
+        uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable -> handleCrash(thread, throwable) }
+
         super.onCreate()
+
         DynamicColors.applyToActivitiesIfAvailable(this)
-        FileUtil.init(this)
+
+        FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
+
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
         extractFiles()
+
         disableModules()
         scope.launch { loadTextmateTheme() }
+    }
+
+    private fun handleCrash(thread: Thread, th: Throwable) {
+        runCatching {
+            val intent = Intent().apply {
+                action = CrashActivity.REPORT_CRASH
+                putExtra("trace", Log.getStackTraceString(th))
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+            uncaughtExceptionHandler?.uncaughtException(thread, th)
+            exitProcess(1)
+        }.onFailure {
+            Log.e("App", "Unable to show crash activity. $it")
+        }
     }
 
     private fun extractFiles() {

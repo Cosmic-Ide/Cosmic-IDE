@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_close"
+        android:icon="@drawable/baseline_close_24"
+        android:title="Close app"
+        app:showAsAction="always" />
+
+</menu>

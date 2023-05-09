@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Cosmic IDE Rewrite</string>
+    <string name="action_settings">Настройки</string>
+    <string name="next">Следующий</string>
+    <string name="import_project">Импортный проект</string>
+    <string name="project">Проект</string>
+    <string name="new_project">Новый проект</string>
+    <string name="use_kotlin_template">Используйте  </string>
+    <string name="enter_project_name">Введите название проекта</string>
+    <string name="project_name">Название проекта</string>
+    <string name="editor">Редактор</string>
+    <string name="enter_package_name">Введите имя пакета</string>
+    <string name="create_project">Создать проект</string>
+    <string name="project_path">Путь проекта</string>
+    <string name="action_compile">Компиляция</string>
+    <string name="compile_info"> информация</string>
+    <string name="project_output">Выход проекта</string>
+    <string name="reload">Перезагрузка</string>
+    <string name="cancel">Отмена</string>
+</resources>

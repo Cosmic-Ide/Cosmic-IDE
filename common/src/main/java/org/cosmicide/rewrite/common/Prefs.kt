@@ -25,7 +25,7 @@ object Prefs {
     val tabSize: Int
         get() = prefs.getInt("tab_size", 4)
     val compilerJavaVersion: Int
-        get() = prefs.getInt("java_version", 17)
+        get() = Integer.parseInt(prefs.getString("java_version", "17"))
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)
     val editorFontSize: Float

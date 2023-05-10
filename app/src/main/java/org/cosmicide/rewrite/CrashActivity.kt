@@ -22,7 +22,7 @@ class CrashActivity : AppCompatActivity() {
          * @param context the context for start this activity
          * @param stackTrace the stack trace string to display
          */
-        fun newIntent(context: String, stackTrace: String): Intent {
+        fun newIntent(context: Context, stackTrace: String): Intent {
             val intent = Intent(context, CrashActivity::class.java)
             intent.putExtra(STACKTRACE, stackTrace)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

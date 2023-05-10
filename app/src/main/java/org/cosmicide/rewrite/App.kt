@@ -51,7 +51,7 @@ class App : Application() {
     }
 
     private fun getTheme(theme: String): Int {
-        when (theme) {
+        return when (theme) {
             "light" -> AppCompatDelegate.MODE_NIGHT_NO
             "dark" -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM

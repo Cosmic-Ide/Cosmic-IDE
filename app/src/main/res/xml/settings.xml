@@ -2,6 +2,18 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <PreferenceCategory android:title="Appearance">
+
+        <ListPreference
+            android:key="app_theme"
+            android:title="Theme"
+            android:entries="@array/app_theme_entries"
+            android:entryValues="@array/app_theme_entries"
+            android:defaultValue="auto"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Editor">
 
         <SeekBarPreference

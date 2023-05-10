@@ -12,4 +12,10 @@
         <item>16</item>
         <item>17</item>
     </string-array>
+
+    <string-array name="app_theme_entries">
+        <item>auto</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
 </resources>

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.content.res.Configuration
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -36,16 +37,25 @@ class App : Application() {
         uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable -> handleCrash(thread, throwable) }
 
-        DynamicColors.applyToActivitiesIfAvailable(this)
-
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
+
+        AppCompatDelegate.setDefaultNightMode(getTheme(Prefs.appTheme))
+        DynamicColors.applyToActivitiesIfAvailable(this)
 
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
         extractFiles()
         disableModules()
 
         scope.launch { loadTextmateTheme() }
+    }
+
+    private fun getTheme(theme: String): Int {
+        when (theme) {
+            "light" -> AppCompatDelegate.MODE_NIGHT_NO
+            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
     }
 
     private fun handleCrash(thread: Thread, throwable: Throwable) {

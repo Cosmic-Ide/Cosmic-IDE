@@ -19,6 +19,9 @@ object Prefs {
         prefs = PreferenceManager.getDefaultSharedPreferences(context)
     }
 
+    val appTheme: String
+        get() = prefs.getString("app_theme", "auto") ?: "auto"
+
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", false)
 

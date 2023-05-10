@@ -22,8 +22,8 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
-import org.cosmicide.rewrite.editor.JavaLanguage
-import org.cosmicide.rewrite.editor.KotlinLanguage
+import org.cosmicide.rewrite.editor.language.JavaLanguage
+import org.cosmicide.rewrite.editor.language.KotlinLanguage
 import org.cosmicide.rewrite.extension.setCompletionLayout
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel

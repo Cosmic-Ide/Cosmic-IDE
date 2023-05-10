@@ -1,11 +1,10 @@
-package org.cosmicide.rewrite.editor
+package org.cosmicide.rewrite.editor.language
 
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.WorkerThread
 import com.tyron.kotlin.completion.KotlinEnvironment
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
@@ -18,12 +17,11 @@ class KotlinLanguage(
     private val editor: CodeEditor,
     private val project: Project,
     private val file: File
-) : TextMateLanguage(
+) : IdeLanguage(
     grammarRegistry.findGrammar("source.kotlin"),
     grammarRegistry.findLanguageConfiguration("source.kotlin"),
     grammarRegistry,
-    themeRegistry,
-    false
+    themeRegistry
 ) {
 
     private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
@@ -40,13 +38,14 @@ class KotlinLanguage(
         }
     }
 
-    @WorkerThread
     override fun requireAutoComplete(
         content: ContentReference,
         position: CharPosition,
         publisher: CompletionPublisher,
         extraArguments: Bundle
     ) {
+        super.requireAutoComplete(content, position, publisher, extraArguments)
+
         try {
             val text = editor.text.toString()
             val ktFile = kotlinEnvironment.updateKotlinFile(fileName, text)
@@ -58,10 +57,9 @@ class KotlinLanguage(
             publisher.addItems(itemList)
         } catch (e: Throwable) {
             if (e !is InterruptedException) {
-                Log.e(TAG, "Failed to fetch code suggestions", e)
+                Log.e(TAG, "Failed to fetch code completions", e)
             }
         }
-        super.requireAutoComplete(content, position, publisher, extraArguments)
     }
 
     companion object {

@@ -36,7 +36,7 @@
         </activity>
         <activity
             android:name=".CrashActivity"
-            android:exported="true"
+            android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="org.cosmicide.rewrite.REPORT_CRASH" />

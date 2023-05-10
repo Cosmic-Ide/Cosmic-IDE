@@ -31,10 +31,10 @@ class App : Application() {
     private lateinit var indexFile: File
 
     override fun onCreate() {
+        super.onCreate()
+
         uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable -> handleCrash(thread, throwable) }
-
-        super.onCreate()
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 

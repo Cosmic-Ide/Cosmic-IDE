@@ -60,7 +60,7 @@ class App : Application() {
 
     private fun handleCrash(thread: Thread, throwable: Throwable) {
         runCatching {
-            val intent = CrashActivity.newIntent(throwable.stackTraceToString())
+            val intent = CrashActivity.newIntent(this, throwable.stackTraceToString())
             startActivity(intent)
             uncaughtExceptionHandler?.uncaughtException(thread, throwable)
             exitProcess(1)

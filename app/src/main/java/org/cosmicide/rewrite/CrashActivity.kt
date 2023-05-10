@@ -1,5 +1,6 @@
 package org.cosmicide.rewrite
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -14,16 +15,15 @@ class CrashActivity : AppCompatActivity() {
     companion object {
         const val STACKTRACE = "stacktrace"
         const val DEFAULT_ERROR_MESSAGE = "Unable to get stacktrace."
-        const val REPORT_CRASH = "org.cosmicide.rewrite.REPORT_CRASH"
 
         /**
          * Creates an intent to start this activity with the given stack trace.
          *
+         * @param context the context for start this activity
          * @param stackTrace the stack trace string to display
          */
-        fun newIntent(stackTrace: String): Intent {
-            val intent = Intent()
-            intent.action = REPORT_CRASH
+        fun newIntent(context: String, stackTrace: String): Intent {
+            val intent = Intent(context, CrashActivity::class.java)
             intent.putExtra(STACKTRACE, stackTrace)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             return intent

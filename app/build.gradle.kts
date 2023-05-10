@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -66,8 +65,6 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("org.slf4j:slf4j-simple:2.0.7")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
     implementation(projects.buildTools)
     implementation(projects.common)

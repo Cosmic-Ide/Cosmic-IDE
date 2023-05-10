@@ -8,7 +8,7 @@
             android:key="app_theme"
             android:title="Theme"
             android:entries="@array/app_theme_entries"
-            android:entryValues="@array/app_theme_entries"
+            android:entryValues="@array/app_theme_entry_values"
             android:defaultValue="auto"
             app:useSimpleSummaryProvider="true" />
 

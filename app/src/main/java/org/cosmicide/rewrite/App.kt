@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
+import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -21,21 +22,14 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.FileNotFoundException
-import kotlin.system.exitProcess
 
 class App : Application() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
-
     private lateinit var indexFile: File
 
     override fun onCreate() {
         super.onCreate()
-
-        uncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { thread, throwable -> handleCrash(thread, throwable) }
 
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
@@ -48,6 +42,10 @@ class App : Application() {
         disableModules()
 
         scope.launch { loadTextmateTheme() }
+
+        CrashConfig.Builder.create()
+            .errorActivity(CrashActivity::class.java)
+            .apply()
     }
 
     private fun getTheme(theme: String): Int {
@@ -55,17 +53,6 @@ class App : Application() {
             "light" -> AppCompatDelegate.MODE_NIGHT_NO
             "dark" -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-    }
-
-    private fun handleCrash(thread: Thread, throwable: Throwable) {
-        runCatching {
-            val intent = CrashActivity.newIntent(this, throwable.stackTraceToString())
-            startActivity(intent)
-            uncaughtExceptionHandler?.uncaughtException(thread, throwable)
-            exitProcess(1)
-        }.onFailure {
-            Log.e("App", "Unable to show crash activity. $it")
         }
     }
 
@@ -110,8 +97,9 @@ class App : Application() {
     }
 
     private fun applyThemeBasedOnConfiguration(config: Configuration) {
+        val themeFromPrefs = getTheme(Prefs.appTheme)
         val themeName =
-            if (config.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES) {
+            if (config.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES && themeFromPrefs == AppCompatDelegate.MODE_NIGHT_YES) {
                 DARCULA_THEME_NAME
             } else {
                 QUIET_LIGHT_THEME_NAME

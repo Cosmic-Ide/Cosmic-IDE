@@ -37,7 +37,8 @@
         <activity
             android:name=".CrashActivity"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:process=":error_activity" />
     </application>
 
 </manifest>

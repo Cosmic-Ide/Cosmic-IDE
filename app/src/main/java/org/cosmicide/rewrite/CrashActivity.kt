@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.developer.crashx.config.CrashConfig
 import org.cosmicide.rewrite.databinding.ActivityCrashBinding
 import org.cosmicide.rewrite.util.CommonUtils
 
@@ -12,23 +13,7 @@ import org.cosmicide.rewrite.util.CommonUtils
  */
 class CrashActivity : AppCompatActivity() {
 
-    companion object {
-        const val STACKTRACE = "stacktrace"
-        const val DEFAULT_ERROR_MESSAGE = "Unable to get stacktrace."
-
-        /**
-         * Creates an intent to start this activity with the given stack trace.
-         *
-         * @param context the context for start this activity
-         * @param stackTrace the stack trace string to display
-         */
-        fun newIntent(context: Context, stackTrace: String): Intent {
-            val intent = Intent(context, CrashActivity::class.java)
-            intent.putExtra(STACKTRACE, stackTrace)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            return intent
-        }
-    }
+    private var config: CrashConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +21,13 @@ class CrashActivity : AppCompatActivity() {
         val binding = ActivityCrashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val extras = intent.extras
-        if (extras == null) {
+        config = com.developer.crashx.CrashActivity.getConfigFromIntent(intent)
+        if (config == null) {
             finishAffinity()
             return
         }
 
-        binding.errorText.text = extras.getString(STACKTRACE, DEFAULT_ERROR_MESSAGE)
+        binding.errorText.text = com.developer.crashx.CrashActivity.getStackTraceFromIntent(intent)
 
         binding.copyButton.setOnClickListener {
             CommonUtils.copyToClipboard(it.context, binding.errorText.text.toString())
@@ -60,6 +45,6 @@ class CrashActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        finishAffinity()
+        com.developer.crashx.CrashActivity.closeApplication(this, config!!)
     }
 }

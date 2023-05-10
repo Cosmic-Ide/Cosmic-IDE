@@ -20,4 +20,7 @@
     <string name="project_output">Project output</string>
     <string name="reload">Reload</string>
     <string name="cancel">Cancel</string>
+    <string name="pref_theme_auto">System theme</string>
+    <string name="pref_theme_light">Light theme</string>
+    <string name="pref_theme_dark">Dark theme</string>
 </resources>

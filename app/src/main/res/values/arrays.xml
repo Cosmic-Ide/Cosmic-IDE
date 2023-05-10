@@ -18,4 +18,10 @@
         <item>light</item>
         <item>dark</item>
     </string-array>
+
+    <string-array name="app_theme_entry_values">
+        <item>@string/pref_theme_auto</item>
+        <item>@string/pref_theme_light</item>
+        <item>@string/pref_theme_dark</item>
+    </string-array>
 </resources>

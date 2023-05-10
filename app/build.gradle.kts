@@ -57,7 +57,7 @@ dependencies {
     implementation("com.github.TutorialsAndroid:crashx:v6.0.19")
     implementation("io.github.dingyi222666:treeview:1.2.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.github.xxdark:ssvm:6e795448e4")
     implementation("com.android.tools:r8:8.0.40")

@@ -1,6 +1,7 @@
 package org.cosmicide.rewrite.compile
 
 import org.cosmicide.build.BuildReporter
+import org.cosmicide.build.Task
 import org.cosmicide.build.dex.D8Task
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
@@ -12,80 +13,72 @@ import org.cosmicide.project.Project
  * @property project The project to be compiled.
  * @property reporter The [BuildReporter] to report the build progress and status.
  */
-class Compiler(val project: Project, val reporter: BuildReporter) {
+class Compiler(
+    private val project: Project,
+    private val reporter: BuildReporter
+) {
     companion object {
         var compileListener: (Class<*>, BuildStatus) -> Unit = { _, _ -> }
+
+        fun initializeCache(project: Project) {
+            CompilerCache.saveCache(JavaCompileTask(project))
+            CompilerCache.saveCache(KotlinCompiler(project))
+            CompilerCache.saveCache(D8Task(project))
+        }
     }
 
     init {
-        CompilerCache.saveCache(JavaCompileTask(project))
-        CompilerCache.saveCache(KotlinCompiler(project))
-        CompilerCache.saveCache(D8Task(project))
+        initializeCache(project)
     }
 
     /**
-     * Compiles Java and Kotlin code and converts class files to dex format.
+     * Compiles Kotlin and Java code and converts class files to dex format.
      */
     fun compile() {
         try {
-            compileKotlin()
-            compileJava()
-            convertClassFilesToDex()
-            reportSuccess()
+            compileKotlinCode()
+            compileJavaCode()
+            convertClassFilesToDexFormat()
+            reporter.reportSuccess()
         } catch (e: Exception) {
-            reportFailure(e)
+            reporter.reportError("Build failed: ${e.message}")
         }
     }
 
-    private fun compileJava() {
-        reporter.reportInfo("Compiling Java code...")
-        compileListener(JavaCompileTask::class.java, BuildStatus.STARTED)
-        CompilerCache.getCache<JavaCompileTask>().execute(reporter)
-        compileListener(JavaCompileTask::class.java, BuildStatus.FINISHED)
+    private inline fun <reified T : Task> compileTask(message: String) {
+        val task = CompilerCache.getCache<T>()
 
-        if (reporter.failure) {
-            throw Exception("Failed to compile Java code.")
+        with (reporter) {
+            reportInfo(message)
+            compileListener(T::class.java, BuildStatus.STARTED)
+            task.execute(this)
+            compileListener(T::class.java, BuildStatus.FINISHED)
+
+            if (failure) {
+                throw Exception("Failed to compile ${T::class.simpleName} code.")
+            }
+
+            reportInfo("Successfully compiled ${T::class.simpleName} code.")
         }
-
-        reporter.reportInfo("Successfully compiled Java code.")
     }
 
-    private fun compileKotlin() {
-        reporter.reportInfo("Compiling Kotlin code...")
-        compileListener(KotlinCompiler::class.java, BuildStatus.STARTED)
-        CompilerCache.getCache<KotlinCompiler>().execute(reporter)
-        compileListener(KotlinCompiler::class.java, BuildStatus.FINISHED)
-
-        if (reporter.failure) {
-            throw Exception("Failed to compile Kotlin code.")
-        }
-
-        reporter.reportInfo("Successfully compiled Kotlin code.")
+    private fun compileJavaCode() {
+        compileTask<JavaCompileTask>("Compiling Java code")
     }
 
-    private fun convertClassFilesToDex() {
-        reporter.reportInfo("Converting class files to dex format...")
-        compileListener(D8Task::class.java, BuildStatus.STARTED)
-        CompilerCache.getCache<D8Task>().execute(reporter)
-        compileListener(D8Task::class.java, BuildStatus.FINISHED)
-
-        if (reporter.failure) {
-            throw Exception("Failed to compile dex files.")
-        }
-
-        reporter.reportInfo("Successfully converted class files to dex format.")
+    private fun compileKotlinCode() {
+        compileTask<KotlinCompiler>("Compiling Kotlin code")
     }
 
-    private fun reportSuccess() {
-        reporter.reportSuccess()
+    private fun convertClassFilesToDexFormat() {
+        compileTask<D8Task>("Converting class files to dex format")
     }
 
-    private fun reportFailure(e: Exception) {
-        reporter.reportError("Build failed: ${e.message}")
-    }
-
-    enum class BuildStatus {
-        STARTED,
-        FINISHED
+    sealed class BuildStatus {
+        object JAVA_COMPILING : BuildStatus()
+        object KOTLIN_COMPILING : BuildStatus()
+        object CONVERTING_TO_DEX : BuildStatus()
+        object STARTED : BuildStatus()
+        object FINISHED : BuildStatus()
     }
 }

@@ -4,8 +4,8 @@ import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
@@ -23,7 +23,7 @@ import kotlin.io.path.name
 class D8Task(val project: Project) : Task {
 
     companion object {
-        var MIN_API_LEVEL = 26
+        const val MIN_API_LEVEL = 26
         val COMPILATION_MODE = CompilationMode.DEBUG
     }
 
@@ -52,35 +52,27 @@ class D8Task(val project: Project) : Task {
         // Compile libraries
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory) {
-            val toDex = mutableListOf<Path>()
             val libDexDir = File(project.buildDir, "libs").apply { mkdirs() }
-            // Check if all libs have been pre-dexed or not
-            libDir.listFiles()?.forEach { lib ->
+            libDir.listFiles { file -> file.extension == "jar" }.mapNotNull { lib ->
                 val outDex = File(libDexDir, lib.nameWithoutExtension + ".dex")
-                if (lib.extension == "jar" && !outDex.exists()) {
-                    toDex.add(lib.toPath())
-                }
-            }
-            toDex.forEach {
-                reporter.reportInfo("Compiling library ${it.name}")
+                if (!outDex.exists()) lib.toPath() else null
+            }.forEach { jarFile ->
+                reporter.reportInfo("Compiling library ${jarFile.name}")
                 CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        compileJar(it, libDexDir.toPath())
-                    } catch (e: Throwable) {
-                        reporter.reportError("Error compiling library ${it.name}: ${e.stackTraceToString()}")
-                    }
+                    compileJar(jarFile, libDexDir.toPath(), reporter)
                 }
             }
         }
     }
 
     /**
-     * Compiles a list of jar files to a directory of dex files.
+     * Compiles a jar file to a directory of dex files.
      *
-     * @param jarFile The jar files to compile.
+     * @param jarFile The jar file to compile.
      * @param outputDir The directory to output the dex files to.
+     * @param reporter The BuildReporter instance to report any errors to.
      */
-    fun compileJar(jarFile: Path, outputDir: Path) {
+    fun compileJar(jarFile: Path, outputDir: Path, reporter: BuildReporter) {
         D8.run(
             D8Command.builder()
                 .setMinApiLevel(MIN_API_LEVEL)
@@ -99,7 +91,8 @@ class D8Task(val project: Project) : Task {
      * @return A list of paths to all class files in the directory.
      */
     fun getClassFiles(root: File): List<Path> {
-        return root.walk().filter { it.extension == "class" }.map { it.toPath() }.toList()
+        return root.listFiles { file -> file.extension == "class" }
+            ?.map { it.toPath() } ?: emptyList()
     }
 
 }

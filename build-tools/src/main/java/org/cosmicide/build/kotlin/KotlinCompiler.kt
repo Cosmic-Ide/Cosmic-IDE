@@ -53,9 +53,7 @@ class KotlinCompiler(val project: Project) : Task {
         val classpath = mutableListOf<File>()
 
         project.libDir.walk().forEach {
-            if (it.isFile) {
-                classpath.add(it)
-            }
+            it.takeIf { it.isFile }?.let { classpath.add(it) }
         }
 
         return classpath
@@ -66,18 +64,17 @@ class KotlinCompiler(val project: Project) : Task {
         val plugins = mutableListOf<File>()
 
         pluginDir.walk().forEach {
-            if (it.isFile) {
-                plugins.add(it)
-            }
+            it.takeIf { it.isFile }?.let { plugins.add(it) }
         }
 
         return plugins
     }
 
-    fun createMessageCollector(reporter: BuildReporter): MessageCollector {
-        return object : MessageCollector {
+    fun createMessageCollector(reporter: BuildReporter): MessageCollector =
+        object : MessageCollector {
 
             private var hasErrors: Boolean = false
+
             override fun clear() {}
 
             override fun hasErrors() = hasErrors
@@ -87,7 +84,7 @@ class KotlinCompiler(val project: Project) : Task {
                 message: String,
                 location: CompilerMessageSourceLocation?
             ) {
-                val diagnostic = Diagnostic(message, location)
+                val diagnostic = CompilationDiagnostic(message, location)
                 when (severity) {
                     CompilerMessageSeverity.ERROR, CompilerMessageSeverity.EXCEPTION -> {
                         hasErrors = true
@@ -100,9 +97,8 @@ class KotlinCompiler(val project: Project) : Task {
                 }
             }
         }
-    }
 
-    data class Diagnostic(
+    data class CompilationDiagnostic(
         val message: String,
         val location: CompilerMessageSourceLocation?
     ) {

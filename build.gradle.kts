@@ -5,4 +5,5 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.8.21" apply false
     id("org.jetbrains.kotlin.jvm") version "1.8.21" apply false
     id("org.jetbrains.kotlin.plugin.allopen") version "1.8.20" apply true
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.21" apply false
 }

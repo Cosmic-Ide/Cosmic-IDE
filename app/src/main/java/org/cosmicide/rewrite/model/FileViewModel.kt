@@ -22,6 +22,9 @@ class FileViewModel : ViewModel() {
     val currentFile: File?
         get() = files.value?.getOrNull(currentPosition.value ?: -1)
 
+    /**
+     * Sets the current position to the given position.
+     */
     fun setCurrentPosition(pos: Int) {
         _currentPosition.value = pos
     }
@@ -34,8 +37,9 @@ class FileViewModel : ViewModel() {
     fun addFile(file: File) {
         val index = _files.value?.indexOf(file) ?: -1
         if (index == -1) {
-            _files.value = (_files.value ?: emptyList()) + file
-            setCurrentPosition(_files.value?.lastIndex ?: -1)
+            val newList = _files.value.orEmpty() + file
+            _files.value = newList
+            setCurrentPosition(newList.lastIndex)
         } else {
             setCurrentPosition(index)
         }
@@ -45,10 +49,8 @@ class FileViewModel : ViewModel() {
      * Removes the given file from the list of files.
      */
     fun removeFile(file: File) {
-        _files.value?.toMutableList()?.apply {
-            remove(file)
-            _files.value = this
-        }
+        val newList = _files.value.orEmpty().filterNot { it == file }
+        _files.value = newList
     }
 
     /**
@@ -60,44 +62,46 @@ class FileViewModel : ViewModel() {
     }
 
     /**
-     * Removes all files from the list totally
+     * Removes all files from the list.
+     * Sets the current position to -1 to indicate that there is no current file.
      */
-    fun removeAll(){
+    fun removeAll() {
         _files.value = emptyList()
-        setCurrentPosition(0)
+        setCurrentPosition(-1)
     }
 
     /**
-     * Removes a file immediately close to the position at Right
+     * Removes the file immediately to the right of the given position.
+     * If the given position is the last position in the list, nothing happens.
      */
     fun removeRight(pos: Int) {
-        val currentPos = currentPosition.value!!
+        val currentPos = currentPosition.value ?: return
         if (pos == _files.value?.lastIndex) return
-        _files.value?.toMutableList()?.apply {
-            if (pos == currentPos)
-                removeAt(0)
-            else
-                removeAt(pos + 1)
-            _files.value = this
-            setCurrentPosition(currentPos)
+        val newList = _files.value.orEmpty().toMutableList()
+        if (pos == currentPos) {
+            newList.removeAt(0)
+        } else {
+            newList.removeAt(pos + 1)
         }
+        _files.value = newList
+        setCurrentPosition(currentPos)
     }
 
     /**
-     * Removes a file immediately close to the position at Left
+     * Removes the file immediately to the left of the given position.
+     * If the given position is the first position in the list, nothing happens.
      */
     fun removeLeft(pos: Int) {
+        val currentPos = currentPosition.value ?: return
         if (pos == 0) return
-        val currentPos = currentPosition.value!!
-        _files.value?.toMutableList()?.apply {
-            removeAt(pos - 1)
-            _files.value = this
-            setCurrentPosition(currentPos - 1)
-        }
+        val newList = _files.value.orEmpty().toMutableList()
+        newList.removeAt(pos - 1)
+        _files.value = newList
+        setCurrentPosition(currentPos - 1)
     }
 
     /**
-     * Adds the given file to the list of files and sets it as the current file.
+     * Opens the given file by adding it to the list of files and setting it as the current file.
      * Returns true if the file was successfully added, false otherwise.
      */
     fun openFile(file: File): Boolean {
@@ -109,7 +113,8 @@ class FileViewModel : ViewModel() {
      * Updates the list of files with the given new files.
      * Any files in the new list that are already in the current list are not added again.
      */
-    fun updateFiles(newFiles: MutableList<File>) {
-        _files.value = (_files.value ?: emptyList()) + newFiles.filterNot { it in _files.value.orEmpty() }
+    fun updateFiles(newFiles: List<File>) {
+        val newList = (_files.value.orEmpty() + newFiles).distinctBy { it.absolutePath }
+        _files.value = newList
     }
 }

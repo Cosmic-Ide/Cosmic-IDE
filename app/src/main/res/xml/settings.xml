@@ -10,23 +10,23 @@
             android:summary="Set the font size for the editor"
             android:defaultValue="14"
             android:max="32"
-            android:min="12"
+            app:min="12"
             app:showSeekBarValue="true" />
 
         <SeekBarPreference
-            android:defaultValue="4"
             android:key="tab_size"
-            android:max="16"
-            android:min="1"
-            android:summary="Set the tab size for the editor"
             android:title="Tab Size"
+            android:summary="Set the tab size for the editor"
+            android:defaultValue="4"
+            android:max="14"
+            app:min="2"
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
             android:key="use_spaces"
+            android:title="Use spaces instead of tabs"
             android:summary="Use spaces instead of tabs for indentation in the editor"
-            android:title="Use spaces instead of tabs" />
+            android:defaultValue="false" />
 
     </PreferenceCategory>
 
@@ -34,8 +34,8 @@
 
         <Preference
             android:key="plugins"
-            android:summary="Unsupported for now"
-            android:title="Plugins" />
+            android:title="Plugins"
+            android:summary="Unsupported for now" />
 
         <SwitchPreferenceCompat
             android:key="use_fastjarfs"
@@ -44,10 +44,10 @@
             android:defaultValue="false" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
             android:key="use_ssvm"
+            android:title="Use SSVM for running"
             android:summary="This is a very experimental feature. Use with caution."
-            android:title="Use SSVM for running." />
+            android:defaultValue="false" />
 
         <ListPreference
             android:key="java_version"
@@ -59,8 +59,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="About">
+    <PreferenceCategory android:title="About">
 
         <Preference
             android:key="version"

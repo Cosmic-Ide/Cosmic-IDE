@@ -29,24 +29,17 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
 
     override suspend fun fetchNodeChildData(targetNode: TreeNode<FileSet>): Set<FileSet> =
         withContext(Dispatchers.IO) {
-            val set = targetNode.requireData().subDir
-            set.clear()
-            val files = /*: Array<File> = if (targetNode.requireData().file.isFile) {
-                targetNode.requireData().file.parentFile.listFiles()
-            } else {*/
-                targetNode.requireData().file.listFiles()
-            //}
-            Log.d("Refreshing Data", targetNode.requireData().file.name)
-            Log.d("FILES", "Refreshing")
+            val set = targetNode.requireData().subDir.apply { clear() }
+            val files = targetNode.requireData().file.listFiles()
+            Log.d("Data refreshing", targetNode.requireData().file.name)
             for (file in files) {
-                Log.d("FILES", file.name)
                 when {
                     file.isFile -> set.add(FileSet(file))
                     file.isDirectory -> {
                         val tempSet = mutableSetOf<FileSet>().apply {
-                            addAll(transverseTree(file))
+                            addAll(traverseDirectory(file))
                         }
-                        set.add(FileSet(file, subDir = tempSet))
+                        set.add(FileSet(file, tempSet))
                     }
                 }
             }
@@ -64,7 +57,7 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
         )
     }
 
-    private fun transverseTree(dir: File): Set<FileSet> {
+    private fun traverseDirectory(dir: File): Set<FileSet> {
         val set = mutableSetOf<FileSet>()
         val files = dir.listFiles() ?: return set
         for (file in files) {
@@ -72,9 +65,9 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
                 file.isFile -> set.add(FileSet(file))
                 file.isDirectory -> {
                     val tempSet = mutableSetOf<FileSet>().apply {
-                        addAll(transverseTree(file))
+                        addAll(traverseDirectory(file))
                     }
-                    set.add(FileSet(file, subDir = tempSet))
+                    set.add(FileSet(file, tempSet))
                 }
             }
         }

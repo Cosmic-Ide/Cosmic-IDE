@@ -3,7 +3,7 @@ package org.cosmicide.build
 /**
  * Enum to represent different kinds of build reports.
  */
-enum class KIND {
+enum class BuildReportKind {
     INFO,
     WARNING,
     ERROR,
@@ -16,24 +16,28 @@ enum class KIND {
  * @property kind The kind of build report.
  * @property message The message associated with the build report.
  */
-data class BuildReport(val kind: KIND, val message: String)
+data class BuildReport(val kind: BuildReportKind, val message: String)
 
 /**
  * Class for reporting build progress.
  * @property callback A function that takes a [BuildReport] as input and handles it.
  */
 class BuildReporter(
-    val callback: (BuildReport) -> Unit = { report -> println("${report.kind}: ${report.message}") }
+    val callback: (BuildReport) -> Unit = { report ->
+        println("${report.kind}: ${report.message}")
+    }
 ) {
     var buildSuccess = false
+        private set
     var failure = false
+        private set
 
     /**
      * Generates an informational build report.
      * @param message The message associated with the build report.
      */
     fun reportInfo(message: String) {
-        callback(BuildReport(KIND.INFO, message))
+        callback(BuildReport(BuildReportKind.INFO, message))
     }
 
     /**
@@ -41,7 +45,7 @@ class BuildReporter(
      * @param message The message associated with the build report.
      */
     fun reportWarning(message: String) {
-        callback(BuildReport(KIND.WARNING, message))
+        callback(BuildReport(BuildReportKind.WARNING, message))
     }
 
     /**
@@ -49,7 +53,7 @@ class BuildReporter(
      * @param message The message associated with the build report.
      */
     fun reportError(message: String) {
-        callback(BuildReport(KIND.ERROR, message))
+        callback(BuildReport(BuildReportKind.ERROR, message))
         failure = true
     }
 
@@ -58,7 +62,7 @@ class BuildReporter(
      * @param message The message associated with the build report.
      */
     fun reportLogging(message: String) {
-        callback(BuildReport(KIND.LOGGING, message))
+        callback(BuildReport(BuildReportKind.LOGGING, message))
     }
 
     /**
@@ -66,7 +70,7 @@ class BuildReporter(
      * @param message The message associated with the build report.
      */
     fun reportOutput(message: String) {
-        callback(BuildReport(KIND.OUTPUT, message))
+        callback(BuildReport(BuildReportKind.OUTPUT, message))
     }
 
     /**

@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
-import java.lang.Thread.UncaughtExceptionHandler
 import java.io.File
 import java.io.FileNotFoundException
 import kotlin.system.exitProcess
@@ -26,7 +25,8 @@ import kotlin.system.exitProcess
 class App : Application() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private var uncaughtExceptionHandler: UncaughtExceptionHandler? = null
+
+    private var uncaughtExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
     private lateinit var indexFile: File
 
@@ -43,20 +43,16 @@ class App : Application() {
 
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
         extractFiles()
-
         disableModules()
+
         scope.launch { loadTextmateTheme() }
     }
 
-    private fun handleCrash(thread: Thread, th: Throwable) {
+    private fun handleCrash(thread: Thread, throwable: Throwable) {
         runCatching {
-            val intent = Intent().apply {
-                action = CrashActivity.REPORT_CRASH
-                putExtra(CrashActivity.STACKTRACE, Log.getStackTraceString(th))
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            val intent = CrashActivity.newIntent(throwable.stackTraceToString())
             startActivity(intent)
-            uncaughtExceptionHandler?.uncaughtException(thread, th)
+            uncaughtExceptionHandler?.uncaughtException(thread, throwable)
             exitProcess(1)
         }.onFailure {
             Log.e("App", "Unable to show crash activity. $it")
@@ -88,6 +84,7 @@ class App : Application() {
     private fun loadTextmateTheme() {
         val fileProvider = AssetsFileResolver(assets)
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
+
         GrammarRegistry.getInstance().loadGrammars(LANGUAGES_FILE_PATH)
 
         val themeRegistry = ThemeRegistry.getInstance()
@@ -123,8 +120,10 @@ class App : Application() {
         private const val INDEX_FILE_NAME = "index.json"
         private const val ANDROID_JAR = "android.jar"
         private const val KOTLIN_STDLIB = "kotlin-stdlib-1.8.0.jar"
+
         private const val LANGUAGES_FILE_PATH = "textmate/languages.json"
         private const val TEXTMATE_DIR = "textmate"
+
         private const val DARCULA_THEME_FILE_NAME = "darcula.json"
         private const val DARCULA_THEME_NAME = "darcula"
         private const val QUIET_LIGHT_THEME_FILE_NAME = "QuietLight.tmTheme"

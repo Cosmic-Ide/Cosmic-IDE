@@ -4,7 +4,6 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.project.Project
 import java.io.File
-import java.io.FileOutputStream
 import java.util.jar.JarOutputStream
 import java.util.zip.ZipEntry
 
@@ -22,12 +21,12 @@ class JarTask(val project: Project) : Task {
             jarFile.delete()
         }
 
-        JarOutputStream(FileOutputStream(jarFile)).use { jar ->
+        JarOutputStream(jarFile.outputStream()).use { jar ->
             directory.walkTopDown().filter { it.isFile && it.extension == "class" }
                 .forEach { classFile ->
                     val entryName = classFile.relativeTo(directory).path.replace("\\", "/")
                     jar.putNextEntry(ZipEntry(entryName))
-                    classFile.inputStream().use { input ->
+                    classFile.inputStream().buffered().use { input ->
                         input.copyTo(jar)
                     }
                     jar.closeEntry()

@@ -59,7 +59,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             )
 
             val rootItem = FileSet(project.root,
-                transverseTree(project.root) as MutableSet<FileSet>
+                traverseDirectory(project.root) as MutableSet<FileSet>
             )
 
             val generator = FileTreeNodeGenerator(rootItem)
@@ -207,7 +207,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }.commit()
     }
 
-    private fun transverseTree(dir: File) : Set<FileSet>{
+    private fun traverseDirectory(dir: File): Set<FileSet> {
         val set = mutableSetOf<FileSet>()
         val files = dir.listFiles() ?: return set
         for (file in files) {
@@ -215,9 +215,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 file.isFile -> set.add(FileSet(file))
                 file.isDirectory -> {
                     val tempSet = mutableSetOf<FileSet>().apply {
-                        addAll(transverseTree(file))
+                        addAll(traverseDirectory(file))
                     }
-                    set.add(FileSet(file, subDir = tempSet))
+                    set.add(FileSet(file, tempSet))
                 }
             }
         }

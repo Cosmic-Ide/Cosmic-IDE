@@ -1,7 +1,8 @@
 package org.cosmicide.build
 
 import com.sun.tools.javap.JavapTask
-import java.io.OutputStream
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
 /**
  * A utility object for disassembling Java class files using the javap tool.
@@ -15,20 +16,13 @@ object Javap {
      */
     fun disassemble(classPath: String): String {
         val args = arrayOf("-c", "-l", "-constants", "-verbose", classPath)
-        val outputStream = object : OutputStream() {
-            private val stringBuilder = StringBuilder()
-            override fun write(b: Int) {
-                stringBuilder.append(b.toChar())
-            }
-            override fun toString(): String {
-                return stringBuilder.toString()
-            }
-        }
 
-        val javapTask = JavapTask().apply {
-            handleOptions(args)
-            setLog(outputStream)
-        }
+        val outputStream = ByteArrayOutputStream()
+        val printStream = PrintStream(outputStream)
+
+        val javapTask = JavapTask()
+        javapTask.handleOptions(args)
+        javapTask.setLog(printStream)
         javapTask.run()
 
         return outputStream.toString()

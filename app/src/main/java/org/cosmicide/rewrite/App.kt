@@ -44,8 +44,11 @@ class App : Application() {
         scope.launch { loadTextmateTheme() }
 
         CrashConfig.Builder.create()
-            .errorActivity(CrashActivity::class.java)
             .apply()
+
+        /* CrashConfig.Builder.create()
+            .errorActivity(CrashActivity::class.java)
+            .apply() */
     }
 
     private fun getTheme(theme: String): Int {

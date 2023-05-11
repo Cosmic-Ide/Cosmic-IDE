@@ -93,7 +93,16 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     fileViewModel.currentFile?.writeText(binding.editor.text.toString())
                 }
 
-                override fun onTabReselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                   fileViewModel.setCurrentPosition(tab.position)
+                    val file = fileViewModel.currentFile
+                    if (file?.extension == "class") {
+                        binding.editor.setText(Javap.disassemble(file.absolutePath))
+                    } else {
+                        binding.editor.setText(fileViewModel.currentFile?.readText())
+                    }
+                    setEditorLanguage()
+                }
             })
 
 
@@ -160,12 +169,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     override fun onDestroyView() {
+        saveFile()
         fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }
-                ?.writeText(binding.editor.text.toString())
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
         super.onDestroyView()
+    }
+    
+    private fun saveFile() {
+        fileViewModel.currentPosition.value?.let { pos ->
+            fileViewModel.currentFile?.takeIf { it.exists() }
+                ?.writeText(binding.editor.text.toString())
+        }
     }
 
     private fun configureToolbar() {
@@ -175,6 +190,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.drawer.open()
             }
             setOnMenuItemClickListener {
+                saveFile()
                 when (it.itemId) {
                     R.id.action_compile -> {
                         navigateToCompileInfoFragment()

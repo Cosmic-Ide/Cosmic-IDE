@@ -5,10 +5,16 @@ import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.TextRange
 
-class IdeFormatter(val language: IdeLanguage) : AsyncFormatter() {
+/**
+ * An asynchronous formatter for [IdeLanguage]s.
+ *
+ * @property language The language to use for formatting.
+ */
+class IdeFormatter(private val language: IdeLanguage) : AsyncFormatter() {
 
     override fun formatAsync(text: Content, range: TextRange): TextRange {
-        text.replace(0, text.toString().length, language.formatCode(text, range))
+        val formattedText = language.formatCode(text, range)
+        text.replace(0, text.length, formattedText)
         return range
     }
 

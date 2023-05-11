@@ -21,6 +21,13 @@ import java.net.URI
 import java.nio.file.Path
 import java.util.logging.Level
 
+/**
+ * A custom implementation of an IDE language for Java.
+ *
+ * @property editor A reference to the [CodeEditor] instance for this language.
+ * @property project The [Project] instance for this language.
+ * @property file The [File] instance for this language.
+ */
 class JavaLanguage(
     val editor: CodeEditor,
     val project: Project,
@@ -66,6 +73,7 @@ class JavaLanguage(
                         result.prefix.length,
                         candidate.name
                     )
+
                     val kind = when (candidate.kind) {
                         CompletionCandidate.Kind.CLASS -> CompletionItemKind.Class
                         CompletionCandidate.Kind.INTERFACE -> CompletionItemKind.Interface

@@ -13,6 +13,13 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import org.cosmicide.project.Project
 import java.io.File
 
+/**
+ * A custom implementation of an IDE language for Kotlin.
+ *
+ * @property editor A reference to the [CodeEditor] instance for this language.
+ * @property project The [Project] instance for this language.
+ * @property file The [File] instance for this language.
+ */
 class KotlinLanguage(
     private val editor: CodeEditor,
     private val project: Project,
@@ -23,15 +30,12 @@ class KotlinLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-
     private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
     private var fileName: String = file.name
 
     init {
         try {
-            val ktFile = kotlinEnvironment.updateKotlinFile(
-                file.absolutePath, editor.text.toString()
-            )
+            val ktFile = kotlinEnvironment.updateKotlinFile(file.absolutePath, editor.text.toString())
             fileName = ktFile.name
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update Kotlin file", e)

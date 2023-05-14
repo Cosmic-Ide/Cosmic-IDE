@@ -70,12 +70,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         }
 
         binding.infoEditor.apply {
-            colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
             isWordwrap = true
-            setTextSize(Prefs.editorFontSize)
-            setFont()
         }
 
         binding.toolbar.title = "Running ${project.name}"

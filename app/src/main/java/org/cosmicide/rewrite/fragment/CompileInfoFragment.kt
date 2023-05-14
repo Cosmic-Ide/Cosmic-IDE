@@ -47,11 +47,8 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.infoEditor.apply {
-            setFont()
-            colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             setEditorLanguage(TextMateLanguage.create("source.build", false))
             editable = false
-            setTextSize(Prefs.editorFontSize)
             isLineNumberEnabled = false
         }
 

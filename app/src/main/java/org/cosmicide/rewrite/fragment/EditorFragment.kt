@@ -45,9 +45,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
-        binding.editor.setTextSize(Prefs.editorFontSize)
-        binding.editor.tabWidth = Prefs.tabSize
-        binding.editor.setCompletionLayout()
 
         lifecycleScope.launch {
             fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]

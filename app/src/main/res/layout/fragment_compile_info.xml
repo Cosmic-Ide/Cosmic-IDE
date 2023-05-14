@@ -20,7 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <io.github.rosemoe.sora.widget.CodeEditor
+    <org.cosmicide.rewrite.editor.IdeEditor
         android:id="@+id/info_editor"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

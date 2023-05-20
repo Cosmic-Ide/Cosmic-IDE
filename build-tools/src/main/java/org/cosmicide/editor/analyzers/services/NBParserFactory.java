@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.editor.analyzers.services;
 
 import com.sun.tools.javac.parser.JavacParser;
@@ -27,6 +34,7 @@ public class NBParserFactory extends ParserFactory {
     private final ScannerFactory scannerFactory;
     private final Names names;
     private final CancelService cancelService;
+
     protected NBParserFactory(Context context) {
         super(context);
         this.scannerFactory = ScannerFactory.instance(context);
@@ -111,8 +119,7 @@ public class NBParserFactory extends ParserFactory {
             //for (name : <collection>) {...}
             //the "name" will be made a type of a variable with name "<error>", with
             //no end position. Inject the end position for the variable:
-            if (result instanceof JCEnhancedForLoop) {
-                JCEnhancedForLoop tree = (JCEnhancedForLoop) result;
+            if (result instanceof JCEnhancedForLoop tree) {
                 if (getEndPos(tree.var) == Position.NOPOS) {
                     endPosTable.storeEnd(tree.var, getEndPos(tree.var.vartype));
                 }

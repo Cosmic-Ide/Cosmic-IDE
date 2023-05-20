@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.rosemoe.sora.langs.textmate
 
 import android.os.Bundle
@@ -13,7 +20,6 @@ import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.editor.language.IdeFormatter
 import org.eclipse.tm4e.core.grammar.IGrammar
-import org.eclipse.tm4e.languageconfiguration.model.AutoClosingPairConditional
 import org.eclipse.tm4e.languageconfiguration.model.LanguageConfiguration
 
 /**
@@ -31,7 +37,13 @@ open class IdeLanguage(
     private val grammarRegistry: GrammarRegistry,
     private val themeRegistry: ThemeRegistry,
     private val createIdentifiers: Boolean = false
-) : TextMateLanguage(grammar, langConfiguration, grammarRegistry, themeRegistry, createIdentifiers) {
+) : TextMateLanguage(
+    grammar,
+    langConfiguration,
+    grammarRegistry,
+    themeRegistry,
+    createIdentifiers
+) {
 
     private val _symbolPairs: SymbolPairMatch by lazy {
         val symbolPair = SymbolPairMatch()
@@ -62,7 +74,8 @@ open class IdeLanguage(
         position: CharPosition,
         publisher: CompletionPublisher,
         extraArguments: Bundle
-    ) {}
+    ) {
+    }
 
     override fun getFormatter(): Formatter {
         return _formatter

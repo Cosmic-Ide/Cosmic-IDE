@@ -1,4 +1,12 @@
+<!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <resources>
+
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:colorBackground">@color/light_colorSurface</item>
         <item name="android:fontFamily">@font/inter</item>
@@ -36,10 +44,8 @@
     <style name="Theme.CosmicIDERewrite" parent="Base.Theme.CosmicIDERewrite" />
 
     <style name="Theme.CosmicIDERewrite.Start" parent="Theme.SplashScreen">
-       <item name="windowSplashScreenBackground">@color/logo_background</item>
-       <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
-       <!-- Integer.MAX_VALUE -->
-       <item name="android:windowSplashScreenAnimationDuration">2147483647</item>
-       <item name="postSplashScreenTheme">@style/Theme.CosmicIDERewrite</item>
+        <item name="windowSplashScreenBackground">@color/logo_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
+        <item name="postSplashScreenTheme">@style/Theme.CosmicIDERewrite</item>
     </style>
 </resources>

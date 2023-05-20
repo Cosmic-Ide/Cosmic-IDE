@@ -1,6 +1,14 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.rewrite.util
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import org.cosmicide.project.Project
 import java.io.File
@@ -51,13 +59,17 @@ class FileIndex(private val project: Project) {
      */
     fun getFiles(): List<File> {
         if (filePath.exists().not()) {
-            filePath.parentFile?.mkdirs()
-            filePath.bufferedWriter().use { it.write("[]") }
             return emptyList()
         }
 
         val json = filePath.readText()
-        val filePaths = Gson().fromJson<List<String>>(json, object : TypeToken<List<String>>() {}.type)
+
+        val filePaths: List<String>
+        try {
+            filePaths = Gson().fromJson(json, object : TypeToken<List<String>>() {}.type)
+        } catch (e: JsonSyntaxException) {
+            return emptyList()
+        }
 
         if (filePaths.isNullOrEmpty()) {
             return emptyList()
@@ -65,6 +77,5 @@ class FileIndex(private val project: Project) {
 
         return filePaths.map { File(it) }
             .filter(File::exists)
-            .distinctBy { it.absolutePath }
     }
 }

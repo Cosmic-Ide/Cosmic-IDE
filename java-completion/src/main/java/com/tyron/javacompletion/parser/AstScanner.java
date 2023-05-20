@@ -1,4 +1,11 @@
 /*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
  *  This file is part of CodeAssist.
  *
  *  CodeAssist is free software: you can redistribute it and/or modify
@@ -22,9 +29,26 @@ import static java.util.stream.Collectors.toList;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
-import com.tyron.javacompletion.model.*;
-import com.tyron.javacompletion.model.util.MethodInvocationEntity;
-import com.sun.source.tree.*;
+import com.sun.source.tree.BlockTree;
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.EnhancedForLoopTree;
+import com.sun.source.tree.ExpressionStatementTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
+import com.sun.source.tree.IdentifierTree;
+import com.sun.source.tree.IfTree;
+import com.sun.source.tree.ImportTree;
+import com.sun.source.tree.LambdaExpressionTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.ModifiersTree;
+import com.sun.source.tree.StatementTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.TypeParameterTree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.tree.DocCommentTable;
@@ -34,6 +58,21 @@ import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCCompilationUnit;
 import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
+import com.tyron.javacompletion.logging.JLogger;
+import com.tyron.javacompletion.model.BlockScope;
+import com.tyron.javacompletion.model.ClassEntity;
+import com.tyron.javacompletion.model.Entity;
+import com.tyron.javacompletion.model.EntityScope;
+import com.tyron.javacompletion.model.FileScope;
+import com.tyron.javacompletion.model.LambdaEntity;
+import com.tyron.javacompletion.model.LambdaTypeReference;
+import com.tyron.javacompletion.model.MethodEntity;
+import com.tyron.javacompletion.model.TypeParameter;
+import com.tyron.javacompletion.model.TypeReference;
+import com.tyron.javacompletion.model.VariableEntity;
+import com.tyron.javacompletion.model.util.MethodInvocationEntity;
+import com.tyron.javacompletion.model.util.NestedRangeMapBuilder;
+import com.tyron.javacompletion.options.IndexOptions;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -43,10 +82,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.lang.model.element.Modifier;
-
-import com.tyron.javacompletion.logging.JLogger;
-import com.tyron.javacompletion.model.util.NestedRangeMapBuilder;
-import com.tyron.javacompletion.options.IndexOptions;
 
 public class AstScanner extends TreePathScanner<Void, EntityScope> {
     private static final List<String> UNAVAILABLE_QUALIFIERS = ImmutableList.of();

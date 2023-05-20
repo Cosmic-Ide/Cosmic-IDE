@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
@@ -20,11 +27,9 @@ import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
-import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.editor.language.JavaLanguage
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
-import org.cosmicide.rewrite.extension.setCompletionLayout
 import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.FileSet
@@ -55,7 +60,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.included.treeview as TreeView<FileSet>
             )
 
-            val rootItem = FileSet(project.root,
+            val rootItem = FileSet(
+                project.root,
                 traverseDirectory(project.root) as MutableSet<FileSet>
             )
 
@@ -92,7 +98,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab) {
-                   fileViewModel.setCurrentPosition(tab.position)
+                    fileViewModel.setCurrentPosition(tab.position)
                     val file = fileViewModel.currentFile
                     if (file?.extension == "class") {
                         binding.editor.setText(Javap.disassemble(file.absolutePath))
@@ -172,7 +178,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
         super.onDestroyView()
     }
-    
+
     private fun saveFile() {
         fileViewModel.currentPosition.value?.let { pos ->
             fileViewModel.currentFile?.takeIf { it.exists() }
@@ -193,6 +199,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         navigateToCompileInfoFragment()
                         true
                     }
+
                     R.id.action_settings -> {
                         navigateToSettingsFragment()
                         true

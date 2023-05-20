@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.rewrite.compile
 
 import org.cosmicide.build.BuildReporter
@@ -6,8 +13,6 @@ import org.cosmicide.build.dex.D8Task
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
 import org.cosmicide.project.Project
-import java.io.OutputStream
-import java.io.PrintStream
 
 /**
  * A class responsible for compiling Java and Kotlin code and converting class files to dex format.
@@ -40,25 +45,18 @@ class Compiler(
         try {
             compileKotlinCode()
             compileJavaCode()
-            println("Starting d8")
-            val pout = System.out
-            System.setOut(PrintStream(object : OutputStream() {
-                override fun write(b: Int) {
-                    pout.print(b.toChar())
-                }
-
-            }))
             convertClassFilesToDexFormat()
             reporter.reportSuccess()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             reporter.reportError("Build failed: ${e.message}")
+            reporter.reportError("Stacktrace: ${e.stackTraceToString()}")
         }
     }
 
     private inline fun <reified T : Task> compileTask(message: String) {
         val task = CompilerCache.getCache<T>()
 
-        with (reporter) {
+        with(reporter) {
             reportInfo(message)
             compileListener(T::class.java, BuildStatus.STARTED)
             task.execute(this)
@@ -85,9 +83,6 @@ class Compiler(
     }
 
     sealed class BuildStatus {
-        object JAVA_COMPILING : BuildStatus()
-        object KOTLIN_COMPILING : BuildStatus()
-        object CONVERTING_TO_DEX : BuildStatus()
         object STARTED : BuildStatus()
         object FINISHED : BuildStatus()
     }

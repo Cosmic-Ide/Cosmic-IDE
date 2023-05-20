@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.rewrite.editor
 
 import android.content.Context
@@ -26,7 +33,7 @@ class IdeEditor @JvmOverloads constructor(
         colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         setCompletionLayout()
         setFont()
-        setInputType(createInputFlags())
+        inputType = createInputFlags()
         updateNonPrintablePaintingFlags()
         updateTextSize()
         updateTabSize()
@@ -34,10 +41,10 @@ class IdeEditor @JvmOverloads constructor(
 
     override fun commitText(text: CharSequence?, applyAutoIndent: Boolean) {
         if (text?.length == 1) {
-            val currentChar = text.toString().getOrNull(getCursor().left)
+            val currentChar = text.toString().getOrNull(cursor.left)
             val c = text[0]
             if (ignoredPairEnds.contains(c) && c == currentChar) {
-                setSelection(getCursor().leftLine, getCursor().leftColumn + 1)
+                setSelection(cursor.leftLine, cursor.leftColumn + 1)
                 return
             }
         }
@@ -46,15 +53,15 @@ class IdeEditor @JvmOverloads constructor(
 
     fun appendText(text: String): Int {
         val content = getText()
-        if (getLineCount() <= 0) {
+        if (lineCount <= 0) {
             return 0
         }
-        var col = content.getColumnCount(getLineCount() - 1)
+        var col = content.getColumnCount(lineCount - 1)
         if (col < 0) {
             col = 0
         }
-        content.insert(getLineCount() - 1, col, text)
-        return getLineCount() - 1
+        content.insert(lineCount - 1, col, text)
+        return lineCount - 1
     }
 
     private fun updateTextSize() {
@@ -68,11 +75,9 @@ class IdeEditor @JvmOverloads constructor(
     }
 
     private fun updateNonPrintablePaintingFlags() {
-        setNonPrintablePaintingFlags(
-            CodeEditor.FLAG_DRAW_WHITESPACE_LEADING
-            or CodeEditor.FLAG_DRAW_WHITESPACE_INNER
-            or CodeEditor.FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE
-        )
+        nonPrintablePaintingFlags = (FLAG_DRAW_WHITESPACE_LEADING
+                or FLAG_DRAW_WHITESPACE_INNER
+                or FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE)
     }
 
     private fun createInputFlags(): Int {

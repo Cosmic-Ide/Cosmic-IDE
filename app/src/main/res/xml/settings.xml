@@ -1,15 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory android:title="Appearance">
 
         <ListPreference
-            android:key="app_theme"
-            android:title="Theme"
+            android:defaultValue="auto"
             android:entries="@array/app_theme_entries"
             android:entryValues="@array/app_theme_entry_values"
-            android:defaultValue="auto"
+            android:key="app_theme"
+            android:title="Theme"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -17,28 +23,28 @@
     <PreferenceCategory android:title="Editor">
 
         <SeekBarPreference
-            android:key="font_size"
-            android:title="Font Size"
-            android:summary="Set the font size for the editor"
             android:defaultValue="14"
+            android:key="font_size"
             android:max="32"
+            android:summary="Set the font size for the editor"
+            android:title="Font Size"
             app:min="12"
             app:showSeekBarValue="true" />
 
         <SeekBarPreference
-            android:key="tab_size"
-            android:title="Tab Size"
-            android:summary="Set the tab size for the editor"
             android:defaultValue="4"
+            android:key="tab_size"
             android:max="14"
+            android:summary="Set the tab size for the editor"
+            android:title="Tab Size"
             app:min="2"
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="use_spaces"
-            android:title="Use spaces instead of tabs"
             android:summary="Use spaces instead of tabs for indentation in the editor"
-            android:defaultValue="false" />
+            android:title="Use spaces instead of tabs" />
 
     </PreferenceCategory>
 
@@ -46,14 +52,14 @@
 
         <Preference
             android:key="plugins"
-            android:title="Plugins"
-            android:summary="Unsupported for now" />
+            android:summary="Unsupported for now"
+            android:title="Plugins" />
 
         <SwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="use_fastjarfs"
-            android:title="Use fast implementation for Jar FS"
             android:summary="This experimental mode may speed up compilation time, but use with caution"
-            android:defaultValue="false" />
+            android:title="Use fast implementation for Jar FS" />
 
 
         <SwitchPreferenceCompat
@@ -63,18 +69,18 @@
             android:title="Use K2 compiler for compilation" />
 
         <SwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="use_ssvm"
-            android:title="Use SSVM for running"
             android:summary="This is a very experimental feature. Use with caution."
-            android:defaultValue="false" />
+            android:title="Use SSVM for running" />
 
         <ListPreference
-            android:key="java_version"
-            android:title="Java Version"
-            android:summary="Select the version of Java to use for compilation"
+            android:defaultValue="17"
             android:entries="@array/java_version_entries"
             android:entryValues="@array/java_version_entries"
-            android:defaultValue="17" />
+            android:key="java_version"
+            android:summary="Select the version of Java to use for compilation"
+            android:title="Java Version" />
 
     </PreferenceCategory>
 

@@ -1,3 +1,10 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.cosmicide.build.java
 
 import com.sun.tools.javac.api.JavacTool
@@ -56,7 +63,7 @@ class JavaCompileTask(val project: Project) : Task {
             fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
             fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
 
-            val options = listOf("-proc:none", "-release", version)
+            val options = listOf("-proc:none", "-source", version, "-target", version)
 
             val task = tool.getTask(
                 object : Writer() {
@@ -66,6 +73,7 @@ class JavaCompileTask(val project: Project) : Task {
                         reporter.reportInfo(sb.toString())
                         sb.clear()
                     }
+
                     override fun write(cbuf: CharArray?, off: Int, len: Int) {
                         sb.appendRange(cbuf!!, off, off + len)
                         reporter.reportInfo(sb.toString())
@@ -89,7 +97,10 @@ class JavaCompileTask(val project: Project) : Task {
 
                 when (diagnostic.kind) {
                     Diagnostic.Kind.ERROR, Diagnostic.Kind.OTHER -> reporter.reportError(message.toString())
-                    Diagnostic.Kind.NOTE, Diagnostic.Kind.WARNING, Diagnostic.Kind.MANDATORY_WARNING -> reporter.reportWarning(message.toString())
+                    Diagnostic.Kind.NOTE, Diagnostic.Kind.WARNING, Diagnostic.Kind.MANDATORY_WARNING -> reporter.reportWarning(
+                        message.toString()
+                    )
+
                     else -> reporter.reportInfo(message.toString())
                 }
             }

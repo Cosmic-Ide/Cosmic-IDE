@@ -76,7 +76,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
-                    fileViewModel.setCurrentPosition(tab.position)
+                    if (fileViewModel.currentPosition.value != tab.position)
+                        fileViewModel.setCurrentPosition(tab.position)
                     val file = fileViewModel.currentFile
                     if (file?.extension == "class") {
                         binding.editor.setText(Javap.disassemble(file.absolutePath))
@@ -102,7 +103,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
             })
 
-
             fileViewModel.files.observe(viewLifecycleOwner) { files ->
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
@@ -112,7 +112,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
                     binding.tabLayout.apply {
-                        addTab(tab)
+                        addTab(tab, false)
                     }
                 }
             }

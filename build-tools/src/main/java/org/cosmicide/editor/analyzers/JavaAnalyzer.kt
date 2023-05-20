@@ -150,7 +150,7 @@ class JavaAnalyzer(
     private fun getSourceFiles(): List<JavaFileObject> {
         val sourceFiles = mutableListOf<JavaFileObject>()
 
-        project.srcDir.invoke().walk().forEach {
+        project.srcDir.walk().forEach {
             if (it.extension == "java") {
                 val cache = Cache.getCache(it)
                 if (cache == null || cache.lastModified < it.lastModified()) {

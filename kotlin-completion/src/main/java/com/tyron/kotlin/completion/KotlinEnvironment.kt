@@ -19,10 +19,13 @@
 package com.tyron.kotlin.completion
 
 import com.intellij.psi.PsiElement
-import com.intellij.psi.tree.TokenSet
 import com.tyron.kotlin.completion.codeInsight.ReferenceVariantsHelper
 import com.tyron.kotlin.completion.model.Analysis
-import com.tyron.kotlin.completion.util.*
+import com.tyron.kotlin.completion.util.IdeDescriptorRenderersScripting
+import com.tyron.kotlin.completion.util.getResolutionScope
+import com.tyron.kotlin.completion.util.importableFqName
+import com.tyron.kotlin.completion.util.isVisible
+import com.tyron.kotlin.completion.util.logTime
 import com.tyron.kotlin_completion.util.PsiUtils
 import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
@@ -30,18 +33,42 @@ import org.cosmicide.project.Project
 import org.cosmicide.rewrite.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.analyzer.AnalysisResult
+import org.jetbrains.kotlin.build.DEFAULT_KOTLIN_SOURCE_FILES_EXTENSIONS
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
-import org.jetbrains.kotlin.cli.jvm.compiler.*
+import org.jetbrains.kotlin.cli.jvm.compiler.CliBindingTrace
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
+import org.jetbrains.kotlin.cli.jvm.compiler.TopDownAnalyzerFacadeForJVM
+import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
-import org.jetbrains.kotlin.config.*
+import org.jetbrains.kotlin.config.AnalysisFlags
+import org.jetbrains.kotlin.config.ApiVersion
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
+import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.JVMConfigurationKeys
+import org.jetbrains.kotlin.config.LanguageFeature
+import org.jetbrains.kotlin.config.LanguageVersion
+import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.container.getService
-import org.jetbrains.kotlin.descriptors.*
+import org.jetbrains.kotlin.descriptors.ClassDescriptor
+import org.jetbrains.kotlin.descriptors.ConstructorDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptor
+import org.jetbrains.kotlin.descriptors.DeclarationDescriptorWithVisibility
+import org.jetbrains.kotlin.descriptors.FunctionDescriptor
+import org.jetbrains.kotlin.descriptors.ModuleDescriptor
+import org.jetbrains.kotlin.descriptors.PackageViewDescriptor
+import org.jetbrains.kotlin.descriptors.PropertyDescriptor
+import org.jetbrains.kotlin.descriptors.TypeParameterDescriptor
+import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.idea.FrontendInternals
-import org.jetbrains.kotlin.lexer.KtKeywordToken
+import org.jetbrains.kotlin.incremental.isKotlinFile
+import org.jetbrains.kotlin.lexer.KtSingleValueToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtElement
+import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtSimpleNameExpression
 import org.jetbrains.kotlin.renderer.ClassifierNamePolicy
 import org.jetbrains.kotlin.renderer.ParameterNameRenderingPolicy
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -54,7 +81,6 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.types.asFlexibleType
 import org.jetbrains.kotlin.types.isFlexible
 import java.io.File
-import java.util.*
 import kotlin.collections.set
 
 data class KotlinEnvironment(
@@ -114,7 +140,7 @@ data class KotlinEnvironment(
                         completionVariantFor(prefix, descriptor)
                     }
                 if (items.size > 50) items.subList(0, 50) else items +
-                        keywordsCompletionVariants(KtTokens.KEYWORDS, prefix)
+                        keywordsCompletionVariants(prefix)
             }
                 ?: emptyList()
         }
@@ -164,7 +190,6 @@ data class KotlinEnvironment(
     }
 
     private fun keywordsCompletionVariants(
-        keywords: TokenSet,
         prefix: String
     ): List<CompletionItem> {
         // Return an empty list if the prefix is empty
@@ -173,8 +198,8 @@ data class KotlinEnvironment(
         val result = mutableListOf<CompletionItem>()
 
         // Iterate over the keywords and add the ones that match the prefix to the result
-        for (token in keywords.types) {
-            if (token is KtKeywordToken && token.value.startsWith(prefix)) {
+        for (token in KtTokens.KEYWORDS.types.map { it as KtSingleValueToken }) {
+            if (token.value.startsWith(prefix)) {
                 result.add(
                     EditorCompletionItem(
                         token.value,
@@ -262,7 +287,7 @@ data class KotlinEnvironment(
                             if (prefix.isNotEmpty()) {
                                 it.identifier.startsWith(prefix)
                             }
-                            true
+                            false
                         },
                         filterOutJavaGettersAndSetters = true,
                         filterOutShadowed = true,
@@ -378,6 +403,7 @@ data class KotlinEnvironment(
                             put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
                             put(JVMConfigurationKeys.USE_FAST_JAR_FILE_SYSTEM, true)
                             put(CommonConfigurationKeys.USE_FIR, true)
+                            put(JVMConfigurationKeys.ENABLE_JVM_PREVIEW, true)
                             put(JVMConfigurationKeys.USE_PSI_CLASS_FILES_READING, false)
                             put(JVMConfigurationKeys.VALIDATE_IR, false)
                             put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, true)
@@ -393,12 +419,14 @@ data class KotlinEnvironment(
                             }
                             val languageVersionSettings = LanguageVersionSettingsImpl(
                                 LanguageVersion.KOTLIN_2_0,
-                                ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
+                                ApiVersion.createByLanguageVersion(LanguageVersion.KOTLIN_2_0),
                                 mapOf(
                                     AnalysisFlags.extendedCompilerChecks to false,
                                     AnalysisFlags.ideMode to true,
                                     AnalysisFlags.skipMetadataVersionCheck to true,
                                     AnalysisFlags.skipPrereleaseCheck to true,
+                                    AnalysisFlags.libraryToSourceAnalysis to false,
+                                    AnalysisFlags.eagerResolveOfLightClasses to false
                                 ),
                                 langFeatures
                             )
@@ -414,12 +442,10 @@ data class KotlinEnvironment(
 
         fun get(module: Project): KotlinEnvironment {
             val jars = module.libDir.walk().filter { it.extension == "jar" }.toMutableList()
-            jars.add(File(FileUtil.classpathDir, "android.jar"))
-            jars.add(File(FileUtil.classpathDir, "kotlin-stdlib-1.8.0.jar"))
-            jars.add(File(FileUtil.classpathDir, "kotlin-stdlib-common-1.8.0.jar"))
+            FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach { jars.add(it) }
             val environment = with(jars)
-            module.srcDir.invoke().walk()
-                .filter { it.extension == "kt" }
+            module.srcDir.walk()
+                .filter { it.isKotlinFile(DEFAULT_KOTLIN_SOURCE_FILES_EXTENSIONS) }
                 .forEach {
                     environment.updateKotlinFile(it.absolutePath, it.readText())
                 }

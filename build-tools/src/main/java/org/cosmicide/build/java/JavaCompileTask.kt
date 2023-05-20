@@ -32,7 +32,7 @@ class JavaCompileTask(val project: Project) : Task {
             reporter.reportWarning(e.stackTraceToString())
         }
 
-        val javaFiles = getSourceFiles(project.srcDir.invoke())
+        val javaFiles = getSourceFiles(project.srcDir)
 
         if (javaFiles.isEmpty()) {
             reporter.reportInfo("No java files found. Skipping compilation.")
@@ -56,7 +56,7 @@ class JavaCompileTask(val project: Project) : Task {
             fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
             fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
 
-            val options = listOf("-proc:none", "-source", version, "-target", version)
+            val options = listOf("-proc:none", "-release", version)
 
             val task = tool.getTask(
                 object : Writer() {

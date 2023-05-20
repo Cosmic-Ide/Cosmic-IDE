@@ -6,6 +6,8 @@ import org.cosmicide.build.dex.D8Task
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
 import org.cosmicide.project.Project
+import java.io.OutputStream
+import java.io.PrintStream
 
 /**
  * A class responsible for compiling Java and Kotlin code and converting class files to dex format.
@@ -38,6 +40,14 @@ class Compiler(
         try {
             compileKotlinCode()
             compileJavaCode()
+            println("Starting d8")
+            val pout = System.out
+            System.setOut(PrintStream(object : OutputStream() {
+                override fun write(b: Int) {
+                    pout.print(b.toChar())
+                }
+
+            }))
             convertClassFilesToDexFormat()
             reporter.reportSuccess()
         } catch (e: Exception) {

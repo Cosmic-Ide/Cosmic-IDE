@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.incremental.isJavaFile
 import org.jetbrains.kotlin.incremental.makeIncrementally
 import java.io.File
 
@@ -20,54 +21,51 @@ class KotlinCompiler(val project: Project) : Task {
             noReflect = true
             noStdlib = true
             noJdk = true
+            newInference = true
         }
     }
 
     override fun execute(reporter: BuildReporter) {
-        val kotlinSourceFiles = getSourceFiles(project.srcDir.invoke(), "kt")
-        if (kotlinSourceFiles.isEmpty()) {
+        val sourceFiles = getSourceFiles(project.srcDir, "kt")
+        if (sourceFiles.isEmpty()) {
             reporter.reportInfo("No Kotlin files are present. Skipping Kotlin compilation.")
             return
         }
 
-        val kotlinHome = File(project.binDir, "kotlin").apply { mkdirs() }
+        val kotlinHomeDir = File(project.binDir, "kotlin").apply { mkdirs() }
         val classOutput = File(project.binDir, "classes").apply { mkdirs() }
-        val classpath = collectClasspathFiles()
+        val classpathFiles = collectClasspathFiles()
 
-        val plugins = getKotlinCompilerPlugins().map(File::getAbsolutePath).toTypedArray()
+        val enabledPlugins = getKotlinCompilerPlugins().map(File::getAbsolutePath).toTypedArray()
 
-        args.classpath = (getSystemClasspath() + classpath).joinToString(separator = File.pathSeparator) { it.absolutePath }
-        args.kotlinHome = kotlinHome.absolutePath
-        args.destination = classOutput.absolutePath
-        args.javaSourceRoots = kotlinSourceFiles.filter { it.extension == "java" }.map { it.absolutePath }.toTypedArray()
-        args.moduleName = project.name
-        args.pluginClasspaths = plugins
-        args.useFastJarFileSystem = Prefs.useFastJarFs
+        args.apply {
+            classpath =
+                (getSystemClasspath() + classpathFiles).joinToString(separator = File.pathSeparator) { it.absolutePath }
+            kotlinHome = kotlinHomeDir.absolutePath
+            destination = classOutput.absolutePath
+            javaSourceRoots =
+                sourceFiles.filter { it.isJavaFile() }.map { it.absolutePath }.toTypedArray()
+            moduleName = project.name
+            pluginClasspaths = enabledPlugins
+            useFastJarFileSystem = Prefs.useFastJarFs
+            useFirIC = true
+            useFirLT = true
+            if (Prefs.useK2) languageVersion = "2.0"
+        }
 
         val collector = createMessageCollector(reporter)
 
-        makeIncrementally(kotlinHome, listOf(project.srcDir.invoke()), args, collector)
+        makeIncrementally(kotlinHomeDir, listOf(project.srcDir), args, collector)
     }
 
     fun collectClasspathFiles(): List<File> {
-        val classpath = mutableListOf<File>()
-
-        project.libDir.walk().forEach {
-            it.takeIf { it.isFile }?.let { classpath.add(it) }
-        }
-
-        return classpath
+        return project.libDir.walk().filter(File::isFile).toList()
     }
 
     fun getKotlinCompilerPlugins(): List<File> {
         val pluginDir = File(project.root, "kt_plugins")
-        val plugins = mutableListOf<File>()
 
-        pluginDir.walk().forEach {
-            it.takeIf { it.isFile }?.let { plugins.add(it) }
-        }
-
-        return plugins
+        return pluginDir.walk().filter(File::isFile).toList()
     }
 
     fun createMessageCollector(reporter: BuildReporter): MessageCollector =

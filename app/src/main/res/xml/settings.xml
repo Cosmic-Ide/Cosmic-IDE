@@ -55,6 +55,13 @@
             android:summary="This experimental mode may speed up compilation time, but use with caution"
             android:defaultValue="false" />
 
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="use_k2"
+            android:summary="This experimental mode may speed up compilation time, but use with caution"
+            android:title="Use K2 compiler for compilation" />
+
         <SwitchPreferenceCompat
             android:key="use_ssvm"
             android:title="Use SSVM for running"

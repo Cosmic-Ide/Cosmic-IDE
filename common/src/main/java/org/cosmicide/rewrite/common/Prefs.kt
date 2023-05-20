@@ -25,6 +25,9 @@ object Prefs {
     val useFastJarFs: Boolean
         get() = prefs.getBoolean("use_fastjarfs", false)
 
+    val useK2: Boolean
+        get() = prefs.getBoolean("use_k2", false)
+
     val useSpaces: Boolean
         get() = prefs.getBoolean("use_spaces", false)
 

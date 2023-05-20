@@ -1,7 +1,6 @@
 package org.cosmicide.project
 
 import java.io.File
-import java.io.Serializable
 
 /**
  * Represents a project.
@@ -22,12 +21,10 @@ data class Project(
     /**
      * The source directory of the project, based on the language used.
      */
-    val srcDir: () -> File
-        get() = {
-            when (language) {
-                is Language.Java -> File(root, "src/main/java")
-                is Language.Kotlin -> File(root, "src/main/kotlin")
-            }
+    val srcDir: File
+        get() = when (language) {
+            is Language.Java -> File(root, "src/main/java")
+            is Language.Kotlin -> File(root, "src/main/kotlin")
         }
 
     /**

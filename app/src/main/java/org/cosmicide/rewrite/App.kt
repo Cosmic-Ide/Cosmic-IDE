@@ -1,9 +1,7 @@
 package org.cosmicide.rewrite
 
 import android.app.Application
-import android.content.Intent
 import android.content.res.Configuration
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
@@ -127,7 +125,7 @@ class App : Application() {
 
         private const val DARCULA_THEME_FILE_NAME = "darcula.json"
         private const val DARCULA_THEME_NAME = "darcula"
-        private const val QUIET_LIGHT_THEME_FILE_NAME = "QuietLight.tmTheme"
+        private const val QUIET_LIGHT_THEME_FILE_NAME = "QuietLight.tmTheme.json"
         private const val QUIET_LIGHT_THEME_NAME = "QuietLight"
     }
 }

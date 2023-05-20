@@ -14,7 +14,6 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 import java.io.IOException
-import kotlin.text.Regex
 
 class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     private val viewModel: ProjectViewModel by activityViewModels()
@@ -73,7 +72,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             val projectName = name.replace("\\.", "")
             val root = File(FileUtil.projectDir, projectName).apply { mkdirs() }
             val project = Project(root = root, language = language)
-            val srcDir = project.srcDir.invoke().apply { mkdirs() }
+            val srcDir = project.srcDir.apply { mkdirs() }
             val mainFile = File(srcDir, "Main.${language.extension}")
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()

@@ -4,13 +4,14 @@ import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
 import com.android.tools.r8.D8Command
 import com.android.tools.r8.OutputMode
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
+import org.jetbrains.kotlin.incremental.isClassFile
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.name
@@ -42,6 +43,8 @@ class D8Task(val project: Project) : Task {
                     .addProgramFiles(
                         getClassFiles(project.binDir.resolve("classes"))
                     )
+                    .setDisableDesugaring(true)
+                    .setIntermediate(true)
                     .setOutput(project.binDir.toPath(), OutputMode.DexIndexed)
                     .build()
             )
@@ -53,10 +56,10 @@ class D8Task(val project: Project) : Task {
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory) {
             val libDexDir = File(project.buildDir, "libs").apply { mkdirs() }
-            libDir.listFiles { file -> file.extension == "jar" }.mapNotNull { lib ->
+            libDir.listFiles { file -> file.extension == "jar" }?.mapNotNull { lib ->
                 val outDex = File(libDexDir, lib.nameWithoutExtension + ".dex")
                 if (!outDex.exists()) lib.toPath() else null
-            }.forEach { jarFile ->
+            }?.forEach { jarFile ->
                 reporter.reportInfo("Compiling library ${jarFile.name}")
                 CoroutineScope(Dispatchers.IO).launch {
                     compileJar(jarFile, libDexDir.toPath(), reporter)
@@ -73,15 +76,19 @@ class D8Task(val project: Project) : Task {
      * @param reporter The BuildReporter instance to report any errors to.
      */
     fun compileJar(jarFile: Path, outputDir: Path, reporter: BuildReporter) {
-        D8.run(
-            D8Command.builder()
-                .setMinApiLevel(MIN_API_LEVEL)
-                .setMode(COMPILATION_MODE)
-                .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                .addProgramFiles(jarFile)
-                .setOutput(outputDir, OutputMode.DexIndexed)
-                .build()
-        )
+        try {
+            D8.run(
+                D8Command.builder()
+                    .setMinApiLevel(MIN_API_LEVEL)
+                    .setMode(COMPILATION_MODE)
+                    .addClasspathFiles(getSystemClasspath().map { it.toPath() })
+                    .addProgramFiles(jarFile)
+                    .setOutput(outputDir, OutputMode.DexIndexed)
+                    .build()
+            )
+        } catch (e: Throwable) {
+            reporter.reportError(e.stackTraceToString())
+        }
     }
 
     /**
@@ -91,8 +98,6 @@ class D8Task(val project: Project) : Task {
      * @return A list of paths to all class files in the directory.
      */
     fun getClassFiles(root: File): List<Path> {
-        return root.listFiles { file -> file.extension == "class" }
-            ?.map { it.toPath() } ?: emptyList()
+        return root.walk().filter(File::isClassFile).map { it.toPath() }.toList()
     }
-
 }

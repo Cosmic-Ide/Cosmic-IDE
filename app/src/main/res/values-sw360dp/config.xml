@@ -5,6 +5,8 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <bool name="config_materialPreferenceIconSpaceReserved">false</bool>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <bool name="config_materialPreferenceIconSpaceReserved" tools:ignore="MissingDefaultResource">
+        false
+    </bool>
 </resources>

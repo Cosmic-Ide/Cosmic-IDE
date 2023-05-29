@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "org.cosmicide.build"
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 26

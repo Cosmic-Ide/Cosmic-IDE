@@ -72,18 +72,18 @@ class ViewBinder(
         }
 
         when {
-            node.isChild -> applyDir(holder, node)
-            else -> applyFile(holder, node)
+            node.isChild -> applyDir(node)
+            else -> applyFile(node)
         }
     }
 
-    private fun applyFile(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
+    private fun applyFile(node: TreeNode<FileSet>) {
         with(fileBinding) {
             textView.text = node.name.toString()
         }
     }
 
-    private fun applyDir(holder: TreeView.ViewHolder, node: TreeNode<FileSet>) {
+    private fun applyDir(node: TreeNode<FileSet>) {
         with(dirBinding) {
             textView.text = node.name.toString()
             imageView.animate()
@@ -105,13 +105,13 @@ class ViewBinder(
 
     override fun onClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder) {
         when {
-            node.isChild -> applyDir(holder, node)
+            node.isChild -> applyDir(node)
             else -> fileViewModel.addFile(node.data!!.file)
         }
     }
 
     override fun onToggle(node: TreeNode<FileSet>, isExpand: Boolean, holder: TreeView.ViewHolder) {
-        applyDir(holder, node)
+        applyDir(node)
     }
 
     private fun showMenu(v: View, @MenuRes menuRes: Int, file: File, node: TreeNode<FileSet>) {

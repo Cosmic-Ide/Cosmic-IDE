@@ -34,6 +34,10 @@ class FileIndex(private val project: Project) {
         if (files.isEmpty()) {
             return
         }
+        if (filePath.exists().not()) {
+            filePath.parentFile?.mkdirs()
+            filePath.createNewFile()
+        }
 
         if (currentIndex < 0 || currentIndex >= files.size) {
             throw IndexOutOfBoundsException("Invalid current index: $currentIndex")

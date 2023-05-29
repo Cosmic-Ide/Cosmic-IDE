@@ -23,6 +23,7 @@
  */
 package com.tyron.javacompletion.completion;
 
+import java.util.Locale;
 import java.util.Optional;
 
 enum KeywordCompletionCandidate implements CompletionCandidate {
@@ -80,7 +81,7 @@ enum KeywordCompletionCandidate implements CompletionCandidate {
 
     @Override
     public String getName() {
-        return name().toLowerCase();
+        return name().toLowerCase(Locale.ROOT);
     }
 
     @Override

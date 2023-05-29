@@ -42,15 +42,10 @@ class Compiler(
      * Compiles Kotlin and Java code and converts class files to dex format.
      */
     fun compile() {
-        try {
-            compileKotlinCode()
-            compileJavaCode()
-            convertClassFilesToDexFormat()
-            reporter.reportSuccess()
-        } catch (e: Throwable) {
-            reporter.reportError("Build failed: ${e.message}")
-            reporter.reportError("Stacktrace: ${e.stackTraceToString()}")
-        }
+        compileKotlinCode()
+        compileJavaCode()
+        convertClassFilesToDexFormat()
+        reporter.reportSuccess()
     }
 
     private inline fun <reified T : Task> compileTask(message: String) {

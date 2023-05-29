@@ -18,7 +18,6 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
-import org.jetbrains.kotlin.incremental.isClassFile
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.name
@@ -41,23 +40,20 @@ class D8Task(val project: Project) : Task {
      * @param reporter The BuildReporter instance to report any errors to.
      */
     override fun execute(reporter: BuildReporter) {
-        try {
-            D8.run(
-                D8Command.builder()
-                    .setMinApiLevel(MIN_API_LEVEL)
-                    .setMode(COMPILATION_MODE)
-                    .addClasspathFiles(getSystemClasspath().map { it.toPath() })
-                    .addProgramFiles(
-                        getClassFiles(project.binDir.resolve("classes"))
-                    )
-                    .setDisableDesugaring(true)
-                    .setIntermediate(true)
-                    .setOutput(project.binDir.toPath(), OutputMode.DexIndexed)
-                    .build()
-            )
-        } catch (e: Exception) {
-            reporter.reportError("Error compiling project classes: ${e.message}")
+        val classes = getClassFiles(project.binDir.resolve("classes"))
+        if (classes.isEmpty()) {
+            reporter.reportError("No classes found to compile.")
+            return
         }
+        D8.run(
+            D8Command.builder()
+                .setMinApiLevel(MIN_API_LEVEL)
+                .setMode(COMPILATION_MODE)
+                .addClasspathFiles(getSystemClasspath().map { it.toPath() })
+                .addProgramFiles(classes)
+                .setOutput(project.binDir.toPath(), OutputMode.DexIndexed)
+                .build()
+        )
 
         // Compile libraries
         val libDir = project.libDir
@@ -105,6 +101,6 @@ class D8Task(val project: Project) : Task {
      * @return A list of paths to all class files in the directory.
      */
     fun getClassFiles(root: File): List<Path> {
-        return root.walk().filter(File::isClassFile).map { it.toPath() }.toList()
+        return root.walk().filter { it.extension == "class" }.map { it.toPath() }.toList()
     }
 }

@@ -14,7 +14,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/reload"
-        android:icon="@drawable/outline_refresh_24"
+        android:icon="@drawable/round_refresh_24"
         android:title="@string/reload"
         app:showAsAction="ifRoom" />
 

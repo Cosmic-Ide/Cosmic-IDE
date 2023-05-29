@@ -4,8 +4,6 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="testRunner" value="GRADLE" />
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="jbr-17" />
         <option name="modules">
@@ -18,6 +16,7 @@
             <option value="$PROJECT_DIR$/java-completion" />
             <option value="$PROJECT_DIR$/kotlin-completion" />
             <option value="$PROJECT_DIR$/kotlinc" />
+            <option value="$PROJECT_DIR$/lynx" />
             <option value="$PROJECT_DIR$/project" />
             <option value="$PROJECT_DIR$/util" />
           </set>

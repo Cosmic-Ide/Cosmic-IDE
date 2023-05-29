@@ -38,6 +38,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 
 public class TypeReferenceScanner extends TreeScanner<Void, Void> {
     private static final JLogger logger = JLogger.createForEnclosingClass();
@@ -111,7 +112,7 @@ public class TypeReferenceScanner extends TreeScanner<Void, Void> {
     @Override
     public Void visitPrimitiveType(PrimitiveTypeTree node, Void unused) {
         isPrimitive = true;
-        names.addFirst(node.getPrimitiveTypeKind().name().toLowerCase());
+        names.addFirst(node.getPrimitiveTypeKind().name().toLowerCase(Locale.ROOT));
         return null;
     }
 }

@@ -70,6 +70,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -265,7 +266,7 @@ public class ExpressionSolver {
                 PrimitiveTypeTree node, ExpressionDefinitionScannerParams params) {
             return ImmutableList.of(
                     EntityWithContext.ofStaticEntity(
-                            PrimitiveEntity.get(node.getPrimitiveTypeKind().name().toLowerCase())));
+                            PrimitiveEntity.get(node.getPrimitiveTypeKind().name().toLowerCase(Locale.ROOT))));
         }
 
         @Override

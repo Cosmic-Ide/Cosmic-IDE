@@ -7,10 +7,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
+    android:animateLayoutChanges="false"
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -22,21 +23,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:scaleType="center"
-        android:visibility="gone"
-        app:srcCompat="@drawable/baseline_arrow_forward_ios_24" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="6dp"
-        android:drawableLeft="@drawable/outline_insert_drive_file_24"
+        android:layout_marginStart="6dp"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        android:text="TextView" />
+        app:drawableStartCompat="@drawable/round_insert_drive_file_24"
+        tools:text="File name" />
 </LinearLayout>

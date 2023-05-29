@@ -23,6 +23,8 @@
  */
 package com.tyron.javacompletion.completion;
 
+import java.util.Locale;
+
 /**
  * Logic of matching a completion name with a given completion prefix.
  */
@@ -38,7 +40,7 @@ public class CompletionPrefixMatcher {
                     : MatchLevel.CASE_SENSITIVE_PREFIX;
         }
 
-        if (candidateName.toLowerCase().startsWith(completionPrefix.toLowerCase())) {
+        if (candidateName.toLowerCase(Locale.ROOT).startsWith(completionPrefix.toLowerCase(Locale.ROOT))) {
             return candidateName.length() == completionPrefix.length()
                     ? MatchLevel.CASE_INSENSITIVE_EQUAL
                     : MatchLevel.CASE_INSENSITIVE_PREFIX;

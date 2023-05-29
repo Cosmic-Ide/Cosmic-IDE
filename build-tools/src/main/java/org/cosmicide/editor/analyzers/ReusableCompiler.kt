@@ -151,10 +151,10 @@ class ReusableCompiler {
         task.addTaskListener(currentContext)
         cancelService.setRunning(true)
         checkedOut = false
-        return Borrow(task, currentContext)
+        return Borrow(task)
     }
 
-    inner class Borrow internal constructor(val task: JavacTask, ctx: ReusableContext?) :
+    inner class Borrow internal constructor(val task: JavacTask) :
         AutoCloseable {
         var closed = false
         override fun close() {

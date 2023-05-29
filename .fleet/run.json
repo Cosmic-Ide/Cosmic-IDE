@@ -1,0 +1,11 @@
+{
+  "configurations": [
+    {
+      "type": "gradle",
+      "name": "Build",
+      "tasks": [
+        "assembleDebug"
+      ]
+    }
+  ]
+}

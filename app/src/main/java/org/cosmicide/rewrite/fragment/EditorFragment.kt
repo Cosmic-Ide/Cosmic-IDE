@@ -14,6 +14,8 @@ import androidx.annotation.MenuRes
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.github.pedrovgs.lynx.LynxActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
@@ -21,13 +23,16 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.cosmic.ide.dependency.resolver.getArtifact
 import org.cosmicide.build.Javap
 import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
+import org.cosmicide.rewrite.databinding.NewDependencyBinding
 import org.cosmicide.rewrite.editor.language.JavaLanguage
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
@@ -180,9 +185,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun saveFile() {
-        fileViewModel.currentPosition.value?.let { pos ->
-            fileViewModel.currentFile?.takeIf { it.exists() }
-                ?.writeText(binding.editor.text.toString())
+        fileViewModel.currentFile?.let { file ->
+            if (file.exists()) {
+                file.writeText(binding.editor.text.toString())
+                return
+            }
+            file.createNewFile()
+            file.writeText(binding.editor.text.toString())
         }
     }
 
@@ -202,6 +211,57 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
                     R.id.action_settings -> {
                         navigateToSettingsFragment()
+                        true
+                    }
+
+                    R.id.undo -> {
+                        binding.editor.undo()
+                        true
+                    }
+
+                    R.id.redo -> {
+                        binding.editor.redo()
+                        true
+                    }
+
+                    R.id.dependency_manager -> {
+                        val sheet = BottomSheetDialog(requireContext())
+                        val binding = NewDependencyBinding.inflate(layoutInflater)
+                        binding.apply {
+                            download.setOnClickListener {
+                                var dependency = dependency.text.toString()
+                                if (dependency.isNotEmpty()) {
+                                    dependency = dependency
+                                        .replace("implementation", "")
+                                        .replace("'", "")
+                                        .replace("\"", "")
+                                    dependency = dependency.trim()
+                                    val arr = dependency.split(":")
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val artifact = try {
+                                            getArtifact(arr[0], arr[1], arr[2])
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                binding.editor.setText(e.stackTraceToString())
+                                            }
+                                            return@launch
+                                        }
+                                        artifact.downloadArtifact(project.libDir)
+                                        sheet.dismiss()
+                                    }
+                                }
+                            }
+                            editor.editable = false
+                        }
+                        sheet.setContentView(binding.root)
+                        sheet.show()
+
+                        true
+                    }
+
+                    R.id.logcat -> {
+                        startActivity(LynxActivity.getIntent(requireContext()))
                         true
                     }
 

@@ -30,4 +30,8 @@
     <string name="pref_theme_auto">System theme</string>
     <string name="pref_theme_light">Light theme</string>
     <string name="pref_theme_dark">Dark theme</string>
+    <string name="download">Download</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="dependency_manager">Dependency Manager</string>
 </resources>

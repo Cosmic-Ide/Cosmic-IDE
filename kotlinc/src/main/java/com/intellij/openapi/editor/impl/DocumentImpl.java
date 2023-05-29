@@ -319,7 +319,6 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
         return stripTrailingSpaces(project, inChangedLinesOnly, null);
     }
 
-    @Override
     public boolean isLineModified(int line) {
         LineSet lineSet = myLineSet;
         return lineSet != null && lineSet.isModified(line);

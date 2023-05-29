@@ -52,11 +52,12 @@ dependencies {
     implementation("com.android.tools:desugar_jdk_libs_nio:2.0.3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
 
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -83,4 +84,5 @@ dependencies {
     implementation(projects.kotlinCompletion)
     implementation(projects.project)
     implementation(projects.util)
+    implementation(projects.lynx)
 }

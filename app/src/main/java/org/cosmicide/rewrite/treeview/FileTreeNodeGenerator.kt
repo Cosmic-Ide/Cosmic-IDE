@@ -38,6 +38,7 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
         withContext(Dispatchers.IO) {
             val set = targetNode.requireData().subDir.apply { clear() }
             val files = targetNode.requireData().file.listFiles()
+            if (files == null) return@withContext set
             Log.d("Data refreshing", targetNode.requireData().file.name)
             for (file in files) {
                 when {

@@ -9,13 +9,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_compile"
+        android:icon="@drawable/round_play_arrow_24"
+        android:title="@string/action_compile"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/undo"
+        android:icon="@drawable/baseline_undo_24"
+        android:title="@string/undo"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/redo"
+        android:icon="@drawable/baseline_redo_24"
+        android:title="@string/redo"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/dependency_manager"
+        android:title="@string/dependency_manager" />
 
     <item
-        android:id="@+id/action_compile"
-        android:icon="@drawable/outline_play_arrow_24"
-        android:title="@string/action_compile"
-        app:showAsAction="always" />
+        android:id="@+id/logcat"
+        android:title="Logcat" />
 </menu>

@@ -5,14 +5,8 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.github.dingyi222666.view.treeview.TreeView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/treeview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <io.github.dingyi222666.view.treeview.TreeView
-        android:id="@+id/treeview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="12sp" />
-
-</FrameLayout>
+    android:layout_height="match_parent"
+    android:layout_margin="12sp" />

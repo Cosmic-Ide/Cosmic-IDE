@@ -3,6 +3,34 @@
   <component name="deploymentTargetDropDown">
     <value>
       <entry key="app">
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Pixel_3a_API_33_arm64-v8a.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2023-05-21T12:35:22.260634Z" />
+        </State>
+      </entry>
+      <entry key="rewrite [app:dependencies]">
+        <State />
+      </entry>
+      <entry key="rewrite [dependencies --configuration :app]">
+        <State />
+      </entry>
+      <entry key="rewrite [dependencies --configuration app]">
+        <State />
+      </entry>
+      <entry key="rewrite [dependencies --configuration compileClasspath]">
+        <State />
+      </entry>
+      <entry key="rewrite [dependencies --configuration]">
         <State />
       </entry>
     </value>

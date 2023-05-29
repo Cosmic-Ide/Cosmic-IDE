@@ -46,7 +46,10 @@ class App : Application() {
         extractFiles()
         disableModules()
 
-        scope.launch { loadTextmateTheme() }
+        scope.launch {
+            loadTextmateTheme()
+        }
+        applyThemeBasedOnConfiguration(resources.configuration)
 
         CrashConfig.Builder.create()
             .apply()
@@ -116,8 +119,9 @@ class App : Application() {
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {
-        val inputStream = FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
-            ?: throw FileNotFoundException("Theme file not found: $fileName")
+        val inputStream =
+            FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
+                ?: throw FileNotFoundException("Theme file not found: $fileName")
         val source = IThemeSource.fromInputStream(inputStream, fileName, null)
         return ThemeModel(source, themeName)
     }

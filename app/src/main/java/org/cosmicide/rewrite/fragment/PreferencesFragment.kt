@@ -33,7 +33,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
         findPreference<Preference>(KEY_APP_THEME)?.let { themePreference ->
             themePreference.onPreferenceChangeListener =
-                Preference.OnPreferenceChangeListener { preference, newValue ->
+                Preference.OnPreferenceChangeListener { _, newValue ->
                     AppCompatDelegate.setDefaultNightMode(getTheme(newValue as String))
                     true
                 }

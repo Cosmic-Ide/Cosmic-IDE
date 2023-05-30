@@ -10,12 +10,13 @@ package org.cosmicide.rewrite.fragment
 import android.os.Bundle
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.annotation.MenuRes
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.github.pedrovgs.lynx.LynxActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
@@ -33,6 +34,8 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
+import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
+import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
 import org.cosmicide.rewrite.editor.language.JavaLanguage
 import org.cosmicide.rewrite.editor.language.KotlinLanguage
 import org.cosmicide.rewrite.extension.setFont
@@ -133,7 +136,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     if (binding.drawer.isOpen) {
                         binding.drawer.close()
                     }
-                    binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position), true)
+                    if (binding.tabLayout.selectedTabPosition != it) {
+                        binding.tabLayout.getTabAt(it)?.select()
+                    }
                 }
             }
 
@@ -224,6 +229,11 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
+                    R.id.action_format -> {
+                        formatCodeAsync()
+                        true
+                    }
+
                     R.id.dependency_manager -> {
                         val sheet = BottomSheetDialog(requireContext())
                         val binding = NewDependencyBinding.inflate(layoutInflater)
@@ -260,13 +270,54 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
-                    R.id.logcat -> {
-                        startActivity(LynxActivity.getIntent(requireContext()))
-                        true
-                    }
-
                     else -> false
                 }
+            }
+        }
+    }
+
+    private fun formatCodeAsync() {
+        val text = binding.editor.text.toString()
+        val content = binding.editor.text
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val formatted = when (fileViewModel.currentFile?.extension) {
+                    "java" -> {
+                        GoogleJavaFormat.formatCode(text)
+                    }
+
+                    "kt" -> {
+                        ktfmtFormatter.formatCode(text)
+                    }
+
+                    else -> {
+                        ""
+                    }
+                }
+
+                if (formatted.isNotEmpty()) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        content.replace(0, content.length, formatted)
+                    }
+                }
+            } catch (e: Exception) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    Snackbar.make(
+                        binding.root,
+                        "Failed to format code",
+                        Snackbar.LENGTH_SHORT
+                    ).apply {
+                        setAction("View Error") {
+                            val sheet = BottomSheetDialog(requireContext())
+                            sheet.setContentView(TextView(requireContext()).apply {
+                                setText(e.stackTraceToString())
+                            })
+                            sheet.show()
+                        }
+                        show()
+                    }
+                }
+                return@launch
             }
         }
     }
@@ -281,7 +332,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun navigateToSettingsFragment() {
         parentFragmentManager.beginTransaction().apply {
-            replace(R.id.fragment_container, SettingsFragment())
+            add(R.id.fragment_container, SettingsFragment())
             addToBackStack(null)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }.commit()

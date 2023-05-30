@@ -40,6 +40,11 @@ import java.nio.ByteBuffer
 import java.util.Objects
 import java.util.zip.ZipFile
 
+/*
+ * @auther: Mike Anderson (MikeAndrson)
+ *
+ * A class to manage the SSVM VM
+ */
 class SSVM(
     private val rtJar: ZipFile,
 ) {

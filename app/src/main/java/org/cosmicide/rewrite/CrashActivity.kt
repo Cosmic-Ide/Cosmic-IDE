@@ -37,17 +37,6 @@ class CrashActivity : AppCompatActivity() {
         binding.copyButton.setOnClickListener {
             CommonUtils.copyToClipboard(it.context, binding.errorText.text.toString())
         }
-
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.action_close -> {
-                    onBackPressed()
-                    true
-                }
-
-                else -> false
-            }
-        }
     }
 
     override fun onBackPressed() {

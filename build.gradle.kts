@@ -13,9 +13,3 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.8.21" apply false
     id("org.jetbrains.kotlin.plugin.allopen") version "1.8.20" apply true
 }
-
-buildscript {
-    dependencies {
-        classpath("dev.rikka.tools.materialthemebuilder:gradle-plugin:1.4.0")
-    }
-}

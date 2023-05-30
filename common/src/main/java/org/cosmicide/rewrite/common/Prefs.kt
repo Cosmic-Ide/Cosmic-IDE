@@ -30,10 +30,36 @@ object Prefs {
         get() = prefs.getString("app_theme", "auto") ?: "auto"
 
     val useFastJarFs: Boolean
-        get() = prefs.getBoolean("use_fastjarfs", false)
+        get() = prefs.getBoolean("use_fastjarfs", true)
 
     val useK2: Boolean
-        get() = prefs.getBoolean("use_k2", false)
+        get() = prefs.getBoolean("use_k2", true)
+
+    val useLigatures: Boolean
+        get() = prefs.getBoolean("font_ligatures", true)
+
+    val wordWrap: Boolean
+        get() = prefs.getBoolean("word_wrap", false)
+
+    val scrollbarEnabled: Boolean
+        get() = prefs.getBoolean("scrollbar", true)
+
+    val hardwareAcceleration: Boolean
+        get() = prefs.getBoolean("hardware_acceleration", true)
+
+    val nonPrintableCharacters: Boolean
+        get() = prefs.getBoolean("non_printable_characters", false)
+
+    val ktfmtStyle: String
+        get() = prefs.getString("ktfmt_style", "google") ?: "google"
+
+    val googleJavaFormatOptions: Set<String>?
+        get() = prefs.getStringSet("gjf_options", setOf())
+
+    val googleJavaFormatStyle: String
+        get() = prefs.getString("gjf_style", "aosp") ?: "aosp"
+    val lineNumbers: Boolean
+        get() = prefs.getBoolean("line_numbers", true)
 
     val useSpaces: Boolean
         get() = prefs.getBoolean("use_spaces", false)
@@ -41,8 +67,11 @@ object Prefs {
     val tabSize: Int
         get() = prefs.getInt("tab_size", 4)
 
+    val javacFlags: String
+        get() = prefs.getString("javac_flags", "") ?: ""
+
     val compilerJavaVersion: Int
-        get() = Integer.parseInt(prefs.getString("java_version", "17"))
+        get() = Integer.parseInt(prefs.getString("java_version", "17") ?: "17")
 
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)

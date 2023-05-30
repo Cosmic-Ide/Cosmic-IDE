@@ -18,13 +18,18 @@
         android:id="@+id/undo"
         android:icon="@drawable/baseline_undo_24"
         android:title="@string/undo"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/redo"
         android:icon="@drawable/baseline_redo_24"
         android:title="@string/redo"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_format"
+        android:title="Format"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_settings"
@@ -34,7 +39,4 @@
         android:id="@+id/dependency_manager"
         android:title="@string/dependency_manager" />
 
-    <item
-        android:id="@+id/logcat"
-        android:title="Logcat" />
 </menu>

@@ -7,9 +7,15 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
+import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -20,11 +26,44 @@ import org.cosmicide.rewrite.adapter.ProjectAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
+import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
+import org.cosmicide.rewrite.util.unzip
 
-class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAdapter.OnProjectEventListener {
+
+class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
+    ProjectAdapter.OnProjectEventListener {
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
+    private val documentPickerLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data
+                if (data != null) {
+                    val uri = data.data!!
+                    val name = DocumentFile.fromSingleUri(
+                        requireContext(),
+                        uri
+                    )!!.name?.substringBefore(".")
+                    val projectPath = FileUtil.projectDir.resolve(name!!)
+                    if (projectPath.exists()) {
+                        Snackbar.make(
+                            requireView(),
+                            "Project already exists",
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                        return@registerForActivityResult
+                    }
+                    projectPath.mkdirs()
+                    requireContext().contentResolver.openInputStream(uri)?.unzip(projectPath)
+                    viewModel.loadProjects()
+                }
+            }
+        }.also { documentPickerLauncher = it }
+    // for exporting a project
+
 
     override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)
 
@@ -52,7 +91,13 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.newProjectTextview.visibility = View.VISIBLE
                 binding.fabs.importButton.setOnClickListener {
-                    navigateToNewProjectFragment()
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                        addCategory(Intent.CATEGORY_OPENABLE)
+                        type = "application/zip" // Set the MIME type to filter the files, if needed
+                    }
+
+                    documentPickerLauncher.launch(intent)
+
                 }
             } else {
                 navigateToNewProjectFragment()
@@ -93,10 +138,10 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Delete Project")
             .setMessage("Are you sure, you want to delete ${project.name}")
-            .setNegativeButton("Cancel"){ dialog,_ ->
+            .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Delete"){ _, _ ->
+            .setPositiveButton("Delete") { _, _ ->
                 project.delete()
                 viewModel.loadProjects()
             }
@@ -108,8 +153,8 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(), ProjectAd
         setOnClickListeners()
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, NewProjectFragment())
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             addToBackStack(null)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         }.commit()
     }
 

@@ -58,6 +58,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
+    implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
 
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -79,10 +80,11 @@ dependencies {
 
     implementation(projects.buildTools)
     implementation(projects.common)
-    implementation(projects.javaCompletion)
+    implementation(projects.completion.java)
+    implementation(projects.completion.kotlin)
+    implementation(projects.formatter.googleJavaFormat)
+    implementation(projects.formatter.ktfmt)
     implementation(projects.kotlinc)
-    implementation(projects.kotlinCompletion)
     implementation(projects.project)
     implementation(projects.util)
-    implementation(projects.lynx)
 }

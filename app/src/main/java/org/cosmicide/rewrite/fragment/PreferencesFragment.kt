@@ -10,12 +10,10 @@ package org.cosmicide.rewrite.fragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentTransaction
-import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import org.cosmicide.rewrite.BuildConfig
 import org.cosmicide.rewrite.R
-import org.cosmicide.rewrite.preference.showListPreference
 
 /**
  * A [PreferenceFragmentCompat] subclass to display the preferences UI.
@@ -61,13 +59,6 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             "light" -> AppCompatDelegate.MODE_NIGHT_NO
             "dark" -> AppCompatDelegate.MODE_NIGHT_YES
             else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-    }
-
-    override fun onDisplayPreferenceDialog(preference: Preference) {
-        when (preference) {
-            is ListPreference -> showListPreference(preference)
-            else -> super.onDisplayPreferenceDialog(preference)
         }
     }
 }

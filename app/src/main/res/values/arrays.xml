@@ -19,6 +19,29 @@
         <item>17</item>
     </string-array>
 
+    <string-array name="gjf_options">
+        <item>--fix-imports-only</item>
+        <item>--skip-sorting-import</item>
+        <item>--skip-removing-unused-imports</item>
+        <item>--skip-reflowing-long-strings</item>
+        <item>--skip-javadoc-formatting</item>
+    </string-array>
+
+    <string-array name="gjf_styles">
+        <item>aosp</item>
+        <item>google</item>
+    </string-array>
+
+    <string-array name="empty">
+
+    </string-array>
+
+    <string-array name="ktfmt_styles">
+        <item>dropbox</item>
+        <item>google</item>
+        <item>kotlinlang</item>
+    </string-array>
+
     <string-array name="app_theme_entries">
         <item>@string/pref_theme_auto</item>
         <item>@string/pref_theme_light</item>

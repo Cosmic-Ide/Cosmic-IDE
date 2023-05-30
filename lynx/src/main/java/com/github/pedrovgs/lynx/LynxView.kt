@@ -76,6 +76,7 @@ class LynxView @JvmOverloads constructor(
         initializeConfiguration(attrs)
         initializePresenter()
         initializeView()
+        lvTraces?.adapter = adapter
     }
 
     /** Initializes LynxPresenter if LynxView is visible when is attached to the window.  */
@@ -98,7 +99,7 @@ class LynxView @JvmOverloads constructor(
      */
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
         super.onVisibilityChanged(changedView, visibility)
-        if (changedView !== this) {
+        if (changedView != this) {
             return
         }
         if (visibility == VISIBLE) {
@@ -162,7 +163,9 @@ class LynxView @JvmOverloads constructor(
         if (isPresenterReady) {
             presenter!!.resume()
             val lastPosition = adapter!!.itemCount - 1
-            lvTraces!!.smoothScrollToPosition(lastPosition)
+            if (lastPosition > 0) {
+                lvTraces!!.scrollToPosition(lastPosition)
+            }
         }
     }
 
@@ -341,7 +344,7 @@ class LynxView @JvmOverloads constructor(
         if (shouldUpdateScrollPosition) {
             val newScrollPosition = lastScrollPosition - removedTraces
             lastScrollPosition = newScrollPosition
-            lvTraces!!.smoothScrollToPosition(newScrollPosition)
+            if (newScrollPosition > 0) lvTraces!!.smoothScrollToPosition(newScrollPosition)
         }
     }
 

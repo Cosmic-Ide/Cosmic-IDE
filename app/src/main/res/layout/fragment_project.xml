@@ -29,8 +29,6 @@
         android:id="@+id/project_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp"
         android:transitionGroup="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
@@ -39,11 +37,11 @@
         layout="@layout/project_fragment_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:layout_gravity="bottom|end"
-        android:focusable="true"
         android:clickable="true"
+        android:focusable="true"
         android:transitionGroup="true" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

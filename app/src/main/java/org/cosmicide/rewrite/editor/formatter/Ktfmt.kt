@@ -1,0 +1,27 @@
+/*
+ * This file is part of Cosmic IDE.
+ * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package org.cosmicide.rewrite.editor.formatter
+
+import com.facebook.ktfmt.cli.Main
+import org.cosmicide.rewrite.common.Prefs
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.readText
+import kotlin.io.path.writeText
+
+object ktfmtFormatter {
+    fun formatCode(code: String): String {
+        val file = kotlin.io.path.createTempFile("file", ".kt")
+        file.writeText(code)
+        val args = listOf(
+            "--" + Prefs.ktfmtStyle + "-style",
+            file.absolutePathString()
+        )
+        Main(System.`in`, System.out, System.err, args.toTypedArray()).run()
+        return file.readText()
+    }
+}

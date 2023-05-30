@@ -37,6 +37,11 @@ class IdeEditor @JvmOverloads constructor(
         updateNonPrintablePaintingFlags()
         updateTextSize()
         updateTabSize()
+        isLigatureEnabled = Prefs.useLigatures
+        isWordwrap = Prefs.wordWrap
+        setScrollBarEnabled(Prefs.scrollbarEnabled)
+        isHardwareAcceleratedDrawAllowed = Prefs.hardwareAcceleration
+        isLineNumberEnabled = Prefs.lineNumbers
     }
 
     override fun commitText(text: CharSequence?, applyAutoIndent: Boolean) {
@@ -75,9 +80,10 @@ class IdeEditor @JvmOverloads constructor(
     }
 
     private fun updateNonPrintablePaintingFlags() {
-        nonPrintablePaintingFlags = (FLAG_DRAW_WHITESPACE_LEADING
+        val flags = (FLAG_DRAW_WHITESPACE_LEADING
                 or FLAG_DRAW_WHITESPACE_INNER
                 or FLAG_DRAW_WHITESPACE_FOR_EMPTY_LINE)
+        nonPrintablePaintingFlags = if (Prefs.nonPrintableCharacters) flags else 0
     }
 
     private fun createInputFlags(): Int {

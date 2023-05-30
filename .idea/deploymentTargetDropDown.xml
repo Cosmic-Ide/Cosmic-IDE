@@ -10,28 +10,13 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="$USER_HOME$/.android/avd/Pixel_3a_API_33_arm64-v8a.avd" />
+                  <value value="$USER_HOME$/.android/avd/Pixel_7_Pro_API_UpsideDownCake.avd" />
                 </Key>
               </deviceKey>
             </Target>
           </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2023-05-21T12:35:22.260634Z" />
+          <timeTargetWasSelectedWithDropDown value="2023-05-29T14:51:14.750316Z" />
         </State>
-      </entry>
-      <entry key="rewrite [app:dependencies]">
-        <State />
-      </entry>
-      <entry key="rewrite [dependencies --configuration :app]">
-        <State />
-      </entry>
-      <entry key="rewrite [dependencies --configuration app]">
-        <State />
-      </entry>
-      <entry key="rewrite [dependencies --configuration compileClasspath]">
-        <State />
-      </entry>
-      <entry key="rewrite [dependencies --configuration]">
-        <State />
       </entry>
     </value>
   </component>

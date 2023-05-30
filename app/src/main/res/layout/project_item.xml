@@ -9,13 +9,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
-    android:clickable="true"
-    android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:minHeight="?attr/listPreferredItemHeight"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
 
     <TextView
         android:id="@+id/project_title"
@@ -33,7 +31,7 @@
         android:ellipsize="start"
         android:maxLines="2"
         android:text="@string/project_path"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textAppearance="?attr/textAppearanceBodySmall"
         android:textColor="?android:attr/textColorSecondary" />
 
 </LinearLayout>

@@ -20,6 +20,7 @@
         <activity
             android:name=".LynxActivity"
             android:exported="false"
+            android:theme="@style/Theme.AppCompat.DayNight"
             android:windowSoftInputMode="stateHidden" />
     </application>
 

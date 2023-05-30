@@ -42,7 +42,8 @@ class KotlinLanguage(
 
     init {
         try {
-            val ktFile = kotlinEnvironment.updateKotlinFile(file.absolutePath, editor.text.toString())
+            val ktFile =
+                kotlinEnvironment.updateKotlinFile(file.absolutePath, editor.text.toString())
             fileName = ktFile.name
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update Kotlin file", e)

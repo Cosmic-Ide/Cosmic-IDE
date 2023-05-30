@@ -23,14 +23,16 @@ dependencyResolutionManagement {
         maven("https://jitpack.io")
     }
 }
+
 rootProject.name = "CosmicIDE-Rewrite"
 include(":app")
 include(":common")
 include(":project")
 include(":kotlinc")
-include(":kotlin-completion")
+include(":completion:java")
+include(":completion:kotlin")
+include(":formatter:google-java-format")
+include(":formatter:ktfmt")
 include(":util")
-include(":java-completion")
 include(":build-tools")
 include(":TreeView")
-include(":lynx")

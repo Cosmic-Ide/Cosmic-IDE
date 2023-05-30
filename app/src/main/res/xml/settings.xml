@@ -10,7 +10,7 @@
 
     <PreferenceCategory android:title="Appearance">
 
-        <ListPreference
+        <org.cosmicide.rewrite.preference.MaterialListPreference
             android:defaultValue="auto"
             android:entries="@array/app_theme_entries"
             android:entryValues="@array/app_theme_entry_values"
@@ -46,6 +46,74 @@
             android:summary="Use spaces instead of tabs for indentation in the editor"
             android:title="Use spaces instead of tabs" />
 
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="font_ligatures"
+            android:summary="Enable font ligatures in the editor"
+            android:title="Enable font ligatures" />
+
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="word_wrap"
+            android:summary="Enable word wrap in the editor"
+            android:title="Enable word wrap" />
+
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="scrollbar"
+            android:summary="Show scrollbar in the editor"
+            android:title="Show scrollbar" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="hardware_acceleration"
+            android:summary="Enabling this can cause more memory usage but it will speed up rendering in the editor"
+            android:title="Enable hardware acceleration" />
+
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="non_printable_characters"
+            android:summary="Show non printable characters in the editor"
+            android:title="Show non printable characters" />
+
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="line_numbers"
+            android:summary="Enable line numbers in the editor"
+            android:title="Enable Line Number" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Formatter">
+        <org.cosmicide.rewrite.preference.MaterialListPreference
+            android:defaultValue="google"
+            android:entries="@array/ktfmt_styles"
+            android:entryValues="@array/ktfmt_styles"
+            android:key="ktfmt_style"
+            android:summary="Set ktfmt formatter style"
+            android:title="ktfmt formatter style" />
+
+        <org.cosmicide.rewrite.preference.MaterialMultiSelectListPreference
+            android:defaultValue="@array/empty"
+            android:dialogTitle="Google Java Formatter options"
+            android:entries="@array/gjf_options"
+            android:entryValues="@array/gjf_options"
+            android:key="gjf_options"
+            android:summary="Set options for Google Java Formatter"
+            android:title="Google Java Formatter options" />
+
+        <org.cosmicide.rewrite.preference.MaterialListPreference
+            android:defaultValue="aosp"
+            android:entries="@array/gjf_styles"
+            android:entryValues="@array/gjf_styles"
+            android:key="gjf_style"
+            android:summary="Set Google Java Formatter style"
+            android:title="Google Java Formatter style" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Compiler">
@@ -74,13 +142,17 @@
             android:summary="This is a very experimental feature. Use with caution."
             android:title="Use SSVM for running" />
 
-        <ListPreference
+        <org.cosmicide.rewrite.preference.MaterialListPreference
             android:defaultValue="17"
             android:entries="@array/java_version_entries"
             android:entryValues="@array/java_version_entries"
             android:key="java_version"
             android:summary="Select the version of Java to use for compilation"
             android:title="Java Version" />
+
+        <org.cosmicide.rewrite.preference.MaterialEditTextPreference
+            android:key="javac_flags"
+            android:title="Additional javac flags" />
 
     </PreferenceCategory>
 

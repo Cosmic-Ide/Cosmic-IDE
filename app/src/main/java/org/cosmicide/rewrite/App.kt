@@ -39,7 +39,6 @@ class App : Application() {
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
 
-        AppCompatDelegate.setDefaultNightMode(getTheme(Prefs.appTheme))
         DynamicColors.applyToActivitiesIfAvailable(this)
 
         indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
@@ -49,7 +48,6 @@ class App : Application() {
         scope.launch {
             loadTextmateTheme()
         }
-        applyThemeBasedOnConfiguration(resources.configuration)
 
         CrashConfig.Builder.create()
             .apply()
@@ -99,21 +97,30 @@ class App : Application() {
         themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
         themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
 
-        applyThemeBasedOnConfiguration(resources.configuration)
+        applyThemeBasedOnConfiguration()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        applyThemeBasedOnConfiguration(newConfig)
+        applyThemeBasedOnConfiguration()
     }
 
-    private fun applyThemeBasedOnConfiguration(config: Configuration) {
-        val themeFromPrefs = getTheme(Prefs.appTheme)
+    private fun applyThemeBasedOnConfiguration() {
+
         val themeName =
-            if (config.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES && themeFromPrefs == AppCompatDelegate.MODE_NIGHT_YES) {
-                DARCULA_THEME_NAME
-            } else {
-                QUIET_LIGHT_THEME_NAME
+            when (getTheme(Prefs.appTheme)) {
+                AppCompatDelegate.MODE_NIGHT_YES -> DARCULA_THEME_NAME
+                AppCompatDelegate.MODE_NIGHT_NO -> QUIET_LIGHT_THEME_NAME
+                else -> {
+                    val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+
+                    val nightMode = currentNightMode == AppCompatDelegate.MODE_NIGHT_YES ||
+                            (currentNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM &&
+                                    (resources.configuration.uiMode and
+                                            Configuration.UI_MODE_NIGHT_MASK) ==
+                                    Configuration.UI_MODE_NIGHT_YES)
+                    if (nightMode) DARCULA_THEME_NAME else QUIET_LIGHT_THEME_NAME
+                }
             }
         ThemeRegistry.getInstance().setTheme(themeName)
     }

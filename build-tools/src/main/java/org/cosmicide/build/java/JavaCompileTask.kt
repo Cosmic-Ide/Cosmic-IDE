@@ -63,7 +63,13 @@ class JavaCompileTask(val project: Project) : Task {
             fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
             fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
 
-            val options = listOf("-proc:none", "-source", version, "-target", version)
+            val options = listOf(
+                "-proc:none",
+                "-source",
+                version,
+                "-target",
+                version
+            ) + Prefs.javacFlags.split(" ")
 
             val task = tool.getTask(
                 object : Writer() {

@@ -7,15 +7,17 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.MenuRes
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import io.github.dingyi222666.view.treeview.Tree
@@ -47,13 +49,19 @@ import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 
+
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
-    private val project: Project = ProjectHandler.getProject()
-        ?: throw IllegalStateException("No project set")
+    private val project: Project =
+        ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
     private lateinit var fileViewModel: FileViewModel
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        setEditorLanguage()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,8 +77,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             )
 
             val rootItem = FileSet(
-                project.root,
-                traverseDirectory(project.root) as MutableSet<FileSet>
+                project.root, traverseDirectory(project.root) as MutableSet<FileSet>
             )
 
             val generator = FileTreeNodeGenerator(rootItem)
@@ -89,11 +96,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                val isBinary = fileViewModel.currentFile?.extension == "class"
                 override fun onTabSelected(tab: TabLayout.Tab) {
-                    if (fileViewModel.currentPosition.value != tab.position)
-                        fileViewModel.setCurrentPosition(tab.position)
-                    val file = fileViewModel.currentFile
-                    if (file?.extension == "class") {
+                    if (fileViewModel.currentPosition.value != tab.position && isBinary.not()) fileViewModel.setCurrentPosition(
+                        tab.position
+                    )
+                    val file = fileViewModel.currentFile!!
+                    if (isBinary) {
                         binding.editor.setText(Javap.disassemble(file.absolutePath))
                     } else {
                         binding.editor.setText(fileViewModel.currentFile?.readText())
@@ -121,9 +130,18 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.tabLayout.removeAllTabs()
                 files.forEach { file ->
                     val tab = binding.tabLayout.newTab().setText(file.name)
-                    tab.view.setOnLongClickListener {
-                        showMenu(it, R.menu.tab_menu, tab.position)
-                        true
+                    tab.customView = Chip(requireContext()).apply {
+                        text = file.name
+                        chipStrokeWidth = 0f
+                    }
+                    (tab.customView as View).apply {
+                        setOnLongClickListener {
+                            showMenu(it, R.menu.tab_menu, tab.position)
+                            true
+                        }
+                        setOnClickListener {
+                            tab.select()
+                        }
                     }
                     binding.tabLayout.apply {
                         addTab(tab, false)
@@ -161,9 +179,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 "java" -> {
                     binding.editor.text.addContentListener(
                         EditorDiagnosticsMarker(
-                            binding.editor,
-                            file,
-                            project
+                            binding.editor, file, project
                         )
                     )
                     JavaLanguage(binding.editor, project, file)
@@ -241,10 +257,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                             download.setOnClickListener {
                                 var dependency = dependency.text.toString()
                                 if (dependency.isNotEmpty()) {
-                                    dependency = dependency
-                                        .replace("implementation", "")
-                                        .replace("'", "")
-                                        .replace("\"", "")
+                                    dependency =
+                                        dependency.replace("implementation", "").replace("'", "")
+                                            .replace("\"", "")
                                     dependency = dependency.trim()
                                     val arr = dependency.split(":")
                                     lifecycleScope.launch(Dispatchers.IO) {
@@ -303,9 +318,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             } catch (e: Exception) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     Snackbar.make(
-                        binding.root,
-                        "Failed to format code",
-                        Snackbar.LENGTH_SHORT
+                        binding.root, "Failed to format code", Snackbar.LENGTH_SHORT
                     ).apply {
                         setAction("View Error") {
                             val sheet = BottomSheetDialog(requireContext())
@@ -356,7 +369,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun showMenu(v: View, @MenuRes menuRes: Int, position: Int) {
-        val popup = PopupMenu(context, v)
+        val popup = PopupMenu(requireContext(), v)
         popup.menuInflater.inflate(menuRes, popup.menu)
 
         popup.setOnMenuItemClickListener {

@@ -11,7 +11,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ameen.treeview"
+    namespace = "com.unnamed.b.atv"
     compileSdk = 33
 
     defaultConfig {

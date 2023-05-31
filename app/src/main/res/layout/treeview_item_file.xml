@@ -11,12 +11,11 @@
     android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="false"
+    android:animateLayoutChanges="true"
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:padding="10dp">
 
     <Space
         android:id="@+id/space"

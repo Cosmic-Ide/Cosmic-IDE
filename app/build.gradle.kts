@@ -87,4 +87,5 @@ dependencies {
     implementation(projects.kotlinc)
     implementation(projects.project)
     implementation(projects.util)
+    //implementation(projects.treeView)
 }

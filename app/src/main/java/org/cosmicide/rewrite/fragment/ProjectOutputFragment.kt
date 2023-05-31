@@ -184,6 +184,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {
                 ssvm.addURL(it)
             }
+            project.libDir.walk().filter { it.extension == "jar" }.forEach {
+                ssvm.addURL(it)
+            }
 
             ssvm.addURL(project.binDir.resolve("classes.jar"))
         }

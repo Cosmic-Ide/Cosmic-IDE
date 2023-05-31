@@ -30,7 +30,7 @@ class JavaCompileTask(val project: Project) : Task {
     val fileManager = tool.getStandardFileManager(diagnostics, null, null)
 
     override fun execute(reporter: BuildReporter) {
-        val output = File(project.binDir, "classes")
+        val output = project.binDir.resolve("classes")
         val version = Prefs.compilerJavaVersion.toString()
 
         try {

@@ -12,9 +12,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Space
 import androidx.annotation.MenuRes
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.dingyi222666.view.treeview.TreeNode
@@ -28,6 +28,7 @@ import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding
 import org.cosmicide.rewrite.model.FileViewModel
+import org.cosmicide.rewrite.openFileWithExternalApp
 import org.jetbrains.kotlin.incremental.createDirectory
 import java.io.File
 
@@ -72,7 +73,11 @@ class ViewBinder(
         }
 
         when {
-            node.isChild -> applyDir(node)
+            node.isChild -> {
+                dirBinding.textView.text = node.name.toString()
+                applyDir(node)
+            }
+
             else -> applyFile(node)
         }
     }
@@ -85,7 +90,6 @@ class ViewBinder(
 
     private fun applyDir(node: TreeNode<FileSet>) {
         with(dirBinding) {
-            textView.text = node.name.toString()
             imageView.animate()
                 .rotation(if (node.expand) 90f else 0f)
                 .setDuration(200)
@@ -118,12 +122,12 @@ class ViewBinder(
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
 
-        when {
-            node.isChild.not() -> {
-                popup.menu.removeItem(R.id.create_kotlin_class)
-                popup.menu.removeItem(R.id.create_java_class)
-                popup.menu.removeItem(R.id.create_folder)
-            }
+        if (node.isChild) {
+            popup.menu.removeItem(R.id.open_external)
+        } else {
+            popup.menu.removeItem(R.id.create_kotlin_class)
+            popup.menu.removeItem(R.id.create_java_class)
+            popup.menu.removeItem(R.id.create_folder)
         }
 
         popup.setOnMenuItemClickListener {
@@ -138,7 +142,7 @@ class ViewBinder(
                         .setPositiveButton("Create") { _, _ ->
                             file.absolutePath
                             val name = binding.edittext.text.toString()
-                            File(file, "$name.kt").createNewFile()
+                            file.resolve("$name.kt").createNewFile()
                             lifeScope.launch {
                                 treeView.refresh(node = parentNode)
                             }
@@ -159,9 +163,7 @@ class ViewBinder(
                             file.absolutePath
                             var name = binding.edittext.text.toString()
                             name = name.replace("\\.", "")
-                            File(file, "$name.java").apply {
-                                createNewFile()
-                            }
+                            file.resolve("$name.java").createNewFile()
                             lifeScope.launch {
                                 Log.d("ViewBinder", "Refresh treeview")
                                 treeView.refresh(node = parentNode)
@@ -230,6 +232,10 @@ class ViewBinder(
                             dialog.dismiss()
                         }
                         .show()
+                }
+
+                R.id.open_external -> {
+                    openFileWithExternalApp(v.context, file)
                 }
             }
             true

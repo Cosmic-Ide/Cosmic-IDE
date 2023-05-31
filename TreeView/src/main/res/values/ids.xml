@@ -5,25 +5,8 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-        android:id="@+id/create_kotlin_class"
-        android:title="Create kotlin class" />
-    <item
-        android:id="@+id/create_java_class"
-        android:title="Create java class" />
-    <item
-        android:id="@+id/create_folder"
-        android:title="Create folder" />
-    <item
-        android:id="@+id/rename"
-        android:title="Rename" />
-    <item
-        android:id="@+id/delete"
-        android:title="Delete" />
-
-    <item
-        android:id="@+id/open_external"
-        android:title="Open in external app" />
-</menu>
+<resources>
+    <item name="node_header" type="id" />
+    <item name="node_items" type="id" />
+    <item name="tree_items" type="id" />
+</resources>

@@ -8,5 +8,4 @@
 <io.github.dingyi222666.view.treeview.TreeView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/treeview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="12sp" />
+    android:layout_height="match_parent" />

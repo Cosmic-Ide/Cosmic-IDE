@@ -13,15 +13,19 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/build-tools" />
             <option value="$PROJECT_DIR$/common" />
-            <option value="$PROJECT_DIR$/java-completion" />
-            <option value="$PROJECT_DIR$/kotlin-completion" />
+            <option value="$PROJECT_DIR$/completion" />
+            <option value="$PROJECT_DIR$/completion/java" />
+            <option value="$PROJECT_DIR$/completion/kotlin" />
+            <option value="$PROJECT_DIR$/formatter" />
+            <option value="$PROJECT_DIR$/formatter/google-java-format" />
+            <option value="$PROJECT_DIR$/formatter/ktfmt" />
             <option value="$PROJECT_DIR$/kotlinc" />
-            <option value="$PROJECT_DIR$/lynx" />
             <option value="$PROJECT_DIR$/project" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>
       </GradleProjectSettings>
     </option>
+    <option name="offlineMode" value="true" />
   </component>
 </project>

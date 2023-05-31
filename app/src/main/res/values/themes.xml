@@ -8,6 +8,7 @@
 <resources>
 
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
+        <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
         <item name="android:colorBackground">@color/light_colorSurface</item>
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

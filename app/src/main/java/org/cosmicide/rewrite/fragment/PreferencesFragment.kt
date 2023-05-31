@@ -7,8 +7,10 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.app.UiModeManager
+import android.os.Build
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentTransaction
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -32,7 +34,18 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(KEY_APP_THEME)?.let { themePreference ->
             themePreference.onPreferenceChangeListener =
                 Preference.OnPreferenceChangeListener { _, newValue ->
-                    AppCompatDelegate.setDefaultNightMode(getTheme(newValue as String))
+                    val theme = getTheme(newValue as String)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        getSystemService(
+                            requireContext(),
+                            UiModeManager::class.java
+                        )?.setApplicationNightMode(theme)
+                    } else {
+                        getSystemService(
+                            requireContext(),
+                            UiModeManager::class.java
+                        )?.nightMode = theme
+                    }
                     true
                 }
         }
@@ -56,9 +69,9 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
     private fun getTheme(value: String): Int {
         return when (value) {
-            "light" -> AppCompatDelegate.MODE_NIGHT_NO
-            "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            "light" -> UiModeManager.MODE_NIGHT_NO
+            "dark" -> UiModeManager.MODE_NIGHT_YES
+            else -> UiModeManager.MODE_NIGHT_AUTO
         }
     }
 }

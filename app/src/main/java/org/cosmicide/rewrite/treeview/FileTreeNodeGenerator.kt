@@ -36,18 +36,14 @@ class FileTreeNodeGenerator(private val rootItem: FileSet) : TreeNodeGenerator<F
 
     override suspend fun fetchNodeChildData(targetNode: TreeNode<FileSet>): Set<FileSet> =
         withContext(Dispatchers.IO) {
-            val set = targetNode.requireData().subDir.apply { clear() }
-            val files = targetNode.requireData().file.listFiles()
-            if (files == null) return@withContext set
-            Log.d("Data refreshing", targetNode.requireData().file.name)
+            val set = mutableSetOf<FileSet>()
+            val files = targetNode.requireData().file.listFiles() ?: return@withContext set
+            Log.d("Refreshing Data", targetNode.requireData().file.name)
             for (file in files) {
                 when {
                     file.isFile -> set.add(FileSet(file))
                     file.isDirectory -> {
-                        val tempSet = mutableSetOf<FileSet>().apply {
-                            addAll(traverseDirectory(file))
-                        }
-                        set.add(FileSet(file, tempSet))
+                        set.add(FileSet(file, subDir = traverseDirectory(file).toMutableSet()))
                     }
                 }
             }

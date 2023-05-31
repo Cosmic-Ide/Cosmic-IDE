@@ -25,6 +25,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="?colorPrimaryDark" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/project_list"
         android:layout_width="match_parent"

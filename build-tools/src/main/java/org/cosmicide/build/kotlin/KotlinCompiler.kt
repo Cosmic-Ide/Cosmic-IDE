@@ -29,6 +29,8 @@ class KotlinCompiler(val project: Project) : Task {
             noStdlib = true
             noJdk = true
             newInference = true
+            useFirLT = true
+            useFirIC = true
         }
     }
 
@@ -55,8 +57,6 @@ class KotlinCompiler(val project: Project) : Task {
             moduleName = project.name
             pluginClasspaths = enabledPlugins
             useFastJarFileSystem = Prefs.useFastJarFs
-            useFirIC = true
-            useFirLT = true
             if (Prefs.useK2) languageVersion = "2.0"
         }
 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="17">
+    <bytecodeTargetLevel target="1.8">
       <module name="Cosmic_IDE_Rewrite.app" target="17" />
+      <module name="CosmicIDE-Rewrite.lynx" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

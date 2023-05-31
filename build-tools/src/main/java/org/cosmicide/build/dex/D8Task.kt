@@ -18,6 +18,7 @@ import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.util.getSystemClasspath
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.Prefs
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.name
@@ -40,6 +41,10 @@ class D8Task(val project: Project) : Task {
      * @param reporter The BuildReporter instance to report any errors to.
      */
     override fun execute(reporter: BuildReporter) {
+        if (Prefs.useSSVM) {
+            reporter.reportInfo("Skipping D8 compilation because SSVM is enabled.")
+            return
+        }
         val classes = getClassFiles(project.binDir.resolve("classes"))
         if (classes.isEmpty()) {
             reporter.reportError("No classes found to compile.")

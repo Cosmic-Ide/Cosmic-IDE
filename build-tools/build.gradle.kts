@@ -34,12 +34,18 @@ android {
     }
 }
 
-
 dependencies {
     implementation(projects.common)
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.kotlinc)
+    /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
+    implementation("org.scala-lang:scala3-compiler_3:3.3.1-RC1") {
+        exclude(group = "org.jline", module = "jline-terminal")
+        exclude(group = "org.jline", module = "jline-terminal-jna")
+        exclude(group = "org.jline", module = "jline-reader")
+    }
+    */
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("com.google.guava:guava:31.1-jre")
     implementation("com.android.tools:r8:8.0.40")

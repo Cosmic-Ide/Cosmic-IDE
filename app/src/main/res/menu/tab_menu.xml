@@ -18,8 +18,8 @@
         android:title="Close Right Tab" />
     <item
         android:id="@+id/close_other_tab"
-        android:title="Close Others Tab" />
+        android:title="Close Other Tabs" />
     <item
         android:id="@+id/close_all_tab"
-        android:title="Close All Tab" />
+        android:title="Close All Tabs" />
 </menu>

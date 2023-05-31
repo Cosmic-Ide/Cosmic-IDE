@@ -94,7 +94,8 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
 
     private fun navigateToEditorFragment() {
         parentFragmentManager.beginTransaction().apply {
-            replace(R.id.fragment_container, EditorFragment())
+            add(R.id.fragment_container, EditorFragment())
+            addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }.commit()
     }

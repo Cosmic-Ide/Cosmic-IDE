@@ -5,33 +5,50 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground"
-    android:gravity="center_vertical"
-    android:minHeight="?attr/listPreferredItemHeight"
-    android:orientation="vertical"
-    android:paddingHorizontal="16dp">
+    android:layout_margin="8dp"
+    android:checkable="true"
+    android:clickable="true"
+    android:focusable="true"
+    android:minHeight="?listPreferredItemHeightLarge"
+    app:cardBackgroundColor="?colorSecondaryContainer"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:contentPadding="12dp"
+    app:rippleColor="?colorOnSecondary">
 
-    <TextView
-        android:id="@+id/project_title"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textSize="20sp"
-        tools:text="@string/project_name" />
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/project_path"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="start"
-        android:maxLines="2"
-        android:text="@string/project_path"
-        android:textAppearance="?attr/textAppearanceBodySmall"
-        android:textColor="?android:attr/textColorSecondary" />
+        <TextView
+            android:id="@+id/project_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_medium"
+            android:singleLine="true"
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textColor="?colorOnSurface"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:text="@string/project_name" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/project_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="start"
+            android:maxLines="2"
+            android:paddingHorizontal="6dp"
+            android:text="@string/project_path"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?colorOnSurfaceVariant" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

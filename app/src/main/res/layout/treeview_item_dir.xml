@@ -11,12 +11,11 @@
     android:id="@+id/root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="false"
+    android:animateLayoutChanges="true"
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:padding="10dp">
 
     <Space
         android:id="@+id/space"
@@ -27,7 +26,7 @@
         android:id="@+id/imageView"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:contentDescription="Expand/Collapse"
+        android:contentDescription="@string/expand_collapse"
         android:scaleType="center"
         app:srcCompat="@drawable/baseline_arrow_forward_ios_24" />
 

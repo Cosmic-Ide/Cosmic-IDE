@@ -17,9 +17,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
@@ -42,7 +45,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 if (data != null) {
-                    val uri = data.data!!
+                    val uri = data.data ?: return@registerForActivityResult
                     val name = DocumentFile.fromSingleUri(
                         requireContext(),
                         uri
@@ -56,9 +59,15 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                         ).show()
                         return@registerForActivityResult
                     }
+                    binding.progressBar.visibility = View.VISIBLE
                     projectPath.mkdirs()
-                    requireContext().contentResolver.openInputStream(uri)?.unzip(projectPath)
-                    viewModel.loadProjects()
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        requireContext().contentResolver.openInputStream(uri)?.unzip(projectPath)
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            binding.progressBar.visibility = View.GONE
+                            viewModel.loadProjects()
+                        }
+                    }
                 }
             }
         }.also { documentPickerLauncher = it }

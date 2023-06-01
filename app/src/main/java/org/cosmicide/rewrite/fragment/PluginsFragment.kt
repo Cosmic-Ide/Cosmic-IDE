@@ -78,6 +78,7 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
             val plugins = mutableListOf<Plugin>()
             FileUtil.pluginDir.listFiles { file -> file.isDirectory }?.forEach { file ->
                 val config = file.resolve("config.json")
+                if (config.readText().isEmpty()) {
                 config.writeText(
                     """
 {
@@ -89,6 +90,7 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
 }
                         """
                 )
+                }
                 if (config.exists()) {
                     val data =
                         Gson().fromJson<Map<String, String>>(

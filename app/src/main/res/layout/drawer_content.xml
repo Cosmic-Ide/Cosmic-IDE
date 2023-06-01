@@ -5,7 +5,13 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<io.github.dingyi222666.view.treeview.TreeView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/treeview"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/refresher"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <io.github.dingyi222666.view.treeview.TreeView
+        android:id="@+id/treeview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

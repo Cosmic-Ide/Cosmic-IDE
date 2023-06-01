@@ -74,7 +74,7 @@ class ViewBinder(
 
         when {
             node.isChild -> {
-                dirBinding.textView.text = node.name.toString()
+                dirBinding.textView.text = node.data!!.file.name
                 applyDir(node)
             }
 
@@ -83,18 +83,14 @@ class ViewBinder(
     }
 
     private fun applyFile(node: TreeNode<FileSet>) {
-        with(fileBinding) {
-            textView.text = node.name.toString()
-        }
+        fileBinding.textView.text = node.name.toString()
     }
 
     private fun applyDir(node: TreeNode<FileSet>) {
-        with(dirBinding) {
-            imageView.animate()
-                .rotation(if (node.expand) 90f else 0f)
-                .setDuration(200)
-                .start()
-        }
+        dirBinding.imageView.animate()
+            .rotation(if (node.expand) 90f else 0f)
+            .setDuration(200)
+            .start()
     }
 
     override fun onLongClick(node: TreeNode<FileSet>, holder: TreeView.ViewHolder): Boolean {

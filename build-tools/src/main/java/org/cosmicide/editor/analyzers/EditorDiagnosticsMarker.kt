@@ -19,16 +19,18 @@ import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import java.io.File
 
-class EditorDiagnosticsMarker(
-    private val editor: CodeEditor,
-    private val file: File,
-    private val project: Project
-) : ContentListener {
+class EditorDiagnosticsMarker : ContentListener {
 
     private val analyzer: JavaAnalyzer by lazy { JavaAnalyzer(editor, project, file) }
     private val diagnostics = DiagnosticsContainer()
+    private lateinit var editor: CodeEditor
+    private lateinit var file: File
+    private lateinit var project: Project
 
-    init {
+    fun init(editor: CodeEditor, file: File, project: Project) {
+        this.editor = editor
+        this.file = file
+        this.project = project
         analyze(editor.text)
         editor.post {
             val window = editor.getComponent(EditorDiagnosticTooltipWindow::class.java)
@@ -78,5 +80,9 @@ class EditorDiagnosticsMarker(
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    companion object {
+        val INSTANCE = EditorDiagnosticsMarker()
     }
 }

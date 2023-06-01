@@ -36,10 +36,14 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx") {
+        exclude(group = "javax.inject", module = "javax.inject")
+    }
     implementation("androidx.databinding:viewbinding:8.0.1")
     api("androidx.preference:preference-ktx:1.2.0")
 
-    implementation("com.google.android.material:material:1.8.0")
+    implementation("com.google.android.material:material:1.9.0")
 
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.1"))
     api("io.github.Rosemoe.sora-editor:editor")

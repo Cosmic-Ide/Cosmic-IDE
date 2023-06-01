@@ -8,6 +8,7 @@
 package org.cosmicide.rewrite
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.developer.crashx.config.CrashConfig
 import org.cosmicide.rewrite.databinding.ActivityCrashBinding
@@ -37,9 +38,10 @@ class CrashActivity : AppCompatActivity() {
         binding.copyButton.setOnClickListener {
             CommonUtils.copyToClipboard(it.context, binding.errorText.text.toString())
         }
-    }
-
-    override fun onBackPressed() {
-        com.developer.crashx.CrashActivity.closeApplication(this, config!!)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                com.developer.crashx.CrashActivity.closeApplication(this@CrashActivity, config!!)
+            }
+        })
     }
 }

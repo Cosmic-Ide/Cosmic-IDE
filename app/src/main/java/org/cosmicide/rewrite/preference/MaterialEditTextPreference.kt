@@ -25,6 +25,7 @@ class MaterialEditTextPreference(context: Context, attrs: AttributeSet) :
             .setTitle(title)
             .setView(TextInputLayout(context).apply {
                 addView(editText)
+                setPadding(8, 4, 8, 4)
             })
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
                 dialog.dismiss()

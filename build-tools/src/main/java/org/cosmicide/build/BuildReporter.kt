@@ -7,6 +7,8 @@
 
 package org.cosmicide.build
 
+import org.cosmicide.rewrite.common.Analytics
+
 /**
  * Enum to represent different kinds of build reports.
  */
@@ -38,6 +40,7 @@ class BuildReporter(
         private set
     var failure = false
         private set
+    private var startTime = System.currentTimeMillis()
 
     /**
      * Generates an informational build report.
@@ -85,6 +88,11 @@ class BuildReporter(
      * Reports that the build completed successfully.
      */
     fun reportSuccess() {
+        if (failure) {
+            return
+        }
+        val endTime = System.currentTimeMillis()
+        Analytics.logEvent("build_success", "build_time" to (endTime - startTime).toString() + "ms")
         reportOutput("Build completed successfully.")
         buildSuccess = true
     }

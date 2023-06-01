@@ -10,6 +10,7 @@ package org.cosmicide.rewrite.fragment
 import android.app.UiModeManager
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentTransaction
 import androidx.preference.Preference
@@ -41,10 +42,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
                             UiModeManager::class.java
                         )?.setApplicationNightMode(theme)
                     } else {
-                        getSystemService(
-                            requireContext(),
-                            UiModeManager::class.java
-                        )?.nightMode = theme
+                        AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
                     }
                     true
                 }

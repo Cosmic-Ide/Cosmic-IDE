@@ -52,13 +52,16 @@ class Compiler(
         val task = CompilerCache.getCache<T>()
 
         with(reporter) {
+            if (failure) {
+                return
+            }
             reportInfo(message)
             compileListener(T::class.java, BuildStatus.STARTED)
             task.execute(this)
             compileListener(T::class.java, BuildStatus.FINISHED)
 
             if (failure) {
-                throw Exception("Failed to compile ${T::class.simpleName} code.")
+                reportOutput("Failed to compile ${T::class.simpleName} code.")
             }
 
             reportInfo("Successfully compiled ${T::class.simpleName} code.")

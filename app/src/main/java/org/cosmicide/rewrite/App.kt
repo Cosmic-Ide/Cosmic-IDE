@@ -24,11 +24,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.util.FileUtil
 import org.eclipse.tm4e.core.registry.IThemeSource
+import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileNotFoundException
+import java.time.ZonedDateTime
 
 class App : Application() {
 
@@ -40,18 +43,38 @@ class App : Application() {
 
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
+        Analytics.init(applicationContext)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
+        }
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
-        indexFile = File(FileUtil.dataDir, INDEX_FILE_NAME)
+        indexFile = FileUtil.dataDir.resolve(INDEX_FILE_NAME)
         extractFiles()
         disableModules()
 
         scope.launch {
             loadTextmateTheme()
         }
+        Analytics.logEvent("theme", "theme" to Prefs.appTheme)
+        Analytics.logEvent(
+            "startup",
+            "time" to ZonedDateTime.now().toString(),
+            "device" to Build.DEVICE,
+            "model" to Build.MODEL,
+            "manufacturer" to Build.MANUFACTURER,
+            "sdk" to Build.VERSION.SDK_INT.toString(),
+            "abi" to Build.SUPPORTED_ABIS.joinToString()
+        )
 
-        CrashConfig.Builder.create()
+        CrashConfig.Builder
+            .create()
+            .backgroundMode(CrashConfig.BACKGROUND_MODE_SHOW_CUSTOM)
+            .errorActivity(CrashActivity::class.java)
+            .enabled(true)
+            .showRestartButton(true)
+            .trackActivities(true)
             .apply()
 
         val theme = getTheme(Prefs.appTheme)
@@ -62,7 +85,7 @@ class App : Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             uiModeManager.setApplicationNightMode(theme)
         } else {
-            uiModeManager.nightMode = theme
+            AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
         }
     }
 
@@ -76,8 +99,8 @@ class App : Application() {
 
     private fun extractFiles() {
         scope.launch { extractAsset(INDEX_FILE_NAME, indexFile) }
-        scope.launch { extractAsset(ANDROID_JAR, File(FileUtil.classpathDir, ANDROID_JAR)) }
-        scope.launch { extractAsset(KOTLIN_STDLIB, File(FileUtil.classpathDir, KOTLIN_STDLIB)) }
+        scope.launch { extractAsset(ANDROID_JAR, FileUtil.classpathDir.resolve(ANDROID_JAR)) }
+        scope.launch { extractAsset(KOTLIN_STDLIB, FileUtil.classpathDir.resolve(KOTLIN_STDLIB)) }
         scope.launch { extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar")) }
     }
 

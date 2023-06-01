@@ -11,6 +11,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import io.github.dingyi222666.view.treeview.Tree
@@ -54,28 +56,127 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project =
         ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
-    private lateinit var fileViewModel: FileViewModel
+    private val fileViewModel: FileViewModel by lazy {
+        ViewModelProvider(this)[FileViewModel::class.java]
+    }
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        setEditorLanguage()
+        setColorScheme()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
+        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
 
-        lifecycleScope.launch {
-            fileViewModel = ViewModelProvider(this@EditorFragment)[FileViewModel::class.java]
-            val binder = ViewBinder(
-                lifecycleScope,
-                layoutInflater,
-                fileViewModel,
-                binding.included.treeview as TreeView<FileSet>
-            )
+        binding.included.refresher.apply {
+            setOnRefreshListener {
+                isRefreshing = true
+                lifecycleScope.launch {
+                    binding.included.treeview.tree.apply {
+                        generator = FileTreeNodeGenerator(
+                            FileSet(
+                                project.root, traverseDirectory(project.root) as MutableSet<FileSet>
+                            )
+                        )
+                        initTree()
+                    }
+                }
+                isRefreshing = false
+            }
+        }
 
+        initViewModelListeners()
+        initTreeView()
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                val file = fileViewModel.files.value?.get(tab.position) ?: return
+                val isBinary = file.extension == "class"
+
+                if (fileViewModel.currentPosition.value != tab.position)
+                    fileViewModel.setCurrentPosition(tab.position)
+
+                if (isBinary) {
+                    binding.editor.setText(Javap.disassemble(file.absolutePath))
+                    return
+                }
+                binding.editor.setText(fileViewModel.currentFile?.readText())
+                setEditorLanguage()
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                fileViewModel.currentFile?.writeText(binding.editor.text.toString())
+                binding.editor.setText("")
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                onTabSelected(tab)
+            }
+        })
+
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (binding.drawer.isOpen) {
+                        binding.drawer.close()
+                    } else {
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+            })
+    }
+
+    private fun initViewModelListeners() {
+        fileViewModel.files.observe(viewLifecycleOwner) { files ->
+            binding.tabLayout.removeAllTabs()
+            val appearanceModel = ShapeAppearanceModel.builder().setAllCornerSizes(48f).build()
+            files.forEach { file ->
+                val tab = binding.tabLayout.newTab().setText(file.name)
+                tab.customView = Chip(requireContext()).apply {
+                    text = file.name
+                    chipStrokeWidth = 0f
+                    shapeAppearanceModel = appearanceModel
+                }
+                (tab.customView as View).apply {
+                    setOnLongClickListener {
+                        showMenu(it, R.menu.tab_menu, tab.position)
+                        true
+                    }
+                    setOnClickListener {
+                        if (binding.tabLayout.selectedTabPosition != tab.position) tab.select()
+                    }
+                }
+                binding.tabLayout.addTab(tab, false)
+            }
+        }
+
+        fileViewModel.currentPosition.observe(viewLifecycleOwner) { pos ->
+            if (pos == -1) return@observe
+            if (binding.drawer.isOpen) binding.drawer.close()
+            if (binding.tabLayout.selectedTabPosition != pos) {
+                binding.tabLayout.getTabAt(pos)?.select()
+            }
+        }
+        val files = fileIndex.getFiles()
+        if (files.isEmpty()) return
+        fileViewModel.updateFiles(files.toMutableList())
+    }
+
+    private fun initTreeView() {
+        val binder = ViewBinder(
+            lifecycleScope,
+            layoutInflater,
+            fileViewModel,
+            binding.included.treeview as TreeView<FileSet>
+        )
+
+        lifecycleScope.launch(Dispatchers.IO) {
             val rootItem = FileSet(
                 project.root, traverseDirectory(project.root) as MutableSet<FileSet>
             )
@@ -87,82 +188,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 initTree()
             }
 
-            (binding.included.treeview as TreeView<FileSet>).apply {
-                bindCoroutineScope(lifecycleScope)
-                this.tree = tree
-                this.binder = binder
-                nodeEventListener = binder
-                refresh()
-            }
-
-            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                val isBinary = fileViewModel.currentFile?.extension == "class"
-                override fun onTabSelected(tab: TabLayout.Tab) {
-                    if (fileViewModel.currentPosition.value != tab.position && isBinary.not()) fileViewModel.setCurrentPosition(
-                        tab.position
-                    )
-                    val file = fileViewModel.currentFile!!
-                    if (isBinary) {
-                        binding.editor.setText(Javap.disassemble(file.absolutePath))
-                    } else {
-                        binding.editor.setText(fileViewModel.currentFile?.readText())
-                    }
-                    setEditorLanguage()
-                }
-
-                override fun onTabUnselected(tab: TabLayout.Tab) {
-                    fileViewModel.currentFile?.writeText(binding.editor.text.toString())
-                }
-
-                override fun onTabReselected(tab: TabLayout.Tab) {
-                    fileViewModel.setCurrentPosition(tab.position)
-                    val file = fileViewModel.currentFile
-                    if (file?.extension == "class") {
-                        binding.editor.setText(Javap.disassemble(file.absolutePath))
-                    } else {
-                        binding.editor.setText(fileViewModel.currentFile?.readText())
-                    }
-                    setEditorLanguage()
-                }
-            })
-
-            fileViewModel.files.observe(viewLifecycleOwner) { files ->
-                binding.tabLayout.removeAllTabs()
-                files.forEach { file ->
-                    val tab = binding.tabLayout.newTab().setText(file.name)
-                    tab.customView = Chip(requireContext()).apply {
-                        text = file.name
-                        chipStrokeWidth = 0f
-                    }
-                    (tab.customView as View).apply {
-                        setOnLongClickListener {
-                            showMenu(it, R.menu.tab_menu, tab.position)
-                            true
-                        }
-                        setOnClickListener {
-                            tab.select()
-                        }
-                    }
-                    binding.tabLayout.apply {
-                        addTab(tab, false)
-                    }
-                }
-            }
-
-            fileViewModel.currentPosition.observe(viewLifecycleOwner) { position ->
-                position?.takeIf { it != -1 }?.let {
-                    if (binding.drawer.isOpen) {
-                        binding.drawer.close()
-                    }
-                    if (binding.tabLayout.selectedTabPosition != it) {
-                        binding.tabLayout.getTabAt(it)?.select()
-                    }
-                }
-            }
-
-            fileIndex.getFiles().takeIf { it.isNotEmpty() }?.let { files ->
-                view.post {
-                    fileViewModel.updateFiles(files.toMutableList())
+            lifecycleScope.launch(Dispatchers.Main) {
+                binding.included.treeview.apply {
+                    bindCoroutineScope(lifecycleScope)
+                    this.tree = tree
+                    this.binder = binder
+                    nodeEventListener = binder
+                    lifecycleScope.launch { refresh() }
                 }
             }
         }
@@ -170,6 +202,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun setEditorLanguage() {
         val file = fileViewModel.currentFile
+        if (file?.extension == "java") {
+            binding.editor.text.addContentListener(EditorDiagnosticsMarker.INSTANCE)
+            EditorDiagnosticsMarker.INSTANCE.init(binding.editor, file, project)
+        } else {
+            binding.editor.text.removeContentListener(EditorDiagnosticsMarker.INSTANCE)
+        }
         binding.editor.setEditorLanguage(
             when (file?.extension) {
                 "kt" -> {
@@ -177,24 +215,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 "java" -> {
-                    binding.editor.text.addContentListener(
-                        EditorDiagnosticsMarker(
-                            binding.editor, file, project
-                        )
-                    )
                     JavaLanguage(binding.editor, project, file)
                 }
 
                 "class" -> {
-
                     TextMateLanguage.create("source.java", true)
                 }
 
                 else -> EmptyLanguage()
             }
         )
-        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         binding.editor.setFont()
+    }
+
+    private fun setColorScheme() {
+        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
     }
 
     override fun onDestroyView() {

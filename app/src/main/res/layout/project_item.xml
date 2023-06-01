@@ -15,11 +15,12 @@
     android:clickable="true"
     android:focusable="true"
     android:minHeight="?listPreferredItemHeightLarge"
-    app:cardBackgroundColor="?colorSecondaryContainer"
-    app:cardCornerRadius="24dp"
+    app:cardBackgroundColor="?colorSurfaceContainerHigh"
+    app:cardCornerRadius="18dp"
     app:cardElevation="0dp"
     app:contentPadding="12dp"
-    app:rippleColor="?colorOnSecondary">
+    app:rippleColor="?colorSurfaceContainerHigh"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"

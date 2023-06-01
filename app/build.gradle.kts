@@ -8,6 +8,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -28,8 +29,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -49,7 +49,7 @@ android {
 }
 
 dependencies {
-    implementation("com.android.tools:desugar_jdk_libs_nio:2.0.3")
+    implementation("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.10.1")
@@ -59,6 +59,9 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+
+    implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
@@ -77,6 +80,8 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
     implementation("com.airbnb.android:lottie:6.0.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
 
     implementation(projects.buildTools)
     implementation(projects.common)

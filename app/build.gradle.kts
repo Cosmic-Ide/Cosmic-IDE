@@ -82,6 +82,8 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.0.0")
 
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx"
+    implementation("com.google.gms:google-services:4.3.15")
 
     implementation(projects.buildTools)
     implementation(projects.common)

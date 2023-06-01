@@ -240,11 +240,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun saveFile() {
         fileViewModel.currentFile?.let { file ->
-            if (file.exists()) {
-                file.writeText(binding.editor.text.toString())
-                return
+            if (file.extension == "class") return // we don't wanna save the output from javap because that'll break the binary
+            if (file.exists().not()) {
+                file.createNewFile()
             }
-            file.createNewFile()
             file.writeText(binding.editor.text.toString())
         }
     }

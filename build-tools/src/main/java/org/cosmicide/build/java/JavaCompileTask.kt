@@ -62,6 +62,8 @@ class JavaCompileTask(val project: Project) : Task {
             fm.setLocation(StandardLocation.PLATFORM_CLASS_PATH, getSystemClasspath())
             fm.setLocation(StandardLocation.CLASS_PATH, getClasspath(project))
             fm.setLocation(StandardLocation.SOURCE_PATH, javaFiles)
+            
+            val flags = Prefs.javacFlags
 
             val options = listOf(
                 "-proc:none",
@@ -69,7 +71,7 @@ class JavaCompileTask(val project: Project) : Task {
                 version,
                 "-target",
                 version
-            ) + Prefs.javacFlags.split(" ")
+            ) + if (flags.isNotEmpty()) flags.split(" ").toList() else listOf<String>()
 
             val task = tool.getTask(
                 object : Writer() {

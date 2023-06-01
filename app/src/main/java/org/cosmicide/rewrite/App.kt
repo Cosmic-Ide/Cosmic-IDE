@@ -165,7 +165,7 @@ class App : Application() {
     fun loadPlugins() {
         scope.launch {
             PluginsFragment.getPlugins().forEach { plugin ->
-                val pluginFile = FileUtil.dataDir.resolve(plugin.getName() + ".dex")
+                val pluginFile = FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
                 loader.loadDex(pluginFile)
                 val className = plugin.getName().toLowerCase() + ".Main"
                 val clazz = loader.loader.loadClass(className)

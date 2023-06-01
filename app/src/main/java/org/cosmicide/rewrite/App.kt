@@ -33,6 +33,7 @@ import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileNotFoundException
+import java.lang.reflect.Modifier
 import java.time.ZonedDateTime
 
 class App : Application() {
@@ -166,6 +167,17 @@ class App : Application() {
             PluginsFragment.getPlugins().forEach { plugin ->
                 val pluginFile = FileUtil.dataDir.resolve(plugin.getName() + ".dex")
                 loader.loadDex(pluginFile)
+                val className = plugin.getName().toLowerCase() + ".Main"
+                val clazz = loader.loader.loadClass(className)
+                val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
+                if (Modifier.isStatic(method.modifiers)) {
+                    method.invoke(null, arrayOf<String>())
+                } else {
+                    method.invoke(
+                        clazz.getDeclaredConstructor().newInstance(),
+                        arrayOf<String>()
+                    )
+                }
             }
         }
     }

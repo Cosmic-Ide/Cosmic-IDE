@@ -63,9 +63,9 @@ class D8Task(val project: Project) : Task {
         // Compile libraries
         val libDir = project.libDir
         if (libDir.exists() && libDir.isDirectory) {
-            val libDexDir = File(project.buildDir, "libs").apply { mkdirs() }
+            val libDexDir = project.buildDir.resolve("libs").apply { mkdirs() }
             libDir.listFiles { file -> file.extension == "jar" }?.mapNotNull { lib ->
-                val outDex = File(libDexDir, lib.nameWithoutExtension + ".dex")
+                val outDex = libDexDir.resolve(lib.nameWithoutExtension + ".dex")
                 if (!outDex.exists()) lib.toPath() else null
             }?.forEach { jarFile ->
                 reporter.reportInfo("Compiling library ${jarFile.name}")

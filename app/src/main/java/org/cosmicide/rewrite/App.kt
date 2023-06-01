@@ -26,7 +26,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
@@ -37,6 +39,9 @@ class App : Application() {
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private lateinit var indexFile: File
+    private val loader: MultipleDexClassLoader by lazy {
+        MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -44,6 +49,7 @@ class App : Application() {
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
         Analytics.init(applicationContext)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
         }
@@ -57,6 +63,9 @@ class App : Application() {
         scope.launch {
             loadTextmateTheme()
         }
+
+        loadPlugins()
+
         Analytics.logEvent("theme", "theme" to Prefs.appTheme)
         Analytics.logEvent(
             "startup",
@@ -150,6 +159,15 @@ class App : Application() {
                 }
             }
         ThemeRegistry.getInstance().setTheme(themeName)
+    }
+
+    fun loadPlugins() {
+        scope.launch {
+            PluginsFragment.getPlugins().forEach { plugin ->
+                val pluginFile = FileUtil.dataDir.resolve(plugin.getName() + ".dex")
+                loader.loadDex(pluginFile)
+            }
+        }
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {

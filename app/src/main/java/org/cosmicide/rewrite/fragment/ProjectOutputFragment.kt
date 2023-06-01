@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 import com.android.tools.smali.dexlib2.Opcodes
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile
-import dalvik.system.DexClassLoader
 import dev.xdark.ssvm.execution.VMException
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +27,7 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.compile.ssvm.SSVM
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.util.FileUtil
+import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.OutputStream
 import java.io.PrintStream
@@ -110,6 +110,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
     fun runClass(className: String) = CoroutineScope(Dispatchers.IO).launch {
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
+                // This is a hack to allow the editor to update properly even when in a while(true) loop
+                Thread.sleep(1)
+
                 val text = binding.infoEditor.text
                 lifecycleScope.launch(Dispatchers.Main) {
                     text.insert(
@@ -118,21 +121,19 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         p0.toChar().toString()
                     )
                 }
-                // This is a hack to allow the editor to update properly even when in a while(true) loop
-                Thread.sleep(1)
             }
         })
         System.setOut(systemOut)
         System.setErr(systemOut)
 
-        val loader = DexClassLoader(
-            project.binDir.resolve("classes.dex").absolutePath,
-            project.binDir.toString(),
-            null,
-            javaClass.classLoader
-        )
+        val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
+        loader.loadDex(project.binDir.resolve("classes.dex"))
+
+        project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "dex" }?.forEach {
+            loader.loadDex(it)
+        }
         runCatching {
-            loader.loadClass(className)
+            loader.loader.loadClass(className)
         }.onSuccess { clazz ->
             isRunning = true
             if (Prefs.useSSVM) {

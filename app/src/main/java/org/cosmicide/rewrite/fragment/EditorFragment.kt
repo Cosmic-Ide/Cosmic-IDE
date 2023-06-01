@@ -15,7 +15,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -56,9 +56,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private val project: Project =
         ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
     private val fileIndex: FileIndex = FileIndex(project)
-    private val fileViewModel: FileViewModel by lazy {
-        ViewModelProvider(this)[FileViewModel::class.java]
-    }
+    private val fileViewModel: FileViewModel by activityViewModels<FileViewModel>()
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 

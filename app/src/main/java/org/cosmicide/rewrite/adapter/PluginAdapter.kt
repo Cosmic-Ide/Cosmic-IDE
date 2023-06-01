@@ -43,6 +43,8 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
      */
     interface OnPluginEventListener {
         fun onPluginClicked(plugin: Plugin)
+
+        fun onPluginLongClicked(plugin: Plugin)
     }
 
     /**
@@ -84,9 +86,15 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
          */
         fun bind(plugin: Plugin) {
             val title = "${plugin.getName()} v${plugin.getVersion()}"
-            binding.title.text = title
-            binding.author.text = plugin.getAuthor()
-            binding.root.setOnClickListener { listener.onPluginClicked(plugin) }
+            binding.apply {
+                switch1.text = title
+                author.text = plugin.getAuthor()
+                root.setOnClickListener { listener.onPluginClicked(plugin) }
+                root.setOnLongClickListener {
+                    listener.onPluginLongClicked(plugin)
+                    true
+                }
+            }
         }
     }
 }

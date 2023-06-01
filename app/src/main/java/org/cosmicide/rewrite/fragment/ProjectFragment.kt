@@ -71,7 +71,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 }
             }
         }.also { documentPickerLauncher = it }
-    // for exporting a project
 
 
     override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)

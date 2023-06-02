@@ -7,14 +7,10 @@
 
 package io.github.rosemoe.sora.langs.textmate
 
-import android.os.Bundle
-import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.Content
-import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.text.TextRange
 import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.cosmicide.rewrite.common.Prefs
@@ -67,14 +63,6 @@ open class IdeLanguage(
     init {
         tabSize = Prefs.tabSize
         useTab(Prefs.useSpaces.not())
-    }
-
-    override fun requireAutoComplete(
-        content: ContentReference,
-        position: CharPosition,
-        publisher: CompletionPublisher,
-        extraArguments: Bundle
-    ) {
     }
 
     override fun getFormatter(): Formatter {

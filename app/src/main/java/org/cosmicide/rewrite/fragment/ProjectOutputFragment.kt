@@ -111,7 +111,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
                 // This is a hack to allow the editor to update properly even when in a while(true) loop
-                Thread.sleep(1)
+                Thread.sleep(4)
 
                 val text = binding.infoEditor.text
                 lifecycleScope.launch(Dispatchers.Main) {

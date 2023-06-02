@@ -11,6 +11,7 @@ import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
@@ -75,18 +76,17 @@ class App : Application() {
             "model" to Build.MODEL,
             "manufacturer" to Build.MANUFACTURER,
             "sdk" to Build.VERSION.SDK_INT.toString(),
-            "abi" to Build.SUPPORTED_ABIS.joinToString()
+            "abi" to Build.SUPPORTED_ABIS.joinToString(),
+            "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
         )
 
         CrashConfig.Builder
             .create()
-            .backgroundMode(CrashConfig.BACKGROUND_MODE_SHOW_CUSTOM)
-            .errorActivity(CrashActivity::class.java)
-            .enabled(true)
             .showRestartButton(true)
             .trackActivities(true)
             .apply()
 
+        Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         val theme = getTheme(Prefs.appTheme)
         val uiModeManager = getSystemService(UiModeManager::class.java)
         if (uiModeManager.nightMode == theme) {
@@ -162,12 +162,14 @@ class App : Application() {
         ThemeRegistry.getInstance().setTheme(themeName)
     }
 
-    fun loadPlugins() {
+    private fun loadPlugins() {
         scope.launch {
             PluginsFragment.getPlugins().forEach { plugin ->
-                val pluginFile = FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
+                val pluginFile =
+                    FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
+                if (pluginFile.exists().not()) return@forEach
                 loader.loadDex(pluginFile)
-                val className = plugin.getName().toLowerCase() + ".Main"
+                val className = plugin.getName().lowercase() + ".Main"
                 val clazz = loader.loader.loadClass(className)
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.modifiers)) {
@@ -178,6 +180,7 @@ class App : Application() {
                         arrayOf<String>()
                     )
                 }
+                Log.d("Plugin", "Loaded plugin ${plugin.getName()}")
             }
         }
     }

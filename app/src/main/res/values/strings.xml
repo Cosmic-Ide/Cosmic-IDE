@@ -27,6 +27,8 @@
     <string name="project_output">Project output</string>
     <string name="reload">Reload</string>
     <string name="cancel">Cancel</string>
+    <string name="analytics_permission_title">Improve Your Experience</string>
+    <string name="analytics_permission_message">Help us enhance your app experience! By enabling analytics, you\'ll help us in optimizing features, identifying and fixing issues faster, and delivering a better overall experience. Your data will be anonymized and treated with utmost confidentiality. It will not be shared with any third party source. You can opt out any time in settings.</string>
     <string name="pref_theme_auto">System theme</string>
     <string name="pref_theme_light">Light theme</string>
     <string name="pref_theme_dark">Dark theme</string>
@@ -35,4 +37,6 @@
     <string name="redo">Redo</string>
     <string name="dependency_manager">Dependency Manager</string>
     <string name="expand_collapse">Expand/Collapse</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
 </resources>

@@ -9,6 +9,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
 }
 
 android {
@@ -21,6 +23,7 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "GIT_COMMIT", "\"${getGitCommit()}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,7 +49,24 @@ android {
     viewBinding {
         enable = true
     }
+
+    configurations.configureEach {
+        exclude(group = "javax.inject", module = "javax.inject")
+    }
 }
+
+fun getGitCommit(): String {
+    return try {
+        val process = Runtime.getRuntime().exec("git rev-parse --short HEAD")
+        process.waitFor()
+        val commit = process.inputStream.bufferedReader().readText().trim()
+        println("Git commit: $commit")
+        commit
+    } catch (e: Exception) {
+        ""
+    }
+}
+
 
 dependencies {
     implementation("com.android.tools:desugar_jdk_libs:2.0.3")
@@ -82,9 +102,9 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.0.0")
 
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))
-    implementation("com.google.firebase:firebase-analytics-ktx") {
-        exclude(group = "javax.inject", module = "javax.inject")
-    }
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-perf-ktx:20.3.2")
     implementation("com.google.gms:google-services:4.3.15")
 
     implementation(projects.buildTools)

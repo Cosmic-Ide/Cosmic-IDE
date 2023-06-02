@@ -14,10 +14,12 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ProjectAdapter
+import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
@@ -77,6 +80,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        askForAnalyticsPermission()
 
         setOnClickListeners()
         setUpProjectList()
@@ -155,6 +159,32 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             }
             .show()
         return true
+    }
+
+    private fun askForAnalyticsPermission() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        if (prefs.getBoolean("analytics_preference_asked", false)) return
+        MaterialAlertDialogBuilder(requireContext()).apply {
+            setTitle(getString(R.string.analytics_permission_title))
+            setMessage(R.string.analytics_permission_message)
+            setCancelable(false)
+            setPositiveButton(R.string.accept) { _, _ ->
+                prefs.edit {
+                    putBoolean("analytics_preference", true).apply()
+                    putBoolean("analytics_preference_asked", true).apply()
+                }
+
+            }
+            setNegativeButton(R.string.decline) { _, _ ->
+                prefs.edit {
+                    putBoolean("analytics_preference", false).apply()
+                    putBoolean("analytics_preference_asked", true).apply()
+                }
+                Analytics.setAnalyticsCollectionEnabled(false)
+            }
+            allowEnterTransitionOverlap = true
+            show()
+        }
     }
 
     private fun navigateToNewProjectFragment() {

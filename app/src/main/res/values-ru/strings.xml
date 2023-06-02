@@ -4,27 +4,35 @@
   ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
-
 <resources>
     <string name="app_name">Cosmic IDE Rewrite</string>
     <string name="action_settings">Настройки</string>
-    <string name="next">Следующий</string>
-    <string name="import_project">Импортный проект</string>
-    <string name="project">Проект</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Следующее</string>
+    <string name="import_project">Импортировать проект</string>
+
+    <string name="projects">Проекты</string>
     <string name="new_project">Новый проект</string>
-    <string name="use_kotlin_template">Используйте  </string>
-    <string name="enter_project_name">Введите название проекта</string>
-    <string name="project_name">Название проекта</string>
+    <string name="use_kotlin_template">Использовать шаблон для Kotlin</string>
+    <string name="enter_project_name">Введите имя проекта</string>
+    <string name="project_name">Имя проекта</string>
     <string name="editor">Редактор</string>
-    <string name="enter_package_name">Введите имя пакета</string>
+    <string name="enter_package_name">Введите имя папки (package)</string>
+
     <string name="create_project">Создать проект</string>
-    <string name="project_path">Путь проекта</string>
-    <string name="action_compile">Компиляция</string>
-    <string name="compile_info"> информация</string>
-    <string name="project_output">Выход проекта</string>
-    <string name="reload">Перезагрузка</string>
-    <string name="cancel">Отмена</string>
-    <string name="pref_theme_auto">Системная тема</string>
+    <string name="project_path">Путь к проекту</string>
+    <string name="action_compile">Скомпилировать</string>
+    <string name="compile_info">Информация о компилировании</string>
+    <string name="project_output">Вывод проекта</string>
+    <string name="reload">Перезагрузить</string>
+    <string name="cancel">Отменить</string>
+    <string name="pref_theme_auto">Тема системы</string>
     <string name="pref_theme_light">Светлая тема</string>
     <string name="pref_theme_dark">Тёмная тема</string>
+    <string name="download">Скачать</string>
+    <string name="undo">Отменить</string>
+    <string name="redo">Вернуть</string>
+    <!-- Dependency Manager will sound awkward in russian -->
+    <string name="dependency_manager">Dependency Manager</string>
+    <string name="expand_collapse">Свернуть/Развернуть</string>
 </resources>

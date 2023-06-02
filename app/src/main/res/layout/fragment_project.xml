@@ -21,7 +21,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/project" />
+            app:title="@string/projects" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

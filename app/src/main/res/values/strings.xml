@@ -12,7 +12,7 @@
     <string name="next">Next</string>
     <string name="import_project">Import Project</string>
 
-    <string name="project">Project</string>
+    <string name="projects">Projects</string>
     <string name="new_project">New Project</string>
     <string name="use_kotlin_template">Use Kotlin Template</string>
     <string name="enter_project_name">Enter project name</string>

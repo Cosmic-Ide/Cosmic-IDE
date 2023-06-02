@@ -1,0 +1,70 @@
+<!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="1080dp"
+    android:height="1080dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="1080">
+    <path android:pathData="M515.1,725.8L472,824.5C455.4,862.4 403,862.4 386.4,824.5L343.3,725.8C305,638 236,568.1 149.9,529.9L31.3,477.3C-6.4,460.5 -6.4,405.7 31.3,388.9L146.2,337.9C234.5,298.7 304.7,226.2 342.4,135.4L386,30.3C402.2,-8.8 456.2,-8.8 472.4,30.3L516,135.4C553.7,226.2 623.9,298.7 712.2,337.9L827.1,388.9C864.8,405.7 864.8,460.5 827.1,477.3L708.5,529.9C622.4,568.1 553.4,638 515.1,725.8Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="670.4"
+                android:centerY="474"
+                android:gradientRadius="665.5"
+                android:type="radial">
+                <item
+                    android:color="#FF1BA1E3"
+                    android:offset="0" />
+                <item
+                    android:color="#FF1BA1E3"
+                    android:offset="0" />
+                <item
+                    android:color="#FF5489D6"
+                    android:offset="0.3" />
+                <item
+                    android:color="#FF9B72CB"
+                    android:offset="0.5" />
+                <item
+                    android:color="#FFD96570"
+                    android:offset="0.8" />
+                <item
+                    android:color="#FFF49C46"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:pathData="M915.5,1037L903.4,1064.8C894.5,1085.1 866.3,1085.1 857.5,1064.8L845.4,1037C823.8,987.5 784.9,948 736.3,926.5L699,909.9C678.8,900.9 678.8,871.6 699,862.6L734.2,847C784,824.8 823.6,783.9 844.9,732.8L857.3,702.7C866,681.8 894.9,681.8 903.6,702.7L916,732.8C937.2,783.9 976.8,824.8 1026.6,847L1061.9,862.6C1082.1,871.6 1082.1,900.9 1061.9,909.9L1024.5,926.5C976,948 937.1,987.5 915.5,1037Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:centerX="670.4"
+                android:centerY="474"
+                android:gradientRadius="665.5"
+                android:type="radial">
+                <item
+                    android:color="#FF1BA1E3"
+                    android:offset="0" />
+                <item
+                    android:color="#FF1BA1E3"
+                    android:offset="0" />
+                <item
+                    android:color="#FF5489D6"
+                    android:offset="0.3" />
+                <item
+                    android:color="#FF9B72CB"
+                    android:offset="0.5" />
+                <item
+                    android:color="#FFD96570"
+                    android:offset="0.8" />
+                <item
+                    android:color="#FFF49C46"
+                    android:offset="1" />
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

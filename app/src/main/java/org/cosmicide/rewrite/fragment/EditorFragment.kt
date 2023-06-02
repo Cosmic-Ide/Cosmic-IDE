@@ -317,6 +317,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
+                    R.id.action_chat -> {
+                        parentFragmentManager.beginTransaction().apply {
+                            add(R.id.fragment_container, ChatFragment())
+                            addToBackStack(null)
+                        }.commit()
+                        true
+                    }
+
                     else -> false
                 }
             }

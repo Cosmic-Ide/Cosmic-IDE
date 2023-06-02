@@ -48,7 +48,7 @@ import java.util.zip.ZipFile
 class SSVM(
     private val rtJar: ZipFile,
 ) {
-    private lateinit var vm: VirtualMachine
+    lateinit var vm: VirtualMachine
 
     private var initialized: Boolean = false
 

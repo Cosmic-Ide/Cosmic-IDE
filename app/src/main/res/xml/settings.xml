@@ -114,6 +114,12 @@
             android:summary="Set Google Java Formatter style"
             android:title="Google Java Formatter style" />
 
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="use_bard_proxy"
+            android:summary="Useful if bard is not available in your country"
+            android:title="Use proxy for bard" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Compiler">

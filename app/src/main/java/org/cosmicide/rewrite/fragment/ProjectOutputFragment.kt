@@ -141,6 +141,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 invoke(className)
                 return@onSuccess
             }
+            System.setProperty("project.dir", project.root.absolutePath)
             if (clazz.declaredMethods.any { it.name == "main" }) {
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.modifiers)) {
@@ -180,6 +181,8 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         catchVMException {
             // init VM
             ssvm.initVM()
+
+            ssvm.vm.properties.setProperty("project.dir", project.root.absolutePath)
 
             // add test JAR
             FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {

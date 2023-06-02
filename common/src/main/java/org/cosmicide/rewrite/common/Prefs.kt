@@ -76,6 +76,9 @@ object Prefs {
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)
 
+    val useBardProxy: Boolean
+        get() = prefs.getBoolean("use_bard_proxy", false)
+
     val analyticsEnabled: Boolean
         get() = prefs.getBoolean("analytics_preference", true)
 

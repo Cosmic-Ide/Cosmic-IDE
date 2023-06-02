@@ -10,7 +10,7 @@
     <string name="action_settings">Налаштування</string>
     <string name="next">Про нас</string>
     <string name="import_project">Імпортний проект</string>
-    <string name="projects">Проекты</string>
+    <string name="projects">Проект</string>
     <string name="new_project">Новий проект</string>
     <string name="use_kotlin_template">Використовуйте Котлін шаблон</string>
     <string name="enter_project_name">Назва проекту</string>

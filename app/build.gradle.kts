@@ -40,6 +40,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -53,13 +55,15 @@ android {
     configurations.configureEach {
         exclude(group = "javax.inject", module = "javax.inject")
     }
+
+    packagingOptions.resources.excludes.add("META-INF/INDEX.LIST")
 }
 
 fun getGitCommit(): String {
     return try {
-        val process = Runtime.getRuntime().exec("git rev-parse --short HEAD")
-        process.waitFor()
-        val commit = process.inputStream.bufferedReader().readText().trim()
+        val commit = providers.exec {
+            commandLine("git", "rev-parse", "--short", "HEAD")
+        }.standardOutput.asText.get().trim()
         println("Git commit: $commit")
         commit
     } catch (e: Exception) {
@@ -69,7 +73,8 @@ fun getGitCommit(): String {
 
 
 dependencies {
-    implementation("com.android.tools:desugar_jdk_libs:2.0.3")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.10.1")
@@ -116,5 +121,6 @@ dependencies {
     implementation(projects.kotlinc)
     implementation(projects.project)
     implementation(projects.util)
+    implementation(projects.bardapi)
     //implementation(projects.treeView)
 }

@@ -32,11 +32,16 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/dependency_manager"
+        android:title="@string/dependency_manager" />
+
+    <item
+        android:id="@+id/action_chat"
+        android:title="@string/action_chat" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/dependency_manager"
-        android:title="@string/dependency_manager" />
 
 </menu>

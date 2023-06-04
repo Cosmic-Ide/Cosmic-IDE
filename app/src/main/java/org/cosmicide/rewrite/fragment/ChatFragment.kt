@@ -7,10 +7,13 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.pkslow.ai.AIClient
 import com.pkslow.ai.GoogleBardClient
 import com.pkslow.ai.util.NetworkUtils
@@ -71,6 +74,16 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             layoutManager = LinearLayoutManager(requireContext()).apply {
                 stackFromEnd = true
             }
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                    val verticalOffset = 4.dp
+                    outRect.top = verticalOffset
+                    outRect.bottom = verticalOffset
+                }
+            })
         }
     }
 }
+
+inline val Int.dp: Int
+    get() = (Resources.getSystem().displayMetrics.density * this + 0.5f).toInt()

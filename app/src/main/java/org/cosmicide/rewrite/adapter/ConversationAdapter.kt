@@ -11,25 +11,26 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.MaterialColors
 import com.pkslow.ai.domain.Answer
+import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
+import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
-import org.cosmicide.rewrite.databinding.ConversationItemBinding
 
-class ConversationAdapter :
-    RecyclerView.Adapter<ConversationAdapter.ViewHolder>() {
+class ConversationAdapter : RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
 
     private val conversations = mutableListOf<Conversation>()
 
-    data class Conversation(
-        val text: String,
-        val author: String = "Bot",
-    )
+    data class Conversation(val text: String, val author: String = "Bot")
+
+    companion object {
+        const val VIEW_TYPE_SENT = 1
+        const val VIEW_TYPE_RECEIVED = 2
+    }
 
     fun add(conversation: Conversation) {
-        this.conversations += conversation
-        notifyItemInserted(conversations.size - 1)
+        conversations += conversation
+        notifyItemInserted(conversations.lastIndex)
     }
 
     fun add(answer: Answer) {
@@ -37,68 +38,63 @@ class ConversationAdapter :
     }
 
     fun getConversations(): List<Map<String, String>> {
-        val convos = mutableListOf<Map<String, String>>()
-        conversations.forEach {
-            convos.add(mapOf("text" to it.text, "author" to it.author))
-        }
-        return convos
+        return conversations.map { mapOf("text" to it.text, "author" to it.author) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-        ViewHolder(
-            ConversationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindableViewHolder<Conversation, *> {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            VIEW_TYPE_SENT -> SentViewHolder(ConversationItemSentBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_RECEIVED -> ReceivedViewHolder(ConversationItemReceivedBinding.inflate(inflater, parent, false))
+            else -> throw IllegalArgumentException("Invalid view type: $viewType")
+        }
+    }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BindableViewHolder<Conversation, *>, position: Int) {
         holder.bind(conversations[position])
     }
 
     override fun getItemCount() = conversations.size
 
-    class ViewHolder(
-        private val binding: ConversationItemBinding,
-    ) : RecyclerView.ViewHolder(binding.root) {
+    override fun getItemViewType(position: Int): Int {
+        val conversation = conversations[position]
+        return if (conversation.author == "User") {
+            VIEW_TYPE_SENT
+        } else {
+            VIEW_TYPE_RECEIVED
+        }
+    }
 
-        fun bind(convo: Conversation) {
-            binding.textview.apply {
-                val markwon = Markwon.builder(context)
-                    .usePlugin(LinkifyPlugin.create())
-                    .build()
+    inner class SentViewHolder(private val itemBinding: ConversationItemSentBinding) :
+        BindableViewHolder<Conversation, ConversationItemSentBinding>(itemBinding) {
+
+        private val markwon: Markwon by lazy {
+            Markwon.builder(binding.message.context)
+                .usePlugin(LinkifyPlugin.create())
+                .build()
+        }
+
+        override fun bind(conversation: Conversation) {
+            binding.message.apply {
                 movementMethod = LinkMovementMethod.getInstance()
-                text = markwon.toMarkdown(convo.text)
+                markwon.setMarkdown(this, conversation.text)
             }
-            binding.root.apply {
-                if (convo.author == "User") {
-                    setBackgroundColor(
-                        MaterialColors.getColor(
-                            this,
-                            com.google.android.material.R.attr.colorSurface
-                        )
-                    )
-                }
-                /*setOnLongClickListener {
-                    PopupMenu(context, this).apply {
-                        inflate(R.menu.bard_response_menu)
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.view_draft_1 -> {
+        }
+    }
 
-                                    true
-                                }
-                                R.id.view_draft_2 -> {
-                                    binding.textview.text.toString().copyToClipboard(context)
-                                    true
-                                }
-                                R.id.view_draft_3 -> {
-                                    binding.textview.text.toString().copyToClipboard(context)
-                                    true
-                                }
-                                else -> false
-                            }
-                        }
-                    }.show(
-                    true
-                }*/
+    inner class ReceivedViewHolder(private val itemBinding: ConversationItemReceivedBinding) :
+        BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
+
+        private val markwon: Markwon by lazy {
+            Markwon.builder(binding.message.context)
+                .usePlugin(LinkifyPlugin.create())
+                .build()
+        }
+
+        override fun bind(conversation: Conversation) {
+            binding.message.apply {
+                movementMethod = LinkMovementMethod.getInstance()
+                markwon.setMarkdown(this, conversation.text)
             }
         }
     }

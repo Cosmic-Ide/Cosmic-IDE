@@ -16,59 +16,61 @@ import com.pkslow.ai.GoogleBardClient
 import com.pkslow.ai.util.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.adapter.ConversationAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentChatBinding
+import java.time.Duration
 
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
+
     private val conversationAdapter = ConversationAdapter()
-    val client: AIClient =
-        GoogleBardClient(
-            "WwioM6QIAAtOsjpFrWTtle935KZySZOzVDxXGg6IrBezbtYb6RrMzFklQYi2QTJ80bo_Nw.",
-            java.time.Duration.ofHours(1)
-        ) // i hope you dont talk to it for more than an hour lmao
-    // hi, if you were thinking of using this key, don't. It's free already, just get your own.
+
+    // The token will expire in an hour.
+    // If you were thinking of using this key, don't. It's free already, just get your own.
+    private val client: AIClient = GoogleBardClient(
+        "WwioM6QIAAtOsjpFrWTtle935KZySZOzVDxXGg6IrBezbtYb6RrMzFklQYi2QTJ80bo_Nw.",
+        Duration.ofHours(1)
+    )
 
     override fun getViewBinding() = FragmentChatBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (Prefs.useBardProxy) {
-            NetworkUtils.setUpProxy(
-                "198.199.86.11",
-                "8080"
-            ) // thanks to us-proxy.org for the free proxy
+            // Thanks to us-proxy.org for the free proxy.
+            NetworkUtils.setUpProxy("198.199.86.11", "8080")
         }
-        binding.recyclerview.apply {
-            adapter = conversationAdapter
-            layoutManager = LinearLayoutManager(requireContext()).apply { stackFromEnd = true }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
         setOnClickListeners()
+        setupRecyclerView()
     }
 
     private fun setOnClickListeners() {
-        binding.send.setOnClickListener {
-            conversationAdapter.add(
-                ConversationAdapter.Conversation(
-                    binding.textinput.text.toString(),
-                    "User"
-                )
-            )
-            val text = binding.textinput.text.toString()
-            binding.textinput.setText("")
+        binding.sendMessageButtonIcon.setOnClickListener {
+            val message = binding.messageText.text.toString().trim()
+            if (message.isEmpty()) {
+                return@setOnClickListener
+            }
+            val conversation = ConversationAdapter.Conversation(message, "User")
+            conversationAdapter.add(conversation)
+            binding.messageText.setText("")
             lifecycleScope.launch(Dispatchers.IO) {
-                val answer = client.ask(text)
-                lifecycleScope.launch(Dispatchers.Main) {
+                val answer = client.ask(message)
+                withContext(Dispatchers.Main) {
                     conversationAdapter.add(answer)
+                    binding.recyclerview.smoothScrollToPosition(conversationAdapter.itemCount - 1)
                 }
             }
-            binding.recyclerview.smoothScrollToPosition(conversationAdapter.itemCount - 1)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerview.apply {
+            adapter = conversationAdapter
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                stackFromEnd = true
+            }
         }
     }
 }
-

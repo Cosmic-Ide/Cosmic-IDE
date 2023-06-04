@@ -73,17 +73,12 @@ class ProjectAdapter(private val listener: OnProjectEventListener) :
      * @param binding The [ProjectItemBinding] object for the item view.
      * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
      */
-    class ViewHolder(
-        private val binding: ProjectItemBinding,
+    inner class ViewHolder(
+        private val itemBinding: ProjectItemBinding,
         private val listener: OnProjectEventListener
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : BindableViewHolder<Project, ProjectItemBinding>(itemBinding) {
 
-        /**
-         * Binds the given [Project] object to the item view.
-         *
-         * @param project The [Project] object to be displayed.
-         */
-        fun bind(project: Project) {
+        override fun bind(project: Project) {
             binding.projectTitle.text = project.name
             binding.projectPath.text = project.root.absolutePath
             binding.root.setOnClickListener { listener.onProjectClicked(project) }

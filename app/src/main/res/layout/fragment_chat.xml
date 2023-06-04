@@ -11,49 +11,77 @@
     android:layout_height="match_parent"
     android:background="?colorSurface">
 
-    <ScrollView
-        android:id="@+id/scrollview"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </HorizontalScrollView>
-    </ScrollView>
-
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/scrollview" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:id="@+id/chat_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/chat_view_background"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider">
+        app:layout_constraintTop_toBottomOf="@id/recyclerview">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textinput"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/type_a_message" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/send" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/message_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="Talk to Bard"
+                android:inputType="textAutoCorrect|textCapSentences|textMultiLine|textShortMessage"
+                android:imeOptions="actionSend|flagNoEnterAction|flagNoExtractUi"
+                android:paddingVertical="8dp" />
+
+            <LinearLayout
+                android:id="@+id/send_message_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:orientation="vertical"
+                android:gravity="bottom">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:minWidth="@dimen/min_touch_target_size"
+                    android:minHeight="@dimen/min_touch_target_size"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="16dp">
+
+                    <ImageView
+                        android:id="@+id/send_message_button_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_baseline_send_24" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

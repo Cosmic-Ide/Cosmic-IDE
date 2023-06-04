@@ -74,17 +74,12 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
      * @param binding The [PluginItemBinding] object for the item view.
      * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
      */
-    class ViewHolder(
-        private val binding: PluginItemBinding,
+    inner class ViewHolder(
+        private val itemBinding: PluginItemBinding,
         private val listener: OnPluginEventListener
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : BindableViewHolder<Plugin, PluginItemBinding>(itemBinding) {
 
-        /**
-         * Binds the given [Plugin] object to the item view.
-         *
-         * @param plugin The [Plugin] object to be displayed.
-         */
-        fun bind(plugin: Plugin) {
+        override fun bind(plugin: Plugin) {
             val title = "${plugin.getName()} v${plugin.getVersion()}"
             binding.apply {
                 switch1.text = title

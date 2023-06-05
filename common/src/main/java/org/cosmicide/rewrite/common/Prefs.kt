@@ -82,6 +82,9 @@ object Prefs {
     val analyticsEnabled: Boolean
         get() = prefs.getBoolean("analytics_preference", true)
 
+    val doubleClickClose: Boolean
+        get() = prefs.getBoolean("double_click_close", false)
+
     val editorFontSize: Float
         get() = runCatching {
             prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f

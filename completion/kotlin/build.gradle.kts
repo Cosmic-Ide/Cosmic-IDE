@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "com.tyron.kotlin.completion"
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 26

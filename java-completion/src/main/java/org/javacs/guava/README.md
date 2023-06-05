@@ -1,0 +1,1 @@
+Forked from Guava so we can eliminate the dependency and make jlink work.

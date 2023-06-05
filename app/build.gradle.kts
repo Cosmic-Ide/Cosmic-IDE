@@ -56,7 +56,22 @@ android {
         exclude(group = "javax.inject", module = "javax.inject")
     }
 
-    packagingOptions.resources.excludes.add("META-INF/INDEX.LIST")
+    packagingOptions.resources.excludes.addAll(
+        listOf(
+            "META-INF/INDEX.LIST",
+            "META-INF/eclipse.inf",
+            "META-INF/CHANGES",
+            "META-INF/README.md",
+            "about_files/LICENSE-2.0.txt",
+            "META-INF/AL2.0",
+            "META-INF/LGPL2.1",
+            "plugin.xml",
+            "plugin.properties",
+            "about.mappings",
+            "about.properties",
+            "about.ini",
+        )
+    )
 }
 
 fun getGitCommit(): String {
@@ -70,7 +85,6 @@ fun getGitCommit(): String {
         ""
     }
 }
-
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
@@ -122,5 +136,4 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.bardapi)
-    //implementation(projects.treeView)
 }

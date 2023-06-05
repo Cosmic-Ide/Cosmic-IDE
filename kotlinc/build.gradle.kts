@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "org.jetbrains.kotlin"
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         minSdk = 26

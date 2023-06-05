@@ -46,7 +46,6 @@
             android:summary="Use spaces instead of tabs for indentation in the editor"
             android:title="Use spaces instead of tabs" />
 
-
         <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="font_ligatures"
@@ -85,6 +84,13 @@
             android:key="line_numbers"
             android:summary="Enable line numbers in the editor"
             android:title="Enable Line Number" />
+
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="double_click_close"
+            android:summary="Close file on double click on editor tab"
+            android:title="Close file on double click" />
 
     </PreferenceCategory>
 

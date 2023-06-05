@@ -66,6 +66,7 @@ class KotlinLanguage(
                     it, position.line, position.column
                 )
             }
+            println("itemList: $itemList")
             publisher.addItems(itemList)
         } catch (e: Throwable) {
             if (e !is InterruptedException) {

@@ -96,23 +96,29 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     private fun setOnClickListeners() {
         binding.fabs.importButton.visibility = View.GONE
-        binding.fabs.newProjectTextview.visibility = View.GONE
+        binding.fabs.fabNewProject.visibility = View.GONE
+        binding.fabs.cancelText.visibility = View.GONE
 
-        binding.fabs.fabNewProject.setOnClickListener {
+        binding.fabs.cancel.setOnClickListener {
             if (!binding.fabs.importButton.isVisible) {
                 binding.fabs.importButton.visibility = View.VISIBLE
-                binding.fabs.newProjectTextview.visibility = View.VISIBLE
+                binding.fabs.fabNewProject.visibility = View.VISIBLE
+                binding.fabs.cancelText.visibility = View.VISIBLE
                 binding.fabs.importButton.setOnClickListener {
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/zip" // Set the MIME type to filter the files, if needed
+                        type = "application/zip"
                     }
 
                     documentPickerLauncher.launch(intent)
-
+                }
+                binding.fabs.fabNewProject.setOnClickListener {
+                    navigateToNewProjectFragment()
                 }
             } else {
-                navigateToNewProjectFragment()
+                binding.fabs.importButton.visibility = View.GONE
+                binding.fabs.fabNewProject.visibility = View.GONE
+                binding.fabs.cancelText.visibility = View.GONE
             }
         }
     }

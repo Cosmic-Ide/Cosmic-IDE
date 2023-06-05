@@ -91,12 +91,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         initTreeView()
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            private var isClicked = false
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val file = fileViewModel.files.value?.get(tab.position) ?: return
                 val isBinary = file.extension == "class"
 
-                if (fileViewModel.currentPosition.value != tab.position)
+                if (fileViewModel.currentPosition.value != tab.position) {
                     fileViewModel.setCurrentPosition(tab.position)
+                }
 
                 if (isBinary) {
                     binding.editor.setText(Javap.disassemble(file.absolutePath))
@@ -112,7 +114,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
+                if (isClicked) {
+                    fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
+                    binding.tabLayout.removeTabAt(tab.position)
+                    binding.editor.setText("")
+                    return
+                }
+                isClicked = true
                 onTabSelected(tab)
+                binding.root.postDelayed({ isClicked = false }, 10000)
             }
         })
 

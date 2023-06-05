@@ -28,9 +28,15 @@ class EditorCompletionItem(
         if (commitText == null) return
 
         val suffix = when (kind) {
-            CompletionItemKind.Method, CompletionItemKind.Constructor -> "()"
+            CompletionItemKind.Constructor -> "()"
             CompletionItemKind.Module -> "."
-            else -> ""
+            else -> {
+                if (kind == CompletionItemKind.Method && label.endsWith(')').not()) {
+                    "()"
+                } else {
+                    ""
+                }
+            }
         }
 
         text.replace(line, column - prefixLength, line, column, commitText + suffix)

@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="Cosmic_IDE_Rewrite.app" target="17" />
+      <module name="CosmicIDE-Rewrite.java-completion.test" target="17" />
       <module name="CosmicIDE-Rewrite.lynx" target="17" />
     </bytecodeTargetLevel>
   </component>

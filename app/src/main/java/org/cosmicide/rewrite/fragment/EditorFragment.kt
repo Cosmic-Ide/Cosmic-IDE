@@ -262,6 +262,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.toolbar.apply {
             title = project.name
             setNavigationOnClickListener {
+                binding.editor.hideEditorWindows()
                 binding.drawer.open()
             }
             setOnMenuItemClickListener {

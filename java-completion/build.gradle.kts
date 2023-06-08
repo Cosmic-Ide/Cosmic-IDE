@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 /*
  * This file is part of Cosmic IDE.
  * Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -8,22 +6,38 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  */
 
 plugins {
-    id("java-library")
-    id("org.jetbrains.kotlin.jvm")
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
+android {
+    namespace = "org.cosmicide.completion.java"
+    compileSdk = 33
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    defaultConfig {
+        minSdk = 26
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
 }
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 dependencies {
-    implementation("org.eclipse.lsp4j:org.eclipse.lsp4j:0.12.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("com.google.guava:guava:32.0.0-jre")
+    implementation("com.github.javaparser:javaparser-core:3.25.3")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.3")
+    implementation("org.javassist:javassist:3.29.2-GA")
+    implementation(projects.common)
+    implementation(projects.project)
+    implementation(projects.kotlinc)
+    implementation(projects.util)
 }

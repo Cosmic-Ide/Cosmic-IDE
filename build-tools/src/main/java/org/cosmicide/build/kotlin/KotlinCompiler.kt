@@ -41,8 +41,8 @@ class KotlinCompiler(val project: Project) : Task {
             return
         }
 
-        val kotlinHomeDir = File(project.binDir, "kotlin").apply { mkdirs() }
-        val classOutput = File(project.binDir, "classes").apply { mkdirs() }
+        val kotlinHomeDir = project.binDir.resolve("kotlin").apply { mkdirs() }
+        val classOutput = project.binDir.resolve("classes").apply { mkdirs() }
         val classpathFiles = collectClasspathFiles()
 
         val enabledPlugins = getKotlinCompilerPlugins().map(File::getAbsolutePath).toTypedArray()

@@ -20,8 +20,14 @@ class EditorCompletionItem(
     val commitText: String
 ) : SimpleCompletionItem(label, description, prefixLength, commitText) {
 
+    private val listeners = mutableListOf<(content: Content) -> Unit>()
+
     override fun performCompletion(editor: CodeEditor, text: Content, position: CharPosition) {
         performCompletion(editor, text, position.line, position.column)
+    }
+
+    fun setOnComplete(listener: (content: Content) -> Unit) {
+        listeners.add(listener)
     }
 
     override fun performCompletion(editor: CodeEditor, text: Content, line: Int, column: Int) {
@@ -57,5 +63,11 @@ class EditorCompletionItem(
                 }
             }
         }
+        listeners.forEach { it(text) }
+    }
+
+    override fun kind(kind: CompletionItemKind?): EditorCompletionItem {
+        super.kind(kind)
+        return this
     }
 }

@@ -18,14 +18,14 @@ android {
     compileSdk = 33
 
     defaultConfig {
+        val commit = getGitCommit()
         applicationId = "org.cosmicide.rewrite"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0"
-        buildConfigField("String", "GIT_COMMIT", "\"${getGitCommit()}\"")
+        versionName = "1.0-$commit"
+        buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -136,4 +136,5 @@ dependencies {
     implementation(projects.project)
     implementation(projects.util)
     implementation(projects.bardapi)
+    implementation(projects.javaCompletion)
 }

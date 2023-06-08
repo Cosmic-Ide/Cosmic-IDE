@@ -94,7 +94,7 @@ class CompletionProvider {
             if (!isImportedClass(psiFile, qualifiedName)) {
                 println("Not imported")
                 item.setOnComplete {
-                    it.replace(0, it.length, addImportStatement(psiFile, qualifiedName))
+                    //it.replace(0, it.length, addImportStatement(psiFile, qualifiedName))
                     println("Added import statement")
                 }
             }

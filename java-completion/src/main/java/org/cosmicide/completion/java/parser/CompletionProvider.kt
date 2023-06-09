@@ -156,10 +156,10 @@ class CompletionProvider {
             println("Qualified name: $qualifiedName")
             if (!isImportedClass(psiFile, qualifiedName)) {
                 println("Not imported")
-                item.setOnComplete {
+                /*item.setOnComplete {
                     it.replace(0, it.length, addImport(psiFile, qualifiedName))
                     println("Added import statement")
-                }
+                }*/
             }
             completionItems.add(item)
         }

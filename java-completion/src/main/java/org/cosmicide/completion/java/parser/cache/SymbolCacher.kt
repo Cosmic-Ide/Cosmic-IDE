@@ -21,6 +21,7 @@ import java.util.jar.JarFile
 
 class SymbolCacher(private val jarFile: File) {
     private val cache = ConcurrentHashMap<String, CtClass>()
+    private val packageCache = ConcurrentHashMap<String, String>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
     fun getClass(className: String): CtClass? {
@@ -32,9 +33,14 @@ class SymbolCacher(private val jarFile: File) {
         val classPool = ClassPool.getDefault()
         val file = JarFile(jarFile)
         val deferredList = file.entries().asSequence()
-            .filter { !it.isDirectory && it.name.endsWith(".class") }
             .map { entry ->
                 scope.async {
+                    if (entry.name.endsWith(".class").not()) return@async
+                    val packageName = entry.name.substringBeforeLast('/').replace('/', '.')
+                    if (packageCache.containsKey(packageName).not()) {
+                        println("Loading package: $packageName")
+                        packageCache[packageName] = packageName
+                    }
                     val ctClass = classPool.makeClass(file.getInputStream(entry))
                     if (isPublicStaticClass(ctClass)) {
                         cache[ctClass.name] = ctClass
@@ -71,6 +77,14 @@ class SymbolCacher(private val jarFile: File) {
                 val qualifiedName = entry.value.qualifiedName()
                 entry.key.substringBeforeLast('.') to qualifiedName
             }
+    }
+
+    fun getClasses(): MutableSet<MutableMap.MutableEntry<String, CtClass>> {
+        return cache.entries
+    }
+
+    fun getPackages(): MutableSet<MutableMap.MutableEntry<String, String>> {
+        return packageCache.entries
     }
 }
 

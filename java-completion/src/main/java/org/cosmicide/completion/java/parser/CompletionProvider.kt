@@ -13,26 +13,37 @@
  */
 package org.cosmicide.completion.java.parser
 
+import com.github.javaparser.JavaParser
+import com.github.javaparser.ParserConfiguration
+import com.github.javaparser.ast.ImportDeclaration
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration
+import com.github.javaparser.symbolsolver.JavaSymbolSolver
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver
 import com.intellij.core.JavaCoreApplicationEnvironment
 import com.intellij.core.JavaCoreProjectEnvironment
 import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.vfs.impl.VirtualFileManagerImpl
-import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementFinder
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiImportList
+import com.intellij.psi.PsiImportStatement
+import com.intellij.psi.PsiImportStaticReferenceElement
+import com.intellij.psi.PsiImportStaticStatement
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiJavaToken
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.CodeStyleManager
+import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import org.cosmicide.completion.java.parser.cache.SymbolCacher
+import org.cosmicide.completion.java.parser.cache.qualifiedName
 import org.cosmicide.rewrite.editor.EditorCompletionItem
 import org.cosmicide.rewrite.util.FileUtil
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
@@ -52,6 +63,10 @@ class CompletionProvider {
         loadClassesFromJar()
     }
 
+    private val fileFactory by lazy {
+        PsiFileFactory.getInstance(environment.project)
+    }
+
     init {
         setIdeaIoUseFallback()
         setupIdeaStandaloneExecution()
@@ -66,7 +81,6 @@ class CompletionProvider {
 
     fun complete(source: String?, fileName: String?, index: Int): List<EditorCompletionItem> {
         environment.addJarToClassPath(FileUtil.classpathDir.resolve("android.jar"))
-        val fileFactory = PsiFileFactory.getInstance(environment.project)
         val psiFile = fileFactory.createFileFromText(fileName!!, JavaFileType.INSTANCE, source!!)
 
         // Find the element at the specified position
@@ -76,10 +90,59 @@ class CompletionProvider {
             println("Element is null")
             return emptyList()
         }
+
+        val completionItems = mutableListOf<EditorCompletionItem>()
+        println("Prefix: ${element.text}")
+
         println("Element is ${getElementType(element)}")
         val isImported = isImportedClass(element)
         println("Imported already $isImported")
-        val completionItems = mutableListOf<EditorCompletionItem>()
+        if (isImportStatementContext(element)) {
+            println("Import statement context")
+            val packageName =
+                getFullyQualifiedPackageName(element)!! + if (element.text.endsWith(".")) "." else ""
+            println("Package name: $packageName")
+            symbolCacher.getClasses()
+                .filter {
+                    val bool = it.key.startsWith(packageName) && it.key.substringAfter(packageName)
+                        .contains('.').not()
+                    println("condition: $bool, class: ${it.key}}")
+                    bool
+                }.map {
+                    completionItems.add(
+                        EditorCompletionItem(
+                            it.value.qualifiedName(),
+                            it.key.substringBeforeLast('.'),
+                            0,
+                            it.value.qualifiedName()
+                        ).kind(CompletionItemKind.Class)
+                    )
+                }
+            if (packageName.endsWith('.')) {
+                val mPackage = packageName.substringBeforeLast('.')
+                symbolCacher.getPackages()
+                    .filter {
+                        val parentPkgName = it.key.substringBeforeLast('.')
+                        println("match : $parentPkgName")
+                        val matches = parentPkgName == mPackage
+                        println("Matches: $matches, package: ${it.key}")
+                        matches
+                    }
+                    .map {
+                        val toAdd = it.key.substringAfterLast('.')
+                        completionItems.add(
+                            EditorCompletionItem(
+                                toAdd,
+                                it.key.substringBeforeLast('.'),
+                                0,
+                                toAdd
+                            ).kind(CompletionItemKind.Module)
+                        )
+                    }
+            }
+            return completionItems
+        }
+
         val items = symbolCacher.filterClassNames(element.text)
         println("Items: $items")
         for (clazz in items) {
@@ -94,7 +157,7 @@ class CompletionProvider {
             if (!isImportedClass(psiFile, qualifiedName)) {
                 println("Not imported")
                 item.setOnComplete {
-                    //it.replace(0, it.length, addImportStatement(psiFile, qualifiedName))
+                    it.replace(0, it.length, addImport(psiFile, qualifiedName))
                     println("Added import statement")
                 }
             }
@@ -151,6 +214,10 @@ class CompletionProvider {
         return false
     }
 
+    fun isImportStatementContext(element: PsiElement): Boolean {
+        return element is PsiImportStatement || element.parent is PsiImportList || element.parent is PsiImportStaticStatement || element.parent is PsiImportStaticReferenceElement || element.parent is PsiImportStatement
+    }
+
     private fun formatCode(psiFile: PsiFile) {
         val codeStyleManager = CodeStyleManager.getInstance(environment.project)
         codeStyleManager.reformat(psiFile)
@@ -176,6 +243,11 @@ class CompletionProvider {
             ExtensionPoint.Kind.INTERFACE
         )
         Extensions.getRootArea().registerExtensionPoint(
+            "com.intellij.treeCopyHandler",
+            TreeCopyHandler::class.java.name,
+            ExtensionPoint.Kind.INTERFACE
+        )
+        Extensions.getRootArea().registerExtensionPoint(
             "com.intellij.lang.psiAugmentProvider",
             PsiAugmentProvider::class.java.name,
             ExtensionPoint.Kind.INTERFACE
@@ -192,24 +264,41 @@ class CompletionProvider {
         )
     }
 
-    fun addImportStatement(psiFile: PsiFile, importStatement: String): String {
-        if (psiFile is PsiJavaFile) {
-            val factory = JavaPsiFacade.getElementFactory(psiFile.project)
-            val importStatementElement = factory.createImportStatementOnDemand(importStatement)
+    private fun getFullyQualifiedPackageName(element: PsiElement): String? {
+        if (element is PsiImportStatement) {
+            val importReference = element.importReference
+            if (importReference != null) {
+                importReference.qualifiedName?.let {
+                    println("Imported package: $it")
+                    return it
+                }
+            }
+        }
+        println("Not an import statement")
+        return null
+    }
 
-            // Find the appropriate location to insert the import statement
-            val importList = psiFile.importList
-            val anchor = importList?.lastChild ?: psiFile.firstChild
+    fun addImport(psiFile: PsiFile, importStatement: String): String {
+        val typeSolver = CombinedTypeSolver()
+        val config = ParserConfiguration().setSymbolResolver(JavaSymbolSolver(typeSolver))
+        val parser = JavaParser(config)
+        val parsed = parser.parse(psiFile.text)
+        if (parsed.result.isPresent) {
+            val cu = parsed.result.get()
+            val imports = cu.imports
+            imports.add(ImportDeclaration(importStatement, false, false))
+            cu.setImports(imports)
+            val printerConfiguration = DefaultPrinterConfiguration()
 
-            // Insert the new import statement
-            importList?.addBefore(importStatementElement, anchor)
-
-            // Reformat the code
-            val codeStyleManager = CodeStyleManager.getInstance(environment.project)
-            codeStyleManager.reformat(psiFile)
+            return cu.toString(printerConfiguration)
+        } else {
+            println("Failed to parse")
+            println(parsed.problems)
         }
         return psiFile.text
+
     }
+
 
     companion object {
         val javaKeywords = arrayOf(

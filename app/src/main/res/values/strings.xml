@@ -47,4 +47,5 @@
     <string name="draft_1">Draft 1</string>
     <string name="draft_3">Draft 3</string>
     <string name="draft_2">Draft 2</string>
+    <string name="completion_type">Completion type</string>
 </resources>

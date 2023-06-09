@@ -36,6 +36,7 @@ dependencies {
     implementation("com.github.javaparser:javaparser-core:3.25.3")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.3")
     implementation("org.javassist:javassist:3.29.2-GA")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation(projects.common)
     implementation(projects.project)
     implementation(projects.kotlinc)

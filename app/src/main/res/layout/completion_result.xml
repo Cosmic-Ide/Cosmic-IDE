@@ -7,16 +7,17 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?colorSurface"
     android:gravity="center_vertical"
     android:padding="4dp">
 
     <ImageView
         android:id="@+id/result_item_icon"
-        android:contentDescription="Completion type icon"
         android:layout_width="25dp"
         android:layout_height="25dp"
+        android:contentDescription="@string/completion_type"
         android:scaleType="fitCenter" />
 
     <LinearLayout
@@ -31,8 +32,8 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_medium"
             android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceSearchResultTitle"
-            android:textColor="?colorPrimaryVariant"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?colorPrimaryDark"
             tools:text="Completion result title" />
 
         <TextView
@@ -41,7 +42,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/noto_sans_mono"
             android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceSearchResultSubtitle"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
             android:textColor="?attr/colorSecondaryVariant"
             tools:text="Identifier" />
     </LinearLayout>

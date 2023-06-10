@@ -102,22 +102,6 @@ class CompletionProvider {
             val packageName =
                 getFullyQualifiedPackageName(element)!! + if (element.text.endsWith(".")) "." else ""
             println("Package name: $packageName")
-            symbolCacher.getClasses()
-                .filter {
-                    val bool = it.key.startsWith(packageName) && it.key.substringAfter(packageName)
-                        .contains('.').not()
-                    println("condition: $bool, class: ${it.key}}")
-                    bool
-                }.map {
-                    completionItems.add(
-                        EditorCompletionItem(
-                            it.value.qualifiedName(),
-                            it.key.substringBeforeLast('.'),
-                            0,
-                            it.value.qualifiedName()
-                        ).kind(CompletionItemKind.Class)
-                    )
-                }
             if (packageName.endsWith('.')) {
                 val mPackage = packageName.substringBeforeLast('.')
                 symbolCacher.getPackages()
@@ -140,6 +124,23 @@ class CompletionProvider {
                         )
                     }
             }
+            symbolCacher.getClasses()
+                .filter {
+                    val bool = it.key.startsWith(packageName) && it.key.substringAfter(packageName)
+                        .contains('.').not()
+                    println("condition: $bool, class: ${it.key}")
+                    bool
+                }.map {
+                    completionItems.add(
+                        completionItems.lastIndex + 1,
+                        EditorCompletionItem(
+                            it.value.qualifiedName(),
+                            it.key.substringBeforeLast('.'),
+                            0,
+                            it.value.qualifiedName()
+                        ).kind(CompletionItemKind.Class)
+                    )
+                }
             return completionItems
         }
 

@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.editor.language
 
 import android.os.Bundle
 import android.util.Log
+import io.github.rosemoe.sora.lang.completion.CompletionItem
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -68,6 +69,15 @@ class JavaLanguage(
             val text = editor.text.toString()
             println(position.index - 1)
             val items = completionProvider.complete(text, "Main.java", position.index)
+            publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
+                // if the first letter of the label is lowercase, then its most likely a module/package
+                if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
+                    return@Comparator -1
+                } else if (o1.label[0].isUpperCase() && o2.label[0].isLowerCase()) {
+                    return@Comparator 1
+                }
+                return@Comparator o1.label.toString().compareTo(o2.label.toString())
+            })
             publisher.addItems(items)
             /*completions.updateFileContent(path, text)
             val result = completions.getCompletions(path, position.line, position.column)

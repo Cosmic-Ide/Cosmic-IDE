@@ -20,7 +20,9 @@ import com.pkslow.ai.util.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.ConversationAdapter
+import org.cosmicide.rewrite.chat.ChatProvider
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentChatBinding
@@ -29,19 +31,58 @@ import java.time.Duration
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
+    private var model = Models.ORA
 
-    // The token will expire in an hour.
+    // The client will expire in an hour.
     // If you were thinking of using this key, don't. It's free already, just get your own.
-    private val client: AIClient = GoogleBardClient(
-        "WwioM6QIAAtOsjpFrWTtle935KZySZOzVDxXGg6IrBezbtYb6RrMzFklQYi2QTJ80bo_Nw.",
-        Duration.ofHours(1)
-    )
+    private val client: AIClient by lazy {
+        GoogleBardClient(
+            "WwioM6QIAAtOsjpFrWTtle935KZySZOzVDxXGg6IrBezbtYb6RrMzFklQYi2QTJ80bo_Nw.",
+            Duration.ofHours(1)
+        )
+    }
 
     override fun getViewBinding() = FragmentChatBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (Prefs.useBardProxy) {
+        binding.toolbar.title = "Chat"
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.model_bard -> {
+                    model = Models.BARD
+                    true
+                }
+
+                R.id.model_vercel -> {
+                    model = Models.VERCEL_GPT3_5
+                    true
+                }
+
+                R.id.model_ora -> {
+                    model = Models.ORA
+                    true
+                }
+
+                R.id.model_bing -> {
+                    model = Models.BING_GPT4
+                    true
+                }
+
+                R.id.model_yqcloud -> {
+                    model = Models.YQCLOUD
+                    true
+                }
+
+                R.id.model_forefront -> {
+                    model = Models.FOREFRONT
+                    true
+                }
+
+                else -> false
+            }
+        }
+        if (model == Models.BARD && Prefs.useBardProxy) {
             // Thanks to us-proxy.org for the free proxy.
             NetworkUtils.setUpProxy("198.199.86.11", "8080")
         }
@@ -59,9 +100,36 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             conversationAdapter.add(conversation)
             binding.messageText.setText("")
             lifecycleScope.launch(Dispatchers.IO) {
-                val answer = client.ask(message)
+                val reply: String = when (model) {
+                    Models.BARD -> client.ask(message).markdown()
+                    Models.VERCEL_GPT3_5 -> ChatProvider.generate(
+                        "vercel",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.ORA -> ChatProvider.generate(
+                        "ora",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.BING_GPT4 -> ChatProvider.generate(
+                        "bing",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.YQCLOUD -> ChatProvider.generate(
+                        "yqcloud",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.FOREFRONT -> ChatProvider.generate(
+                        "forefront",
+                        conversationAdapter.getConversations()
+                    )
+                }
+                val response = ConversationAdapter.Conversation(reply)
                 withContext(Dispatchers.Main) {
-                    conversationAdapter.add(answer)
+                    conversationAdapter.add(response)
                     binding.recyclerview.smoothScrollToPosition(conversationAdapter.itemCount - 1)
                 }
             }
@@ -75,7 +143,12 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 stackFromEnd = true
             }
             addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
                     val verticalOffset = 4.dp
                     outRect.top = verticalOffset
                     outRect.bottom = verticalOffset
@@ -87,3 +160,12 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
 inline val Int.dp: Int
     get() = (Resources.getSystem().displayMetrics.density * this + 0.5f).toInt()
+
+enum class Models {
+    BARD,
+    BING_GPT4,
+    VERCEL_GPT3_5,
+    YQCLOUD,
+    FOREFRONT,
+    ORA
+}

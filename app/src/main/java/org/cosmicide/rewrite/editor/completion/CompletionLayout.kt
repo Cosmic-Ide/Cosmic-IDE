@@ -24,10 +24,13 @@ class CustomCompletionLayout : DefaultCompletionLayout() {
         val backgroundDrawable = completionListParent.background as? GradientDrawable
             ?: throw IllegalArgumentException("Completion list parent view background is null or not a GradientDrawable")
 
-        backgroundDrawable.setStroke(1f.dpToPx(), requireNotNull(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER)))
+        backgroundDrawable.setStroke(
+            1f.dpToPx(),
+            requireNotNull(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
+        )
     }
 
-    fun Float.dpToPx(): Int {
+    private fun Float.dpToPx(): Int {
         val scale = Resources.getSystem().displayMetrics.density
         return (this * scale + 0.5f).toInt()
     }

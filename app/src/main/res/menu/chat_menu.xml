@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/model_bard"
+        android:title="Google Bard" />
+
+    <item
+        android:id="@+id/model_yqcloud"
+        android:title="Yqcloud GPT-3.5" />
+
+    <item
+        android:id="@+id/model_vercel"
+        android:title="Vercel GPT-3.5" />
+
+    <item
+        android:id="@+id/model_bing"
+        android:title="Bing GPT 4" />
+
+    <item
+        android:id="@+id/model_forefront"
+        android:title="ForeFront GPT 3.5" />
+
+    <item
+        android:id="@+id/model_ora"
+        android:title="Ora GPT 4" />
+
+</menu>

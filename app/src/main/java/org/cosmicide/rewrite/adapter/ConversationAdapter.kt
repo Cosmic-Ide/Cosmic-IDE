@@ -12,12 +12,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.pkslow.ai.domain.Answer
-import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
-import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
 import io.noties.markwon.Markwon
 import io.noties.markwon.linkify.LinkifyPlugin
+import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
+import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
 
-class ConversationAdapter : RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
+class ConversationAdapter :
+    RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
 
     private val conversations = mutableListOf<Conversation>()
 
@@ -41,11 +42,28 @@ class ConversationAdapter : RecyclerView.Adapter<BindableViewHolder<Conversation
         return conversations.map { mapOf("text" to it.text, "author" to it.author) }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindableViewHolder<Conversation, *> {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BindableViewHolder<Conversation, *> {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_SENT -> SentViewHolder(ConversationItemSentBinding.inflate(inflater, parent, false))
-            VIEW_TYPE_RECEIVED -> ReceivedViewHolder(ConversationItemReceivedBinding.inflate(inflater, parent, false))
+            VIEW_TYPE_SENT -> SentViewHolder(
+                ConversationItemSentBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+
+            VIEW_TYPE_RECEIVED -> ReceivedViewHolder(
+                ConversationItemReceivedBinding.inflate(
+                    inflater,
+                    parent,
+                    false
+                )
+            )
+
             else -> throw IllegalArgumentException("Invalid view type: $viewType")
         }
     }
@@ -74,10 +92,10 @@ class ConversationAdapter : RecyclerView.Adapter<BindableViewHolder<Conversation
                 .build()
         }
 
-        override fun bind(conversation: Conversation) {
+        override fun bind(data: Conversation) {
             binding.message.apply {
                 movementMethod = LinkMovementMethod.getInstance()
-                markwon.setMarkdown(this, conversation.text)
+                markwon.setMarkdown(this, data.text)
             }
         }
     }
@@ -91,10 +109,10 @@ class ConversationAdapter : RecyclerView.Adapter<BindableViewHolder<Conversation
                 .build()
         }
 
-        override fun bind(conversation: Conversation) {
+        override fun bind(data: Conversation) {
             binding.message.apply {
                 movementMethod = LinkMovementMethod.getInstance()
-                markwon.setMarkdown(this, conversation.text)
+                markwon.setMarkdown(this, data.text)
             }
         }
     }

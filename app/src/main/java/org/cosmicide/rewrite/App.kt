@@ -21,10 +21,9 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
@@ -39,8 +38,6 @@ import java.time.ZonedDateTime
 
 class App : Application() {
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private lateinit var indexFile: File
     private val loader: MultipleDexClassLoader by lazy {
         MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
     }
@@ -58,19 +55,14 @@ class App : Application() {
 
         DynamicColors.applyToActivitiesIfAvailable(this)
 
-        indexFile = FileUtil.dataDir.resolve(INDEX_FILE_NAME)
         extractFiles()
         disableModules()
 
-        scope.launch {
-            loadTextmateTheme()
-        }
-
+        loadTextmateTheme()
         loadPlugins()
 
-        Analytics.logEvent("theme", "theme" to Prefs.appTheme)
-        Analytics.logEvent(
-            "startup",
+        Analytics.logEvent("startup",
+            "theme" to Prefs.appTheme,
             "time" to ZonedDateTime.now().toString(),
             "device" to Build.DEVICE,
             "model" to Build.MODEL,
@@ -108,20 +100,24 @@ class App : Application() {
     }
 
     private fun extractFiles() {
-        scope.launch { extractAsset(INDEX_FILE_NAME, indexFile) }
-        scope.launch { extractAsset(ANDROID_JAR, FileUtil.classpathDir.resolve(ANDROID_JAR)) }
-        scope.launch { extractAsset(KOTLIN_STDLIB, FileUtil.classpathDir.resolve(KOTLIN_STDLIB)) }
-        scope.launch { extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar")) }
+        extractAsset("index.json", FileUtil.dataDir.resolve("index.json"))
+        extractAsset("android.jar", FileUtil.classpathDir.resolve("android.jar"))
+        extractAsset("kotlin-stdlib-1.8.0.jar", FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar"))
+        extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
     }
 
-    private fun extractAsset(assetName: String, outputFile: File) {
-        if (outputFile.exists()) {
+    private fun extractAsset(assetName: String, targetFile: File) {
+        if (targetFile.exists()) {
             return
         }
-        assets.open(assetName).use { input ->
-            outputFile.outputStream().use { output ->
-                input.copyTo(output)
+        try {
+            assets.open(assetName).use { inputStream ->
+                targetFile.outputStream().use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
             }
+        } catch (e: FileNotFoundException) {
+            Log.e("App", "Failed to extract asset: $assetName", e)
         }
     }
 
@@ -133,11 +129,11 @@ class App : Application() {
         val fileProvider = AssetsFileResolver(assets)
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
 
-        GrammarRegistry.getInstance().loadGrammars(LANGUAGES_FILE_PATH)
+        GrammarRegistry.getInstance().loadGrammars("textmate/languages.json")
 
         val themeRegistry = ThemeRegistry.getInstance()
-        themeRegistry.loadTheme(loadTheme(DARCULA_THEME_FILE_NAME, DARCULA_THEME_NAME))
-        themeRegistry.loadTheme(loadTheme(QUIET_LIGHT_THEME_FILE_NAME, QUIET_LIGHT_THEME_NAME))
+        themeRegistry.loadTheme(loadTheme("darcula.json", "darcula"))
+        themeRegistry.loadTheme(loadTheme("QuietLight.tmTheme.json", "QuietLight"))
 
         applyThemeBasedOnConfiguration()
     }
@@ -150,12 +146,12 @@ class App : Application() {
     private fun applyThemeBasedOnConfiguration() {
         val themeName =
             when (getTheme(Prefs.appTheme)) {
-                AppCompatDelegate.MODE_NIGHT_YES -> DARCULA_THEME_NAME
-                AppCompatDelegate.MODE_NIGHT_NO -> QUIET_LIGHT_THEME_NAME
+                AppCompatDelegate.MODE_NIGHT_YES -> "darcula"
+                AppCompatDelegate.MODE_NIGHT_NO -> "QuietLight"
                 else -> {
                     when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                        Configuration.UI_MODE_NIGHT_YES -> DARCULA_THEME_NAME
-                        else -> QUIET_LIGHT_THEME_NAME
+                        Configuration.UI_MODE_NIGHT_YES -> "darcula"
+                        else -> "QuietLight"
                     }
                 }
             }
@@ -163,47 +159,31 @@ class App : Application() {
     }
 
     private fun loadPlugins() {
-        scope.launch {
-            PluginsFragment.getPlugins().forEach { plugin ->
-                val pluginFile =
-                    FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
-                if (pluginFile.exists().not()) return@forEach
-                loader.loadDex(pluginFile)
-                val className = plugin.getName().lowercase() + ".Main"
-                val clazz = loader.loader.loadClass(className)
-                val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
-                if (Modifier.isStatic(method.modifiers)) {
-                    method.invoke(null, arrayOf<String>())
-                } else {
-                    method.invoke(
-                        clazz.getDeclaredConstructor().newInstance(),
-                        arrayOf<String>()
-                    )
-                }
-                Log.d("Plugin", "Loaded plugin ${plugin.getName()}")
+        PluginsFragment.getPlugins().forEach { plugin ->
+            val pluginFile =
+                FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
+            if (pluginFile.exists().not()) return@forEach
+            loader.loadDex(pluginFile)
+            val className = plugin.getName().lowercase() + ".Main"
+            val clazz = loader.loader.loadClass(className)
+            val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
+            if (Modifier.isStatic(method.modifiers)) {
+                method.invoke(null, arrayOf<String>())
+            } else {
+                method.invoke(
+                    clazz.getDeclaredConstructor().newInstance(),
+                    arrayOf<String>()
+                )
             }
+            Log.d("Plugin", "Loaded plugin ${plugin.getName()}")
         }
     }
 
     private fun loadTheme(fileName: String, themeName: String): ThemeModel {
         val inputStream =
-            FileProviderRegistry.getInstance().tryGetInputStream("$TEXTMATE_DIR/$fileName")
+            FileProviderRegistry.getInstance().tryGetInputStream("textmate/$fileName")
                 ?: throw FileNotFoundException("Theme file not found: $fileName")
         val source = IThemeSource.fromInputStream(inputStream, fileName, null)
         return ThemeModel(source, themeName)
-    }
-
-    companion object {
-        private const val INDEX_FILE_NAME = "index.json"
-        private const val ANDROID_JAR = "android.jar"
-        private const val KOTLIN_STDLIB = "kotlin-stdlib-1.8.0.jar"
-
-        private const val LANGUAGES_FILE_PATH = "textmate/languages.json"
-        private const val TEXTMATE_DIR = "textmate"
-
-        private const val DARCULA_THEME_FILE_NAME = "darcula.json"
-        private const val DARCULA_THEME_NAME = "darcula"
-        private const val QUIET_LIGHT_THEME_FILE_NAME = "QuietLight.tmTheme.json"
-        private const val QUIET_LIGHT_THEME_NAME = "QuietLight"
     }
 }

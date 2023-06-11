@@ -23,6 +23,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            app:titleCentered="true"
             app:menu="@menu/chat_menu" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -43,7 +46,6 @@
         android:layout_marginVertical="8dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:background="@drawable/chat_view_background"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +71,7 @@
                 android:imeOptions="actionSend|flagNoEnterAction|flagNoExtractUi"
                 android:inputType="textAutoCorrect|textCapSentences|textMultiLine|textShortMessage"
                 android:maxHeight="280dp"
-                android:minHeight="@dimen/min_touch_target_size"
+                android:minHeight="@dimen/mtrl_min_touch_target_size"
                 android:paddingVertical="8dp" />
 
             <LinearLayout
@@ -86,8 +88,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:gravity="center"
-                    android:minWidth="@dimen/min_touch_target_size"
-                    android:minHeight="@dimen/min_touch_target_size"
+                    android:minWidth="@dimen/mtrl_min_touch_target_size"
+                    android:minHeight="@dimen/mtrl_min_touch_target_size"
                     android:orientation="vertical"
                     android:paddingStart="6dp"
                     android:paddingEnd="16dp">

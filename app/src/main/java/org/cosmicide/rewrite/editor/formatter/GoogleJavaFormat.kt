@@ -11,27 +11,30 @@ import com.google.googlejavaformat.java.Main
 import org.cosmicide.rewrite.common.Prefs
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
-import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempFile
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object GoogleJavaFormat {
     fun formatCode(code: String): String {
-        val file = kotlin.io.path.createTempFile("file", ".java")
+        val file = createTempFile("file", ".java")
         file.writeText(code)
-        print("Formatting code...")
-        val args = Prefs.googleJavaFormatOptions?.toMutableList() ?: mutableListOf()
-        if (Prefs.googleJavaFormatStyle == "aosp") {
-            args.add("--aosp")
+        println("Formatting code...")
+
+        val args = mutableListOf<String>().apply {
+            addAll(Prefs.googleJavaFormatOptions ?: emptyList())
+            if (Prefs.googleJavaFormatStyle == "aosp") {
+                add("--aosp")
+            }
+            add("--replace")
+            add(file.toAbsolutePath().toString())
         }
-        args.add("--replace")
-        args.add(file.absolutePathString())
 
         Main(
             PrintWriter(OutputStreamWriter(System.out)),
             PrintWriter(OutputStreamWriter(System.err)),
-            System.`in`,
-        ).format(*args.toTypedArray()) // '*' character converts array to varargs
+            System.`in`
+        ).format(*args.toTypedArray())
 
         return file.readText()
     }

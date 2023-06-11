@@ -9,19 +9,19 @@ package org.cosmicide.rewrite.editor.formatter
 
 import com.facebook.ktfmt.cli.Main
 import org.cosmicide.rewrite.common.Prefs
-import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempFile
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
 object ktfmtFormatter {
     fun formatCode(code: String): String {
-        val file = kotlin.io.path.createTempFile("file", ".kt")
-        file.writeText(code)
-        val args = listOf(
-            "--" + Prefs.ktfmtStyle + "-style",
-            file.absolutePathString()
-        )
+        val file = createTempFile("file", ".kt").apply { writeText(code) }
+        val args = listOf("--style", Prefs.ktfmtStyle, file.toAbsolutePath().toString())
+
         Main(System.`in`, System.out, System.err, args.toTypedArray()).run()
+        file.deleteIfExists()
+
         return file.readText()
     }
 }

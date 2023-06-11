@@ -7,6 +7,8 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
@@ -14,6 +16,9 @@ import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.pkslow.ai.AIClient
 import com.pkslow.ai.GoogleBardClient
 import com.pkslow.ai.util.NetworkUtils
@@ -46,48 +51,62 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.title = "Chat"
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.model_bard -> {
-                    model = Models.BARD
-                    true
-                }
+        setupUI(view.context)
+        setOnClickListeners()
+        setupRecyclerView()
+    }
 
-                R.id.model_vercel -> {
-                    model = Models.VERCEL_GPT3_5
-                    true
-                }
-
-                R.id.model_ora -> {
-                    model = Models.ORA
-                    true
-                }
-
-                R.id.model_bing -> {
-                    model = Models.BING_GPT4
-                    true
-                }
-
-                R.id.model_yqcloud -> {
-                    model = Models.YQCLOUD
-                    true
-                }
-
-                R.id.model_forefront -> {
-                    model = Models.FOREFRONT
-                    true
-                }
-
-                else -> false
-            }
-        }
+    private fun setupUI(context: Context) {
+        initToolbar(context)
+        initBackground(context)
         if (model == Models.BARD && Prefs.useBardProxy) {
             // Thanks to us-proxy.org for the free proxy.
             NetworkUtils.setUpProxy("198.199.86.11", "8080")
         }
-        setOnClickListeners()
-        setupRecyclerView()
+    }
+
+    private fun initToolbar(context: Context) {
+        binding.toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
+        binding.toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+        binding.toolbar.setOnMenuItemClickListener {
+            val modelName = when (it.itemId) {
+                R.id.model_bard -> {
+                    model = Models.BARD
+                    "Google Bard"
+                }
+
+                R.id.model_vercel -> {
+                    model = Models.VERCEL_GPT3_5
+                    "Vercel GPT-3.5"
+                }
+
+                R.id.model_ora -> {
+                    model = Models.ORA
+                    "Ora"
+                }
+
+                R.id.model_bing -> {
+                    model = Models.BING_GPT4
+                    "Bing GPT-4"
+                }
+
+                R.id.model_yqcloud -> {
+                    model = Models.YQCLOUD
+                    "YqCloud"
+                }
+
+                R.id.model_forefront -> {
+                    model = Models.FOREFRONT
+                    "Forefront"
+                }
+
+                else -> return@setOnMenuItemClickListener false
+            }
+            binding.toolbar.title = modelName
+            true
+        }
     }
 
     private fun setOnClickListeners() {
@@ -100,32 +119,13 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             conversationAdapter.add(conversation)
             binding.messageText.setText("")
             lifecycleScope.launch(Dispatchers.IO) {
-                val reply: String = when (model) {
+                val reply = when (model) {
                     Models.BARD -> client.ask(message).markdown()
-                    Models.VERCEL_GPT3_5 -> ChatProvider.generate(
-                        "vercel",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.ORA -> ChatProvider.generate(
-                        "ora",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.BING_GPT4 -> ChatProvider.generate(
-                        "bing",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.YQCLOUD -> ChatProvider.generate(
-                        "yqcloud",
-                        conversationAdapter.getConversations()
-                    )
-
-                    Models.FOREFRONT -> ChatProvider.generate(
-                        "forefront",
-                        conversationAdapter.getConversations()
-                    )
+                    Models.VERCEL_GPT3_5 -> ChatProvider.generate("vercel", conversationAdapter.getConversations())
+                    Models.ORA -> ChatProvider.generate("ora", conversationAdapter.getConversations())
+                    Models.BING_GPT4 -> ChatProvider.generate("bing", conversationAdapter.getConversations())
+                    Models.YQCLOUD -> ChatProvider.generate("yqcloud", conversationAdapter.getConversations())
+                    Models.FOREFRONT -> ChatProvider.generate("forefront", conversationAdapter.getConversations())
                 }
                 val response = ConversationAdapter.Conversation(reply)
                 withContext(Dispatchers.Main) {
@@ -149,17 +149,24 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    val verticalOffset = 4.dp
+                    val verticalOffset = 6.dp
                     outRect.top = verticalOffset
                     outRect.bottom = verticalOffset
                 }
             })
         }
     }
-}
 
-inline val Int.dp: Int
-    get() = (Resources.getSystem().displayMetrics.density * this + 0.5f).toInt()
+    private fun initBackground(context: Context) {
+        val shapeAppearance = ShapeAppearanceModel.builder().setAllCornerSizes(24f).build()
+        val shapeDrawable = MaterialShapeDrawable(shapeAppearance).apply {
+            initializeElevationOverlay(context)
+            fillColor = ColorStateList.valueOf(MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, 0))
+        }
+        binding.chatLayout.background = shapeDrawable
+        binding.toolbar.background = shapeDrawable
+    }
+}
 
 enum class Models {
     BARD,
@@ -169,3 +176,6 @@ enum class Models {
     FOREFRONT,
     ORA
 }
+
+private val Int.dp: Int
+    get() = (Resources.getSystem().displayMetrics.density * this + 0.5f).toInt()

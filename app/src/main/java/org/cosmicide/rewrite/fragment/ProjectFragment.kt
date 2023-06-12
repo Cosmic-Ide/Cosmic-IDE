@@ -84,6 +84,14 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
         setOnClickListeners()
         setUpProjectList()
+        binding.toolbar.menu.add(R.string.action_settings).setOnMenuItemClickListener {
+            parentFragmentManager.beginTransaction().apply {
+                replace(R.id.fragment_container, SettingsFragment())
+                addToBackStack(null)
+                setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }.commit()
+            true
+        }
 
         observeViewModelProjects()
     }

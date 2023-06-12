@@ -57,7 +57,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
     }
 
     private fun setupUI(context: Context) {
-        initToolbar(context)
+        initToolbar()
         initBackground(context)
         if (model == Models.BARD && Prefs.useBardProxy) {
             // Thanks to us-proxy.org for the free proxy.
@@ -65,7 +65,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         }
     }
 
-    private fun initToolbar(context: Context) {
+    private fun initToolbar() {
         binding.toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_ios_24)
         binding.toolbar.setNavigationOnClickListener {
             parentFragmentManager.popBackStack()
@@ -87,22 +87,23 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     "Ora"
                 }
 
-                R.id.model_bing -> {
-                    model = Models.BING_GPT4
-                    "Bing GPT-4"
-                }
-
                 R.id.model_yqcloud -> {
                     model = Models.YQCLOUD
                     "YqCloud"
                 }
 
-                R.id.model_forefront -> {
-                    model = Models.FOREFRONT
-                    "Forefront"
+
+                R.id.model_phind -> {
+                    model = Models.PHIND
+                    "Phind"
                 }
 
+
                 else -> return@setOnMenuItemClickListener false
+            }
+
+            if (it.itemId == R.id.clear) {
+                conversationAdapter.clear()
             }
             binding.toolbar.title = modelName
             true
@@ -121,16 +122,30 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val reply = when (model) {
                     Models.BARD -> client.ask(message).markdown()
-                    Models.VERCEL_GPT3_5 -> ChatProvider.generate("vercel", conversationAdapter.getConversations())
-                    Models.ORA -> ChatProvider.generate("ora", conversationAdapter.getConversations())
-                    Models.BING_GPT4 -> ChatProvider.generate("bing", conversationAdapter.getConversations())
-                    Models.YQCLOUD -> ChatProvider.generate("yqcloud", conversationAdapter.getConversations())
-                    Models.FOREFRONT -> ChatProvider.generate("forefront", conversationAdapter.getConversations())
+                    Models.VERCEL_GPT3_5 -> ChatProvider.generate(
+                        "vercel",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.ORA -> ChatProvider.generate(
+                        "ora",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.YQCLOUD -> ChatProvider.generate(
+                        "yqcloud",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.PHIND -> ChatProvider.generate(
+                        "phind",
+                        conversationAdapter.getConversations()
+                    )
                 }
                 val response = ConversationAdapter.Conversation(reply)
                 withContext(Dispatchers.Main) {
                     conversationAdapter.add(response)
-                    binding.recyclerview.smoothScrollToPosition(conversationAdapter.itemCount - 1)
+                    binding.recyclerview.scrollToPosition(conversationAdapter.itemCount - 1)
                 }
             }
         }
@@ -161,7 +176,13 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
         val shapeAppearance = ShapeAppearanceModel.builder().setAllCornerSizes(24f).build()
         val shapeDrawable = MaterialShapeDrawable(shapeAppearance).apply {
             initializeElevationOverlay(context)
-            fillColor = ColorStateList.valueOf(MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, 0))
+            fillColor = ColorStateList.valueOf(
+                MaterialColors.getColor(
+                    context,
+                    com.google.android.material.R.attr.colorSurface,
+                    0
+                )
+            )
         }
         binding.chatLayout.background = shapeDrawable
         binding.toolbar.background = shapeDrawable
@@ -170,11 +191,10 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
 enum class Models {
     BARD,
-    BING_GPT4,
     VERCEL_GPT3_5,
     YQCLOUD,
-    FOREFRONT,
-    ORA
+    ORA,
+    PHIND,
 }
 
 private val Int.dp: Int

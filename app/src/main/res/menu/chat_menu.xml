@@ -5,7 +5,14 @@
   ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/clear"
+        android:icon="@drawable/close"
+        android:title="Clear"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/model_bard"
@@ -20,15 +27,10 @@
         android:title="Vercel GPT-3.5" />
 
     <item
-        android:id="@+id/model_bing"
-        android:title="Bing GPT 4" />
-
-    <item
-        android:id="@+id/model_forefront"
-        android:title="ForeFront GPT 3.5" />
-
-    <item
         android:id="@+id/model_ora"
         android:title="Ora GPT 4" />
 
+    <item
+        android:id="@+id/model_phind"
+        android:title="Phind GPT-4" />
 </menu>

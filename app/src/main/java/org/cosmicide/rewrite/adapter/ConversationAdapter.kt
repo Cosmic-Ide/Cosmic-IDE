@@ -17,6 +17,7 @@ import io.noties.markwon.linkify.LinkifyPlugin
 import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
 import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
 
+
 class ConversationAdapter :
     RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
 
@@ -83,7 +84,12 @@ class ConversationAdapter :
         }
     }
 
-    inner class SentViewHolder(private val itemBinding: ConversationItemSentBinding) :
+    fun clear() {
+        conversations.clear()
+        notifyDataSetChanged()
+    }
+
+    inner class SentViewHolder(itemBinding: ConversationItemSentBinding) :
         BindableViewHolder<Conversation, ConversationItemSentBinding>(itemBinding) {
 
         private val markwon: Markwon by lazy {
@@ -100,7 +106,7 @@ class ConversationAdapter :
         }
     }
 
-    inner class ReceivedViewHolder(private val itemBinding: ConversationItemReceivedBinding) :
+    inner class ReceivedViewHolder(itemBinding: ConversationItemReceivedBinding) :
         BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
 
         private val markwon: Markwon by lazy {

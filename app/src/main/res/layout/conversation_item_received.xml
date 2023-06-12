@@ -24,8 +24,9 @@
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="12dp"
         app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge">
 
         <TextView
@@ -37,6 +38,7 @@
             android:linksClickable="true"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"
+            android:textIsSelectable="true"
             tools:text="This is a very useful response" />
     </com.google.android.material.card.MaterialCardView>
 

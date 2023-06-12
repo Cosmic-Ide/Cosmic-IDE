@@ -5,22 +5,24 @@
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.util
+package org.cosmicide.rewrite.compile.ssvm.native
 
-import android.content.Context
-import java.io.File
 
-object FileUtil {
+import dev.xdark.ssvm.VirtualMachine
+import dev.xdark.ssvm.api.MethodInvoker
+import dev.xdark.ssvm.mirror.InstanceJavaClass
+import org.objectweb.asm.Type
 
-    lateinit var projectDir: File
-    lateinit var classpathDir: File
-    lateinit var dataDir: File
-    lateinit var pluginDir: File
+class SunSharedFileLockTableNatives : NativeInitializer {
+    override fun init(vm: VirtualMachine) {
+        val sharedFileLockIds =
+            vm.findBootstrapClass("sun/nio/ch/SharedFileLockTable") as InstanceJavaClass
 
-    fun init(context: Context) {
-        dataDir = context.getExternalFilesDir(null)!!
-        projectDir = dataDir.resolve("projects").apply { mkdirs() }
-        classpathDir = dataDir.resolve("classpath").apply { mkdirs() }
-        pluginDir = dataDir.resolve("plugins").apply { mkdirs() }
+        vm.`interface`.setInvoker(
+            sharedFileLockIds,
+            "initIDs",
+            Type.getMethodDescriptor(Type.VOID_TYPE),
+            MethodInvoker.noop()
+        )
     }
 }

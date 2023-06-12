@@ -5,22 +5,11 @@
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.util
+package org.cosmicide.rewrite.compile.ssvm.native
 
-import android.content.Context
-import java.io.File
+import dev.xdark.ssvm.VirtualMachine
 
-object FileUtil {
+interface NativeInitializer {
 
-    lateinit var projectDir: File
-    lateinit var classpathDir: File
-    lateinit var dataDir: File
-    lateinit var pluginDir: File
-
-    fun init(context: Context) {
-        dataDir = context.getExternalFilesDir(null)!!
-        projectDir = dataDir.resolve("projects").apply { mkdirs() }
-        classpathDir = dataDir.resolve("classpath").apply { mkdirs() }
-        pluginDir = dataDir.resolve("plugins").apply { mkdirs() }
-    }
+    fun init(vm: VirtualMachine)
 }

@@ -5,22 +5,22 @@
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.util
+package org.cosmicide.rewrite.compile.ssvm.native
 
-import android.content.Context
-import java.io.File
+import dev.xdark.ssvm.VirtualMachine
+import dev.xdark.ssvm.api.MethodInvoker
+import dev.xdark.ssvm.mirror.InstanceJavaClass
+import org.objectweb.asm.Type
 
-object FileUtil {
+class FileDescriptorNatives : NativeInitializer {
+    override fun init(vm: VirtualMachine) {
+        val fileDescriptor = vm.findBootstrapClass("java/io/FileDescriptor") as InstanceJavaClass
 
-    lateinit var projectDir: File
-    lateinit var classpathDir: File
-    lateinit var dataDir: File
-    lateinit var pluginDir: File
-
-    fun init(context: Context) {
-        dataDir = context.getExternalFilesDir(null)!!
-        projectDir = dataDir.resolve("projects").apply { mkdirs() }
-        classpathDir = dataDir.resolve("classpath").apply { mkdirs() }
-        pluginDir = dataDir.resolve("plugins").apply { mkdirs() }
+        vm.`interface`.setInvoker(
+            fileDescriptor,
+            "init",
+            Type.getMethodDescriptor(Type.VOID_TYPE),
+            MethodInvoker.noop()
+        )
     }
 }

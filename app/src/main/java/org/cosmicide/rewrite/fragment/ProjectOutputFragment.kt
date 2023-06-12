@@ -126,6 +126,12 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         System.setOut(systemOut)
         System.setErr(systemOut)
 
+        if (Prefs.useSSVM) {
+            initVM()
+            invoke(className)
+            return@launch
+        }
+
         val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
         loader.loadDex(project.binDir.resolve("classes.dex"))
 
@@ -136,11 +142,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             loader.loader.loadClass(className)
         }.onSuccess { clazz ->
             isRunning = true
-            if (Prefs.useSSVM) {
-                initVM()
-                invoke(className)
-                return@onSuccess
-            }
             System.setProperty("project.dir", project.root.absolutePath)
             if (clazz.declaredMethods.any { it.name == "main" }) {
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
@@ -179,10 +180,14 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         JarTask(project).execute(BuildReporter())
 
         catchVMException {
+            ssvm.addProperty("project.dir", project.root.absolutePath)
+            ssvm.addProperty("user.home", project.binDir.absolutePath)
+            ssvm.addProperty(
+                "java.home",
+                project.binDir.absolutePath
+            )
             // init VM
             ssvm.initVM()
-
-            ssvm.vm.properties.setProperty("project.dir", project.root.absolutePath)
 
             // add test JAR
             FileUtil.classpathDir.walk().filter { it.extension == "jar" }.forEach {

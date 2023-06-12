@@ -93,7 +93,7 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.0.0")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
     implementation("com.github.TutorialsAndroid:crashx:v6.0.19")
-    implementation("com.github.xxdark:ssvm:6e795448e4")
+    implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")

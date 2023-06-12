@@ -42,6 +42,8 @@ import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.impl.source.tree.TreeCopyHandler
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
+import javassist.CtClass
+import javassist.Modifier
 import org.cosmicide.completion.java.parser.cache.SymbolCacher
 import org.cosmicide.completion.java.parser.cache.qualifiedName
 import org.cosmicide.rewrite.editor.EditorCompletionItem
@@ -144,6 +146,43 @@ class CompletionProvider {
             return completionItems
         }
 
+        if (element.text.endsWith('.')) {
+            if (element.text.first().isUpperCase()) {
+                val className = element.text.substring(0, element.text.length - 1)
+                val qualified = getQualifiedNameIfImported(psiFile, className)
+                if (qualified.isEmpty()) {
+                    val ctClass = symbolCacher.getClass("java.lang.$className")
+                    if (ctClass == null) {
+                        println("Class not found '$className' with element ${element.text}")
+                        return completionItems
+                    }
+
+                    addAllFieldAndMethods(ctClass, completionItems)
+                }
+                val clazz = symbolCacher.getClass(className)
+                if (clazz == null) {
+                    println("Class not found '$className' with element ${element.text}")
+                    return completionItems
+                }
+                addAllFieldAndMethods(clazz, completionItems)
+            } else {
+                val packageName = element.text.substringBeforeLast('.')
+                if (packageName.isEmpty()) {
+                    return completionItems
+                }
+                if (packageName.lowercase() == packageName) {
+                    // probably something like java.lang.System
+                    val clazz = symbolCacher.getClass(packageName)
+                    if (clazz == null) {
+                        println("Class not found '$packageName' with element ${element.text}")
+                        return completionItems
+                    }
+                    addAllFieldAndMethods(clazz, completionItems)
+                }
+            }
+            return completionItems
+        }
+
         val items = symbolCacher.filterClassNames(element.text)
         println("Items: $items")
         for (clazz in items) {
@@ -180,6 +219,42 @@ class CompletionProvider {
         return completionItems
     }
 
+    private fun addAllFieldAndMethods(
+        ctClass: CtClass,
+        completionItems: MutableList<EditorCompletionItem>
+    ) {
+        val fields = ctClass.fields
+        for (field in fields) {
+            if (Modifier.isPublic(field.modifiers) || Modifier.isStatic(field.modifiers)) {
+                completionItems.add(
+                    EditorCompletionItem(
+                        field.name,
+                        field.type.name,
+                        0,
+                        field.name
+                    ).kind(CompletionItemKind.Field)
+                )
+            }
+        }
+        val methods = ctClass.methods
+        for (method in methods) {
+            // if modifier is public/static, then add it
+            if (Modifier.isPublic(method.modifiers) || Modifier.isStatic(method.modifiers)) {
+                completionItems.add(
+                    EditorCompletionItem(
+                        method.name + method.parameterTypes.joinToString(", ", "(", ")") {
+                            it.simpleName
+                        },
+                        method.returnType.name.substringAfterLast('.'),
+                        0,
+                        method.name
+                    ).kind(CompletionItemKind.Method)
+                )
+            }
+        }
+    }
+
+
     private fun isImportedClass(element: PsiElement): Boolean {
         val psiFile = element.containingFile
         if (psiFile is PsiJavaFile) {
@@ -213,6 +288,22 @@ class CompletionProvider {
             }
         }
         return false
+    }
+
+    private fun getQualifiedNameIfImported(psiFile: PsiFile, clazz: String): String {
+        if (psiFile is PsiJavaFile) {
+            val importList = psiFile.importList
+            if (importList != null) {
+                val importStatements = importList.importStatements
+                for (importStatement in importStatements) {
+                    val importedClassName = importStatement.qualifiedName
+                    if (importedClassName?.substringAfterLast('.') == clazz) {
+                        return importedClassName
+                    }
+                }
+            }
+        }
+        return ""
     }
 
     fun isImportStatementContext(element: PsiElement): Boolean {

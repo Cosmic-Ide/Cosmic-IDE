@@ -38,9 +38,7 @@ class JavaLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-    private val completionProvider by lazy {
-        CompletionProvider()
-    }
+    private val completionProvider = CompletionProvider()
 
     /*
         private val completions: JavaCompletions by lazy { JavaCompletions() }

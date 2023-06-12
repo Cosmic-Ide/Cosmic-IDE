@@ -48,58 +48,43 @@ import java.util.zip.ZipFile
 class SSVM(
     private val rtJar: ZipFile,
 ) {
-    lateinit var vm: VirtualMachine
+    private val vm: VirtualMachine = object : VirtualMachine(DefaultVMInitializer()) {
+        override fun createFileDescriptorManager() = HostFileDescriptorManager()
+
+        override fun createManagementInterface() = object : ManagementInterface {
+            override fun getVersion() = "null"
+
+            override fun getStartupTime() = System.currentTimeMillis()
+
+            override fun getInputArguments() = listOf<String>()
+        }
+
+        override fun createBootClassLoader() = BootClassLoader {
+            println("[VM] Loading: $it.class")
+
+            try {
+                val entry = rtJar.getEntry("$it.class")
+                    ?: return@BootClassLoader null
+
+                rtJar.getInputStream(entry).use { stream ->
+                    val cr = ClassReader(stream)
+                    val node = ClassUtil.readNode(cr)
+
+                    return@BootClassLoader ClassParseResult(cr, node)
+                }
+            } catch (e: IOException) {
+                System.err.println("[VM] Couldn't load class $it: ${Log.getStackTraceString(e)}")
+            }
+
+            return@BootClassLoader null
+        }
+    }
 
     private var initialized: Boolean = false
+    val isInitialized: Boolean
+        get() = initialized
 
     fun initVM() {
-        vm = object : VirtualMachine() {
-            override fun createFileDescriptorManager() = HostFileDescriptorManager()
-
-            override fun createManagementInterface() = object : ManagementInterface {
-                override fun getVersion() = "null"
-
-                override fun getStartupTime() = System.currentTimeMillis()
-
-                override fun getInputArguments() = listOf<String>()
-            }
-
-            override fun createBootClassLoader() = BootClassLoader {
-
-                try {
-                    val entry = rtJar.getEntry("$it.class")
-                        ?: return@BootClassLoader null
-
-                    rtJar.getInputStream(entry).use { stream ->
-                        val cr = ClassReader(stream)
-                        val node = ClassUtil.readNode(cr)
-
-                        return@BootClassLoader ClassParseResult(cr, node)
-                    }
-                } catch (e: IOException) {
-                    System.err.println("[VM] Couldn't load class $it: ${Log.getStackTraceString(e)}")
-                }
-
-                return@BootClassLoader null
-            }
-        }
-
-        vm.properties.apply {
-            setProperty("sun.stderr.encoding", "UTF-8")
-            setProperty("sun.stdout.encoding", "UTF-8")
-            setProperty("sun.jnu.encoding", "UTF-8")
-            setProperty("line.separator", "\n")
-            setProperty("path.separator", ":")
-            setProperty("file.separator", "/")
-            setProperty("java.home", "/usr/lib/jvm")
-            setProperty("user.home", "/home/mike")
-            setProperty("user.dir", "/home/mike")
-            setProperty("user.name", "mike")
-            setProperty("os.version", "10.0")
-            setProperty("os.arch", "arm64")
-            setProperty("os.name", "Linux")
-        }
-
         initialized = try {
             vm.bootstrap()
 
@@ -131,6 +116,10 @@ class SSVM(
             System.err.println("[VM] Couldn't start VM: ${Log.getStackTraceString(e)}")
             false
         }
+    }
+
+    fun init() {
+
     }
 
     private fun getVMSystemClassLoader(): Value {
@@ -197,38 +186,16 @@ class SSVM(
                 true
             ) as InstanceJavaClass
 
-            val m = klass.getMethod(
+            val method = klass.getStaticMethod(
                 "main",
                 "([Ljava/lang/String;)V",
             )
-            // check if main method is static
-            if (java.lang.reflect.Modifier.isStatic(m.access)) {
-                val method = klass.getStaticMethod(
-                    "main",
-                    "([Ljava/lang/String;)V",
-                )
-                helper.invokeStatic(
-                    klass,
-                    method,
-                    arrayOf(),
-                    arrayOf(helper.emptyArray(symbols.java_lang_String()))
-                )
-            } else if (java.lang.reflect.Modifier.isPublic(m.access)) {
-                val method = klass.getMethod(
-                    "main",
-                    "([Ljava/lang/String;)V",
-                )
 
-                val instance = vm.memoryManager.newInstance(klass)
-                helper.invokeExact(
-                    klass,
-                    method,
-                    arrayOf(),
-                    arrayOf(instance, helper.emptyArray(symbols.java_lang_String()))
-                )
-            }
-
-
+            helper.invokeStatic(
+                method,
+                arrayOf(),
+                arrayOf(helper.emptyArray(symbols.java_lang_String()))
+            )
         } catch (e: VMException) {
             helper.invokeVirtual(
                 "printStackTrace",
@@ -242,9 +209,12 @@ class SSVM(
     fun release() {
         try {
             rtJar.close()
-
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
         }
+    }
+
+    fun addProperty(key: String, value: String) {
+        vm.properties.setProperty(key, value)
     }
 
     private class JitDexClassLoader : JitInstaller.ClassDefiner {

@@ -62,7 +62,6 @@
         <activity
             android:name=".CrashActivity"
             android:exported="false"
-            android:process=":error_activity"
             android:windowSoftInputMode="stateAlwaysHidden" />
     </application>
 

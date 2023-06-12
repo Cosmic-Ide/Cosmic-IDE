@@ -10,10 +10,14 @@ package org.cosmicide.rewrite.fragment
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
@@ -36,9 +40,9 @@ import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.ProjectHandler
 import org.cosmicide.rewrite.util.unzip
 
-
 class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
     ProjectAdapter.OnProjectEventListener {
+
     private val projectAdapter = ProjectAdapter(this)
     private val viewModel by activityViewModels<ProjectViewModel>()
     private val documentPickerLauncher: ActivityResultLauncher<Intent> =
@@ -75,7 +79,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
             }
         }.also { documentPickerLauncher = it }
 
-
     override fun getViewBinding() = FragmentProjectBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,14 +87,9 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
         setOnClickListeners()
         setUpProjectList()
-        binding.toolbar.menu.add(R.string.action_settings).setOnMenuItemClickListener {
-            parentFragmentManager.beginTransaction().apply {
-                replace(R.id.fragment_container, SettingsFragment())
-                addToBackStack(null)
-                setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            }.commit()
-            true
-        }
+
+        val activity = requireActivity() as AppCompatActivity
+        activity.setSupportActionBar(binding.toolbar)
 
         observeViewModelProjects()
     }
@@ -100,6 +98,24 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         super.onResume()
         viewModel.loadProjects()
         setOnClickListeners()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.projects_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, SettingsFragment())
+                    addToBackStack(null)
+                    setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                }.commit()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setOnClickListeners() {
@@ -164,9 +180,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Delete Project")
             .setMessage("Are you sure, you want to delete ${project.name}")
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton("Cancel", null)
             .setPositiveButton("Delete") { _, _ ->
                 project.delete()
                 viewModel.loadProjects()
@@ -187,7 +201,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                     putBoolean("analytics_preference", true).apply()
                     putBoolean("analytics_preference_asked", true).apply()
                 }
-
             }
             setNegativeButton(R.string.decline) { _, _ ->
                 prefs.edit {

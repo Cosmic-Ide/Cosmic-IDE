@@ -17,12 +17,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/projects" />
+            android:layout_height="?attr/collapsingToolbarLayoutLargeSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="@string/projects" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

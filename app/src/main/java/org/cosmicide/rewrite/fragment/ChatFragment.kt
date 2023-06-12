@@ -31,6 +31,7 @@ import org.cosmicide.rewrite.chat.ChatProvider
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentChatBinding
+import org.cosmicide.rewrite.extension.getDip
 import java.time.Duration
 
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
@@ -79,17 +80,17 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
                 R.id.model_vercel -> {
                     model = Models.VERCEL_GPT3_5
-                    "Vercel GPT-3.5"
+                    "Vercel"
                 }
 
                 R.id.model_ora -> {
                     model = Models.ORA
-                    "Ora GPT-4"
+                    "Ora"
                 }
 
                 R.id.model_yqcloud -> {
                     model = Models.YQCLOUD
-                    "Yqcloud GPT-3.5"
+                    "Yqcloud"
                 }
 
                 R.id.model_phind -> {
@@ -171,7 +172,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
     }
 
     private fun initBackground(context: Context) {
-        val shapeAppearance = ShapeAppearanceModel.builder().setAllCornerSizes(24f).build()
+        val shapeAppearance = ShapeAppearanceModel.builder().setAllCornerSizes(context.getDip(24f)).build()
         val shapeDrawable = MaterialShapeDrawable(shapeAppearance).apply {
             initializeElevationOverlay(context)
             fillColor = ColorStateList.valueOf(

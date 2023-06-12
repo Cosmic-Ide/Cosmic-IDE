@@ -84,20 +84,18 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
                 R.id.model_ora -> {
                     model = Models.ORA
-                    "Ora"
+                    "Ora GPT-4"
                 }
 
                 R.id.model_yqcloud -> {
                     model = Models.YQCLOUD
-                    "YqCloud"
+                    "Yqcloud GPT-3.5"
                 }
-
 
                 R.id.model_phind -> {
                     model = Models.PHIND
                     "Phind"
                 }
-
 
                 else -> return@setOnMenuItemClickListener false
             }
@@ -164,7 +162,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    val verticalOffset = 6.dp
+                    val verticalOffset = 8.dp
                     outRect.top = verticalOffset
                     outRect.bottom = verticalOffset
                 }
@@ -183,6 +181,7 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     0
                 )
             )
+            elevation = 6f
         }
         binding.chatLayout.background = shapeDrawable
         binding.toolbar.background = shapeDrawable

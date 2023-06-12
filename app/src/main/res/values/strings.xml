@@ -41,7 +41,7 @@
     <string name="decline">Decline</string>
     <string name="type_a_message">Type a message</string>
     <string name="send">Send</string>
-    <string name="action_chat">Chat</string>
+    <string name="action_chat">Chat with AI</string>
     <string name="author">author</string>
     <string name="view_drafts">View Drafts</string>
     <string name="draft_1">Draft 1</string>

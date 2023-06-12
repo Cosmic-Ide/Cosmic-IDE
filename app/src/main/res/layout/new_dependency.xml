@@ -15,11 +15,10 @@
     android:paddingHorizontal="16sp"
     android:paddingTop="5dp">
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="150dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp" />
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"

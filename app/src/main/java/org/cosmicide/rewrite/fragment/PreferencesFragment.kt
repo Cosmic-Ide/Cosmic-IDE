@@ -13,10 +13,15 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentTransaction
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.cosmicide.rewrite.BuildConfig
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.databinding.DialogTextPreferenceBinding
 
 /**
  * A [PreferenceFragmentCompat] subclass to display the preferences UI.
@@ -62,6 +67,60 @@ class PreferencesFragment : PreferenceFragmentCompat() {
 
                 true
             }
+        }
+    }
+
+    override fun onDisplayPreferenceDialog(preference: Preference) {
+        when (preference) {
+            is ListPreference -> {
+                val prefIndex = preference.entryValues.indexOf(preference.value)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(preference.title)
+                    .setSingleChoiceItems(preference.entries, prefIndex) { dialog, index ->
+                        val newValue = preference.entryValues[index].toString()
+                        if (preference.callChangeListener(newValue)) {
+                            preference.value = newValue
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+            is MultiSelectListPreference -> {
+                val selectedItems = preference.entryValues.map {
+                    preference.values.contains(it)
+                }.toBooleanArray()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(preference.title)
+                    .setMultiChoiceItems(preference.entries, selectedItems) { dialog, _, _ ->
+                        val newValues = preference.entryValues
+                            .filterIndexed { index, _ -> selectedItems[index] }
+                            .map { it.toString() }
+                            .toMutableSet()
+                        if (preference.callChangeListener(newValues)) {
+                            preference.values = newValues
+                        }
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+            is EditTextPreference -> {
+                val binding = DialogTextPreferenceBinding.inflate(layoutInflater)
+                binding.input.setText(preference.text)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(preference.title)
+                    .setView(binding.root)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        val newValue = binding.input.text.toString()
+                        if (preference.callChangeListener(newValue)) {
+                            preference.text = newValue
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            }
+            else -> super.onDisplayPreferenceDialog(preference)
         }
     }
 

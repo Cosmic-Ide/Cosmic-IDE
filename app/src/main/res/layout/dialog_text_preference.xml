@@ -10,20 +10,19 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
+        android:id="@+id/input_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="15dp"
         android:layout_marginRight="15dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edittext"
+            android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:digits="qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
-            android:hint="Class name"
-            android:singleLine="true" />
+            android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
+
 </LinearLayout>

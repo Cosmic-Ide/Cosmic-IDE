@@ -8,171 +8,166 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Appearance">
+    <PreferenceCategory app:title="Appearance">
 
-        <org.cosmicide.rewrite.preference.MaterialListPreference
-            android:defaultValue="auto"
-            android:entries="@array/app_theme_entries"
-            android:entryValues="@array/app_theme_entry_values"
-            android:key="app_theme"
-            android:title="Theme"
+        <ListPreference
+            app:defaultValue="auto"
+            app:entries="@array/app_theme_entries"
+            app:entryValues="@array/app_theme_entry_values"
+            app:key="app_theme"
+            app:title="Theme"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Editor">
+    <PreferenceCategory app:title="Editor">
 
         <SeekBarPreference
-            android:defaultValue="14"
-            android:key="font_size"
             android:max="32"
-            android:summary="Set the font size for the editor"
-            android:title="Font Size"
+            app:defaultValue="14"
+            app:key="font_size"
+            app:summary="Set the font size for the editor"
+            app:title="Font Size"
             app:min="12"
             app:showSeekBarValue="true" />
 
         <SeekBarPreference
-            android:defaultValue="4"
-            android:key="tab_size"
             android:max="14"
-            android:summary="Set the tab size for the editor"
-            android:title="Tab Size"
+            app:defaultValue="4"
+            app:key="tab_size"
+            app:summary="Set the tab size for the editor"
+            app:title="Tab Size"
             app:min="2"
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="use_spaces"
-            android:summary="Use spaces instead of tabs for indentation in the editor"
-            android:title="Use spaces instead of tabs" />
+            app:defaultValue="false"
+            app:key="use_spaces"
+            app:summary="Use spaces instead of tabs for indentation in the editor"
+            app:title="Use spaces instead of tabs" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="font_ligatures"
-            android:summary="Enable font ligatures in the editor"
-            android:title="Enable font ligatures" />
-
-
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="word_wrap"
-            android:summary="Enable word wrap in the editor"
-            android:title="Enable word wrap" />
-
+            app:defaultValue="true"
+            app:key="font_ligatures"
+            app:summary="Enable font ligatures in the editor"
+            app:title="Enable font ligatures" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="scrollbar"
-            android:summary="Show scrollbar in the editor"
-            android:title="Show scrollbar" />
+            app:defaultValue="false"
+            app:key="word_wrap"
+            app:summary="Enable word wrap in the editor"
+            app:title="Enable word wrap" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="hardware_acceleration"
-            android:summary="Enabling this can cause more memory usage but it will speed up rendering in the editor"
-            android:title="Enable hardware acceleration" />
-
-
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="non_printable_characters"
-            android:summary="Show non printable characters in the editor"
-            android:title="Show non printable characters" />
+            app:defaultValue="true"
+            app:key="scrollbar"
+            app:summary="Show scrollbar in the editor"
+            app:title="Show scrollbar" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="line_numbers"
-            android:summary="Enable line numbers in the editor"
-            android:title="Enable Line Number" />
-
+            app:defaultValue="true"
+            app:key="hardware_acceleration"
+            app:summary="Enabling this can cause more memory usage but it will speed up rendering in the editor"
+            app:title="Enable hardware acceleration" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="double_click_close"
-            android:summary="Close file on double click on editor tab"
-            android:title="Close file on double click" />
+            app:defaultValue="false"
+            app:key="non_printable_characters"
+            app:summary="Show non printable characters in the editor"
+            app:title="Show non printable characters" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="line_numbers"
+            app:summary="Enable line numbers in the editor"
+            app:title="Enable Line Number" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="double_click_close"
+            app:summary="Close file on double click on editor tab"
+            app:title="Close file on double click" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Formatter">
-        <org.cosmicide.rewrite.preference.MaterialListPreference
-            android:defaultValue="google"
-            android:entries="@array/ktfmt_styles"
-            android:entryValues="@array/ktfmt_styles"
-            android:key="ktfmt_style"
-            android:summary="Set ktfmt formatter style"
-            android:title="ktfmt formatter style" />
+    <PreferenceCategory app:title="Formatter">
+        <ListPreference
+            app:defaultValue="google"
+            app:entries="@array/ktfmt_styles"
+            app:entryValues="@array/ktfmt_styles"
+            app:key="ktfmt_style"
+            app:summary="Set ktfmt formatter style"
+            app:title="ktfmt formatter style" />
 
-        <org.cosmicide.rewrite.preference.MaterialMultiSelectListPreference
-            android:defaultValue="@array/empty"
-            android:dialogTitle="Google Java Formatter options"
-            android:entries="@array/gjf_options"
-            android:entryValues="@array/gjf_options"
-            android:key="gjf_options"
-            android:summary="Set options for Google Java Formatter"
-            android:title="Google Java Formatter options" />
+        <MultiSelectListPreference
+            app:defaultValue="@array/empty"
+            app:dialogTitle="Google Java Formatter options"
+            app:entries="@array/gjf_options"
+            app:entryValues="@array/gjf_options"
+            app:key="gjf_options"
+            app:summary="Set options for Google Java Formatter"
+            app:title="Google Java Formatter options" />
 
-        <org.cosmicide.rewrite.preference.MaterialListPreference
-            android:defaultValue="aosp"
-            android:entries="@array/gjf_styles"
-            android:entryValues="@array/gjf_styles"
-            android:key="gjf_style"
-            android:summary="Set Google Java Formatter style"
-            android:title="Google Java Formatter style" />
+        <ListPreference
+            app:defaultValue="aosp"
+            app:entries="@array/gjf_styles"
+            app:entryValues="@array/gjf_styles"
+            app:key="gjf_style"
+            app:summary="Set Google Java Formatter style"
+            app:title="Google Java Formatter style" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="use_bard_proxy"
-            android:summary="Useful if bard is not available in your country"
-            android:title="Use proxy for bard" />
+            app:defaultValue="false"
+            app:key="use_bard_proxy"
+            app:summary="Useful if bard is not available in your country"
+            app:title="Use proxy for bard" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Compiler">
+    <PreferenceCategory app:title="Compiler">
 
         <Preference
-            android:key="plugins"
-            android:summary="Unsupported for now"
-            android:title="Plugins" />
+            app:key="plugins"
+            app:summary="Unsupported for now"
+            app:title="Plugins" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="use_fastjarfs"
-            android:summary="This experimental mode may speed up compilation time, but use with caution"
-            android:title="Use fast implementation for Jar FS" />
-
-
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="use_k2"
-            android:summary="This experimental mode may speed up compilation time, but use with caution"
-            android:title="Use K2 compiler for compilation" />
+            app:defaultValue="false"
+            app:key="use_fastjarfs"
+            app:summary="This experimental mode may speed up compilation time, but use with caution"
+            app:title="Use fast implementation for Jar FS" />
 
         <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:key="use_ssvm"
-            android:summary="This is a very experimental feature. Use with caution."
-            android:title="Use SSVM for running" />
+            app:defaultValue="false"
+            app:key="use_k2"
+            app:summary="This experimental mode may speed up compilation time, but use with caution"
+            app:title="Use K2 compiler for compilation" />
 
-        <org.cosmicide.rewrite.preference.MaterialListPreference
-            android:defaultValue="17"
-            android:entries="@array/java_version_entries"
-            android:entryValues="@array/java_version_entries"
-            android:key="java_version"
-            android:summary="Select the version of Java to use for compilation"
-            android:title="Java Version" />
+        <SwitchPreferenceCompat
+            app:defaultValue="false"
+            app:key="use_ssvm"
+            app:summary="This is a very experimental feature. Use with caution."
+            app:title="Use SSVM for running" />
 
-        <org.cosmicide.rewrite.preference.MaterialEditTextPreference
-            android:key="javac_flags"
-            android:title="Additional javac flags" />
+        <ListPreference
+            app:defaultValue="17"
+            app:entries="@array/java_version_entries"
+            app:entryValues="@array/java_version_entries"
+            app:key="java_version"
+            app:summary="Select the version of Java to use for compilation"
+            app:title="Java Version" />
+
+        <EditTextPreference
+            app:key="javac_flags"
+            app:title="Additional javac flags" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="About">
+    <PreferenceCategory app:title="About">
 
         <Preference
-            android:key="version"
-            android:title="Version" />
+            app:key="version"
+            app:title="Version" />
 
     </PreferenceCategory>
 

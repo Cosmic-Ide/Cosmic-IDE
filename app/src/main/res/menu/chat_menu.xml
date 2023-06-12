@@ -28,7 +28,7 @@
 
     <item
         android:id="@+id/model_ora"
-        android:title="Ora GPT 4" />
+        android:title="Ora GPT-4" />
 
     <item
         android:id="@+id/model_phind"

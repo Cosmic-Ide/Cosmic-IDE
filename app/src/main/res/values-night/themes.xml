@@ -12,6 +12,7 @@
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
 
+        <item name="appBarLayoutStyle">@style/Widget.CosmicIde.AppBarLayout</item>
         <item name="fontFamily">@font/inter</item>
         <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat</item>

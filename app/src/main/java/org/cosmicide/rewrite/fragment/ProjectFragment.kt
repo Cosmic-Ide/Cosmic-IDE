@@ -96,6 +96,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     override fun onResume() {
         super.onResume()
+
         viewModel.loadProjects()
         setOnClickListeners()
     }

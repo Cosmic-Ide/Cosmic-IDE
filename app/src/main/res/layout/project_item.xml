@@ -8,47 +8,39 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Project.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:checkable="true"
     android:clickable="true"
     android:focusable="true"
-    android:minHeight="?listPreferredItemHeightLarge"
-    app:cardBackgroundColor="?attr/colorSurface"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="0dp"
-    app:contentPadding="12dp"
-    app:strokeWidth="0dp">
+    android:minHeight="?attr/listPreferredItemHeightLarge">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/project_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="sans-serif-medium"
             android:singleLine="true"
-            android:textAppearance="?attr/textAppearanceTitleLarge"
-            android:textColor="?colorOnSurface"
-            android:textSize="24sp"
-            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
             tools:text="@string/project_name" />
 
         <TextView
             android:id="@+id/project_path"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="start"
             android:maxLines="2"
-            android:paddingHorizontal="6dp"
-            android:text="@string/project_path"
             android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="?colorOnSurfaceVariant" />
+            android:textColor="?attr/colorSecondary"
+            tools:text="@string/project_path" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

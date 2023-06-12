@@ -11,4 +11,23 @@
         <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
     </style>
 
+    <style name="Project.Base.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="android:layout_marginHorizontal">12dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+        <item name="android:outlineAmbientShadowColor">@android:color/transparent</item>
+        <item name="android:outlineSpotShadowColor">@android:color/transparent</item>
+
+        <item name="contentPaddingBottom">12dp</item>
+        <item name="contentPaddingLeft">16dp</item>
+        <item name="contentPaddingRight">16dp</item>
+        <item name="contentPaddingTop">12dp</item>
+
+        <item name="shapeAppearance">?attr/shapeAppearanceCornerLarge</item>
+    </style>
+
+    <style name="Project.Card" parent="Project.Base.Card">
+        <item name="cardElevation">2dp</item>
+        <item name="strokeWidth">0.5dp</item>
+    </style>
+
 </resources>

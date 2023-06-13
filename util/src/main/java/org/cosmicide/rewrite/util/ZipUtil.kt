@@ -16,6 +16,7 @@ fun InputStream.unzip(targetDir: File) {
         var ze = zipIn.nextEntry
         while (ze != null) {
             val resolved = targetDir.resolve(ze.name).normalize()
+            // Android 14+ prevents Zip Slip attacks: https://developer.android.com/about/versions/14/behavior-changes-14#zip-path-traversal
             if (!resolved.startsWith(targetDir)) {
                 // see: https://snyk.io/research/zip-slip-vulnerability
                 throw SecurityException("Entry with an illegal path: " + ze.name)

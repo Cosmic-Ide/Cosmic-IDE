@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentTransaction
@@ -29,6 +30,7 @@ import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.rewrite.util.ProjectHandler
+import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
@@ -93,10 +95,12 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
     fun checkClasses() {
         // TODO: Show a recyclerview with all classes and allow the user to select one
+        val bufferedInputStream = project.binDir.resolve("classes.dex").inputStream().buffered()
         val dexFile = DexBackedDexFile.fromInputStream(
             Opcodes.forApi(33),
-            project.binDir.resolve("classes.dex").inputStream().buffered()
+            bufferedInputStream
         )
+        bufferedInputStream.close()
         val classes = dexFile.classes.map { it.type.substring(1, it.type.length - 1) }
         if (classes.isEmpty()) {
             binding.infoEditor.setText("No classes found")
@@ -133,10 +137,11 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         }
 
         val loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
-        loader.loadDex(project.binDir.resolve("classes.dex"))
+
+        loader.loadDex(makeDexReadOnlyIfNeeded(project.binDir.resolve("classes.dex")))
 
         project.buildDir.resolve("libs").listFiles()?.filter { it.extension == "dex" }?.forEach {
-            loader.loadDex(it)
+            loader.loadDex(makeDexReadOnlyIfNeeded(it))
         }
         runCatching {
             loader.loader.loadClass(className)
@@ -223,6 +228,23 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                 }"
             )
         }
+    }
+
+    // Android 14+ doesn't allow loading writable dex files: https://developer.android.com/about/versions/14/behavior-changes-14#safer-dynamic-code-loading
+    private fun makeDexReadOnlyIfNeeded(dexFile: File): File {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return dexFile
+        }
+        val target = requireContext().cacheDir.resolve(dexFile.name)
+        if (target.exists()) {
+            target.delete()
+        }
+        target.createNewFile()
+        dexFile.inputStream().buffered().use {
+            target.writeBytes(it.readBytes())
+        }
+        target.setReadOnly() // This is required for Android 14+
+        return target
     }
 
     override fun onDestroy() {

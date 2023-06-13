@@ -21,14 +21,17 @@ import com.github.javaparser.symbolsolver.JavaSymbolSolver
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver
 import com.intellij.core.JavaCoreApplicationEnvironment
 import com.intellij.core.JavaCoreProjectEnvironment
-import com.intellij.ide.highlighter.JavaFileType
+import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.extensions.Extensions
 import com.intellij.openapi.vfs.impl.VirtualFileManagerImpl
 import com.intellij.psi.JavaTokenType
+import com.intellij.psi.PsiAssignmentExpression
 import com.intellij.psi.PsiComment
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementFinder
+import com.intellij.psi.PsiExpressionStatement
+import com.intellij.psi.PsiField
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiImportList
@@ -37,10 +40,15 @@ import com.intellij.psi.PsiImportStaticReferenceElement
 import com.intellij.psi.PsiImportStaticStatement
 import com.intellij.psi.PsiJavaFile
 import com.intellij.psi.PsiJavaToken
+import com.intellij.psi.PsiMethodCallExpression
+import com.intellij.psi.PsiReferenceExpression
+import com.intellij.psi.PsiType
+import com.intellij.psi.PsiVariable
 import com.intellij.psi.PsiWhiteSpace
 import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.impl.source.tree.TreeCopyHandler
+import com.intellij.psi.util.PsiTreeUtil
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import javassist.CtClass
 import javassist.Modifier
@@ -52,28 +60,85 @@ import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
 import org.jetbrains.kotlin.cli.jvm.compiler.setupIdeaStandaloneExecution
 import java.util.logging.Logger
 
-
+// TODO: cleanup, pretty ugly for now
 class CompletionProvider {
 
-    private val logger = Logger.getLogger(this::javaClass.name)
 
-    private val environment by lazy {
-        JavaCoreProjectEnvironment({ logger.info("JavaCoreProjectEnvironment disposed") },
-            JavaCoreApplicationEnvironment { logger.info("JavaCoreApplicationEnvironment disposed") })
-    }
-    private val symbolCacher = SymbolCacher(FileUtil.classpathDir.resolve("android.jar")).apply {
-        loadClassesFromJar()
-    }
+    companion object {
+        val logger = Logger.getLogger(CompletionProvider::javaClass.name)
 
-    private val fileFactory by lazy {
-        PsiFileFactory.getInstance(environment.project)
+        val environment =
+            JavaCoreProjectEnvironment({ logger.info("JavaCoreProjectEnvironment disposed") },
+                JavaCoreApplicationEnvironment { logger.info("JavaCoreApplicationEnvironment disposed") })
+        val symbolCacher = SymbolCacher(FileUtil.classpathDir.resolve("android.jar")).apply {
+            loadClassesFromJar()
+        }
+
+        val fileFactory by lazy {
+            PsiFileFactory.getInstance(environment.project)
+        }
+
+        val javaKeywords = arrayOf(
+            "abstract",
+            "assert",
+            "boolean",
+            "break",
+            "byte",
+            "case",
+            "catch",
+            "char",
+            "class",
+            "const",
+            "continue",
+            "default",
+            "do",
+            "double",
+            "else",
+            "enum",
+            "extends",
+            "final",
+            "finally",
+            "float",
+            "for",
+            "goto",
+            "if",
+            "implements",
+            "import",
+            "instanceof",
+            "int",
+            "interface",
+            "long",
+            "native",
+            "new",
+            "package",
+            "private",
+            "protected",
+            "public",
+            "return",
+            "short",
+            "static",
+            "strictfp",
+            "super",
+            "switch",
+            "synchronized",
+            "this",
+            "throw",
+            "throws",
+            "transient",
+            "try",
+            "void",
+            "volatile",
+            "while",
+            "true",
+            "false",
+            "null"
+        )
     }
 
     init {
         setIdeaIoUseFallback()
         setupIdeaStandaloneExecution()
         registerExtensions()
-
     }
 
 
@@ -81,9 +146,23 @@ class CompletionProvider {
         return psiElement.javaClass.simpleName
     }
 
+    private fun getFullyQualifiedName(referenceExpression: PsiReferenceExpression): String? {
+        val referenceNameElement = referenceExpression.referenceNameElement
+        if (referenceNameElement != null) {
+            val resolvedElement = referenceNameElement.reference!!.resolve()
+            if (resolvedElement is PsiField) {
+                val containingClass = resolvedElement.containingClass
+                if (containingClass != null) {
+                    return containingClass.qualifiedName
+                }
+            }
+        }
+        return null
+    }
+
     fun complete(source: String?, fileName: String?, index: Int): List<EditorCompletionItem> {
         environment.addJarToClassPath(FileUtil.classpathDir.resolve("android.jar"))
-        val psiFile = fileFactory.createFileFromText(fileName!!, JavaFileType.INSTANCE, source!!)
+        val psiFile = fileFactory.createFileFromText(fileName!!, JavaLanguage.INSTANCE, source!!)
 
         // Find the element at the specified position
         val element = findElementAtOffset(psiFile, index)
@@ -148,6 +227,36 @@ class CompletionProvider {
 
         if (element.text.endsWith('.')) {
             if (element.text.first().isUpperCase()) {
+                if (element.text.count { it == '.' } > 1) {
+                    // probably something like System.out.
+                    if (element is PsiReferenceExpression) {
+                        val className = element.text.substringBefore('.')
+                        // check if it is imported
+                        var qualified = getQualifiedNameIfImported(psiFile, className)
+                        if (qualified.isEmpty()) {
+                            qualified = "java.lang.$className"
+                        }
+                        println("Qualified: $qualified")
+                        val ctClass = symbolCacher.getClass(qualified)
+                        if (ctClass == null) {
+                            println("Class not found '$qualified' with element ${element.text}")
+                            return completionItems
+                        }
+
+                        val field = element.text.substringAfter("$className.").substringBefore('.')
+                        val fieldType = ctClass.getField(field).type.name
+                        if (fieldType == null) {
+                            println("Field not found '$field' with element ${element.text}")
+                            return completionItems
+                        }
+                        val clazz = symbolCacher.getClass(fieldType)
+                        if (clazz == null) {
+                            println("Class not found '$fieldType' with element ${element.text}")
+                            return completionItems
+                        }
+                        addAllFieldAndMethods(clazz, completionItems)
+                    }
+                }
                 val className = element.text.substring(0, element.text.length - 1)
                 val qualified = getQualifiedNameIfImported(psiFile, className)
                 if (qualified.isEmpty()) {
@@ -229,7 +338,7 @@ class CompletionProvider {
                 completionItems.add(
                     EditorCompletionItem(
                         field.name,
-                        field.type.name,
+                        field.type.name.substringAfterLast('.'),
                         0,
                         field.name
                     ).kind(CompletionItemKind.Field)
@@ -310,9 +419,54 @@ class CompletionProvider {
         return element is PsiImportStatement || element.parent is PsiImportList || element.parent is PsiImportStaticStatement || element.parent is PsiImportStaticReferenceElement || element.parent is PsiImportStatement
     }
 
-    private fun formatCode(psiFile: PsiFile) {
+    fun formatCode(content: String): String {
+        val psiFile = fileFactory.createFileFromText("temp.java", JavaLanguage.INSTANCE, content)
+        formatCode(psiFile)
+        return psiFile.text
+    }
+
+    fun formatCode(psiFile: PsiFile) {
         val codeStyleManager = CodeStyleManager.getInstance(environment.project)
         codeStyleManager.reformat(psiFile)
+    }
+
+    private fun getTypeOfExpression(element: PsiElement): PsiType? {
+        var type: PsiType? = null
+
+        // Find the parent expression statement or variable declaration
+        val parentExpression = PsiTreeUtil.getParentOfType(
+            element,
+            PsiExpressionStatement::class.java,
+            PsiVariable::class.java
+        )
+        if (parentExpression != null) {
+            if (parentExpression is PsiExpressionStatement) {
+                val expression = parentExpression.expression
+                if (expression is PsiAssignmentExpression) {
+                    // Handle assignment expressions, e.g., "variable = value;"
+                    val leftOperand = expression.lExpression
+                    if (leftOperand is PsiReferenceExpression) {
+                        val resolvedElement = leftOperand.resolve()
+                        if (resolvedElement is PsiField) {
+                            type = resolvedElement.type
+                        } else if (resolvedElement is PsiVariable) {
+                            type = resolvedElement.type
+                        }
+                    }
+                } else if (expression is PsiMethodCallExpression) {
+                    // Handle method call expressions, e.g., "method().field"
+                    val referenceExpression = expression.methodExpression
+                    val resolvedElement = referenceExpression.resolve()
+                    if (resolvedElement is PsiField) {
+                        type = resolvedElement.type
+                    }
+                }
+            } else if (parentExpression is PsiVariable) {
+                // Handle variable declarations, e.g., "Type variable = value;"
+                type = parentExpression.type
+            }
+        }
+        return type
     }
 
     private fun findElementAtOffset(file: PsiFile, offset: Int): PsiElement? {
@@ -389,64 +543,5 @@ class CompletionProvider {
         }
         return psiFile.text
 
-    }
-
-
-    companion object {
-        val javaKeywords = arrayOf(
-            "abstract",
-            "assert",
-            "boolean",
-            "break",
-            "byte",
-            "case",
-            "catch",
-            "char",
-            "class",
-            "const",
-            "continue",
-            "default",
-            "do",
-            "double",
-            "else",
-            "enum",
-            "extends",
-            "final",
-            "finally",
-            "float",
-            "for",
-            "goto",
-            "if",
-            "implements",
-            "import",
-            "instanceof",
-            "int",
-            "interface",
-            "long",
-            "native",
-            "new",
-            "package",
-            "private",
-            "protected",
-            "public",
-            "return",
-            "short",
-            "static",
-            "strictfp",
-            "super",
-            "switch",
-            "synchronized",
-            "this",
-            "throw",
-            "throws",
-            "transient",
-            "try",
-            "void",
-            "volatile",
-            "while",
-            "true",
-            "false",
-            "null"
-        )
     }
 }

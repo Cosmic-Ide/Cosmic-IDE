@@ -92,7 +92,6 @@ dependencies {
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.airbnb.android:lottie:6.0.0")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
-    implementation("com.github.TutorialsAndroid:crashx:v6.0.19")
     implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.google.code.gson:gson:2.10.1")

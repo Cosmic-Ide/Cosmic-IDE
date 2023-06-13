@@ -85,6 +85,9 @@ object Prefs {
     val doubleClickClose: Boolean
         get() = prefs.getBoolean("double_click_close", false)
 
+    val experimentalJavaCompletion: Boolean
+        get() = prefs.getBoolean("experimental_java_completion", false)
+
     val editorFontSize: Float
         get() = runCatching {
             prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f

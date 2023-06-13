@@ -60,6 +60,12 @@
 
         <SwitchPreferenceCompat
             app:defaultValue="true"
+            app:key="experimental_java_completion"
+            app:summary="Uses an experimental Java completion engine"
+            app:title="Experimental java code completion" />
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
             app:key="scrollbar"
             app:summary="Show scrollbar in the editor"
             app:title="Show scrollbar" />
@@ -164,6 +170,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="About">
+
+        <SwitchPreferenceCompat
+            app:defaultValue="true"
+            app:key="analytics_preference"
+            app:summary="Send anonymous usage statistics to help improve the app."
+            app:title="Send analytics" />
 
         <Preference
             app:key="version"

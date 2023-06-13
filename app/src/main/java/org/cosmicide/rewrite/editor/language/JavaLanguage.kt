@@ -9,7 +9,11 @@ package org.cosmicide.rewrite.editor.language
 
 import android.os.Bundle
 import android.util.Log
+import com.tyron.javacompletion.JavaCompletions
+import com.tyron.javacompletion.completion.CompletionCandidate
+import com.tyron.javacompletion.options.JavaCompletionOptionsImpl
 import io.github.rosemoe.sora.lang.completion.CompletionItem
+import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
 import io.github.rosemoe.sora.langs.textmate.IdeLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -17,9 +21,16 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.text.ContentReference
 import io.github.rosemoe.sora.widget.CodeEditor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.Prefs
+import org.cosmicide.rewrite.editor.EditorCompletionItem
 import java.io.File
+import java.net.URI
+import java.util.logging.Level
 
 /**
  * A custom implementation of an IDE language for Java.
@@ -38,23 +49,27 @@ class JavaLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-    private val completionProvider = CompletionProvider()
+    private lateinit var completionProvider: CompletionProvider
 
-    /*
-        private val completions: JavaCompletions by lazy { JavaCompletions() }
-        private val path: Path = file.toPath()
+    private val completions by lazy { JavaCompletions() }
+    private val path = file.toPath()
 
-        init {
-            val options = JavaCompletionOptionsImpl(
-                "${project.binDir.absolutePath}/autocomplete.log",
-                Level.ALL,
-                emptyList(),
-                emptyList()
-            )
-            completions.initialize(URI("file://" + project.root.absolutePath), options)
-            completions.openFile(file.toPath(), editor.text.toString())
+    init {
+        if (Prefs.experimentalJavaCompletion) {
+            CoroutineScope(Dispatchers.IO).launch {
+                completionProvider = CompletionProvider()
+            }
         }
-    */
+        val options = JavaCompletionOptionsImpl(
+            "${project.binDir.absolutePath}/autocomplete.log",
+            Level.ALL,
+            emptyList(),
+            emptyList()
+        )
+        completions.initialize(URI("file://" + project.root.absolutePath), options)
+        completions.openFile(file.toPath(), editor.text.toString())
+    }
+
     override fun requireAutoComplete(
         content: ContentReference,
         position: CharPosition,
@@ -65,19 +80,21 @@ class JavaLanguage(
 
         try {
             val text = editor.text.toString()
-            println(position.index - 1)
-            val items = completionProvider.complete(text, "Main.java", position.index)
-            publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
-                // if the first letter of the label is lowercase, then its most likely a module/package
-                if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
-                    return@Comparator -1
-                } else if (o1.label[0].isUpperCase() && o2.label[0].isLowerCase()) {
-                    return@Comparator 1
-                }
-                return@Comparator o1.label.toString().compareTo(o2.label.toString())
-            })
-            publisher.addItems(items)
-            /*completions.updateFileContent(path, text)
+            if (Prefs.experimentalJavaCompletion) {
+                val items = completionProvider.complete(text, "Main.java", position.index)
+                publisher.setComparator(Comparator<CompletionItem> { o1, o2 ->
+                    // if the first letter of the label is lowercase, then its most likely a module/package
+                    if (o1.label[0].isLowerCase() && o2.label[0].isUpperCase()) {
+                        return@Comparator -1
+                    } else if (o1.label[0].isUpperCase() && o2.label[0].isLowerCase()) {
+                        return@Comparator 1
+                    }
+                    return@Comparator o1.label.toString().compareTo(o2.label.toString())
+                })
+                publisher.addItems(items)
+                return
+            }
+            completions.updateFileContent(path, text)
             val result = completions.getCompletions(path, position.line, position.column)
             result.completionCandidates.forEach { candidate ->
                 if (candidate.name != "<error>") {
@@ -106,13 +123,13 @@ class JavaLanguage(
                     publisher.addItem(item)
                 }
             }
-            */
         } catch (e: Throwable) {
             if (e !is InterruptedException) {
                 Log.e(TAG, "Failed to fetch code completions", e)
             }
         }
     }
+
 
     companion object {
         private const val TAG = "JavaLanguage"

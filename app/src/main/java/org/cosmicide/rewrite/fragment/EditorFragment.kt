@@ -240,12 +240,24 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
     }
 
+
     override fun onDestroyView() {
         saveFile()
         fileViewModel.currentPosition.value?.let { pos ->
             fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
         super.onDestroyView()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            saveFile()
+            fileViewModel.currentPosition.value?.let { pos ->
+                fileIndex.putFiles(pos, fileViewModel.files.value!!)
+            }
+            binding.tabLayout.removeAllTabs()
+        }
     }
 
     private fun saveFile() {

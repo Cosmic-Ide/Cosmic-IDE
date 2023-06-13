@@ -6,7 +6,6 @@
   -->
 
 <objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
-    android:duration="3600"
     android:pivotX="50%"
     android:pivotY="50%"
     android:propertyName="rotation"

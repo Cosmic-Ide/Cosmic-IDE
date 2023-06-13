@@ -37,7 +37,7 @@ class EditorCompletionItem(
             CompletionItemKind.Constructor -> "()"
             CompletionItemKind.Module -> "."
             else -> {
-                if (kind == CompletionItemKind.Method && label.endsWith(')').not()) {
+                if (kind == CompletionItemKind.Method && commitText.endsWith(')').not()) {
                     "()"
                 } else {
                     ""

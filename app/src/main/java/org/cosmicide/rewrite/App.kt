@@ -13,7 +13,6 @@ import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import com.developer.crashx.config.CrashConfig
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -21,9 +20,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
@@ -61,7 +57,8 @@ class App : Application() {
         loadTextmateTheme()
         loadPlugins()
 
-        Analytics.logEvent("startup",
+        Analytics.logEvent(
+            "startup",
             "theme" to Prefs.appTheme,
             "time" to ZonedDateTime.now().toString(),
             "device" to Build.DEVICE,
@@ -71,12 +68,6 @@ class App : Application() {
             "abi" to Build.SUPPORTED_ABIS.joinToString(),
             "version" to BuildConfig.VERSION_NAME + if (BuildConfig.GIT_COMMIT.isNotEmpty()) " (${BuildConfig.GIT_COMMIT})" else "",
         )
-
-        CrashConfig.Builder
-            .create()
-            .showRestartButton(true)
-            .trackActivities(true)
-            .apply()
 
         Analytics.setAnalyticsCollectionEnabled(Prefs.analyticsEnabled)
         val theme = getTheme(Prefs.appTheme)
@@ -102,7 +93,10 @@ class App : Application() {
     private fun extractFiles() {
         extractAsset("index.json", FileUtil.dataDir.resolve("index.json"))
         extractAsset("android.jar", FileUtil.classpathDir.resolve("android.jar"))
-        extractAsset("kotlin-stdlib-1.8.0.jar", FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar"))
+        extractAsset(
+            "kotlin-stdlib-1.8.0.jar",
+            FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar")
+        )
         extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
     }
 

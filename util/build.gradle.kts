@@ -11,7 +11,7 @@ plugins {
 }
 android {
     namespace = "org.cosmicide.rewrite.util"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 26

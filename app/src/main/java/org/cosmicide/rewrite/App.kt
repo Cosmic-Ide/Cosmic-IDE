@@ -11,6 +11,7 @@ import android.app.Application
 import android.app.UiModeManager
 import android.content.res.Configuration
 import android.os.Build
+import android.os.StrictMode
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
@@ -31,6 +32,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.lang.reflect.Modifier
 import java.time.ZonedDateTime
+import java.util.concurrent.Executors
 
 class App : Application() {
 
@@ -44,6 +46,32 @@ class App : Application() {
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
         Analytics.init(applicationContext)
+
+        if (BuildConfig.DEBUG) {
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder().apply {
+                    detectLeakedClosableObjects()
+                    detectLeakedRegistrationObjects()
+                    detectActivityLeaks()
+                    detectContentUriWithoutPermission()
+                    detectFileUriExposure()
+                    detectCleartextNetwork()
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                        penaltyLog()
+                        return@apply
+                    }
+                    permitNonSdkApiUsage()
+                    penaltyListener(Executors.newSingleThreadExecutor()) { violation ->
+                        Log.e("StrictMode", "VM violation", violation)
+                        violation.printStackTrace()
+                    }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        detectIncorrectContextUse()
+                        detectUnsafeIntentLaunch()
+                    }
+                }.build()
+            )
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")

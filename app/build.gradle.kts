@@ -15,13 +15,13 @@ plugins {
 
 android {
     namespace = "org.cosmicide.rewrite"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         val commit = getGitCommit()
         applicationId = "org.cosmicide.rewrite"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0-$commit"
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
@@ -118,7 +118,7 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
     implementation("org.slf4j:slf4j-simple:2.0.7")
     implementation(platform("com.google.firebase:firebase-bom:32.1.0"))

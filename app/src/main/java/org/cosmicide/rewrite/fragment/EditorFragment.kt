@@ -135,6 +135,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         binding.drawer.close()
                     } else {
                         parentFragmentManager.popBackStack()
+                        onHidden()
                     }
                 }
             })
@@ -249,16 +250,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         super.onDestroyView()
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (hidden) {
-            saveFile()
-            fileViewModel.currentPosition.value?.let { pos ->
-                fileIndex.putFiles(pos, fileViewModel.files.value!!)
-            }
-            binding.tabLayout.removeAllTabs()
+    fun onHidden() {
+        saveFile()
+        fileViewModel.currentPosition.value?.let { pos ->
+            fileIndex.putFiles(pos, fileViewModel.files.value!!)
         }
+        binding.tabLayout.removeAllTabs()
     }
+
 
     private fun saveFile() {
         fileViewModel.currentFile?.let { file ->

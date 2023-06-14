@@ -9,9 +9,8 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
 }
-
 android {
-    namespace = "org.cosmicide.build"
+    namespace = "com.tyron.kotlin.completion"
     compileSdk = 34
 
     defaultConfig {
@@ -20,7 +19,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
         }
     }
 
@@ -35,19 +34,10 @@ android {
 }
 
 dependencies {
-    implementation(projects.common)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0")
+    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation(projects.feature.project)
     implementation(projects.kotlinc)
+    implementation(projects.common)
     implementation(projects.util)
-    /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
-    implementation("org.scala-lang:scala3-compiler_3:3.3.1-RC1") {
-        exclude(group = "org.jline", module = "jline-terminal")
-        exclude(group = "org.jline", module = "jline-terminal-jna")
-        exclude(group = "org.jline", module = "jline-reader")
-    }
-    */
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("com.google.guava:guava:31.1-jre")
-    implementation("com.android.tools:r8:8.0.40")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
 }

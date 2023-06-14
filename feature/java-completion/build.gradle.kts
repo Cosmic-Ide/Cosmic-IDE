@@ -9,9 +9,8 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
 }
-
 android {
-    namespace = "org.cosmicide.build"
+    namespace = "org.cosmicide.completion.java"
     compileSdk = 34
 
     defaultConfig {
@@ -20,7 +19,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
         }
     }
 
@@ -33,21 +32,13 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
-
 dependencies {
-    implementation(projects.common)
+    implementation("com.github.javaparser:javaparser-core:3.25.3")
+    implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.3")
+    implementation("org.javassist:javassist:3.29.2-GA")
+    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation(projects.feature.project)
+    implementation(projects.common)
     implementation(projects.kotlinc)
     implementation(projects.util)
-    /* D8 cannot handle scala3 compiler rn (https://issuetracker.google.com/issues/285036373)
-    implementation("org.scala-lang:scala3-compiler_3:3.3.1-RC1") {
-        exclude(group = "org.jline", module = "jline-terminal")
-        exclude(group = "org.jline", module = "jline-terminal-jna")
-        exclude(group = "org.jline", module = "jline-reader")
-    }
-    */
-    implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("com.google.guava:guava:31.1-jre")
-    implementation("com.android.tools:r8:8.0.40")
-    implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
 }

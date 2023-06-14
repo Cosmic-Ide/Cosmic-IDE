@@ -33,7 +33,7 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    api("com.google.guava:guava:31.1-jre")
+    api("com.google.guava:guava:32.0.1-android")
 
     implementation("com.google.auto.value:auto-value-annotations:1.10.1")
     annotationProcessor("com.google.auto.value:auto-value:1.10.1")

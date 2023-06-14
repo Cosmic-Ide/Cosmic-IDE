@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation(projects.feature.project)
     implementation(projects.kotlinc)

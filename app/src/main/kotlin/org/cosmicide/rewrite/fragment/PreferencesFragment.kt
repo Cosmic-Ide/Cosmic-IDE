@@ -32,6 +32,7 @@ class PreferencesFragment : PreferenceFragmentCompat() {
         const val KEY_APP_THEME = "app_theme"
         const val KEY_VERSION = "version"
         const val KEY_PLUGINS = "plugins"
+        const val AVAILABLE_PLUGINS = "available_plugins"
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -61,6 +62,17 @@ class PreferencesFragment : PreferenceFragmentCompat() {
             pluginsPreference.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     add(R.id.fragment_container, PluginsFragment())
+                    addToBackStack(null)
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                }.commit()
+
+                true
+            }
+        }
+        findPreference<Preference>(AVAILABLE_PLUGINS)?.let { availablePlugins ->
+            availablePlugins.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    add(R.id.fragment_container, PluginListFragment())
                     addToBackStack(null)
                     setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 }.commit()

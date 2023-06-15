@@ -70,19 +70,19 @@ class ProjectAdapter(private val listener: OnProjectEventListener) :
     /**
      * ViewHolder for displaying a single [Project] object in the [RecyclerView].
      *
-     * @param binding The [ProjectItemBinding] object for the item view.
+     * @param itemBinding The [ProjectItemBinding] object for the item view.
      * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
      */
     inner class ViewHolder(
-        private val itemBinding: ProjectItemBinding,
+        itemBinding: ProjectItemBinding,
         private val listener: OnProjectEventListener
     ) : BindableViewHolder<Project, ProjectItemBinding>(itemBinding) {
 
-        override fun bind(project: Project) {
-            binding.projectTitle.text = project.name
-            binding.projectPath.text = project.root.absolutePath
-            binding.root.setOnClickListener { listener.onProjectClicked(project) }
-            binding.root.setOnLongClickListener { listener.onProjectLongClicked(project) }
+        override fun bind(data: Project) {
+            binding.projectTitle.text = data.name
+            binding.projectPath.text = data.root.absolutePath
+            binding.root.setOnClickListener { listener.onProjectClicked(data) }
+            binding.root.setOnLongClickListener { listener.onProjectLongClicked(data) }
         }
     }
 }

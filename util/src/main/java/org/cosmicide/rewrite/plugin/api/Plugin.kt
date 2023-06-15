@@ -7,13 +7,19 @@
 
 package org.cosmicide.rewrite.plugin.api
 
-interface Plugin {
-    fun getName(): String
-
-    fun getVersion(): String
-
-    fun getAuthor(): String
-    fun getDescription(): String
-
-    fun getSource(): String
-}
+data class Plugin(
+    val name: String,
+    val version: String,
+    val author: String,
+    val description: String,
+    val source: String,
+    var raw: String = """
+        {
+            "name": "$name",
+            "version": "$version",
+            "author": "$author",
+            "description": "$description",
+            "source": "$source"
+        }
+    """.trimIndent()
+)

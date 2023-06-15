@@ -73,7 +73,7 @@ open class IdeLanguage(
         return _symbolPairs
     }
 
-    fun formatCode(text: Content, range: TextRange): String {
+    fun formatCode(text: Content): String {
         return text.toString()
     }
 }

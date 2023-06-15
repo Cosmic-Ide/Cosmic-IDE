@@ -42,13 +42,13 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                     val binding = PluginInfoBinding.inflate(layoutInflater)
                     val bottomSheetView = binding.root
                     binding.apply {
-                        val title = "${plugin.getName()} v${plugin.getVersion()}"
+                        val title = "${plugin.name} v${plugin.version}"
                         pluginName.text = title
                         val markwon = Markwon.builder(context)
                             .usePlugin(LinkifyPlugin.create())
                             .build()
-                        val desc = plugin.getDescription()
-                            .ifEmpty { "No description" } + "\n\n" + plugin.getSource()
+                        val desc = plugin.description
+                            .ifEmpty { "No description" } + "\n\n" + plugin.source
                         pluginDescription.movementMethod = LinkMovementMethod.getInstance()
                         pluginDescription.text = markwon.toMarkdown(desc)
                     }
@@ -59,9 +59,9 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                 override fun onPluginLongClicked(plugin: Plugin) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Delete plugin")
-                        .setMessage("Are you sure you want to delete ${plugin.getName()}?")
+                        .setMessage("Are you sure you want to delete ${plugin.name}?")
                         .setPositiveButton("Yes") { _, _ ->
-                            FileUtil.pluginDir.resolve(plugin.getName()).deleteRecursively()
+                            FileUtil.pluginDir.resolve(plugin.name).deleteRecursively()
                             (adapter as PluginAdapter).submitList(getPlugins())
                         }
                         .setNegativeButton("No") { _, _ -> }
@@ -97,27 +97,13 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                             config.readText(),
                             object : TypeToken<Map<String, String>>() {}.type
                         )
-                    plugins.add(object : Plugin {
-                        override fun getName(): String {
-                            return data.getValue("name")
-                        }
-
-                        override fun getVersion(): String {
-                            return data.getValue("version")
-                        }
-
-                        override fun getAuthor(): String {
-                            return data.getValue("author")
-                        }
-
-                        override fun getDescription(): String {
-                            return data.getValue("description")
-                        }
-
-                        override fun getSource(): String {
-                            return data.getValue("source")
-                        }
-                    })
+                    plugins.add(Plugin(
+                            name = data.getValue("name"),
+                            version = data.getValue("version"),
+                            author = data.getValue("author"),
+                            description =  data.getValue("description"),
+                            source = data.getValue("source"),
+                    ))
                 }
             }
             return plugins

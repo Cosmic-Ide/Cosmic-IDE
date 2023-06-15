@@ -9,20 +9,21 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/TreeView" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/bardapi" />
             <option value="$PROJECT_DIR$/build-tools" />
             <option value="$PROJECT_DIR$/common" />
-            <option value="$PROJECT_DIR$/completion" />
-            <option value="$PROJECT_DIR$/completion/java" />
-            <option value="$PROJECT_DIR$/completion/kotlin" />
-            <option value="$PROJECT_DIR$/formatter" />
-            <option value="$PROJECT_DIR$/formatter/google-java-format" />
-            <option value="$PROJECT_DIR$/formatter/ktfmt" />
-            <option value="$PROJECT_DIR$/java-completion" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/TreeView" />
+            <option value="$PROJECT_DIR$/feature/bardapi" />
+            <option value="$PROJECT_DIR$/feature/completion" />
+            <option value="$PROJECT_DIR$/feature/completion/java" />
+            <option value="$PROJECT_DIR$/feature/completion/kotlin" />
+            <option value="$PROJECT_DIR$/feature/formatter" />
+            <option value="$PROJECT_DIR$/feature/formatter/google-java-format" />
+            <option value="$PROJECT_DIR$/feature/formatter/ktfmt" />
+            <option value="$PROJECT_DIR$/feature/java-completion" />
+            <option value="$PROJECT_DIR$/feature/project" />
             <option value="$PROJECT_DIR$/kotlinc" />
-            <option value="$PROJECT_DIR$/project" />
             <option value="$PROJECT_DIR$/util" />
           </set>
         </option>

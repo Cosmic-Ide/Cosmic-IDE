@@ -7,16 +7,12 @@
 
 package org.cosmicide.rewrite.common
 
-import android.content.Context
 import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
 object Analytics {
-    fun init(context: Context) {
-        analytics = Firebase.analytics
-    }
+    val analytics by lazy { Firebase.analytics }
 
     fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
@@ -33,6 +29,4 @@ object Analytics {
     fun setAnalyticsCollectionEnabled(enabled: Boolean) {
         analytics.setAnalyticsCollectionEnabled(enabled)
     }
-
-    lateinit var analytics: FirebaseAnalytics
 }

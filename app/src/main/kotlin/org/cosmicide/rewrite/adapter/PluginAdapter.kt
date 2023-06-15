@@ -50,7 +50,7 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     /**
      * Sets the list of plugins to be displayed in the [RecyclerView].
      *
-     * @param projects The list of [Plugin] objects.
+     * @param plugins The list of [Plugin] objects.
      */
     fun submitList(plugins: List<Plugin>) {
         this.plugins = plugins
@@ -71,22 +71,22 @@ class PluginAdapter(private val listener: OnPluginEventListener) :
     /**
      * ViewHolder for displaying a single [Plugin] object in the [RecyclerView].
      *
-     * @param binding The [PluginItemBinding] object for the item view.
-     * @param listener The [OnProjectEventListener] for handling user interactions with the item view.
+     * @param itemBinding The [PluginItemBinding] object for the item view.
+     * @param listener The [OnPluginEventListener] for handling user interactions with the item view.
      */
     inner class ViewHolder(
-        private val itemBinding: PluginItemBinding,
+        itemBinding: PluginItemBinding,
         private val listener: OnPluginEventListener
     ) : BindableViewHolder<Plugin, PluginItemBinding>(itemBinding) {
 
-        override fun bind(plugin: Plugin) {
-            val title = "${plugin.getName()} v${plugin.getVersion()}"
+        override fun bind(data: Plugin) {
+            val title = "${data.name} v${data.version}"
             binding.apply {
                 switch1.text = title
-                author.text = plugin.getAuthor()
-                root.setOnClickListener { listener.onPluginClicked(plugin) }
+                author.text = data.author
+                root.setOnClickListener { listener.onPluginClicked(data) }
                 root.setOnLongClickListener {
-                    listener.onPluginLongClicked(plugin)
+                    listener.onPluginLongClicked(data)
                     true
                 }
             }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of Cosmic IDE.
+  ~ Cosmic IDE is a free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+  ~ Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+  ~ You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?listPreferredItemHeightLarge"
+    android:background="?attr/colorSurface"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:layout_marginStart="?listPreferredItemPaddingStart"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:checked="false"
+        android:layoutDirection="rtl"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textSize="20sp"
+        tools:text="Plugin name" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="Install" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="start"
+        android:maxLines="2"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?android:attr/textColorSecondary"
+        tools:text="Author" />
+
+</LinearLayout>

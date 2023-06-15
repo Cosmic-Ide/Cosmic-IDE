@@ -45,7 +45,6 @@ class App : Application() {
 
         FileUtil.init(applicationContext)
         Prefs.init(applicationContext)
-        Analytics.init(applicationContext)
 
         if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(
@@ -183,10 +182,10 @@ class App : Application() {
     private fun loadPlugins() {
         PluginsFragment.getPlugins().forEach { plugin ->
             val pluginFile =
-                FileUtil.pluginDir.resolve(plugin.getName()).resolve("classes.dex")
+                FileUtil.pluginDir.resolve(plugin.name).resolve("classes.dex")
             if (pluginFile.exists().not()) return@forEach
             loader.loadDex(pluginFile)
-            val className = plugin.getName().lowercase() + ".Main"
+            val className = plugin.name.lowercase() + ".Main"
             val clazz = loader.loader.loadClass(className)
             val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
             if (Modifier.isStatic(method.modifiers)) {
@@ -197,7 +196,7 @@ class App : Application() {
                     arrayOf<String>()
                 )
             }
-            Log.d("Plugin", "Loaded plugin ${plugin.getName()}")
+            Log.d("Plugin", "Loaded plugin ${plugin.name}")
         }
     }
 

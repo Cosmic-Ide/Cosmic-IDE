@@ -12,7 +12,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -92,6 +91,19 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         activity.setSupportActionBar(binding.toolbar)
 
         observeViewModelProjects()
+        binding.toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.action_settings -> {
+                    parentFragmentManager.beginTransaction().apply {
+                        replace(R.id.fragment_container, SettingsFragment())
+                        addToBackStack(null)
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    }.commit()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     override fun onResume() {
@@ -103,20 +115,6 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.projects_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                parentFragmentManager.beginTransaction().apply {
-                    replace(R.id.fragment_container, SettingsFragment())
-                    addToBackStack(null)
-                    setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                }.commit()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     private fun setOnClickListeners() {

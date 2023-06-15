@@ -133,6 +133,11 @@
     <PreferenceCategory app:title="Compiler">
 
         <Preference
+            app:key="available_plugins"
+            app:summary="View available plugins"
+            app:title="Available Plugins" />
+
+        <Preference
             app:key="plugins"
             app:summary="Unsupported for now"
             app:title="Plugins" />

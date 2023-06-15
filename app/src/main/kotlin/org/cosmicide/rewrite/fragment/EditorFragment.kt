@@ -177,13 +177,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         fileViewModel.updateFiles(files.toMutableList())
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun initTreeView() {
+        val treeview = binding.included.treeview as TreeView<FileSet>
         val binder = ViewBinder(
             lifecycleScope,
             layoutInflater,
             fileViewModel,
-            binding.included.treeview as TreeView<FileSet>
-        )
+            treeview)
 
         lifecycleScope.launch(Dispatchers.IO) {
             val rootItem = FileSet(
@@ -228,7 +229,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
 
                 "class" -> {
-                    TextMateLanguage.create("source.java", true)
+                    TextMateLanguage.create("source.class", true)
                 }
 
                 else -> EmptyLanguage()

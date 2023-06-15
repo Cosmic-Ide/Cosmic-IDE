@@ -20,7 +20,7 @@ import io.github.rosemoe.sora.text.TextRange
 class IdeFormatter(private val language: IdeLanguage) : AsyncFormatter() {
 
     override fun formatAsync(text: Content, range: TextRange): TextRange {
-        val formattedText = language.formatCode(text, range)
+        val formattedText = language.formatCode(text)
         text.replace(0, text.length, formattedText)
         return range
     }

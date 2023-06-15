@@ -3,8 +3,19 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="Cosmic_IDE_Rewrite.app" target="17" />
+      <module name="CosmicIDE-Rewrite.bardapi" target="17" />
+      <module name="CosmicIDE-Rewrite.bardapi.main" target="17" />
+      <module name="CosmicIDE-Rewrite.bardapi.test" target="17" />
+      <module name="CosmicIDE-Rewrite.completion.java" target="17" />
+      <module name="CosmicIDE-Rewrite.completion.kotlin" target="17" />
+      <module name="CosmicIDE-Rewrite.java-completion" target="17" />
+      <module name="CosmicIDE-Rewrite.java-completion.main" target="17" />
       <module name="CosmicIDE-Rewrite.java-completion.test" target="17" />
       <module name="CosmicIDE-Rewrite.lynx" target="17" />
+      <module name="CosmicIDE-Rewrite.project" target="17" />
+      <module name="CosmicIDE-Rewrite.project.main" target="17" />
+      <module name="CosmicIDE-Rewrite.project.test" target="17" />
+      <module name="CosmicIDE-Rewrite.TreeView" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

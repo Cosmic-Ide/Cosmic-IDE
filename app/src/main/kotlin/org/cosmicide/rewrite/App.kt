@@ -16,6 +16,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
+import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -24,6 +25,8 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
+import org.cosmicide.rewrite.plugin.api.Hook
+import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -43,7 +46,17 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        FileUtil.init(applicationContext)
+        HookManager.registerHook(object : Hook("disableModules", App::class.java) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                println("Hooked to App.disableModules()")
+            }
+
+            override fun after(param: XC_MethodHook.MethodHookParam) {
+                println("Hooked to App.disableModules()")
+            }
+        })
+
+        FileUtil.init(getExternalFilesDir(null)!!)
         Prefs.init(applicationContext)
 
         if (BuildConfig.DEBUG) {
@@ -109,7 +122,7 @@ class App : Application() {
         }
     }
 
-    private fun getTheme(theme: String): Int {
+    fun getTheme(theme: String): Int {
         return when (theme) {
             "light" -> UiModeManager.MODE_NIGHT_NO
             "dark" -> UiModeManager.MODE_NIGHT_YES
@@ -117,7 +130,7 @@ class App : Application() {
         }
     }
 
-    private fun extractFiles() {
+    fun extractFiles() {
         extractAsset("index.json", FileUtil.dataDir.resolve("index.json"))
         extractAsset("android.jar", FileUtil.classpathDir.resolve("android.jar"))
         extractAsset(
@@ -127,7 +140,7 @@ class App : Application() {
         extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
     }
 
-    private fun extractAsset(assetName: String, targetFile: File) {
+    fun extractAsset(assetName: String, targetFile: File) {
         if (targetFile.exists()) {
             return
         }
@@ -142,11 +155,11 @@ class App : Application() {
         }
     }
 
-    private fun disableModules() {
+    fun disableModules() {
         JavacConfigProvider.disableModules()
     }
 
-    private fun loadTextmateTheme() {
+    fun loadTextmateTheme() {
         val fileProvider = AssetsFileResolver(assets)
         FileProviderRegistry.getInstance().addFileProvider(fileProvider)
 
@@ -164,7 +177,7 @@ class App : Application() {
         applyThemeBasedOnConfiguration()
     }
 
-    private fun applyThemeBasedOnConfiguration() {
+    fun applyThemeBasedOnConfiguration() {
         val themeName =
             when (getTheme(Prefs.appTheme)) {
                 AppCompatDelegate.MODE_NIGHT_YES -> "darcula"
@@ -179,7 +192,7 @@ class App : Application() {
         ThemeRegistry.getInstance().setTheme(themeName)
     }
 
-    private fun loadPlugins() {
+    fun loadPlugins() {
         PluginsFragment.getPlugins().forEach { plugin ->
             val pluginFile =
                 FileUtil.pluginDir.resolve(plugin.name).resolve("classes.dex")
@@ -200,7 +213,7 @@ class App : Application() {
         }
     }
 
-    private fun loadTheme(fileName: String, themeName: String): ThemeModel {
+    fun loadTheme(fileName: String, themeName: String): ThemeModel {
         val inputStream =
             FileProviderRegistry.getInstance().tryGetInputStream("textmate/$fileName")
                 ?: throw FileNotFoundException("Theme file not found: $fileName")

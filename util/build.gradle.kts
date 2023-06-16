@@ -32,3 +32,7 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 }
+
+dependencies {
+    implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
+}

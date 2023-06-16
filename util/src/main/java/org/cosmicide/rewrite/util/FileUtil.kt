@@ -7,7 +7,6 @@
 
 package org.cosmicide.rewrite.util
 
-import android.content.Context
 import java.io.File
 
 object FileUtil {
@@ -17,8 +16,8 @@ object FileUtil {
     lateinit var dataDir: File
     lateinit var pluginDir: File
 
-    fun init(context: Context) {
-        dataDir = context.getExternalFilesDir(null)!!
+    fun init(dir: File) {
+        dataDir = dir
         projectDir = dataDir.resolve("projects").apply { mkdirs() }
         classpathDir = dataDir.resolve("classpath").apply { mkdirs() }
         pluginDir = dataDir.resolve("plugins").apply { mkdirs() }

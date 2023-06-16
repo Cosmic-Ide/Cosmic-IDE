@@ -23,13 +23,12 @@ import io.github.dingyi222666.view.treeview.TreeView
 import io.github.dingyi222666.view.treeview.TreeViewBinder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.cosmicide.rewrite.FileProvider.openFileWithExternalApp
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding
 import org.cosmicide.rewrite.model.FileViewModel
-import org.cosmicide.rewrite.openFileWithExternalApp
-import org.jetbrains.kotlin.incremental.createDirectory
 import java.io.File
 
 class ViewBinder(
@@ -180,7 +179,7 @@ class ViewBinder(
                             file.absolutePath
                             var name = binding.edittext.text.toString()
                             name = name.replace("\\.", "")
-                            file.resolve(name).createDirectory()
+                            file.resolve(name).mkdirs()
                             lifeScope.launch {
                                 Log.d("ViewBinder", "Refresh treeview")
                                 treeView.refresh(node = parentNode)

@@ -15,12 +15,17 @@ import org.cosmicide.project.Project
 class ProjectHandler {
 
     companion object {
+        /**
+         * The current project.
+         */
+        @JvmStatic
         private var project: Project? = null
 
         /**
          * Gets the current project.
          * @return the current project, or null if no project is set
          */
+        @JvmStatic
         fun getProject(): Project? {
             return project
         }
@@ -29,6 +34,7 @@ class ProjectHandler {
          * Sets the current project.
          * @param project the project to set
          */
+        @JvmStatic
         fun setProject(project: Project) {
             this.project = project
         }

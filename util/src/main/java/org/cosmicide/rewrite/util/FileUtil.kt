@@ -10,12 +10,19 @@ package org.cosmicide.rewrite.util
 import java.io.File
 
 object FileUtil {
-
+@JvmStatic
     lateinit var projectDir: File
+
+    @JvmStatic
     lateinit var classpathDir: File
+
+    @JvmStatic
     lateinit var dataDir: File
+
+    @JvmStatic
     lateinit var pluginDir: File
 
+    @JvmStatic
     fun init(dir: File) {
         dataDir = dir
         projectDir = dataDir.resolve("projects").apply { mkdirs() }

@@ -12,12 +12,15 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 
 object Analytics {
+    @JvmStatic
     val analytics by lazy { Firebase.analytics }
 
+    @JvmStatic
     fun logEvent(event: String, bundle: Bundle) {
         analytics.logEvent(event, bundle)
     }
 
+    @JvmStatic
     fun logEvent(event: String, vararg pairs: Pair<String, String>) {
         val bundle = Bundle()
         for (pair in pairs) {
@@ -26,6 +29,7 @@ object Analytics {
         logEvent(event, bundle)
     }
 
+    @JvmStatic
     fun setAnalyticsCollectionEnabled(enabled: Boolean) {
         analytics.setAnalyticsCollectionEnabled(enabled)
     }

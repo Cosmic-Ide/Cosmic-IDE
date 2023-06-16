@@ -12,6 +12,7 @@ import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Member
 
 object HookManager {
+    @JvmStatic
     fun registerHook(hook: Hook) {
         XposedBridge.hookMethod(hook.type.getDeclaredMethod(hook.method), object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
@@ -24,19 +25,22 @@ object HookManager {
         })
     }
 
-
+    @JvmStatic
     fun invokeOriginal(method: Member, obj: Any?, vararg args: Any?): Any? {
         return XposedBridge.invokeOriginalMethod(method, obj, args)
     }
 
+    @JvmStatic
     fun isHooked(method: Member): Boolean {
         return XposedBridge.isHooked(method)
     }
 
+    @JvmStatic
     fun hookAllConstructors(clazz: Class<*>, callback: XC_MethodHook) {
         XposedBridge.hookAllConstructors(clazz, callback)
     }
 
+    @JvmStatic
     fun hookAllMethods(clazz: Class<*>, methodName: String, callback: XC_MethodHook) {
         XposedBridge.hookAllMethods(clazz, methodName, callback)
     }

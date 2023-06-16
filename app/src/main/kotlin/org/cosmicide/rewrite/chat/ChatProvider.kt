@@ -20,6 +20,7 @@ object ChatProvider {
 
     data class Message(val role: String, val content: String)
 
+    @JvmStatic
     fun generate(model: String, conversation: List<Map<String, String>>): String {
         // json format: {
         //  "messages": [

@@ -17,9 +17,10 @@ import java.io.IOException
 import kotlin.random.Random
 
 object ChatCompletion {
-    private val client = OkHttpClient()
+    @JvmStatic
+    val client = OkHttpClient()
 
-    private fun md5(text: String): String {
+    fun md5(text: String): String {
         return text.encodeToByteArray().let {
             val digest = java.security.MessageDigest.getInstance("MD5")
             digest.update(it)
@@ -32,12 +33,14 @@ object ChatCompletion {
         }
     }
 
-    private fun getApiKey(userAgent: String): String {
+    @JvmStatic
+    fun getApiKey(userAgent: String): String {
         val part1 = Random.nextLong(0, 10_000_000_000_000)
         val part2 = md5(userAgent + md5(userAgent + md5(userAgent + part1.toString() + "x")))
         return "tryit-$part1-$part2"
     }
 
+    @JvmStatic
     fun create(messages: List<Map<String, String>>, callback: (String) -> Unit) {
         val userAgent = UserAgent.random()
         val apiKey = getApiKey(userAgent)
@@ -82,13 +85,3 @@ object ChatCompletion {
     }
 }
 
-object Completion {
-    fun create(prompt: String, callback: (String) -> Unit) {
-        ChatCompletion.create(
-            listOf(
-                mapOf("role" to "user", "content" to prompt)
-            ),
-            callback
-        )
-    }
-}

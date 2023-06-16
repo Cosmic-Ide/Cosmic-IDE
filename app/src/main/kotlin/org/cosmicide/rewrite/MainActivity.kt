@@ -16,7 +16,6 @@ import org.cosmicide.rewrite.fragment.ProjectFragment
 
 class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)

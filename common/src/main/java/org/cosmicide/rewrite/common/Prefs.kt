@@ -88,6 +88,12 @@ object Prefs {
     val experimentalJavaCompletion: Boolean
         get() = prefs.getBoolean("experimental_java_completion", false)
 
+    val pluginRepository: String
+        get() = prefs.getString(
+            "plugin_repository",
+            "https://raw.githubusercontent.com/Cosmic-IDE/plugins-repo/main/plugins.json"
+        ) ?: "https://raw.githubusercontent.com/Cosmic-IDE/plugins-repo/main/plugins.json"
+
     val editorFontSize: Float
         get() = runCatching {
             prefs.getString("font_size", "14")?.toFloatOrNull()?.coerceIn(1f, 32f) ?: 14f

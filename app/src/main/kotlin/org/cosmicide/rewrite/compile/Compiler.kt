@@ -25,8 +25,16 @@ class Compiler(
     private val reporter: BuildReporter
 ) {
     companion object {
+        /**
+         * A listener to be called when a compiler starts or finishes compiling.
+         */
+        @JvmStatic
         var compileListener: (Class<*>, BuildStatus) -> Unit = { _, _ -> }
 
+        /**
+         * Initializes the cache of compiler instances.
+         */
+        @JvmStatic
         fun initializeCache(project: Project) {
             CompilerCache.saveCache(JavaCompileTask(project))
             CompilerCache.saveCache(KotlinCompiler(project))
@@ -48,6 +56,12 @@ class Compiler(
         reporter.reportSuccess()
     }
 
+    /**
+     * Compiles a task.
+     *
+     * @param T The type of the task to be compiled.
+     * @param message The message to be reported when the task starts compiling.
+     */
     private inline fun <reified T : Task> compileTask(message: String) {
         val task = CompilerCache.getCache<T>()
 
@@ -68,14 +82,23 @@ class Compiler(
         }
     }
 
+    /**
+     * Compiles Java code.
+     */
     private fun compileJavaCode() {
         compileTask<JavaCompileTask>("Compiling Java code")
     }
 
+    /**
+     * Compiles Kotlin code.
+     */
     private fun compileKotlinCode() {
         compileTask<KotlinCompiler>("Compiling Kotlin code")
     }
 
+    /**
+     * Converts class files to dex format.
+     */
     private fun convertClassFilesToDexFormat() {
         compileTask<D8Task>("Converting class files to dex format")
     }

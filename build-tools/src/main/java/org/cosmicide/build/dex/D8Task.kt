@@ -32,6 +32,8 @@ class D8Task(val project: Project) : Task {
 
     companion object {
         const val MIN_API_LEVEL = 26
+
+        @JvmStatic
         val COMPILATION_MODE = CompilationMode.DEBUG
     }
 

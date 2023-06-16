@@ -132,16 +132,6 @@
 
     <PreferenceCategory app:title="Compiler">
 
-        <Preference
-            app:key="available_plugins"
-            app:summary="View available plugins"
-            app:title="Available Plugins" />
-
-        <Preference
-            app:key="plugins"
-            app:summary="Unsupported for now"
-            app:title="Plugins" />
-
         <SwitchPreferenceCompat
             app:defaultValue="false"
             app:key="use_fastjarfs"
@@ -171,6 +161,25 @@
         <EditTextPreference
             app:key="javac_flags"
             app:title="Additional javac flags" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Plugins">
+        <Preference
+            app:key="available_plugins"
+            app:summary="View available plugins"
+            app:title="Available Plugins" />
+
+        <Preference
+            app:key="plugins"
+            app:summary="Installed Plugins"
+            app:title="Plugins" />
+
+        <EditTextPreference
+            app:defaultValue="https://raw.githubusercontent.com/Cosmic-IDE/plugins-repo/main/plugins.json"
+            app:key="plugin_repository"
+            app:summary="Add a custom plugin repository"
+            app:title="Plugin Repository" />
 
     </PreferenceCategory>
 

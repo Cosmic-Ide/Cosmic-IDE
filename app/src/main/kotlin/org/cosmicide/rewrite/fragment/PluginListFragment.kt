@@ -31,12 +31,11 @@ import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.adapter.AvailablePluginAdapter
 import org.cosmicide.rewrite.adapter.PluginAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentPluginListBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
-import org.cosmicide.rewrite.util.Constants
 import org.cosmicide.rewrite.util.FileUtil
-import java.lang.IllegalArgumentException
 import java.net.URL
 
 class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
@@ -134,7 +133,7 @@ class PluginListFragment : BaseBindingFragment<FragmentPluginListBinding>() {
     suspend fun getPlugins(): List<Plugin> {
         return withContext(Dispatchers.IO) {
             try {
-                val pluginsJson = URL(Constants.PLUGINS_REPOSITORY).readText()
+                val pluginsJson = URL(Prefs.pluginRepository).readText()
                 val pluginsType = object : TypeToken<List<Plugin>>() {}.type
                 Gson().fromJson(pluginsJson, pluginsType) as List<Plugin>
             } catch (e: Exception) {

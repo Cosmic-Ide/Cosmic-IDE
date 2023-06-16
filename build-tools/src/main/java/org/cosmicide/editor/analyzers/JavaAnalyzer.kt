@@ -57,9 +57,6 @@ class JavaAnalyzer(
             diagnostics, Locale.getDefault(), Charset.defaultCharset()
         )
     }
-    private val reusableCompiler by lazy {
-        ReusableCompiler()
-    }
 
     init {
         standardFileManager.setLocation(

@@ -14,25 +14,30 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import java.io.File
 
-fun openFileWithExternalApp(context: Context, file: File) {
-    val fileUri: Uri =
-        FileProvider.getUriForFile(
-            context,
-            "org.cosmicide.rewrite.fileprovider",
-            file
-        )
 
-    val intent = Intent(Intent.ACTION_VIEW)
-    intent.setDataAndType(fileUri, "*/*")
-    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+object FileProvider {
+    @JvmStatic
+    fun openFileWithExternalApp(context: Context, file: File) {
+        val fileUri: Uri =
+            FileProvider.getUriForFile(
+                context,
+                "org.cosmicide.rewrite.fileprovider",
+                file
+            )
 
-    val packageManager: PackageManager = context.packageManager
-    val activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(fileUri, "*/*")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
-    if (activities.isNotEmpty()) {
-        context.startActivity(intent)
-    } else {
-        // No app can handle the file, handle the scenario as per your requirements
-        // For example, show a toast message or fallback to your own file viewer
+        val packageManager: PackageManager = context.packageManager
+        val activities =
+            packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+
+        if (activities.isNotEmpty()) {
+            context.startActivity(intent)
+        } else {
+            // No app can handle the file, handle the scenario as per your requirements
+            // For example, show a toast message or fallback to your own file viewer
+        }
     }
 }

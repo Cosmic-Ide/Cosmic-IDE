@@ -33,18 +33,31 @@ import org.eclipse.tm4e.core.registry.IThemeSource
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import java.io.File
 import java.io.FileNotFoundException
+import java.lang.ref.WeakReference
 import java.lang.reflect.Modifier
 import java.time.ZonedDateTime
 import java.util.concurrent.Executors
 
 class App : Application() {
 
-    private val loader: MultipleDexClassLoader by lazy {
-        MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
+    companion object {
+        /**
+         * The application instance.
+         */
+        @JvmStatic
+        lateinit var instance: WeakReference<App>
+
+        /**
+         * The class loader used to load plugins.
+         */
+        @JvmStatic
+        lateinit var loader: MultipleDexClassLoader
     }
 
     override fun onCreate() {
         super.onCreate()
+        loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
+        instance = WeakReference(this)
 
         HookManager.registerHook(object : Hook("disableModules", App::class.java) {
             override fun before(param: XC_MethodHook.MethodHookParam) {

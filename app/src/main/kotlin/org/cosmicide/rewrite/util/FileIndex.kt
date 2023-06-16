@@ -17,10 +17,10 @@ import java.io.File
  * This class represents an index of files stored in a cache directory for a given project.
  */
 class FileIndex(private val project: Project) {
-    private val filePath by lazy { File(project.cacheDir, FILE_NAME) }
+    val filePath by lazy { project.cacheDir.resolve(FILE_NAME) }
 
     private companion object {
-        private const val FILE_NAME = "files.json"
+        const val FILE_NAME = "files.json"
     }
 
     /**

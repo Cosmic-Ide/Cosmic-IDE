@@ -13,12 +13,15 @@ import org.cosmicide.build.Task
  * Singleton object to manage the caching of compiler instances.
  */
 object CompilerCache {
+    @JvmStatic
     val cacheMap = mutableMapOf<Class<*>, Task>()
 
+    @JvmStatic
     fun <T : Task> saveCache(compiler: T) {
         cacheMap[compiler::class.java] = compiler
     }
 
+    @JvmStatic
     inline fun <reified T : Task> getCache(): T {
         return cacheMap[T::class.java] as T
     }

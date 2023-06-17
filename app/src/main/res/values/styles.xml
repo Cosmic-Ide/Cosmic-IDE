@@ -7,10 +7,6 @@
 
 <resources>
 
-    <style name="Preference.SwitchPreferenceCompat" parent="Preference.SwitchPreferenceCompat.Material">
-        <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
-    </style>
-
     <style name="Project.Card" parent="Widget.Material3.CardView.Filled">
         <item name="android:layout_marginHorizontal">12dp</item>
         <item name="android:layout_marginVertical">8dp</item>

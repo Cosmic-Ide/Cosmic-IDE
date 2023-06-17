@@ -67,7 +67,7 @@ class ViewBinder(
     ) {
         with(holder.itemView.findViewById<Space>(R.id.space)) {
             updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                width = node.depth * context.getDip(22f)
+                width = node.depth * context.getDip(22f).toInt()
             }
         }
 

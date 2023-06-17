@@ -9,30 +9,92 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.BundleCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import de.Maxr1998.modernpreferences.Preference
+import de.Maxr1998.modernpreferences.PreferencesAdapter
+import de.Maxr1998.modernpreferences.helpers.screen
+import de.Maxr1998.modernpreferences.helpers.subScreen
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentSettingsBinding
+import org.cosmicide.rewrite.fragment.settings.*
 
 /**
  * Fragment for displaying settings screen.
  */
 class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
-    override lateinit var binding: FragmentSettingsBinding
+    override fun getViewBinding() = FragmentSettingsBinding.inflate(layoutInflater)
 
-    override fun getViewBinding(): FragmentSettingsBinding {
-        binding = FragmentSettingsBinding.inflate(layoutInflater)
-        return binding
-    }
+    private val appearanceSettings = AppearanceSettings(requireActivity())
+    private val editorSettings = EditorSettings()
+    private val formatterSettings = FormatterSettings(requireActivity())
+    private val compilerSettings = CompilerSettings(requireActivity())
+    private val pluginsSettings = PluginsSettings(requireActivity())
 
-    override fun getView(): View {
-        return binding.root
+    private val preferencesAdapter: PreferencesAdapter
+        get() = binding.preferencesView.adapter as PreferencesAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Preference.Config.dialogBuilderFactory = { context -> MaterialAlertDialogBuilder(context) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Warning!")
+            .setMessage("We have recently updated the API for settings, and as a result, some functions may not work as expected. We apologize for any inconvenience this may cause. Please note that we are working on a fix, which will be available soon.")
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+
+        val screen = screen(requireContext()) {
+            subScreen {
+                collapseIcon = true
+                title = "Appearance"
+                summary = "Customize the appearance of the IDE"
+                appearanceSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "Code editor"
+                summary = "Customize the code editor as you see fit"
+                editorSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "Compiler"
+                summary = "Customize compilers as you see fit"
+                compilerSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "Formatter"
+                summary = "Customize code formatting as you see fit"
+                formatterSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "Plugins"
+                summary = "Lots of plugins are waiting for you"
+                pluginsSettings.provideSettings(this)
+            }
         }
 
+        val adapter = PreferencesAdapter(screen)
+        if (savedInstanceState != null) {
+            BundleCompat.getParcelable(
+                savedInstanceState,
+                "adapter",
+                PreferencesAdapter.SavedState::class.java
+            )?.let(adapter::loadSavedState)
+        }
+
+        binding.preferencesView.adapter = adapter
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable("adapter", preferencesAdapter.getSavedState())
     }
 }

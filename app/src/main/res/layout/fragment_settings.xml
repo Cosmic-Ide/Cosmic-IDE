@@ -10,7 +10,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
     android:transitionGroup="true"
     tools:context=".fragment.SettingsFragment">
 
@@ -18,21 +17,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            style="?attr/collapsingToolbarLayoutLargeStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
-            app:title="Settings" />
+            android:layout_height="?attr/collapsingToolbarLayoutMediumSize"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="0dp"
+                app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
+                app:layout_collapseMode="pin"
+                app:title="Settings" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/settings_container"
-        android:name="org.cosmicide.rewrite.fragment.PreferencesFragment"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/preferences_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
         android:transitionGroup="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,6 +8,8 @@
 [![Total downloads](https://img.shields.io/github/downloads/Cosmic-Ide/Cosmic-Ide/total)](https://github.com/Cosmic-Ide/Cosmic-Ide/releases)
 ![Repository Size](https://img.shields.io/github/repo-size/Cosmic-Ide/Cosmic-Ide)
 
+# NOTE: A rewrite is in progress, so this repository is inactive for now. Check the rewrite at https://github.com/Cosmic-Ide/rewrite
+
 # Cosmic IDE
 
 A next-gen Ide for JVM development on Android!

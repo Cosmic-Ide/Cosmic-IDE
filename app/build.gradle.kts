@@ -120,6 +120,7 @@ dependencies {
     implementation("io.noties.markwon:core:4.6.2")
     implementation("io.noties.markwon:linkify:4.6.2")
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
+    implementation("de.maxr1998:modernandroidpreferences:2.3.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")

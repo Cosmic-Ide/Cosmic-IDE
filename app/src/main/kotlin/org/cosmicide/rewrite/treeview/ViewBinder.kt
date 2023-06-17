@@ -7,7 +7,6 @@
 
 package org.cosmicide.rewrite.treeview
 
-import android.content.res.Resources
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.databinding.TreeviewContextActionDialogItemBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemDirBinding
 import org.cosmicide.rewrite.databinding.TreeviewItemFileBinding
+import org.cosmicide.rewrite.extension.getDip
 import org.cosmicide.rewrite.model.FileViewModel
 import java.io.File
 
@@ -67,7 +67,7 @@ class ViewBinder(
     ) {
         with(holder.itemView.findViewById<Space>(R.id.space)) {
             updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                width = node.depth * 22.dp
+                width = node.depth * context.getDip(22f).toInt()
             }
         }
 
@@ -86,8 +86,9 @@ class ViewBinder(
     }
 
     private fun applyDir(node: TreeNode<FileSet>) {
+        val rotation = if (node.expand) 90f else 0f
         dirBinding.imageView.animate()
-            .rotation(if (node.expand) 90f else 0f)
+            .rotation(rotation)
             .setDuration(200)
             .start()
     }
@@ -242,6 +243,3 @@ class ViewBinder(
 enum class ViewType {
     DIRECTORY, FILE
 }
-
-inline val Int.dp: Int
-    get() = (Resources.getSystem().displayMetrics.density * this + 0.5f).toInt()

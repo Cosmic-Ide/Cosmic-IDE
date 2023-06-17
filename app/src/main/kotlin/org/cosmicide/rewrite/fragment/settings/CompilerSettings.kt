@@ -18,9 +18,10 @@ import org.cosmicide.rewrite.util.PreferenceKeys
 
 class CompilerSettings(private val activity: FragmentActivity) : SettingsProvider {
 
-    private val javaVersionValues = activity.resources.getStringArray(R.array.java_version_entries)
-    private val javaVersionItems =
-        javaVersionValues.zip(javaVersionValues).map { SelectionItem(it.first, it.second, null) }
+    private val javaVersionValues: Array<String>
+        get() = activity.resources.getStringArray(R.array.java_version_entries)
+    private val javaVersionItems: List<SelectionItem>
+        get() = javaVersionValues.zip(javaVersionValues).map { SelectionItem(it.first, it.second, null) }
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {

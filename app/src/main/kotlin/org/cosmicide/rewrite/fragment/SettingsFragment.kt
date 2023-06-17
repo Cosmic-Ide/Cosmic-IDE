@@ -23,17 +23,9 @@ import org.cosmicide.rewrite.fragment.settings.*
  * Fragment for displaying settings screen.
  */
 class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
+    private lateinit var preferencesAdapter: PreferencesAdapter
 
     override fun getViewBinding() = FragmentSettingsBinding.inflate(layoutInflater)
-
-    private val appearanceSettings = AppearanceSettings(requireActivity())
-    private val editorSettings = EditorSettings()
-    private val formatterSettings = FormatterSettings(requireActivity())
-    private val compilerSettings = CompilerSettings(requireActivity())
-    private val pluginsSettings = PluginsSettings(requireActivity())
-
-    private val preferencesAdapter: PreferencesAdapter
-        get() = binding.preferencesView.adapter as PreferencesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,59 +34,71 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Warning!")
-            .setMessage("We have recently updated the API for settings, and as a result, some functions may not work as expected. We apologize for any inconvenience this may cause. Please note that we are working on a fix, which will be available soon.")
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
+        showWarningDialog()
+
+        val appearanceSettings = AppearanceSettings(requireActivity())
+        val editorSettings = EditorSettings()
+        val formatterSettings = FormatterSettings(requireActivity())
+        val compilerSettings = CompilerSettings(requireActivity())
+        val pluginsSettings = PluginsSettings(requireActivity())
 
         val screen = screen(requireContext()) {
             subScreen {
                 collapseIcon = true
                 title = "Appearance"
-                summary = "Customize the appearance of the IDE"
+                summary = "Customize the appearance as you see fit"
                 appearanceSettings.provideSettings(this)
             }
             subScreen {
                 collapseIcon = true
                 title = "Code editor"
-                summary = "Customize the code editor as you see fit"
+                summary = "Customize editor settings"
                 editorSettings.provideSettings(this)
             }
             subScreen {
                 collapseIcon = true
                 title = "Compiler"
-                summary = "Customize compilers as you see fit"
+                summary = "Configure compiler options and build process"
                 compilerSettings.provideSettings(this)
             }
             subScreen {
                 collapseIcon = true
                 title = "Formatter"
-                summary = "Customize code formatting as you see fit"
+                summary = "Adjust code formatting preferences"
                 formatterSettings.provideSettings(this)
             }
             subScreen {
                 collapseIcon = true
                 title = "Plugins"
-                summary = "Lots of plugins are waiting for you"
+                summary = "Explore and install plugins to extend the functionality of the IDE"
                 pluginsSettings.provideSettings(this)
             }
         }
 
-        val adapter = PreferencesAdapter(screen)
-        if (savedInstanceState != null) {
-            BundleCompat.getParcelable(
-                savedInstanceState,
-                "adapter",
-                PreferencesAdapter.SavedState::class.java
-            )?.let(adapter::loadSavedState)
+        preferencesAdapter = PreferencesAdapter(screen)
+        savedInstanceState?.let {
+            preferencesAdapter.loadSavedState(
+                BundleCompat.getParcelable(
+                    it,
+                    "adapter",
+                    PreferencesAdapter.SavedState::class.java
+                )!!
+            )
         }
 
-        binding.preferencesView.adapter = adapter
+        binding.preferencesView.adapter = preferencesAdapter
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable("adapter", preferencesAdapter.getSavedState())
+    }
+
+    private fun showWarningDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Warning!")
+            .setMessage("We have recently updated the API for settings, and as a result, some functions may not work as expected. We apologize for any inconvenience this may cause. Please note that we are working on a fix, which will be available soon.")
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 }

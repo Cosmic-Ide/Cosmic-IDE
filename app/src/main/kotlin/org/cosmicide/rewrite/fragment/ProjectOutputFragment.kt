@@ -112,6 +112,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
                         .replace('/', '.')
                 )
             }
+            return
         }
         val dex = project.binDir.resolve("classes.dex")
         if (!dex.exists()) {

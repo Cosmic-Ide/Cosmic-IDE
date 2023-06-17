@@ -14,15 +14,17 @@ import java.lang.reflect.Member
 object HookManager {
     @JvmStatic
     fun registerHook(hook: Hook) {
-        XposedBridge.hookMethod(hook.type.getDeclaredMethod(hook.method), object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                hook.before(param)
-            }
+        XposedBridge.hookMethod(
+            hook.type.getDeclaredMethod(hook.method, *hook.argTypes),
+            object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    hook.before(param)
+                }
 
-            override fun afterHookedMethod(param: MethodHookParam) {
-                hook.after(param)
-            }
-        })
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    hook.after(param)
+                }
+            })
     }
 
     @JvmStatic

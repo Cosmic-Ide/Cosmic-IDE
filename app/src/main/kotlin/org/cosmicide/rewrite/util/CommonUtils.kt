@@ -10,7 +10,12 @@ package org.cosmicide.rewrite.util
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.view.View
 import androidx.core.content.ContextCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object CommonUtils {
 
@@ -19,4 +24,32 @@ object CommonUtils {
         val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)!!
         clipboard.setPrimaryClip(ClipData.newPlainText("", text))
     }
+
+    suspend fun showSnackbarError(view: View, text: String, error: Throwable) =
+        withContext(Dispatchers.Main) {
+            Snackbar.make(
+                view,
+                text,
+                Snackbar.LENGTH_INDEFINITE
+            ).setAction("Show error") {
+                MaterialAlertDialogBuilder(view.context)
+                    .setTitle(error.message)
+                    .setMessage(error.stackTraceToString())
+                    .setPositiveButton("OK") { _, _ -> }
+            }.show()
+        }
+
+    fun showError(view: View, text: String, error: Throwable) {
+        Snackbar.make(
+            view,
+            text,
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction("Show error") {
+            MaterialAlertDialogBuilder(view.context)
+                .setTitle(error.message)
+                .setMessage(error.stackTraceToString())
+                .setPositiveButton("OK") { _, _ -> }
+        }.show()
+    }
+
 }

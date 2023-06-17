@@ -9,8 +9,8 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Language
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
@@ -77,17 +77,21 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
     ): Boolean {
         return try {
             val projectName = name.replace("\\.", "")
-            val root = File(FileUtil.projectDir, projectName).apply { mkdirs() }
+            val root = FileUtil.projectDir.resolve(projectName).apply { mkdirs() }
             val project = Project(root = root, language = language)
             val srcDir = project.srcDir.apply { mkdirs() }
-            val mainFile = File(srcDir, "Main.${language.extension}")
+            val mainFile = srcDir.resolve("Main.${language.extension}")
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()
             ProjectHandler.setProject(project)
             navigateToEditorFragment()
             true
         } catch (e: IOException) {
-            Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
+            Snackbar.make(
+                requireView(),
+                "Failed to create project: ${e.message}",
+                Snackbar.LENGTH_LONG
+            ).show()
             false
         }
     }

@@ -19,8 +19,6 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.cosmicide.build.BuildReporter
-import org.cosmicide.build.java.JarTask
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.BaseBindingFragment
@@ -34,6 +32,7 @@ import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
 import java.lang.reflect.Modifier
+import java.util.jar.JarFile
 import java.util.zip.ZipFile
 
 class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
@@ -94,8 +93,32 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
     }
 
     fun checkClasses() {
-        // TODO: Show a recyclerview with all classes and allow the user to select one
-        val bufferedInputStream = project.binDir.resolve("classes.dex").inputStream().buffered()
+        if (Prefs.useSSVM) {
+            val jar = project.binDir.resolve("classes.jar")
+            if (!jar.exists()) {
+                binding.infoEditor.setText("classes.jar not found")
+                return
+            }
+            JarFile(jar).use {
+                val mainClass = it.entries().asSequence().firstOrNull { entry ->
+                    entry.name == "Main.class"
+                }
+                if (mainClass == null) {
+                    binding.infoEditor.setText("No entrypoint Main class found")
+                    return
+                }
+                runClass(
+                    mainClass.name.substringBeforeLast(".class")
+                        .replace('/', '.')
+                )
+            }
+        }
+        val dex = project.binDir.resolve("classes.dex")
+        if (!dex.exists()) {
+            binding.infoEditor.setText("classes.dex not found")
+            return
+        }
+        val bufferedInputStream = dex.inputStream().buffered()
         val dexFile = DexBackedDexFile.fromInputStream(
             Opcodes.forApi(33),
             bufferedInputStream
@@ -115,7 +138,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         val systemOut = PrintStream(object : OutputStream() {
             override fun write(p0: Int) {
                 // This is a hack to allow the editor to update properly even when in a while(true) loop
-                Thread.sleep(4)
+                Thread.sleep(1)
 
                 val text = binding.infoEditor.text
                 lifecycleScope.launch(Dispatchers.Main) {
@@ -182,7 +205,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
     private fun initVM() {
         val time = System.currentTimeMillis()
-        JarTask(project).execute(BuildReporter())
 
         catchVMException {
             ssvm.addProperty("project.dir", project.root.absolutePath)

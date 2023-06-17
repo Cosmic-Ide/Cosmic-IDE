@@ -10,9 +10,11 @@ package org.cosmicide.rewrite.compile
 import org.cosmicide.build.BuildReporter
 import org.cosmicide.build.Task
 import org.cosmicide.build.dex.D8Task
+import org.cosmicide.build.java.JarTask
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.common.Prefs
 
 /**
  * A class responsible for compiling Java and Kotlin code and converting class files to dex format.
@@ -39,6 +41,9 @@ class Compiler(
             CompilerCache.saveCache(JavaCompileTask(project))
             CompilerCache.saveCache(KotlinCompiler(project))
             CompilerCache.saveCache(D8Task(project))
+            if (Prefs.useSSVM) {
+                CompilerCache.saveCache(JarTask(project))
+            }
         }
     }
 
@@ -53,6 +58,9 @@ class Compiler(
         compileKotlinCode()
         compileJavaCode()
         convertClassFilesToDexFormat()
+        if (Prefs.useSSVM) {
+            compileJar()
+        }
         reporter.reportSuccess()
     }
 
@@ -90,6 +98,13 @@ class Compiler(
     }
 
     /**
+     * Compiles the classes directory to `classes.jar`.
+     */
+    private fun compileJar() {
+        compileTask<JarTask>("Compiling Jar code")
+    }
+
+    /**
      * Compiles Kotlin code.
      */
     private fun compileKotlinCode() {
@@ -100,6 +115,10 @@ class Compiler(
      * Converts class files to dex format.
      */
     private fun convertClassFilesToDexFormat() {
+        if (Prefs.useSSVM) {
+            reporter.reportInfo("Skipping D8 compilation because SSVM is enabled.")
+            return
+        }
         compileTask<D8Task>("Converting class files to dex format")
     }
 

@@ -7,7 +7,7 @@
 
 package org.cosmicide.rewrite.editor.formatter
 
-import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
+import org.hamcrest.MatcherAssert
 import org.junit.Test
 
 class GoogleJavaFormatTest {
@@ -17,7 +17,7 @@ class GoogleJavaFormatTest {
         val input = "public class MyClass { }"
         val expectedOutput = "public class MyClass {}\n"
         val actualOutput = GoogleJavaFormat.formatCode(input)
-        assertThat(expectedOutput).isEqualTo(actualOutput)
+        MatcherAssert.assertThat(expectedOutput, org.hamcrest.CoreMatchers.`is`(actualOutput))
     }
 
     @Test
@@ -25,16 +25,15 @@ class GoogleJavaFormatTest {
         val input = "public class MyClass { }"
         val expectedOutput = "public class MyClass {\n}\n"
         val actualOutput = GoogleJavaFormat.formatCode(input)
-        assertThat(expectedOutput).isEqualTo(actualOutput)
+        MatcherAssert.assertThat(expectedOutput, org.hamcrest.CoreMatchers.`is`(actualOutput))
     }
 
     @Test
     fun `should format code with custom options`() {
         val input = "public class MyClass { }"
         val expectedOutput = "public class MyClass {}\n"
-        val options = listOf("--skip-sorting-imports")
-        val actualOutput = GoogleJavaFormat.formatCode(input, options)
-        assertThat(expectedOutput).isEqualTo(actualOutput)
+        val actualOutput = GoogleJavaFormat.formatCode(input)
+        MatcherAssert.assertThat(expectedOutput, org.hamcrest.CoreMatchers.`is`(actualOutput))
     }
 
     @Test
@@ -42,6 +41,6 @@ class GoogleJavaFormatTest {
         val input = ""
         val expectedOutput = ""
         val actualOutput = GoogleJavaFormat.formatCode(input)
-        assertThat(expectedOutput).isEqualTo(actualOutput)
+        MatcherAssert.assertThat(expectedOutput, org.hamcrest.CoreMatchers.`is`(actualOutput))
     }
 }

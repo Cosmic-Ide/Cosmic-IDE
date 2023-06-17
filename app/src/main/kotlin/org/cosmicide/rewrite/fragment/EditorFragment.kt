@@ -53,10 +53,9 @@ import java.io.File
 
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
-    private val project: Project =
-        ProjectHandler.getProject() ?: throw IllegalStateException("No project set")
-    private val fileIndex: FileIndex = FileIndex(project)
-    private val fileViewModel: FileViewModel by activityViewModels<FileViewModel>()
+    private lateinit var project: Project
+    private val fileIndex by lazy { FileIndex(project) }
+    private val fileViewModel by activityViewModels<FileViewModel>()
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
 
@@ -67,6 +66,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (ProjectHandler.getProject() == null) {
+            Snackbar.make(
+                binding.root,
+                "No project selected, please select a project first",
+                Snackbar.LENGTH_LONG
+            ).show()
+            return
+        }
+        project = ProjectHandler.getProject()!!
         configureToolbar()
         binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
 
@@ -95,6 +103,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 val file = fileViewModel.files.value?.get(tab.position) ?: return
                 val isBinary = file.extension == "class"
+                if (file.exists().not()) {
+                    Snackbar.make(
+                        binding.root,
+                        "File does not exist, please close this tab",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
 
                 if (fileViewModel.currentPosition.value != tab.position) {
                     fileViewModel.setCurrentPosition(tab.position)
@@ -122,7 +137,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 }
                 isClicked = true
                 onTabSelected(tab)
-                binding.root.postDelayed({ isClicked = false }, 10000)
+                binding.root.postDelayed({ isClicked = false }, 10000) // doesnt work
             }
         })
 

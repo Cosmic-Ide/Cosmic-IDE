@@ -5,32 +5,18 @@
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.cosmicide.rewrite.util
+package org.cosmicide.rewrite.chat
 
-import java.io.File
+import org.junit.Test
 
-object FileUtil {
-
-    @JvmStatic
-    lateinit var dataDir: File
-
-    @JvmStatic
-    val projectDir
-        get() = dataDir.resolve("projects")
-
-    @JvmStatic
-    val classpathDir
-        get() = dataDir.resolve("classpath")
-
-    @JvmStatic
-    val pluginDir
-        get() = dataDir.resolve("plugins")
-
-    @JvmStatic
-    fun init(dir: File) {
-        dataDir = dir
-        projectDir.mkdirs()
-        classpathDir.mkdirs()
-        pluginDir.mkdirs()
+class ChatProviderTest {
+    @Test
+    fun `should generate chat`() {
+        val conversation = listOf(
+            mapOf("author" to "user", "text" to "hi"),
+            mapOf("author" to "bot", "text" to "hello")
+        )
+        val output = ChatProvider.generate("ora", conversation)
+        assert(output.isNotEmpty() && !output.contains("Error"))
     }
 }

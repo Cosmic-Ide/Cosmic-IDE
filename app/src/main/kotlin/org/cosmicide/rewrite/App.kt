@@ -16,7 +16,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
-import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -25,8 +24,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
-import org.cosmicide.rewrite.plugin.api.Hook
-import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -51,26 +48,18 @@ class App : Application() {
          * The class loader used to load plugins.
          */
         @JvmStatic
-        lateinit var loader: MultipleDexClassLoader
+        val loader = MultipleDexClassLoader.INSTANCE
     }
 
     override fun onCreate() {
         super.onCreate()
-        loader = MultipleDexClassLoader(classLoader = javaClass.classLoader!!)
         instance = WeakReference(this)
+        val externalStorage = getExternalFilesDir(null)!!
 
-        HookManager.registerHook(object : Hook("disableModules", App::class.java) {
-            override fun before(param: XC_MethodHook.MethodHookParam) {
-                println("Hooked to App.disableModules()")
-            }
-
-            override fun after(param: XC_MethodHook.MethodHookParam) {
-                println("Hooked to App.disableModules()")
-            }
-        })
-
-        FileUtil.init(getExternalFilesDir(null)!!)
         Prefs.init(applicationContext)
+        FileUtil.init(externalStorage)
+
+        loadPlugins()
 
         if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(
@@ -108,7 +97,6 @@ class App : Application() {
         disableModules()
 
         loadTextmateTheme()
-        loadPlugins()
 
         Analytics.logEvent(
             "startup",
@@ -207,22 +195,29 @@ class App : Application() {
 
     fun loadPlugins() {
         PluginsFragment.getPlugins().forEach { plugin ->
+            val dir = FileUtil.pluginDir.resolve(plugin.name)
             val pluginFile =
-                FileUtil.pluginDir.resolve(plugin.name).resolve("classes.dex")
+                dir.resolve("classes.dex")
+            if (dir.resolve("config.json").exists().not()) return@forEach
             if (pluginFile.exists().not()) return@forEach
-            loader.loadDex(pluginFile)
-            val className = plugin.name.lowercase() + ".Main"
-            val clazz = loader.loader.loadClass(className)
-            val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
-            if (Modifier.isStatic(method.modifiers)) {
-                method.invoke(null, arrayOf<String>())
-            } else {
-                method.invoke(
-                    clazz.getDeclaredConstructor().newInstance(),
-                    arrayOf<String>()
-                )
+            runCatching {
+                loader.loadDex(pluginFile)
+                val className = plugin.name.lowercase() + ".Main"
+                val clazz = loader.loader.loadClass(className)
+                val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
+                if (Modifier.isStatic(method.modifiers)) {
+                    method.invoke(null, arrayOf<String>())
+                } else {
+                    method.invoke(
+                        clazz.getDeclaredConstructor().newInstance(),
+                        arrayOf<String>()
+                    )
+                }
+            }.onSuccess {
+                Log.d("Plugin", "Loaded plugin ${plugin.name}")
+            }.onFailure {
+                Log.e("Plugin", "Failed to load plugin ${plugin.name}", it)
             }
-            Log.d("Plugin", "Loaded plugin ${plugin.name}")
         }
     }
 

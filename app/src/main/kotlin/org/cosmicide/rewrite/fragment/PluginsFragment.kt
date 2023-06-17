@@ -78,19 +78,6 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
             val plugins = mutableListOf<Plugin>()
             FileUtil.pluginDir.listFiles { file -> file.isDirectory }?.forEach { file ->
                 val config = file.resolve("config.json")
-                if (config.readText().isEmpty()) {
-                config.writeText(
-                    """
-{
-"name":"Mama",
-"version":"1.0.0",
-"author":"Pranav",
-"description": "Pro Plugin",
-"source": "earth"
-}
-                        """
-                )
-                }
                 if (config.exists()) {
                     val data =
                         Gson().fromJson<Map<String, String>>(

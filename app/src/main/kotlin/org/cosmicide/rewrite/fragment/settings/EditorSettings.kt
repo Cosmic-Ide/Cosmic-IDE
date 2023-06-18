@@ -25,7 +25,7 @@ class EditorSettings : SettingsProvider {
                 showTickMarks = true
             }
 
-            seekBar(PreferenceKeys.EDITOR_FONT_SIZE) {
+            seekBar(PreferenceKeys.EDITOR_TAB_SIZE) {
                 title = "Tab size"
                 summary = "Set the tab size for the editor"
                 max = 14

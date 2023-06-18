@@ -35,7 +35,7 @@ object ChatCompletion {
 
     @JvmStatic
     fun getApiKey(userAgent: String): String {
-        val part1 = Random.nextLong(0, 10_000_000_000_000)
+        val part1 = Random.nextInt(1000000000)
         val part2 = md5(userAgent + md5(userAgent + md5(userAgent + part1.toString() + "x")))
         return "tryit-$part1-$part2"
     }

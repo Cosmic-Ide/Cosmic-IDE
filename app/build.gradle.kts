@@ -11,7 +11,6 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
-    id("maven-publish")
 }
 
 android {
@@ -40,8 +39,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-
-        isCoreLibraryDesugaringEnabled = true
     }
 
 
@@ -71,6 +68,7 @@ android {
             "about.mappings",
             "about.properties",
             "about.ini",
+            "src/*"
         )
     )
 }
@@ -88,8 +86,6 @@ fun getGitCommit(): String {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-
     implementation("com.android.tools:r8:8.0.40")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.airbnb.android:lottie:6.0.0")
@@ -99,7 +95,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-crashlytics-ktx")
-    implementation("com.google.firebase:firebase-perf-ktx:20.3.2")
+    implementation("com.google.firebase:firebase-perf-ktx:20.3.3")
     implementation("com.google.gms:google-services:4.3.15")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 
@@ -108,7 +104,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.documentfile:documentfile:1.1.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.5.7")
+    implementation("androidx.fragment:fragment-ktx:1.6.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")

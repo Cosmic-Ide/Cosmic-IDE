@@ -15,6 +15,7 @@ import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.fragment.PluginListFragment
 import org.cosmicide.rewrite.util.PreferenceKeys
@@ -52,6 +53,7 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
             editText(PreferenceKeys.PLUGIN_REPOSITORY) {
                 title = "Repository"
                 summary = "Add a custom plugin repository"
+                defaultValue = Prefs.pluginRepository
             }
         }
     }

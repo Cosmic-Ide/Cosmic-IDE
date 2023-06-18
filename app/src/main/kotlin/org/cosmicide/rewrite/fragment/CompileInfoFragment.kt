@@ -73,7 +73,11 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.infoEditor.setText(e.stackTraceToString())
+                    binding.infoEditor.text.insert(
+                        binding.infoEditor.text.lineCount - 1,
+                        0,
+                        "Build failed: ${e.message}\n"
+                    )
                 }
             }
         }

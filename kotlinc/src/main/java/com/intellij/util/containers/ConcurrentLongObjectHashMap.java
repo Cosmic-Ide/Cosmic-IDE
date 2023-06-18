@@ -720,7 +720,7 @@ final class ConcurrentLongObjectHashMap<V> implements ConcurrentLongObjectMap<V>
         if ((t = table) != null) {
             Traverser<V> it = new Traverser<>(t, t.length, 0, t.length);
             for (Node<V> p; (p = it.advance()) != null; ) {
-                h += p.key ^ p.val.hashCode();
+                h += (long) (p.key ^ p.val.hashCode());
             }
         }
         return h;

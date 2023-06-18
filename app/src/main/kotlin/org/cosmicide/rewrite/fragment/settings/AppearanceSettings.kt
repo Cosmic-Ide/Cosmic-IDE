@@ -7,8 +7,13 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
+import android.app.UiModeManager
+import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
+import de.Maxr1998.modernpreferences.helpers.defaultOnSelectionChange
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
 import org.cosmicide.rewrite.R
@@ -28,7 +33,26 @@ class AppearanceSettings(private val activity: FragmentActivity) : SettingsProvi
             singleChoice(PreferenceKeys.APP_THEME, themeItems) {
                 initialSelection = "auto"
                 title = "App theme"
+                defaultOnSelectionChange { newValue ->
+                    val theme = getTheme(newValue)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        getSystemService(
+                            activity,
+                            UiModeManager::class.java
+                        )?.setApplicationNightMode(theme)
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(if (theme == UiModeManager.MODE_NIGHT_AUTO) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM else theme)
+                    }
+                }
             }
+        }
+    }
+
+    private fun getTheme(value: String): Int {
+        return when (value) {
+            "light" -> UiModeManager.MODE_NIGHT_NO
+            "dark" -> UiModeManager.MODE_NIGHT_YES
+            else -> UiModeManager.MODE_NIGHT_AUTO
         }
     }
 }

@@ -74,9 +74,7 @@ class Compiler(
         val task = CompilerCache.getCache<T>()
 
         with(reporter) {
-            if (failure) {
-                return
-            }
+            if (failure) return
             reportInfo(message)
             compileListener(T::class.java, BuildStatus.STARTED)
             task.execute(this)

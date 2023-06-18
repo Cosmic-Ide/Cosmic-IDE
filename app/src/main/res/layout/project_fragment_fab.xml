@@ -61,7 +61,7 @@
             android:elevation="0dp"
             app:elevation="0dp"
             app:rippleColor="?colorPrimaryDark"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/sharp_add_24" />
     </LinearLayout>
 
 
@@ -83,6 +83,7 @@
             android:textSize="16sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cancel_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
@@ -90,6 +91,6 @@
             android:elevation="0dp"
             app:elevation="0dp"
             app:rippleColor="?colorPrimaryDark"
-            app:srcCompat="@drawable/close" />
+            app:srcCompat="@drawable/sharp_add_24" />
     </LinearLayout>
 </LinearLayout>

@@ -10,7 +10,7 @@
 
     <item
         android:id="@+id/clear"
-        android:icon="@drawable/close"
+        android:icon="@drawable/baseline_close_24"
         android:title="Clear"
         app:showAsAction="always" />
 

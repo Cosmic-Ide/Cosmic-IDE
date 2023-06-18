@@ -9,6 +9,11 @@ package org.cosmicide.rewrite.fragment
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -18,6 +23,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.documentfile.provider.DocumentFile
 import androidx.fragment.app.activityViewModels
@@ -127,6 +133,13 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 binding.fabs.importButton.visibility = View.VISIBLE
                 binding.fabs.fabNewProject.visibility = View.VISIBLE
                 binding.fabs.cancelText.visibility = View.VISIBLE
+                binding.fabs.cancelFab.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.baseline_close_24,
+                        activity?.theme
+                    )
+                )
                 binding.fabs.importButton.setOnClickListener {
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
@@ -142,6 +155,10 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
                 binding.fabs.importButton.visibility = View.GONE
                 binding.fabs.fabNewProject.visibility = View.GONE
                 binding.fabs.cancelText.visibility = View.GONE
+
+                binding.fabs.cancelFab.setImageDrawable(
+                    ResourcesCompat.getDrawable(resources, R.drawable.sharp_add_24, activity?.theme)
+                )
             }
         }
     }

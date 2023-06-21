@@ -26,34 +26,33 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
             switch(PreferenceKeys.COMPILER_USE_FJFS) {
-                title = "Fast implementation for Jar FS"
+                title = activity.getString(R.string.fast_jar_fs)
                 summary =
-                    "This experimental mode may speed up compilation time, but use with caution"
+                    activity.getString(R.string.experimental_caution)
                 defaultValue = false
             }
 
             switch(PreferenceKeys.COMPILER_USE_K2) {
-                title = "K2 compiler for compilation"
-                summary =
-                    "This experimental mode may speed up compilation time, but use with caution"
+                title = activity.getString(R.string.k2_compiler)
+                summary = activity.getString(R.string.experimental_caution)
                 defaultValue = false
             }
 
             switch(PreferenceKeys.COMPILER_USE_SSVM) {
-                title = "SSVM for running"
-                summary = "This is a very experimental feature. Use with caution."
+                title = activity.getString(R.string.ssvm)
+                summary = activity.getString(R.string.experimental_caution)
                 defaultValue = false
             }
 
             singleChoice(PreferenceKeys.COMPILER_JAVA_VERSIONS, javaVersionItems) {
-                title = "Java Version"
-                summary = "Select the version of Java to use for compilation"
+                title = activity.getString(R.string.java_version)
+                summary = activity.getString(R.string.java_version_desc)
                 initialSelection = "17"
             }
 
             editText(PreferenceKeys.COMPILER_JAVAC_FLAGS) {
-                title = "Additional Javac flags"
-                summaryProvider = { "View Javac flags" }
+                title = activity.getString(R.string.additional_javac_flags)
+                summaryProvider = { activity.getString(R.string.additional_javac_flags_desc) }
             }
         }
     }

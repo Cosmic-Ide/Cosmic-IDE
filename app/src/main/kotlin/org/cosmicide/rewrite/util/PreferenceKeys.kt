@@ -41,5 +41,6 @@ object PreferenceKeys {
     const val AVAILABLE_PLUGINS = "available_plugins"
     const val INSTALLED_PLUGINS = "installed_plugins"
     const val PLUGIN_REPOSITORY = "plugin_repository"
+    const val PLUGIN_SETTINGS = "plugin_settings"
 
 }

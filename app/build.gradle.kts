@@ -27,12 +27,24 @@ android {
         buildConfigField("String", "GIT_COMMIT", "\"$commit\"")
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("keystore.keystore")
+            storePassword = "rewrite"
+            keyAlias = "rewrite"
+            keyPassword = "rewrite"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            isCrunchPngs = true
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 

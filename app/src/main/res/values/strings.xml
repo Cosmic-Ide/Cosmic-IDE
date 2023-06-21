@@ -10,7 +10,9 @@
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
+
     <string name="import_project">Import Project</string>
+    <string name="app_theme">App theme</string>
 
     <string name="projects">Projects</string>
     <string name="new_project">New Project</string>
@@ -48,5 +50,22 @@
     <string name="draft_3">Draft 3</string>
     <string name="draft_2">Draft 2</string>
     <string name="completion_type">Completion type</string>
-    <string name="enter_something">Enter something...</string>
+    <string name="enter_something">Enter something…</string>
+    <string name="fast_jar_fs">Fast implementation for Jar FS</string>
+    <string name="experimental_caution">This experimental mode may speed up compilation time, but use with caution</string>
+    <string name="k2_compiler">K2 compiler for compilation</string>
+    <string name="ssvm">SSVM for running</string>
+    <string name="java_version">Java version</string>
+    <string name="java_version_desc">Select the version of Java to use for compilation</string>
+    <string name="additional_javac_flags">Additional Javac flags</string>
+    <string name="additional_javac_flags_desc">Additional flags to pass to Javac</string>
+
+    <!-- Strings used for compilation -->
+    <string name="compiling_java">Compiling Java code</string>
+    <string name="compiling_kotlin">Compiling Kotlin code</string>
+    <string name="compiling_class_files_to_dex">Compiling class files to dex</string>
+    <string name="skipping_d8_ssvm_enabled">Skipping D8 compilation because SSVM is enabled.</string>
+    <string name="assembling_jar">Assembling class files to JAR</string>
+    <string name="failed_to_compile">Failed to compile %1$s code.</string>
+    <string name="successfully_run">Successfully run %1$s.</string>
 </resources>

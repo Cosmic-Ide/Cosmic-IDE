@@ -14,6 +14,8 @@ import org.cosmicide.build.java.JarTask
 import org.cosmicide.build.java.JavaCompileTask
 import org.cosmicide.build.kotlin.KotlinCompiler
 import org.cosmicide.project.Project
+import org.cosmicide.rewrite.App
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.Prefs
 
 /**
@@ -46,6 +48,8 @@ class Compiler(
             }
         }
     }
+
+    private val context = App.instance.get()!!
 
     init {
         initializeCache(project)
@@ -81,10 +85,10 @@ class Compiler(
             compileListener(T::class.java, BuildStatus.FINISHED)
 
             if (failure) {
-                reportOutput("Failed to compile ${T::class.simpleName} code.")
+                reportOutput(context.getString(R.string.failed_to_compile, T::class.simpleName))
             }
 
-            reportInfo("Successfully compiled ${T::class.simpleName} code.")
+            reportInfo(context.getString(R.string.successfully_run, T::class.simpleName))
         }
     }
 
@@ -92,21 +96,21 @@ class Compiler(
      * Compiles Java code.
      */
     private fun compileJavaCode() {
-        compileTask<JavaCompileTask>("Compiling Java code")
+        compileTask<JavaCompileTask>(context.getString(R.string.compiling_java))
     }
 
     /**
      * Compiles the classes directory to `classes.jar`.
      */
     private fun compileJar() {
-        compileTask<JarTask>("Compiling Jar code")
+        compileTask<JarTask>(context.getString(R.string.assembling_jar))
     }
 
     /**
      * Compiles Kotlin code.
      */
     private fun compileKotlinCode() {
-        compileTask<KotlinCompiler>("Compiling Kotlin code")
+        compileTask<KotlinCompiler>(context.getString(R.string.compiling_kotlin))
     }
 
     /**
@@ -114,10 +118,10 @@ class Compiler(
      */
     private fun convertClassFilesToDexFormat() {
         if (Prefs.useSSVM) {
-            reporter.reportInfo("Skipping D8 compilation because SSVM is enabled.")
+            reporter.reportInfo(context.getString(R.string.skipping_d8_ssvm_enabled))
             return
         }
-        compileTask<D8Task>("Converting class files to dex format")
+        compileTask<D8Task>(context.getString(R.string.compiling_class_files_to_dex))
     }
 
     sealed class BuildStatus {

@@ -31,8 +31,9 @@ class AppearanceSettings(private val activity: FragmentActivity) : SettingsProvi
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
             singleChoice(PreferenceKeys.APP_THEME, themeItems) {
-                initialSelection = "auto"
-                title = "App theme"
+                initialSelection = activity.resources.getStringArray(R.array.app_theme_entry_values)
+                    .first() // auto
+                title = activity.getString(R.string.app_theme)
                 defaultOnSelectionChange { newValue ->
                     val theme = getTheme(newValue)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

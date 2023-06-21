@@ -13,7 +13,9 @@ import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.editText
 import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.pref
-import de.Maxr1998.modernpreferences.helpers.singleChoice
+import de.Maxr1998.modernpreferences.Preference
+import de.Maxr1998.modernpreferences.helpers.categoryHeader
+import de.Maxr1998.modernpreferences.helpers.subScreen
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
@@ -55,6 +57,22 @@ class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider
                 summary = "Add a custom plugin repository"
                 defaultValue = Prefs.pluginRepository
             }
+
+            categoryHeader(PreferenceKeys.PLUGIN_SETTINGS) {
+                title = "Plugin settings"
+            }
+            for (pref in prefs) {
+                addPreferenceItem(pref)
+            }
+        }
+    }
+
+    companion object {
+        val prefs = mutableListOf<Preference>()
+
+        @JvmStatic
+        fun addPref(pref: Preference) {
+            prefs.add(pref)
         }
     }
 }

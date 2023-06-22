@@ -62,8 +62,13 @@ android {
         enable = true
     }
 
+
     configurations.configureEach {
         exclude(group = "javax.inject", module = "javax.inject")
+    }
+
+    packagingOptions.jniLibs.apply {
+        useLegacyPackaging = false
     }
 
     packagingOptions.resources.excludes.addAll(
@@ -125,8 +130,7 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
     implementation("io.github.dingyi222666:treeview:1.2.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("io.noties.markwon:core:4.6.2")
-    implementation("io.noties.markwon:linkify:4.6.2")
+    implementation("org.commonmark:commonmark:0.20.0")
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
 

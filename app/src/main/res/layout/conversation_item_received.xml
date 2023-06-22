@@ -10,13 +10,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
     android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginEnd="4dp"
+        android:contentDescription="@string/bot_icon"
         app:srcCompat="@drawable/google_bard_logo" />
 
     <com.google.android.material.card.MaterialCardView
@@ -24,16 +26,15 @@
         style="?attr/materialCardViewFilledStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="12dp"
-        app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge">
+        app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge">
 
         <TextView
             android:id="@+id/message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="8dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="8dp"
             android:linksClickable="true"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"

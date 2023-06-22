@@ -74,10 +74,10 @@
             <LinearLayout
                 android:id="@+id/send_message_button_container"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="bottom"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:gravity="bottom"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -95,6 +95,7 @@
                         android:id="@+id/send_message_button_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/send_message"
                         app:srcCompat="@drawable/ic_baseline_send_24" />
 
                 </LinearLayout>

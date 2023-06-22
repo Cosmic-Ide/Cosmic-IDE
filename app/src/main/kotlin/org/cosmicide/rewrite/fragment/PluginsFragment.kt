@@ -10,18 +10,20 @@ package org.cosmicide.rewrite.fragment
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.noties.markwon.Markwon
-import io.noties.markwon.linkify.LinkifyPlugin
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import org.cosmicide.rewrite.adapter.PluginAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
 import org.cosmicide.rewrite.databinding.PluginInfoBinding
 import org.cosmicide.rewrite.plugin.api.Plugin
+import org.cosmicide.rewrite.util.CommonUtils
 import org.cosmicide.rewrite.util.FileUtil
 
 class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
@@ -44,13 +46,15 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                     binding.apply {
                         val title = "${plugin.name} v${plugin.version}"
                         pluginName.text = title
-                        val markwon = Markwon.builder(context)
-                            .usePlugin(LinkifyPlugin.create())
-                            .build()
+                        val parser = Parser.builder().build()
+                        val htmlRenderer = HtmlRenderer.builder().build()
                         val desc = plugin.description
                             .ifEmpty { "No description" } + "\n\n" + plugin.source
                         pluginDescription.movementMethod = LinkMovementMethod.getInstance()
-                        pluginDescription.text = markwon.toMarkdown(desc)
+                        pluginDescription.text = HtmlCompat.fromHtml(
+                            htmlRenderer.render(parser.parse(desc)),
+                            CommonUtils.getHtmlSupportedFlags()
+                        )
                     }
                     dialog.setContentView(bottomSheetView)
                     dialog.show()

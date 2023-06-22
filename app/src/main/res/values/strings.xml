@@ -68,4 +68,6 @@
     <string name="assembling_jar">Assembling class files to JAR</string>
     <string name="failed_to_compile">Failed to compile %1$s code.</string>
     <string name="successfully_run">Successfully run %1$s.</string>
+    <string name="bot_icon">Bot Icon</string>
+    <string name="send_message">Send message</string>
 </resources>

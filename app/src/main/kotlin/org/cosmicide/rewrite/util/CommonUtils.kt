@@ -8,6 +8,7 @@
 package org.cosmicide.rewrite.util
 
 import android.view.View
+import androidx.core.text.HtmlCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -39,4 +40,7 @@ object CommonUtils {
                 .setPositiveButton("OK") { _, _ -> }
         }.show()
     }
+
+    fun getHtmlSupportedFlags() =
+        HtmlCompat.FROM_HTML_MODE_COMPACT or HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS
 }

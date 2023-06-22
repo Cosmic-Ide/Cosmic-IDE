@@ -10,12 +10,14 @@ package org.cosmicide.rewrite.adapter
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pkslow.ai.domain.Answer
-import io.noties.markwon.Markwon
-import io.noties.markwon.linkify.LinkifyPlugin
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
 import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
+import org.cosmicide.rewrite.util.CommonUtils
 
 
 class ConversationAdapter :
@@ -86,22 +88,23 @@ class ConversationAdapter :
 
     fun clear() {
         conversations.clear()
-        notifyDataSetChanged()
+        notifyItemRangeRemoved(0, itemCount)
     }
 
     inner class SentViewHolder(itemBinding: ConversationItemSentBinding) :
         BindableViewHolder<Conversation, ConversationItemSentBinding>(itemBinding) {
 
-        private val markwon: Markwon by lazy {
-            Markwon.builder(binding.message.context)
-                .usePlugin(LinkifyPlugin.create())
-                .build()
-        }
+        val parser: Parser = Parser.builder().build()
+        val htmlRenderer: HtmlRenderer = HtmlRenderer.builder().build()
 
         override fun bind(data: Conversation) {
+            val node = parser.parse(data.text)
             binding.message.apply {
                 movementMethod = LinkMovementMethod.getInstance()
-                markwon.setMarkdown(this, data.text)
+                text = HtmlCompat.fromHtml(
+                    htmlRenderer.render(node),
+                    CommonUtils.getHtmlSupportedFlags()
+                )
             }
         }
     }
@@ -109,16 +112,17 @@ class ConversationAdapter :
     inner class ReceivedViewHolder(itemBinding: ConversationItemReceivedBinding) :
         BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
 
-        private val markwon: Markwon by lazy {
-            Markwon.builder(binding.message.context)
-                .usePlugin(LinkifyPlugin.create())
-                .build()
-        }
+        val parser: Parser = Parser.builder().build()
+        val htmlRenderer: HtmlRenderer = HtmlRenderer.builder().build()
 
         override fun bind(data: Conversation) {
+            val node = parser.parse(data.text)
             binding.message.apply {
                 movementMethod = LinkMovementMethod.getInstance()
-                markwon.setMarkdown(this, data.text)
+                text = HtmlCompat.fromHtml(
+                    htmlRenderer.render(node),
+                    CommonUtils.getHtmlSupportedFlags()
+                )
             }
         }
     }

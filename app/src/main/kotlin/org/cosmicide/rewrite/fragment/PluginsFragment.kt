@@ -8,16 +8,12 @@
 package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.View
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 import org.cosmicide.rewrite.adapter.PluginAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentPluginsBinding
@@ -46,15 +42,9 @@ class PluginsFragment : BaseBindingFragment<FragmentPluginsBinding>() {
                     binding.apply {
                         val title = "${plugin.name} v${plugin.version}"
                         pluginName.text = title
-                        val parser = Parser.builder().build()
-                        val htmlRenderer = HtmlRenderer.builder().build()
                         val desc = plugin.description
                             .ifEmpty { "No description" } + "\n\n" + plugin.source
-                        pluginDescription.movementMethod = LinkMovementMethod.getInstance()
-                        pluginDescription.text = HtmlCompat.fromHtml(
-                            htmlRenderer.render(parser.parse(desc)),
-                            CommonUtils.getHtmlSupportedFlags()
-                        )
+                        CommonUtils.getMarkwon().setMarkdown(pluginDescription, desc)
                     }
                     dialog.setContentView(bottomSheetView)
                     dialog.show()

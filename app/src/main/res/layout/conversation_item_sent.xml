@@ -28,7 +28,7 @@
             android:fontFamily="@font/montserrat_medium"
             android:linksClickable="true"
             android:paddingHorizontal="12dp"
-            android:paddingTop="8dp"
+            android:paddingVertical="8dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textIsSelectable="true"
             tools:text="This is a very useful response" />

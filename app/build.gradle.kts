@@ -41,9 +41,6 @@ android {
             isMinifyEnabled = false
             isCrunchPngs = true
             isShrinkResources = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
-            )
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -65,6 +62,9 @@ android {
 
     configurations.configureEach {
         exclude(group = "javax.inject", module = "javax.inject")
+        exclude(group = "org.jetbrains", module = "annotations-java5")
+        exclude(group = "com.google.j2objc", module = "j2objc-annotations")
+        exclude(group = "com.google.errorprone", module = "error_prone_annotations")
     }
 
     packagingOptions.jniLibs.apply {
@@ -130,7 +130,16 @@ dependencies {
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")
     implementation("io.github.dingyi222666:treeview:1.2.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
-    implementation("org.commonmark:commonmark:0.20.0")
+
+    // markwon
+    val markwon_version = "4.6.2"
+    implementation("io.noties.markwon:core:$markwon_version")
+    implementation("io.noties.markwon:html:$markwon_version")
+    implementation("io.noties.markwon:image:$markwon_version")
+    implementation("io.noties.markwon:image-glide:$markwon_version")
+    implementation("io.noties.markwon:linkify:$markwon_version")
+    implementation("io.noties.markwon:syntax-highlight:$markwon_version")
+
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")
 

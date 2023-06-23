@@ -7,12 +7,21 @@
 
 package org.cosmicide.rewrite.util
 
+import android.text.method.ScrollingMovementMethod
 import android.view.View
-import androidx.core.text.HtmlCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import io.noties.markwon.Markwon
+import io.noties.markwon.core.CorePlugin
+import io.noties.markwon.html.HtmlPlugin
+import io.noties.markwon.image.ImagesPlugin
+import io.noties.markwon.image.glide.GlideImagesPlugin
+import io.noties.markwon.linkify.LinkifyPlugin
+import io.noties.markwon.movement.MovementMethodPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.cosmicide.rewrite.App
+
 object CommonUtils {
     suspend fun showSnackbarError(view: View, text: String, error: Throwable) =
         withContext(Dispatchers.Main) {
@@ -41,6 +50,13 @@ object CommonUtils {
         }.show()
     }
 
-    fun getHtmlSupportedFlags() =
-        HtmlCompat.FROM_HTML_MODE_COMPACT or HtmlCompat.FROM_HTML_OPTION_USE_CSS_COLORS
+    fun getMarkwon() = Markwon
+        .builder(App.instance.get()!!.applicationContext)
+        .usePlugin(CorePlugin.create())
+        .usePlugin(MovementMethodPlugin.create(ScrollingMovementMethod.getInstance()))
+        .usePlugin(LinkifyPlugin.create())
+        .usePlugin(GlideImagesPlugin.create(App.instance.get()!!.applicationContext))
+        .usePlugin(ImagesPlugin.create())
+        .usePlugin(HtmlPlugin.create())
+        .build()
 }

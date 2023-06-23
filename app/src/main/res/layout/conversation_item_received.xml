@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_medium"
             android:paddingHorizontal="12dp"
-            android:paddingTop="8dp"
+            android:paddingVertical="8dp"
             android:linksClickable="true"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSurfaceVariant"

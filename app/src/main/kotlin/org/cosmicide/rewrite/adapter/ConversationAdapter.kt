@@ -7,18 +7,13 @@
 
 package org.cosmicide.rewrite.adapter
 
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pkslow.ai.domain.Answer
-import org.commonmark.parser.Parser
-import org.commonmark.renderer.html.HtmlRenderer
 import org.cosmicide.rewrite.databinding.ConversationItemReceivedBinding
 import org.cosmicide.rewrite.databinding.ConversationItemSentBinding
 import org.cosmicide.rewrite.util.CommonUtils
-
 
 class ConversationAdapter :
     RecyclerView.Adapter<BindableViewHolder<ConversationAdapter.Conversation, *>>() {
@@ -94,17 +89,9 @@ class ConversationAdapter :
     inner class SentViewHolder(itemBinding: ConversationItemSentBinding) :
         BindableViewHolder<Conversation, ConversationItemSentBinding>(itemBinding) {
 
-        val parser: Parser = Parser.builder().build()
-        val htmlRenderer: HtmlRenderer = HtmlRenderer.builder().build()
-
         override fun bind(data: Conversation) {
-            val node = parser.parse(data.text)
             binding.message.apply {
-                movementMethod = LinkMovementMethod.getInstance()
-                text = HtmlCompat.fromHtml(
-                    htmlRenderer.render(node),
-                    CommonUtils.getHtmlSupportedFlags()
-                )
+                CommonUtils.getMarkwon().setMarkdown(this, data.text)
             }
         }
     }
@@ -112,17 +99,9 @@ class ConversationAdapter :
     inner class ReceivedViewHolder(itemBinding: ConversationItemReceivedBinding) :
         BindableViewHolder<Conversation, ConversationItemReceivedBinding>(itemBinding) {
 
-        val parser: Parser = Parser.builder().build()
-        val htmlRenderer: HtmlRenderer = HtmlRenderer.builder().build()
-
         override fun bind(data: Conversation) {
-            val node = parser.parse(data.text)
             binding.message.apply {
-                movementMethod = LinkMovementMethod.getInstance()
-                text = HtmlCompat.fromHtml(
-                    htmlRenderer.render(node),
-                    CommonUtils.getHtmlSupportedFlags()
-                )
+                CommonUtils.getMarkwon().setMarkdown(this, data.text)
             }
         }
     }

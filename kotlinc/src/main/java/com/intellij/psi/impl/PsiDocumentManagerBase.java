@@ -1196,7 +1196,8 @@ public abstract class PsiDocumentManagerBase extends PsiDocumentManager
             //            ApplicationManager.getApplication().assertIsDispatchThread();
             // make cached provider non-gcable temporarily (until commit end) to avoid surprising
             // getCachedProvider()==null
-            myDocumentCommitProcessor.commitAsynchronously(myProject, document, reason, modality);
+            myDocumentCommitProcessor.commitAsynchronously(myProject, this, document, reason, modality, viewProvider);
+
         }
     }
 

@@ -43,9 +43,10 @@ dependencies {
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("org.jetbrains.intellij.deps:trove4j:1.0.20200330")
+    implementation("org.jdom:jdom:2.0.2")
 
     implementation(files("libs/jaxp.jar"))
-    api(files("libs/kotlin-compiler-1.8.20.jar"))
+    api(files("libs/kotlin-compiler-1.9.0-RC.jar"))
 
     compileOnly(files("libs/the-unsafe.jar"))
 }

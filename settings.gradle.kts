@@ -20,6 +20,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://www.jetbrains.com/intellij-repository/releases")
+        maven("https://dl.bintray.com/jetbrains/intellij-third-party-dependencies")
         maven("https://jitpack.io")
         maven("https://maven.aliucord.com/snapshots")
     }

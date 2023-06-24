@@ -15,13 +15,29 @@ import de.Maxr1998.modernpreferences.helpers.switch
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.util.PreferenceKeys
+import org.jetbrains.kotlin.config.LanguageVersion
 
 class CompilerSettings(private val activity: FragmentActivity) : SettingsProvider {
 
     private val javaVersionValues: Array<String>
         get() = activity.resources.getStringArray(R.array.java_version_entries)
+
+    private val kotlinVersionValues = arrayOf(
+        LanguageVersion.KOTLIN_1_4,
+        LanguageVersion.KOTLIN_1_5,
+        LanguageVersion.KOTLIN_1_6,
+        LanguageVersion.KOTLIN_1_7,
+        LanguageVersion.KOTLIN_1_8,
+        LanguageVersion.KOTLIN_1_9,
+        LanguageVersion.KOTLIN_2_0,
+        LanguageVersion.KOTLIN_2_1
+    )
     private val javaVersionItems: List<SelectionItem>
-        get() = javaVersionValues.zip(javaVersionValues).map { SelectionItem(it.first, it.second, null) }
+        get() = javaVersionValues.zip(javaVersionValues)
+            .map { SelectionItem(it.first, it.second, null) }
+
+    private val kotlinVersionItems: List<SelectionItem>
+        get() = kotlinVersionValues.map { SelectionItem(it.versionString, it.versionString, null) }
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
@@ -48,6 +64,12 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
                 title = activity.getString(R.string.java_version)
                 summary = activity.getString(R.string.java_version_desc)
                 initialSelection = "17"
+            }
+
+            singleChoice(PreferenceKeys.COMPILER_KOTLIN_VERSION, kotlinVersionItems) {
+                title = "Kotlin Version"
+                summary = "Select the Kotlin version to use"
+                initialSelection = LanguageVersion.KOTLIN_2_1.versionString
             }
 
             editText(PreferenceKeys.COMPILER_JAVAC_FLAGS) {

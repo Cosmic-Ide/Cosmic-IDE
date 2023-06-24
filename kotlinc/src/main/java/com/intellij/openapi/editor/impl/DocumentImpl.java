@@ -46,7 +46,6 @@ import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.LocalTimeCounter;
 import com.intellij.util.ObjectUtils;
 import com.intellij.util.Processor;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.text.CharArrayUtil;
 import com.intellij.util.text.ImmutableCharSequence;
 
@@ -72,7 +71,6 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     static final Key<Reference<RangeMarkerTree<RangeMarkerEx>>> PERSISTENT_RANGE_MARKERS_KEY =
             Key.create("PERSISTENT_RANGE_MARKERS_KEY");
     private static final Logger LOG = Logger.getInstance(DocumentImpl.class);
-    private static final int STRIP_TRAILING_SPACES_BULK_MODE_LINES_LIMIT = 1000;
     // track GC of RangeMarkerTree: means no-one is interested in range markers for this file
     // anymore
     private static final ReferenceQueue<RangeMarkerTree<RangeMarkerEx>> rmTreeQueue =
@@ -87,7 +85,6 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
     private final List<RangeMarker> myGuardedBlocks = new ArrayList<>();
     private final Object myLineSetLock = ObjectUtils.sentinel("line set lock");
     private final PropertyChangeSupport myPropertyChangeSupport = new PropertyChangeSupport(this);
-    private final List<Object> myReadOnlyListeners = ContainerUtil.createLockFreeCopyOnWriteList();
     private final boolean myAssertThreading;
     private final AtomicInteger sequence = new AtomicInteger();
     private volatile LineSet myLineSet;
@@ -118,7 +115,6 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
             };
     private volatile FrozenDocument myFrozen;
     private boolean myIsReadOnly;
-    private volatile boolean isStripTrailingSpacesEnabled = true;
     private volatile long myModificationStamp;
     private int myCheckGuardedBlocks;
     private boolean myGuardsSuppressed;
@@ -308,7 +304,7 @@ public final class DocumentImpl extends UserDataHolderBase implements DocumentEx
 
     //  @Override
     public void setStripTrailingSpacesEnabled(boolean isEnabled) {
-        isStripTrailingSpacesEnabled = isEnabled;
+        // no-op
     }
 
     public boolean stripTrailingSpaces(Project project) {

@@ -173,9 +173,9 @@ object PathUtil {
 
     @JvmStatic
     fun getJdkClassesRootsFromJre(javaHome: String): List<File> =
-        JavaSdkUtil.getJdkClassesRoots(File(javaHome), true)
+        JavaSdkUtil.getJdkClassesRoots(File(javaHome).toPath(), true).map { it.toFile() }
 
     @JvmStatic
     fun getJdkClassesRoots(jdkHome: File): List<File> =
-        JavaSdkUtil.getJdkClassesRoots(jdkHome, false)
+        JavaSdkUtil.getJdkClassesRoots(jdkHome.toPath(), false).map { it.toFile() }
 }

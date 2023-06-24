@@ -18,6 +18,7 @@ object PreferenceKeys {
     const val COMPILER_USE_SSVM = "use_ssvm"
     const val COMPILER_JAVA_VERSIONS = "java_versions"
     const val COMPILER_JAVAC_FLAGS = "javac_flags"
+    const val COMPILER_KOTLIN_VERSION = "kotlin_version"
 
     // Editor
     const val EDITOR_FONT_SIZE = "font_size"

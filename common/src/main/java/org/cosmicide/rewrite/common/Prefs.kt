@@ -73,6 +73,9 @@ object Prefs {
     val compilerJavaVersion: Int
         get() = Integer.parseInt(prefs.getString("java_version", "17") ?: "17")
 
+    val kotlinVersion: String
+        get() = prefs.getString("kotlin_version", "2.1") ?: "2.1"
+
     val useSSVM: Boolean
         get() = prefs.getBoolean("use_ssvm", false)
 

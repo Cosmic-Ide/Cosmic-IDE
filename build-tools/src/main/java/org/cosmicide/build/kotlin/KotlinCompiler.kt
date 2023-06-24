@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.incremental.isJavaFile
-import org.jetbrains.kotlin.incremental.makeIncrementally
+import org.jetbrains.kotlin.incremental.makeJvmIncrementally
 import java.io.File
 
 class KotlinCompiler(val project: Project) : Task {
@@ -57,12 +57,12 @@ class KotlinCompiler(val project: Project) : Task {
             moduleName = project.name
             pluginClasspaths = enabledPlugins
             useFastJarFileSystem = Prefs.useFastJarFs
-            if (Prefs.useK2) languageVersion = "2.0"
+            languageVersion = Prefs.kotlinVersion
         }
 
         val collector = createMessageCollector(reporter)
 
-        makeIncrementally(kotlinHomeDir, listOf(project.srcDir), args, collector)
+        makeJvmIncrementally(kotlinHomeDir, listOf(project.srcDir), args, collector)
     }
 
     fun collectClasspathFiles(): List<File> {

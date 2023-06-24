@@ -407,7 +407,6 @@ data class KotlinEnvironment(
                             put(JVMConfigurationKeys.DISABLE_CALL_ASSERTIONS, true)
                             put(JVMConfigurationKeys.DISABLE_PARAM_ASSERTIONS, true)
                             put(JVMConfigurationKeys.DISABLE_RECEIVER_ASSERTIONS, true)
-                            put(CommonConfigurationKeys.INCREMENTAL_COMPILATION, true)
 
                             // enable all language features
                             val langFeatures =
@@ -415,8 +414,9 @@ data class KotlinEnvironment(
                             for (langFeature in LanguageFeature.values()) {
                                 langFeatures[langFeature] = LanguageFeature.State.ENABLED
                             }
+
                             val languageVersionSettings = LanguageVersionSettingsImpl(
-                                LanguageVersion.KOTLIN_2_0,
+                                LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!,
                                 ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
                                 mapOf(
                                     AnalysisFlags.extendedCompilerChecks to false,

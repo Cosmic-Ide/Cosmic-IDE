@@ -70,4 +70,11 @@
     <string name="successfully_run">Successfully run %1$s.</string>
     <string name="bot_icon">Bot Icon</string>
     <string name="send_message">Send message</string>
+    <string name="create_kotlin_class">Create kotlin class</string>
+    <string name="delete">Delete</string>
+    <string name="open_in_external_app">Open in external app</string>
+    <string name="rename">Rename</string>
+    <string name="create_file">Create File</string>
+    <string name="create_folder">Create folder</string>
+    <string name="create_java_class">Create java class</string>
 </resources>

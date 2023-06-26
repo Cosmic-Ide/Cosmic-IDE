@@ -177,19 +177,38 @@ class ViewBinder(
                         .setTitle("Create folder")
                         .setView(binding.root)
                         .setPositiveButton("Create") { _, _ ->
-                            file.absolutePath
                             var name = binding.edittext.text.toString()
                             name = name.replace("\\.", "")
                             file.resolve(name).mkdirs()
                             lifeScope.launch {
                                 Log.d("ViewBinder", "Refresh treeview")
-                                treeView.refresh(node = parentNode)
+                                treeView.refresh()
                             }
                         }
                         .setNegativeButton("Cancel") { dialog, _ ->
                             dialog.dismiss()
                         }
                         .show()
+                }
+
+                R.id.create_file -> {
+                    val binding = TreeviewContextActionDialogItemBinding.inflate(layoutInflater)
+                    MaterialAlertDialogBuilder(v.context)
+                        .setTitle("Create file")
+                        .setView(binding.root)
+                        .setPositiveButton("Create") { _, _ ->
+                            var name = binding.edittext.text.toString()
+                            name = name.replace("\\.", "")
+                            file.resolve(name).createNewFile()
+                            lifeScope.launch {
+                                treeView.refresh()
+                            }
+                        }
+                        .setNegativeButton("Cancel") { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .show()
+
                 }
 
                 R.id.rename -> {

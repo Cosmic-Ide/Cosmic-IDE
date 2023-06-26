@@ -9,21 +9,25 @@
 
     <item
         android:id="@+id/create_kotlin_class"
-        android:title="Create kotlin class" />
+        android:title="@string/create_kotlin_class" />
     <item
         android:id="@+id/create_java_class"
-        android:title="Create java class" />
+        android:title="@string/create_java_class" />
     <item
         android:id="@+id/create_folder"
-        android:title="Create folder" />
+        android:title="@string/create_folder" />
+
+    <item
+        android:id="@+id/create_file"
+        android:title="@string/create_file" />
     <item
         android:id="@+id/rename"
-        android:title="Rename" />
+        android:title="@string/rename" />
     <item
         android:id="@+id/delete"
-        android:title="Delete" />
+        android:title="@string/delete" />
 
     <item
         android:id="@+id/open_external"
-        android:title="Open in external app" />
+        android:title="@string/open_in_external_app" />
 </menu>

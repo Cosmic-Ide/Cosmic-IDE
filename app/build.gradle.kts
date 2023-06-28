@@ -138,7 +138,6 @@ dependencies {
     implementation("io.noties.markwon:image:$markwon_version")
     implementation("io.noties.markwon:image-glide:$markwon_version")
     implementation("io.noties.markwon:linkify:$markwon_version")
-    implementation("io.noties.markwon:syntax-highlight:$markwon_version")
 
     implementation("com.aliucord:Aliuhook:main-SNAPSHOT")
     implementation("de.maxr1998:modernandroidpreferences:2.3.2")

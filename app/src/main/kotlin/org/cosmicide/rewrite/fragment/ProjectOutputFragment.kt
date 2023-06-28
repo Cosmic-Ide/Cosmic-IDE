@@ -25,6 +25,7 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.compile.ssvm.SSVM
 import org.cosmicide.rewrite.databinding.FragmentCompileInfoBinding
+import org.cosmicide.rewrite.editor.EditorInputStream
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.cosmicide.rewrite.util.ProjectHandler
@@ -76,7 +77,6 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
 
         binding.infoEditor.apply {
             setEditorLanguage(TextMateLanguage.create("source.build", false))
-            editable = false
             isWordwrap = true
         }
 
@@ -153,10 +153,13 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         })
         System.setOut(systemOut)
         System.setErr(systemOut)
+        System.setIn(EditorInputStream(binding.infoEditor))
 
         if (Prefs.useSSVM) {
+            isRunning = true
             initVM()
             invoke(className)
+            isRunning = false
             return@launch
         }
 
@@ -191,6 +194,7 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
             System.err.println("Error loading class: ${e.message}")
         }.also {
             systemOut.close()
+            System.`in`.close()
             isRunning = false
         }
     }

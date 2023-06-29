@@ -21,7 +21,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.pkslow.ai.AIClient
 import com.pkslow.ai.GoogleBardClient
-import com.pkslow.ai.util.NetworkUtils
+import com.pkslow.ai.utils.NetworkUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

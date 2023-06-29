@@ -6,7 +6,7 @@
  */
 package com.pkslow.ai.domain
 
-import com.pkslow.ai.util.Constants.EMPTY_STRING
+import com.pkslow.ai.utils.Constants.EMPTY_STRING
 import java.util.Objects
 
 class BardRequest(

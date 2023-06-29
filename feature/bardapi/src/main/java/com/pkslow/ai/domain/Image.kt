@@ -6,26 +6,22 @@
  */
 package com.pkslow.ai.domain
 
-class Answer(
-    var status: AnswerStatus = AnswerStatus.NO_ANSWER,
-    var chosenAnswer: String = "",
-    var images: List<Image> = listOf(),
-) {
+data class Image(val url: String, val label: String, val article: String) {
     fun markdown(): String {
-        var markdown = this.chosenAnswer
-
-        if (images.isNotEmpty()) {
-            for (image in images) {
-                markdown = markdown.replaceFirst(image.labelRegex(), image.markdown())
-            }
-        }
-        return markdown
+        val sb = StringBuilder()
+        sb.append("\n")
+        sb.append("[!")
+        sb.append(label)
+        sb.append("(")
+        sb.append(url)
+        sb.append(")](")
+        sb.append(article)
+        sb.append(")")
+        return sb.toString()
     }
-}
 
-
-enum class AnswerStatus {
-    OK,
-    NO_ANSWER,
-    ERROR
+    fun labelRegex(): String {
+        val temp = label.substring(1, label.length - 1)
+        return "\\[$temp\\]"
+    }
 }

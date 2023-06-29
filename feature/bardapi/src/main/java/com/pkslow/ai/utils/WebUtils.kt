@@ -4,18 +4,17 @@
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.pkslow.ai.util
+package com.pkslow.ai.utils
 
 import okhttp3.OkHttpClient
 import java.time.Duration
 
 object WebUtils {
     fun okHttpClientWithTimeout(timeout: Duration): OkHttpClient {
-        val client: OkHttpClient = OkHttpClient.Builder()
+        return OkHttpClient.Builder()
             .callTimeout(timeout)
             .readTimeout(timeout)
             .connectTimeout(timeout)
             .build()
-        return client
     }
 }

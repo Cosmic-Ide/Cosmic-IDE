@@ -4,7 +4,7 @@
  * Cosmic IDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
  */
-package com.pkslow.ai.util
+package com.pkslow.ai.utils
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -12,13 +12,14 @@ import com.pkslow.ai.domain.Answer
 import com.pkslow.ai.domain.AnswerStatus
 import com.pkslow.ai.domain.BardRequest
 import com.pkslow.ai.domain.BardResponse
-import com.pkslow.ai.util.Constants.ASK_QUESTION_PATH
-import com.pkslow.ai.util.Constants.BARD_VERSION
-import com.pkslow.ai.util.Constants.BASE_URL
-import com.pkslow.ai.util.Constants.CONTENT_TYPE
-import com.pkslow.ai.util.Constants.HOSTNAME
-import com.pkslow.ai.util.Constants.TOKEN_COOKIE_NAME
-import com.pkslow.ai.util.Constants.USER_AGENT
+import com.pkslow.ai.domain.Image
+import com.pkslow.ai.utils.Constants.ASK_QUESTION_PATH
+import com.pkslow.ai.utils.Constants.BARD_VERSION
+import com.pkslow.ai.utils.Constants.BASE_URL
+import com.pkslow.ai.utils.Constants.CONTENT_TYPE
+import com.pkslow.ai.utils.Constants.HOSTNAME
+import com.pkslow.ai.utils.Constants.TOKEN_COOKIE_NAME
+import com.pkslow.ai.utils.Constants.USER_AGENT
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -58,11 +59,11 @@ object BardUtils {
     }
 
     fun genQueryStringParamsForAsk(): Map<String, String> {
-        var randonNum = ThreadLocalRandom.current().nextInt(0, 10000)
-        randonNum = randonNum + 100000
+        var randomNum = ThreadLocalRandom.current().nextInt(0, 10000)
+        randomNum += 100000
         val params: MutableMap<String, String> = HashMap()
         params["bl"] = BARD_VERSION
-        params["_reqid"] = randonNum.toString()
+        params["_reqid"] = randomNum.toString()
         params["rt"] = "c"
         return params
     }
@@ -81,8 +82,8 @@ object BardUtils {
     /**
      * remove backslash \ in answer string
      */
-    fun removeBackslash(answerStr: String): String {
-        var answerStr = answerStr
+    fun removeBackslash(answer: String): String {
+        var answerStr = answer
         answerStr = answerStr.replace("\\\\n", "\n")
         answerStr = answerStr.replace("\\", "\"")
         return answerStr
@@ -98,11 +99,13 @@ object BardUtils {
     }
 
     fun buildRequestBodyForAsk(bardRequest: BardRequest): RequestBody {
+        val question: String = bardRequest.question.replace("\"", "\\\\\\\"")
+
         return FormBody.Builder()
             .add(
                 "f.req", String.format(
                     "[null,\"[[\\\"%s\\\"],null,[\\\"%s\\\",\\\"%s\\\",\\\"%s\\\"]]\"]",
-                    bardRequest.question,
+                    question,
                     bardRequest.conversationId,
                     bardRequest.responseId,
                     bardRequest.choiceId
@@ -125,28 +128,37 @@ object BardUtils {
             )
             val element3 = (jsonArray[0] as JsonArray)[2]
             val content3 = element3.asString
-            val jsonArray3 = Gson().fromJson(
+            val chatData = Gson().fromJson(
                 content3,
                 JsonArray::class.java
             )
-            conversationId = (jsonArray3[1] as JsonArray)[0].asString
-            responseId = (jsonArray3[1] as JsonArray)[1].asString
-            var chosenAnswer = (jsonArray3[0] as JsonArray)[0].asString
+            conversationId = (chatData[1] as JsonArray)[0].asString
+            responseId = (chatData[1] as JsonArray)[1].asString
+            var chosenAnswer = ((chatData[4] as JsonArray)[0] as JsonArray)[1].asString
             chosenAnswer = removeBackslash(chosenAnswer)
             answer.chosenAnswer = chosenAnswer
 
             // somehow get the other drafts
             // ???
-            choiceId = ((jsonArray3[4] as JsonArray)[0] as JsonArray)[0].asString
+            choiceId = ((chatData[4] as JsonArray)[0] as JsonArray)[0].asString
+
+            val images = mutableListOf<Image>()
             try {
-                val imageURL =
-                    ((((((jsonArray3[4] as JsonArray)[0] as JsonArray)[4] as JsonArray)[0] as JsonArray)[3] as JsonArray)[0] as JsonArray)[0].asString
-                val articleURL =
-                    ((((((jsonArray3[4] as JsonArray)[0] as JsonArray)[4] as JsonArray)[0] as JsonArray)[1] as JsonArray)[0] as JsonArray)[0].asString
-                answer.imageURL = imageURL
-                answer.articleURL = articleURL
-            } catch (e: Exception) {
+                val imagesJson = ((chatData[4] as JsonArray)[0] as JsonArray)[4] as JsonArray
+
+                for (i in 0 until imagesJson.size()) {
+                    val imageJson = imagesJson[i] as JsonArray
+                    val url = ((imageJson[0] as JsonArray)[0] as JsonArray)[0].asString
+                    val markdownLabel = imageJson[2].asString
+                    val articleURL = ((imageJson[1] as JsonArray)[0] as JsonArray)[0].asString
+                    val image = Image(url, markdownLabel, articleURL)
+                    //                    log.debug("Received image: {}", image);
+                    images.add(image)
+                }
+            } catch (_: Exception) {
             }
+
+            answer.images = images
         } catch (e: Exception) {
             answer.status = AnswerStatus.NO_ANSWER
             return BardResponse(conversationId!!, responseId!!, choiceId!!, answer)
@@ -156,6 +168,6 @@ object BardUtils {
     }
 
     fun isEmpty(str: String?): Boolean {
-        return str == null || str.length == 0
+        return str.isNullOrEmpty()
     }
 }

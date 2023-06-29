@@ -10,12 +10,12 @@ import com.pkslow.ai.domain.Answer
 import com.pkslow.ai.domain.AnswerStatus
 import com.pkslow.ai.domain.BardRequest
 import com.pkslow.ai.domain.BardResponse
-import com.pkslow.ai.util.BardUtils.createPostRequestForAsk
-import com.pkslow.ai.util.BardUtils.createRequestForSNlM0e
-import com.pkslow.ai.util.BardUtils.fetchSNlM0eFromBody
-import com.pkslow.ai.util.BardUtils.renderBardResponseFromResponse
-import com.pkslow.ai.util.Constants.EMPTY_STRING
-import com.pkslow.ai.util.WebUtils.okHttpClientWithTimeout
+import com.pkslow.ai.utils.BardUtils.createPostRequestForAsk
+import com.pkslow.ai.utils.BardUtils.createRequestForSNlM0e
+import com.pkslow.ai.utils.BardUtils.fetchSNlM0eFromBody
+import com.pkslow.ai.utils.BardUtils.renderBardResponseFromResponse
+import com.pkslow.ai.utils.Constants.EMPTY_STRING
+import com.pkslow.ai.utils.WebUtils.okHttpClientWithTimeout
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
@@ -83,10 +83,8 @@ class GoogleBardClient : AIClient {
                 val responseString =
                     Objects.requireNonNull(response.body).string()
                 check(statusCode == 200) { "Can't get the answer" }
-                val result =
-                    responseString.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
-                        .toTypedArray()[3]
-                return result
+                return responseString.split("\\n".toRegex()).dropLastWhile { it.isEmpty() }
+                    .toTypedArray<String>()[3]
             }
         } catch (e: IOException) {
             throw RuntimeException(e)

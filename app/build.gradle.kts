@@ -105,7 +105,7 @@ fun getGitCommit(): String {
 dependencies {
     implementation("com.android.tools:r8:8.0.40")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
-    implementation("com.airbnb.android:lottie:6.0.0")
+    implementation("com.airbnb.android:lottie:6.0.1")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")
     implementation("com.github.xxdark:ssvm:df30743")
     implementation("com.google.android.material:material:1.9.0")

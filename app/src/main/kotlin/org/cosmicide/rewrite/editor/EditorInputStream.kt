@@ -24,31 +24,36 @@ class EditorInputStream(private val editor: CodeEditor) : InputStream() {
 
     override fun read(): Int {
         if (lineBuffer.isEmpty()) {
+            Log.d("EditorInputStream", "lineBuffer is empty")
             readLineToBuffer()
         }
         if (lineBuffer.isEmpty()) {
             return -1
         }
-        val c = lineBuffer[0]
+        if (lineBuffer.isBlank()) {
+            return -1
+        }
+        Log.d("lineBuffer", "${lineBuffer.length}")
+        val code = lineBuffer[0].code
         lineBuffer.deleteCharAt(0)
-        return c.code
+        return code
     }
 
     private fun readLineToBuffer() {
-        var lineComplete = false
-        while (!lineComplete) {
-            lineComplete = try {
-                val line = editor.text.getLineString(editor.lineCount - 1)
-                if (line.isEmpty()) {
-                    val data = editor.text.getLineString(editor.lineCount - 2)
-                    lineBuffer.append(data).append('\n')
-                    true
-                } else {
-                    false
-                }
-            } catch (e: Exception) {
-                Log.e("EditorInputStream", "Error reading line", e)
-                false
+        while (true) {
+            val lines = editor.text.lines()
+            if (lines.isEmpty()) {
+                continue
+            }
+            if (lines.size == 1) {
+                continue
+            }
+            val line = lines[lines.size - 1]
+            Log.d("EditorInputStream", line)
+            if (line.isBlank()) {
+                lineBuffer.append(lines[lines.size - 2]).append('\n')
+                Log.d("buffer", lineBuffer.toString())
+                break
             }
         }
     }

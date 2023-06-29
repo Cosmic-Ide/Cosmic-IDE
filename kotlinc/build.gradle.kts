@@ -39,7 +39,7 @@ configurations.all {
 dependencies {
     implementation("org.lsposed.hiddenapibypass:hiddenapibypass:4.3")
 
-    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-scripting-compiler:1.8.22")
     runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.8.22")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
     implementation("org.jetbrains.intellij.deps:trove4j:1.0.20200330")

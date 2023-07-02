@@ -188,8 +188,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
         val files = fileIndex.getFiles()
-        if (files.isEmpty()) return
         fileViewModel.updateFiles(files.toMutableList())
+        if (fileViewModel.files.value!!.isEmpty()) {
+            binding.editor.setText("No files are opened in the editor. Please open a file through the file manager.")
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -227,29 +229,33 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     private fun setEditorLanguage() {
         val file = fileViewModel.currentFile
-        if (file?.extension == "java") {
-            binding.editor.text.addContentListener(EditorDiagnosticsMarker.INSTANCE)
-            EditorDiagnosticsMarker.INSTANCE.init(binding.editor, file, project)
-        } else {
+
+        when (file!!.extension) {
+            "java" -> {
+                if (binding.editor.editorLanguage is JavaLanguage) return
+                binding.editor.setEditorLanguage(JavaLanguage(binding.editor, project, file))
+                binding.editor.text.addContentListener(EditorDiagnosticsMarker.INSTANCE)
+                EditorDiagnosticsMarker.INSTANCE.init(binding.editor, file, project)
+            }
+
+            "kt" -> {
+                if (binding.editor.editorLanguage is KotlinLanguage) return
+                binding.editor.setEditorLanguage(KotlinLanguage(binding.editor, project, file))
+            }
+
+            "class" -> {
+                binding.editor.setEditorLanguage(TextMateLanguage.create("source.class", true))
+            }
+
+            else -> {
+                binding.editor.setEditorLanguage(EmptyLanguage())
+            }
+        }
+
+        if (file.extension != "java") {
             binding.editor.text.removeContentListener(EditorDiagnosticsMarker.INSTANCE)
         }
-        binding.editor.setEditorLanguage(
-            when (file?.extension) {
-                "kt" -> {
-                    KotlinLanguage(binding.editor, project, file)
-                }
 
-                "java" -> {
-                    JavaLanguage(binding.editor, project, file)
-                }
-
-                "class" -> {
-                    TextMateLanguage.create("source.class", true)
-                }
-
-                else -> EmptyLanguage()
-            }
-        )
         binding.editor.setFont()
     }
 

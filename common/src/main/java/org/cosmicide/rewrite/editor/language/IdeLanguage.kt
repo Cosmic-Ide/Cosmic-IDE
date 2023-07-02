@@ -11,7 +11,6 @@ import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.Content
-import io.github.rosemoe.sora.text.TextRange
 import io.github.rosemoe.sora.widget.SymbolPairMatch
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.editor.language.IdeFormatter
@@ -62,15 +61,21 @@ open class IdeLanguage(
 
     init {
         tabSize = Prefs.tabSize
-        useTab(Prefs.useSpaces.not())
     }
 
     override fun getFormatter(): Formatter {
         return _formatter
     }
 
+    override fun useTab(): Boolean {
+        return Prefs.useSpaces.not()
+    }
+
     override fun getSymbolPairs(): SymbolPairMatch {
-        return _symbolPairs
+        if (Prefs.bracketPairAutocomplete) {
+            return _symbolPairs
+        }
+        return SymbolPairMatch()
     }
 
     fun formatCode(text: Content): String {

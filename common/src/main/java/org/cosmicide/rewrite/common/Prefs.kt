@@ -67,6 +67,9 @@ object Prefs {
     val tabSize: Int
         get() = prefs.getInt("tab_size", 4)
 
+    val bracketPairAutocomplete: Boolean
+        get() = prefs.getBoolean("bracket_pair_autocomplete", true)
+
     val javacFlags: String
         get() = prefs.getString("javac_flags", "") ?: ""
 

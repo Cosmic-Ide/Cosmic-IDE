@@ -32,6 +32,7 @@ object PreferenceKeys {
     const val EDITOR_LINE_NUMBERS_SHOW = "line_numbers_show"
     const val EDITOR_DOUBLE_CLICK_CLOSE = "double_click_close"
     const val EDITOR_EXP_JAVA_COMPLETION = "experimental_java_completion"
+    const val BRACKET_PAIR_AUTOCOMPLETE = "bracket_pair_autocomplete"
 
     // Formatter
     const val FORMATTER_KTFMT_STYLE = "ktfmt_style"

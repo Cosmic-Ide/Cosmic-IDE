@@ -10,7 +10,6 @@ package org.cosmicide.rewrite.fragment.settings
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.switch
-import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.util.PreferenceKeys
 
 class EditorSettings : SettingsProvider {
@@ -55,6 +54,12 @@ class EditorSettings : SettingsProvider {
                 title = "Word wrap"
                 summary = "Enable & disable word wrap"
                 defaultValue = false
+            }
+
+            switch(PreferenceKeys.BRACKET_PAIR_AUTOCOMPLETE) {
+                title = "Bracket pair auto-completion"
+                summary = "Enable & disable bracket pair auto-completion"
+                defaultValue = true
             }
 
             switch(PreferenceKeys.EDITOR_SCROLLBAR_SHOW) {

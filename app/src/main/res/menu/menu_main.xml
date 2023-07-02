@@ -26,6 +26,12 @@
         android:title="@string/redo"
         app:showAsAction="always" />
 
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_format"
         android:title="Format"
@@ -38,10 +44,5 @@
     <item
         android:id="@+id/action_chat"
         android:title="@string/action_chat" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
 
 </menu>

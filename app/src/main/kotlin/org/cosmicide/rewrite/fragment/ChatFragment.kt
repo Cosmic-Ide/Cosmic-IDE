@@ -37,7 +37,7 @@ import java.time.Duration
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.ORA
+    private var model = Models.YQCLOUD
 
     // The client will expire in an hour.
     // If you were thinking of using this key, don't. It's free already, just get your own.
@@ -83,8 +83,8 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     "Vercel"
                 }
 
-                R.id.model_ora -> {
-                    model = Models.ORA
+                R.id.model_forefront -> {
+                    model = Models.FOREFRONT
                     "Ora"
                 }
 
@@ -121,13 +121,14 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val reply = when (model) {
                     Models.BARD -> client.ask(message).markdown()
+
                     Models.VERCEL_GPT3_5 -> ChatProvider.generate(
                         "vercel",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.ORA -> ChatProvider.generate(
-                        "ora",
+                    Models.FOREFRONT -> ChatProvider.generate(
+                        "forefront",
                         conversationAdapter.getConversations()
                     )
 
@@ -193,7 +194,7 @@ enum class Models {
     BARD,
     VERCEL_GPT3_5,
     YQCLOUD,
-    ORA,
+    FOREFRONT,
     PHIND,
 }
 

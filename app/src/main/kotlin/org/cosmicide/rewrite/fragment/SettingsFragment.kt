@@ -34,7 +34,6 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showWarningDialog()
 
         val appearanceSettings = AppearanceSettings(requireActivity())
         val editorSettings = EditorSettings()
@@ -92,13 +91,5 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable("adapter", preferencesAdapter.getSavedState())
-    }
-
-    private fun showWarningDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Warning!")
-            .setMessage("We have recently updated the API for settings, and as a result, some functions may not work as expected. We apologize for any inconvenience this may cause. Please note that we are working on a fix, which will be available soon.")
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
     }
 }

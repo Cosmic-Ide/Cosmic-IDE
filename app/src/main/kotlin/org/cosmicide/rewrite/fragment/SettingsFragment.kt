@@ -86,6 +86,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         }
 
         binding.preferencesView.adapter = preferencesAdapter
+        binding.toolbar.setNavigationOnClickListener { preferencesAdapter.goBack() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

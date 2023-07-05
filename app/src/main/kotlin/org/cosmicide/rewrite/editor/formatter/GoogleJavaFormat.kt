@@ -12,6 +12,7 @@ import org.cosmicide.rewrite.common.Prefs
 import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import kotlin.io.path.createTempFile
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
@@ -36,6 +37,9 @@ object GoogleJavaFormat {
             System.`in`
         ).format(*args.toTypedArray())
 
-        return file.readText()
+        val formattedCode = file.readText()
+        file.deleteIfExists()
+
+        return formattedCode
     }
 }

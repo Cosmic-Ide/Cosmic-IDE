@@ -31,7 +31,6 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="0dp"
                 app:layout_collapseMode="pin"
                 app:navigationIcon="@drawable/baseline_arrow_back_ios_24"
                 app:title="Settings" />

@@ -9,7 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -53,8 +54,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
                 android:layout_height="match_parent">
 
                 <TextView
@@ -62,27 +65,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/no_open_files"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.4" />
+                    android:textAppearance="?attr/textAppearanceTitleLarge" />
 
                 <TextView
                     android:id="@+id/no_editor_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:gravity="center"
                     android:text="@string/no_open_files_desc"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textSize="13sp"
-                    app:layout_constraintEnd_toEndOf="@id/no_editor"
-                    app:layout_constraintStart_toStartOf="@id/no_editor"
-                    app:layout_constraintTop_toBottomOf="@id/no_editor" />
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
         </ViewFlipper>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -70,6 +70,9 @@ object Prefs {
     val bracketPairAutocomplete: Boolean
         get() = prefs.getBoolean("bracket_pair_autocomplete", true)
 
+    val quickDelete: Boolean
+        get() = prefs.getBoolean("quick_delete", false)
+
     val javacFlags: String
         get() = prefs.getString("javac_flags", "") ?: ""
 

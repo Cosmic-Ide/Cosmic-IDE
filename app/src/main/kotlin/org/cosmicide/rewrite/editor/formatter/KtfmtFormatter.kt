@@ -20,8 +20,9 @@ object ktfmtFormatter {
         val args = listOf("--style", Prefs.ktfmtStyle, file.toAbsolutePath().toString())
 
         Main(System.`in`, System.out, System.err, args.toTypedArray()).run()
+        val formattedCode = file.readText()
         file.deleteIfExists()
 
-        return file.readText()
+        return formattedCode
     }
 }

@@ -68,6 +68,12 @@ class EditorSettings : SettingsProvider {
                 defaultValue = false
             }
 
+            switch(PreferenceKeys.QUICK_DELETE) {
+                title = "Fast delete blank lines"
+                summary = "If enabled, blank lines are deleted quickly in the editor"
+                defaultValue = true
+            }
+
             switch(PreferenceKeys.EDITOR_HW_ENABLE) {
                 title = "Hardware acceleration"
                 summary =

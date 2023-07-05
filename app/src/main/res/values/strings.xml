@@ -77,4 +77,7 @@
     <string name="create_file">Create File</string>
     <string name="create_folder">Create folder</string>
     <string name="create_java_class">Create java class</string>
+
+    <string name="no_open_files">No open files</string>
+    <string name="no_open_files_desc">Try opening the file with a file manager</string>
 </resources>

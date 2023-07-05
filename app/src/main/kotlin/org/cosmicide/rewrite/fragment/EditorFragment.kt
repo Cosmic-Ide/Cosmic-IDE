@@ -16,6 +16,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -66,6 +67,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         if (ProjectHandler.getProject() == null) {
             Snackbar.make(
                 binding.root,
@@ -74,9 +76,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             ).show()
             return
         }
+
         project = ProjectHandler.getProject()!!
+
         configureToolbar()
-        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+        setColorScheme()
+        initViewModelListeners()
+        initTreeView()
 
         binding.included.refresher.apply {
             setOnRefreshListener {
@@ -95,32 +101,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
 
-        initViewModelListeners()
-        initTreeView()
-
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            private var isClicked = false
+            private val isTabClicked = MutableLiveData<Boolean>(false)
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val file = fileViewModel.files.value?.get(tab.position) ?: return
-                val isBinary = file.extension == "class"
-                if (file.exists().not()) {
-                    Snackbar.make(
-                        binding.root,
-                        "File does not exist, please close this tab",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
-
-                if (fileViewModel.currentPosition.value != tab.position) {
-                    fileViewModel.setCurrentPosition(tab.position)
-                }
-
-                if (isBinary) {
-                    binding.editor.setText(Javap.disassemble(file.absolutePath))
-                    return
-                }
-                binding.editor.setText(fileViewModel.currentFile?.readText())
-                setEditorLanguage()
+                handleTabSelected(tab)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab) {
@@ -129,18 +113,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             override fun onTabReselected(tab: TabLayout.Tab) {
-                if (isClicked) {
-                    fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
-                    binding.tabLayout.removeTabAt(tab.position)
-                    binding.editor.setText("")
-                    return
-                }
-                isClicked = true
-                onTabSelected(tab)
-                binding.root.postDelayed({ isClicked = false }, 10000) // doesnt work
+                handleTabReselected(tab, isTabClicked)
             }
         })
-
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -157,27 +132,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun initViewModelListeners() {
+        val indexedFiles = fileIndex.getFiles()
+
         fileViewModel.files.observe(viewLifecycleOwner) { files ->
-            binding.tabLayout.removeAllTabs()
-            val appearanceModel = ShapeAppearanceModel.builder().setAllCornerSizes(48f).build()
-            files.forEach { file ->
-                val tab = binding.tabLayout.newTab().setText(file.name)
-                tab.customView = Chip(requireContext()).apply {
-                    text = file.name
-                    chipStrokeWidth = 0f
-                    shapeAppearanceModel = appearanceModel
-                }
-                (tab.customView as View).apply {
-                    setOnLongClickListener {
-                        showMenu(it, R.menu.tab_menu, tab.position)
-                        true
-                    }
-                    setOnClickListener {
-                        if (binding.tabLayout.selectedTabPosition != tab.position) tab.select()
-                    }
-                }
-                binding.tabLayout.addTab(tab, false)
-            }
+            handleFilesUpdate(files)
         }
 
         fileViewModel.currentPosition.observe(viewLifecycleOwner) { pos ->
@@ -187,10 +145,10 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 binding.tabLayout.getTabAt(pos)?.select()
             }
         }
-        val files = fileIndex.getFiles()
-        fileViewModel.updateFiles(files.toMutableList())
+
+        fileViewModel.updateFiles(indexedFiles.toMutableList())
         if (fileViewModel.files.value!!.isEmpty()) {
-            binding.editor.setText("No files are opened in the editor. Please open a file through the file manager.")
+            binding.viewContainer.displayedChild = 1
         }
     }
 
@@ -223,6 +181,70 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     nodeEventListener = binder
                     lifecycleScope.launch { refresh() }
                 }
+            }
+        }
+    }
+
+    private fun handleTabSelected(tab: TabLayout.Tab) {
+        val file = fileViewModel.files.value?.get(tab.position) ?: return
+        val isBinary = file.extension == "class"
+
+        if (file.exists().not()) {
+            binding.tabLayout.removeTab(tab)
+        }
+        if (fileViewModel.currentPosition.value != tab.position) {
+            fileViewModel.setCurrentPosition(tab.position)
+        }
+        if (isBinary) {
+            binding.editor.setText(Javap.disassemble(file.absolutePath))
+            return
+        }
+
+        binding.editor.setText(fileViewModel.currentFile?.readText())
+        setEditorLanguage()
+    }
+
+    private fun handleTabReselected(tab: TabLayout.Tab, isTabClicked: MutableLiveData<Boolean>) {
+        if (isTabClicked.value == true) {
+            fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
+            binding.tabLayout.removeTab(tab)
+            binding.editor.setText("")
+            return
+        }
+
+        isTabClicked.value = true
+        tab.select()
+        binding.root.postDelayed({ isTabClicked.value = false }, 10000) // doesnt work
+    }
+
+    private fun handleFilesUpdate(files: List<File>) {
+        val appearanceModel = ShapeAppearanceModel.builder().setAllCornerSizes(48f).build()
+        binding.apply {
+            if (files.isEmpty()) {
+                tabLayout.visibility = View.GONE
+                viewContainer.displayedChild = 1
+            } else {
+                tabLayout.visibility = View.VISIBLE
+                viewContainer.displayedChild = 0
+            }
+            tabLayout.removeAllTabs()
+            files.forEach { file ->
+                val tab = tabLayout.newTab().setText(file.name)
+                tab.customView = Chip(requireContext()).apply {
+                    text = file.name
+                    chipStrokeWidth = 0f
+                    shapeAppearanceModel = appearanceModel
+                }
+                (tab.customView as View).apply {
+                    setOnLongClickListener {
+                        showMenu(it, R.menu.tab_menu, tab.position)
+                        true
+                    }
+                    setOnClickListener {
+                        if (tabLayout.selectedTabPosition != tab.position) tab.select()
+                    }
+                }
+                tabLayout.addTab(tab, false)
             }
         }
     }
@@ -280,10 +302,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.tabLayout.removeAllTabs()
     }
 
-
     private fun saveFile() {
         fileViewModel.currentFile?.let { file ->
-            if (file.extension == "class") return // we don't wanna save the output from javap because that'll break the binary
+            if (file.extension == "class") return
             if (file.exists().not()) {
                 file.createNewFile()
             }

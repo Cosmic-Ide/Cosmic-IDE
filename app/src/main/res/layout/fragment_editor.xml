@@ -39,14 +39,51 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <org.cosmicide.rewrite.editor.IdeEditor
-            android:id="@+id/editor"
+        <ViewFlipper
+            android:id="@+id/view_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/app_bar" />
+            app:layout_constraintTop_toBottomOf="@id/app_bar">
+
+            <org.cosmicide.rewrite.editor.IdeEditor
+                android:id="@+id/editor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/no_editor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_open_files"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent"
+                    app:layout_constraintVertical_bias="0.4" />
+
+                <TextView
+                    android:id="@+id/no_editor_desc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="@string/no_open_files_desc"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="@id/no_editor"
+                    app:layout_constraintStart_toStartOf="@id/no_editor"
+                    app:layout_constraintTop_toBottomOf="@id/no_editor" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ViewFlipper>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

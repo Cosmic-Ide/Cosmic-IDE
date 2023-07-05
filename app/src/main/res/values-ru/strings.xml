@@ -7,9 +7,11 @@
 <resources>
     <string name="app_name">Cosmic IDE Rewrite</string>
     <string name="action_settings">Настройки</string>
-    <!-- Strings used for fragments for navigation -->
+    <!-- Строки, используемые для фрагментов для навигации -->
     <string name="next">Следующее</string>
+
     <string name="import_project">Импортировать проект</string>
+    <string name="app_theme">Тема приложения</string>
 
     <string name="projects">Проекты</string>
     <string name="new_project">Новый проект</string>
@@ -17,7 +19,7 @@
     <string name="enter_project_name">Введите имя проекта</string>
     <string name="project_name">Имя проекта</string>
     <string name="editor">Редактор</string>
-    <string name="enter_package_name">Введите имя папки (package)</string>
+    <string name="enter_package_name">Введите имя пакета (package)</string>
 
     <string name="create_project">Создать проект</string>
     <string name="project_path">Путь к проекту</string>
@@ -32,7 +34,47 @@
     <string name="download">Скачать</string>
     <string name="undo">Отменить</string>
     <string name="redo">Вернуть</string>
-    <!-- Dependency Manager will sound awkward in russian -->
-    <string name="dependency_manager">Dependency Manager</string>
+    <string name="dependency_manager">Менеджер зависимостей</string>
     <string name="expand_collapse">Свернуть/Развернуть</string>
+    <string name="accept">Принять</string>
+    <string name="decline">Отклонить</string>
+    <string name="type_a_message">Введите сообщение</string>
+    <string name="send">Отправить</string>
+    <string name="action_chat">Чат с нейросетью</string>
+    <string name="author">автор</string>
+    <string name="view_drafts">Просмотр черновиков</string>
+    <string name="draft_1">Черновик 1</string>
+    <string name="draft_3">Черновик 3</string>
+    <string name="draft_2">Черновик 2</string>
+    <string name="completion_type">Тип завершения</string>
+    <string name="enter_something">Введите что-нибудь…</string>
+    <string name="fast_jar_fs">Быстрая реализация для Jar FS</string>
+    <string name="experimental_caution">Этот экспериментальный режим может ускорить время компиляции, но используйте его с осторожностью.</string>
+    <string name="k2_compiler">Компилятор K2 для компиляции</string>
+    <string name="ssvm">SSVM для выполнения</string>
+    <string name="java_version">Версия Java</string>
+    <string name="java_version_desc">Выберите версию Java для компиляции</string>
+    <string name="additional_javac_flags">Дополнительные флаги Javac</string>
+    <string name="additional_javac_flags_desc">Дополнительные флаги для передачи в Javac</string>
+
+    <!-- Strings used for compilation -->
+    <string name="compiling_java">Компиляция Java-кода</string>
+    <string name="compiling_kotlin">Компиляция Kotlin-кода</string>
+    <string name="compiling_class_files_to_dex">Компиляция файлов классов в dex</string>
+    <string name="skipping_d8_ssvm_enabled">Пропуск компиляции D8, так как включена SSVM.</string>
+    <string name="assembling_jar">Сборка файлов классов в JAR</string>
+    <string name="failed_to_compile">Не удалось скомпилировать код %1$s.</string>
+    <string name="successfully_run">Успешно выполнено %1$s.</string>
+    <string name="bot_icon">Значок бота</string>
+    <string name="send_message">Отправить сообщение</string>
+    <string name="create_kotlin_class">Создайте Kotlin-класс</string>
+    <string name="delete">Удалить</string>
+    <string name="open_in_external_app">Открыть во внешнем приложении</string>
+    <string name="rename">Переименовать</string>
+    <string name="create_file">Создать файл</string>
+    <string name="create_folder">Создать папку</string>
+    <string name="create_java_class">Создать класс Java</string>
+
+    <string name="no_open_files">Нет открытых файлов</string>
+    <string name="no_open_files_desc">Попробуйте открыть файл файловым менеджером</string>
 </resources>

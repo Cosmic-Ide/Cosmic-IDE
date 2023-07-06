@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.editText
@@ -41,6 +42,11 @@ class CompilerSettings(private val activity: FragmentActivity) : SettingsProvide
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.outline_build_24,
+                activity.theme
+            )
             switch(PreferenceKeys.COMPILER_USE_FJFS) {
                 title = activity.getString(R.string.fast_jar_fs)
                 summary =

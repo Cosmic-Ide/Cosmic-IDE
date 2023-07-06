@@ -11,6 +11,7 @@ import android.app.UiModeManager
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.defaultOnSelectionChange
@@ -30,10 +31,20 @@ class AppearanceSettings(private val activity: FragmentActivity) : SettingsProvi
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.baseline_color_lens_24,
+                activity.theme
+            )
             singleChoice(PreferenceKeys.APP_THEME, themeItems) {
                 initialSelection = activity.resources.getStringArray(R.array.app_theme_entry_values)
                     .first() // auto
                 title = activity.getString(R.string.app_theme)
+                icon = ResourcesCompat.getDrawable(
+                    activity.resources,
+                    R.drawable.outline_dark_mode_24,
+                    activity.theme
+                )
                 defaultOnSelectionChange { newValue ->
                     val theme = getTheme(newValue)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

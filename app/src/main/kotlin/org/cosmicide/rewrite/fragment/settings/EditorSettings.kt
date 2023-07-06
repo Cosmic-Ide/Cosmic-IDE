@@ -7,15 +7,23 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
 import de.Maxr1998.modernpreferences.helpers.seekBar
 import de.Maxr1998.modernpreferences.helpers.switch
+import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.util.PreferenceKeys
 
-class EditorSettings : SettingsProvider {
+class EditorSettings(private val activity: FragmentActivity) : SettingsProvider {
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.baseline_mode_edit_24,
+                activity.theme
+            )
             seekBar(PreferenceKeys.EDITOR_FONT_SIZE) {
                 title = "Font size"
                 summary = "Set the font size for the editor"
@@ -35,7 +43,7 @@ class EditorSettings : SettingsProvider {
             switch(PreferenceKeys.EDITOR_EXP_JAVA_COMPLETION) {
                 title = "Experimental Java code completion"
                 summary = "Uses an experimental Java Completion Engine"
-                defaultValue = true
+                defaultValue = false
             }
 
             switch(PreferenceKeys.EDITOR_USE_SPACES) {
@@ -65,7 +73,7 @@ class EditorSettings : SettingsProvider {
             switch(PreferenceKeys.EDITOR_SCROLLBAR_SHOW) {
                 title = "Scrollbar"
                 summary = "If enabled, shows scrollbar in the editor"
-                defaultValue = false
+                defaultValue = true
             }
 
             switch(PreferenceKeys.QUICK_DELETE) {
@@ -78,7 +86,7 @@ class EditorSettings : SettingsProvider {
                 title = "Hardware acceleration"
                 summary =
                     "Enabling this may result in increased memory usage, but will speed up editor rendering"
-                defaultValue = false
+                defaultValue = true
             }
 
             switch(PreferenceKeys.EDITOR_NON_PRINTABLE_SYMBOLS_SHOW) {
@@ -95,7 +103,7 @@ class EditorSettings : SettingsProvider {
 
             switch(PreferenceKeys.EDITOR_DOUBLE_CLICK_CLOSE) {
                 title = "Close file on double click"
-                summary = "Close file on double click on the editor tab"
+                summary = "Close file on double click on the editor tab. Doesn't work for now."
                 defaultValue = false
             }
         }

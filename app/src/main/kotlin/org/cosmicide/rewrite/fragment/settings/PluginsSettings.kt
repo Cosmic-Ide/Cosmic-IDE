@@ -21,11 +21,17 @@ import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
 import org.cosmicide.rewrite.fragment.PluginListFragment
 import org.cosmicide.rewrite.util.PreferenceKeys
+import androidx.core.content.res.ResourcesCompat
 
 class PluginsSettings(private val activity: FragmentActivity) : SettingsProvider {
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.outline_extension_24,
+                activity.theme
+            )
             pref(PreferenceKeys.AVAILABLE_PLUGINS) {
                 title = "Available plugins"
                 summary = "View available plugins"

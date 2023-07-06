@@ -7,9 +7,9 @@
 
 package org.cosmicide.rewrite.fragment.settings
 
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import de.Maxr1998.modernpreferences.PreferenceScreen
-import de.Maxr1998.modernpreferences.helpers.onClick
 import de.Maxr1998.modernpreferences.helpers.multiChoice
 import de.Maxr1998.modernpreferences.helpers.singleChoice
 import de.Maxr1998.modernpreferences.preferences.choice.SelectionItem
@@ -34,6 +34,11 @@ class FormatterSettings(private val activity: FragmentActivity) : SettingsProvid
 
     override fun provideSettings(builder: PreferenceScreen.Builder) {
         builder.apply {
+            icon = ResourcesCompat.getDrawable(
+                activity.resources,
+                R.drawable.outline_edit_note_24,
+                activity.theme
+            )
             singleChoice(PreferenceKeys.FORMATTER_KTFMT_STYLE, ktfmtStyleItems) {
                 title = "Kotlin code formatter styles"
                 summary = "Choose a style for formatting Kotlin code"

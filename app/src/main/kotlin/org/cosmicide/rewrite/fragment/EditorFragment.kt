@@ -102,7 +102,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            private val isTabClicked = MutableLiveData<Boolean>(false)
+            private val isTabClicked = MutableLiveData(false)
             override fun onTabSelected(tab: TabLayout.Tab) {
                 handleTabSelected(tab)
             }
@@ -118,7 +118,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         })
 
         requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     if (binding.drawer.isOpen) {
@@ -214,7 +213,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         isTabClicked.value = true
         tab.select()
-        binding.root.postDelayed({ isTabClicked.value = false }, 10000) // doesnt work
+        binding.root.postDelayed({ isTabClicked.value = false }, 10000) // doesn't work
     }
 
     private fun handleFilesUpdate(files: List<File>) {

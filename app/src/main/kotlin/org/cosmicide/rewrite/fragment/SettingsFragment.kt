@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.BundleCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.Maxr1998.modernpreferences.Preference
@@ -36,7 +37,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         val appearanceSettings = AppearanceSettings(requireActivity())
-        val editorSettings = EditorSettings()
+        val editorSettings = EditorSettings(requireActivity())
         val formatterSettings = FormatterSettings(requireActivity())
         val compilerSettings = CompilerSettings(requireActivity())
         val pluginsSettings = PluginsSettings(requireActivity())
@@ -86,7 +87,20 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         }
 
         binding.preferencesView.adapter = preferencesAdapter
-        binding.toolbar.setNavigationOnClickListener { preferencesAdapter.goBack() }
+        binding.toolbar.setNavigationOnClickListener {
+            if (!preferencesAdapter.goBack()) {
+                parentFragmentManager.popBackStack()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (!preferencesAdapter.goBack()) {
+                        isEnabled = false
+                        parentFragmentManager.popBackStack()
+                    }
+                }
+            })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

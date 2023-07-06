@@ -43,7 +43,7 @@ open an issue or submit a pull request.
 If you appreciate the work that has been put into Cosmic IDE, you can donate to support the
 developers:
 
-[Donate Button](https://patreon.com/cosmicide)
+[![](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://patreon.com/cosmicide)
 
 ## Acknowledgement
 
@@ -70,6 +70,6 @@ Cosmic IDE Rewrite is licensed under the GNU GPL-v3 License.
 
 If you have any questions or feedback, please contact us at:
 
-[Discord](https://discord.gg/8Gu6YCq2eS)
-[Telegram](https://t.me/cosmicide)
-[Email Address]<purwarpranav80@gmail.com>
+- [Discord](https://discord.gg/8Gu6YCq2eS)
+- [Telegram](https://t.me/cosmicide)
+- [Email Address](mailto:purwarpranav80@gmail.com)

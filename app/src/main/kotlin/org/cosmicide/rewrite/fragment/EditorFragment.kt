@@ -21,6 +21,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
@@ -42,7 +43,6 @@ import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
-
 
 class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var project: Project
@@ -73,11 +73,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         binding.pager.apply {
             adapter = EditorAdapter(this@EditorFragment, fileViewModel)
             editorAdapter = adapter as EditorAdapter
-
-            TabLayoutMediator(binding.tabLayout, this, true, true) { tab, position ->
-                tab.text = fileViewModel.files.value!![position].name
-            }.attach()
         }
+
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                binding.pager.currentItem = tab!!.position
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                // Do nothing
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                binding.pager.currentItem = tab?.position ?: 0
+            }
+        })
 
         binding.included.refresher.apply {
             setOnRefreshListener {
@@ -106,12 +116,17 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
                 }
             })
+
+        TabLayoutMediator(binding.tabLayout, binding.pager, true, true) { tab, position ->
+            tab.text = fileViewModel.files.value!![position].name
+        }.attach()
     }
 
     private fun initViewModelListeners() {
         val indexedFiles = fileIndex.getFiles()
 
         fileViewModel.files.observe(viewLifecycleOwner) { files ->
+            editorAdapter.notifyDataSetChanged()
             handleFilesUpdate(files)
         }
 
@@ -124,6 +139,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
 
         fileViewModel.updateFiles(indexedFiles.toMutableList())
+        fileViewModel.setCurrentPosition(0)
         if (fileViewModel.files.value!!.isEmpty()) {
             binding.viewContainer.displayedChild = 1
         }
@@ -196,20 +212,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
     override fun onDestroyView() {
         for (i in 0 until binding.pager.adapter!!.itemCount) {
-            getFragment(i)?.save()
+            editorAdapter.getItem(i)?.save()
             fileIndex.putFiles(i, fileViewModel.files.value!!)
         }
         super.onDestroyView()
     }
 
 
-    fun getFragment(position: Int): EditorAdapter.CodeEditorFragment? {
-        if (editorAdapter.itemCount <= position) return null
-        return childFragmentManager.findFragmentByTag("ed$position") as EditorAdapter.CodeEditorFragment?
-    }
-
     fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
-        return getFragment(binding.pager.currentItem)
+        return editorAdapter.getItem(binding.pager.currentItem)
     }
 
     private fun configureToolbar() {
@@ -221,7 +232,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 Log.d("EditorFragment", "Tab count: ${binding.tabLayout.tabCount}")
                 for (i in 0 until editorAdapter.itemCount) {
                     Log.d("EditorFragment", "Saving file $i")
-                    getFragment(i - 1)?.save()
+                    editorAdapter.getItem(i - 1)?.save()
                 }
                 binding.drawer.open()
             }
@@ -239,12 +250,12 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     R.id.undo -> {
-                        getCurrentFragment()!!.editor.undo()
+                        getCurrentFragment()?.editor?.undo()
                         true
                     }
 
                     R.id.redo -> {
-                        getCurrentFragment()!!.editor.redo()
+                        getCurrentFragment()?.editor?.redo()
                         true
                     }
 
@@ -293,6 +304,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         parentFragmentManager.beginTransaction().apply {
                             add(R.id.fragment_container, ChatFragment())
                             addToBackStack(null)
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         }.commit()
                         true
                     }
@@ -304,7 +316,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun formatCodeAsync() {
-        val content = getCurrentFragment()!!.editor.text
+        val fragment = getCurrentFragment()
+        if (fragment == null) {
+            Snackbar.make(
+                binding.root, "No file selected", Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+        val content = fragment.editor.text
         val text = content.toString()
         lifecycleScope.launch(Dispatchers.IO) {
             try {

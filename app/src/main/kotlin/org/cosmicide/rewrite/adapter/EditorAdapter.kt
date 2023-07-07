@@ -36,8 +36,11 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     }
 
     override fun createFragment(position: Int): Fragment {
-        if (position >= itemCount) throw IndexOutOfBoundsException()
         return CodeEditorFragment(fileViewModel.files.value!![position])
+    }
+
+    fun getItem(position: Int): CodeEditorFragment? {
+        return fragment.childFragmentManager.findFragmentByTag("f$position") as CodeEditorFragment?
     }
 
     class CodeEditorFragment(val file: File) : Fragment() {
@@ -91,7 +94,7 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
                 }
 
                 "class" -> {
-                    editor.setEditorLanguage(TextMateLanguage.create("source.class", true))
+                    editor.setEditorLanguage(TextMateLanguage.create("source.java", true))
                 }
 
                 else -> {

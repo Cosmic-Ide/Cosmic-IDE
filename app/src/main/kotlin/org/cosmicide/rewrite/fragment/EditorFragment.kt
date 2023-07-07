@@ -7,8 +7,8 @@
 
 package org.cosmicide.rewrite.fragment
 
-import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -16,34 +16,25 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
-import io.github.rosemoe.sora.lang.EmptyLanguage
-import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmic.ide.dependency.resolver.getArtifact
-import org.cosmicide.build.Javap
-import org.cosmicide.editor.analyzers.EditorDiagnosticsMarker
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
+import org.cosmicide.rewrite.adapter.EditorAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
 import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
-import org.cosmicide.rewrite.editor.language.JavaLanguage
-import org.cosmicide.rewrite.editor.language.KotlinLanguage
-import org.cosmicide.rewrite.extension.setFont
 import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.FileSet
 import org.cosmicide.rewrite.treeview.FileTreeNodeGenerator
@@ -57,13 +48,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     private lateinit var project: Project
     private val fileIndex by lazy { FileIndex(project) }
     private val fileViewModel by activityViewModels<FileViewModel>()
+    private lateinit var editorAdapter: EditorAdapter
 
     override fun getViewBinding() = FragmentEditorBinding.inflate(layoutInflater)
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        setColorScheme()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -80,9 +67,17 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         project = ProjectHandler.getProject()!!
 
         configureToolbar()
-        setColorScheme()
         initViewModelListeners()
         initTreeView()
+
+        binding.pager.apply {
+            adapter = EditorAdapter(this@EditorFragment, fileViewModel)
+            editorAdapter = adapter as EditorAdapter
+
+            TabLayoutMediator(binding.tabLayout, this, true, true) { tab, position ->
+                tab.text = fileViewModel.files.value!![position].name
+            }.attach()
+        }
 
         binding.included.refresher.apply {
             setOnRefreshListener {
@@ -101,22 +96,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
         }
 
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            private val isTabClicked = MutableLiveData(false)
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                handleTabSelected(tab)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab) {
-                fileViewModel.currentFile?.writeText(binding.editor.text.toString())
-                binding.editor.setText("")
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                handleTabReselected(tab, isTabClicked)
-            }
-        })
-
         requireActivity().onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -124,7 +103,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         binding.drawer.close()
                     } else {
                         parentFragmentManager.popBackStack()
-                        onHidden()
                     }
                 }
             })
@@ -184,38 +162,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
     }
 
-    private fun handleTabSelected(tab: TabLayout.Tab) {
-        val file = fileViewModel.files.value?.get(tab.position) ?: return
-        val isBinary = file.extension == "class"
-
-        if (file.exists().not()) {
-            binding.tabLayout.removeTab(tab)
-        }
-        if (fileViewModel.currentPosition.value != tab.position) {
-            fileViewModel.setCurrentPosition(tab.position)
-        }
-        if (isBinary) {
-            binding.editor.setText(Javap.disassemble(file.absolutePath))
-            return
-        }
-
-        binding.editor.setText(fileViewModel.currentFile?.readText())
-        setEditorLanguage()
-    }
-
-    private fun handleTabReselected(tab: TabLayout.Tab, isTabClicked: MutableLiveData<Boolean>) {
-        if (isTabClicked.value == true) {
-            fileViewModel.removeFile(fileViewModel.files.value!![tab.position])
-            binding.tabLayout.removeTab(tab)
-            binding.editor.setText("")
-            return
-        }
-
-        isTabClicked.value = true
-        tab.select()
-        binding.root.postDelayed({ isTabClicked.value = false }, 10000) // doesn't work
-    }
-
     private fun handleFilesUpdate(files: List<File>) {
         val appearanceModel = ShapeAppearanceModel.builder().setAllCornerSizes(48f).build()
         binding.apply {
@@ -248,78 +194,39 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
     }
 
-    private fun setEditorLanguage() {
-        val file = fileViewModel.currentFile
-
-        when (file!!.extension) {
-            "java" -> {
-                if (binding.editor.editorLanguage is JavaLanguage) return
-                binding.editor.setEditorLanguage(JavaLanguage(binding.editor, project, file))
-                binding.editor.text.addContentListener(EditorDiagnosticsMarker.INSTANCE)
-                EditorDiagnosticsMarker.INSTANCE.init(binding.editor, file, project)
-            }
-
-            "kt" -> {
-                if (binding.editor.editorLanguage is KotlinLanguage) return
-                binding.editor.setEditorLanguage(KotlinLanguage(binding.editor, project, file))
-            }
-
-            "class" -> {
-                binding.editor.setEditorLanguage(TextMateLanguage.create("source.class", true))
-            }
-
-            else -> {
-                binding.editor.setEditorLanguage(EmptyLanguage())
-            }
-        }
-
-        if (file.extension != "java") {
-            binding.editor.text.removeContentListener(EditorDiagnosticsMarker.INSTANCE)
-        }
-
-        binding.editor.setFont()
-    }
-
-    private fun setColorScheme() {
-        binding.editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-    }
-
-
     override fun onDestroyView() {
-        saveFile()
-        fileViewModel.currentPosition.value?.let { pos ->
-            fileIndex.putFiles(pos, fileViewModel.files.value!!)
+        for (i in 0 until binding.pager.adapter!!.itemCount) {
+            getFragment(i)?.save()
+            fileIndex.putFiles(i, fileViewModel.files.value!!)
         }
         super.onDestroyView()
     }
 
-    fun onHidden() {
-        saveFile()
-        fileViewModel.currentPosition.value?.let { pos ->
-            fileIndex.putFiles(pos, fileViewModel.files.value!!)
-        }
-        binding.tabLayout.removeAllTabs()
+
+    fun getFragment(position: Int): EditorAdapter.CodeEditorFragment? {
+        if (editorAdapter.itemCount <= position) return null
+        return childFragmentManager.findFragmentByTag("ed$position") as EditorAdapter.CodeEditorFragment?
     }
 
-    private fun saveFile() {
-        fileViewModel.currentFile?.let { file ->
-            if (file.extension == "class") return
-            if (file.exists().not()) {
-                file.createNewFile()
-            }
-            file.writeText(binding.editor.text.toString())
-        }
+    fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
+        return getFragment(binding.pager.currentItem)
     }
 
     private fun configureToolbar() {
         binding.toolbar.apply {
             title = project.name
             setNavigationOnClickListener {
-                binding.editor.hideEditorWindows()
+                Log.d("EditorFragment", "Saving files")
+                Log.d("EditorFragment", "Adapter count: ${editorAdapter.itemCount}")
+                Log.d("EditorFragment", "Tab count: ${binding.tabLayout.tabCount}")
+                for (i in 0 until editorAdapter.itemCount) {
+                    Log.d("EditorFragment", "Saving file $i")
+                    getFragment(i - 1)?.save()
+                }
                 binding.drawer.open()
             }
             setOnMenuItemClickListener {
-                saveFile()
+                getCurrentFragment()?.save()
                 when (it.itemId) {
                     R.id.action_compile -> {
                         navigateToCompileInfoFragment()
@@ -332,16 +239,17 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     R.id.undo -> {
-                        binding.editor.undo()
+                        getCurrentFragment()!!.editor.undo()
                         true
                     }
 
                     R.id.redo -> {
-                        binding.editor.redo()
+                        getCurrentFragment()!!.editor.redo()
                         true
                     }
 
                     R.id.action_format -> {
+                        if (editorAdapter.itemCount == 0) return@setOnMenuItemClickListener true
                         formatCodeAsync()
                         true
                     }
@@ -396,8 +304,8 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun formatCodeAsync() {
-        val text = binding.editor.text.toString()
-        val content = binding.editor.text
+        val content = getCurrentFragment()!!.editor.text
+        val text = content.toString()
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val formatted = when (fileViewModel.currentFile?.extension) {
@@ -480,7 +388,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             when (it.itemId) {
                 R.id.close_tab -> {
                     fileViewModel.removeFile(fileViewModel.files.value!![position])
-                    binding.editor.setText("")
                 }
 
                 R.id.close_all_tab -> fileViewModel.removeAll()

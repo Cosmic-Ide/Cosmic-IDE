@@ -125,6 +125,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+    implementation("androidx.viewpager2:viewpager2:1.1.0-beta02")
 
     implementation("io.github.Rosemoe.sora-editor:editor:0.21.1")
     implementation("io.github.Rosemoe.sora-editor:language-textmate:0.21.1")

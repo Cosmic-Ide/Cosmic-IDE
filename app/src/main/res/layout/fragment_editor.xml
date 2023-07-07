@@ -49,8 +49,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/app_bar">
 
-            <org.cosmicide.rewrite.editor.IdeEditor
-                android:id="@+id/editor"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

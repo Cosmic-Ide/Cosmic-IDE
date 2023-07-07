@@ -40,7 +40,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics-ktx") {
         exclude(group = "javax.inject", module = "javax.inject")
     }
-    implementation("androidx.databinding:viewbinding:8.0.1")
+    implementation("androidx.databinding:viewbinding:8.0.2")
     api("androidx.preference:preference-ktx:1.2.0")
 
     implementation("com.google.android.material:material:1.9.0")

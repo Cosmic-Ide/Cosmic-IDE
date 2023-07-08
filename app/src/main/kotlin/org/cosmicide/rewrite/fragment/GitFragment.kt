@@ -9,15 +9,18 @@ package org.cosmicide.rewrite.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dev.pranav.jgit.api.Author
 import dev.pranav.jgit.tasks.Credentials
 import dev.pranav.jgit.tasks.Repository
 import dev.pranav.jgit.tasks.createRepository
+import dev.pranav.jgit.tasks.execGit
 import dev.pranav.jgit.tasks.toRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,9 +29,12 @@ import org.cosmicide.rewrite.adapter.GitAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentGitBinding
+import org.cosmicide.rewrite.databinding.GitCommandBinding
 import org.cosmicide.rewrite.util.ProjectHandler
 import org.eclipse.jgit.transport.URIish
+import java.io.OutputStream
 import java.io.OutputStreamWriter
+import java.io.PrintStream
 
 class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
@@ -72,9 +78,10 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 .setMessage("Do you want to set it now?").setCancelable(false)
                 .setPositiveButton("Yes") { _, _ ->
                     parentFragmentManager.popBackStack()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, SettingsFragment()).addToBackStack(null)
-                        .commit()
+                    parentFragmentManager.beginTransaction().apply {
+                        replace(R.id.fragment_container, SettingsFragment()).addToBackStack(null)
+                        setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    }.commit()
                 }.setNegativeButton("No") { _, _ ->
                     parentFragmentManager.popBackStack()
                 }.show()
@@ -98,6 +105,7 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
         if (::repository.isInitialized) {
             val remotes = repository.git.remoteList()
+            Log.d("remotes", remotes.toString())
             if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
                 binding.remote.setText(remotes[0].pushURIs[0].toString())
             }
@@ -118,7 +126,17 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         }
 
         binding.pull.setOnClickListener {
-            repository.pull(OutputStreamWriter(System.out), binding.rebase.isChecked)
+            lifecycleScope.launch(Dispatchers.IO) {
+                repository.git.remoteAdd {
+                    setName("origin")
+                    setUri(URIish(binding.remote.text.toString()))
+                }
+                repository.pull(OutputStreamWriter(System.out), binding.rebase.isChecked)
+                lifecycleScope.launch(Dispatchers.Main) {
+                    (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
+                    Snackbar.make(binding.root, "Pulled", Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
 
         binding.commit.setOnClickListener {
@@ -155,6 +173,32 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                     }
                 }
             }
+        }
+
+        binding.toolbar.setOnMenuItemClickListener {
+            if (it.itemId == R.id.custom_command) {
+                val binding = GitCommandBinding.inflate(layoutInflater)
+                BottomSheetDialog(requireContext()).apply {
+                    setContentView(binding.root)
+                    binding.execute.setOnClickListener {
+                        binding.gitOutput.text = ""
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            ProjectHandler.getProject()!!.root.execGit(
+                                binding.gitCommand.text.toString().split(" ").toMutableList(),
+                                PrintStream(object : OutputStream() {
+                                    override fun write(b: Int) {
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            binding.gitOutput.append(b.toChar().toString())
+                                        }
+                                    }
+                                })
+                            )
+                        }
+                    }
+                    show()
+                }
+            }
+            true
         }
     }
 

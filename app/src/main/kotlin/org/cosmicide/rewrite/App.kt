@@ -16,6 +16,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import com.itsaky.androidide.config.JavacConfigProvider
+import de.robv.android.xposed.XC_MethodHook
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
@@ -24,6 +25,8 @@ import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolve
 import org.cosmicide.rewrite.common.Analytics
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.fragment.PluginsFragment
+import org.cosmicide.rewrite.plugin.api.Hook
+import org.cosmicide.rewrite.plugin.api.HookManager
 import org.cosmicide.rewrite.util.FileUtil
 import org.cosmicide.rewrite.util.MultipleDexClassLoader
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -60,6 +63,16 @@ class App : Application() {
         FileUtil.init(externalStorage)
 
         loadPlugins()
+
+        HookManager.registerHook(object : Hook(
+            method = "exit",
+            argTypes = arrayOf(Int::class.java),
+            type = System::class.java
+        ) {
+            override fun before(param: XC_MethodHook.MethodHookParam) {
+                param.result = null
+            }
+        })
 
         if (BuildConfig.DEBUG) {
             StrictMode.setVmPolicy(

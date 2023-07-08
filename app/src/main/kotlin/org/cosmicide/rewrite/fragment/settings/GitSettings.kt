@@ -18,10 +18,12 @@ class GitSettings : SettingsProvider {
             editText(PreferenceKeys.GIT_USERNAME) {
                 title = "Username"
                 defaultValue = ""
+                summary = "Enter your username here. This is required to push to GitHub"
             }
             editText(PreferenceKeys.GIT_EMAIL) {
                 title = "Email"
                 defaultValue = ""
+                summary = "Enter your email address here. This is required to push to GitHub"
             }
             editText(PreferenceKeys.GIT_API_KEY) {
                 title = "Personal Access Token"

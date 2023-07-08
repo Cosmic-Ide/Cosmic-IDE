@@ -23,5 +23,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit.pgm:6.6.0.202305301015-r") {
+        exclude("net.java.dev.jna", "jna-platform")
+        exclude("net.java.dev.jna", "jna")
+        exclude("commons-logging", "commons-logging")
+    }
     implementation("com.github.sya-ri:kgit:1.0.5")
 }

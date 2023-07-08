@@ -77,6 +77,7 @@ android {
             "META-INF/eclipse.inf",
             "META-INF/CHANGES",
             "META-INF/README.md",
+            "META-INF/DEPENDENCIES",
             "about_files/LICENSE-2.0.txt",
             "META-INF/AL2.0",
             "META-INF/LGPL2.1",

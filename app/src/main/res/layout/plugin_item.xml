@@ -8,19 +8,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="?listPreferredItemHeightLarge"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
-    <com.google.android.material.checkbox.MaterialCheckBox
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        style="@style/Widget.Material3.CompoundButton.MaterialSwitch"
         android:id="@+id/switch1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:checked="false"
-        android:layoutDirection="rtl"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textSize="20sp"
         tools:text="Plugin name" />
@@ -38,5 +37,6 @@
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:layout_marginTop="8dp"
         android:layout_marginHorizontal="32dp" />
 </LinearLayout>

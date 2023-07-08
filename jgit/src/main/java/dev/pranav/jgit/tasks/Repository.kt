@@ -10,10 +10,12 @@ package dev.pranav.jgit.tasks
 import com.github.syari.kgit.KGit
 import dev.pranav.jgit.api.Author
 import org.eclipse.jgit.lib.TextProgressMonitor
+import org.eclipse.jgit.pgm.Main
 import org.eclipse.jgit.revwalk.RevCommit
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
+import java.io.PrintStream
 import java.io.Writer
 import java.util.logging.Logger
 
@@ -103,7 +105,20 @@ fun File.createRepository(): Repository {
         setDirectory(file)
     }
     logger.info("Created repository at ${file.absolutePath}")
+    logger.info("Creating main branch")
+    git.branchCreate {
+        setName("main")
+    }
+    logger.info("Created main branch")
     return Repository(git)
+}
+
+fun File.execGit(args: MutableList<String>, writer: PrintStream) {
+    System.setErr(writer)
+    System.setOut(writer)
+    args.add(0, "--git-dir")
+    args.add(1, this.absolutePath)
+    Main.main(args.toTypedArray())
 }
 
 val logger = Logger.getLogger("Repository")

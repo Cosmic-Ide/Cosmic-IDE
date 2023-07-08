@@ -40,6 +40,11 @@ object PreferenceKeys {
     const val FORMATTER_GJF_STYLE = "google_java_formatter_style"
     const val FORMATTER_GJF_OPTIONS = "google_java_formatter_options"
 
+    // Git
+    const val GIT_USERNAME = "git_username"
+    const val GIT_EMAIL = "git_email"
+    const val GIT_API_KEY = "git_api_key"
+
     // Plugins
     const val AVAILABLE_PLUGINS = "available_plugins"
     const val INSTALLED_PLUGINS = "installed_plugins"

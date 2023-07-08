@@ -41,6 +41,7 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
         val formatterSettings = FormatterSettings(requireActivity())
         val compilerSettings = CompilerSettings(requireActivity())
         val pluginsSettings = PluginsSettings(requireActivity())
+        val gitSettings = GitSettings()
 
         val screen = screen(requireContext()) {
             subScreen {
@@ -72,6 +73,12 @@ class SettingsFragment : BaseBindingFragment<FragmentSettingsBinding>() {
                 title = "Plugins"
                 summary = "Explore and install plugins to extend the functionality of the IDE"
                 pluginsSettings.provideSettings(this)
+            }
+            subScreen {
+                collapseIcon = true
+                title = "Git"
+                summary = "Configure Git integration"
+                gitSettings.provideSettings(this)
             }
         }
 

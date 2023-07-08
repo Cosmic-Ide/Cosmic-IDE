@@ -97,6 +97,15 @@ object Prefs {
     val experimentalJavaCompletion: Boolean
         get() = prefs.getBoolean("experimental_java_completion", false)
 
+    val gitUsername: String
+        get() = prefs.getString("git_username", "") ?: ""
+
+    val gitEmail: String
+        get() = prefs.getString("git_email", "") ?: ""
+
+    val gitApiKey: String
+        get() = prefs.getString("git_api_key", "") ?: ""
+
     val pluginRepository: String
         get() = prefs.getString(
             "plugin_repository",

@@ -80,4 +80,14 @@
 
     <string name="no_open_files">No open files</string>
     <string name="no_open_files_desc">Try opening the file with a file manager</string>
+    <string name="commit_message">Commit Message</string>
+    <string name="commit">Commit</string>
+    <string name="push">Push</string>
+    <string name="remote_repository_url">Remote Repository URL</string>
+    <string name="format_group_artifact_version">Format: group:artifact:version</string>
+    <string name="enter_dependency">Enter Dependency</string>
+    <string name="push_to_remote">Push to remote</string>
+    <string name="pull_from_remote">Pull from remote</string>
+    <string name="rebase">Rebase</string>
+    <string name="pull">Pull</string>
 </resources>

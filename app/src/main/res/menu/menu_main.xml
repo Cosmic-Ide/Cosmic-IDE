@@ -45,4 +45,8 @@
         android:id="@+id/action_chat"
         android:title="@string/action_chat" />
 
+    <item
+        android:id="@+id/action_git"
+        android:title="Git" />
+
 </menu>

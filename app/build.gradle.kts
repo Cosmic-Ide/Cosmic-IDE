@@ -132,6 +132,9 @@ dependencies {
     implementation("io.github.dingyi222666:treeview:1.2.1")
     implementation("io.github.itsaky:nb-javac-android:17.0.0.3")
 
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
+    implementation("com.github.sya-ri:kgit:1.0.5")
+
     // markwon
     val markwon_version = "4.6.2"
     implementation("io.noties.markwon:core:$markwon_version")
@@ -159,6 +162,7 @@ dependencies {
     implementation(projects.feature.project)
     implementation(projects.kotlinc)
     implementation(projects.util)
+    implementation(projects.jgit)
 
     testImplementation("junit:junit:4.13.2")
 }

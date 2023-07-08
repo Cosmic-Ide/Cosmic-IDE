@@ -8,7 +8,6 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -23,7 +22,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:nestedScrollingEnabled="true">
 
         <LinearLayout
@@ -35,19 +34,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
-                tools:text="Enter Dependency" />
+                android:text="@string/enter_dependency" />
 
-            <EditText
-                android:id="@+id/dependency"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:inputType="textNoSuggestions"
-                android:textAppearance="?attr/textAppearanceBody1"
-                tools:hint="Example: com.github.Cosmic-Ide:DependencyResolver:6ba20bb748" />
+                android:hint="@string/format_group_artifact_version">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dependency"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:inputType="textNoSuggestions"
+                    android:textAppearance="?attr/textAppearanceBody1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.TonalButton"
                 android:id="@+id/download"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -309,6 +309,15 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
+                    R.id.action_git -> {
+                        parentFragmentManager.beginTransaction().apply {
+                            add(R.id.fragment_container, GitFragment())
+                            addToBackStack(null)
+                            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        }.commit()
+                        true
+                    }
+
                     else -> false
                 }
             }

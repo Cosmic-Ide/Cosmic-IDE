@@ -24,7 +24,6 @@
 package com.tyron.kotlin.completion
 
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.CharsetToolkit
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.impl.PsiFileFactoryImpl
@@ -32,6 +31,7 @@ import com.intellij.testFramework.LightVirtualFile
 import org.jetbrains.kotlin.idea.KotlinLanguage
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
+import java.nio.charset.StandardCharsets.UTF_8
 
 class KotlinFile(val name: String, val kotlinFile: KtFile) {
 
@@ -65,7 +65,7 @@ class KotlinFile(val name: String, val kotlinFile: KtFile) {
                             if (name.endsWith(".kt")) name else "$name.kt",
                             KotlinLanguage.INSTANCE,
                             content
-                        ).apply { charset = CharsetToolkit.UTF8_CHARSET },
+                        ).apply { charset = UTF_8 },
                         KotlinLanguage.INSTANCE, true, false
                     ) as KtFile
             )

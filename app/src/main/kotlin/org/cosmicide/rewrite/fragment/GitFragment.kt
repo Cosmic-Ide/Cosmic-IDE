@@ -57,12 +57,8 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 .setMessage("Do you want to initialize a new repository?").setCancelable(false)
                 .setPositiveButton("Yes") { _, _ ->
                     lifecycleScope.launch(Dispatchers.IO) {
-                        repository = root.createRepository()
-                        repository.addAll()
-                        repository.commit(
-                            getAuthor(),
-                            "Initial commit"
-                        )
+                        repository =
+                            root.createRepository(Author(Prefs.gitUsername, Prefs.gitEmail))
                         lifecycleScope.launch(Dispatchers.Main) {
                             (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                             Snackbar.make(binding.root, "Committed", Snackbar.LENGTH_SHORT).show()

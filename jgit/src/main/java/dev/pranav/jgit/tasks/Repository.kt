@@ -17,7 +17,6 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 import java.io.PrintStream
 import java.io.Writer
-import java.util.logging.Logger
 
 class Repository(val git: KGit) {
 
@@ -39,7 +38,7 @@ class Repository(val git: KGit) {
         return if (latestCommit != null) {
             git.log().toList()
         } else {
-            logger.warning("No commits found")
+            println("No commits found")
             emptyList()
         }
     }
@@ -88,28 +87,39 @@ fun File.toRepository(): Repository {
 
 fun File.cloneRepository(url: String, writer: Writer): Repository {
     val file = this
-    logger.info("Cloning repository from $url to ${file.absolutePath}")
+    println("Cloning repository from $url to ${file.absolutePath}")
     val git = KGit.cloneRepository {
         setURI(url)
         setGitDir(file)
         setProgressMonitor(TextProgressMonitor(writer))
     }
-    logger.info("Cloned repository from $url to ${file.absolutePath}")
+    println("Cloned repository from $url to ${file.absolutePath}")
     return Repository(git)
 }
 
-fun File.createRepository(): Repository {
+fun File.createRepository(author: Author): Repository {
     val file = this
-    logger.info("Creating repository at ${file.absolutePath}")
+    println("Creating repository at ${file.absolutePath}")
     val git = KGit.init {
         setDirectory(file)
+        setGitDir(file.resolve(".git"))
+        setBare(false)
     }
-    logger.info("Created repository at ${file.absolutePath}")
-    logger.info("Creating main branch")
+    println("Created repository at ${file.absolutePath}")
+    println("Creating initial commit")
+    git.add {
+        addFilepattern(".")
+    }
+    git.commit {
+        setAuthor(author.name, author.email)
+        message = "Initial commit"
+    }
+    println("Created initial commit")
+    println("Creating main branch")
     git.branchCreate {
         setName("main")
     }
-    logger.info("Created main branch")
+    println("Created main branch")
     return Repository(git)
 }
 
@@ -121,4 +131,3 @@ fun File.execGit(args: MutableList<String>, writer: PrintStream) {
     Main.main(args.toTypedArray())
 }
 
-val logger = Logger.getLogger("Repository")

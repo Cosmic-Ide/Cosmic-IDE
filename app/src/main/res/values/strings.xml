@@ -94,4 +94,6 @@
     <string name="execute_custom_command_with_jgit">Execute custom command with JGit</string>
     <string name="enter_jgit_command">Enter JGit command</string>
     <string name="execute">Execute</string>
+    <string name="add_all">Add all</string>
+    <string name="staging_area">Staging Area</string>
 </resources>

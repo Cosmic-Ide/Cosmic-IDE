@@ -44,7 +44,7 @@ class Repository(val git: KGit) {
     }
 
     fun addAll() {
-        addDirectory(".")
+        add(".")
     }
 
     fun commit(author: Author, commit: String) {
@@ -54,7 +54,7 @@ class Repository(val git: KGit) {
         }
     }
 
-    fun addDirectory(directory: String) {
+    fun add(directory: String) {
         git.add {
             addFilepattern(directory)
         }
@@ -71,8 +71,7 @@ class Repository(val git: KGit) {
         git.push {
             setCredentialsProvider(
                 UsernamePasswordCredentialsProvider(
-                    creds.username,
-                    creds.password
+                    creds.username, creds.password
                 )
             )
             progressMonitor = TextProgressMonitor(writer)

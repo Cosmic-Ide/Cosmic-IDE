@@ -24,13 +24,16 @@ import dev.pranav.jgit.tasks.execGit
 import dev.pranav.jgit.tasks.toRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.GitAdapter
+import org.cosmicide.rewrite.adapter.StagingAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.common.Prefs
 import org.cosmicide.rewrite.databinding.FragmentGitBinding
 import org.cosmicide.rewrite.databinding.GitCommandBinding
 import org.cosmicide.rewrite.util.ProjectHandler
+import org.eclipse.jgit.lib.Config
 import org.eclipse.jgit.transport.URIish
 import java.io.OutputStream
 import java.io.OutputStreamWriter
@@ -89,21 +92,44 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             layoutManager = LinearLayoutManager(context)
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        binding.staging.apply {
+            adapter = StagingAdapter(ProjectHandler.getProject()!!.root.absolutePath)
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        catchException {
             if (!::repository.isInitialized) {
-                return@launch
+                return@catchException
             }
             val commits = repository.getCommitList()
-            lifecycleScope.launch(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
                 (binding.recyclerview.adapter as GitAdapter).updateCommits(commits)
             }
         }
 
+        if (repository.isClean()) {
+            binding.commit.isEnabled = false
+            binding.commit.alpha = 0.5f
+        } else {
+            (binding.staging.adapter as StagingAdapter).updateStatus(repository.git.status())
+        }
+
         if (::repository.isInitialized) {
-            val remotes = repository.git.remoteList()
-            Log.d("remotes", remotes.toString())
-            if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
-                binding.remote.setText(remotes[0].pushURIs[0].toString())
+            catchException {
+                val remotes = repository.git.remoteList()
+                Log.d("remotes", remotes.toString())
+                if (remotes.isNotEmpty() && remotes[0].pushURIs.isNotEmpty()) {
+                    binding.remote.setText(remotes[0].pushURIs[0].toString())
+                }
+            }
+        }
+
+        binding.addAll.setOnClickListener {
+            catchException {
+                for (file in (binding.staging.adapter as StagingAdapter).files) {
+                    repository.add(file.path)
+                }
+                (binding.staging.adapter as StagingAdapter).updateStatus(repository.git.status())
             }
         }
 
@@ -111,7 +137,12 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             if (!hasFocus) {
                 val remote = binding.remote.text.toString()
                 if (remote.isNotEmpty()) {
-                    lifecycleScope.launch(Dispatchers.IO) {
+                    catchException {
+                        Config().apply {
+                            setString("user", null, "name", Prefs.gitUsername)
+                            setString("user", null, "email", Prefs.gitEmail)
+                            setString("remote", "origin", "url", remote)
+                        }
                         repository.git.remoteAdd {
                             setName("origin")
                             setUri(URIish(remote))
@@ -122,13 +153,13 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         }
 
         binding.pull.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
+            catchException {
                 repository.git.remoteAdd {
                     setName("origin")
                     setUri(URIish(binding.remote.text.toString()))
                 }
                 repository.pull(OutputStreamWriter(System.out), binding.rebase.isChecked)
-                lifecycleScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                     Snackbar.make(binding.root, "Pulled", Snackbar.LENGTH_SHORT).show()
                 }
@@ -136,17 +167,16 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
         }
 
         binding.commit.setOnClickListener {
-            if (repository.isClean()) {
+            if (repository.git.status().hasUncommittedChanges().not()) {
                 Snackbar.make(binding.root, "Nothing to commit", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            repository.addAll()
-            lifecycleScope.launch(Dispatchers.IO) {
+            catchException {
                 repository.commit(
                     getAuthor(),
                     binding.commitMessage.text.toString()
                 )
-                lifecycleScope.launch(Dispatchers.Main) {
+                withContext(Dispatchers.Main) {
                     (binding.recyclerview.adapter as GitAdapter).updateCommits(repository.getCommitList())
                     Snackbar.make(binding.root, "Committed", Snackbar.LENGTH_SHORT).show()
                 }
@@ -155,16 +185,16 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
 
         binding.push.setOnClickListener {
             binding.remote.text.toString().let { remote ->
-                repository.git.remoteAdd {
-                    setName("origin")
-                    setUri(URIish(remote))
-                }
-                lifecycleScope.launch(Dispatchers.IO) {
+                catchException {
+                    repository.git.remoteAdd {
+                        setName("origin")
+                        setUri(URIish(remote))
+                    }
                     repository.push(
                         OutputStreamWriter(System.out),
                         Credentials(Prefs.gitUsername, Prefs.gitApiKey)
                     )
-                    lifecycleScope.launch(Dispatchers.Main) {
+                    withContext(Dispatchers.Main) {
                         Snackbar.make(binding.root, "Pushed", Snackbar.LENGTH_SHORT).show()
                     }
                 }
@@ -195,6 +225,23 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
                 }
             }
             true
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        repository.git.close()
+    }
+
+    fun catchException(code: suspend () -> Unit) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                code()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Snackbar.make(binding.root, e.message.toString(), Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

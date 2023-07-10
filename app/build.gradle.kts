@@ -11,6 +11,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 android {
@@ -105,6 +106,7 @@ fun getGitCommit(): String {
 
 dependencies {
     implementation("com.android.tools:r8:8.0.40")
+    implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("com.android.tools.smali:smali-dexlib2:3.0.3")
     implementation("com.airbnb.android:lottie:6.0.1")
     implementation("com.github.Cosmic-Ide:DependencyResolver:7fd2291213")

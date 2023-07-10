@@ -104,7 +104,8 @@ class App : Application() {
             HiddenApiBypass.addHiddenApiExemptions("Lsun/misc/Unsafe;")
         }
 
-        DynamicColors.applyToActivitiesIfAvailable(this)
+       DynamicColors.applyToActivitiesIfAvailable(this)
+
 
         extractFiles()
         disableModules()
@@ -145,13 +146,10 @@ class App : Application() {
     }
 
     fun extractFiles() {
-        extractAsset("index.json", FileUtil.dataDir.resolve("index.json"))
-        extractAsset("android.jar", FileUtil.classpathDir.resolve("android.jar"))
         extractAsset(
             "kotlin-stdlib-1.8.0.jar",
             FileUtil.classpathDir.resolve("kotlin-stdlib-1.8.0.jar")
         )
-        extractAsset("rt.jar", FileUtil.dataDir.resolve("rt.jar"))
     }
 
     fun extractAsset(assetName: String, targetFile: File) {
@@ -211,8 +209,14 @@ class App : Application() {
             val dir = FileUtil.pluginDir.resolve(plugin.name)
             val pluginFile =
                 dir.resolve("classes.dex")
-            if (dir.resolve("config.json").exists().not()) return@forEach
-            if (pluginFile.exists().not()) return@forEach
+            if (dir.resolve("config.json").exists().not()) {
+                Log.e("Plugin", "Plugin ${plugin.name} is missing config.json")
+                return@forEach
+            }
+            if (pluginFile.exists().not()) {
+                Log.e("Plugin", "Plugin ${plugin.name} is missing classes.dex")
+                return@forEach
+            }
             runCatching {
                 loader.loadDex(pluginFile)
                 val className = plugin.name.lowercase() + ".Main"

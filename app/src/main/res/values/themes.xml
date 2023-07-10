@@ -8,6 +8,11 @@
 <resources>
 
     <style name="Base.Theme.CosmicIDERewrite" parent="Theme.Material3.Light.NoActionBar">
+
+        <item name="android:navigationBarColor">
+            @android:color/transparent
+        </item>
+
         <item name="android:colorBackground">@color/light_colorBackground</item>
         <item name="android:fontFamily">@font/inter</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
@@ -51,5 +56,6 @@
         <item name="windowSplashScreenBackground">@color/logo_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_animated</item>
         <item name="postSplashScreenTheme">@style/Theme.CosmicIDERewrite</item>
+        <item name="windowSplashScreenIconBackgroundColor">?colorSurface</item>
     </style>
 </resources>

@@ -96,11 +96,11 @@ class GitFragment : BaseBindingFragment<FragmentGitBinding>() {
             adapter = StagingAdapter(ProjectHandler.getProject()!!.root.absolutePath)
             layoutManager = LinearLayoutManager(context)
         }
+        if (!::repository.isInitialized) {
+            return
+        }
 
         catchException {
-            if (!::repository.isInitialized) {
-                return@catchException
-            }
             val commits = repository.getCommitList()
             withContext(Dispatchers.Main) {
                 (binding.recyclerview.adapter as GitAdapter).updateCommits(commits)

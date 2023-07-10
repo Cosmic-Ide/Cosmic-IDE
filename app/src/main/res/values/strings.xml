@@ -96,4 +96,5 @@
     <string name="execute">Execute</string>
     <string name="add_all">Add all</string>
     <string name="staging_area">Staging Area</string>
+    <string name="install_required_resources">Install required resources</string>
 </resources>

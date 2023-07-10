@@ -25,10 +25,6 @@ class ProjectViewModel : ViewModel() {
     private val _projects = MutableLiveData<List<Project>>()
     val projects: LiveData<List<Project>> = _projects
 
-    init {
-        loadProjects()
-    }
-
     fun loadProjects() {
         viewModelScope.launch(Dispatchers.IO) {
             val projectsList = FileUtil.projectDir.listFiles { file -> file.isDirectory }

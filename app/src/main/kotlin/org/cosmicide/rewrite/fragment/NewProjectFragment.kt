@@ -9,6 +9,7 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Language
@@ -29,6 +30,11 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.setOnApplyWindowInsetsListener { view, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            insets
+        }
 
         binding.btnCreate.setOnClickListener {
             val projectName = binding.projectName.text.toString()

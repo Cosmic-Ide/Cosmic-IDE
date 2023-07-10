@@ -8,26 +8,50 @@
 package org.cosmicide.rewrite
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentTransaction
 import org.cosmicide.rewrite.databinding.ActivityMainBinding
+import org.cosmicide.rewrite.fragment.InstallResourcesFragment
 import org.cosmicide.rewrite.fragment.ProjectFragment
+import org.cosmicide.rewrite.util.ResourceUtil
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
 
-        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = insets.left
+                topMargin = insets.top
+                rightMargin = insets.right
+                bottomMargin = insets.bottom
+            }
 
-        if (supportFragmentManager.findFragmentByTag("ProjectFragment") == null) {
+            WindowInsetsCompat.CONSUMED
+        }
+
+        setContentView(binding.root)
+        if (ResourceUtil.missingResources().isNotEmpty()) {
             supportFragmentManager.beginTransaction().apply {
-                add(binding.fragmentContainer.id, ProjectFragment(), "ProjectFragment")
-                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                add(binding.fragmentContainer.id, InstallResourcesFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            }.commit()
+        } else {
+            supportFragmentManager.beginTransaction().apply {
+                add(binding.fragmentContainer.id, ProjectFragment())
+                setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             }.commit()
         }
     }

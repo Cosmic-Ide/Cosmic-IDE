@@ -175,7 +175,9 @@ class ProjectOutputFragment : BaseBindingFragment<FragmentCompileInfoBinding>() 
         }.onSuccess { clazz ->
             isRunning = true
             System.setProperty("project.dir", project.root.absolutePath)
-            if (clazz.declaredMethods.any { it.name == "main" }) {
+            if (clazz.declaredMethods.any {
+                    it.name == "main" && it.parameterCount == 1 && it.parameterTypes[0] == Array<String>::class.java
+                }) {
                 val method = clazz.getDeclaredMethod("main", Array<String>::class.java)
                 if (Modifier.isStatic(method.modifiers)) {
                     method.invoke(null, arrayOf<String>())

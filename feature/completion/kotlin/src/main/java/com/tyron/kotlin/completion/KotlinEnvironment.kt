@@ -87,7 +87,7 @@ data class KotlinEnvironment(
     val classpath: List<File>,
     val kotlinEnvironment: KotlinCoreEnvironment
 ) {
-    private val kotlinFiles = mutableMapOf<String, KotlinFile>()
+    val kotlinFiles = mutableMapOf<String, KotlinFile>()
 
     fun updateKotlinFile(name: String, contents: String): KotlinFile {
         val kotlinFile = KotlinFile.from(kotlinEnvironment.project, name, contents)

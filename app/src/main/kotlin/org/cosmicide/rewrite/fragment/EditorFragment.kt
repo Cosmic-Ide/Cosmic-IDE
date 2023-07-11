@@ -23,16 +23,20 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dev.pranav.navigation.NavigationProvider
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.cosmic.ide.dependency.resolver.getArtifact
+import org.cosmicide.project.Language
 import org.cosmicide.project.Project
 import org.cosmicide.rewrite.R
 import org.cosmicide.rewrite.adapter.EditorAdapter
+import org.cosmicide.rewrite.adapter.NavAdapter
 import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentEditorBinding
+import org.cosmicide.rewrite.databinding.NavigationElementsBinding
 import org.cosmicide.rewrite.databinding.NewDependencyBinding
 import org.cosmicide.rewrite.editor.formatter.GoogleJavaFormat
 import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
@@ -40,6 +44,7 @@ import org.cosmicide.rewrite.model.FileViewModel
 import org.cosmicide.rewrite.treeview.FileSet
 import org.cosmicide.rewrite.treeview.FileTreeNodeGenerator
 import org.cosmicide.rewrite.treeview.ViewBinder
+import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
@@ -318,9 +323,73 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                         true
                     }
 
+                    R.id.nav_items -> {
+                        showNavigationeElements()
+                        true
+                    }
+
                     else -> false
                 }
             }
+        }
+    }
+
+    private fun showNavigationeElements() {
+        val editor = getCurrentFragment()
+        if (editor == null) {
+            Snackbar.make(
+                binding.root, "Open a file first", Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val language = when (editor.file.extension) {
+            "java" -> Language.Java
+            // TODO: Add support for kotlin
+            else -> {
+                Snackbar.make(
+                    binding.root, "Unsupported language", Snackbar.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+
+        val psiFile =
+            FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
+
+        val classes = psiFile.classes
+        if (classes.isEmpty()) {
+            Snackbar.make(
+                binding.root, "No classes found", Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val navItems = NavigationProvider.extractMethodsAndFields(
+            classes[0]
+        )
+
+
+        if (navItems.isEmpty()) {
+            Snackbar.make(
+                binding.root, "No methods or fields found", Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+        val binding = NavigationElementsBinding.inflate(layoutInflater)
+        binding.elementList.adapter =
+            NavAdapter(requireContext(), navItems, editor.editor.text.indexer)
+        val bottomSheet = BottomSheetDialog(requireContext())
+        binding.elementList.setOnItemClickListener { _, _, position, _ ->
+            val item = navItems[position]
+            val pos = editor.editor.text.indexer.getCharPosition(item.startPosition)
+            editor.editor.cursor.set(pos.line, pos.column)
+            bottomSheet.dismiss()
+        }
+
+        bottomSheet.apply {
+            setContentView(binding.root)
+            show()
         }
     }
 
@@ -376,6 +445,9 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun navigateToCompileInfoFragment() {
+        for (i in 0 until editorAdapter.itemCount) {
+            editorAdapter.getItem(i)?.save()
+        }
         parentFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, CompileInfoFragment())
             addToBackStack(null)

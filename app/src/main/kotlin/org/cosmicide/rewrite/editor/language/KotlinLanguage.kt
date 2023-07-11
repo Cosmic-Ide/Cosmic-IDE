@@ -37,7 +37,7 @@ class KotlinLanguage(
     grammarRegistry,
     themeRegistry
 ) {
-    private val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
+    val kotlinEnvironment: KotlinEnvironment by lazy { KotlinEnvironment.get(project) }
     private var fileName: String = file.name
 
     init {

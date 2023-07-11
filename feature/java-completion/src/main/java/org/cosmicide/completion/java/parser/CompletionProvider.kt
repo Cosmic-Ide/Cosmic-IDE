@@ -24,6 +24,7 @@ import com.intellij.core.JavaCoreProjectEnvironment
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.extensions.Extensions
+import com.intellij.openapi.extensions.impl.ExtensionsAreaImpl
 import com.intellij.openapi.vfs.impl.VirtualFileManagerImpl
 import com.intellij.psi.JavaTokenType
 import com.intellij.psi.PsiAssignmentExpression
@@ -133,12 +134,42 @@ class CompletionProvider {
             "false",
             "null"
         )
+
+
+        @Suppress("DEPRECATION")
+        fun registerExtensions(extensionArea: ExtensionsAreaImpl) {
+            extensionArea.registerExtensionPoint(
+                "com.intellij.virtualFileManagerListener",
+                VirtualFileManagerImpl::class.java.name,
+                ExtensionPoint.Kind.INTERFACE
+            )
+            Extensions.getRootArea().registerExtensionPoint(
+                "com.intellij.treeCopyHandler",
+                TreeCopyHandler::class.java.name,
+                ExtensionPoint.Kind.INTERFACE
+            )
+            Extensions.getRootArea().registerExtensionPoint(
+                "com.intellij.lang.psiAugmentProvider",
+                PsiAugmentProvider::class.java.name,
+                ExtensionPoint.Kind.INTERFACE
+            )
+            extensionArea.registerExtensionPoint(
+                "com.intellij.java.elementFinder",
+                PsiElementFinder::class.java.name,
+                ExtensionPoint.Kind.INTERFACE
+            )
+            Extensions.getRootArea().registerExtensionPoint(
+                "com.intellij.java.elementFinder",
+                PsiElementFinder::class.java.name,
+                ExtensionPoint.Kind.INTERFACE
+            )
+        }
     }
 
     init {
         setIdeaIoUseFallback()
         setupIdeaStandaloneExecution()
-        registerExtensions()
+        registerExtensions(environment.project.extensionArea)
     }
 
 
@@ -478,36 +509,6 @@ class CompletionProvider {
             element = element.getParent()
         }
         return element
-    }
-
-    @Suppress("UnstableApiUsage", "DEPRECATION")
-    private fun registerExtensions() {
-        val extensionArea = environment.project.extensionArea
-        extensionArea.registerExtensionPoint(
-            "com.intellij.virtualFileManagerListener",
-            VirtualFileManagerImpl::class.java.name,
-            ExtensionPoint.Kind.INTERFACE
-        )
-        Extensions.getRootArea().registerExtensionPoint(
-            "com.intellij.treeCopyHandler",
-            TreeCopyHandler::class.java.name,
-            ExtensionPoint.Kind.INTERFACE
-        )
-        Extensions.getRootArea().registerExtensionPoint(
-            "com.intellij.lang.psiAugmentProvider",
-            PsiAugmentProvider::class.java.name,
-            ExtensionPoint.Kind.INTERFACE
-        )
-        extensionArea.registerExtensionPoint(
-            "com.intellij.java.elementFinder",
-            PsiElementFinder::class.java.name,
-            ExtensionPoint.Kind.INTERFACE
-        )
-        Extensions.getRootArea().registerExtensionPoint(
-            "com.intellij.java.elementFinder",
-            PsiElementFinder::class.java.name,
-            ExtensionPoint.Kind.INTERFACE
-        )
     }
 
     private fun getFullyQualifiedPackageName(element: PsiElement): String? {

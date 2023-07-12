@@ -32,26 +32,27 @@ class SymbolCacher(private val jarFile: File) {
         println("Loading classes from jar file: $jarFile")
         val classPool = ClassPool.getDefault()
         val file = JarFile(jarFile)
-        val deferredList = file.entries().asSequence()
-            .map { entry ->
-                scope.async {
-                    if (entry.name.endsWith(".class").not()) return@async
-                    val packageName = entry.name.substringBeforeLast('/').replace('/', '.')
-                    if (packageCache.containsKey(packageName).not()) {
-                        println("Loading package: $packageName")
-                        packageCache[packageName] = packageName
-                    }
-                    val ctClass = classPool.makeClass(file.getInputStream(entry))
-                    if (isPublicStaticClass(ctClass)) {
-                        cache[ctClass.name] = ctClass
-                        println("Loaded class: ${ctClass.name} ${ctClass.qualifiedName()}")
+        file.use {
+            val deferredList = it.entries().asSequence()
+                .map { entry ->
+                    scope.async {
+                        if (entry.name.endsWith(".class").not()) return@async
+                        val packageName = entry.name.substringBeforeLast('/').replace('/', '.')
+                        if (packageCache.containsKey(packageName).not()) {
+                            println("Loading package: $packageName")
+                            packageCache[packageName] = packageName
+                        }
+                        val ctClass = classPool.makeClass(file.getInputStream(entry))
+                        if (isPublicStaticClass(ctClass)) {
+                            cache[ctClass.name] = ctClass
+                        }
                     }
                 }
-            }
-            .toList()
+                .toList()
 
-        runBlocking {
-            deferredList.awaitAll()
+            runBlocking {
+                deferredList.awaitAll()
+            }
         }
 
         return cache

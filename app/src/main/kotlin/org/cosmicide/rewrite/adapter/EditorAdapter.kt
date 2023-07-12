@@ -31,16 +31,43 @@ import java.io.File
 class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
     FragmentStateAdapter(fragment) {
 
+    private var ids = fileViewModel.files.value!!.map { it.hashCode().toLong() }
+    private val fragments = mutableListOf<CodeEditorFragment>()
+
+    init {
+        fileViewModel.files.observe(fragment.viewLifecycleOwner) { files ->
+            notifyDataSetChanged()
+            fragments.clear()
+            ids = files.map { it.hashCode().toLong() }
+        }
+    }
+
     override fun getItemCount(): Int {
         return fileViewModel.files.value!!.size
     }
 
     override fun createFragment(position: Int): Fragment {
-        return CodeEditorFragment(fileViewModel.files.value!![position])
+        val fragment = CodeEditorFragment(fileViewModel.files.value!![position])
+        fragments.add(fragment)
+        return fragment
     }
 
     fun getItem(position: Int): CodeEditorFragment? {
-        return fragment.childFragmentManager.findFragmentByTag("f$position") as CodeEditorFragment?
+        if (position >= fragments.size) return null
+        if (position < 0) return null
+        return fragments[position]
+    }
+
+    override fun getItemId(position: Int): Long {
+        return fileViewModel.files.value!![position].hashCode().toLong()
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        return ids.contains(itemId)
+    }
+
+    fun saveAll() {
+        fragments.forEach { it.save() }
     }
 
     class CodeEditorFragment(val file: File) : Fragment() {
@@ -63,7 +90,6 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         }
 
         private fun setEditorLanguage() {
-
             when (file.extension) {
                 "java" -> {
                     if (editor.editorLanguage is JavaLanguage) return

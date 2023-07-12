@@ -9,11 +9,6 @@ package org.cosmicide.rewrite.fragment
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Matrix
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -42,7 +37,6 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.ProjectHandler
 import org.cosmicide.rewrite.util.unzip
 
 class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
@@ -188,8 +182,7 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
     }
 
     override fun onProjectClicked(project: Project) {
-        ProjectHandler.setProject(project)
-        navigateToEditorFragment()
+        navigateToEditorFragment(project)
     }
 
     override fun onProjectLongClicked(project: Project): Boolean {
@@ -239,9 +232,9 @@ class ProjectFragment : BaseBindingFragment<FragmentProjectBinding>(),
         }.commit()
     }
 
-    private fun navigateToEditorFragment() {
+    private fun navigateToEditorFragment(project: Project) {
         parentFragmentManager.beginTransaction().apply {
-            add(R.id.fragment_container, EditorFragment())
+            add(R.id.fragment_container, EditorFragment(project))
             addToBackStack(null)
             setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         }.commit()

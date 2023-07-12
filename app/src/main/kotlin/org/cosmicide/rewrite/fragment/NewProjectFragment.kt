@@ -9,7 +9,6 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import org.cosmicide.project.Language
@@ -19,7 +18,6 @@ import org.cosmicide.rewrite.common.BaseBindingFragment
 import org.cosmicide.rewrite.databinding.FragmentNewProjectBinding
 import org.cosmicide.rewrite.model.ProjectViewModel
 import org.cosmicide.rewrite.util.FileUtil
-import org.cosmicide.rewrite.util.ProjectHandler
 import java.io.File
 import java.io.IOException
 
@@ -30,11 +28,6 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.root.setOnApplyWindowInsetsListener { view, insets ->
-            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            insets
-        }
 
         binding.btnCreate.setOnClickListener {
             val projectName = binding.projectName.text.toString()
@@ -89,8 +82,7 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
             val mainFile = srcDir.resolve("Main.${language.extension}")
             mainFile.createMainFile(language, packageName)
             viewModel.loadProjects()
-            ProjectHandler.setProject(project)
-            navigateToEditorFragment()
+            navigateToEditorFragment(project)
             true
         } catch (e: IOException) {
             Snackbar.make(
@@ -102,11 +94,11 @@ class NewProjectFragment : BaseBindingFragment<FragmentNewProjectBinding>() {
         }
     }
 
-    private fun navigateToEditorFragment() {
+    private fun navigateToEditorFragment(project: Project) {
         parentFragmentManager.beginTransaction().apply {
-            add(R.id.fragment_container, EditorFragment())
+            add(R.id.fragment_container, EditorFragment(project))
             addToBackStack(null)
-            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            setTransition(androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         }.commit()
     }
 

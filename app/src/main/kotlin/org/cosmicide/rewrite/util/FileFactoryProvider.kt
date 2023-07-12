@@ -13,6 +13,8 @@ import com.intellij.core.JavaCoreProjectEnvironment
 import com.intellij.lang.java.JavaLanguage
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiJavaFile
+import com.intellij.psi.PsiManager
+import com.intellij.testFramework.LightVirtualFile
 import org.cosmicide.completion.java.parser.CompletionProvider
 import org.cosmicide.rewrite.common.Prefs
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
@@ -23,7 +25,9 @@ import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
+import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
+import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 
 object FileFactoryProvider {
@@ -80,7 +84,14 @@ object FileFactoryProvider {
         ) as PsiJavaFile
     }
 
-    fun getPsiJavaFile(fileName: String, text: String): PsiJavaFile {
-        return fileFactory.createFileFromText(fileName, JavaLanguage.INSTANCE, text) as PsiJavaFile
+    fun getPsiJavaFile(fileName: String, code: String): PsiJavaFile {
+        return fileFactory.createFileFromText(fileName, JavaLanguage.INSTANCE, code) as PsiJavaFile
+    }
+
+    fun getKtPsiFile(fileName: String, code: String): KtFile {
+        return PsiManager.getInstance(kotlinEnv.project)
+            .findFile(
+                LightVirtualFile(fileName, KotlinFileType.INSTANCE, code)
+            ) as KtFile
     }
 }

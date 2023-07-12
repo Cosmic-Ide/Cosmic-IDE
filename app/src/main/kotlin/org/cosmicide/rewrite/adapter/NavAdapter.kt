@@ -41,7 +41,7 @@ class NavAdapter(
         val startColumn = pos.column + 1
         textView.text = item.name
         view.findViewById<TextView>(R.id.description).text =
-            "${item.modifiers.text} ($startLine:$startColumn)"
+            "${item.modifiers} ($startLine:$startColumn)"
 
 
         val type = when (item) {

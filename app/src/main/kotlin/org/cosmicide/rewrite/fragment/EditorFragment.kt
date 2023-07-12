@@ -18,11 +18,10 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.chip.Chip
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dev.pranav.navigation.KtNavigationProvider
 import dev.pranav.navigation.NavigationProvider
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeView
@@ -47,11 +46,13 @@ import org.cosmicide.rewrite.treeview.ViewBinder
 import org.cosmicide.rewrite.util.FileFactoryProvider
 import org.cosmicide.rewrite.util.FileIndex
 import org.cosmicide.rewrite.util.ProjectHandler
+import org.jetbrains.kotlin.psi.KtFile
 import java.io.File
 
-class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
-    private lateinit var project: Project
-    private val fileIndex by lazy { FileIndex(project) }
+class EditorFragment(
+    private val project: Project
+) : BaseBindingFragment<FragmentEditorBinding>() {
+    private lateinit var fileIndex: FileIndex
     private val fileViewModel by activityViewModels<FileViewModel>()
     private lateinit var editorAdapter: EditorAdapter
 
@@ -60,24 +61,16 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (ProjectHandler.getProject() == null) {
-            Snackbar.make(
-                binding.root,
-                "No project selected, please select a project first",
-                Snackbar.LENGTH_LONG
-            ).show()
-            return
-        }
-
-        project = ProjectHandler.getProject()!!
+        fileIndex = FileIndex(project)
+        ProjectHandler.setProject(project)
 
         configureToolbar()
         initViewModelListeners()
         initTreeView()
 
         binding.pager.apply {
-            adapter = EditorAdapter(this@EditorFragment, fileViewModel)
-            editorAdapter = adapter as EditorAdapter
+            editorAdapter = EditorAdapter(this@EditorFragment, fileViewModel)
+            adapter = editorAdapter
         }
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -86,7 +79,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Do nothing
+
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -114,10 +107,21 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (binding.drawer.isOpen) {
-                        binding.drawer.close()
-                    } else {
-                        parentFragmentManager.popBackStack()
+                    binding.apply {
+                        editorAdapter.saveAll()
+                        if (drawer.isOpen) {
+                            drawer.close()
+                        } else {
+                            fileIndex.putFiles(
+                                binding.pager.currentItem,
+                                fileViewModel.files.value!!
+                            )
+                            fileViewModel.updateFiles(listOf())
+                            handleFilesUpdate(listOf())
+                            fileViewModel.setCurrentPosition(-1)
+
+                            parentFragmentManager.popBackStack()
+                        }
                     }
                 }
             })
@@ -125,13 +129,26 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         TabLayoutMediator(binding.tabLayout, binding.pager, true, true) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
         }.attach()
+
+        fileViewModel.updateFiles(fileIndex.getFiles().toMutableList())
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (isHidden) {
+            editorAdapter.saveAll()
+
+            Log.d("EditorFragment", "Saving files: ${fileViewModel.files.value}")
+            fileIndex.putFiles(binding.pager.currentItem, fileViewModel.files.value!!)
+        } else {
+            fileViewModel.updateFiles(fileIndex.getFiles().toMutableList())
+        }
     }
 
     private fun initViewModelListeners() {
         val indexedFiles = fileIndex.getFiles()
 
         fileViewModel.files.observe(viewLifecycleOwner) { files ->
-            editorAdapter.notifyDataSetChanged()
             handleFilesUpdate(files)
         }
 
@@ -184,7 +201,6 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     private fun handleFilesUpdate(files: List<File>) {
-        val appearanceModel = ShapeAppearanceModel.builder().setAllCornerSizes(48f).build()
         binding.apply {
             if (files.isEmpty()) {
                 tabLayout.visibility = View.GONE
@@ -196,18 +212,13 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
             tabLayout.removeAllTabs()
             files.forEach { file ->
                 val tab = tabLayout.newTab().setText(file.name)
-                tab.customView = Chip(requireContext()).apply {
-                    text = file.name
-                    chipStrokeWidth = 0f
-                    shapeAppearanceModel = appearanceModel
-                }
-                (tab.customView as View).apply {
+                tab.view.apply {
                     setOnLongClickListener {
                         showMenu(it, R.menu.tab_menu, tab.position)
                         true
                     }
                     setOnClickListener {
-                        if (tabLayout.selectedTabPosition != tab.position) tab.select()
+                        tab.select()
                     }
                 }
                 tabLayout.addTab(tab, false)
@@ -216,16 +227,14 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
     }
 
     override fun onDestroyView() {
-        for (i in 0 until binding.pager.adapter!!.itemCount) {
-            editorAdapter.getItem(i)?.save()
-            fileIndex.putFiles(i, fileViewModel.files.value!!)
-        }
+        editorAdapter.saveAll()
         super.onDestroyView()
     }
 
 
     fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
-        return editorAdapter.getItem(binding.pager.currentItem)
+        println("Current position: ${binding.tabLayout.selectedTabPosition}")
+        return editorAdapter.getItem(binding.tabLayout.selectedTabPosition)
     }
 
     private fun configureToolbar() {
@@ -235,10 +244,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                 Log.d("EditorFragment", "Saving files")
                 Log.d("EditorFragment", "Adapter count: ${editorAdapter.itemCount}")
                 Log.d("EditorFragment", "Tab count: ${binding.tabLayout.tabCount}")
-                for (i in 0 until editorAdapter.itemCount) {
-                    Log.d("EditorFragment", "Saving file $i")
-                    editorAdapter.getItem(i - 1)?.save()
-                }
+                editorAdapter.saveAll()
                 binding.drawer.open()
             }
             setOnMenuItemClickListener {
@@ -324,7 +330,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
                     }
 
                     R.id.nav_items -> {
-                        showNavigationeElements()
+                        showNavigationElements()
                         true
                     }
 
@@ -334,7 +340,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
     }
 
-    private fun showNavigationeElements() {
+    private fun showNavigationElements() {
         val editor = getCurrentFragment()
         if (editor == null) {
             Snackbar.make(
@@ -345,7 +351,7 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
 
         val language = when (editor.file.extension) {
             "java" -> Language.Java
-            // TODO: Add support for kotlin
+            "kt" -> Language.Kotlin
             else -> {
                 Snackbar.make(
                     binding.root, "Unsupported language", Snackbar.LENGTH_SHORT
@@ -355,20 +361,23 @@ class EditorFragment : BaseBindingFragment<FragmentEditorBinding>() {
         }
 
         val psiFile =
-            FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
+            if (language == Language.Kotlin)
+                FileFactoryProvider.getKtPsiFile(editor.file.name, editor.editor.text.toString())
+            else
+                FileFactoryProvider.getPsiJavaFile(editor.file.name, editor.editor.text.toString())
 
         val classes = psiFile.classes
-        if (classes.isEmpty()) {
+        if (classes.isEmpty() && language == Language.Java) {
             Snackbar.make(
                 binding.root, "No classes found", Snackbar.LENGTH_SHORT
             ).show()
             return
         }
 
-        val navItems = NavigationProvider.extractMethodsAndFields(
-            classes[0]
-        )
-
+        val navItems = when (language) {
+            is Language.Java -> NavigationProvider.extractMethodsAndFields(classes[0])
+            is Language.Kotlin -> KtNavigationProvider.parseKtFile(psiFile as KtFile)
+        }
 
         if (navItems.isEmpty()) {
             Snackbar.make(

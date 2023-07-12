@@ -9,18 +9,27 @@ package dev.pranav.navigation
 
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiField
-import com.intellij.psi.PsiMember
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.PsiModifierList
 
 object NavigationProvider {
 
     fun extractMethodsAndFields(javaFile: PsiClass, depth: Int = 0): List<NavigationItem> {
         var d = depth
         val navigationItems = mutableListOf<NavigationItem>()
+        val name = buildString {
+            append(javaFile.name)
+            if (javaFile.superClass != null) {
+                append(" : ")
+                append(javaFile.superClass?.name)
+            }
+            if (javaFile.implementsList != null && javaFile.implementsList!!.referenceElements.isNotEmpty()) {
+                append(" implements ")
+                append(javaFile.implementsList?.referenceElements?.joinToString(", ") { it.text })
+            }
+        }
         val item = ClassNavigationKind(
-            javaFile.name!!,
-            javaFile.modifierList!!,
+            name,
+            javaFile.modifierList!!.text,
             javaFile.textOffset,
             javaFile.textOffset + javaFile.textLength,
             d
@@ -30,46 +39,65 @@ object NavigationProvider {
         javaFile.children.forEach { child ->
             when (child) {
                 is PsiMethod -> {
-                    val methodName = child.name
                     val modifiers = child.modifierList
+                    val parameters = child.parameterList
+                    var returnType = child.returnTypeElement?.text ?: "void"
+
+                    val methodName = child.name + "(" + parameters.parameters.joinToString(", ") {
+                        it.typeElement?.text ?: "void"
+                    } + ") : $returnType"
+
                     val startPosition = child.textOffset
                     val endPosition = startPosition + child.textLength
 
                     val methodItem =
-                        MethodNavigationItem(methodName, modifiers, startPosition, endPosition, d)
+                        MethodNavigationItem(
+                            methodName,
+                            modifiers.text,
+                            startPosition,
+                            endPosition,
+                            d
+                        )
                     navigationItems.add(methodItem)
                 }
 
                 is PsiField -> {
-                    val fieldName = child.name
                     val modifiers = child.modifierList ?: return@forEach
                     val startPosition = child.textOffset
+                    val type = child.typeElement?.text ?: "void"
+                    val fieldName = child.name + " : $type"
 
                     val fieldItem =
-                        FieldNavigationItem(fieldName, modifiers, startPosition, depth = d)
+                        FieldNavigationItem(fieldName, modifiers.text, startPosition, depth = d)
                     navigationItems.add(fieldItem)
                 }
 
                 is PsiClass -> {
-                    val innerClass = child.name
-                    val modifiers = child.modifierList ?: return@forEach
+                    val modifiers = child.modifierList
+                    val innerClassName = buildString {
+                        append(javaFile.name)
+                        if (javaFile.superClass != null) {
+                            append(" : ")
+                            append(javaFile.superClass?.name)
+                        }
+                        if (javaFile.implementsList != null && javaFile.implementsList!!.referenceElements.isNotEmpty()) {
+                            append(" implements ")
+                            append(javaFile.implementsList?.referenceElements?.joinToString(", ") { it.text })
+                        }
+                    }
                     val startPosition = child.textOffset
                     val endPosition = startPosition + child.textLength
 
                     val innerClassItem =
-                        ClassNavigationKind(innerClass!!, modifiers, startPosition, endPosition, d)
+                        ClassNavigationKind(
+                            innerClassName,
+                            modifiers!!.text,
+                            startPosition,
+                            endPosition,
+                            d
+                        )
                     navigationItems.add(innerClassItem)
                     navigationItems.addAll(extractMethodsAndFields(child, d + 1))
-                }
-
-                is PsiMember -> {
-                    val fieldName = child.name
-                    val modifiers = child.modifierList ?: return@forEach
-                    val startPosition = child.textOffset
-
-                    val fieldItem =
-                        FieldNavigationItem(fieldName!!, modifiers, startPosition, depth = d)
-                    navigationItems.add(fieldItem)
                 }
             }
         }
@@ -90,7 +118,7 @@ object NavigationProvider {
 
     interface NavigationItem {
         val name: String
-        val modifiers: PsiModifierList
+        val modifiers: String
         val startPosition: Int
         val endPosition: Int
         val kind: NavigationItemKind
@@ -100,7 +128,7 @@ object NavigationProvider {
 
     data class MethodNavigationItem(
         override val name: String,
-        override val modifiers: PsiModifierList,
+        override val modifiers: String,
         override val startPosition: Int,
         override val endPosition: Int,
         override val depth: Int,
@@ -109,7 +137,7 @@ object NavigationProvider {
 
     data class FieldNavigationItem(
         override val name: String,
-        override val modifiers: PsiModifierList,
+        override val modifiers: String,
         override val startPosition: Int,
         override val endPosition: Int = startPosition + name.length,
         override val depth: Int,
@@ -118,7 +146,7 @@ object NavigationProvider {
 
     data class ClassNavigationKind(
         override val name: String,
-        override val modifiers: PsiModifierList,
+        override val modifiers: String,
         override val startPosition: Int,
         override val endPosition: Int,
         override val depth: Int,

@@ -1,70 +1,115 @@
 package dev.pranav.navigation
 
-import com.intellij.psi.PsiElement
+import dev.pranav.navigation.NavigationProvider.ClassNavigationKind
+import dev.pranav.navigation.NavigationProvider.FieldNavigationItem
+import dev.pranav.navigation.NavigationProvider.MethodNavigationItem
+import dev.pranav.navigation.NavigationProvider.NavigationItem
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtProperty
+import org.jetbrains.kotlin.psi.KtSuperTypeEntry
+import org.jetbrains.kotlin.psi.psiUtil.endOffset
+import org.jetbrains.kotlin.psi.psiUtil.startOffset
 
 object KtNavigationProvider {
-    fun extractMethodsAndFields(psiElement: PsiElement, depth: Int = 0): List<NavigationItem> {
+
+    fun parseKtFile(psiFile: KtFile, depth: Int = 0): List<NavigationItem> {
+        var d = depth
         val navigationItems = mutableListOf<NavigationItem>()
+        d++
 
-        when (psiElement) {
-            is KtFile -> {
-                psiElement.declarations.forEach { declaration ->
-                    if (declaration is KtClass) {
-                        navigationItems.addAll(extractMethodsAndFields(declaration, depth))
+        for (declaration in psiFile.declarations) {
+            when (declaration) {
+                is KtClass -> {
+                    val superClass = declaration.superTypeListEntries
+                        .filterIsInstance<KtSuperTypeEntry>()
+                        .firstOrNull()
+                        ?.typeAsUserType?.referencedName
+
+                    val interfaces = declaration.superTypeListEntries
+                        .filterIsInstance<KtSuperTypeEntry>()
+                        .drop(1)
+                        .mapNotNull { it.typeAsUserType?.referencedName }
+                        .joinToString(", ")
+
+                    val name = buildString {
+                        append(declaration.name ?: "")
+                        if (superClass != null) {
+                            append(" : $superClass")
+                        }
+                        if (interfaces.isNotEmpty()) {
+                            append(" -> $interfaces")
+                        }
                     }
+
+                    navigationItems.add(
+                        ClassNavigationKind(
+                            name,
+                            declaration.modifierList?.text ?: "",
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                    navigationItems.addAll(parseKotlinClass(declaration, d + 1))
                 }
-            }
 
-            is KtClass -> {
-                val item = ClassNavigationKind(
-                    psiElement.name ?: "",
-                    psiElement.modifierList ?: return navigationItems,
-                    psiElement.textOffset,
-                    psiElement.textOffset + psiElement.textLength,
-                    depth
-                )
-                navigationItems.add(item)
+                is KtNamedFunction -> {
+                    val returnType = declaration.typeReference?.text
+                    val parameters = declaration.valueParameters.joinToString(", ") { parameter ->
+                        "${parameter.name}: ${parameter.typeReference?.text ?: ""}"
+                    }
 
-                psiElement.declarations.forEach { declaration ->
-                    println(declaration.name)
-                    when (declaration) {
-                        is KtNamedFunction -> {
-                            val methodName = declaration.name ?: ""
-                            val modifiers = declaration.modifierList ?: return@forEach
-
-                            val methodItem = MethodNavigationItem(
-                                methodName,
-                                modifiers,
-                                declaration.textOffset,
-                                declaration.textOffset + declaration.textLength,
-                                depth
-                            )
-                            navigationItems.add(methodItem)
-                        }
-
-                        is KtProperty -> {
-                            val propertyName = declaration.name ?: ""
-                            val modifiers = declaration.modifierList ?: return@forEach
-
-                            val propertyItem = FieldNavigationItem(
-                                propertyName,
-                                modifiers,
-                                declaration.textOffset,
-                                declaration.textOffset + declaration.textLength,
-                                depth
-                            )
-                            navigationItems.add(propertyItem)
-                        }
-
-                        is KtClass -> {
-                            navigationItems.addAll(extractMethodsAndFields(declaration, depth + 1))
+                    val name = buildString {
+                        append(declaration.name ?: return@buildString)
+                        append("($parameters)")
+                        if (returnType != null) {
+                            append(": $returnType")
                         }
                     }
+                    navigationItems.add(
+                        MethodNavigationItem(
+                            name,
+                            declaration.modifierList?.text ?: "",
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                }
+
+                is KtProperty -> {
+                    val type = declaration.typeReference?.text
+                    val name = declaration.name
+                    navigationItems.add(
+                        FieldNavigationItem(
+                            name + (if (type != null) ": $type" else ""),
+                            declaration.modifierList?.text ?: "",
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                }
+
+                else -> {
+                    navigationItems.add(
+                        object : NavigationItem {
+                            override val name: String
+                                get() = declaration.text
+                            override val modifiers: String
+                                get() = ""
+                            override val startPosition: Int
+                                get() = declaration.startOffset
+                            override val endPosition: Int
+                                get() = declaration.endOffset
+                            override val kind: NavigationProvider.NavigationItemKind
+                                get() = NavigationProvider.NavigationItemKind.METHOD
+                            override val depth: Int
+                                get() = d
+                        }
+                    )
                 }
             }
         }
@@ -72,46 +117,106 @@ object KtNavigationProvider {
         return navigationItems
     }
 
-    interface NavigationItem {
-        val name: String
-        val modifiers: KtModifierList
-        val startPosition: Int
-        val endPosition: Int
-        val kind: NavigationItemKind
-        val depth: Int
+    fun parseKotlinClass(psiFile: KtClass, depth: Int = 0): List<NavigationItem> {
+        var d = depth
+        val navigationItems = mutableListOf<NavigationItem>()
+        d++
+
+        for (declaration in psiFile.declarations) {
+            when (declaration) {
+                is KtClass -> {
+                    val superClass = declaration.superTypeListEntries
+                        .filterIsInstance<KtSuperTypeEntry>()
+                        .firstOrNull()
+                        ?.typeAsUserType?.referencedName
+
+                    val interfaces = declaration.superTypeListEntries
+                        .filterIsInstance<KtSuperTypeEntry>()
+                        .drop(1)
+                        .mapNotNull { it.typeAsUserType?.referencedName }
+                        .joinToString(", ")
+
+                    val name = buildString {
+                        append(declaration.name ?: "")
+                        if (superClass != null) {
+                            append(" : $superClass")
+                        }
+                        if (interfaces.isNotEmpty()) {
+                            append(" -> $interfaces")
+                        }
+                    }
+
+                    navigationItems.add(
+                        ClassNavigationKind(
+                            name,
+                            declaration.modifierList!!.text,
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                    navigationItems.addAll(parseKotlinClass(declaration, d + 1))
+                }
+
+                is KtNamedFunction -> {
+                    val returnType = declaration.typeReference?.text
+                    val parameters = declaration.valueParameters.joinToString(", ") { parameter ->
+                        "${parameter.name}: ${parameter.typeReference?.text ?: ""}"
+                    }
+
+                    val name = buildString {
+                        append(declaration.name ?: return@buildString)
+                        append("($parameters)")
+                        if (returnType != null) {
+                            append(": $returnType")
+                        }
+                    }
+                    navigationItems.add(
+                        MethodNavigationItem(
+                            name,
+                            declaration.modifierList?.text ?: "",
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                }
+
+                is KtProperty -> {
+                    val type = declaration.typeReference?.text
+                    val name = declaration.name
+                    navigationItems.add(
+                        FieldNavigationItem(
+                            name + (if (type != null) ": $type" else ""),
+                            declaration.modifierList?.text ?: "",
+                            declaration.startOffset,
+                            declaration.endOffset,
+                            d
+                        )
+                    )
+                }
+
+                else -> {
+                    navigationItems.add(
+                        object : NavigationItem {
+                            override val name: String
+                                get() = declaration.text
+                            override val modifiers: String
+                                get() = ""
+                            override val startPosition: Int
+                                get() = declaration.startOffset
+                            override val endPosition: Int
+                                get() = declaration.endOffset
+                            override val kind: NavigationProvider.NavigationItemKind
+                                get() = NavigationProvider.NavigationItemKind.METHOD
+                            override val depth: Int
+                                get() = d
+                        }
+                    )
+                }
+            }
+        }
+
+        return navigationItems
     }
-
-    data class MethodNavigationItem(
-        override val name: String,
-        override val modifiers: KtModifierList,
-        override val startPosition: Int,
-        override val endPosition: Int,
-        override val depth: Int,
-        override val kind: NavigationItemKind = NavigationItemKind.METHOD,
-    ) : NavigationItem
-
-    data class FieldNavigationItem(
-        override val name: String,
-        override val modifiers: KtModifierList,
-        override val startPosition: Int,
-        override val endPosition: Int,
-        override val depth: Int,
-        override val kind: NavigationItemKind = NavigationItemKind.FIELD,
-    ) : NavigationItem
-
-    data class ClassNavigationKind(
-        override val name: String,
-        override val modifiers: KtModifierList,
-        override val startPosition: Int,
-        override val endPosition: Int,
-        override val depth: Int,
-        override val kind: NavigationItemKind = NavigationItemKind.CLASS,
-    ) : NavigationItem
-
-    enum class NavigationItemKind {
-        METHOD,
-        FIELD,
-        CLASS,
-    }
-
 }

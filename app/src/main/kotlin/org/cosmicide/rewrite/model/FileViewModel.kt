@@ -52,12 +52,22 @@ class FileViewModel : ViewModel() {
         }
     }
 
+    fun addFiles(files: List<File>) {
+        _files.value = files
+        setCurrentPosition(files.lastIndex)
+    }
+
     /**
      * Removes the given file from the list of files.
      */
     fun removeFile(file: File) {
         val newList = _files.value.orEmpty().filterNot { it == file }
         _files.value = newList
+        if (newList.isEmpty()) {
+            setCurrentPosition(-1)
+        } else {
+            setCurrentPosition(currentPosition.value?.minus(1) ?: 0)
+        }
     }
 
     /**

@@ -32,7 +32,7 @@ object ChatProvider {
         val jsonObject = mapOf("messages" to messages)
         val messagesJson = gson.toJson(jsonObject)
         println(messagesJson)
-        val url = "https://gpt4free-experimental.pranavpurwar.repl.co/chat/completions/$model"
+        val url = "https://gpt4free-experimental.pranavpurwar.repl.co/chat/$model"
 
         val mediaType = "application/json; charset=utf-8".toMediaType()
         val request = Request.Builder().url(url).post(messagesJson.toRequestBody(mediaType)).build()
@@ -41,7 +41,6 @@ object ChatProvider {
         return try {
             val response = client.newCall(request).execute()
             val body = response.body.string()
-            println(body)
             body
         } catch (e: Exception) {
             e.printStackTrace()

@@ -37,7 +37,7 @@ import java.time.Duration
 class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
     private val conversationAdapter = ConversationAdapter()
-    private var model = Models.YQCLOUD
+    private var model = Models.THEB
 
     // The client will expire in an hour.
     // If you were thinking of using this key, don't. It's free already, just get your own.
@@ -78,24 +78,29 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                     "Google Bard"
                 }
 
-                R.id.model_vercel -> {
-                    model = Models.VERCEL_GPT3_5
+                R.id.model_aichat -> {
+                    model = Models.AICHAT
                     "Vercel"
                 }
 
-                R.id.model_forefront -> {
-                    model = Models.FOREFRONT
+                R.id.model_aitianhu -> {
+                    model = Models.AITIANHU
                     "Ora"
                 }
 
-                R.id.model_yqcloud -> {
-                    model = Models.YQCLOUD
+                R.id.model_easychat -> {
+                    model = Models.EASYCHAT
                     "Yqcloud"
                 }
 
-                R.id.model_phind -> {
-                    model = Models.PHIND
+                R.id.model_h2o -> {
+                    model = Models.H2O
                     "Phind"
+                }
+
+                R.id.model_theb -> {
+                    model = Models.THEB
+                    "Theb"
                 }
 
                 else -> return@setOnMenuItemClickListener false
@@ -122,23 +127,28 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
                 val reply = when (model) {
                     Models.BARD -> client.ask(message).markdown()
 
-                    Models.VERCEL_GPT3_5 -> ChatProvider.generate(
-                        "vercel",
+                    Models.AICHAT -> ChatProvider.generate(
+                        "aichat",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.FOREFRONT -> ChatProvider.generate(
-                        "forefront",
+                    Models.AITIANHU -> ChatProvider.generate(
+                        "aitianhu",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.YQCLOUD -> ChatProvider.generate(
-                        "yqcloud",
+                    Models.EASYCHAT -> ChatProvider.generate(
+                        "easychat",
                         conversationAdapter.getConversations()
                     )
 
-                    Models.PHIND -> ChatProvider.generate(
-                        "phind",
+                    Models.H2O -> ChatProvider.generate(
+                        "h2o",
+                        conversationAdapter.getConversations()
+                    )
+
+                    Models.THEB -> ChatProvider.generate(
+                        "theb",
                         conversationAdapter.getConversations()
                     )
                 }
@@ -192,10 +202,11 @@ class ChatFragment : BaseBindingFragment<FragmentChatBinding>() {
 
 enum class Models {
     BARD,
-    VERCEL_GPT3_5,
-    YQCLOUD,
-    FOREFRONT,
-    PHIND,
+    AICHAT,
+    AITIANHU,
+    EASYCHAT,
+    H2O,
+    THEB
 }
 
 private val Int.dp: Int

@@ -7,7 +7,6 @@
 
 package org.cosmicide.rewrite.editor.formatter
 
-import org.cosmicide.rewrite.editor.formatter.ktfmtFormatter
 import org.junit.Test
 
 class ktfmtFormatterTest {
@@ -19,28 +18,28 @@ class ktfmtFormatterTest {
                 val foo = "bar"
             }
         """.trimIndent()
-        val formattedCode = KtfmtFormatter.formatCode(code)
-        assertThat("fun main() {\n    val foo = \"bar\"\n}\n").isEqualTo(formattedCode)
+        val formattedCode = ktfmtFormatter.formatCode(code)
+        assert("fun main() {\n    val foo = \"bar\"\n}\n" == formattedCode)
     }
 
     @Test
     fun `should not modify already formatted code`() {
         val code = "fun main() {\n    val foo = \"bar\"\n}\n"
-        val formattedCode = KtfmtFormatter.formatCode(code)
-        assertThat(code).isEqualTo(formattedCode)
+        val formattedCode = ktfmtFormatter.formatCode(code)
+        assert(code == formattedCode)
     }
 
     @Test
     fun `should handle code with syntax errors`() {
         val code = "foo bar"
-        val formattedCode = KtfmtFormatter.formatCode(code)
-        assertThat(code).isEqualTo(formattedCode)
+        val formattedCode = ktfmtFormatter.formatCode(code)
+        assert(code == formattedCode)
     }
 
     @Test
     fun `should handle empty input`() {
         val input = ""
-        val formattedCode = KtfmtFormatter.formatCode(input)
-        assertThat("").isEqualTo(formattedCode)
+        val formattedCode = ktfmtFormatter.formatCode(input)
+        assert("" == formattedCode)
     }
 }

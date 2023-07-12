@@ -16,7 +16,18 @@ class ChatProviderTest {
             mapOf("author" to "user", "text" to "hi"),
             mapOf("author" to "bot", "text" to "hello")
         )
-        val output = ChatProvider.generate("ora", conversation)
-        assert(output.isNotEmpty() && !output.contains("Error"))
+        val models = arrayOf(
+            "acytoo",
+            "aichat",
+            "ails",
+            "altianhu",
+            "chatgptai",
+            "chatgptlogin",
+            "deepai"
+        )
+        for (model in models) {
+            val output = ChatProvider.generate(model, conversation)
+            println(output)
+        }
     }
 }

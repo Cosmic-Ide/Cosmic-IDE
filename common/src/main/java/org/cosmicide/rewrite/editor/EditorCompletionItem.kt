@@ -36,7 +36,7 @@ class EditorCompletionItem(
 
         val suffix = when (kind) {
             CompletionItemKind.Constructor -> "()"
-            CompletionItemKind.Module -> "."
+            // CompletionItemKind.Module -> "."
             else -> {
                 if (kind == CompletionItemKind.Method && commitText.endsWith(')').not()) {
                     "()"

@@ -112,13 +112,15 @@ class EditorFragment(
                         if (drawer.isOpen) {
                             drawer.close()
                         } else {
+                            editorAdapter.saveAll()
+
                             fileIndex.putFiles(
                                 binding.pager.currentItem,
                                 fileViewModel.files.value!!
                             )
-                            fileViewModel.updateFiles(listOf())
-                            handleFilesUpdate(listOf())
-                            fileViewModel.setCurrentPosition(-1)
+
+                            fileViewModel.removeAll()
+                            fileViewModel.files.removeObservers(viewLifecycleOwner)
 
                             parentFragmentManager.popBackStack()
                         }
@@ -129,20 +131,6 @@ class EditorFragment(
         TabLayoutMediator(binding.tabLayout, binding.pager, true, true) { tab, position ->
             tab.text = fileViewModel.files.value!![position].name
         }.attach()
-
-        fileViewModel.updateFiles(fileIndex.getFiles().toMutableList())
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        if (isHidden) {
-            editorAdapter.saveAll()
-
-            Log.d("EditorFragment", "Saving files: ${fileViewModel.files.value}")
-            fileIndex.putFiles(binding.pager.currentItem, fileViewModel.files.value!!)
-        } else {
-            fileViewModel.updateFiles(fileIndex.getFiles().toMutableList())
-        }
     }
 
     private fun initViewModelListeners() {
@@ -233,7 +221,6 @@ class EditorFragment(
 
 
     fun getCurrentFragment(): EditorAdapter.CodeEditorFragment? {
-        println("Current position: ${binding.tabLayout.selectedTabPosition}")
         return editorAdapter.getItem(binding.tabLayout.selectedTabPosition)
     }
 

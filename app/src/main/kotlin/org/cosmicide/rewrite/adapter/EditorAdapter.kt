@@ -70,6 +70,13 @@ class EditorAdapter(val fragment: Fragment, val fileViewModel: FileViewModel) :
         fragments.forEach { it.save() }
     }
 
+    fun destroyAll() {
+        fragments.forEach { fg ->
+            fg.editor.release()
+            fragment.childFragmentManager.beginTransaction().remove(fg).commit()
+        }
+    }
+
     class CodeEditorFragment(val file: File) : Fragment() {
 
         lateinit var editor: IdeEditor

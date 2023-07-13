@@ -7,6 +7,7 @@
 
 package org.cosmicide.rewrite.editor
 
+import android.util.Log
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.text.CharPosition
@@ -14,10 +15,10 @@ import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 
 class EditorCompletionItem(
-    val label: String,
+    label: String,
     val description: String,
-    val prefixLength: Int,
-    val commitText: String
+    prefixLength: Int,
+    commitText: String
 ) : SimpleCompletionItem(label, description, prefixLength, commitText) {
 
     private val listeners = mutableListOf<(content: Content) -> Unit>()
@@ -46,12 +47,13 @@ class EditorCompletionItem(
         }
 
         text.replace(line, column - prefixLength, line, column, commitText + suffix)
+        Log.d("Completion", "commitText: $commitText, suffix: $suffix $label")
 
         if (kind == CompletionItemKind.Method || kind == CompletionItemKind.Constructor) {
             val start = description.indexOf('(')
             val end = description.indexOf(')')
             if (start == -1) {
-                val labelStart = label.indexOf('(')
+                val labelStart = commitText.indexOf('(')
                 val labelEnd = label.indexOf(')')
                 if (labelStart == -1) return
                 if (label.substring(labelStart + 1, labelEnd).isNotEmpty()) {

@@ -17,8 +17,7 @@ import java.io.File
  */
 class FileViewModel : ViewModel() {
 
-    private val _files = MutableLiveData<List<File>>(emptyList())
-    val files: LiveData<List<File>> get() = _files
+    val files = MutableLiveData<List<File>>(mutableListOf())
 
     private val _currentPosition = MutableLiveData(-1)
     val currentPosition: LiveData<Int> get() = _currentPosition
@@ -42,28 +41,21 @@ class FileViewModel : ViewModel() {
      * If the file is already in the list, the current position is set to its index.
      */
     fun addFile(file: File) {
-        val index = _files.value?.indexOf(file) ?: -1
+        val index = files.value?.indexOf(file) ?: -1
         if (index == -1) {
-            val newList = _files.value.orEmpty() + file
-            _files.value = newList
-            setCurrentPosition(newList.lastIndex)
+            files.value = files.value?.toMutableList()?.apply { add(file) }
+            setCurrentPosition(files.value!!.lastIndex)
         } else {
             setCurrentPosition(index)
         }
-    }
-
-    fun addFiles(files: List<File>) {
-        _files.value = files
-        setCurrentPosition(files.lastIndex)
     }
 
     /**
      * Removes the given file from the list of files.
      */
     fun removeFile(file: File) {
-        val newList = _files.value.orEmpty().filterNot { it == file }
-        _files.value = newList
-        if (newList.isEmpty()) {
+        files.value = files.value?.toMutableList()?.apply { remove(file) }
+        if (files.value!!.isEmpty()) {
             setCurrentPosition(-1)
         } else {
             setCurrentPosition(currentPosition.value?.minus(1) ?: 0)
@@ -74,7 +66,7 @@ class FileViewModel : ViewModel() {
      * Removes all files from the list except for the given file, and sets the current position to 0.
      */
     fun removeOthers(file: File) {
-        _files.value = listOf(file)
+        files.value = mutableListOf(file)
         setCurrentPosition(0)
     }
 
@@ -83,7 +75,7 @@ class FileViewModel : ViewModel() {
      * Sets the current position to -1 to indicate that there is no current file.
      */
     fun removeAll() {
-        _files.value = emptyList()
+        files.value = mutableListOf()
         setCurrentPosition(-1)
     }
 
@@ -93,14 +85,8 @@ class FileViewModel : ViewModel() {
      */
     fun removeRight(pos: Int) {
         val currentPos = currentPosition.value ?: return
-        if (pos == _files.value?.lastIndex) return
-        val newList = _files.value.orEmpty().toMutableList()
-        if (pos == currentPos) {
-            newList.removeAt(0)
-        } else {
-            newList.removeAt(pos + 1)
-        }
-        _files.value = newList
+        if (pos == files.value?.lastIndex) return
+        files.value = files.value?.toMutableList()?.apply { removeAt(pos + 1) }
         setCurrentPosition(currentPos)
     }
 
@@ -111,19 +97,8 @@ class FileViewModel : ViewModel() {
     fun removeLeft(pos: Int) {
         val currentPos = currentPosition.value ?: return
         if (pos == 0) return
-        val newList = _files.value.orEmpty().toMutableList()
-        newList.removeAt(pos - 1)
-        _files.value = newList
+        files.value = files.value?.toMutableList()?.apply { removeAt(pos - 1) }
         setCurrentPosition(currentPos - 1)
-    }
-
-    /**
-     * Opens the given file by adding it to the list of files and setting it as the current file.
-     * Returns true if the file was successfully added, false otherwise.
-     */
-    fun openFile(file: File): Boolean {
-        addFile(file)
-        return true
     }
 
     /**
@@ -131,7 +106,7 @@ class FileViewModel : ViewModel() {
      * Any files in the new list that are already in the current list are not added again.
      */
     fun updateFiles(newFiles: List<File>) {
-        val newList = (_files.value.orEmpty() + newFiles).distinctBy { it.absolutePath }
-        _files.value = newList
+        files.value =
+            (files.value.orEmpty() + newFiles).distinctBy { it.absolutePath }.toMutableList()
     }
 }

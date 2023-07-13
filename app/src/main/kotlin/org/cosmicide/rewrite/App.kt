@@ -64,12 +64,15 @@ class App : Application() {
 
         loadPlugins()
 
+        // Some libraries may call System.exit() to exit the app, which crashes the app.
+        // Currently, only JGit does this.
         HookManager.registerHook(object : Hook(
             method = "exit",
             argTypes = arrayOf(Int::class.java),
             type = System::class.java
         ) {
             override fun before(param: XC_MethodHook.MethodHookParam) {
+                System.err.println("System.exit() called!")
                 param.result = null
             }
         })

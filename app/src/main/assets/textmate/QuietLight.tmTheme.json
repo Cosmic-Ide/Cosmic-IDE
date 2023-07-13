@@ -10,7 +10,6 @@
         "invisibles": "#AAAAAA",
         "lineHighlight": "#E4F6D4",
         "selection": "#C9D0D9",
-        "completionWindowBackground": "#F5F5F5",
         "completionWindowStroke": "#79747E"
       }
     },

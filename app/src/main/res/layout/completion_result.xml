@@ -9,7 +9,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?colorSurface"
     android:gravity="center_vertical"
     android:padding="4dp">
 
@@ -30,10 +29,9 @@
             android:id="@+id/result_item_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/noto_sans_mono"
             android:singleLine="true"
             android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="?colorPrimaryDark"
             tools:text="Completion result title" />
 
         <TextView

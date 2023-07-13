@@ -7,11 +7,16 @@
 
 package org.cosmicide.rewrite.editor.completion
 
+import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import io.github.rosemoe.sora.widget.component.DefaultCompletionLayout
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import org.cosmicide.rewrite.App
+import org.cosmicide.rewrite.common.Prefs
 
 class CustomCompletionLayout : DefaultCompletionLayout() {
 
@@ -28,6 +33,21 @@ class CustomCompletionLayout : DefaultCompletionLayout() {
             1f.dpToPx(),
             requireNotNull(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_CORNER))
         )
+
+
+        val color = when (App.instance.get()!!.getTheme(Prefs.appTheme)) {
+            AppCompatDelegate.MODE_NIGHT_YES -> "#1F1F1F"
+            AppCompatDelegate.MODE_NIGHT_NO -> "#F5F5F5"
+            else -> {
+                when (completionList.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                    Configuration.UI_MODE_NIGHT_YES -> "#1F1F1F"
+                    else -> "#F5F5F5"
+                }
+            }
+        }
+
+        completionListParent.setBackgroundColor(Color.parseColor(color))
+        backgroundDrawable.setColor(colorScheme.getColor(EditorColorScheme.COMPLETION_WND_BACKGROUND))
     }
 
     private fun Float.dpToPx(): Int {

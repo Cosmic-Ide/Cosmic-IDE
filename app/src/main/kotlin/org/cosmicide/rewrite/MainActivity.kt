@@ -31,12 +31,16 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val imeInset =
+                ViewCompat.getRootWindowInsets(view)!!.getInsets(WindowInsetsCompat.Type.ime())
+
+            val systemBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = insets.left
-                topMargin = insets.top
-                rightMargin = insets.right
-                bottomMargin = insets.bottom
+                leftMargin = systemBarInsets.left
+                topMargin = systemBarInsets.top
+                rightMargin = systemBarInsets.right
+                bottomMargin = if (imeInset.bottom > 0) imeInset.bottom else systemBarInsets.bottom
             }
 
             WindowInsetsCompat.CONSUMED

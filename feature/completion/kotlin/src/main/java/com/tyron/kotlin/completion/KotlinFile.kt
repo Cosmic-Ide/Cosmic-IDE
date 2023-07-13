@@ -25,13 +25,11 @@ package com.tyron.kotlin.completion
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiFileFactory
-import com.intellij.psi.impl.PsiFileFactoryImpl
+import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
-import org.jetbrains.kotlin.idea.KotlinLanguage
+import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtFile
-import java.nio.charset.StandardCharsets.UTF_8
 
 class KotlinFile(val name: String, val kotlinFile: KtFile) {
 
@@ -59,14 +57,9 @@ class KotlinFile(val name: String, val kotlinFile: KtFile) {
     companion object {
         fun from(project: Project, name: String, content: String) =
             KotlinFile(
-                name, (PsiFileFactory.getInstance(project) as PsiFileFactoryImpl)
-                    .trySetupPsiForFile(
-                        LightVirtualFile(
-                            if (name.endsWith(".kt")) name else "$name.kt",
-                            KotlinLanguage.INSTANCE,
-                            content
-                        ).apply { charset = UTF_8 },
-                        KotlinLanguage.INSTANCE, true, false
+                name, PsiManager.getInstance(project)
+                    .findFile(
+                        LightVirtualFile(name, KotlinFileType.INSTANCE, content)
                     ) as KtFile
             )
     }

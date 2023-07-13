@@ -9,7 +9,6 @@ package org.cosmicide.rewrite.fragment
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import kotlinx.coroutines.Dispatchers
@@ -49,12 +48,6 @@ class CompileInfoFragment : BaseBindingFragment<FragmentCompileInfoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                parentFragmentManager.popBackStack()
-            }
-        })
 
         binding.infoEditor.apply {
             setEditorLanguage(TextMateLanguage.create("source.build", false))

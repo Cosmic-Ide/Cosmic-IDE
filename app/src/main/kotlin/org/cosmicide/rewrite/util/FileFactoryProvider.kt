@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.metadata.jvm.deserialization.JvmProtoBufUtil
 import org.jetbrains.kotlin.psi.KtFile
-import java.io.File
 
 object FileFactoryProvider {
     private val TAG = "FileFactoryProvider"
@@ -52,12 +51,12 @@ object FileFactoryProvider {
             )
             val languageVersionSettings = LanguageVersionSettingsImpl(
                 LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!,
-                ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
+                ApiVersion.createByLanguageVersion(LanguageVersion.fromVersionString(Prefs.kotlinVersion)!!),
                 mapOf(
                     AnalysisFlags.extendedCompilerChecks to false,
                     AnalysisFlags.ideMode to true,
                     AnalysisFlags.skipMetadataVersionCheck to true,
-                    AnalysisFlags.skipPrereleaseCheck to true,
+                    AnalysisFlags.skipPrereleaseCheck to true
                 )
             )
             put(
@@ -74,14 +73,6 @@ object FileFactoryProvider {
 
     init {
         CompletionProvider.registerExtensions(env.project.extensionArea)
-    }
-
-    fun getPsiJavaFile(file: File): PsiJavaFile {
-        return fileFactory.createFileFromText(
-            file.name,
-            JavaLanguage.INSTANCE,
-            file.readText()
-        ) as PsiJavaFile
     }
 
     fun getPsiJavaFile(fileName: String, code: String): PsiJavaFile {

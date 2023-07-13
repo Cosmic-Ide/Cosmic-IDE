@@ -7,13 +7,12 @@
 
 package org.cosmicide.rewrite.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.Space
-import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import dev.pranav.navigation.NavigationProvider
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionIconDrawer
@@ -27,31 +26,34 @@ class NavAdapter(
     private val indexer: Indexer
 ) : ArrayAdapter<NavigationProvider.NavigationItem>(context, R.layout.nav_item, items) {
 
+    @SuppressLint("SetTextI18n")
     override fun getView(
         position: Int,
         convertView: android.view.View?,
         parent: ViewGroup
     ): android.view.View {
-        val view =
-            convertView ?: NavItemBinding.inflate(LayoutInflater.from(context), parent, false).root
+        val binding = convertView?.let {
+            NavItemBinding.bind(it)
+        } ?: NavItemBinding.inflate(LayoutInflater.from(context), parent, false)
         val item = items[position]
-        val textView = view.findViewById<TextView>(R.id.nav_item_title)
         val pos = indexer.getCharPosition(item.startPosition)
         val startLine = pos.line + 1
         val startColumn = pos.column + 1
-        textView.text = item.name
-        view.findViewById<TextView>(R.id.description).text =
+        binding.navItemTitle.text = item.name
+        binding.description.text =
             "${item.modifiers} ($startLine:$startColumn)"
 
+        binding.navItemTitle.typeface = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
+        binding.description.typeface = ResourcesCompat.getFont(context, R.font.noto_sans_mono)
 
         val type = when (item) {
             is NavigationProvider.MethodNavigationItem -> CompletionItemKind.Method
             is NavigationProvider.FieldNavigationItem -> CompletionItemKind.Field
             else -> CompletionItemKind.Class
         }
-        view.findViewById<Space>(R.id.space).layoutParams.width = item.depth * 50
-        view.findViewById<ImageView>(R.id.nav_item_icon)
+        binding.space.layoutParams.width = item.depth * 30
+        binding.navItemIcon
             .setImageDrawable(SimpleCompletionIconDrawer.draw(type))
-        return view
+        return binding.root
     }
 }
